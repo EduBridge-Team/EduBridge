@@ -1,0 +1,27 @@
+# اعتماديات
+node_modules/
+vendor/
+
+# ملفات الأسرار — لا تُرفع أبداً
+.env
+edubridge-api/.env
+edubridge-api-laravel/.env
+
+# قاعدة البيانات المحلية وثنائياتها
+.pgdata/
+.pgtool/
+
+# مخرجات البناء
+build/
+dist/
+*.apk
+
+# ملفات النظام والمحررات
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+
+# إعدادات Claude المحلية
+.claude/

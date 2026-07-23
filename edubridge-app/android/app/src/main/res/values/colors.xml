@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- خلفية الأيقونة التكيفية -->
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- خلفية سبلاش أندرويد 12+ (سماوي فاتح من هوية جسر) -->
+    <color name="splash_background">#DDF6FB</color>
+</resources>

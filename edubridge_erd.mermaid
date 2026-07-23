@@ -1,0 +1,109 @@
+erDiagram
+    users {
+        int id PK
+        string name
+        string email
+        string password_hash
+        string role "parent | teacher | specialist | admin"
+        string phone
+        datetime created_at
+    }
+
+    children {
+        int id PK
+        string name
+        date birth_date
+        string gender
+        int disability_type_id FK
+        int organization_id FK "nullable"
+        text notes
+        datetime created_at
+    }
+
+    disability_types {
+        int id PK
+        string name "توحد | صعوبات تعلم | إعاقة سمعية ..."
+        text description
+    }
+
+    child_parent {
+        int child_id FK
+        int parent_id FK "-> users.id"
+    }
+
+    organizations {
+        int id PK
+        string name
+        string contact
+        string address
+    }
+
+    lessons {
+        int id PK
+        string title
+        text content
+        int disability_type_id FK "الدرس مناسب لأي نوع"
+        int teacher_id FK "-> users.id (المُنشئ)"
+        datetime created_at
+    }
+
+    media {
+        int id PK
+        int lesson_id FK
+        string type "image | video | audio"
+        string url
+    }
+
+    progress {
+        int id PK
+        int child_id FK
+        int lesson_id FK
+        string status "not_started | in_progress | done"
+        int score
+        datetime completed_at
+    }
+
+    sessions {
+        int id PK
+        int specialist_id FK "-> users.id"
+        int child_id FK
+        datetime scheduled_at
+        string status "scheduled | done | cancelled"
+    }
+
+    notes {
+        int id PK
+        int author_id FK "-> users.id (معلّم/مختص)"
+        int child_id FK
+        text content
+        datetime created_at
+    }
+
+    notifications {
+        int id PK
+        int user_id FK
+        string message
+        boolean is_read
+        datetime created_at
+    }
+
+    disability_types ||--o{ children : "يصنّف"
+    disability_types ||--o{ lessons : "يناسب"
+    organizations ||--o{ children : "تدعم"
+
+    users ||--o{ child_parent : "ولي أمر"
+    children ||--o{ child_parent : "طفل"
+
+    users ||--o{ lessons : "ينشئ"
+    lessons ||--o{ media : "يحتوي"
+
+    children ||--o{ progress : "يتقدّم"
+    lessons ||--o{ progress : "مُتابَع في"
+
+    users ||--o{ sessions : "مختص"
+    children ||--o{ sessions : "له جلسة"
+
+    users ||--o{ notes : "يكتب"
+    children ||--o{ notes : "عنه ملاحظة"
+
+    users ||--o{ notifications : "يستقبل"
