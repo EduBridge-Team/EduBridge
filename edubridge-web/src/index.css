@@ -155,7 +155,7 @@ h1, h2, h3 { color: var(--text); }
   box-shadow: 0 8px 28px rgba(46, 125, 107, 0.12);
   text-align: center;
 }
-.auth-card img { width: 96px; height: 96px; }
+.auth-card img { width: 140px; height: 140px; }
 .auth-card h1 { margin: 12px 0 4px; font-size: 34px; }
 .auth-card .tagline { color: var(--muted); margin-bottom: 24px; }
 
