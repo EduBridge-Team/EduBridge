@@ -1,6 +1,6 @@
 # EduBridge — جسر تعليمي لأطفال ذوي الاحتياجات الخاصة
 
-مشروع تدريب ميداني — موبايل وويب وواجهتان خلفيتان (Node وLaravel) على نفس قاعدة البيانات ونفس عقد الـ API.
+مشروع تدريب ميداني — تطبيق موبايل وواجهة ويب وواجهة خلفية بـ Laravel على قاعدة PostgreSQL.
 
 ## محتوى المجلد
 
@@ -9,26 +9,25 @@
 | `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
 | `edubridge_schema.sql`  | سكربت إنشاء الجداول (PostgreSQL) |
 | `edubridge_seed.sql`    | بيانات تجريبية |
-| `edubridge-api/`        | الواجهة الخلفية الأصلية (Node.js + Express) |
-| `edubridge-api-laravel/`| الواجهة الخلفية بـ Laravel — **نفس عقد الـ API** |
+| `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
 | `branding/`             | ملفات الهوية (الشعار والأيقونات) |
 
 ## التقنيات
 
-- **Backend:** Laravel 12 (PHP) — أو النسخة الأصلية Node.js + Express
+- **Backend:** Laravel 12 (PHP)
 - **الموبايل:** Flutter (مع قراءة صوتية flutter_tts)
 - **الويب:** React + Vite + React Router
 - **قاعدة البيانات:** PostgreSQL
-- **المصادقة:** JWT + bcrypt (نفس التوكن في النسختين)
+- **المصادقة:** JWT + bcrypt
 
 ## خطوات التشغيل
 
 ### 1) قاعدة البيانات
 أنشئ قاعدة باسم `edubridge` ونفّذ عليها `edubridge_schema.sql` ثم `edubridge_seed.sql`.
 
-### 2) الـ Backend — نسخة Laravel (المعتمدة)
+### 2) الـ Backend (Laravel)
 ```bash
 cd edubridge-api-laravel
 composer install
@@ -37,17 +36,6 @@ php artisan key:generate
 # عدّل .env: بيانات PostgreSQL + أضف JWT_SECRET=نص عشوائي طويل
 php artisan serve --host=0.0.0.0 --port=3000
 ```
-
-<details>
-<summary>بديل: النسخة الأصلية (Node.js)</summary>
-
-```bash
-cd edubridge-api
-npm install
-cp .env.example .env   # عدّل القيم
-npm run dev
-```
-</details>
 
 تحقّق: افتح `http://localhost:3000` — يجب أن يرد برسالة نجاح.
 
@@ -103,7 +91,7 @@ GET  /api/progress/child/:childId/summary
 
 ## الحالة
 
-- [x] مسارات الأطفال والدروس والتقدّم (Node + Laravel)
+- [x] مسارات الأطفال والدروس والتقدّم (Laravel)
 - [x] تطبيق الموبايل: دخول/تسجيل، الأطفال، الدروس مع قراءة صوتية، زر «تمّ»، شاشة التقدّم، أيقونة وشاشة بداية بهوية «جسر»
 - [x] واجهة الويب: نفس الشاشات + شريط علوي وبحث في الدروس وصفحة من نحن
 - [ ] الإضافات الاختيارية: الوسائط، الجلسات، الملاحظات، الإشعارات

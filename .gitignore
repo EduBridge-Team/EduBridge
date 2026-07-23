@@ -4,7 +4,6 @@ vendor/
 
 # ملفات الأسرار — لا تُرفع أبداً
 .env
-edubridge-api/.env
 edubridge-api-laravel/.env
 
 # قاعدة البيانات المحلية وثنائياتها

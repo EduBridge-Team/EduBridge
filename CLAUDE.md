@@ -8,8 +8,7 @@
 
 **EduBridge (جسر تعليمي)** جسر تعليمي لأطفال ذوي الاحتياجات الخاصة — مشروع تدريب ميداني جامعي.
 يتكوّن من:
-- **Backend (المعتمد)** — Laravel 12 في `edubridge-api-laravel/`
-- **Backend (الأصلي، مرجعي)** — Node.js + Express في `edubridge-api/` — نفس عقد الـ API تماماً
+- **Backend** — Laravel 12 في `edubridge-api-laravel/`
 - **تطبيق موبايل** (Flutter) في `edubridge-app/`
 - **واجهة ويب** (React + Vite) في `edubridge-web/`
 - **قاعدة بيانات** (سكربتات SQL في جذر المجلد)
@@ -27,11 +26,10 @@ EduBridge/
 ├── edubridge_seed.sql           # بيانات تجريبية (باسورد الكل: password123)
 ├── branding/                    # الهوية: الشعار والأيقونة الأصلية
 ├── .pgdata/ + .pgtool/          # PostgreSQL محمول محلي (غير مرفوع للمستودع)
-├── edubridge-api-laravel/       # الـ Backend المعتمد (Laravel)
+├── edubridge-api-laravel/       # الـ Backend (Laravel)
 │   ├── routes/api.php           # كل المسارات
 │   ├── app/Http/Controllers/    # Auth / Child / Lesson / Progress
 │   └── app/Http/Middleware/     # JwtAuth (توكن) + RoleMiddleware (أدوار)
-├── edubridge-api/               # الـ Backend الأصلي (Node + Express)
 ├── edubridge-app/               # تطبيق Flutter
 │   └── lib/
 │       ├── config.dart          # عنوان الـ API
@@ -59,7 +57,7 @@ EduBridge/
   ```
   المستخدم `postgres` بمصادقة trust (بدون كلمة مرور فعلية)، والقاعدة `edubridge` جاهزة بالسكيما والبيانات.
 
-### 2) الـ Backend (Laravel — المعتمد)
+### 2) الـ Backend (Laravel)
 ```bash
 cd edubridge-api-laravel
 composer install          # إن لم يكن vendor موجوداً
@@ -110,13 +108,13 @@ flutter run
 6. **التعليقات بالعربية.**
 7. اللون الأساسي: `Color(0xFF2E7D6B)` — وهوية «جسر» (تركوازي `#2FB9BE`) للشعار والأيقونة.
 8. **Git:** لا تضف تريلر `Co-Authored-By` في رسائل الـ commit.
-9. **تطابق العقد:** أي تعديل على مسارات Laravel يجب أن يحافظ على نفس أشكال الاستجابات القديمة `{children: [...]}` / `{error: "..."}` لأن التطبيق والويب يعتمدان عليها.
+9. **تطابق العقد:** أي تعديل على مسارات Laravel يجب أن يحافظ على نفس أشكال الاستجابات الموثقة `{children: [...]}` / `{error: "..."}` لأن التطبيق والويب يعتمدان عليها.
 
 ---
 
 ## ما اكتمل
 
-- كل مسارات الـ API (auth / children / lessons / progress) في النسختين Node وLaravel — مختبرة بالكامل.
+- كل مسارات الـ API (auth / children / lessons / progress) في Laravel — مختبرة بالكامل.
 - تطبيق Flutter: دخول، تسجيل حساب، الأطفال، دروس الطفل مع «تمّ» و«استمع» (flutter_tts)، شاشة التقدّم، أيقونة «جسر» الأصلية وشاشة بداية، اختبار تكامل للدخول على جهاز حقيقي.
 - واجهة React: نفس الشاشات + شريط علوي (بحث في الدروس، من نحن) بهوية جسر.
 - المستودع: https://github.com/MohammedEmad333/EduBridge (خاص، فرع main).
