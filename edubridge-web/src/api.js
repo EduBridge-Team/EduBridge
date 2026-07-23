@@ -1,6 +1,8 @@
 // طبقة الاتصال بالـ API — نفس الخادم الذي يستخدمه تطبيق الموبايل
-// نستخدم hostname الحالي بدل localhost حتى يعمل من أي جهاز على الشبكة
-const BASE_URL = `http://${window.location.hostname}:3000/api`;
+// في الإنتاج: حدّد VITE_API_URL وقت البناء (مثال: https://api.myaccount.alwaysdata.net/api)
+// في التطوير: نستخدم hostname الحالي بدل localhost حتى يعمل من أي جهاز على الشبكة
+const BASE_URL =
+  import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`;
 
 // التوكن وبيانات المستخدم في localStorage
 export function getToken() {
