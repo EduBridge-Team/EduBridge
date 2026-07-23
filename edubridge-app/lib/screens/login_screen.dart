@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                 ),
                 const Text(
-                  'جسر تعليمي لذوي الاحتياجات الخاصة',
+                  'تعلم بلا حدود .. فرص متساوية للجميع',
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
                 const SizedBox(height: 40),

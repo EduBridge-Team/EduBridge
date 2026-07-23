@@ -2,6 +2,6 @@
 <resources>
     <!-- خلفية الأيقونة التكيفية -->
     <color name="ic_launcher_background">#FFFFFF</color>
-    <!-- خلفية سبلاش أندرويد 12+ (سماوي فاتح من هوية جسر) -->
-    <color name="splash_background">#DDF6FB</color>
+    <!-- خلفية سبلاش أندرويد 12+ (أزرق فاتح من هوية جسر) -->
+    <color name="splash_background">#E9F3FC</color>
 </resources>

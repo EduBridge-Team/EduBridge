@@ -33,7 +33,7 @@ export default function LoginPage() {
       <div className="auth-card">
         <img src="/icon.png" alt="شعار جسر" />
         <h1>EduBridge</h1>
-        <div className="tagline">جسر تعليمي لذوي الاحتياجات الخاصة</div>
+        <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
 
         {successMsg && <div className="success-box">{successMsg}</div>}
 
