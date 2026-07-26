@@ -5,7 +5,7 @@ import { ROLE_NAMES } from '../roles'
 
 export default function TopBar() {
   const navigate = useNavigate()
-  // useLocation يجبر الشريط على إعادة العرض بعد الدخول/الخروج
+  // نستخدم useLocation لإجبار الشريط على إعادة العرض بعد الدخول/الخروج
   useLocation()
   const user = getUser()
 

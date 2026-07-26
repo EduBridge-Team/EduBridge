@@ -1,6 +1,6 @@
 <?php
 
-// مسارات الـ API — نفس عقد النسخة القديمة (Express) تماماً
+// مسارات الـ API
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
