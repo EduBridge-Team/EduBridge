@@ -1,9 +1,8 @@
 // إعدادات التطبيق
 class Config {
-  // عنوان الـAPI.
-  // ملاحظة مهمة:
-  // - جهاز حقيقي عبر USB: شغّل `adb reverse tcp:3000 tcp:3000` واستخدم 127.0.0.1
-  // - محاكي أندرويد: استخدم 10.0.2.2 (يشير لجهازك) بدل localhost
-  // - جهاز حقيقي عبر الشبكة: استخدم IP جهازك مثل http://192.168.1.5:3000
-  static const String baseUrl = "http://127.0.0.1:3000/api";
+  // عنوان الـAPI — النسخة المنشورة على alwaysdata (يعمل من أي مكان)
+  // للتطوير المحلي بدّل إلى:
+  // - جهاز حقيقي عبر USB: `adb reverse tcp:3000 tcp:3000` + http://127.0.0.1:3000/api
+  // - محاكي أندرويد: http://10.0.2.2:3000/api
+  static const String baseUrl = "https://edubridge.alwaysdata.net/api";
 }

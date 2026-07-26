@@ -13,7 +13,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // شاشة الدخول تعرض اسم التطبيق وزر الدخول
-    expect(find.text('جسر'), findsOneWidget);
+    expect(find.text('EduBridge'), findsOneWidget);
     expect(find.text('دخول'), findsOneWidget);
   });
 }
