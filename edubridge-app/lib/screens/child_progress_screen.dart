@@ -105,7 +105,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     }
     if (_progress.isEmpty) {
       return ListView(
-        // ListView حتى يعمل السحب للتحديث مع القائمة الفارغة
+        // نستخدم ListView حتى يعمل السحب للتحديث مع القائمة الفارغة
         children: const [
           SizedBox(height: 120),
           Icon(Icons.insights, size: 72, color: Colors.grey),
