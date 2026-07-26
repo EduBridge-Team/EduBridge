@@ -56,12 +56,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 Image.asset('assets/icon.png', width: 110, height: 110),
                 const SizedBox(height: 16),
                 const Text(
-                  'جسر',
+                  'EduBridge',
                   style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                 ),
                 const Text(
+                  'جسر تعليمي',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2E7D6B),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
                   'تعلم بلا حدود .. فرص متساوية للجميع',
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                  style: TextStyle(fontSize: 15, color: Colors.black54),
                 ),
                 const SizedBox(height: 40),
 
