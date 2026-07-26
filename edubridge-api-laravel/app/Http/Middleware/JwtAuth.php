@@ -23,7 +23,7 @@ class JwtAuth
 
         try {
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
-            // نمرر حمولة التوكن { id, role } للمسارات التالية
+            // نمرر حمولة التوكن للمسارات التالية — { id, role }
             $request->attributes->set('jwt_user', $decoded);
         } catch (Exception $e) {
             return response()->json(['error' => 'توكن غير صالح'], 403);

@@ -67,7 +67,7 @@ export default function ChildLessonsPage() {
     }
   }
 
-  // قراءة الدرس صوتياً (Web Speech API) أو إيقافها
+  // قراءة الدرس صوتياً أو إيقافها — Web Speech API
   const toggleSpeak = (lesson) => {
     const synth = window.speechSynthesis
     if (!synth) {
