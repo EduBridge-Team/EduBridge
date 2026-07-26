@@ -156,7 +156,13 @@ h1, h2, h3 { color: var(--text); }
   text-align: center;
 }
 .auth-card img { width: 140px; height: 140px; }
-.auth-card h1 { margin: 12px 0 4px; font-size: 34px; }
+.auth-card h1 { margin: 12px 0 2px; font-size: 34px; }
+.auth-card .subtitle {
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
 .auth-card .tagline { color: var(--muted); margin-bottom: 24px; }
 
 /* ===== الحقول والأزرار — كبيرة وواضحة (accessibility) ===== */
