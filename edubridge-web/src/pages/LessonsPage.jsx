@@ -30,7 +30,7 @@ export default function LessonsPage() {
     return () => window.speechSynthesis?.cancel()
   }, [])
 
-  // القدوم من أيقونة البحث في الشريط العلوي → تركيز حقل البحث
+  // عند القدوم من أيقونة البحث في الشريط العلوي نركّز حقل البحث
   useEffect(() => {
     if (!loading && location.state?.focusSearch) {
       searchRef.current?.focus()

@@ -29,7 +29,7 @@ class ProgressController extends Controller
         $completedAt = $status === 'done' ? now() : null;
 
         try {
-            // إدراج أو تحديث (upsert): إن وُجد السجل نحدّثه، وإلا نضيفه
+            // إن وُجد السجل نحدّثه، وإلا نضيفه — upsert
             DB::table('progress')->upsert(
                 [[
                     'child_id' => $childId,

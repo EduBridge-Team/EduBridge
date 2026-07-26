@@ -6,7 +6,7 @@ import 'package:edubridge_app/main.dart';
 
 void main() {
   testWidgets('التطبيق يبنى ويعرض شاشة الدخول', (WidgetTester tester) async {
-    // تهيئة تخزين وهمي (لا يوجد توكن → تظهر شاشة الدخول)
+    // تهيئة تخزين وهمي: لا يوجد توكن محفوظ، فتظهر شاشة الدخول
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const EduBridgeApp());

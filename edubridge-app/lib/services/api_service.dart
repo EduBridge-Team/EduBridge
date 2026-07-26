@@ -35,7 +35,7 @@ class ApiService {
     await prefs.remove('name');
   }
 
-  // تسجيل الدخول — يرجّع رسالة خطأ أو null عند النجاح
+  // تسجيل الدخول — يرجّع رسالة الخطأ عند الفشل، ولا شيء عند النجاح
   static Future<String?> login(String email, String password) async {
     final res = await http.post(
       Uri.parse('${Config.baseUrl}/auth/login'),
@@ -77,7 +77,7 @@ class ApiService {
     return data['error'] ?? 'فشل إنشاء الحساب';
   }
 
-  // طلب GET محمي بالتوكن — لاستخدامه لاحقاً (أطفال، دروس...)
+  // طلب جلب محمي بالتوكن — GET
   static Future<http.Response> authGet(String path) async {
     final token = await getToken();
     return http.get(
@@ -86,7 +86,7 @@ class ApiService {
     );
   }
 
-  // طلب POST محمي بالتوكن
+  // طلب إرسال محمي بالتوكن — POST
   static Future<http.Response> authPost(String path, Map body) async {
     final token = await getToken();
     return http.post(

@@ -10,7 +10,7 @@ import ChildProgressPage from './pages/ChildProgressPage'
 import LessonsPage from './pages/LessonsPage'
 import AboutPage from './pages/AboutPage'
 
-// صفحة محمية: بدون توكن → تحويل لتسجيل الدخول
+// صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
   return children

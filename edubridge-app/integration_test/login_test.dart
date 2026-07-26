@@ -1,5 +1,5 @@
 // اختبار تكامل على الجهاز الحقيقي: تسجيل الدخول بحساب المعلّم
-// يمرّ عبر الـ API الفعلي (adb reverse → localhost:3000)
+// يمرّ عبر الواجهة الفعلية على المنفذ 3000 من خلال الكابل
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edubridge_app/main.dart' as app;
 
-// ينتظر ظهور عنصر (بدل pumpAndSettle لأن مؤشر التحميل يمنع الاستقرار)
+// ينتظر ظهور عنصر بدل الانتظار الكامل، لأن مؤشر التحميل يمنع الاستقرار — pumpAndSettle
 Future<bool> pumpUntilFound(
   WidgetTester tester,
   Finder finder, {
