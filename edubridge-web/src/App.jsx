@@ -2,6 +2,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { getToken } from './api'
 import TopBar from './components/TopBar'
+import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ChildrenPage from './pages/ChildrenPage'
@@ -38,8 +39,10 @@ export default function App() {
             </Page>
           }
         />
+        {/* الصفحة الرئيسية — عامة بدون تسجيل دخول */}
+        <Route path="/" element={<HomePage />} />
         <Route
-          path="/"
+          path="/children"
           element={
             <Protected>
               <Page>

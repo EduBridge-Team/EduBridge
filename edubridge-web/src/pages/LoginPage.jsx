@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(email.trim(), password)
-      navigate('/')
+      navigate('/children')
     } catch (err) {
       setError(err.message)
     } finally {
