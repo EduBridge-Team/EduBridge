@@ -39,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       setState(() => _error = error);
-       setState(() => _error = error);
     }
   }
 
