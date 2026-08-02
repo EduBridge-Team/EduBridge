@@ -15,7 +15,6 @@ class EduBridgeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'EduBridge — جسر تعليمي',
-            title: 'EduBridge — جسر تعليمي',
       debugShowCheckedModeBanner: false,
 
       // اتجاه الواجهة من اليمين لليسار (عربي)
