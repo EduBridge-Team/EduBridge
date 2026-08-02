@@ -28,8 +28,9 @@ export default function TopBar() {
       {/* روابط التنقّل */}
       <nav className="topbar-nav">
         <NavLink to="/" end>
-          الأطفال
+          الرئيسية
         </NavLink>
+        <NavLink to="/children">الأطفال</NavLink>
         <NavLink to="/lessons">تصفح الدروس</NavLink>
         <NavLink to="/about">من نحن</NavLink>
       </nav>
@@ -57,7 +58,7 @@ export default function TopBar() {
           </button>
         </div>
       ) : (
-        <button className="topbar-btn" onClick={() => navigate('/login')}>
+        <button className="topbar-btn login-btn" onClick={() => navigate('/login')}>
           🔒 تسجيل الدخول
         </button>
       )}
