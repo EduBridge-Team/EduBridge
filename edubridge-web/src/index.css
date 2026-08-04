@@ -293,6 +293,13 @@ input:focus, select:focus {
 }
 .btn.success:hover { background: var(--green-deep); }
 .btn.small { min-height: 48px; font-size: 17px; }
+.btn.navy {
+  background: var(--navy);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: var(--shadow-soft);
+}
+.btn.navy:hover { background: var(--navy-deep); }
 
 .link-btn {
   background: none;

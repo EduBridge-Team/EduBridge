@@ -60,6 +60,15 @@ export default function HomePage() {
             <button className="btn outline" onClick={() => navigate('/lessons')}>
               استكشف برامجنا
             </button>
+            {/* تحميل تطبيق الأندرويد — أحدث إصدار من GitHub */}
+            <a
+              className="btn navy"
+              href="https://github.com/EduBridge-Team/EduBridge/releases/latest"
+              target="_blank"
+              rel="noreferrer"
+            >
+              📱 حمّل التطبيق
+            </a>
           </div>
         </div>
         <div className="hero-art">
@@ -201,6 +210,13 @@ export default function HomePage() {
             <Link to="/about">عن المنصة</Link>
             <Link to="/lessons">تصفح الدروس</Link>
             <Link to="/login">تسجيل الدخول</Link>
+            <a
+              href="https://github.com/EduBridge-Team/EduBridge/releases/latest"
+              target="_blank"
+              rel="noreferrer"
+            >
+              📱 حمّل تطبيق الأندرويد
+            </a>
           </div>
           <div>
             <h4>بيانات التواصل</h4>
