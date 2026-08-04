@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 import 'child_progress_screen.dart';
 
 class ChildLessonsScreen extends StatefulWidget {
@@ -178,8 +179,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('دروس ${widget.childName}'),
+      appBar: JisrAppBar(
+        title: 'دروس ${widget.childName}',
         actions: [
           // زر التقدّم — يفتح شاشة ملخّص وتفاصيل التقدّم
           IconButton(
@@ -269,17 +270,29 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  isDone ? Icons.check_circle : Icons.menu_book,
-                  size: 32,
-                  color: isDone ? Colors.green : const Color(0xFF2E7D6B),
+                // أيقونة الدرس داخل مربّع ملوّن ناعم
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: isDone ? AppColors.tintGreen : AppColors.tintTeal,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    isDone ? Icons.check_circle : Icons.menu_book,
+                    size: 28,
+                    color: isDone ? AppColors.greenDeep : AppColors.tealDeep,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     lesson['title'] ?? '',
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.navy,
+                    ),
                   ),
                 ),
               ],
@@ -333,7 +346,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              isDone ? Colors.green : const Color(0xFF2E7D6B),
+                              isDone ? AppColors.greenDeep : AppColors.green,
                           foregroundColor: Colors.white,
                         ),
                         onPressed: (isDone || isSaving)

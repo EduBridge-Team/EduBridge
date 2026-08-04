@@ -1,6 +1,7 @@
 // شاشة تسجيل الدخول
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -52,27 +53,51 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // شعار جسر
-                Image.asset('assets/icon.png', width: 110, height: 110),
-                const SizedBox(height: 16),
+                // شعار جسر داخل هالة لونية ناعمة
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: SweepGradient(
+                      colors: [
+                        AppColors.tintTeal,
+                        AppColors.tintGreen,
+                        AppColors.tintOrange,
+                        AppColors.tintTeal,
+                      ],
+                    ),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    child:
+                        Image.asset('assets/icon.png', width: 88, height: 88),
+                  ),
+                ),
+                const SizedBox(height: 18),
                 const Text(
-                  'EduBridge',
-                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+                  'جسر التعليمي',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.navy,
+                  ),
                 ),
                 const Text(
-                  'جسر تعليمي',
+                  'تعلم بلا حدود',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2E7D6B),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tealDeep,
                   ),
-
-              
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'تعلم بلا حدود .. فرص متساوية للجميع',
-                  style: TextStyle(fontSize: 15, color: Colors.black54),
+                  'فرص متساوية للجميع',
+                  style: TextStyle(fontSize: 15, color: AppColors.muted),
                 ),
                 const SizedBox(height: 40),
 

@@ -18,7 +18,7 @@ const PROGRAMS = [
     desc: 'تدريب عملي لتعزيز استقلالية القراءة والتعلم لكل طفل.',
   },
   {
-    icon: '💡',
+    icon: '🧩',
     tag: 'دعم خاص',
     title: 'المهارات الحياتية الرقمية',
     desc: 'برنامج مخصص لتمكين الأطفال ذوي الإعاقات الإدراكية من التعامل مع العالم الرقمي بأمان.',
@@ -41,7 +41,10 @@ export default function HomePage() {
       {/* ===== القسم البطولي ===== */}
       <section className="hero">
         <div className="hero-text">
-          <h1>نبني جسوراً نحو مستقبل شامل للجميع</h1>
+          <span className="eyebrow">🌈 تعليم شامل للجميع</span>
+          <h1>
+            نبني <span className="hl">جسوراً</span> نحو مستقبل شامل للجميع
+          </h1>
           <p>
             نحن في «EduBridge — جسر تعليمي» نؤمن بأن التعليم حق للجميع. نوفر
             بيئة تعليمية ذكية ومتاحة صُممت خصيصاً لتلبية احتياجات ذوي الهمم،
@@ -59,7 +62,18 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-        <img className="hero-logo" src="/logo.png" alt="شعار جسر تعليمي" />
+        <div className="hero-art">
+          <div className="blob" />
+          <img className="hero-logo" src="/logo.png" alt="شعار جسر تعليمي" />
+          <div className="hero-float a">
+            <span className="d" style={{ background: 'var(--tint-teal)' }}>🔊</span>
+            قراءة صوتية
+          </div>
+          <div className="hero-float b">
+            <span className="d" style={{ background: 'var(--tint-green)' }}>✓</span>
+            تقدّم مباشر
+          </div>
+        </div>
       </section>
 
       {/* ===== الرسالة والإحصاءات ===== */}
