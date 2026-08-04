@@ -1,6 +1,7 @@
 // شاشة إنشاء حساب جديد
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -65,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('إنشاء حساب')),
+      appBar: const JisrAppBar(title: 'إنشاء حساب'),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -74,8 +75,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  const Icon(Icons.person_add,
-                      size: 72, color: Color(0xFF2E7D6B)),
+                  // أيقونة ترحيبية داخل مربّع ملوّن ناعم
+                  Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      color: AppColors.tintTeal,
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    child: const Icon(Icons.person_add,
+                        size: 48, color: AppColors.tealDeep),
+                  ),
                   const SizedBox(height: 24),
 
                   // حقل الاسم

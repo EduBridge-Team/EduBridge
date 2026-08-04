@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'services/api_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'theme.dart';
 
 void main() {
   runApp(const EduBridgeApp());
@@ -20,14 +21,8 @@ class EduBridgeApp extends StatelessWidget {
       // اتجاه الواجهة من اليمين لليسار (عربي)
       locale: const Locale('ar'),
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF2E7D6B),
-        // نصوص أكبر قليلاً لسهولة القراءة (accessibility)
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(fontSize: 16),
-        ),
-      ),
+      // ثيم هوية «جسر» الموحّد — انظر theme.dart
+      theme: buildJisrTheme(),
 
       // تغليف كامل التطبيق باتجاه RTL
       builder: (context, child) => Directionality(

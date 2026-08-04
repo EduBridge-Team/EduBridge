@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 import 'child_lessons_screen.dart';
 
 class ChildrenScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الأطفال')),
+      appBar: const JisrAppBar(title: 'الأطفال'),
       body: RefreshIndicator(
         onRefresh: _loadChildren,
         child: _buildBody(),
@@ -79,17 +80,32 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
       itemCount: _children.length,
       itemBuilder: (context, i) {
         final child = _children[i];
+        // لون متناوب لكل طفل من لوحة الهوية + الحرف الأول من اسمه
+        final color = AppColors.kidPalette[i % AppColors.kidPalette.length];
+        final name = child['name'] ?? '';
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               radius: 26,
-              child: Icon(Icons.child_care, size: 28),
+              backgroundColor: color,
+              child: Text(
+                name.isNotEmpty ? name.characters.first : '🙂',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
             title: Text(
-              child['name'] ?? '',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              name,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.navy,
+              ),
             ),
             trailing: const Icon(Icons.chevron_left), // اتجاه RTL
             onTap: () {

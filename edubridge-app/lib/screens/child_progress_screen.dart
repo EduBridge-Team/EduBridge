@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 
 class ChildProgressScreen extends StatefulWidget {
   final int childId;
@@ -70,7 +71,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('تقدّم ${widget.childName}')),
+      appBar: JisrAppBar(title: 'تقدّم ${widget.childName}'),
       body: RefreshIndicator(
         onRefresh: _loadProgress,
         child: _buildBody(),
@@ -140,27 +141,72 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
     final avgScore = _summary?['avg_score'];
 
+    // حلقة الإنجاز: نسبة الدروس المكتملة من الإجمالي
+    final total = done + inProgress + notStarted;
+    final percent = total > 0 ? done / total : 0.0;
+
     return Column(
       children: [
+        // ===== حلقة إنجاز محفّزة =====
+        SizedBox(
+          width: 130,
+          height: 130,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 130,
+                height: 130,
+                child: CircularProgressIndicator(
+                  value: percent,
+                  strokeWidth: 11,
+                  strokeCap: StrokeCap.round,
+                  color: AppColors.green,
+                  backgroundColor: AppColors.lineCool,
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${(percent * 100).round()}%',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.navy,
+                    ),
+                  ),
+                  const Text(
+                    'الإنجاز',
+                    style:
+                        TextStyle(fontSize: 13, color: AppColors.muted),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
-            _summaryCard('مكتمل', '$done', Icons.check_circle, Colors.green),
-            const SizedBox(width: 8),
             _summaryCard(
-                'قيد التنفيذ', '$inProgress', Icons.autorenew, Colors.orange),
+                'مكتمل', '$done', Icons.check_circle, AppColors.greenDeep),
+            const SizedBox(width: 8),
+            _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew,
+                AppColors.orangeDeep),
           ],
         ),
         const SizedBox(height: 8),
         Row(
           children: [
-            _summaryCard(
-                'لم يبدأ', '$notStarted', Icons.hourglass_empty, Colors.grey),
+            _summaryCard('لم يبدأ', '$notStarted', Icons.hourglass_empty,
+                AppColors.muted),
             const SizedBox(width: 8),
             _summaryCard(
               'متوسّط النتيجة',
               avgScore != null ? '$avgScore%' : '—',
               Icons.star,
-              const Color(0xFF2E7D6B),
+              AppColors.tealDeep,
             ),
           ],
         ),
@@ -232,18 +278,22 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   ({String label, IconData icon, Color color}) _statusInfo(String status) {
     switch (status) {
       case 'done':
-        return (label: 'مكتمل', icon: Icons.check_circle, color: Colors.green);
+        return (
+          label: 'مكتمل',
+          icon: Icons.check_circle,
+          color: AppColors.greenDeep
+        );
       case 'in_progress':
         return (
           label: 'قيد التنفيذ',
           icon: Icons.autorenew,
-          color: Colors.orange
+          color: AppColors.orangeDeep
         );
       default:
         return (
           label: 'لم يبدأ',
           icon: Icons.hourglass_empty,
-          color: Colors.grey
+          color: AppColors.muted
         );
     }
   }
