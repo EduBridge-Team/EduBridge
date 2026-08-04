@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../theme.dart';
 import 'login_screen.dart';
 import 'children_screen.dart';
+import 'lessons_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -131,15 +132,21 @@ class HomeScreen extends StatelessWidget {
                 _MenuTile(
                   icon: '📚',
                   tint: AppColors.tintGreen,
-                  title: 'الدروس',
-                  subtitle: 'دروس مناسبة لنوع إعاقة كل طفل',
-                  onTap: () => _openChildren(context),
+                  title: 'تصفح الدروس',
+                  subtitle: 'كل الدروس مع بحث وقراءة صوتية',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const LessonsScreen()),
+                    );
+                  },
                 ),
                 _MenuTile(
                   icon: '📊',
                   tint: AppColors.tintOrange,
                   title: 'التقدّم',
-                  subtitle: 'ملخّص إنجاز كل طفل درساً بدرس',
+                  subtitle: 'اختر طفلاً لعرض ملخّص إنجازه',
                   onTap: () => _openChildren(context),
                 ),
 
