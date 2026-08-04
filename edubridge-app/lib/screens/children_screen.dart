@@ -82,7 +82,8 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
         final child = _children[i];
         // لون متناوب لكل طفل من لوحة الهوية + الحرف الأول من اسمه
         final color = AppColors.kidPalette[i % AppColors.kidPalette.length];
-        final name = child['name'] ?? '';
+        // تحويل صريح إلى String — القيمة القادمة من JSON نوعها dynamic
+        final String name = (child['name'] ?? '').toString();
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
