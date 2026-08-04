@@ -123,7 +123,9 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       padding: const EdgeInsets.all(12),
       children: [
         _buildSummaryCards(),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
+        _buildRewardsSection(),
+        const SizedBox(height: 20),
         const Text(
           'تفاصيل الدروس',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -131,6 +133,145 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         const SizedBox(height: 8),
         ..._progress.map((p) => _buildProgressTile(p)),
       ],
+    );
+  }
+
+  // ===== المكافآت: نجوم لكل درس مكتمل + شارات إنجاز =====
+  Widget _buildRewardsSection() {
+    final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
+    final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
+    final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
+    final total = done + inProgress + notStarted;
+    final avgScore = double.tryParse('${_summary?['avg_score'] ?? ''}');
+
+    // الشارات: (أيقونة، اسم، شرط التحقيق، تلميح عند القفل)
+    final badges = <({String emoji, String title, bool earned, String hint})>[
+      (
+        emoji: '🌟',
+        title: 'البداية المشرقة',
+        earned: done >= 1,
+        hint: 'أكمل أول درس',
+      ),
+      (
+        emoji: '🏅',
+        title: 'نجم المثابرة',
+        earned: done >= 5,
+        hint: done >= 5 ? '' : 'بقي ${5 - done} دروس',
+      ),
+      (
+        emoji: '🏆',
+        title: 'بطل الدروس',
+        earned: done >= 10,
+        hint: done >= 10 ? '' : 'بقي ${10 - done} دروس',
+      ),
+      (
+        emoji: '🎓',
+        title: 'أكملتها كلها!',
+        earned: total > 0 && done == total,
+        hint: 'أكمل كل الدروس',
+      ),
+      if (avgScore != null)
+        (
+          emoji: '💯',
+          title: 'العلامة الرائعة',
+          earned: avgScore >= 90,
+          hint: 'متوسّط ٩٠٪ فأعلى',
+        ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'المكافآت 🎉',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+
+        // شريط النجوم: نجمة لكل درس مكتمل
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.tintYellow,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            children: [
+              const Text('⭐', style: TextStyle(fontSize: 30)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'} — نجمة عن كل درس مكتمل',
+                  style: const TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // بطاقات الشارات
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.55,
+          children: badges.map((b) => _buildBadgeCard(b)).toList(),
+        ),
+      ],
+    );
+  }
+
+  // بطاقة شارة واحدة: ملوّنة عند التحقيق، رمادية بقفل قبل ذلك
+  Widget _buildBadgeCard(
+      ({String emoji, String title, bool earned, String hint}) badge) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: badge.earned ? AppColors.tintGreen : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: badge.earned ? AppColors.green : AppColors.lineCool,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            badge.earned ? badge.emoji : '🔒',
+            style: TextStyle(
+              fontSize: 28,
+              color: badge.earned ? null : AppColors.muted,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            badge.title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: badge.earned ? AppColors.greenDeep : AppColors.muted,
+            ),
+          ),
+          if (!badge.earned && badge.hint.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              badge.hint,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11.5, color: AppColors.muted),
+            ),
+          ],
+        ],
+      ),
     );
   }
 

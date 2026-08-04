@@ -145,8 +145,8 @@ class HomeScreen extends StatelessWidget {
                 _MenuTile(
                   icon: '📊',
                   tint: AppColors.tintOrange,
-                  title: 'التقدّم',
-                  subtitle: 'اختر طفلاً لعرض ملخّص إنجازه',
+                  title: 'التقدّم والمكافآت',
+                  subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
                   onTap: () => _openChildren(context),
                 ),
 
