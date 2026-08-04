@@ -35,6 +35,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // الألوان المتكيّفة مع الوضع الحالي (فاتح/ليلي)
+    final c = JisrColors.of(context);
+
     return Scaffold(
       body: Column(
         children: [
@@ -73,6 +76,22 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
+                        // زر الوضع الليلي/الفاتح
+                        ValueListenableBuilder<ThemeMode>(
+                          valueListenable: jisrThemeMode,
+                          builder: (context, mode, _) => IconButton(
+                            icon: Icon(
+                              mode == ThemeMode.dark
+                                  ? Icons.light_mode
+                                  : Icons.dark_mode,
+                              color: Colors.white,
+                            ),
+                            tooltip: mode == ThemeMode.dark
+                                ? 'الوضع الفاتح'
+                                : 'الوضع الليلي',
+                            onPressed: toggleThemeMode,
+                          ),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white),
                           tooltip: 'خروج',
@@ -124,14 +143,14 @@ class HomeScreen extends StatelessWidget {
               children: [
                 _MenuTile(
                   icon: '👧',
-                  tint: AppColors.tintTeal,
+                  tint: c.tintTeal,
                   title: 'الأطفال',
                   subtitle: 'عرض الأطفال ودروسهم وتقدّمهم',
                   onTap: () => _openChildren(context),
                 ),
                 _MenuTile(
                   icon: '📚',
-                  tint: AppColors.tintGreen,
+                  tint: c.tintGreen,
                   title: 'تصفح الدروس',
                   subtitle: 'كل الدروس مع بحث وقراءة صوتية',
                   onTap: () {
@@ -144,7 +163,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _MenuTile(
                   icon: '📊',
-                  tint: AppColors.tintOrange,
+                  tint: c.tintOrange,
                   title: 'التقدّم والمكافآت',
                   subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
                   onTap: () {
@@ -162,18 +181,17 @@ class HomeScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.tintYellow,
+                    color: c.tintYellow,
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Text('🔊', style: TextStyle(fontSize: 28)),
-                      SizedBox(width: 12),
+                      const Text('🔊', style: TextStyle(fontSize: 28)),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
-                          style: TextStyle(
-                              fontSize: 14.5, color: AppColors.ink),
+                          style: TextStyle(fontSize: 14.5, color: c.onTint),
                         ),
                       ),
                     ],
@@ -206,6 +224,8 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -232,22 +252,21 @@ class _MenuTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.navy,
+                        color: c.heading,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                          fontSize: 13.5, color: AppColors.muted),
+                      style: TextStyle(fontSize: 13.5, color: c.muted),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_left, color: AppColors.muted),
+              Icon(Icons.chevron_left, color: c.muted),
             ],
           ),
         ),

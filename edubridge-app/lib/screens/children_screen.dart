@@ -107,10 +107,10 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
             ),
             title: Text(
               name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.navy,
+                color: JisrColors.of(context).heading,
               ),
             ),
             trailing: const Icon(Icons.chevron_left), // اتجاه RTL

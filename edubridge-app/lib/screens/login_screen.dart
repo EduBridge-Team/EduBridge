@@ -53,51 +53,55 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // شعار جسر داخل هالة لونية ناعمة
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: SweepGradient(
-                      colors: [
-                        AppColors.tintTeal,
-                        AppColors.tintGreen,
-                        AppColors.tintOrange,
-                        AppColors.tintTeal,
-                      ],
-                    ),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
+                // شعار جسر داخل هالة لونية ناعمة (متكيّفة مع الوضع)
+                Builder(builder: (context) {
+                  final c = JisrColors.of(context);
+                  return Container(
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(26),
+                      shape: BoxShape.circle,
+                      gradient: SweepGradient(
+                        colors: [
+                          c.tintTeal,
+                          c.tintGreen,
+                          c.tintOrange,
+                          c.tintTeal,
+                        ],
+                      ),
                     ),
-                    child:
-                        Image.asset('assets/icon.png', width: 88, height: 88),
-                  ),
-                ),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      child: Image.asset('assets/icon.png',
+                          width: 88, height: 88),
+                    ),
+                  );
+                }),
                 const SizedBox(height: 18),
-                const Text(
+                Text(
                   'جسر التعليمي',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.navy,
+                    color: JisrColors.of(context).heading,
                   ),
                 ),
-                const Text(
+                Text(
                   'تعلم بلا حدود',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.tealDeep,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'فرص متساوية للجميع',
-                  style: TextStyle(fontSize: 15, color: AppColors.muted),
+                  style: TextStyle(
+                      fontSize: 15, color: JisrColors.of(context).muted),
                 ),
                 const SizedBox(height: 40),
 

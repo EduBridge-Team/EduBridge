@@ -5,7 +5,10 @@ import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // استرجاع وضع الثيم المحفوظ (فاتح/ليلي) قبل التشغيل
+  await loadSavedThemeMode();
   runApp(const EduBridgeApp());
 }
 
@@ -14,34 +17,40 @@ class EduBridgeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'EduBridge — جسر تعليمي',
-      debugShowCheckedModeBanner: false,
+    // نستمع لتغيّر وضع الثيم حتى يتبدّل التطبيق فوراً عند الضغط على 🌙
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: jisrThemeMode,
+      builder: (context, mode, _) => MaterialApp(
+        title: 'EduBridge — جسر تعليمي',
+        debugShowCheckedModeBanner: false,
 
-      // اتجاه الواجهة من اليمين لليسار (عربي)
-      locale: const Locale('ar'),
+        // اتجاه الواجهة من اليمين لليسار (عربي)
+        locale: const Locale('ar'),
 
-      // ثيم هوية «جسر» الموحّد — انظر theme.dart
-      theme: buildJisrTheme(),
+        // ثيما هوية «جسر»: فاتح وليلي — انظر theme.dart
+        theme: buildJisrTheme(),
+        darkTheme: buildJisrDarkTheme(),
+        themeMode: mode,
 
-      // تغليف كامل التطبيق باتجاه RTL
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child!,
-      ),
+        // تغليف كامل التطبيق باتجاه RTL
+        builder: (context, child) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: child!,
+        ),
 
-      // نقرّر شاشة البداية حسب وجود توكن محفوظ
-      home: FutureBuilder<String?>(
-        future: ApiService.getToken(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          final loggedIn = snapshot.data != null;
-          return loggedIn ? const HomeScreen() : const LoginScreen();
-        },
+        // نقرّر شاشة البداية حسب وجود توكن محفوظ
+        home: FutureBuilder<String?>(
+          future: ApiService.getToken(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+            final loggedIn = snapshot.data != null;
+            return loggedIn ? const HomeScreen() : const LoginScreen();
+          },
+        ),
       ),
     );
   }

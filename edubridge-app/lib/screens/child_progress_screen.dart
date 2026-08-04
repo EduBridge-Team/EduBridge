@@ -138,6 +138,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
   // ===== المكافآت: نجوم لكل درس مكتمل + شارات إنجاز =====
   Widget _buildRewardsSection() {
+    final c = JisrColors.of(context);
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
@@ -193,7 +194,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.tintYellow,
+            color: c.tintYellow,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Row(
@@ -203,10 +204,10 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
               Expanded(
                 child: Text(
                   'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'} — نجمة عن كل درس مكتمل',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: c.onTint,
                   ),
                 ),
               ),
@@ -232,13 +233,14 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   // بطاقة شارة واحدة: ملوّنة عند التحقيق، رمادية بقفل قبل ذلك
   Widget _buildBadgeCard(
       ({String emoji, String title, bool earned, String hint}) badge) {
+    final c = JisrColors.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: badge.earned ? AppColors.tintGreen : Colors.white,
+        color: badge.earned ? c.tintGreen : c.card,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: badge.earned ? AppColors.green : AppColors.lineCool,
+          color: badge.earned ? AppColors.green : c.line,
           width: 2,
         ),
       ),
@@ -249,7 +251,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             badge.earned ? badge.emoji : '🔒',
             style: TextStyle(
               fontSize: 28,
-              color: badge.earned ? null : AppColors.muted,
+              color: badge.earned ? null : c.muted,
             ),
           ),
           const SizedBox(height: 6),
@@ -259,7 +261,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: badge.earned ? AppColors.greenDeep : AppColors.muted,
+              color: badge.earned ? c.success : c.muted,
             ),
           ),
           if (!badge.earned && badge.hint.isNotEmpty) ...[
@@ -267,7 +269,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             Text(
               badge.hint,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11.5, color: AppColors.muted),
+              style: TextStyle(fontSize: 11.5, color: c.muted),
             ),
           ],
         ],
@@ -277,6 +279,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
   // بطاقات الملخّص: مكتمل / جاري / لم يبدأ / متوسّط النتيجة
   Widget _buildSummaryCards() {
+    final c = JisrColors.of(context);
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
@@ -303,7 +306,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                   strokeWidth: 11,
                   strokeCap: StrokeCap.round,
                   color: AppColors.green,
-                  backgroundColor: AppColors.lineCool,
+                  backgroundColor: c.line,
                 ),
               ),
               Column(
@@ -311,16 +314,15 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                 children: [
                   Text(
                     '${(percent * 100).round()}%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.navy,
+                      color: c.heading,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'الإنجاز',
-                    style:
-                        TextStyle(fontSize: 13, color: AppColors.muted),
+                    style: TextStyle(fontSize: 13, color: c.muted),
                   ),
                 ],
               ),
@@ -331,7 +333,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         Row(
           children: [
             _summaryCard(
-                'مكتمل', '$done', Icons.check_circle, AppColors.greenDeep),
+                'مكتمل', '$done', Icons.check_circle, c.success),
             const SizedBox(width: 8),
             _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew,
                 AppColors.orangeDeep),
@@ -341,13 +343,13 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         Row(
           children: [
             _summaryCard('لم يبدأ', '$notStarted', Icons.hourglass_empty,
-                AppColors.muted),
+                c.muted),
             const SizedBox(width: 8),
             _summaryCard(
               'متوسّط النتيجة',
               avgScore != null ? '$avgScore%' : '—',
               Icons.star,
-              AppColors.tealDeep,
+              Theme.of(context).colorScheme.primary,
             ),
           ],
         ),
@@ -422,7 +424,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         return (
           label: 'مكتمل',
           icon: Icons.check_circle,
-          color: AppColors.greenDeep
+          color: JisrColors.of(context).success
         );
       case 'in_progress':
         return (
@@ -434,7 +436,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         return (
           label: 'لم يبدأ',
           icon: Icons.hourglass_empty,
-          color: AppColors.muted
+          color: JisrColors.of(context).muted
         );
     }
   }

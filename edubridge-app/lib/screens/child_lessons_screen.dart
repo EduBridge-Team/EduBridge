@@ -256,6 +256,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   }
 
   Widget _buildLessonCard(Map lesson) {
+    final c = JisrColors.of(context);
     final lessonId = lesson['id'];
     final isDone = _doneLessonIds.contains(lessonId);
     final isSpeaking = _speakingLessonId == lessonId;
@@ -275,23 +276,25 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: isDone ? AppColors.tintGreen : AppColors.tintTeal,
+                    color: isDone ? c.tintGreen : c.tintTeal,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
                     isDone ? Icons.check_circle : Icons.menu_book,
                     size: 28,
-                    color: isDone ? AppColors.greenDeep : AppColors.tealDeep,
+                    color: isDone
+                        ? c.success
+                        : Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     lesson['title'] ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.navy,
+                      color: c.heading,
                     ),
                   ),
                 ),

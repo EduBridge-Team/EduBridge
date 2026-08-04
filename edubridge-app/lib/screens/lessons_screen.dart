@@ -160,12 +160,13 @@ class _LessonsScreenState extends State<LessonsScreen> {
       return ListView(
         children: [
           const SizedBox(height: 120),
-          const Icon(Icons.menu_book, size: 72, color: AppColors.muted),
+          Icon(Icons.menu_book, size: 72, color: JisrColors.of(context).muted),
           const SizedBox(height: 16),
           Center(
             child: Text(
               _lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
-              style: const TextStyle(fontSize: 18, color: AppColors.muted),
+              style: TextStyle(
+                  fontSize: 18, color: JisrColors.of(context).muted),
             ),
           ),
         ],
@@ -182,6 +183,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   Widget _buildLessonCard(Map lesson) {
     final isSpeaking = _speakingLessonId == lesson['id'];
     final content = (lesson['content'] ?? '').toString();
+    final c = JisrColors.of(context);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -196,20 +198,19 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: AppColors.tintGreen,
+                    color: c.tintGreen,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.menu_book,
-                      size: 28, color: AppColors.greenDeep),
+                  child: Icon(Icons.menu_book, size: 28, color: c.success),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     (lesson['title'] ?? '').toString(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.navy,
+                      color: c.heading,
                     ),
                   ),
                 ),

@@ -80,11 +80,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     width: 88,
                     height: 88,
                     decoration: BoxDecoration(
-                      color: AppColors.tintTeal,
+                      color: JisrColors.of(context).tintTeal,
                       borderRadius: BorderRadius.circular(26),
                     ),
-                    child: const Icon(Icons.person_add,
-                        size: 48, color: AppColors.tealDeep),
+                    child: Icon(Icons.person_add,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                   const SizedBox(height: 24),
 
@@ -127,8 +128,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // اختيار الدور
                   DropdownButtonFormField<String>(
                     initialValue: _role,
-                    style: const TextStyle(
-                        fontSize: 18, color: Colors.black87),
+                    style: TextStyle(
+                        fontSize: 18, color: JisrColors.of(context).body),
                     decoration: const InputDecoration(
                       labelText: 'الدور',
                       border: OutlineInputBorder(),
