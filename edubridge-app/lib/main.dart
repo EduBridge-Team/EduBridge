@@ -1,7 +1,7 @@
 // نقطة تشغيل التطبيق
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
-import 'screens/login_screen.dart';
+import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -48,7 +48,8 @@ class EduBridgeApp extends StatelessWidget {
               );
             }
             final loggedIn = snapshot.data != null;
-            return loggedIn ? const HomeScreen() : const LoginScreen();
+            // الضيف يرى الشاشة الترحيبية أولاً — الدخول من داخلها
+            return loggedIn ? const HomeScreen() : const WelcomeScreen();
           },
         ),
       ),

@@ -33,10 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (error == null) {
-      // نجاح — روح للرئيسية
-      Navigator.pushReplacement(
+      // نجاح — روح للرئيسية مع تنظيف كل الشاشات السابقة (الترحيبية وغيرها)
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
       );
     } else {
       setState(() => _error = error);

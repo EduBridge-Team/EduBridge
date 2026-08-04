@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'login_screen.dart';
+import 'welcome_screen.dart';
 import 'children_screen.dart';
 import 'lessons_screen.dart';
 
@@ -20,9 +20,10 @@ class HomeScreen extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     await ApiService.logout();
     if (!context.mounted) return;
+    // بعد الخروج نرجع للشاشة الترحيبية
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
     );
   }
 
