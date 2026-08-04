@@ -86,25 +86,25 @@ export default function ChildProgressPage() {
           {/* بطاقات الملخّص */}
           <div className="summary-grid">
             <div className="summary-card">
-              <div className="num" style={{ color: '#2e7d32' }}>
+              <div className="num" style={{ color: 'var(--green-deep)' }}>
                 {summary?.done ?? 0}
               </div>
               <div className="lbl">مكتمل ✅</div>
             </div>
             <div className="summary-card">
-              <div className="num" style={{ color: '#ef6c00' }}>
+              <div className="num" style={{ color: 'var(--orange-deep)' }}>
                 {summary?.in_progress ?? 0}
               </div>
               <div className="lbl">قيد التنفيذ 🔄</div>
             </div>
             <div className="summary-card">
-              <div className="num" style={{ color: '#9e9e9e' }}>
+              <div className="num" style={{ color: 'var(--navy)' }}>
                 {summary?.not_started ?? 0}
               </div>
               <div className="lbl">لم يبدأ ⏳</div>
             </div>
             <div className="summary-card">
-              <div className="num" style={{ color: '#2e7d6b' }}>
+              <div className="num" style={{ color: 'var(--teal-deep)' }}>
                 {summary?.avg_score != null ? `${summary.avg_score}%` : '—'}
               </div>
               <div className="lbl">متوسّط النتيجة ⭐</div>
