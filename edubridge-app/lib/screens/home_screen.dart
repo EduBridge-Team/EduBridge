@@ -147,7 +147,14 @@ class HomeScreen extends StatelessWidget {
                   tint: AppColors.tintOrange,
                   title: 'التقدّم والمكافآت',
                   subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
-                  onTap: () => _openChildren(context),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              const ChildrenScreen(forProgress: true)),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 8),

@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'child_lessons_screen.dart';
+import 'child_progress_screen.dart';
 
 class ChildrenScreen extends StatefulWidget {
-  const ChildrenScreen({super.key});
+  /// عند true: اختيار الطفل يفتح تقدّمه ومكافآته مباشرة بدل دروسه
+  final bool forProgress;
+
+  const ChildrenScreen({super.key, this.forProgress = false});
 
   @override
   State<ChildrenScreen> createState() => _ChildrenScreenState();
@@ -54,7 +58,8 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const JisrAppBar(title: 'الأطفال'),
+      appBar: JisrAppBar(
+          title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال'),
       body: RefreshIndicator(
         onRefresh: _loadChildren,
         child: _buildBody(),
@@ -110,13 +115,19 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
             ),
             trailing: const Icon(Icons.chevron_left), // اتجاه RTL
             onTap: () {
+              // حسب مصدر الدخول: التقدّم والمكافآت مباشرة، أو الدروس
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ChildLessonsScreen(
-                    childId: child['id'],
-                    childName: child['name'] ?? '',
-                  ),
+                  builder: (_) => widget.forProgress
+                      ? ChildProgressScreen(
+                          childId: child['id'],
+                          childName: child['name'] ?? '',
+                        )
+                      : ChildLessonsScreen(
+                          childId: child['id'],
+                          childName: child['name'] ?? '',
+                        ),
                 ),
               );
             },
