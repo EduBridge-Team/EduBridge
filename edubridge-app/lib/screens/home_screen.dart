@@ -745,7 +745,7 @@ class _HomeScreenState extends State<home_screen> {
                                       ),
                                     ),
                                     Text("زيادة حجم النصوص في التطبيق"),
-                                  ],
+                                  ],  
                                 ),
                               ],
                             ),
