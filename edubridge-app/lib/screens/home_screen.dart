@@ -1,4 +1,3 @@
-
 import 'package:edubridge_app/screens/child_lessons_screen.dart';
 import 'package:edubridge_app/screens/child_progress_screen.dart';
 import 'package:edubridge_app/screens/children_screen.dart';
@@ -18,7 +17,6 @@ class home_screen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<home_screen> {
-
   userType currentRole =
       userType.guest; // الدور الحالي للمستخدم (افتراضيًا ضيف)
   bool isSwitched = false;
@@ -128,7 +126,7 @@ class _HomeScreenState extends State<home_screen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>LoginScreen(),
+                      builder: (context) => LoginScreen(),
                     ),
                   );
                 }
@@ -140,7 +138,7 @@ class _HomeScreenState extends State<home_screen> {
               title: const Text('تصفح الدورات والمسارات'),
               onTap: () => Navigator.pop(context),
             ),
-            
+
             ListTile(
               leading: const Icon(Icons.contact_support),
               title: const Text('تواصل معنا'),
@@ -287,534 +285,527 @@ class _HomeScreenState extends State<home_screen> {
         ),
       ),
       body: SafeArea(
-      
-          child: _selectedIndex == 0
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 16),
-                      Text(
-                        " نبني جسورا نحو مستقبل شامل للجميع",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color.fromARGB(255, 1, 17, 88),
-                          fontWeight: FontWeight.bold,
+        child: _selectedIndex == 0
+            ? SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 16),
+                    Text(
+                      " نبني جسورا نحو مستقبل شامل للجميع",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color.fromARGB(255, 1, 17, 88),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "  نحن نؤمن بأن التعليم حق للجميع، ونسعى لتقديم محتوى تعليمي .",
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 0, 3, 17),
+                          fontWeight: FontWeight.normal),
+                    ),
+                    Text(
+                      " متاح وميسر لكل طفل، بغض النظر عن قدراته الجسدية أو العقلية.",
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 0, 3, 17),
+                          fontWeight: FontWeight.normal),
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => LoginScreen()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 1, 17, 88),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          ' ابدأ رحلتك التعليمية',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Text(
-                        "  نحن نؤمن بأن التعليم حق للجميع، ونسعى لتقديم محتوى تعليمي .",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 0, 3, 17),
-                            fontWeight: FontWeight.normal),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                              255, 200, 211, 232), // لون الحدود
+                          width: 1.5, // سمك الحدود
+                        ),
                       ),
-                      Text(
-                        " متاح وميسر لكل طفل، بغض النظر عن قدراته الجسدية أو العقلية.",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 0, 3, 17),
-                            fontWeight: FontWeight.normal),
+                      child: const Column(
+                        children: [
+                          Text("😀", style: TextStyle(fontSize: 24)),
+                          Text("0%",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("نسبة رضا الطلاب"),
+                        ],
                       ),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => LoginScreen()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 1, 17, 88),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Text(
-                            ' ابدأ رحلتك التعليمية',
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                              255, 200, 211, 232), // لون الحدود
+                          width: 1.5, // سمك الحدود
+                        ), // درجة ا
+                      ),
+                      child: const Column(
+                        children: [
+                          Text("👤", style: TextStyle(fontSize: 24)),
+                          Text("0",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("طالب وطالية"),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(20), // درجة ا
+                          border: Border.all(
+                            color: const Color.fromARGB(
+                                255, 200, 211, 232), // لون الحدود
+                            width: 1.5,
+                          )),
+                      child: const Column(
+                        children: [
+                          Text("🤝", style: TextStyle(fontSize: 24)),
+                          Text("0",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("شريك تعليمي"),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(30),
+                      margin: const EdgeInsets.all(30),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: const Color.fromARGB(
+                              255, 8, 0, 59), // لون الخلفية
+                          borderRadius: BorderRadius.circular(
+                              20), // درجة الاستدارة // سمك الحدود
+                          border: Border.all(
+                            color: const Color.fromARGB(
+                                255, 200, 211, 232), // لون الحدود
+                            width: 1.5,
+                          )),
+                      child: const Column(
+                        children: [
+                          Text("رؤية بلا حدود",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  fontWeight: FontWeight.bold)),
+                          Text(
+                            "نسعى لأن نكون المرجع الأول في الوطن العربي للتعليم الرقمي المتاح، حيث تذوب الفوارق الجسدية وتبرز القدرات العقلية والإبداعية.",
                             style: TextStyle(
                               fontSize: 16,
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      Container(
+                    ),
+                    Container(
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.all(12),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(20),
+                          color: const Color.fromARGB(255, 246, 246, 246),
+                          borderRadius: BorderRadius.circular(20), // درجة ا
                           border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 200, 211, 232), // لون الحدود
-                            width: 1.5, // سمك الحدود
+                            color: const Color.fromARGB(255, 200, 211, 232),
+                            width: 1.5,
                           ),
                         ),
-                        child: const Column(
-                          children: [
-                            Text("😀", style: TextStyle(fontSize: 24)),
-                            Text("0%",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("نسبة رضا الطلاب"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 200, 211, 232), // لون الحدود
-                            width: 1.5, // سمك الحدود
-                          ), // درجة ا
-                        ),
-                        child: const Column(
-                          children: [
-                            Text("👤", style: TextStyle(fontSize: 24)),
-                            Text("0",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("طالب وطالية"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            borderRadius: BorderRadius.circular(20), // درجة ا
-                            border: Border.all(
-                              color: const Color.fromARGB(
-                                  255, 200, 211, 232), // لون الحدود
-                              width: 1.5,
-                            )),
                         child: const Column(
                           children: [
                             Text("🤝", style: TextStyle(fontSize: 24)),
-                            Text("0",
+                            Text("الدعم المستمر",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("شريك تعليمي"),
+                            Text("مرافقة المتعلم في كل خطوة لضمان النجاح."),
                           ],
+                        )),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 246, 246, 246),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 200, 211, 232),
+                          width: 1.5,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(30),
-                        margin: const EdgeInsets.all(30),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: const Color.fromARGB(
-                                255, 8, 0, 59), // لون الخلفية
-                            borderRadius: BorderRadius.circular(
-                                20), // درجة الاستدارة // سمك الحدود
-                            border: Border.all(
-                              color: const Color.fromARGB(
-                                  255, 200, 211, 232), // لون الحدود
-                              width: 1.5,
-                            )),
-                        child: const Column(
-                          children: [
-                            Text("رؤية بلا حدود",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontWeight: FontWeight.bold)),
-                            Text(
-                              "نسعى لأن نكون المرجع الأول في الوطن العربي للتعليم الرقمي المتاح، حيث تذوب الفوارق الجسدية وتبرز القدرات العقلية والإبداعية.",
+                      child: const Column(
+                        children: [
+                          Text("📚", style: TextStyle(fontSize: 24)),
+                          Text("تنوع المناهج",
                               style: TextStyle(
-                                fontSize: 16,
-                                color: Color.fromARGB(255, 255, 255, 255),
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("محتوى تعليمي يناسب مختلف أنواع الإعاقات"),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      'مسارات تعليمية متخصصة',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color.fromARGB(255, 1, 17, 88),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 246, 246, 246),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 200, 211, 232),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text("🤟", style: TextStyle(fontSize: 24)),
+                          Text("لغة الإشارة المتقدمة",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                              "دورة شاملة لتعلم لغة الإشارة من الأساسيات وحتى الاحتراف."),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ChildLessonsScreen(
+                                      childId: 0,
+                                      childName: '',
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 1, 17, 88),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                ' اكتشف المسار',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 246, 246, 246),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 200, 211, 232),
+                          width: 1.5,
                         ),
                       ),
-                      Container(
+                      child: Column(
+                        children: [
+                          Text("📖", style: TextStyle(fontSize: 24)),
+                          Text("تقنيات القراءة الميسّرة",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                              "تدريب عملي لتعزيز استقلالية القراءة والتعلم لكل طفل."),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => ChildLessonsScreen(
+                                            childId: 0,
+                                            childName: '',
+                                          )),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 1, 17, 88),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                ' اكتشف المسار',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 246, 246, 246),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 200, 211, 232),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "💡",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          Text("المهارات الحياتية الرقمية",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                              "رنامج مخصص لتمكين الأطفال ذوي الإعاقات الإدراكية من التعامل مع العالم الرقمي بأمان."),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => ChildLessonsScreen(
+                                            childId: 0,
+                                            childName: '',
+                                          )),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 1, 17, 88),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                ' اكتشف المسار',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 173, 173, 173),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 200, 211, 232),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Column(children: [
+                        Text("ميزات وصول صممت خصيصا ",
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 1, 17, 88),
+                                fontWeight: FontWeight.bold)),
+                        Container(
                           padding: const EdgeInsets.all(12),
                           margin: const EdgeInsets.all(12),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 246, 246, 246),
+                            color: const Color.fromARGB(255, 196, 194, 194),
                             borderRadius: BorderRadius.circular(20), // درجة ا
                             border: Border.all(
                               color: const Color.fromARGB(255, 200, 211, 232),
                               width: 1.5,
                             ),
                           ),
-                          child: const Column(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Text("🤝", style: TextStyle(fontSize: 24)),
-                              Text("الدعم المستمر",
-                                  style: TextStyle(
+                              Column(
+                                children: [
+                                  Text(
+                                    "الوضع الليلي",
+                                    style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              Text("مرافقة المتعلم في كل خطوة لضمان النجاح."),
+                                      color: Color.fromARGB(255, 1, 17, 88),
+                                    ),
+                                  ),
+                                  Text("تقليل إجهاد العين في الإضاءة المنخفضة"),
+                                ],
+                              ),
+                              ValueListenableBuilder<ThemeMode>(
+                                valueListenable: jisrThemeMode,
+                                builder: (context, mode, _) => IconButton(
+                                  icon: Icon(
+                                    mode == ThemeMode.dark
+                                        ? Icons.light_mode
+                                        : Icons.dark_mode,
+                                    color: const Color.fromARGB(
+                                        255, 236, 236, 238),
+                                  ),
+                                  tooltip: mode == ThemeMode.dark
+                                      ? 'الوضع الفاتح'
+                                      : 'الوضع الليلي',
+                                  onPressed: toggleThemeMode,
+                                ),
+                              ),
                             ],
-                          )),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 246, 246, 246),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 200, 211, 232),
-                            width: 1.5,
                           ),
                         ),
-                        child: const Column(
-                          children: [
-                            Text("📚", style: TextStyle(fontSize: 24)),
-                            Text("تنوع المناهج",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("محتوى تعليمي يناسب مختلف أنواع الإعاقات"),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        'مسارات تعليمية متخصصة',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color.fromARGB(255, 1, 17, 88),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 246, 246, 246),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 200, 211, 232),
-                            width: 1.5,
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.all(12),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 191, 190, 190),
+                            borderRadius: BorderRadius.circular(20), // درجة ا
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 200, 211, 232),
+                              width: 1.5,
+                            ),
                           ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text("🤟", style: TextStyle(fontSize: 24)),
-                            Text("لغة الإشارة المتقدمة",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text(
-                                "دورة شاملة لتعلم لغة الإشارة من الأساسيات وحتى الاحتراف."),
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ChildLessonsScreen(
-                                        childId: 0,
-                                        childName: '',
-                                      ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    "تكبير النص",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 1, 17, 88),
                                     ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 1, 17, 88),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ),
-                                child: Text(
-                                  ' اكتشف المسار',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                  Text("زيادة حجم النصوص في التطبيق"),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                      ]),
+                    ),
+                    SizedBox(height: 30),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 16, 0, 65),
+                        borderRadius: BorderRadius.circular(20), // درجة ا
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 0, 26, 73),
+                          width: 1.5,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 246, 246, 246),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 200, 211, 232),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text("📖", style: TextStyle(fontSize: 24)),
-                            Text("تقنيات القراءة الميسّرة",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text(
-                                "تدريب عملي لتعزيز استقلالية القراءة والتعلم لكل طفل."),
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => ChildLessonsScreen(
-                                              childId: 0,
-                                              childName: '',
-                                            )),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 1, 17, 88),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: Text(
-                                  ' اكتشف المسار',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "كن جزءا من مسيرة التغيير",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
+                          ),
+                          Text(
+                            "اشترك في نشرتنا البريدية لتصلك احدث الدورات والمقالات التخصصية.",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          TextField(
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(fontSize: 18),
+                            decoration: const InputDecoration(
+                              labelText: 'الإيميل',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.email),
+                              filled: true,
+                              fillColor: Color.fromARGB(255, 240, 239, 240),
+                              hintText: 'أدخل بريدك الإلكتروني',
+                              hintStyle: const TextStyle(
+                                  color: Color.fromARGB(179, 66, 64, 64)),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 246, 246, 246),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 200, 211, 232),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              "💡",
-                              style: TextStyle(fontSize: 24),
-                            ),
-                            Text("المهارات الحياتية الرقمية",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text(
-                                "رنامج مخصص لتمكين الأطفال ذوي الإعاقات الإدراكية من التعامل مع العالم الرقمي بأمان."),
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => ChildLessonsScreen(
-                                              childId: 0,
-                                              childName: '',
-                                            )),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 1, 17, 88),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: Text(
-                                  ' اكتشف المسار',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 173, 173, 173),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 200, 211, 232),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(children: [
-                          Text("ميزات وصول صممت خصيصا ",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Color.fromARGB(255, 1, 17, 88),
-                                  fontWeight: FontWeight.bold)),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.all(12),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 196, 194, 194),
-                              borderRadius: BorderRadius.circular(20), // درجة ا
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 200, 211, 232),
-                                width: 1.5,
-                              ),
-                            ),
-                               
-                            child: Row(
-                              
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      "الوضع الليلي",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Color.fromARGB(255, 1, 17, 88),
-                                      ),
-                                    ),
-                                    Text(
-                                        "تقليل إجهاد العين في الإضاءة المنخفضة"),
-                                  ],
-                                ),
-                                 ValueListenableBuilder<ThemeMode>(
-                          valueListenable: jisrThemeMode,
-                          builder: (context, mode, _) => IconButton(
-                            icon: Icon(
-                              mode == ThemeMode.dark
-                                  ? Icons.light_mode
-                                  : Icons.dark_mode,
-                              color: const Color.fromARGB(255, 236, 236, 238),
-                              
-                            ),
-                            tooltip: mode == ThemeMode.dark
-                                ? 'الوضع الفاتح'
-                                : 'الوضع الليلي',
-                            onPressed: toggleThemeMode,
-                          ),
-                        ),                         ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.all(12),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 191, 190, 190),
-                              borderRadius: BorderRadius.circular(20), // درجة ا
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 200, 211, 232),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      "تكبير النص",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Color.fromARGB(255, 1, 17, 88),
-                                      ),
-                                    ),
-                                    Text("زيادة حجم النصوص في التطبيق"),
-                                  ],  
-                                ),
-                              ],
-                            ),
-                          ),
-                        ]),
-                      ),
-                      SizedBox(height: 30),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 16, 0, 65),
-                          borderRadius: BorderRadius.circular(20), // درجة ا
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 0, 26, 73),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              "كن جزءا من مسيرة التغيير",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              "اشترك في نشرتنا البريدية لتصلك احدث الدورات والمقالات التخصصية.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color.fromARGB(255, 255, 255, 255),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextField(
-                              keyboardType: TextInputType.emailAddress,
-                              style: const TextStyle(fontSize: 18),
-                              decoration: const InputDecoration(
-                                labelText: 'الإيميل',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.email),
-                                filled: true,
-                                fillColor: Color.fromARGB(255, 240, 239, 240),
-                                hintText: 'أدخل بريدك الإلكتروني',
-                                hintStyle: const TextStyle(
-                                    color: Color.fromARGB(179, 66, 64, 64)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : _selectedIndex == 1
-                  ? ChildProgressScreen(
-                      childId: 0,
-                      childName: '',
-                    )
-                  : _selectedIndex == 2
-                      ? ChildLessonsScreen(
-                          childId: 0,
-                          childName: '',
-                        )
-                      : LoginScreen(),
-                      //profile_screen(),
+                    ),
+                  ],
+                ),
+              )
+            : _selectedIndex == 1
+                ? ChildProgressScreen(
+                    childId: 0,
+                    childName: '',
+                  )
+                : _selectedIndex == 2
+                    ? ChildLessonsScreen(
+                        childId: 0,
+                        childName: '',
+                      )
+                    : LoginScreen(),
+        //profile_screen(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -881,4 +872,3 @@ class _HomeScreenState extends State<home_screen> {
     LoginScreen(),
   ];
 }
-
