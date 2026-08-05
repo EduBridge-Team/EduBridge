@@ -1,12 +1,11 @@
-
+import 'package:edubridge_app/screens/about-us.dart';
 import 'package:edubridge_app/screens/child_lessons_screen.dart';
 import 'package:edubridge_app/screens/child_progress_screen.dart';
 import 'package:edubridge_app/screens/children_screen.dart';
 import 'package:edubridge_app/screens/login_screen.dart';
-
+import 'package:edubridge_app/screens/profile_screen.dart';
 import 'package:edubridge_app/screens/register_screen.dart';
-import 'package:edubridge_app/theme.dart';
-
+import 'package:edubridge_app/screens/setting_screen.dart';
 import 'package:flutter/material.dart';
 
 enum userType { teacher, specialized, admin, student, guest }
@@ -18,7 +17,6 @@ class home_screen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<home_screen> {
-
   userType currentRole =
       userType.guest; // الدور الحالي للمستخدم (افتراضيًا ضيف)
   bool isSwitched = false;
@@ -26,7 +24,6 @@ class _HomeScreenState extends State<home_screen> {
   final _emailCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
     var scaffold = Scaffold(
       backgroundColor: const Color.fromARGB(255, 246, 247, 249),
       drawer: Drawer(
@@ -126,11 +123,10 @@ class _HomeScreenState extends State<home_screen> {
                   );
                 } else {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>LoginScreen(),
-                    ),
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const profile_screen(),
+                      ));
                 }
               },
             ),
@@ -140,7 +136,18 @@ class _HomeScreenState extends State<home_screen> {
               title: const Text('تصفح الدورات والمسارات'),
               onTap: () => Navigator.pop(context),
             ),
-            
+            ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('عن المنصة'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutUs(),
+                    ),
+                  );
+                }),
             ListTile(
               leading: const Icon(Icons.contact_support),
               title: const Text('تواصل معنا'),
@@ -287,7 +294,6 @@ class _HomeScreenState extends State<home_screen> {
         ),
       ),
       body: SafeArea(
-      
           child: _selectedIndex == 0
               ? SingleChildScrollView(
                   child: Column(
@@ -677,16 +683,14 @@ class _HomeScreenState extends State<home_screen> {
                             margin: const EdgeInsets.all(12),
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 196, 194, 194),
+                              color: const Color.fromARGB(255, 246, 246, 246),
                               borderRadius: BorderRadius.circular(20), // درجة ا
                               border: Border.all(
                                 color: const Color.fromARGB(255, 200, 211, 232),
                                 width: 1.5,
                               ),
                             ),
-                               
                             child: Row(
-                              
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Column(
@@ -709,8 +713,7 @@ class _HomeScreenState extends State<home_screen> {
                               mode == ThemeMode.dark
                                   ? Icons.light_mode
                                   : Icons.dark_mode,
-                              color: const Color.fromARGB(255, 236, 236, 238),
-                              
+                              color: Colors.white,
                             ),
                             tooltip: mode == ThemeMode.dark
                                 ? 'الوضع الفاتح'
@@ -725,7 +728,7 @@ class _HomeScreenState extends State<home_screen> {
                             margin: const EdgeInsets.all(12),
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 191, 190, 190),
+                              color: const Color.fromARGB(255, 246, 246, 246),
                               borderRadius: BorderRadius.circular(20), // درجة ا
                               border: Border.all(
                                 color: const Color.fromARGB(255, 200, 211, 232),
@@ -813,9 +816,7 @@ class _HomeScreenState extends State<home_screen> {
                           childId: 0,
                           childName: '',
                         )
-                      : LoginScreen(),
-                      //profile_screen(),
-      ),
+                      : profile_screen()),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -878,7 +879,6 @@ class _HomeScreenState extends State<home_screen> {
       childId: 0,
       childName: '',
     ),
-    LoginScreen(),
+    profile_screen(),
   ];
 }
-

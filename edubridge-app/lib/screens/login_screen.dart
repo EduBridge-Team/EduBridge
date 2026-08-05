@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // نجاح — روح للرئيسية
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const home_screen()),
       );
     } else {
       setState(() => _error = error);
