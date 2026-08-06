@@ -1,6 +1,6 @@
 // هوية «جسر التعليمي» — نظام التصميم المشترك للتطبيق
 // لوحة ألوان مستوحاة من الشعار: كحلي، تركوازي، أخضر، برتقالي
-// مع خلفية كريمية دافئة وحوافّ دائرية ودودة
+// مع خلفية دافئة وحوافّ دائرية
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
