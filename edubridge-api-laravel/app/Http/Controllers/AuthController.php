@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
+    private function getGoogleClientId(): ?string
+    {
+        return env('GOOGLE_CLIENT_ID') ?: getenv('GOOGLE_CLIENT_ID') ?: ($_ENV['GOOGLE_CLIENT_ID'] ?? null);
+    }
+
     // إنشاء حساب جديد
     // POST /api/auth/register
     public function register(Request $request)
@@ -106,7 +111,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'الرمز المرسل من Google مطلوب'], 400);
         }
 
-        $googleClientId = env('GOOGLE_CLIENT_ID');
+        $googleClientId = $this->getGoogleClientId();
         if (!$googleClientId) {
             return response()->json(['error' => 'لم يتم تكوين Google OAuth بعد'], 500);
         }
