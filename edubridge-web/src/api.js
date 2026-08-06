@@ -52,6 +52,17 @@ export async function login(email, password) {
   return data.user;
 }
 
+// تسجيل الدخول عبر Google — يحفظ التوكن وبيانات المستخدم
+export async function googleLogin(idToken) {
+  const data = await request("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ id_token: idToken }),
+  });
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  return data.user;
+}
+
 // إنشاء حساب جديد
 export function register(name, email, password, role) {
   return request("/auth/register", {

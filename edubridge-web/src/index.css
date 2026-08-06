@@ -240,6 +240,31 @@ h1, h2, h3, h4 {
 }
 .auth-card .tagline { color: var(--muted); margin-bottom: 24px; }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 22px 0 10px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line-cool);
+}
+.google-btn-shell {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+.google-btn-shell > div {
+  width: 100% !important;
+  max-width: 320px;
+}
+
 /* ===== الحقول والأزرار — كبيرة وواضحة (accessibility) ===== */
 label { display: block; text-align: start; font-weight: 700; margin: 14px 0 6px; color: var(--navy); }
 

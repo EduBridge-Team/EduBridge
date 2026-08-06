@@ -10,6 +10,7 @@ use App\Http\Controllers\ProgressController;
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/google', [AuthController::class, 'google']);
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {

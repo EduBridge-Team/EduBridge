@@ -1,7 +1,7 @@
 // صفحة تسجيل الدخول
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { login } from '../api'
+import { googleLogin, login } from '../api'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -10,9 +10,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
 
   // رسالة نجاح قادمة من صفحة التسجيل
   const successMsg = location.state?.message
+
+  useEffect(() => {
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!googleClientId || !window.google?.accounts?.id) {
+      return
+    }
+
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: async (response) => {
+        setError(null)
+        setLoading(true)
+        try {
+          await googleLogin(response.credential)
+          navigate('/children')
+        } catch (err) {
+          setError(err.message)
+        } finally {
+          setLoading(false)
+        }
+      },
+    })
+
+    const container = document.getElementById('google-signin-button')
+    if (container) {
+      window.google.accounts.id.renderButton(container, {
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        width: 320,
+        locale: 'ar',
+      })
+      setGoogleReady(true)
+    }
+  }, [navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -65,6 +102,10 @@ export default function LoginPage() {
             {loading ? 'جارِ الدخول...' : 'دخول'}
           </button>
         </form>
+
+        <div className="auth-divider">أو</div>
+        <div id="google-signin-button" className="google-btn-shell" />
+        {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
 
         <Link to="/register">
           <button className="link-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
