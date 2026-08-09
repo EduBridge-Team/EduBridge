@@ -1,7 +1,21 @@
 // صفحة تسجيل الدخول
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { login } from '../api'
+import { googleLogin, login } from '../api'
+
+// الصفحة التي يهبط عليها المستخدم بعد الدخول حسب دوره — لكل دور لوحته
+function landingFor(user) {
+  switch (user?.role) {
+    case 'admin':
+      return '/admin'
+    case 'teacher':
+      return '/teacher'
+    case 'specialist':
+      return '/specialist'
+    default:
+      return '/children'
+  }
+}
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -10,17 +24,79 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
 
   // رسالة نجاح قادمة من صفحة التسجيل
   const successMsg = location.state?.message
+
+  useEffect(() => {
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!googleClientId) {
+      return
+    }
+
+    let cancelled = false
+    let pollId
+
+    // تهيئة زر Google بعد التأكد من تحميل سكربت GSI (يُحمَّل async defer فقد لا يكون جاهزاً عند التركيب)
+    const setupGoogle = () => {
+      if (cancelled || !window.google?.accounts?.id) {
+        return false
+      }
+
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async (response) => {
+          setError(null)
+          setLoading(true)
+          try {
+            const u = await googleLogin(response.credential)
+            navigate(landingFor(u))
+          } catch (err) {
+            setError(err.message)
+          } finally {
+            setLoading(false)
+          }
+        },
+      })
+
+      const container = document.getElementById('google-signin-button')
+      if (container) {
+        window.google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular',
+          width: 320,
+          locale: 'ar',
+        })
+        setGoogleReady(true)
+      }
+      return true
+    }
+
+    // إن لم يكن السكربت جاهزاً بعد، نُعيد المحاولة دورياً حتى يصل
+    if (!setupGoogle()) {
+      pollId = setInterval(() => {
+        if (setupGoogle()) {
+          clearInterval(pollId)
+        }
+      }, 200)
+    }
+
+    return () => {
+      cancelled = true
+      if (pollId) clearInterval(pollId)
+    }
+  }, [navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
     try {
-      await login(email.trim(), password)
-      navigate('/children')
+      const u = await login(email.trim(), password)
+      navigate(landingFor(u))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -65,6 +141,10 @@ export default function LoginPage() {
             {loading ? 'جارِ الدخول...' : 'دخول'}
           </button>
         </form>
+
+        <div className="auth-divider">أو</div>
+        <div id="google-signin-button" className="google-btn-shell" />
+        {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
 
         <Link to="/register">
           <button className="link-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>

@@ -52,6 +52,17 @@ export async function login(email, password) {
   return data.user;
 }
 
+// تسجيل الدخول عبر Google — يحفظ التوكن وبيانات المستخدم
+export async function googleLogin(idToken) {
+  const data = await request("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ id_token: idToken }),
+  });
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  return data.user;
+}
+
 // إنشاء حساب جديد
 export function register(name, email, password, role) {
   return request("/auth/register", {
@@ -75,6 +86,19 @@ export function fetchLessons() {
   return request("/lessons");
 }
 
+// أنواع الإعاقة (قائمة مرجعية)
+export function fetchDisabilityTypes() {
+  return request("/disability-types");
+}
+
+// إضافة درس جديد (معلّم/أدمن)
+export function createLesson(payload) {
+  return request("/lessons", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 // تقدّم الطفل: التفاصيل والملخّص
 export function fetchChildProgress(childId) {
   return request(`/progress/child/${childId}`);
@@ -89,5 +113,29 @@ export function markLessonDone(childId, lessonId) {
   return request("/progress", {
     method: "POST",
     body: JSON.stringify({ child_id: childId, lesson_id: lessonId, status: "done" }),
+  });
+}
+
+// ===== لوحة التحكم الإدارية (أدمن فقط) =====
+
+// كل المستخدمين، مع فلترة اختيارية حسب الدور
+export function fetchUsers(role) {
+  const q = role ? `?role=${encodeURIComponent(role)}` : "";
+  return request(`/users${q}`);
+}
+
+// تعديل مستخدم (الاسم/البريد/الدور/الهاتف)
+export function updateUser(id, payload) {
+  return request(`/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+// ربط طفل بولي أمر
+export function linkParent(childId, parentId) {
+  return request(`/children/${childId}/parents`, {
+    method: "POST",
+    body: JSON.stringify({ parent_id: parentId }),
   });
 }

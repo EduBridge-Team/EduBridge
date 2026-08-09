@@ -42,15 +42,19 @@ class ChildController extends Controller
         $user = $request->attributes->get('jwt_user');
 
         try {
+            // نُرفق اسم نوع الإعاقة (disability_name) لتستعمله لوحات المعلّم والمختص
+            $base = DB::table('children as c')
+                ->leftJoin('disability_types as dt', 'dt.id', '=', 'c.disability_type_id')
+                ->select('c.*', 'dt.name as disability_name')
+                ->orderBy('c.name');
+
             if ($user->role === 'parent') {
-                $children = DB::table('children as c')
+                $children = (clone $base)
                     ->join('child_parent as cp', 'cp.child_id', '=', 'c.id')
                     ->where('cp.parent_id', $user->id)
-                    ->orderBy('c.name')
-                    ->select('c.*')
                     ->get();
             } else {
-                $children = DB::table('children')->orderBy('name')->get();
+                $children = $base->get();
             }
 
             return response()->json(['children' => $children]);

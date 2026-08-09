@@ -6,9 +6,15 @@ namespace App\Http\Controllers;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
+    private function getGoogleClientId(): ?string
+    {
+        return env('GOOGLE_CLIENT_ID') ?: getenv('GOOGLE_CLIENT_ID') ?: ($_ENV['GOOGLE_CLIENT_ID'] ?? null);
+    }
+
     // إنشاء حساب جديد
     // POST /api/auth/register
     public function register(Request $request)
@@ -73,6 +79,78 @@ class AuthController extends Controller
             }
 
             // إنشاء التوكن — نفس الحمولة والصلاحية (7 أيام)
+            $now = time();
+            $token = JWT::encode(
+                ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
+                env('JWT_SECRET'),
+                'HS256'
+            );
+
+            return response()->json([
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(['error' => 'خطأ في السيرفر'], 500);
+        }
+    }
+
+    // تسجيل الدخول عبر Google
+    // POST /api/auth/google
+    public function google(Request $request)
+    {
+        $idToken = $request->input('id_token') ?: $request->input('idToken');
+
+        if (!$idToken) {
+            return response()->json(['error' => 'الرمز المرسل من Google مطلوب'], 400);
+        }
+
+        $googleClientId = $this->getGoogleClientId();
+        if (!$googleClientId) {
+            return response()->json(['error' => 'لم يتم تكوين Google OAuth بعد'], 500);
+        }
+
+        try {
+            $response = Http::get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $idToken]);
+
+            if (!$response->successful()) {
+                return response()->json(['error' => 'رمز Google غير صالح'], 401);
+            }
+
+            $payload = $response->json();
+            if (($payload['aud'] ?? '') !== $googleClientId) {
+                return response()->json(['error' => 'رمز Google غير صالح'], 401);
+            }
+
+            $email = $payload['email'] ?? null;
+            $name = $payload['name'] ?? $payload['given_name'] ?? ($email ? explode('@', $email)[0] : 'Google User');
+
+            if (!$email) {
+                return response()->json(['error' => 'البريد الإلكتروني من Google غير متوفر'], 401);
+            }
+
+            $user = DB::table('users')->where('email', $email)->first();
+
+            if (!$user) {
+                $passwordHash = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT, ['cost' => 10]);
+                $id = DB::table('users')->insertGetId([
+                    'name' => $name,
+                    'email' => $email,
+                    'password_hash' => $passwordHash,
+                    'role' => 'parent',
+                ]);
+
+                $user = DB::table('users')
+                    ->select('id', 'name', 'email', 'role', 'phone', 'created_at')
+                    ->find($id);
+            }
+
             $now = time();
             $token = JWT::encode(
                 ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],

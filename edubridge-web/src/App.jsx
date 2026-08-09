@@ -10,6 +10,9 @@ import ChildLessonsPage from './pages/ChildLessonsPage'
 import ChildProgressPage from './pages/ChildProgressPage'
 import LessonsPage from './pages/LessonsPage'
 import AboutPage from './pages/AboutPage'
+import AdminPage from './pages/AdminPage'
+import TeacherDashboard from './pages/TeacherDashboard'
+import SpecialistDashboard from './pages/SpecialistDashboard'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
@@ -78,6 +81,30 @@ export default function App() {
               <Page>
                 <ChildProgressPage />
               </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <Protected>
+              <AdminPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/teacher"
+          element={
+            <Protected>
+              <TeacherDashboard />
+            </Protected>
+          }
+        />
+        <Route
+          path="/specialist"
+          element={
+            <Protected>
+              <SpecialistDashboard />
             </Protected>
           }
         />
