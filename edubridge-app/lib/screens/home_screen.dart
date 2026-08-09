@@ -139,7 +139,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // ===== بطاقات التنقّل =====
           Expanded(
             child: FutureBuilder<String?>(
               future: ApiService.getRole(),
@@ -198,7 +197,6 @@ class HomeScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 8),
-                    // بطاقة تذكير بميزة القراءة الصوتية
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(

@@ -1,5 +1,4 @@
-// لوحة التحكم الإدارية — أدمن فقط
-// تبويبان: جميع المستخدمين · ربط طفل بولي أمر
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
@@ -81,7 +80,6 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 }
 
-/// شريط تبويبات دائري — مطابق لتصميم الموقع
 class _AdminTabBar extends StatelessWidget {
   final List<(String, String)> tabs;
   final int selected;
@@ -152,7 +150,6 @@ class _AdminTabBar extends StatelessWidget {
   }
 }
 
-/* ============ تبويب: جميع المستخدمين ============ */
 class _UsersTab extends StatefulWidget {
   const _UsersTab();
 
@@ -452,7 +449,6 @@ class _UserCard extends StatelessWidget {
   }
 }
 
-/* ============ نافذة تعديل مستخدم ============ */
 class _EditUserSheet extends StatefulWidget {
   final Map user;
   final ValueChanged<Map> onSaved;
@@ -620,7 +616,6 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   }
 }
 
-/* ============ تبويب: ربط طفل بولي أمر ============ */
 class _LinkTab extends StatefulWidget {
   const _LinkTab();
 
@@ -905,7 +900,6 @@ class _StateBox extends StatelessWidget {
   }
 }
 
-/// حقل اختيار — يفتح قائمة من الأسفل بدل القائمة المنسدلة (أنسب للموبايل)
 class _PickerField extends StatelessWidget {
   final String label;
   final String? value;
@@ -947,7 +941,6 @@ class _PickerField extends StatelessWidget {
   }
 }
 
-/// قائمة اختيار من الأسفل
 class _PickerSheet extends StatelessWidget {
   final String title;
   final List<(String id, String label)> items;
