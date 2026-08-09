@@ -25,26 +25,29 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* روابط التنقّل */}
+      {/* روابط التنقّل — تظهر حسب حالة الدخول والدور */}
       <nav className="topbar-nav">
         <NavLink to="/" end>
           الرئيسية
         </NavLink>
-        <NavLink to="/children">الأطفال</NavLink>
-        <NavLink to="/lessons">تصفح الدروس</NavLink>
-        <NavLink to="/about">من نحن</NavLink>
-        {/* رابط لوحة التحكم — للأدمن فقط */}
+        {/* لوحة التحكم أول رابط للأدمن */}
         {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
+        {/* صفحات تتطلّب تسجيل الدخول */}
+        {user && <NavLink to="/children">الأطفال</NavLink>}
+        {user && <NavLink to="/lessons">تصفح الدروس</NavLink>}
+        <NavLink to="/about">من نحن</NavLink>
       </nav>
 
-      {/* البحث في الدروس */}
-      <button
-        className="search-btn"
-        title="البحث في الدروس"
-        onClick={() => navigate('/lessons', { state: { focusSearch: true } })}
-      >
-        🔍
-      </button>
+      {/* البحث في الدروس — لمن سجّل الدخول فقط */}
+      {user && (
+        <button
+          className="search-btn"
+          title="البحث في الدروس"
+          onClick={() => navigate('/lessons', { state: { focusSearch: true } })}
+        >
+          🔍
+        </button>
+      )}
 
       <div className="topbar-spacer" />
 

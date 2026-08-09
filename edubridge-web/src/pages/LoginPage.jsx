@@ -3,6 +3,11 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { googleLogin, login } from '../api'
 
+// الصفحة التي يهبط عليها المستخدم بعد الدخول حسب دوره — الأدمن إلى لوحة التحكم
+function landingFor(user) {
+  return user?.role === 'admin' ? '/admin' : '/children'
+}
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -36,8 +41,8 @@ export default function LoginPage() {
           setError(null)
           setLoading(true)
           try {
-            await googleLogin(response.credential)
-            navigate('/children')
+            const u = await googleLogin(response.credential)
+            navigate(landingFor(u))
           } catch (err) {
             setError(err.message)
           } finally {
@@ -81,8 +86,8 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
     try {
-      await login(email.trim(), password)
-      navigate('/children')
+      const u = await login(email.trim(), password)
+      navigate(landingFor(u))
     } catch (err) {
       setError(err.message)
     } finally {
