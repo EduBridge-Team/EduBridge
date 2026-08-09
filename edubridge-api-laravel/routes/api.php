@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\UserController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -16,6 +17,12 @@ Route::post('/auth/google', [AuthController::class, 'google']);
 Route::middleware('auth.jwt')->group(function () {
     // مثال على مسار محمي — يعيد حمولة التوكن
     Route::get('/me', [AuthController::class, 'me']);
+
+    // إدارة المستخدمين — لوحة التحكم الإدارية (أدمن فقط)
+    Route::get('/users', [UserController::class, 'index'])
+        ->middleware('role:admin');
+    Route::put('/users/{id}', [UserController::class, 'update'])
+        ->middleware('role:admin');
 
     // الأطفال
     Route::post('/children', [ChildController::class, 'store'])

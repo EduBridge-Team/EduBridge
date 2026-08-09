@@ -102,3 +102,27 @@ export function markLessonDone(childId, lessonId) {
     body: JSON.stringify({ child_id: childId, lesson_id: lessonId, status: "done" }),
   });
 }
+
+// ===== لوحة التحكم الإدارية (أدمن فقط) =====
+
+// كل المستخدمين، مع فلترة اختيارية حسب الدور
+export function fetchUsers(role) {
+  const q = role ? `?role=${encodeURIComponent(role)}` : "";
+  return request(`/users${q}`);
+}
+
+// تعديل مستخدم (الاسم/البريد/الدور/الهاتف)
+export function updateUser(id, payload) {
+  return request(`/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+// ربط طفل بولي أمر
+export function linkParent(childId, parentId) {
+  return request(`/children/${childId}/parents`, {
+    method: "POST",
+    body: JSON.stringify({ parent_id: parentId }),
+  });
+}

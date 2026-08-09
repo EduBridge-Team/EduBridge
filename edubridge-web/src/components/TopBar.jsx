@@ -33,6 +33,8 @@ export default function TopBar() {
         <NavLink to="/children">الأطفال</NavLink>
         <NavLink to="/lessons">تصفح الدروس</NavLink>
         <NavLink to="/about">من نحن</NavLink>
+        {/* رابط لوحة التحكم — للأدمن فقط */}
+        {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
       </nav>
 
       {/* البحث في الدروس */}
