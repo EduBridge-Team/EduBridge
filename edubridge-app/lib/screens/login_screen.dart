@@ -33,11 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (error == null) {
-      // نجاح — روح للرئيسية
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const home_screen()),
-      );
+      // نجاح — روح للرئيسية مع تنظيف كل الشاشات السابقة (الترحيبية وغيرها)
+      Navigator.pushAndRemoveUntil(
+          context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
     } else {
       setState(() => _error = error);
     }
@@ -75,8 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(26),
                       ),
-                      child: Image.asset('assets/icon.png',
-                          width: 88, height: 88),
+                      child:
+                          Image.asset('assets/icon.png', width: 88, height: 88),
                     ),
                   );
                 }),
@@ -159,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (_) => const RegisterScreen()),
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
                     );
                   },
                   child: const Text(

@@ -1,7 +1,8 @@
 // نقطة تشغيل التطبيق
+import 'package:edubridge_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
-import 'screens/login_screen.dart';
+import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -48,7 +49,7 @@ class EduBridgeApp extends StatelessWidget {
               );
             }
             final loggedIn = snapshot.data != null;
-            return loggedIn ? const home_screen() : const LoginScreen();
+            return loggedIn ?  HomeScreen() : const LoginScreen();
           },
         ),
       ),
