@@ -98,4 +98,17 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
+
+  // طلب تعديل محمي بالتوكن — PUT
+  static Future<http.Response> authPut(String path, Map body) async {
+    final token = await getToken();
+    return http.put(
+      Uri.parse('${Config.baseUrl}$path'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+  }
 }

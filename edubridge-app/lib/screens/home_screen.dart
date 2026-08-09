@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'welcome_screen.dart';
+import 'admin_screen.dart';
 import 'children_screen.dart';
 import 'lessons_screen.dart';
 
@@ -140,66 +141,88 @@ class HomeScreen extends StatelessWidget {
 
           // ===== بطاقات التنقّل =====
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _MenuTile(
-                  icon: '👧',
-                  tint: c.tintTeal,
-                  title: 'الأطفال',
-                  subtitle: 'عرض الأطفال ودروسهم وتقدّمهم',
-                  onTap: () => _openChildren(context),
-                ),
-                _MenuTile(
-                  icon: '📚',
-                  tint: c.tintGreen,
-                  title: 'تصفح الدروس',
-                  subtitle: 'كل الدروس مع بحث وقراءة صوتية',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const LessonsScreen()),
-                    );
-                  },
-                ),
-                _MenuTile(
-                  icon: '📊',
-                  tint: c.tintOrange,
-                  title: 'التقدّم والمكافآت',
-                  subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              const ChildrenScreen(forProgress: true)),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 8),
-                // بطاقة تذكير بميزة القراءة الصوتية
-                Container(
+            child: FutureBuilder<String?>(
+              future: ApiService.getRole(),
+              builder: (context, roleSnap) {
+                final isAdmin = roleSnap.data == 'admin';
+                return ListView(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: c.tintYellow,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Row(
-                    children: [
-                      const Text('🔊', style: TextStyle(fontSize: 28)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
-                          style: TextStyle(fontSize: 14.5, color: c.onTint),
-                        ),
+                  children: [
+                    if (isAdmin)
+                      _MenuTile(
+                        icon: '⚙️',
+                        tint: c.tintTeal,
+                        title: 'لوحة التحكم الإدارية',
+                        subtitle: 'إدارة المستخدمين وربط الأطفال بأولياء الأمور',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const AdminScreen()),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                    _MenuTile(
+                      icon: '👧',
+                      tint: c.tintTeal,
+                      title: 'الأطفال',
+                      subtitle: 'عرض الأطفال ودروسهم وتقدّمهم',
+                      onTap: () => _openChildren(context),
+                    ),
+                    _MenuTile(
+                      icon: '📚',
+                      tint: c.tintGreen,
+                      title: 'تصفح الدروس',
+                      subtitle: 'كل الدروس مع بحث وقراءة صوتية',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const LessonsScreen()),
+                        );
+                      },
+                    ),
+                    _MenuTile(
+                      icon: '📊',
+                      tint: c.tintOrange,
+                      title: 'التقدّم والمكافآت',
+                      subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const ChildrenScreen(forProgress: true)),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 8),
+                    // بطاقة تذكير بميزة القراءة الصوتية
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: c.tintYellow,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text('🔊',
+                              style: TextStyle(fontSize: 28)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
+                              style:
+                                  TextStyle(fontSize: 14.5, color: c.onTint),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
