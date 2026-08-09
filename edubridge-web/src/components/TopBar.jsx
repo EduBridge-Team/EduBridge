@@ -30,8 +30,10 @@ export default function TopBar() {
         <NavLink to="/" end>
           الرئيسية
         </NavLink>
-        {/* لوحة التحكم أول رابط للأدمن */}
+        {/* لوحة كل دور — أول رابط بعد الرئيسية */}
         {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
+        {user?.role === 'teacher' && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
+        {user?.role === 'specialist' && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
         {/* صفحات تتطلّب تسجيل الدخول */}
         {user && <NavLink to="/children">الأطفال</NavLink>}
         {user && <NavLink to="/lessons">تصفح الدروس</NavLink>}

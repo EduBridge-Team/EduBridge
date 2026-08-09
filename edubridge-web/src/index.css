@@ -950,6 +950,99 @@ input:focus, select:focus {
 }
 .modal-actions .btn { flex: 1; }
 
+/* ============================================================
+   لوحات الأدوار (المعلّم / المختص)
+   ============================================================ */
+.container-wide { max-width: 1080px; }
+
+.dash-head { margin-bottom: 22px; }
+.dash-head h2 { margin: 0; font-size: 28px; }
+.dash-sub { color: var(--muted); margin: 6px 0 0; }
+.dash-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 17px;
+  padding: 12px 14px;
+  border: 2px solid var(--line-cool);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: var(--text);
+  resize: vertical;
+}
+textarea:focus {
+  outline: 3px solid rgba(26, 169, 178, 0.35);
+  border-color: var(--teal);
+}
+
+/* لوحة المعلّم — عمودان: الدروس + الأطفال */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.lesson-card { display: flex; flex-direction: column; }
+.lesson-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.lesson-card .content { flex: 1; }
+
+/* لوحة المختص — صف لكل طفل */
+.progress-row {
+  background: var(--card);
+  border: 1px solid var(--line-cool);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pr-child { display: flex; align-items: center; gap: 14px; min-width: 190px; }
+.pr-name { margin: 0; font-size: 20px; }
+.pr-name.clickable { cursor: pointer; }
+.pr-name.clickable:hover { color: var(--teal-deep); }
+.pr-mid {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pr-pct {
+  font-weight: 800;
+  color: var(--navy);
+  font-family: "Baloo Bhaijaan 2", cursive;
+}
+.pr-count {
+  border-radius: 999px;
+  padding: 3px 11px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.pr-count.orange { background: var(--tint-orange); color: var(--orange-deep); }
+.pr-count.green { background: var(--tint-green); color: var(--green-deep); }
+.pr-action { margin-inline-start: auto; }
+
 /* استجابة الشاشات الصغيرة */
 @media (max-width: 820px) {
   .hero-text h1 { font-size: 30px; }
@@ -957,4 +1050,9 @@ input:focus, select:focus {
   .footer-grid { grid-template-columns: 1fr; }
   .access-band { margin: 24px 10px; }
   .admin-search { width: 100%; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .progress-row { flex-direction: column; align-items: stretch; }
+  .pr-mid { justify-content: flex-start; }
+  .pr-action { margin-inline-start: 0; }
+  .pr-action .btn { width: 100%; }
 }

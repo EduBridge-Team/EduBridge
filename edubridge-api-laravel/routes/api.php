@@ -7,6 +7,7 @@ use App\Http\Controllers\ChildController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DisabilityTypeController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -32,6 +33,9 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
         ->middleware('role:teacher,specialist,admin');
     Route::get('/children/{id}/lessons', [ChildController::class, 'lessons']);
+
+    // أنواع الإعاقة (قائمة مرجعية)
+    Route::get('/disability-types', [DisabilityTypeController::class, 'index']);
 
     // الدروس
     Route::post('/lessons', [LessonController::class, 'store'])

@@ -3,9 +3,18 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { googleLogin, login } from '../api'
 
-// الصفحة التي يهبط عليها المستخدم بعد الدخول حسب دوره — الأدمن إلى لوحة التحكم
+// الصفحة التي يهبط عليها المستخدم بعد الدخول حسب دوره — لكل دور لوحته
 function landingFor(user) {
-  return user?.role === 'admin' ? '/admin' : '/children'
+  switch (user?.role) {
+    case 'admin':
+      return '/admin'
+    case 'teacher':
+      return '/teacher'
+    case 'specialist':
+      return '/specialist'
+    default:
+      return '/children'
+  }
 }
 
 export default function LoginPage() {

@@ -86,6 +86,19 @@ export function fetchLessons() {
   return request("/lessons");
 }
 
+// أنواع الإعاقة (قائمة مرجعية)
+export function fetchDisabilityTypes() {
+  return request("/disability-types");
+}
+
+// إضافة درس جديد (معلّم/أدمن)
+export function createLesson(payload) {
+  return request("/lessons", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 // تقدّم الطفل: التفاصيل والملخّص
 export function fetchChildProgress(childId) {
   return request(`/progress/child/${childId}`);
