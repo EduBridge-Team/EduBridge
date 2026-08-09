@@ -17,37 +17,62 @@ export default function LoginPage() {
 
   useEffect(() => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    if (!googleClientId || !window.google?.accounts?.id) {
+    if (!googleClientId) {
       return
     }
 
-    window.google.accounts.id.initialize({
-      client_id: googleClientId,
-      callback: async (response) => {
-        setError(null)
-        setLoading(true)
-        try {
-          await googleLogin(response.credential)
-          navigate('/children')
-        } catch (err) {
-          setError(err.message)
-        } finally {
-          setLoading(false)
-        }
-      },
-    })
+    let cancelled = false
+    let pollId
 
-    const container = document.getElementById('google-signin-button')
-    if (container) {
-      window.google.accounts.id.renderButton(container, {
-        theme: 'outline',
-        size: 'large',
-        text: 'signin_with',
-        shape: 'rectangular',
-        width: 320,
-        locale: 'ar',
+    // تهيئة زر Google بعد التأكد من تحميل سكربت GSI (يُحمَّل async defer فقد لا يكون جاهزاً عند التركيب)
+    const setupGoogle = () => {
+      if (cancelled || !window.google?.accounts?.id) {
+        return false
+      }
+
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async (response) => {
+          setError(null)
+          setLoading(true)
+          try {
+            await googleLogin(response.credential)
+            navigate('/children')
+          } catch (err) {
+            setError(err.message)
+          } finally {
+            setLoading(false)
+          }
+        },
       })
-      setGoogleReady(true)
+
+      const container = document.getElementById('google-signin-button')
+      if (container) {
+        window.google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular',
+          width: 320,
+          locale: 'ar',
+        })
+        setGoogleReady(true)
+      }
+      return true
+    }
+
+    // إن لم يكن السكربت جاهزاً بعد، نُعيد المحاولة دورياً حتى يصل
+    if (!setupGoogle()) {
+      pollId = setInterval(() => {
+        if (setupGoogle()) {
+          clearInterval(pollId)
+        }
+      }, 200)
+    }
+
+    return () => {
+      cancelled = true
+      if (pollId) clearInterval(pollId)
     }
   }, [navigate])
 
