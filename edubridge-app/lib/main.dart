@@ -49,7 +49,7 @@ class EduBridgeApp extends StatelessWidget {
               );
             }
             final loggedIn = snapshot.data != null;
-            return loggedIn ?  HomeScreen() : const LoginScreen();
+            return loggedIn ?  HomeScreen() : const WelcomeScreen();
           },
         ),
       ),
