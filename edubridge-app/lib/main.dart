@@ -1,16 +1,21 @@
-// نقطة تشغيل التطبيق
-import 'package:edubridge_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
+import 'services/tts_service.dart';
 import 'screens/welcome_screen.dart';
-import 'screens/home_screen.dart';
 import 'theme.dart';
+import 'utils/home_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // استرجاع وضع الثيم المحفوظ (فاتح/ليلي) قبل التشغيل
   await loadSavedThemeMode();
+  await TtsService.init();
   runApp(const EduBridgeApp());
+}
+
+Future<Widget> _initialScreen() async {
+  final token = await ApiService.getToken();
+  if (token == null) return const WelcomeScreen();
+  return homeScreenForRole();
 }
 
 class EduBridgeApp extends StatelessWidget {
@@ -39,17 +44,16 @@ class EduBridgeApp extends StatelessWidget {
           child: child!,
         ),
 
-        // نقرّر شاشة البداية حسب وجود توكن محفوظ
-        home: FutureBuilder<String?>(
-          future: ApiService.getToken(),
+        // نقرّر شاشة البداية حسب وجود توكن محفوظ ودور المستخدم
+        home: FutureBuilder<Widget>(
+          future: _initialScreen(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
             }
-            final loggedIn = snapshot.data != null;
-            return loggedIn ?  HomeScreen() : const WelcomeScreen();
+            return snapshot.data ?? const WelcomeScreen();
           },
         ),
       ),

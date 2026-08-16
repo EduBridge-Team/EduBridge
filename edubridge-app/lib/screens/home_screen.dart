@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/tts_toggle_button.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -95,6 +96,7 @@ class HomeScreen extends StatelessWidget {
                             onPressed: toggleThemeMode,
                           ),
                         ),
+                        const TtsToggleButton(),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white),
                           tooltip: 'خروج',
@@ -210,7 +212,7 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
+                              'فعّل زر القراءة 🎙 في الأعلى — ثم اضغط على أي نص لسماعه بالعربية',
                               style:
                                   TextStyle(fontSize: 14.5, color: c.onTint),
                             ),

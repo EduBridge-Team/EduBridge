@@ -3,6 +3,7 @@
 // مع خلفية دافئة وحوافّ دائرية
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'widgets/tts_toggle_button.dart';
 
 /// وضع الثيم الحالي (فاتح/ليلي) — تستمع له MaterialApp وتتبدل فوراً
 final ValueNotifier<ThemeMode> jisrThemeMode = ValueNotifier(ThemeMode.light);
@@ -349,7 +350,10 @@ class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
-      actions: actions,
+      actions: [
+        const TtsToggleButton(),
+        ...?actions,
+      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(gradient: AppColors.headerGradient),
       ),

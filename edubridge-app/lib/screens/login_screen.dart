@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'home_screen.dart';
+import '../utils/home_router.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,9 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (error == null) {
-      // نجاح — روح للرئيسية مع تنظيف كل الشاشات السابقة (الترحيبية وغيرها)
+      final home = await homeScreenForRole();
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
-          context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+        context,
+        MaterialPageRoute(builder: (_) => home),
+        (route) => false,
+      );
     } else {
       setState(() => _error = error);
     }
