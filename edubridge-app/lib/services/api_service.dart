@@ -1,5 +1,6 @@
 // طبقة الاتصال بالـ API
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
@@ -110,5 +111,48 @@ class ApiService {
       },
       body: jsonEncode(body),
     );
+  }
+
+  // رفع درس مع ملف فيديو أو صوت — POST متعدد الأجزاء (multipart)
+  static Future<http.Response> createLessonWithMedia({
+    required String title,
+    required String? content,
+    required int? disabilityTypeId,
+    required File? videoFile,
+    required File? audioFile,
+  }) async {
+    final token = await getToken();
+    final uri = Uri.parse('${Config.baseUrl}/lessons');
+    
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['title'] = title;
+    
+    // إضافة المحتوى إن وجد
+    if (content != null && content.trim().isNotEmpty) {
+      request.fields['content'] = content.trim();
+    }
+    
+    // إضافة نوع الإعاقة إن وجد
+    if (disabilityTypeId != null) {
+      request.fields['disability_type_id'] = disabilityTypeId.toString();
+    }
+    
+    // إضافة ملف الفيديو
+    if (videoFile != null && await videoFile.exists()) {
+      request.files.add(
+        await http.MultipartFile.fromPath('video', videoFile.path),
+      );
+    }
+    
+    // إضافة ملف الصوت
+    if (audioFile != null && await audioFile.exists()) {
+      request.files.add(
+        await http.MultipartFile.fromPath('audio', audioFile.path),
+      );
+    }
+    
+    final response = await request.send();
+    return http.Response.fromStream(response);
   }
 }

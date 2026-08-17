@@ -4,7 +4,9 @@ publish_to: 'none'
 version: 1.4.0+6
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.7.0"
+
 
 dependencies:
   flutter:
@@ -12,13 +14,14 @@ dependencies:
   http: ^1.2.0
   shared_preferences: ^2.2.0
   flutter_tts: ^4.2.0   # قراءة محتوى الدروس صوتياً (accessibility)
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
