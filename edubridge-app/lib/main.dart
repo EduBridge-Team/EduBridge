@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
 import 'services/tts_service.dart';
+import 'screens/splash_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -44,19 +45,34 @@ class EduBridgeApp extends StatelessWidget {
           child: child!,
         ),
 
-        // نقرّر شاشة البداية حسب وجود توكن محفوظ ودور المستخدم
-        home: FutureBuilder<Widget>(
-          future: _initialScreen(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return snapshot.data ?? const WelcomeScreen();
-          },
-        ),
+        // شاشة البداية (Splash) ثم تنتقل إلى «/home»
+        home: const SplashScreen(),
+
+        // «/home» تقرّر الوجهة حسب وجود توكن محفوظ ودور المستخدم
+        routes: {
+          '/home': (context) => const _HomeGate(),
+        },
       ),
+    );
+  }
+}
+
+/// بوابة الشاشة الرئيسية — تختار الوجهة حسب التوكن ودور المستخدم
+class _HomeGate extends StatelessWidget {
+  const _HomeGate();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _initialScreen(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return snapshot.data ?? const WelcomeScreen();
+      },
     );
   }
 }
