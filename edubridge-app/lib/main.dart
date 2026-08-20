@@ -6,49 +6,38 @@ import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // تحميل وضع الثيم (فاتح/ليلي) من التخزين المحلي
   await loadSavedThemeMode();
+  // تهيئة خدمة النطق الصوتي (مرة واحدة عند بدء التطبيق)
   await TtsService.init();
   runApp(const EduBridgeApp());
 }
 
-Future<Widget> _initialScreen() async {
-  final token = await ApiService.getToken();
-  if (token == null) return const WelcomeScreen();
-  return homeScreenForRole();
-}
-
+/// تطبيق جسر التعليمي
 class EduBridgeApp extends StatelessWidget {
   const EduBridgeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // نستمع لتغيّر وضع الثيم حتى يتبدّل التطبيق فوراً عند الضغط على 🌙
+    // مراقبة تغير وضع الثيم لتحديث الواجهة فوراً
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: jisrThemeMode,
       builder: (context, mode, _) => MaterialApp(
         title: 'EduBridge — جسر تعليمي',
         debugShowCheckedModeBanner: false,
-
-        // اتجاه الواجهة من اليمين لليسار (عربي)
         locale: const Locale('ar'),
-
-        // ثيما هوية «جسر»: فاتح وليلي — انظر theme.dart
         theme: buildJisrTheme(),
         darkTheme: buildJisrDarkTheme(),
         themeMode: mode,
-
-        // تغليف كامل التطبيق باتجاه RTL
+        // تطبيق الاتجاه من اليمين لليسار على كامل التطبيق
         builder: (context, child) => Directionality(
           textDirection: TextDirection.rtl,
           child: child!,
         ),
-
-        // شاشة البداية (Splash) ثم تنتقل إلى «/home»
+        // شاشة البداية (Splash) ثم التوجيه إلى الشاشة المناسبة
         home: const SplashScreen(),
-
-        // «/home» تقرّر الوجهة حسب وجود توكن محفوظ ودور المستخدم
         routes: {
           '/home': (context) => const _HomeGate(),
         },
@@ -57,7 +46,7 @@ class EduBridgeApp extends StatelessWidget {
   }
 }
 
-/// بوابة الشاشة الرئيسية — تختار الوجهة حسب التوكن ودور المستخدم
+/// بوابة الشاشة الرئيسية – تختار الوجهة حسب وجود توكن ودور المستخدم
 class _HomeGate extends StatelessWidget {
   const _HomeGate();
 
@@ -75,4 +64,15 @@ class _HomeGate extends StatelessWidget {
       },
     );
   }
+}
+
+/// تحديد الشاشة الأولى بناءً على وجود توكن صلاحية ودور المستخدم
+Future<Widget> _initialScreen() async {
+  final token = await ApiService.getToken();
+  if (token == null) {
+    // لا يوجد توكن → شاشة الترحيب (تسجيل الدخول أو الاشتراك)
+    return const WelcomeScreen();
+  }
+  // يوجد توكن → توجيه حسب الدور (معلم، مختص، أو الشاشة العامة)
+  return homeScreenForRole();
 }

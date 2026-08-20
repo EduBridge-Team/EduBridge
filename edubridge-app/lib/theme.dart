@@ -351,7 +351,7 @@ class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       actions: [
-        const TtsToggleButton(),
+        TtsToggleButton(),
         ...?actions,
       ],
       flexibleSpace: Container(

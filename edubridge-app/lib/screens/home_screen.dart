@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
-import '../widgets/tts_toggle_button.dart';
+import '../widgets/listen_button.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -80,6 +81,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
+                        // زر القراءة باللمس (accessibility) — أبيض ليظهر فوق الرأس
+                        const ListenButton(color: Colors.white),
                         // زر الوضع الليلي/الفاتح
                         ValueListenableBuilder<ThemeMode>(
                           valueListenable: jisrThemeMode,
@@ -96,7 +99,6 @@ class HomeScreen extends StatelessWidget {
                             onPressed: toggleThemeMode,
                           ),
                         ),
-                        const TtsToggleButton(),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white),
                           tooltip: 'خروج',
@@ -212,7 +214,7 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'فعّل زر القراءة 🎙 في الأعلى — ثم اضغط على أي نص لسماعه بالعربية',
+                              'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
                               style:
                                   TextStyle(fontSize: 14.5, color: c.onTint),
                             ),
@@ -250,13 +252,29 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final tts = TtsService.instance;
+    final spoken = '$title. $subtitle'; // النص المقروء في وضع القراءة باللمس
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
+    // نتفاعل مع وضع القراءة باللمس والسطر النشط لإبراز العنصر المقروء
+    return ValueListenableBuilder<bool>(
+      valueListenable: tts.tapToRead,
+      builder: (context, reading, _) => ValueListenableBuilder<String?>(
+        valueListenable: tts.activeLine,
+        builder: (context, active, __) {
+          final isActive = reading && active == spoken;
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: isActive
+                  ? const BorderSide(color: AppColors.green, width: 2.5)
+                  : BorderSide.none,
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              // في وضع القراءة باللمس: النقر يقرأ العنوان والوصف بدل التنقّل
+              onTap: reading ? () => tts.speakLine(spoken) : onTap,
+              child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
@@ -294,7 +312,10 @@ class _MenuTile extends StatelessWidget {
               Icon(Icons.chevron_left, color: c.muted),
             ],
           ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

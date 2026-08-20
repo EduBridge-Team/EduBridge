@@ -39,7 +39,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
 
   @override
   void dispose() {
-    TtsService.stop();
+    TtsService.instance.stop(); // تصحيح
     super.dispose();
   }
 
@@ -263,7 +263,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 children: [
                   Image.asset('assets/icon.png', width: 32, height: 32),
                   const Spacer(),
-                  const TtsToggleButton(),
+                  TtsToggleButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -600,6 +600,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   }
 }
 
+// ================== مكوّن إضافة الدرس (مشارك) ==================
 class _AddLessonSheet extends StatefulWidget {
   final List types;
   final VoidCallback onClose;
@@ -626,22 +627,20 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
 
   final ImagePicker _picker = ImagePicker();
 
-Future<void> _pickVideo() async {
-  final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-  if (video != null) {
-    setState(() => _videoFile = File(video.path));
+  Future<void> _pickVideo() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() => _videoFile = File(video.path));
+    }
   }
-}
 
-Future<void> _pickAudio() async {
-  // للبيانات والأصوات
-  final XFile? audio = await _picker.pickMedia(); 
-  if (audio != null) {
-    setState(() => _audioFile = File(audio.path));
+  Future<void> _pickAudio() async {
+    final XFile? audio = await _picker.pickMedia();
+    if (audio != null) {
+      setState(() => _audioFile = File(audio.path));
+    }
   }
-}
 
-  
   void _removeVideo() {
     setState(() => _videoFile = null);
   }
@@ -764,7 +763,7 @@ Future<void> _pickAudio() async {
                   ),
                   const SizedBox(height: 16),
 
-                  // ===== رفع الفيديو =====
+                  // رفع الفيديو
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -828,7 +827,7 @@ Future<void> _pickAudio() async {
                   ),
                   const SizedBox(height: 12),
 
-                  // ===== رفع الصوت =====
+                  // رفع الصوت
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -929,6 +928,7 @@ Future<void> _pickAudio() async {
   }
 }
 
+// ================== مكوّنات مساعدة ==================
 class _SummaryCard extends StatelessWidget {
   final String icon;
   final String value;

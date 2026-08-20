@@ -2,7 +2,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
+import '../widgets/listen_button.dart';
+import '../widgets/speakable.dart';
 import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 
@@ -25,6 +28,12 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   void initState() {
     super.initState();
     _loadChildren();
+  }
+
+  @override
+  void dispose() {
+    TtsService.instance.stop(); // إيقاف القراءة عند مغادرة الشاشة
+    super.dispose();
   }
 
   Future<void> _loadChildren() async {
@@ -59,7 +68,12 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: JisrAppBar(
-          title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال'),
+        title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
+        actions: const [
+          // تفعيل وضع القراءة باللمس (accessibility)
+          ListenButton(),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _loadChildren,
         child: _buildBody(),
@@ -91,29 +105,9 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
         final String name = (child['name'] ?? '').toString();
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 6),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: CircleAvatar(
-              radius: 26,
-              backgroundColor: color,
-              child: Text(
-                name.isNotEmpty ? name.characters.first : '🙂',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            title: Text(
-              name,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: JisrColors.of(context).heading,
-              ),
-            ),
-            trailing: const Icon(Icons.chevron_left), // اتجاه RTL
+          // في وضع القراءة باللمس: النقر يقرأ اسم الطفل. وإلا: يفتح دروسه/تقدّمه.
+          child: Speakable(
+            text: name,
             onTap: () {
               // حسب مصدر الدخول: التقدّم والمكافآت مباشرة، أو الدروس
               Navigator.push(
@@ -131,6 +125,31 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                 ),
               );
             },
+            child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: CircleAvatar(
+                radius: 26,
+                backgroundColor: color,
+                child: Text(
+                  name.isNotEmpty ? name.characters.first : '🙂',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              title: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: JisrColors.of(context).heading,
+                ),
+              ),
+              trailing: const Icon(Icons.chevron_left), // اتجاه RTL
+            ),
           ),
         );
       },

@@ -40,7 +40,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
   @override
   void dispose() {
-    TtsService.stop();
+    TtsService.instance.stop(); // تصحيح: استخدم instance
     super.dispose();
   }
 
@@ -135,7 +135,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
       (lesson['title'] ?? '').toString(),
       (lesson['content'] ?? '').toString(),
     ].where((t) => t.isNotEmpty).join('. ');
-    await TtsService.speak(text);
+    await TtsService.instance.speakLine(text); // تصحيح
   }
 
   @override
@@ -231,7 +231,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ),
                     ),
                   ),
-                  const TtsToggleButton(),
+                   TtsToggleButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -442,7 +442,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
     return Positioned.fill(
       child: GestureDetector(
         onTap: () {
-          TtsService.stop();
+          TtsService.instance.stop();
           setState(() => _viewingLesson = null);
         },
         child: Container(
@@ -477,7 +477,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         IconButton(
                           icon: const Icon(Icons.close),
                           onPressed: () {
-                            TtsService.stop();
+                            TtsService.instance.stop();
                             setState(() => _viewingLesson = null);
                           },
                         ),
@@ -538,6 +538,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 }
 
+// ================== مكوّن إضافة الدرس (مشارك بين المعلم والمختص) ==================
 class _AddLessonSheet extends StatefulWidget {
   final List types;
   final VoidCallback onClose;
@@ -554,7 +555,6 @@ class _AddLessonSheet extends StatefulWidget {
 }
 
 class _AddLessonSheetState extends State<_AddLessonSheet> {
-
   final _titleCtrl = TextEditingController();
   final _contentCtrl = TextEditingController();
   String? _typeId;
@@ -563,22 +563,21 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
   bool _saving = false;
   String? _error;
 
- final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
 
-Future<void> _pickVideo() async {
-  final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-  if (video != null) {
-    setState(() => _videoFile = File(video.path));
+  Future<void> _pickVideo() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() => _videoFile = File(video.path));
+    }
   }
-}
 
-Future<void> _pickAudio() async {
-  // للبيانات والأصوات
-  final XFile? audio = await _picker.pickMedia(); 
-  if (audio != null) {
-    setState(() => _audioFile = File(audio.path));
+  Future<void> _pickAudio() async {
+    final XFile? audio = await _picker.pickMedia();
+    if (audio != null) {
+      setState(() => _audioFile = File(audio.path));
+    }
   }
-}
 
   void _removeVideo() {
     setState(() => _videoFile = null);
@@ -702,7 +701,7 @@ Future<void> _pickAudio() async {
                   ),
                   const SizedBox(height: 16),
 
-                  // ===== رفع الفيديو =====
+                  // رفع الفيديو
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -766,7 +765,7 @@ Future<void> _pickAudio() async {
                   ),
                   const SizedBox(height: 12),
 
-                  // ===== رفع الصوت =====
+                  // رفع الصوت
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

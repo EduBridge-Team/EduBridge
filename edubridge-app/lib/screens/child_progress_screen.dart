@@ -2,7 +2,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
+import '../widgets/listen_button.dart';
+import '../widgets/speakable.dart';
 
 class ChildProgressScreen extends StatefulWidget {
   final int childId;
@@ -28,6 +31,12 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   void initState() {
     super.initState();
     _loadProgress();
+  }
+
+  @override
+  void dispose() {
+    TtsService.instance.stop(); // إيقاف القراءة عند مغادرة الشاشة
+    super.dispose();
   }
 
   // جلب الملخّص والتفاصيل معاً
@@ -71,7 +80,13 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: 'تقدّم ${widget.childName}'),
+      appBar: JisrAppBar(
+        title: 'تقدّم ${widget.childName}',
+        actions: const [
+          // تفعيل وضع القراءة باللمس (accessibility)
+          ListenButton(),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _loadProgress,
         child: _buildBody(),
@@ -189,29 +204,34 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         ),
         const SizedBox(height: 10),
 
-        // شريط النجوم: نجمة لكل درس مكتمل
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: c.tintYellow,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Row(
-            children: [
-              const Text('⭐', style: TextStyle(fontSize: 30)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'} — نجمة عن كل درس مكتمل',
-                  style: TextStyle(
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w600,
-                    color: c.onTint,
+        // شريط النجوم: نجمة لكل درس مكتمل (قابل للقراءة باللمس)
+        Speakable(
+          radius: 18,
+          text:
+              'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'}، نجمة عن كل درس مكتمل',
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: c.tintYellow,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                const Text('⭐', style: TextStyle(fontSize: 30)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'} — نجمة عن كل درس مكتمل',
+                    style: TextStyle(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w600,
+                      color: c.onTint,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -234,7 +254,14 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   Widget _buildBadgeCard(
       ({String emoji, String title, bool earned, String hint}) badge) {
     final c = JisrColors.of(context);
-    return Container(
+    // نص القراءة باللمس: اسم الشارة وحالتها (محققة/مقفلة + تلميح)
+    final spoken = badge.earned
+        ? 'شارة ${badge.title}، محققة'
+        : 'شارة ${badge.title}، مقفلة${badge.hint.isNotEmpty ? '، ${badge.hint}' : ''}';
+    return Speakable(
+      radius: 18,
+      text: spoken,
+      child: Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: badge.earned ? c.tintGreen : c.card,
@@ -274,6 +301,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           ],
         ],
       ),
+      ),
     );
   }
 
@@ -291,8 +319,11 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
     return Column(
       children: [
-        // ===== حلقة إنجاز محفّزة =====
-        SizedBox(
+        // ===== حلقة إنجاز محفّزة (قابلة للقراءة باللمس) =====
+        Speakable(
+          text: 'نسبة الإنجاز ${(percent * 100).round()} بالمئة',
+          radius: 70,
+          child: SizedBox(
           width: 130,
           height: 130,
           child: Stack(
@@ -329,6 +360,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             ],
           ),
         ),
+        ),
         const SizedBox(height: 16),
         Row(
           children: [
@@ -359,8 +391,11 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
   Widget _summaryCard(String label, String value, IconData icon, Color color) {
     return Expanded(
-      child: Card(
-        child: Padding(
+      // قابل للقراءة باللمس: يقرأ العنوان وقيمته
+      child: Speakable(
+        text: '$label: $value',
+        child: Card(
+          child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
           child: Column(
             children: [
@@ -380,6 +415,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                   textAlign: TextAlign.center),
             ],
           ),
+          ),
         ),
       ),
     );
@@ -392,9 +428,19 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     final score = p['score'];
     final completedAt = _formatDate(p['completed_at']);
 
+    // نص القراءة باللمس: عنوان الدرس وحالته ونتيجته
+    final spoken = [
+      (p['lesson_title'] ?? '').toString(),
+      statusInfo.label,
+      if (score != null) 'النتيجة $score بالمئة',
+      if (completedAt != null) 'أُكمل في $completedAt',
+    ].where((s) => s.isNotEmpty).join('، ');
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
-      child: ListTile(
+      child: Speakable(
+        text: spoken,
+        child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Icon(statusInfo.icon, size: 34, color: statusInfo.color),
@@ -413,6 +459,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             style: TextStyle(fontSize: 15, color: statusInfo.color),
           ),
         ),
+      ),
       ),
     );
   }

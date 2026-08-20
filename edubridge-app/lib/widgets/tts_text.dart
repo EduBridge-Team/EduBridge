@@ -21,44 +21,27 @@ class TtsText extends StatelessWidget {
     this.enableTap = true,
     super.key,
   });
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: TtsService.enabled,
+      valueListenable: TtsService.instance.tapToRead, // تغيير
       builder: (context, readingEnabled, _) {
-        // إذا كان الوضع مفعّلاً، اجعل النص قابل للنقر
         if (!readingEnabled || !enableTap) {
-          return Text(
-            text,
-            style: style,
-            textAlign: textAlign,
-            maxLines: maxLines,
-            overflow: overflow,
-          );
+          return Text(text);
         }
-
-        // نص قابل للنقر مع مؤشر يد
         return GestureDetector(
-          onTap: () => TtsService.speak(text),
-          child: ValueListenableBuilder<bool>(
-            valueListenable: TtsService.isSpeaking,
-            builder: (context, speaking, _) {
-              // تغيير اللون إذا كان يقرأ الآن
-              final effectiveStyle = speaking && text == TtsService.currentText
+          onTap: () => TtsService.instance.speakLine(text), // تغيير
+          child: ValueListenableBuilder<String?>(
+            valueListenable: TtsService.instance.activeLine, // تغيير
+            builder: (context, active, _) {
+              final isSpeaking = active == text;
+              final effectiveStyle = isSpeaking
                   ? (style ?? const TextStyle()).copyWith(
                       color: Colors.blue,
                       backgroundColor: Colors.blue.withValues(alpha: 0.1),
                     )
                   : style;
-
-              return Text(
-                text,
-                style: effectiveStyle,
-                textAlign: textAlign,
-                maxLines: maxLines,
-                overflow: overflow,
-              );
+              return Text(text);
             },
           ),
         );
@@ -66,6 +49,7 @@ class TtsText extends StatelessWidget {
     );
   }
 }
+  @override
 
 // الوصول إلى _currentText — نحتاج لإضافة getter في TtsService
 extension TtsServiceExt on TtsService {

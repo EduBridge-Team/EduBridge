@@ -1,185 +1,78 @@
-// خدمة القراءة الصوتية الشاملة — تعمل في كل مكان بكفاءة عالية
+// lib/services/tts_service.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class TtsService {
   TtsService._();
+  static final TtsService instance = TtsService._();
 
-  static final FlutterTts _tts = FlutterTts();
-  static bool _initialized = false;
-  static String _currentText = '';
-  static bool _isSpeaking = false;
+  final FlutterTts _tts = FlutterTts();
+  bool _ready = false;
 
-  /// وضع القراءة مفعّل
-  static final ValueNotifier<bool> enabled = ValueNotifier(false);
-   static String get currentText => _currentText;
-  /// حالة التحدث الحالية — لعرض مؤشر جاري القراءة
-  static final ValueNotifier<bool> isSpeaking = ValueNotifier(false);
+  // وضع القراءة باللمس
+  final ValueNotifier<bool> tapToRead = ValueNotifier<bool>(false);
+  // السطر الجاري نطقه حالياً
+  final ValueNotifier<String?> activeLine = ValueNotifier<String?>(null);
+  // هل يتم النطق حالياً؟ (اختياري)
+  final ValueNotifier<bool> isSpeaking = ValueNotifier<bool>(false);
 
+  // دالة تهيئة ثابتة تُستدعى من main.dart
   static Future<void> init() async {
-    if (_initialized) return;
-    
-    try {
-      // ضبط اللغة والخصائص
-      await _tts.setLanguage('ar');
-      
-      // سرعة القراءة — 0.4-0.5 للوضوح
-      await _tts.setSpeechRate(0.4);
-      
-      // مستوى الصوت — الحد الأقصى
-      await _tts.setVolume(1.0);
-      
-      // طبقة الصوت — عادية
-      await _tts.setPitch(1.0);
-      
-      // عند انتهاء القراءة
-      _tts.setCompletionHandler(() {
-        _isSpeaking = false;
-        isSpeaking.value = false;
-      });
-      
-      // عند حدوث خطأ
-      _tts.setErrorHandler((message) {
-        debugPrint('TTS Error: $message');
-        _isSpeaking = false;
-        isSpeaking.value = false;
-      });
-      
-      // عند البدء بالقراءة
-      _tts.setStartHandler(() {
-        _isSpeaking = true;
-        isSpeaking.value = true;
-      });
-      
-      _initialized = true;
-      debugPrint('✅ TTS Service Initialized');
-    } catch (e) {
-      debugPrint('❌ TTS Init Error: $e');
-    }
+    await instance._ensureInit();
   }
 
-  /// تبديل وضع القراءة — تفعيل/تعطيل
-  static Future<void> toggle() async {
-    await init();
-    if (enabled.value) {
-      await stop();
-      enabled.value = false;
-      debugPrint('📴 Reading Mode Disabled');
-    } else {
-      enabled.value = true;
-      await speak('تم تفعيل وضع القراءة. اضغط على أي نص لسماعه.');
-      debugPrint('📢 Reading Mode Enabled');
-    }
-  }
-
-  /// قراءة نص — الدالة الرئيسية
-  static Future<void> speak(String text) async {
-    if (text.trim().isEmpty) {
-      debugPrint('⚠️ Empty text provided');
-      return;
-    }
-    
-    await init();
-    
-    // توقف أي قراءة سابقة
-    await stop();
-    
-    _currentText = text.trim();
-    _isSpeaking = true;
-    isSpeaking.value = true;
-    
-    debugPrint('🔊 Starting to read: ${text.substring(0, 50)}...');
-    
-    try {
-      // تقسيم النص إلى أجزاء قابلة للقراءة
-      final chunks = _splitText(_currentText);
-      debugPrint('📝 Text divided into ${chunks.length} chunks');
-      
-      for (int i = 0; i < chunks.length; i++) {
-        if (!_isSpeaking) {
-          debugPrint('⏹️ Reading stopped by user');
-          break;
-        }
-        
-        final chunk = chunks[i];
-        debugPrint('📖 Reading chunk ${i + 1}/${chunks.length}');
-        
-        try {
-          await _tts.speak(chunk);
-          
-          // انتظر قليلاً بين الأجزاء
-          await Future.delayed(const Duration(milliseconds: 500));
-        } catch (e) {
-          debugPrint('❌ Error reading chunk: $e');
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ TTS Error: $e');
-      _isSpeaking = false;
+  // تهيئة المحرك الصوتي
+  Future<void> _ensureInit() async {
+    if (_ready) return;
+    await _tts.setLanguage('ar');
+    await _tts.setSpeechRate(0.45);
+    _tts.setCompletionHandler(() {
+      activeLine.value = null;
       isSpeaking.value = false;
-    }
+    });
+    _tts.setCancelHandler(() {
+      activeLine.value = null;
+      isSpeaking.value = false;
+    });
+    _ready = true;
   }
 
-  /// تقسيم النص الطويل إلى أجزاء
-  static List<String> _splitText(String text) {
-    const maxChunkLength = 500; // طول كل جزء
-    final chunks = <String>[];
-    
-    if (text.length <= maxChunkLength) {
-      chunks.add(text);
-      return chunks;
-    }
-    
-    // تقسيم حسب الجمل أولاً
-    final sentences = text.split(RegExp(r'([.!?،؛]+)'));
-    String currentChunk = '';
-    
-    for (int i = 0; i < sentences.length; i += 2) {
-      final sentence = sentences[i];
-      final punctuation = i + 1 < sentences.length ? sentences[i + 1] : '';
-      final fullSentence = '$sentence$punctuation';
-      
-      if ((currentChunk + fullSentence).length > maxChunkLength) {
-        if (currentChunk.isNotEmpty) {
-          chunks.add(currentChunk.trim());
-        }
-        currentChunk = fullSentence;
-      } else {
-        currentChunk += fullSentence;
-      }
-    }
-    
-    if (currentChunk.isNotEmpty) {
-      chunks.add(currentChunk.trim());
-    }
-    
-    return chunks.where((c) => c.isNotEmpty).toList();
-  }
-
-  /// إيقاف القراءة فوراً
-  static Future<void> stop() async {
-    try {
+  // تبديل وضع القراءة باللمس
+  Future<void> toggleTapToRead() async {
+    tapToRead.value = !tapToRead.value;
+    if (!tapToRead.value) {
+      activeLine.value = null;
+      isSpeaking.value = false;
       await _tts.stop();
-      _isSpeaking = false;
-      isSpeaking.value = false;
-      debugPrint('⏹️ Reading Stopped');
-    } catch (e) {
-      debugPrint('❌ Stop Error: $e');
     }
   }
 
-  /// قراءة نص عند النقر — فقط إذا كان وضع القراءة مفعّلاً
-  static Future<void> speakIfEnabled(String text) async {
-    if (!enabled.value) return;
-    await speak(text);
+  // نطق سطر معين
+  Future<void> speakLine(String text) async {
+    await _ensureInit();
+    final t = text.trim();
+    if (t.isEmpty) return;
+    await _tts.stop();
+    activeLine.value = text;
+    isSpeaking.value = true;
+    await _tts.speak(_normalizeArabic(t));
   }
 
-  /// الحصول على حالة التحدث الحالية
-  static bool get isCurrentlySpeaking => _isSpeaking;
+  // إيقاف النطق فوراً
+  Future<void> stop() async {
+    await _tts.stop();
+    activeLine.value = null;
+    isSpeaking.value = false;
+  }
 
-  /// إعادة تهيئة الخدمة
-  static Future<void> reinitialize() async {
-    _initialized = false;
-    await init();
+  // تحويل الأرقام الغربية إلى عربية ونطق النسب المئوية
+  String _normalizeArabic(String input) {
+    const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    var out = input.replaceAll('%', ' بالمئة');
+    for (var i = 0; i < western.length; i++) {
+      out = out.replaceAll(western[i], arabic[i]);
+    }
+    return out;
   }
 }
