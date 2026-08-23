@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/api_service.dart';
 import 'services/tts_service.dart';
 import 'screens/splash_screen.dart';
@@ -12,7 +13,8 @@ void main() async {
   await loadSavedThemeMode();
   // تهيئة خدمة النطق الصوتي (مرة واحدة عند بدء التطبيق)
   await TtsService.init();
-  runApp(const EduBridgeApp());
+
+  runApp(const ProviderScope(child: EduBridgeApp()));
 }
 
 /// تطبيق جسر التعليمي

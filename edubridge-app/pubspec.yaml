@@ -11,10 +11,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.4.0
+  
+  
   http: ^1.2.0
   shared_preferences: ^2.2.0
   flutter_tts: ^4.2.0   # قراءة محتوى الدروس صوتياً (accessibility)
   image_picker: ^1.1.2
+  web_socket_channel: ^2.4.0 
 
 dev_dependencies:
   flutter_test:

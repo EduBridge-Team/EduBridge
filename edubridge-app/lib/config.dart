@@ -1,14 +1,13 @@
 // إعدادات التطبيق
 class Config {
-  // عنوان الواجهة الخلفية — النسخة المنشورة، تعمل من أي مكان
-  //
-  // للتطوير المحلي بدّل القيمة إلى أحد الخيارين:
-  //
-  // الخيار الأول: جهاز حقيقي موصول بالكابل، بعد تنفيذ أمر تحويل المنفذ:
-  //   adb reverse tcp:3000 tcp:3000
-  //   http://127.0.0.1:3000/api
-  //
-  // الخيار الثاني: محاكي أندرويد:
-  //   http://10.0.2.2:3000/api
-  static const String baseUrl = "https://edubridge.alwaysdata.net/api";
+  
+   // 🔹 للمحاكي (Android Emulator)
+    static const String baseUrl = "https://edubridge.alwaysdata.net/api";
+  static const String wsUrl = "wss://edubridge.alwaysdata.net/ws";
+   
+  
+  // 🔹 للجهاز الحقيقي (USB) - تحتاج adb reverse
+  // static const String baseUrl = "http://127.0.0.1:8000/api";
+  // static const String wsUrl = "ws://127.0.0.1:8000";
 }
+    
