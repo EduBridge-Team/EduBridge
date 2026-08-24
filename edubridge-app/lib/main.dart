@@ -1,8 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/api_service.dart';
 import 'services/tts_service.dart';
-import 'screens/splash_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -39,7 +39,7 @@ class EduBridgeApp extends StatelessWidget {
           child: child!,
         ),
         // شاشة البداية (Splash) ثم التوجيه إلى الشاشة المناسبة
-        home: const SplashScreen(),
+        home: const WelcomeScreen(),
         routes: {
           '/home': (context) => const _HomeGate(),
         },

@@ -14,7 +14,7 @@ Future<Widget> homeScreenForRole() async {
     case 'specialist':
       return const SpecialistDashboardScreen();
     case 'parent':
-      return const ParentScreen(); // شاشة ولي الأمر الجديدة
+      return const ParentScreen(parent: {},); // شاشة ولي الأمر الجديدة
     default:
       return const HomeScreen();
   }

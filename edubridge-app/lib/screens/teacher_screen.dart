@@ -420,7 +420,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ),
                   ),
                   const ListenButton(color: Colors.white),
-                   TtsToggleButton(),
+                  TtsToggleButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',

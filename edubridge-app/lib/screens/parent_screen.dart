@@ -1,18 +1,20 @@
-// شاشة ولي الأمر - إدارة الأطفال ومتابعة تقدمهم
+// شاشة ولي الأمر - إدارة الأطفال ومتابعة تقدمهم (مدموجة مع الميزات الجديدة)
 import 'dart:convert';
-import 'package:edubridge_app/screens/teacher_screen.dart';
+import 'package:edubridge_app/screens/notifications_screen.dart';
+import 'package:edubridge_app/screens/support_sheet.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/listen_button.dart';
-import '../widgets/speakable.dart';
+ // ⬅️ تمت الإضافة
 import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 import 'add_child_screen.dart';
+import 'edit_child_screen.dart'; // ⬅️ تمت الإضافة
 
 class ParentScreen extends StatefulWidget {
-  const ParentScreen({super.key});
+  const ParentScreen({super.key, required Map<dynamic, dynamic> parent});
 
   @override
   State<ParentScreen> createState() => _ParentScreenState();
@@ -48,7 +50,7 @@ class _ParentScreenState extends State<ParentScreen> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         setState(() {
-          _children = data['children'] ?? [];
+          _children = data['children'] ?? []; // تم الحفاظ على بنية البيانات الأصلية
           _loading = false;
         });
       } else {
@@ -149,12 +151,22 @@ class _ParentScreenState extends State<ParentScreen> {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'جسر التعليمي - ولي الأمر',
+                      'جسر التعليمي - ولي الأمر', // ⬅️ تم إضافة الدور هنا
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
+                    ),
+                  ),
+                  // ⬅️ زر الدعم الفني الجديد
+                  IconButton(
+                    icon: const Icon(Icons.headset_mic, color: Colors.white),
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const SupportSheet(),
                     ),
                   ),
                   // زر الإشعارات مع العدد
@@ -210,6 +222,7 @@ class _ParentScreenState extends State<ParentScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+              // ⬅️ تم دمج اسم المستخدم مع الدور هنا
               FutureBuilder<String?>(
                 future: ApiService.getName(),
                 builder: (context, snap) {
@@ -383,7 +396,23 @@ class _ParentScreenState extends State<ParentScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Icon(Icons.chevron_left, size: 20),
+                      // ⬅️ زر التعديل الجديد
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditChildScreen(
+                                child: child,
+                                currentUserRole: 'parent', // ⬅️ الصلاحية ولي أمر
+                                currentUser: {}, // يمكنك تمرير بيانات ولي الأمر هنا
+                              ),
+                            ),
+                          );
+                          if (result == true) _loadData();
+                        },
+                      ),
                     ],
                   ),
                 ],
@@ -396,7 +425,7 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 }
 
-// ===== شاشة تفاصيل الطفل =====
+// ===== شاشة تفاصيل الطفل (كما كانت تماماً) =====
 class ChildDetailsScreen extends StatefulWidget {
   final int childId;
   final String childName;

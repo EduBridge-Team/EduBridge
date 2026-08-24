@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:edubridge_app/screens/support_sheet.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'edit_child_screen.dart';
 
 const _roleNames = {
   'parent': 'ولي أمر',
@@ -18,7 +20,9 @@ const _roleIcons = {
 };
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({super.key});
+  final Map admin;
+
+  const AdminScreen({super.key, required this.admin});
 
   @override
   State<AdminScreen> createState() => _AdminScreenState();
@@ -30,6 +34,7 @@ class _AdminScreenState extends State<AdminScreen> {
   static const _tabs = [
     ('👥', 'المستخدمين'),
     ('👶', 'الأطفال'),
+    ('🎧', 'الدعم الفني'),
   ];
 
   @override
@@ -37,7 +42,20 @@ class _AdminScreenState extends State<AdminScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: const JisrAppBar(title: 'لوحة التحكم الإدارية'),
+      appBar: JisrAppBar(
+        title: 'لوحة التحكم الإدارية',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.headset_mic),
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => const SupportSheet(),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -49,11 +67,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'لوحة التحكم الإدارية',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: c.heading,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
                 ),
               ],
             ),
@@ -70,8 +84,10 @@ class _AdminScreenState extends State<AdminScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: _tab == 0
-                ? const _UsersTab()
-                : const _ChildrenTab(),
+                ? _UsersTab(admin: widget.admin)
+                : _tab == 1
+                    ? _ChildrenTab(admin: widget.admin)
+                    : _SupportTicketsTab(admin: widget.admin),
           ),
         ],
       ),
@@ -149,8 +165,10 @@ class _AdminTabBar extends StatelessWidget {
   }
 }
 
+// ===== تبويب المستخدمين (مثل السابق) =====
 class _UsersTab extends StatefulWidget {
-  const _UsersTab();
+  final Map admin;
+  const _UsersTab({required this.admin});
 
   @override
   State<_UsersTab> createState() => _UsersTabState();
@@ -221,10 +239,7 @@ class _UsersTabState extends State<_UsersTab> {
 
     if (confirm == true) {
       try {
-        // هنا يتم حذف المستخدم. تأكد أن الـ Backend يدعم هذا المسار
-        // إذا لم يكن يدعم، سيظهر خطأ ويجب إضافة المسار في Laravel
-        final res = await ApiService.authDelete('/users/${user['id']}'); 
-        
+        final res = await ApiService.authDelete('/users/${user['id']}');
         if (res.statusCode == 200 || res.statusCode == 204) {
           setState(() {
             _users.removeWhere((u) => u['id'] == user['id']);
@@ -322,11 +337,7 @@ class _UsersTabState extends State<_UsersTab> {
                         const SizedBox(width: 8),
                         Text(
                           'إدارة المستخدمين',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: c.heading,
-                          ),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
                         ),
                       ],
                     ),
@@ -434,11 +445,7 @@ class _UserCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${_roleIcons[role] ?? '👤'} ${_roleNames[role] ?? role}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: pillFg,
-                  ),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: pillFg),
                 ),
               ),
               CircleAvatar(
@@ -446,11 +453,7 @@ class _UserCard extends StatelessWidget {
                 backgroundColor: c.tintTeal,
                 child: Text(
                   initial,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.tealDeep,
-                  ),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.tealDeep),
                 ),
               ),
             ],
@@ -460,11 +463,7 @@ class _UserCard extends StatelessWidget {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: c.heading,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.heading),
           ),
           const SizedBox(height: 2),
           Text(
@@ -503,8 +502,10 @@ class _UserCard extends StatelessWidget {
   }
 }
 
+// ===== تبويب الأطفال (مع إضافة زر الحذف) =====
 class _ChildrenTab extends StatefulWidget {
-  const _ChildrenTab();
+  final Map admin;
+  const _ChildrenTab({required this.admin});
 
   @override
   State<_ChildrenTab> createState() => _ChildrenTabState();
@@ -556,12 +557,28 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     }
   }
 
+  // دالة تعديل الطفل (للأدمن يمرر كل الصلاحيات)
+  Future<void> _editChild(Map child) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditChildScreen(
+          child: child,
+          currentUserRole: 'admin', // يفتح كل الحقول (المعلم، المختص، إلخ)
+          currentUser: widget.admin,
+        ),
+      ),
+    );
+    if (result == true) _load();
+  }
+
+  // دالة حذف الطفل (جديدة)
   Future<void> _deleteChild(Map child) async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('حذف الطفل'),
-        content: Text('هل أنت متأكد من حuyذف "${child['name']}"؟'),
+        content: Text('هل أنت متأكد من حذف "${child['name']}"؟'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
           TextButton(
@@ -574,9 +591,7 @@ class _ChildrenTabState extends State<_ChildrenTab> {
 
     if (confirm == true) {
       try {
-        // تأكد من وجود هذا المسار في الـ Backend
         final res = await ApiService.authDelete('/children/${child['id']}');
-        
         if (res.statusCode == 200 || res.statusCode == 204) {
           setState(() {
             _children.removeWhere((c) => c['id'] == child['id']);
@@ -626,14 +641,174 @@ class _ChildrenTabState extends State<_ChildrenTab> {
               itemCount: _children.length,
               itemBuilder: (context, index) {
                 final child = _children[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  leading: const Icon(Icons.child_care, size: 40),
-                  title: Text(child['name']?.toString() ?? ''),
-                  subtitle: Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
-                  trailing: IconButton(
-                    onPressed: () => _deleteChild(child),
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    leading: const Icon(Icons.child_care, size: 40),
+                    title: Text(child['name']?.toString() ?? ''),
+                    subtitle: Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () => _editChild(child),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteChild(child),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+// ===== تبويب الدعم الفني (الشكاوى) =====
+class _SupportTicketsTab extends StatefulWidget {
+  final Map admin;
+  const _SupportTicketsTab({required this.admin});
+
+  @override
+  State<_SupportTicketsTab> createState() => _SupportTicketsTabState();
+}
+
+class _SupportTicketsTabState extends State<_SupportTicketsTab> {
+  List _tickets = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTickets();
+  }
+
+  Future<void> _loadTickets() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      // ملاحظة: يجب أن تضع هذا المسار في الـ Laravel لجلب الشكاوى
+      final res = await ApiService.authGet('/support/tickets');
+      final data = jsonDecode(res.body);
+
+      if (res.statusCode == 200) {
+        List ticketsList = [];
+        if (data is List) {
+          ticketsList = data;
+        } else if (data is Map) {
+          ticketsList = data['tickets'] ?? data['data'] ?? [];
+        }
+        setState(() {
+          _tickets = ticketsList;
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _error = data['error']?.toString() ?? 'تعذّر جلب الشكاوى';
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      setState(() {
+        _error = 'تعذّر الاتصال بالسيرفر';
+        _loading = false;
+      });
+    }
+  }
+
+  // حل الشكوى وإرسال إشعار لصاحبها
+  Future<void> _resolveTicket(Map ticket) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('حل الشكوى'),
+        content: Text('هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم بأنه تم حل المشكلة.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        // ملاحظة: هذا المسار يجب أن يرسل إشعاراً لصاحب الشكوى (من الـ Backend)
+        final res = await ApiService.authPut('/support/tickets/${ticket['id']}/resolve', {});
+        if (res.statusCode == 200 || res.statusCode == 204) {
+          setState(() {
+            _tickets.removeWhere((t) => t['id'] == ticket['id']);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم حل الشكوى وإرسال إشعار للمستخدم')),
+          );
+        } else {
+          setState(() {
+            _error = 'تعذّر حل الشكوى. تأكد من دعم الـ Backend لهذه الخاصية.';
+          });
+        }
+      } catch (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _StateBox(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red, fontSize: 16)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: _loadTickets, child: const Text('إعادة المحاولة')),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadTickets,
+      child: _tickets.isEmpty
+          ? const Center(child: Text('لا توجد شكاوى حالياً'))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _tickets.length,
+              itemBuilder: (context, index) {
+                final ticket = _tickets[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: const Icon(Icons.support_agent, color: AppColors.orange),
+                    title: Text(ticket['subject']?.toString() ?? 'بدون موضوع'),
+                    subtitle: Text(
+                      ticket['message']?.toString() ?? '',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: TextButton(
+                      onPressed: () => _resolveTicket(ticket),
+                      child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
+                    ),
                   ),
                 );
               },
@@ -731,11 +906,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: Text(
                       'تعديل المستخدم',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: c.heading,
-                      ),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
                     ),
                   ),
                   IconButton(

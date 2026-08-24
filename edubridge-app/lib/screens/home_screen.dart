@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const AdminScreen()),
+                                builder: (_) => const AdminScreen(admin: {},)),
                           );
                         },
                       ),
