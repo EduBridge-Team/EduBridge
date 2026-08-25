@@ -4,16 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
-import '../services/tts_service.dart';
 import '../theme.dart';
-import '../widgets/tts_text.dart';
-import '../widgets/tts_toggle_button.dart';
-import '../widgets/listen_button.dart';
-import 'child_progress_screen.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
 import 'evaluation_sheet.dart';
 import 'educational_plan_sheet.dart';
+import 'support_sheet.dart';
+import 'child_progress_screen.dart';
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -42,12 +39,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     super.initState();
     _load();
     _loadNotificationsCount();
-  }
-
-  @override
-  void dispose() {
-    TtsService.instance.stop();
-    super.dispose();
   }
 
   bool _isToday(String? ts) {
@@ -212,7 +203,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   }
 
   void _viewEvaluation(int childId) {
-    // عرض آخر تقييم للطفل
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -406,12 +396,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           Column(
             children: [
               _buildHeader(c),
-              // شريط التبويب المخصص
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
-                    // حقل البحث للأطفال
                     if (_tabIndex == 0)
                       Expanded(
                         child: TextField(
@@ -424,7 +412,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         ),
                       ),
                     const Spacer(),
-                    // زر الإشعارات
                     Stack(
                       children: [
                         IconButton(
@@ -462,7 +449,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ],
                 ),
               ),
-              // بطاقات الإحصائيات
               if (_tabIndex == 0 && !_loading)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -563,8 +549,15 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       ),
                     ),
                   ),
-                  const ListenButton(color: Colors.white),
-                   TtsToggleButton(),
+                  IconButton(
+                    icon: const Icon(Icons.headset_mic, color: Colors.white),
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const SupportSheet(),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -1394,21 +1387,6 @@ class _LessonDetailSheet extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.volume_up),
-                label: const Text('استمع للدرس'),
-                onPressed: () async {
-                  final text = [
-                    title,
-                    content,
-                  ].where((t) => t.isNotEmpty).join('. ');
-                  await TtsService.instance.speakLine(text);
-                },
-              ),
-            ),
           ],
         ),
       ),
@@ -1750,8 +1728,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     onChanged: (v) => setState(() => _typeId = v),
                   ),
                   const SizedBox(height: 16),
-
-                  // رفع الفيديو
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -1814,8 +1790,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
-                  // رفع الصوت
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -1877,7 +1851,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                       ],
                     ),
                   ),
-
                   if (_error != null) ...[
                     const SizedBox(height: 8),
                     Text(_error!, style: const TextStyle(color: Colors.red)),

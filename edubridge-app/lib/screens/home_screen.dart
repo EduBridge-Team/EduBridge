@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/tts_service.dart';
 import '../theme.dart';
-import '../widgets/listen_button.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -11,7 +9,6 @@ import 'lessons_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  // أسماء الأدوار بالعربية — للترحيب
   static const _roleNames = {
     'parent': 'ولي أمر',
     'teacher': 'معلّم',
@@ -22,7 +19,6 @@ class HomeScreen extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     await ApiService.logout();
     if (!context.mounted) return;
-    // بعد الخروج نرجع للشاشة الترحيبية
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
@@ -38,14 +34,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // الألوان المتكيّفة مع الوضع الحالي (فاتح/ليلي)
     final c = JisrColors.of(context);
 
     return Scaffold(
-  
       body: Column(
         children: [
-          // ===== رأس متدرّج بهوية جسر: شعار + ترحيب بالاسم والدور =====
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -67,7 +60,6 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          
                           child: Image.asset('assets/icon.png',
                               width: 36, height: 36),
                         ),
@@ -81,9 +73,6 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        // زر القراءة باللمس (accessibility) — أبيض ليظهر فوق الرأس
-                        const ListenButton(color: Colors.white),
-                        // زر الوضع الليلي/الفاتح
                         ValueListenableBuilder<ThemeMode>(
                           valueListenable: jisrThemeMode,
                           builder: (context, mode, _) => IconButton(
@@ -107,7 +96,6 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    // الترحيب بالاسم والدور المحفوظين محلياً
                     FutureBuilder(
                       future: Future.wait(
                           [ApiService.getName(), ApiService.getRole()]),
@@ -142,7 +130,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-
           Expanded(
             child: FutureBuilder<String?>(
               future: ApiService.getRole(),
@@ -161,7 +148,7 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const AdminScreen(admin: {},)),
+                                builder: (_) => const AdminScreen(admin: {})),
                           );
                         },
                       ),
@@ -176,7 +163,7 @@ class HomeScreen extends StatelessWidget {
                       icon: '📚',
                       tint: c.tintGreen,
                       title: 'تصفح الدروس',
-                      subtitle: 'كل الدروس مع بحث وقراءة صوتية',
+                      subtitle: 'كل الدروس مع بحث',
                       onTap: () {
                         Navigator.push(
                           context,
@@ -199,29 +186,6 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
-
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: c.tintYellow,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text('🔊',
-                              style: TextStyle(fontSize: 28)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'كل درس يُقرأ صوتياً بالعربية — اضغط «استمع» داخل الدرس',
-                              style:
-                                  TextStyle(fontSize: 14.5, color: c.onTint),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 );
               },
@@ -233,7 +197,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// بطاقة تنقّل: أيقونة ملوّنة + عنوان + وصف
 class _MenuTile extends StatelessWidget {
   final String icon;
   final Color tint;
@@ -252,29 +215,17 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final tts = TtsService.instance;
-    final spoken = '$title. $subtitle'; // النص المقروء في وضع القراءة باللمس
 
-    // نتفاعل مع وضع القراءة باللمس والسطر النشط لإبراز العنصر المقروء
-    return ValueListenableBuilder<bool>(
-      valueListenable: tts.tapToRead,
-      builder: (context, reading, _) => ValueListenableBuilder<String?>(
-        valueListenable: tts.activeLine,
-        builder: (context, active, __) {
-          final isActive = reading && active == spoken;
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: isActive
-                  ? const BorderSide(color: AppColors.green, width: 2.5)
-                  : BorderSide.none,
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              // في وضع القراءة باللمس: النقر يقرأ العنوان والوصف بدل التنقّل
-              onTap: reading ? () => tts.speakLine(spoken) : onTap,
-              child: Padding(
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide.none,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
@@ -312,10 +263,7 @@ class _MenuTile extends StatelessWidget {
               Icon(Icons.chevron_left, color: c.muted),
             ],
           ),
-              ),
-            ),
-          );
-        },
+        ),
       ),
     );
   }

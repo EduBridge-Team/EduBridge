@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:edubridge_app/screens/support_sheet.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -44,17 +43,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       appBar: JisrAppBar(
         title: 'لوحة التحكم الإدارية',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.headset_mic),
-            onPressed: () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => const SupportSheet(),
-            ),
-          ),
-        ],
+        // تم إزالة زر الدعم الفني من الـ AppBar لأنه موجود داخل التبويبات
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -165,7 +154,7 @@ class _AdminTabBar extends StatelessWidget {
   }
 }
 
-// ===== تبويب المستخدمين (مثل السابق) =====
+// ===== تبويب المستخدمين =====
 class _UsersTab extends StatefulWidget {
   final Map admin;
   const _UsersTab({required this.admin});
@@ -502,7 +491,7 @@ class _UserCard extends StatelessWidget {
   }
 }
 
-// ===== تبويب الأطفال (مع إضافة زر الحذف) =====
+// ===== تبويب الأطفال =====
 class _ChildrenTab extends StatefulWidget {
   final Map admin;
   const _ChildrenTab({required this.admin});
@@ -557,14 +546,13 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     }
   }
 
-  // دالة تعديل الطفل (للأدمن يمرر كل الصلاحيات)
   Future<void> _editChild(Map child) async {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => EditChildScreen(
           child: child,
-          currentUserRole: 'admin', // يفتح كل الحقول (المعلم، المختص، إلخ)
+          currentUserRole: 'admin',
           currentUser: widget.admin,
         ),
       ),
@@ -572,7 +560,6 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     if (result == true) _load();
   }
 
-  // دالة حذف الطفل (جديدة)
   Future<void> _deleteChild(Map child) async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -696,7 +683,6 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
     });
 
     try {
-      // ملاحظة: يجب أن تضع هذا المسار في الـ Laravel لجلب الشكاوى
       final res = await ApiService.authGet('/support/tickets');
       final data = jsonDecode(res.body);
 
@@ -725,7 +711,6 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
     }
   }
 
-  // حل الشكوى وإرسال إشعار لصاحبها
   Future<void> _resolveTicket(Map ticket) async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -744,7 +729,6 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
 
     if (confirm == true) {
       try {
-        // ملاحظة: هذا المسار يجب أن يرسل إشعاراً لصاحب الشكوى (من الـ Backend)
         final res = await ApiService.authPut('/support/tickets/${ticket['id']}/resolve', {});
         if (res.statusCode == 200 || res.statusCode == 204) {
           setState(() {
@@ -795,15 +779,27 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
               itemCount: _tickets.length,
               itemBuilder: (context, index) {
                 final ticket = _tickets[index];
+                final user = ticket['user'] ?? {};
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
                     leading: const Icon(Icons.support_agent, color: AppColors.orange),
                     title: Text(ticket['subject']?.toString() ?? 'بدون موضوع'),
-                    subtitle: Text(
-                      ticket['message']?.toString() ?? '',
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ticket['message']?.toString() ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: c.body),
+                        ),
+                        if (user['name'] != null)
+                          Text(
+                            'من: ${user['name']}',
+                            style: TextStyle(fontSize: 12, color: c.muted),
+                          ),
+                      ],
                     ),
                     trailing: TextButton(
                       onPressed: () => _resolveTicket(ticket),
@@ -868,6 +864,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         widget.onSaved(data['user']);
+        Navigator.pop(context);
       } else {
         setState(() {
           _error = data['error'] ?? 'تعذّر حفظ التعديلات';

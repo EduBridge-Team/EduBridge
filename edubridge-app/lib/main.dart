@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/api_service.dart';
-import 'services/tts_service.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -11,8 +9,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // تحميل وضع الثيم (فاتح/ليلي) من التخزين المحلي
   await loadSavedThemeMode();
-  // تهيئة خدمة النطق الصوتي (مرة واحدة عند بدء التطبيق)
-  await TtsService.init();
 
   runApp(const ProviderScope(child: EduBridgeApp()));
 }

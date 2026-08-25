@@ -5,17 +5,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
-import '../services/tts_service.dart';
 import '../theme.dart';
-import '../widgets/tts_text.dart';
-import '../widgets/tts_toggle_button.dart';
-import '../widgets/listen_button.dart';
-import 'child_lessons_screen.dart';
-import 'child_progress_screen.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
 import 'educational_plan_sheet.dart';
 import 'specialist_picker_sheet.dart';
+import 'support_sheet.dart';
+import 'child_lessons_screen.dart';
+import 'child_progress_screen.dart';
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
@@ -46,12 +43,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
     _loadNotificationsCount();
   }
 
-  @override
-  void dispose() {
-    TtsService.instance.stop();
-    super.dispose();
-  }
-
   Future<void> _loadData() async {
     setState(() {
       _loading = true;
@@ -72,7 +63,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
           responses[2].statusCode == 200) {
-        // فلترة الأطفال الموزعين على هذا المعلم فقط
         final allChildren = childrenData['children'] ?? [];
         final myChildren = allChildren.where((child) {
           return child['assigned_teacher_id'] == ApiService.getUserId();
@@ -174,14 +164,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
     setState(() => _viewingLesson = lesson);
   }
 
-  Future<void> _toggleSpeakLesson(Map lesson) async {
-    final text = [
-      (lesson['title'] ?? '').toString(),
-      (lesson['content'] ?? '').toString(),
-    ].where((t) => t.isNotEmpty).join('. ');
-    await TtsService.instance.speakLine(text);
-  }
-
   void _openNotifications() {
     Navigator.push(
       context,
@@ -277,12 +259,10 @@ class _TeacherScreenState extends State<TeacherScreen> {
           Column(
             children: [
               _buildHeader(c),
-              // شريط التبويب المخصص
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
-                    // زر عرض الأطفال الموزعين فقط
                     if (_tabIndex == 0)
                       Row(
                         children: [
@@ -308,7 +288,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ],
                       ),
                     const Spacer(),
-                    // زر الإشعارات
                     Stack(
                       children: [
                         IconButton(
@@ -419,8 +398,15 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ),
                     ),
                   ),
-                  const ListenButton(color: Colors.white),
-                  TtsToggleButton(),
+                  IconButton(
+                    icon: const Icon(Icons.headset_mic, color: Colors.white),
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const SupportSheet(),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -596,7 +582,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 trailing: const Icon(Icons.chevron_left),
                 onTap: () => _openChild(child),
               ),
-              // أزرار الإجراءات
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Row(
@@ -742,10 +727,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
     return Positioned.fill(
       child: GestureDetector(
-        onTap: () {
-          TtsService.instance.stop();
-          setState(() => _viewingLesson = null);
-        },
+        onTap: () => setState(() => _viewingLesson = null),
         child: Container(
           color: Colors.black54,
           alignment: Alignment.center,
@@ -778,10 +760,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () {
-                            TtsService.instance.stop();
-                            setState(() => _viewingLesson = null);
-                          },
+                          onPressed: () => setState(() => _viewingLesson = null),
                         ),
                       ],
                     ),
@@ -833,7 +812,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                             IconButton(
                               icon: const Icon(Icons.play_arrow, size: 28),
                               onPressed: () {
-                                // فتح الفيديو - يمكن إضافة مشغل فيديو
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('سيتم تشغيل الفيديو قريباً'),
@@ -877,15 +855,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.volume_up),
-                        label: const Text('استمع للدرس'),
-                        onPressed: () => _toggleSpeakLesson(lesson),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -1083,8 +1052,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     onChanged: (v) => setState(() => _typeId = v),
                   ),
                   const SizedBox(height: 16),
-
-                  // رفع الفيديو
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -1147,8 +1114,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
-                  // رفع الصوت
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -1210,7 +1175,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                       ],
                     ),
                   ),
-
                   if (_error != null) ...[
                     const SizedBox(height: 8),
                     Text(_error!, style: const TextStyle(color: Colors.red)),
@@ -1249,7 +1213,7 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
   }
 }
 
-// ===== شاشة الإشعارات (مستقلة) =====
+// ===== شاشة الإشعارات =====
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
