@@ -1609,3 +1609,225 @@ textarea:focus {
         width: 100%;
     }
 }
+
+/* ============================================================
+   لوحة ولي الأمر — الأطفال والتفاصيل والإشعارات
+   ============================================================ */
+
+.parent-hero {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-deep) 100%);
+    color: #fff;
+    border-radius: var(--r-md);
+    padding: 22px 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-soft);
+}
+
+.parent-hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.parent-hero h2 {
+    margin: 0;
+    font-size: 26px;
+    color: #fff;
+}
+
+.parent-hero .dash-sub {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 6px 0 0;
+}
+
+/* جرس الإشعارات مع الشارة */
+.bell-btn {
+    position: relative;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.bell-btn:hover {
+    background: rgba(255, 255, 255, 0.32);
+}
+
+.bell-badge {
+    position: absolute;
+    top: 2px;
+    inset-inline-end: 2px;
+    background: #e8455f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 999px;
+    padding: 0 4px;
+}
+
+/* بطاقة الطفل */
+.child-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.child-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.kid-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.child-info {
+    min-width: 0;
+}
+
+.child-info h3 {
+    margin: 0 0 2px;
+}
+
+.child-teacher {
+    color: var(--teal-deep);
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.child-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.icon-btn {
+    background: #fff;
+    border: 2px solid var(--line-cool);
+    border-radius: var(--r-sm);
+    min-width: 42px;
+    min-height: 42px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    border-color: var(--teal);
+}
+
+/* شارات الحالة الإضافية لولي الأمر */
+.status-chip.evaluated {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.status-chip.assigned {
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+}
+
+.status-chip.pending {
+    background: var(--tint-orange);
+    color: var(--orange-deep);
+}
+
+/* صفوف معلومات الطفل */
+.info-row {
+    display: flex;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line-cool);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    min-width: 130px;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.info-value {
+    color: var(--text);
+    flex: 1;
+}
+
+.child-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.child-actions .btn {
+    flex: 1;
+}
+
+.child-form label {
+    margin-top: 12px;
+}
+
+/* بطاقات الإشعارات */
+.notif-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.notif-card.unread {
+    background: var(--tint-teal);
+    border-color: var(--teal);
+}
+
+.notif-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.notif-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-body h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+}
+
+.notif-body h3.bold {
+    font-weight: 800;
+}
+
+.notif-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--teal-deep);
+    flex-shrink: 0;
+    margin-top: 6px;
+}

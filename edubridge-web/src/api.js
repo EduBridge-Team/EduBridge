@@ -76,6 +76,32 @@ export function fetchChildren() {
   return request("/children");
 }
 
+// تفاصيل طفل واحد (مع نوع الإعاقة والمعلم المسؤول والحالة)
+export function fetchChildDetails(childId) {
+  return request(`/children/${childId}`);
+}
+
+// تقييمات الطفل (يعرضها ولي الأمر ضمن تفاصيل الطفل)
+export function fetchChildEvaluations(childId) {
+  return request(`/children/${childId}/evaluations`);
+}
+
+// إضافة طفل جديد (ولي الأمر)
+export function addChild(payload) {
+  return request("/children", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+// تعديل بيانات طفل
+export function updateChild(childId, payload) {
+  return request(`/children/${childId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
 // دروس طفل حسب نوع إعاقته
 export function fetchChildLessons(childId) {
   return request(`/children/${childId}/lessons`);
@@ -114,6 +140,28 @@ export function markLessonDone(childId, lessonId) {
     method: "POST",
     body: JSON.stringify({ child_id: childId, lesson_id: lessonId, status: "done" }),
   });
+}
+
+// ===== الإشعارات — لكل مستخدم إشعاراته =====
+
+// كل إشعارات المستخدم الحالي
+export function fetchNotifications() {
+  return request("/notifications");
+}
+
+// عدد الإشعارات غير المقروءة (لشارة الجرس)
+export function fetchUnreadNotificationsCount() {
+  return request("/notifications/unread/count");
+}
+
+// تعليم إشعار كمقروء
+export function markNotificationRead(id) {
+  return request(`/notifications/${id}/read`, { method: "PUT" });
+}
+
+// تعليم كل الإشعارات كمقروءة
+export function markAllNotificationsRead() {
+  return request("/notifications/read-all", { method: "PUT" });
 }
 
 // ===== لوحة التحكم الإدارية (أدمن فقط) =====
