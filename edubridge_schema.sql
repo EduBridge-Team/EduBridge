@@ -42,11 +42,41 @@ CREATE TABLE children (
     id                 SERIAL PRIMARY KEY,
     name               VARCHAR(100) NOT NULL,
     birth_date         DATE,
+    age                INT,
     gender             VARCHAR(10) CHECK (gender IN ('male', 'female')),
     disability_type_id INT REFERENCES disability_types(id) ON DELETE RESTRICT,
+    -- حقول لوحة ولي الأمر (وصف حر لا يعتمد على القائمة المرجعية)
+    disability_type          VARCHAR(120),
+    disability_description   TEXT,
+    medical_history          TEXT,
+    psychologist_notes       TEXT,
+    special_needs            TEXT,
+    preferred_learning_style VARCHAR(120),
+    strengths                JSONB,
+    challenges               JSONB,
+    status                   VARCHAR(20) NOT NULL DEFAULT 'pending'
+                             CHECK (status IN ('pending', 'evaluated', 'assigned')),
+    assigned_teacher_id      INT REFERENCES users(id) ON DELETE SET NULL,
     organization_id    INT REFERENCES organizations(id)    ON DELETE SET NULL,
     notes              TEXT,
     created_at         TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- التقييمات: يُنشئها المعلّم/المختص، ويعرضها ولي الأمر ضمن تفاصيل الطفل
+CREATE TABLE evaluations (
+    id                   SERIAL PRIMARY KEY,
+    child_id             INT NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    evaluator_id         INT REFERENCES users(id) ON DELETE SET NULL,
+    evaluation_type      VARCHAR(60),
+    cognitive_assessment TEXT,
+    motor_assessment     TEXT,
+    emotional_assessment TEXT,
+    social_assessment    TEXT,
+    recommendations      TEXT,
+    educational_plan     TEXT,
+    teaching_methods     JSONB,
+    assigned_teacher_id  INT REFERENCES users(id) ON DELETE SET NULL,
+    created_at           TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- ربط الطفل بأوليّاء أمره (many-to-many)
@@ -114,7 +144,9 @@ CREATE TABLE notes (
 CREATE TABLE notifications (
     id         SERIAL PRIMARY KEY,
     user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title      VARCHAR(150),
     message    VARCHAR(255) NOT NULL,
+    type       VARCHAR(40),
     is_read    BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -124,6 +156,8 @@ CREATE TABLE notifications (
 -- 3) فهارس تحسّن الأداء  
 -- ============================================================
 CREATE INDEX idx_children_disability   ON children(disability_type_id);
+CREATE INDEX idx_children_assigned_teacher ON children(assigned_teacher_id);
+CREATE INDEX idx_evaluations_child     ON evaluations(child_id);
 CREATE INDEX idx_lessons_disability    ON lessons(disability_type_id);
 CREATE INDEX idx_progress_child        ON progress(child_id);
 CREATE INDEX idx_sessions_child        ON sessions(child_id);
