@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 // التقييمات — يُنشئها المعلّم/المختص، ويعرضها ولي الأمر ضمن تفاصيل الطفل
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Notify;
 
 class EvaluationController extends Controller
 {
@@ -76,37 +77,18 @@ class EvaluationController extends Controller
             DB::table('children')->where('id', $childId)->update($childUpdate);
 
             // إشعار أولياء أمر الطفل بوجود تقييم جديد
-            $this->notifyParents($childId);
+            $child = DB::table('children')->where('id', $childId)->first();
+            Notify::toChildParents(
+                $childId,
+                'تقييم جديد',
+                'تم إضافة تقييم جديد للطفل ' . ($child->name ?? 'طفلك'),
+                'child_evaluated'
+            );
 
             return response()->json(['evaluation' => $this->decode(DB::table('evaluations')->find($id))], 201);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
-        }
-    }
-
-    // إشعار كل أولياء أمر الطفل بتقييم جديد
-    private function notifyParents($childId)
-    {
-        try {
-            $child = DB::table('children')->where('id', $childId)->first();
-            $childName = $child->name ?? 'طفلك';
-
-            $parentIds = DB::table('child_parent')
-                ->where('child_id', $childId)
-                ->pluck('parent_id');
-
-            foreach ($parentIds as $pid) {
-                DB::table('notifications')->insert([
-                    'user_id' => $pid,
-                    'title' => 'تقييم جديد',
-                    'message' => "تم إضافة تقييم جديد للطفل $childName",
-                    'type' => 'child_evaluated',
-                ]);
-            }
-        } catch (\Exception $e) {
-            report($e);
-            // الإشعار ثانوي — لا نُفشل الطلب بسببه
         }
     }
 }
