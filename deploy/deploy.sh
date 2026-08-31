@@ -22,6 +22,10 @@ php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade
 
 # 2) مسح إعدادات Laravel المؤقتة (config + routes + cache) حتى تُحمَّل المسارات الجديدة
 echo "==> (2/3) مسح إعدادات Laravel والمسارات..."
+# تحديث خريطة التحميل التلقائي (لالتقاط أي أصناف/ملفات جديدة) إن توفّر composer
+if command -v composer >/dev/null 2>&1; then
+  composer dump-autoload -o >/dev/null 2>&1 || true
+fi
 php artisan config:clear
 php artisan route:clear
 php artisan cache:clear

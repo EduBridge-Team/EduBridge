@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 // مسارات الأطفال
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Notify;
 
 class ChildController extends Controller
 {
@@ -75,6 +76,12 @@ class ChildController extends Controller
                     'child_id' => $id,
                     'parent_id' => $user->id,
                 ]);
+                Notify::toUser(
+                    $user->id,
+                    'تمت إضافة طفل',
+                    "تمت إضافة الطفل {$data['name']} إلى حسابك بنجاح",
+                    'child_added'
+                );
             }
 
             return response()->json(['child' => $this->decodeChild(DB::table('children')->find($id))], 201);
@@ -214,6 +221,14 @@ class ChildController extends Controller
                 'parent_id' => $parentId,
             ]);
 
+            $child = DB::table('children')->where('id', $id)->first();
+            Notify::toUser(
+                $parentId,
+                'تمت إضافة طفل',
+                'تمت إضافة الطفل ' . ($child->name ?? '') . ' إلى حسابك',
+                'child_added'
+            );
+
             return response()->json(['message' => 'تم الربط'], 201);
         } catch (\Exception $e) {
             report($e);
@@ -242,6 +257,16 @@ class ChildController extends Controller
                 'assigned_teacher_id' => $teacherId,
                 'status' => 'assigned',
             ]);
+
+            // إشعار أولياء أمر الطفل بتعيين المعلّم
+            $child = DB::table('children')->where('id', $id)->first();
+            $teacher = DB::table('users')->where('id', $teacherId)->first();
+            Notify::toChildParents(
+                $id,
+                'تم تعيين معلّم',
+                'تم تعيين المعلّم ' . ($teacher->name ?? '') . ' للطفل ' . ($child->name ?? ''),
+                'child_assigned'
+            );
 
             return response()->json(['child' => $this->decodeChild(DB::table('children')->find($id))]);
         } catch (\Exception $e) {

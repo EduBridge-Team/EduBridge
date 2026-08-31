@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 // مسارات الدروس
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Notify;
 
 class LessonController extends Controller
 {
@@ -25,6 +26,14 @@ class LessonController extends Controller
                 'disability_type_id' => $request->input('disability_type_id'),
                 'teacher_id' => $user->id,
             ]);
+
+            // إشعار أولياء أمر الأطفال المطابقين لنوع إعاقة الدرس الجديد
+            Notify::toParentsByDisabilityType(
+                $request->input('disability_type_id'),
+                'درس جديد',
+                'تمت إضافة درس جديد: ' . $request->input('title'),
+                'lesson_added'
+            );
 
             return response()->json(['lesson' => DB::table('lessons')->find($id)], 201);
         } catch (\Exception $e) {
