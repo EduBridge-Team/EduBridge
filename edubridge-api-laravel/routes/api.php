@@ -11,6 +11,7 @@ use App\Http\Controllers\DisabilityTypeController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\EvaluationController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -30,12 +31,21 @@ Route::middleware('auth.jwt')->group(function () {
 
     // الأطفال
     Route::post('/children', [ChildController::class, 'store'])
-        ->middleware('role:teacher,specialist,admin');
+        ->middleware('role:parent,teacher,specialist,admin');
     Route::get('/children', [ChildController::class, 'index']);
     Route::get('/children/{id}', [ChildController::class, 'show']);
+    Route::put('/children/{id}', [ChildController::class, 'update']);
     Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
         ->middleware('role:teacher,specialist,admin');
+    Route::post('/children/{id}/assign-teacher', [ChildController::class, 'assignTeacher'])
+        ->middleware('role:teacher,specialist,admin');
     Route::get('/children/{id}/lessons', [ChildController::class, 'lessons']);
+    Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild']);
+
+    // التقييمات
+    Route::get('/evaluations/child/{childId}', [EvaluationController::class, 'byChild']);
+    Route::post('/evaluations/child/{childId}', [EvaluationController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
 
     // أنواع الإعاقة (قائمة مرجعية)
     Route::get('/disability-types', [DisabilityTypeController::class, 'index']);
@@ -71,8 +81,10 @@ Route::middleware('auth.jwt')->group(function () {
 
     // الإشعارات — لكل مستخدم إشعاراته
     Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread/count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications', [NotificationController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
-    Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    // نقبل PUT و POST لتوافق الموقع والتطبيق معاً
+    Route::match(['put', 'post'], '/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{id}/read', [NotificationController::class, 'markRead']);
 });
