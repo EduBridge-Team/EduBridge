@@ -13,6 +13,10 @@ import AboutPage from './pages/AboutPage'
 import AdminPage from './pages/AdminPage'
 import TeacherDashboard from './pages/TeacherDashboard'
 import SpecialistDashboard from './pages/SpecialistDashboard'
+import ParentDashboard from './pages/ParentDashboard'
+import ChildDetailsPage from './pages/ChildDetailsPage'
+import ChildFormPage from './pages/ChildFormPage'
+import NotificationsPage from './pages/NotificationsPage'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
@@ -44,12 +48,63 @@ export default function App() {
         />
         {/* الصفحة الرئيسية — عامة بدون تسجيل دخول */}
         <Route path="/" element={<HomePage />} />
+        {/* لوحة ولي الأمر */}
+        <Route
+          path="/parent"
+          element={
+            <Protected>
+              <Page>
+                <ParentDashboard />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <Protected>
+              <Page>
+                <NotificationsPage />
+              </Page>
+            </Protected>
+          }
+        />
         <Route
           path="/children"
           element={
             <Protected>
               <Page>
                 <ChildrenPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/children/new"
+          element={
+            <Protected>
+              <Page>
+                <ChildFormPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/children/:childId"
+          element={
+            <Protected>
+              <Page>
+                <ChildDetailsPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/children/:childId/edit"
+          element={
+            <Protected>
+              <Page>
+                <ChildFormPage />
               </Page>
             </Protected>
           }

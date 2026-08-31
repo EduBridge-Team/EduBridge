@@ -12,6 +12,8 @@ function landingFor(user) {
       return '/teacher'
     case 'specialist':
       return '/specialist'
+    case 'parent':
+      return '/parent'
     default:
       return '/children'
   }

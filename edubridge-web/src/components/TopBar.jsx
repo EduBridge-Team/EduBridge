@@ -34,9 +34,11 @@ export default function TopBar() {
         {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
         {user?.role === 'teacher' && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
         {user?.role === 'specialist' && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
+        {user?.role === 'parent' && <NavLink to="/parent">👨‍👩‍👧 لوحتي</NavLink>}
         {/* صفحات تتطلّب تسجيل الدخول */}
-        {user && <NavLink to="/children">الأطفال</NavLink>}
+        {user && user.role !== 'parent' && <NavLink to="/children">الأطفال</NavLink>}
         {user && <NavLink to="/lessons">تصفح الدروس</NavLink>}
+        {user && <NavLink to="/notifications">🔔 الإشعارات</NavLink>}
         <NavLink to="/about">من نحن</NavLink>
       </nav>
 
