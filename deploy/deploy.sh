@@ -20,9 +20,11 @@ echo "==> (1/3) ترقية قاعدة البيانات..."
 cd "$API"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_parent_features.sql')); echo 'db-ok';"
 
-# 2) مسح إعدادات Laravel المؤقتة
-echo "==> (2/3) مسح إعدادات Laravel..."
+# 2) مسح إعدادات Laravel المؤقتة (config + routes + cache) حتى تُحمَّل المسارات الجديدة
+echo "==> (2/3) مسح إعدادات Laravel والمسارات..."
 php artisan config:clear
+php artisan route:clear
+php artisan cache:clear
 
 # 3) نشر ملفات الموقع الجاهزة إلى public
 echo "==> (3/3) نشر الموقع..."
