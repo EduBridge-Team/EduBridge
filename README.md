@@ -12,6 +12,8 @@
 | `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
+| `deploy/`               | حزمة النشر من الجوال (سكربت SSH + نسخة الموقع المبنية) |
+| `دليل التحديث والنشر.docx` | دليل تحديث ونشر المشروع خطوة بخطوة |
 | `branding/`             | ملفات الهوية (الشعار والأيقونات) |
 
 ## التقنيات
@@ -63,11 +65,14 @@ POST /api/auth/register        إنشاء حساب
 POST /api/auth/login           تسجيل دخول (يرجّع token)
 GET  /api/me                   حمولة التوكن (محمي)
 
-POST /api/children             (teacher/specialist/admin)
+POST /api/children             (parent/teacher/specialist/admin)
 GET  /api/children             (ولي الأمر: أطفاله فقط)
 GET  /api/children/:id
+PUT  /api/children/:id         (تعديل بيانات الطفل)
 POST /api/children/:id/parents (teacher/specialist/admin)
+POST /api/children/:id/assign-teacher (teacher/specialist/admin)
 GET  /api/children/:id/lessons (مفلترة حسب إعاقة الطفل)
+GET  /api/children/:id/evaluations
 
 POST /api/lessons              (teacher/admin)
 GET  /api/lessons?disability_type_id=
@@ -76,6 +81,14 @@ GET  /api/lessons/:id
 POST /api/progress             (upsert — teacher/specialist/admin)
 GET  /api/progress/child/:childId
 GET  /api/progress/child/:childId/summary
+
+GET  /api/evaluations/child/:childId
+POST /api/evaluations/child/:childId  (teacher/specialist/admin)
+
+GET  /api/notifications
+GET  /api/notifications/unread/count
+PUT  /api/notifications/:id/read
+PUT  /api/notifications/read-all
 ```
 
 كل المسارات ما عدا `register`/`login` تتطلب هيدر `Authorization: Bearer <token>`.
@@ -89,9 +102,24 @@ GET  /api/progress/child/:childId/summary
 - ولي أمر: parent@edu.com
 - أدمن: admin@edu.com
 
+## النشر
+
+الموقع منشور على: <https://edubridge.alwaysdata.net>
+
+للتحديث من الجوال (عبر SSH/Termius) بأمر واحد بعد الدمج إلى `main`:
+
+```bash
+cd ~/EduBridge && git pull && bash deploy/deploy.sh
+```
+
+السكربت يرقّي قاعدة البيانات (`database/upgrade_parent_features.sql` — آمن وقابل للتكرار)،
+ويمسح إعدادات Laravel، وينشر نسخة الموقع المبنية من `deploy/web`. التفاصيل في
+`deploy/README.md` و`دليل التحديث والنشر.docx`.
+
 ## الحالة
 
 - [x] مسارات الأطفال والدروس والتقدّم (Laravel)
-- [x] تطبيق الموبايل: دخول/تسجيل، الأطفال، الدروس مع قراءة صوتية، زر «تمّ»، شاشة التقدّم، أيقونة وشاشة بداية بهوية «جسر»
-- [x] واجهة الويب: نفس الشاشات + شريط علوي وبحث في الدروس وصفحة من نحن
-- [ ] الإضافات الاختيارية: الوسائط، الجلسات، الملاحظات، الإشعارات
+- [x] لوحة ولي الأمر: إضافة/تعديل الأطفال، تفاصيل الطفل والتقييمات، الإشعارات (Laravel + الويب)
+- [x] تطبيق الموبايل: دخول/تسجيل، الأطفال، الدروس مع قراءة صوتية، زر «تمّ»، شاشة التقدّم، لوحة ولي الأمر، أيقونة وشاشة بداية بهوية «جسر»
+- [x] واجهة الويب: لوحات لكل دور (ولي أمر/معلّم/مختص/أدمن) + الإشعارات + شريط علوي وبحث في الدروس وصفحة من نحن
+- [ ] الإضافات الاختيارية: الوسائط، الجلسات، الملاحظات
