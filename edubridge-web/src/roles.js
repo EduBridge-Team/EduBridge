@@ -4,4 +4,6 @@ export const ROLE_NAMES = {
   teacher: 'معلّم',
   specialist: 'مختص',
   admin: 'أدمن',
+  ministry: 'وزارة',
+  institution: 'مؤسسة',
 }

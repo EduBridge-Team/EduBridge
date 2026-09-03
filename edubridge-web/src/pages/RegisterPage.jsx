@@ -8,6 +8,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    national_id: '',
     role: 'parent', // الأدمن لا يُنشأ من الواجهة
     password: '',
     confirm: '',
@@ -33,7 +34,13 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      await register(form.name.trim(), form.email.trim(), form.password, form.role)
+      await register(
+        form.name.trim(),
+        form.email.trim(),
+        form.password,
+        form.role,
+        form.national_id.trim(),
+      )
       // نجاح — نرجع لصفحة الدخول مع رسالة
       navigate('/login', {
         state: { message: 'تم إنشاء الحساب بنجاح — سجّل دخولك الآن' },
@@ -65,11 +72,21 @@ export default function RegisterPage() {
             autoComplete="email"
           />
 
+          <label htmlFor="national_id">رقم الهوية (اختياري — للتوثيق لاحقاً)</label>
+          <input
+            id="national_id"
+            value={form.national_id}
+            onChange={set('national_id')}
+            inputMode="numeric"
+          />
+
           <label htmlFor="role">الدور</label>
           <select id="role" value={form.role} onChange={set('role')}>
             <option value="parent">ولي أمر</option>
             <option value="teacher">معلّم</option>
             <option value="specialist">مختص</option>
+            <option value="ministry">وزارة</option>
+            <option value="institution">مؤسسة</option>
           </select>
 
           <label htmlFor="password">كلمة المرور</label>

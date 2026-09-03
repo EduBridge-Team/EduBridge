@@ -32,12 +32,26 @@ export default function TopBar() {
         </NavLink>
         {/* لوحة كل دور — أول رابط بعد الرئيسية */}
         {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
+        {user?.role === 'admin' && <NavLink to="/admin/verifications">🛡️ التوثيق</NavLink>}
         {user?.role === 'teacher' && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
         {user?.role === 'specialist' && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
         {user?.role === 'parent' && <NavLink to="/parent">👨‍👩‍👧 لوحتي</NavLink>}
+        {(user?.role === 'ministry' || user?.role === 'admin') && (
+          <NavLink to="/ministry">🏛️ مراجعة المناهج</NavLink>
+        )}
         {/* صفحات تتطلّب تسجيل الدخول */}
         {user && user.role !== 'parent' && <NavLink to="/children">الأطفال</NavLink>}
         {user && <NavLink to="/lessons">تصفح الدروس</NavLink>}
+        {/* البحث برقم الهوية — الموظفون فقط */}
+        {user && ['teacher', 'specialist', 'admin', 'ministry', 'institution'].includes(user.role) && (
+          <NavLink to="/search">🔎 بحث بالهوية</NavLink>
+        )}
+        {/* دراسة الحالة مع المختصين */}
+        {user && ['parent', 'teacher', 'specialist', 'admin'].includes(user.role) && (
+          <NavLink to="/consultations">🩺 دراسة الحالة</NavLink>
+        )}
+        {user && <NavLink to="/verify">🪪 توثيق الهوية</NavLink>}
+        {user && <NavLink to="/support">🛟 الدعم</NavLink>}
         {user && <NavLink to="/notifications">🔔 الإشعارات</NavLink>}
         <NavLink to="/about">من نحن</NavLink>
       </nav>
