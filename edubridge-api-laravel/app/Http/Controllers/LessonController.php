@@ -24,7 +24,9 @@ class LessonController extends Controller
                 'title' => $request->input('title'),
                 'content' => $request->input('content'),
                 'disability_type_id' => $request->input('disability_type_id'),
+                'education_level' => $request->input('education_level'),
                 'teacher_id' => $user->id,
+                // يبقى 'pending' (افتراضي القاعدة) حتى تعتمده الوزارة — البطاقة 3
             ]);
 
             // إشعار أولياء أمر الأطفال المطابقين لنوع إعاقة الدرس الجديد
@@ -47,10 +49,21 @@ class LessonController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = DB::table('lessons')->orderByDesc('created_at');
+            // نُرفق متوسط التقييم وعددها لكل درس — البطاقة 8
+            $query = DB::table('lessons as l')
+                ->leftJoin('lesson_ratings as r', 'r.lesson_id', '=', 'l.id')
+                ->select('l.*')
+                ->selectRaw('COALESCE(ROUND(AVG(r.stars)::numeric, 1), 0) as rating_avg')
+                ->selectRaw('COUNT(r.id) as rating_count')
+                ->groupBy('l.id')
+                ->orderByDesc('l.created_at');
 
             if ($request->query('disability_type_id')) {
-                $query->where('disability_type_id', $request->query('disability_type_id'));
+                $query->where('l.disability_type_id', $request->query('disability_type_id'));
+            }
+            // فلترة اختيارية حسب حالة اعتماد المنهج — البطاقة 3
+            if ($request->query('curriculum_status')) {
+                $query->where('l.curriculum_status', $request->query('curriculum_status'));
             }
 
             return response()->json(['lessons' => $query->get()]);

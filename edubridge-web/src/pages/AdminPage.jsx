@@ -9,6 +9,7 @@ import {
   fetchChildren,
   fetchLessons,
   linkParent,
+  deleteUser,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
 import Footer from '../components/Footer'
@@ -19,6 +20,8 @@ const ROLE_META = {
   teacher: { icon: '📚', cls: 'role-teacher' },
   specialist: { icon: '🧩', cls: 'role-specialist' },
   parent: { icon: '👪', cls: 'role-parent' },
+  ministry: { icon: '🏛️', cls: 'role-admin' },
+  institution: { icon: '🏢', cls: 'role-specialist' },
 }
 
 const TABS = [
@@ -99,6 +102,18 @@ function UsersTab() {
     setEditing(null)
   }
 
+  // حذف مستخدم (البطاقة 11)
+  const me = getUser()
+  const remove = async (u) => {
+    if (!window.confirm(`حذف المستخدم "${u.name}" نهائياً؟`)) return
+    try {
+      await deleteUser(u.id)
+      setUsers((list) => list.filter((x) => x.id !== u.id))
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   const term = search.trim().toLowerCase()
   const filtered = term
     ? users.filter(
@@ -157,9 +172,25 @@ function UsersTab() {
                 <h4 className="user-name">{u.name}</h4>
                 <div className="user-email">{u.email}</div>
                 {u.phone && <div className="user-phone">📞 {u.phone}</div>}
-                <button className="btn outline small full" onClick={() => setEditing(u)}>
-                  تعديل
-                </button>
+                {u.verification_status && (
+                  <div className={`user-verify ${u.verification_status}`}>
+                    {u.verification_status === 'verified'
+                      ? 'موثّق ✓'
+                      : u.verification_status === 'rejected'
+                        ? 'توثيق مرفوض'
+                        : 'بانتظار التوثيق'}
+                  </div>
+                )}
+                <div className="user-card-actions">
+                  <button className="btn outline small" onClick={() => setEditing(u)}>
+                    تعديل
+                  </button>
+                  {me?.id !== u.id && (
+                    <button className="btn danger small" onClick={() => remove(u)}>
+                      حذف
+                    </button>
+                  )}
+                </div>
               </div>
             )
           })}

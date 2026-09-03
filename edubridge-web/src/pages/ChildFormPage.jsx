@@ -1,7 +1,7 @@
 // نموذج إضافة/تعديل طفل — يُستخدم للحالتين (مطابق لنموذج التطبيق)
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { addChild, updateChild } from '../api'
+import { addChild, updateChild, uploadFile } from '../api'
 
 // تحويل نص مفصول بفواصل إلى قائمة (أو null إن كان فارغاً)
 function toList(text) {
@@ -37,11 +37,32 @@ export default function ChildFormPage() {
     preferred_learning_style: existing.preferred_learning_style || '',
     strengths: fromList(existing.strengths),
     challenges: fromList(existing.challenges),
+    child_national_id: existing.child_national_id || '',
+    guardian_national_id: existing.guardian_national_id || '',
+    guardian_id_document_url: existing.guardian_id_document_url || '',
+    kinship_document_url: existing.kinship_document_url || '',
   })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(null) // اسم الحقل الجاري رفعه
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
+
+  // رفع مستند وتخزين رابطه في الحقل المناسب
+  const upload = (key) => async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setError(null)
+    setUploading(key)
+    try {
+      const { url } = await uploadFile(file)
+      setForm((f) => ({ ...f, [key]: url }))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setUploading(null)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -73,6 +94,10 @@ export default function ChildFormPage() {
       preferred_learning_style: clean(form.preferred_learning_style),
       strengths: toList(form.strengths),
       challenges: toList(form.challenges),
+      child_national_id: clean(form.child_national_id),
+      guardian_national_id: clean(form.guardian_national_id),
+      guardian_id_document_url: clean(form.guardian_id_document_url),
+      kinship_document_url: clean(form.kinship_document_url),
     }
 
     setLoading(true)
@@ -113,6 +138,41 @@ export default function ChildFormPage() {
             onChange={set('age')}
             required
           />
+
+          {/* توثيق الهوية وصلة القرابة — البطاقة 1 */}
+          <fieldset className="id-fieldset">
+            <legend>🪪 توثيق الهوية وصلة القرابة</legend>
+
+            <label htmlFor="child_national_id">رقم هوية الطفل</label>
+            <input
+              id="child_national_id"
+              value={form.child_national_id}
+              inputMode="numeric"
+              onChange={set('child_national_id')}
+            />
+
+            <label htmlFor="guardian_national_id">رقم هوية ولي الأمر</label>
+            <input
+              id="guardian_national_id"
+              value={form.guardian_national_id}
+              inputMode="numeric"
+              onChange={set('guardian_national_id')}
+            />
+
+            <label>صورة هوية ولي الأمر</label>
+            <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" onChange={upload('guardian_id_document_url')} />
+            {uploading === 'guardian_id_document_url' && <span className="meta">جارٍ الرفع...</span>}
+            {form.guardian_id_document_url && <span className="file-link">✓ تم رفع صورة الهوية</span>}
+
+            <label>مستند صلة القرابة (السجل/الكفالة)</label>
+            <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" onChange={upload('kinship_document_url')} />
+            {uploading === 'kinship_document_url' && <span className="meta">جارٍ الرفع...</span>}
+            {form.kinship_document_url && <span className="file-link">✓ تم رفع مستند القرابة</span>}
+
+            <p className="meta">
+              يبقى التسجيل «بانتظار التوثيق» حتى تُراجع الإدارة المستندات.
+            </p>
+          </fieldset>
 
           <label htmlFor="disability_type">نوع الإعاقة (اختياري)</label>
           <input

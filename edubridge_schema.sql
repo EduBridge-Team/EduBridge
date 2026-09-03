@@ -163,3 +163,110 @@ CREATE INDEX idx_progress_child        ON progress(child_id);
 CREATE INDEX idx_sessions_child        ON sessions(child_id);
 CREATE INDEX idx_notes_child           ON notes(child_id);
 CREATE INDEX idx_notifications_user    ON notifications(user_id);
+
+
+-- ============================================================
+-- 4) بطاقات اللوحة: التوثيق، الأدوار، الشهادات، التقييمات،
+--    الدعم/الشكاوى، مراجعة المناهج، دراسة الحالة
+--    (نفس محتوى database/upgrade_board_cards.sql — آمن للتكرار)
+-- ============================================================
+
+-- الأدوار: إضافة الوزارة والمؤسسة
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+ALTER TABLE users ADD CONSTRAINT users_role_check
+    CHECK (role IN ('parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'));
+
+-- توثيق هوية المستخدمين
+ALTER TABLE users ADD COLUMN IF NOT EXISTS national_id         VARCHAR(30);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS id_document_url      VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status  VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (verification_status IN ('pending', 'verified', 'rejected'));
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_note    TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at          TIMESTAMP;
+CREATE INDEX IF NOT EXISTS idx_users_national_id  ON users(national_id);
+CREATE INDEX IF NOT EXISTS idx_users_verification ON users(verification_status);
+
+-- توثيق هوية الطالب وصلة القرابة
+ALTER TABLE children ADD COLUMN IF NOT EXISTS child_national_id        VARCHAR(30);
+ALTER TABLE children ADD COLUMN IF NOT EXISTS guardian_national_id     VARCHAR(30);
+ALTER TABLE children ADD COLUMN IF NOT EXISTS guardian_id_document_url VARCHAR(255);
+ALTER TABLE children ADD COLUMN IF NOT EXISTS kinship_document_url     VARCHAR(255);
+ALTER TABLE children ADD COLUMN IF NOT EXISTS doc_verification_status  VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (doc_verification_status IN ('pending', 'verified', 'rejected'));
+ALTER TABLE children ADD COLUMN IF NOT EXISTS doc_verification_note    TEXT;
+CREATE INDEX IF NOT EXISTS idx_children_child_national ON children(child_national_id);
+
+-- شهادات المعلّم/المختص
+CREATE TABLE IF NOT EXISTS certificates (
+    id         SERIAL PRIMARY KEY,
+    user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title      VARCHAR(150) NOT NULL,
+    url        VARCHAR(255) NOT NULL,
+    status     VARCHAR(20)  NOT NULL DEFAULT 'pending'
+               CHECK (status IN ('pending', 'verified', 'rejected')),
+    note       TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_certificates_user ON certificates(user_id);
+
+-- مراجعة المناهج من الوزارة
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS education_level   VARCHAR(60);
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS curriculum_status VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (curriculum_status IN ('pending', 'approved', 'rejected'));
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS reviewed_by       INT REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS review_note       TEXT;
+ALTER TABLE lessons ADD COLUMN IF NOT EXISTS reviewed_at       TIMESTAMP;
+CREATE INDEX IF NOT EXISTS idx_lessons_curriculum ON lessons(curriculum_status);
+
+-- تقييمات المادة التعليمية
+CREATE TABLE IF NOT EXISTS lesson_ratings (
+    id         SERIAL PRIMARY KEY,
+    lesson_id  INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+    user_id    INT NOT NULL REFERENCES users(id)   ON DELETE CASCADE,
+    stars      INT NOT NULL CHECK (stars BETWEEN 1 AND 5),
+    comment    TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE (lesson_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_lesson_ratings_lesson ON lesson_ratings(lesson_id);
+
+-- الدعم الفني والشكاوى
+CREATE TABLE IF NOT EXISTS support_tickets (
+    id          SERIAL PRIMARY KEY,
+    user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    category    VARCHAR(20) NOT NULL DEFAULT 'support'
+                CHECK (category IN ('support', 'complaint')),
+    subject     VARCHAR(150) NOT NULL,
+    message     TEXT NOT NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'open'
+                CHECK (status IN ('open', 'in_progress', 'resolved', 'closed')),
+    admin_reply TEXT,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_user   ON support_tickets(user_id);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
+
+-- دراسة الحالة مع المختصين
+CREATE TABLE IF NOT EXISTS consultations (
+    id            SERIAL PRIMARY KEY,
+    child_id      INT NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    requester_id  INT NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+    specialist_id INT REFERENCES users(id)             ON DELETE SET NULL,
+    title         VARCHAR(150) NOT NULL,
+    description   TEXT,
+    status        VARCHAR(20) NOT NULL DEFAULT 'open'
+                  CHECK (status IN ('open', 'assigned', 'in_progress', 'closed')),
+    created_at    TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_consultations_child      ON consultations(child_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_specialist ON consultations(specialist_id);
+
+CREATE TABLE IF NOT EXISTS consultation_notes (
+    id              SERIAL PRIMARY KEY,
+    consultation_id INT NOT NULL REFERENCES consultations(id) ON DELETE CASCADE,
+    author_id       INT NOT NULL REFERENCES users(id)         ON DELETE CASCADE,
+    content         TEXT NOT NULL,
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_consultation_notes_consultation ON consultation_notes(consultation_id);

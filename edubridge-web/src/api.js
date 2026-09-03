@@ -63,11 +63,17 @@ export async function googleLogin(idToken) {
   return data.user;
 }
 
-// إنشاء حساب جديد
-export function register(name, email, password, role) {
+// إنشاء حساب جديد (رقم الهوية اختياري — يُستكمل توثيقه لاحقاً)
+export function register(name, email, password, role, nationalId) {
   return request("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ name, email, password, role }),
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+      role,
+      ...(nationalId ? { national_id: nationalId } : {}),
+    }),
   });
 }
 
@@ -185,5 +191,136 @@ export function linkParent(childId, parentId) {
   return request(`/children/${childId}/parents`, {
     method: "POST",
     body: JSON.stringify({ parent_id: parentId }),
+  });
+}
+
+// حذف مستخدم (أدمن) — البطاقة 11
+export function deleteUser(id) {
+  return request(`/users/${id}`, { method: "DELETE" });
+}
+
+// ===== رفع الملفات (صور الهوية/الشهادات/المستندات) =====
+// يرسل الملف كـ multipart ويعيد { url }
+export async function uploadFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${BASE_URL}/uploads`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: fd,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "تعذّر رفع الملف");
+  return data; // { url }
+}
+
+// ===== توثيق الهوية (البطاقات 1، 4، 9) =====
+export function submitMyIdentity(payload) {
+  return request("/me/identity", { method: "POST", body: JSON.stringify(payload) });
+}
+export function fetchMyVerification() {
+  return request("/me/verification");
+}
+export function fetchVerificationUsers(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request(`/verifications/users${q}`);
+}
+export function reviewUserVerification(id, status, note) {
+  return request(`/verifications/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ status, note }),
+  });
+}
+export function fetchVerificationChildren(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request(`/verifications/children${q}`);
+}
+export function reviewChildVerification(id, status, note) {
+  return request(`/verifications/children/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ status, note }),
+  });
+}
+
+// ===== الشهادات (البطاقة 9) =====
+export function fetchCertificates(opts = {}) {
+  // opts: { userId?, status? } — الأدمن يمكنه الفلترة بالحالة أو بمستخدم محدّد
+  const params = {};
+  if (opts.userId) params.user_id = opts.userId;
+  if (opts.status) params.status = opts.status;
+  const q = new URLSearchParams(params).toString();
+  return request(`/certificates${q ? `?${q}` : ""}`);
+}
+export function addCertificate(payload) {
+  return request("/certificates", { method: "POST", body: JSON.stringify(payload) });
+}
+export function reviewCertificate(id, status, note) {
+  return request(`/certificates/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ status, note }),
+  });
+}
+export function deleteCertificate(id) {
+  return request(`/certificates/${id}`, { method: "DELETE" });
+}
+
+// ===== البحث برقم الهوية (البطاقة 2) =====
+export function searchByNationalId(q) {
+  return request(`/search/national-id?q=${encodeURIComponent(q)}`);
+}
+
+// ===== مراجعة المناهج (البطاقة 3) =====
+export function fetchMinistryLessons(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request(`/ministry/lessons${q}`);
+}
+export function reviewLessonCurriculum(id, status, note) {
+  return request(`/ministry/lessons/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ status, note }),
+  });
+}
+
+// ===== تقييمات الدروس (البطاقة 8) =====
+export function fetchLessonRatings(lessonId) {
+  return request(`/lessons/${lessonId}/ratings`);
+}
+export function rateLesson(lessonId, stars, comment) {
+  return request(`/lessons/${lessonId}/ratings`, {
+    method: "POST",
+    body: JSON.stringify({ stars, comment }),
+  });
+}
+
+// ===== الدعم الفني والشكاوى (البطاقة 11) =====
+export function fetchTickets(params = {}) {
+  const q = new URLSearchParams(params).toString();
+  return request(`/support${q ? `?${q}` : ""}`);
+}
+export function createTicket(payload) {
+  return request("/support", { method: "POST", body: JSON.stringify(payload) });
+}
+export function updateTicket(id, payload) {
+  return request(`/support/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+}
+
+// ===== دراسة الحالة مع المختصين (البطاقة 7) =====
+export function fetchConsultations() {
+  return request("/consultations");
+}
+export function fetchConsultation(id) {
+  return request(`/consultations/${id}`);
+}
+export function createConsultation(payload) {
+  return request("/consultations", { method: "POST", body: JSON.stringify(payload) });
+}
+export function updateConsultation(id, payload) {
+  return request(`/consultations/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+}
+export function addConsultationNote(id, content) {
+  return request(`/consultations/${id}/notes`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
   });
 }

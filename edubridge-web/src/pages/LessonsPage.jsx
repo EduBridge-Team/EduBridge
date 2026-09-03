@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { fetchLessons } from '../api'
+import LessonRatings from '../components/LessonRatings'
 
 export default function LessonsPage() {
   const location = useLocation()
@@ -112,6 +113,7 @@ export default function LessonsPage() {
               <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
                 {speakingId === lesson.id ? '⏹ إيقاف' : '🔊 استمع'}
               </button>
+              <LessonRatings lesson={lesson} />
             </div>
           </div>
         ))
