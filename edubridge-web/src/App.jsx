@@ -17,6 +17,12 @@ import ParentDashboard from './pages/ParentDashboard'
 import ChildDetailsPage from './pages/ChildDetailsPage'
 import ChildFormPage from './pages/ChildFormPage'
 import NotificationsPage from './pages/NotificationsPage'
+import SearchPage from './pages/SearchPage'
+import VerifyIdentityPage from './pages/VerifyIdentityPage'
+import VerificationsPage from './pages/VerificationsPage'
+import SupportPage from './pages/SupportPage'
+import MinistryPage from './pages/MinistryPage'
+import ConsultationsPage from './pages/ConsultationsPage'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
@@ -144,6 +150,62 @@ export default function App() {
           element={
             <Protected>
               <AdminPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/admin/verifications"
+          element={
+            <Protected>
+              <VerificationsPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <Protected>
+              <Page>
+                <SearchPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/verify"
+          element={
+            <Protected>
+              <Page>
+                <VerifyIdentityPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <Protected>
+              <Page>
+                <SupportPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/consultations"
+          element={
+            <Protected>
+              <Page>
+                <ConsultationsPage />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/ministry"
+          element={
+            <Protected>
+              <MinistryPage />
             </Protected>
           }
         />

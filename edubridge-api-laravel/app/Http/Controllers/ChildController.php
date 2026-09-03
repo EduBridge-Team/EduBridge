@@ -20,6 +20,14 @@ class ChildController extends Controller
         'notes',
     ];
 
+    // حقول توثيق الهوية وصلة القرابة (البطاقة 1)
+    private const IDENTITY_FIELDS = [
+        'child_national_id',
+        'guardian_national_id',
+        'guardian_id_document_url',
+        'kinship_document_url',
+    ];
+
     // فكّ ترميز أعمدة JSON (نقاط القوة/التحديات) وإرجاعها كمصفوفات
     private function decodeChild($child)
     {
@@ -57,6 +65,11 @@ class ChildController extends Controller
             }
         }
         foreach (self::TEXT_FIELDS as $f) {
+            if ($request->has($f) && $request->input($f) !== null) {
+                $data[$f] = $request->input($f);
+            }
+        }
+        foreach (self::IDENTITY_FIELDS as $f) {
             if ($request->has($f) && $request->input($f) !== null) {
                 $data[$f] = $request->input($f);
             }
@@ -186,6 +199,25 @@ class ChildController extends Controller
                 if ($request->has($f)) {
                     $data[$f] = $request->input($f);
                 }
+            }
+            foreach (self::IDENTITY_FIELDS as $f) {
+                if ($request->has($f)) {
+                    $data[$f] = $request->input($f);
+                }
+            }
+            // إعادة رفع مستندات جديدة تعيد حالة التوثيق إلى "بانتظار المراجعة"
+            $identityChanged = false;
+            foreach (self::IDENTITY_FIELDS as $f) {
+                if ($request->has($f)) {
+                    $identityChanged = true;
+                    break;
+                }
+            }
+            if ($identityChanged && !$request->has('doc_verification_status')) {
+                $data['doc_verification_status'] = 'pending';
+            }
+            if ($request->has('doc_verification_status') && $user->role === 'admin') {
+                $data['doc_verification_status'] = $request->input('doc_verification_status');
             }
             foreach (['strengths', 'challenges'] as $f) {
                 if ($request->has($f)) {

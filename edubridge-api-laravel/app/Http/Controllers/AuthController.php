@@ -29,7 +29,7 @@ class AuthController extends Controller
         if (!$name || !$email || !$password || !$role) {
             return response()->json(['error' => 'الاسم والإيميل والباسورد والدور مطلوبة'], 400);
         }
-        if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin'])) {
+        if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'])) {
             return response()->json(['error' => 'الدور غير صالح'], 400);
         }
 
@@ -40,16 +40,22 @@ class AuthController extends Controller
 
         try {
             // تشفير الباسورد قبل التخزين (bcrypt)
-            $id = DB::table('users')->insertGetId([
+            $insert = [
                 'name' => $name,
                 'email' => $email,
                 'password_hash' => password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]),
                 'role' => $role,
                 'phone' => $phone,
-            ]);
+            ];
+            // رقم الهوية اختياري عند التسجيل (يُستكمل التوثيق لاحقاً)
+            if ($request->filled('national_id')) {
+                $insert['national_id'] = trim((string) $request->input('national_id'));
+            }
+            $id = DB::table('users')->insertGetId($insert);
 
             $user = DB::table('users')
-                ->select('id', 'name', 'email', 'role', 'phone', 'created_at')
+                ->select('id', 'name', 'email', 'role', 'phone', 'national_id',
+                    'verification_status', 'created_at')
                 ->find($id);
 
             return response()->json(['user' => $user], 201);
@@ -93,6 +99,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -165,6 +172,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
         } catch (\Exception $e) {
