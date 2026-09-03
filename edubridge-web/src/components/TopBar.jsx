@@ -1,18 +1,35 @@
-// الشريط العلوي — يظهر في كل الصفحات
+// الشريط العلوي — يظهر في كل الصفحات (متجاوب مع قائمة همبرغر)
+import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
 
 export default function TopBar() {
   const navigate = useNavigate()
-  // إجبار الشريط على إعادة العرض بعد الدخول والخروج — useLocation
-  useLocation()
+  const location = useLocation()
   const user = getUser()
+  const [open, setOpen] = useState(false)
+
+  // إغلاق القائمة تلقائياً عند تغيّر الصفحة
+  useEffect(() => {
+    setOpen(false)
+  }, [location.pathname])
+
+  // منع تمرير الصفحة خلف القائمة المفتوحة على الجوال
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
 
   const handleLogout = () => {
     logout()
+    setOpen(false)
     navigate('/login')
   }
+
+  const is = (...roles) => user && roles.includes(user.role)
 
   return (
     <header className="topbar">
@@ -25,66 +42,72 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* روابط التنقّل — تظهر حسب حالة الدخول والدور */}
-      <nav className="topbar-nav">
-        <NavLink to="/" end>
-          الرئيسية
-        </NavLink>
-        {/* لوحة كل دور — أول رابط بعد الرئيسية */}
-        {user?.role === 'admin' && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
-        {user?.role === 'admin' && <NavLink to="/admin/verifications">🛡️ التوثيق</NavLink>}
-        {user?.role === 'teacher' && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
-        {user?.role === 'specialist' && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
-        {user?.role === 'parent' && <NavLink to="/parent">👨‍👩‍👧 لوحتي</NavLink>}
-        {(user?.role === 'ministry' || user?.role === 'admin') && (
-          <NavLink to="/ministry">🏛️ مراجعة المناهج</NavLink>
-        )}
-        {/* صفحات تتطلّب تسجيل الدخول */}
-        {user && user.role !== 'parent' && <NavLink to="/children">الأطفال</NavLink>}
-        {user && <NavLink to="/lessons">تصفح الدروس</NavLink>}
-        {/* البحث برقم الهوية — الموظفون فقط */}
-        {user && ['teacher', 'specialist', 'admin', 'ministry', 'institution'].includes(user.role) && (
-          <NavLink to="/search">🔎 بحث بالهوية</NavLink>
-        )}
-        {/* دراسة الحالة مع المختصين */}
-        {user && ['parent', 'teacher', 'specialist', 'admin'].includes(user.role) && (
-          <NavLink to="/consultations">🩺 دراسة الحالة</NavLink>
-        )}
-        {user && <NavLink to="/verify">🪪 توثيق الهوية</NavLink>}
-        {user && <NavLink to="/support">🛟 الدعم</NavLink>}
-        {user && <NavLink to="/notifications">🔔 الإشعارات</NavLink>}
-        <NavLink to="/about">من نحن</NavLink>
-      </nav>
+      {/* زر الهمبرغر — يظهر على الشاشات الصغيرة */}
+      <button
+        className={`hamburger ${open ? 'is-open' : ''}`}
+        aria-label="القائمة"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
 
-      {/* البحث في الدروس — لمن سجّل الدخول فقط */}
-      {user && (
-        <button
-          className="search-btn"
-          title="البحث في الدروس"
-          onClick={() => navigate('/lessons', { state: { focusSearch: true } })}
-        >
-          🔍
-        </button>
-      )}
+      {/* خلفية معتمة خلف القائمة على الجوال */}
+      {open && <div className="topbar-backdrop" onClick={() => setOpen(false)} />}
 
-      <div className="topbar-spacer" />
+      {/* لوحة التنقّل — أفقية على سطح المكتب، منسدلة على الجوال */}
+      <div className={`topbar-menu ${open ? 'open' : ''}`}>
+        <nav className="topbar-nav">
+          <NavLink to="/" end>
+            🏠 الرئيسية
+          </NavLink>
+          {is('admin') && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
+          {is('admin') && <NavLink to="/admin/verifications">🛡️ التوثيق</NavLink>}
+          {is('teacher') && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
+          {is('specialist') && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
+          {is('parent') && <NavLink to="/parent">👨‍👩‍👧 لوحتي</NavLink>}
+          {is('ministry', 'admin') && <NavLink to="/ministry">🏛️ المناهج</NavLink>}
+          {user && user.role !== 'parent' && <NavLink to="/children">الأطفال</NavLink>}
+          {user && <NavLink to="/lessons">📚 الدروس</NavLink>}
+          {is('teacher', 'specialist', 'admin', 'ministry', 'institution') && (
+            <NavLink to="/search">🔎 بحث بالهوية</NavLink>
+          )}
+          {is('parent', 'teacher', 'specialist', 'admin') && (
+            <NavLink to="/consultations">🩺 دراسة الحالة</NavLink>
+          )}
+          {user && <NavLink to="/verify">🪪 توثيق الهوية</NavLink>}
+          {user && <NavLink to="/support">🛟 الدعم</NavLink>}
+          {user && <NavLink to="/notifications">🔔 الإشعارات</NavLink>}
+          <NavLink to="/about">من نحن</NavLink>
+        </nav>
 
-      {/* الدخول / معلومات المستخدم والخروج */}
-      {user ? (
-        <div className="topbar-user">
-          <span className="user-name">
-            مرحباً، {user.name}
-            <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
-          </span>
-          <button className="topbar-btn" onClick={handleLogout}>
-            خروج
-          </button>
+        {/* منطقة المستخدم داخل القائمة (تظهر أدناه على الجوال) */}
+        <div className="topbar-actions">
+          {user ? (
+            <>
+              <span className="user-chip">
+                <span className="user-name">{user.name}</span>
+                <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
+              </span>
+              <button className="topbar-btn" onClick={handleLogout}>
+                خروج
+              </button>
+            </>
+          ) : (
+            <button
+              className="topbar-btn login-btn"
+              onClick={() => {
+                setOpen(false)
+                navigate('/login')
+              }}
+            >
+              🔒 تسجيل الدخول
+            </button>
+          )}
         </div>
-      ) : (
-        <button className="topbar-btn login-btn" onClick={() => navigate('/login')}>
-          🔒 تسجيل الدخول
-        </button>
-      )}
+      </div>
     </header>
   )
 }
