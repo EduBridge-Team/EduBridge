@@ -1,4 +1,6 @@
-// طبقة الاتصال بالـ API - كاملة ومتكاملة
+// lib/services/api_service.dart
+// طبقة الاتصال بالـ API - كاملة ومتكاملة مع جميع التحديثات الجديدة
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -7,7 +9,7 @@ import '../config.dart';
 
 class ApiService {
   // ===== دوال التخزين المحلي =====
-  
+
   static Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
@@ -49,7 +51,7 @@ class ApiService {
   }
 
   // ===== دوال المصادقة (Auth) =====
-  
+
   static Future<String?> login(String email, String password) async {
     try {
       final res = await http.post(
@@ -59,7 +61,7 @@ class ApiService {
       );
 
       final data = jsonDecode(res.body);
-      
+
       if (res.statusCode == 200) {
         await _saveToken(data['token']);
         if (data['user'] != null) {
@@ -74,12 +76,8 @@ class ApiService {
   }
 
   static Future<String?> register(
-    String name,
-    String email,
-    String password,
-    String role,
-    {String? phone}
-  ) async {
+      String name, String email, String password, String role,
+      {String? phone}) async {
     try {
       final res = await http.post(
         Uri.parse('${Config.baseUrl}/auth/register'),
@@ -94,7 +92,7 @@ class ApiService {
       );
 
       final data = jsonDecode(res.body);
-      
+
       if (res.statusCode == 201) {
         return null; // نجاح
       }
@@ -108,12 +106,12 @@ class ApiService {
     try {
       final token = await getToken();
       if (token == null) return false;
-      
+
       final res = await http.get(
         Uri.parse('${Config.baseUrl}/auth/verify'),
         headers: {'Authorization': 'Bearer $token'},
       );
-      
+
       return res.statusCode == 200;
     } catch (e) {
       return false;
@@ -121,7 +119,7 @@ class ApiService {
   }
 
   // ===== دوال الطلبات المحمية =====
-  
+
   static Future<http.Response> authGet(String path) async {
     final token = await getToken();
     return http.get(
@@ -130,7 +128,8 @@ class ApiService {
     );
   }
 
-  static Future<http.Response> authPost(String path, Map<String, dynamic> body) async {
+  static Future<http.Response> authPost(
+      String path, Map<String, dynamic> body) async {
     final token = await getToken();
     return http.post(
       Uri.parse('${Config.baseUrl}$path'),
@@ -142,7 +141,8 @@ class ApiService {
     );
   }
 
-  static Future<http.Response> authPut(String path, Map<String, dynamic> body) async {
+  static Future<http.Response> authPut(
+      String path, Map<String, dynamic> body) async {
     final token = await getToken();
     return http.put(
       Uri.parse('${Config.baseUrl}$path'),
@@ -163,7 +163,7 @@ class ApiService {
   }
 
   // ===== دوال الأطفال (Children) =====
-  
+
   static Future<Map<String, dynamic>?> getChildren() async {
     try {
       final res = await authGet('/children');
@@ -202,7 +202,7 @@ class ApiService {
         'strengths': strengths,
         'challenges': challenges,
       });
-      
+
       final data = jsonDecode(res.body);
       if (res.statusCode == 201 || res.statusCode == 200) {
         return data['child'];
@@ -227,9 +227,7 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>?> updateChild(
-    int childId,
-    Map<String, dynamic> data
-  ) async {
+      int childId, Map<String, dynamic> data) async {
     try {
       final res = await authPut('/children/$childId', data);
       final responseData = jsonDecode(res.body);
@@ -256,7 +254,7 @@ class ApiService {
   }
 
   // ===== دوال التقييم (Evaluations) =====
-  
+
   static Future<Map<String, dynamic>?> evaluateChild({
     required int childId,
     required String evaluationType,
@@ -281,7 +279,7 @@ class ApiService {
         'educational_plan': educationalPlan,
         'teaching_methods': teachingMethods,
       });
-      
+
       final data = jsonDecode(res.body);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return data['evaluation'];
@@ -306,14 +304,12 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>?> assignTeacherToChild(
-    int childId,
-    int teacherId
-  ) async {
+      int childId, int teacherId) async {
     try {
       final res = await authPost('/children/$childId/assign-teacher', {
         'teacher_id': teacherId,
       });
-      
+
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         return data['child'];
@@ -325,7 +321,7 @@ class ApiService {
   }
 
   // ===== دوال الدروس (Lessons) =====
-  
+
   static Future<List<dynamic>> getLessons() async {
     try {
       final res = await authGet('/lessons');
@@ -362,35 +358,35 @@ class ApiService {
     try {
       final token = await getToken();
       final uri = Uri.parse('${Config.baseUrl}/lessons');
-      
+
       final request = http.MultipartRequest('POST', uri)
         ..headers['Authorization'] = 'Bearer $token'
         ..fields['title'] = title;
-      
+
       if (content != null && content.trim().isNotEmpty) {
         request.fields['content'] = content.trim();
       }
-      
+
       if (disabilityTypeId != null) {
         request.fields['disability_type_id'] = disabilityTypeId.toString();
       }
-      
+
       if (videoFile != null && await videoFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('video', videoFile.path),
         );
       }
-      
+
       if (audioFile != null && await audioFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('audio', audioFile.path),
         );
       }
-      
+
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
       final data = jsonDecode(responseBody);
-      
+
       if (response.statusCode == 201) {
         return data['lesson'];
       }
@@ -414,7 +410,7 @@ class ApiService {
   }
 
   // ===== دوال التقدم (Progress) =====
-  
+
   static Future<Map<String, dynamic>?> getChildProgress(int childId) async {
     try {
       final res = await authGet('/progress/child/$childId');
@@ -428,7 +424,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getChildProgressSummary(int childId) async {
+  static Future<Map<String, dynamic>?> getChildProgressSummary(
+      int childId) async {
     try {
       final res = await authGet('/progress/child/$childId/summary');
       final data = jsonDecode(res.body);
@@ -454,7 +451,7 @@ class ApiService {
         'status': status,
         'score': score,
       });
-      
+
       final data = jsonDecode(res.body);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return data['progress'];
@@ -466,7 +463,7 @@ class ApiService {
   }
 
   // ===== دوال الإشعارات (Notifications) =====
-  
+
   static Future<List<dynamic>> getNotifications() async {
     try {
       final res = await authGet('/notifications');
@@ -510,7 +507,7 @@ class ApiService {
   }
 
   // ===== دوال المحادثات (Conversations) =====
-  
+
   static Future<List<dynamic>> getConversations() async {
     try {
       final res = await authGet('/conversations');
@@ -558,7 +555,7 @@ class ApiService {
         'other_user_id': otherUserId,
         'subject': subject,
       });
-      
+
       final data = jsonDecode(res.body);
       if (res.statusCode == 201) {
         return data['conversation']['id'];
@@ -570,7 +567,7 @@ class ApiService {
   }
 
   // ===== دوال المستخدمين (Users) =====
-  
+
   static Future<List<dynamic>> getUsers({String? role}) async {
     try {
       String path = '/users';
@@ -601,9 +598,7 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>?> updateUser(
-    int userId,
-    Map<String, dynamic> data
-  ) async {
+      int userId, Map<String, dynamic> data) async {
     try {
       final res = await authPut('/users/$userId', data);
       final responseData = jsonDecode(res.body);
@@ -626,7 +621,7 @@ class ApiService {
   }
 
   // ===== دوال إضافية =====
-  
+
   static Future<Map<String, dynamic>?> getDashboardStats() async {
     try {
       final res = await authGet('/dashboard/stats');
@@ -642,7 +637,8 @@ class ApiService {
 
   static Future<List<dynamic>> searchLessons(String query) async {
     try {
-      final res = await authGet('/lessons/search?q=${Uri.encodeComponent(query)}');
+      final res =
+          await authGet('/lessons/search?q=${Uri.encodeComponent(query)}');
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         return data['lessons'] ?? [];
@@ -650,6 +646,160 @@ class ApiService {
       return [];
     } catch (e) {
       return [];
+    }
+  }
+
+  // ===== دوال التوثيق (Verification) - جديدة =====
+
+  static Future<String?> getVerificationStatus() async {
+    try {
+      final res = await authGet('/verification/status');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['status']; // 'pending', 'approved', 'rejected', 'none'
+      }
+      return 'none';
+    } catch (e) {
+      return 'none';
+    }
+  }
+
+  static Future<void> submitIdentityVerification({
+    required String nationalId,
+    required File idImage,
+  }) async {
+    try {
+      final token = await getToken();
+      final uri = Uri.parse('${Config.baseUrl}/verification/identity');
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['national_id'] = nationalId;
+
+      if (await idImage.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('id_image', idImage.path),
+        );
+      }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final data = jsonDecode(responseBody);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(data['error'] ?? 'تعذّر إرسال التوثيق');
+      }
+    } catch (e) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+  }
+
+  // ===== دوال الأدمن (Admin) - جديدة =====
+
+  static Future<List<dynamic>> getVerificationRequests() async {
+    try {
+      final res = await authGet('/admin/verifications');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['requests'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<bool> approveVerification(int requestId) async {
+    try {
+      final res = await authPost('/admin/verifications/$requestId/approve', {});
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> rejectVerification(int requestId) async {
+    try {
+      final res = await authPost('/admin/verifications/$requestId/reject', {});
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<List<dynamic>> searchByIdentity(String query) async {
+    try {
+      final res =
+          await authGet('/admin/search?q=${Uri.encodeComponent(query)}');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['results'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> getChildrenOfParent(int parentId) async {
+    try {
+      final res = await authGet('/users/$parentId/children');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['children'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+  // ===== دوال إضافة الشهادة ودراسة الحالة =====
+
+  static Future<void> submitCertificate({
+    required String title,
+    required File file,
+  }) async {
+    try {
+      final token = await getToken();
+      final uri = Uri.parse('${Config.baseUrl}/certificates');
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['title'] = title;
+
+      if (await file.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('file', file.path),
+        );
+      }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final data = jsonDecode(responseBody);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(data['error'] ?? 'تعذّر حفظ الشهادة');
+      }
+    } catch (e) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+  }
+
+  static Future<void> requestConsultation({
+    required int childId,
+    required String title,
+    required String description,
+  }) async {
+    try {
+      final res = await authPost('/consultations', {
+        'child_id': childId,
+        'title': title,
+        'description': description,
+      });
+      final data = jsonDecode(res.body);
+      if (res.statusCode != 200 && res.statusCode != 201) {
+        throw Exception(data['error'] ?? 'تعذّر إرسال الطلب');
+      }
+    } catch (e) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
     }
   }
 }

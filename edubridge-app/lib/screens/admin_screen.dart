@@ -33,6 +33,7 @@ class _AdminScreenState extends State<AdminScreen> {
   static const _tabs = [
     ('👥', 'المستخدمين'),
     ('👶', 'الأطفال'),
+    ('🛡️', 'مراجعة التوثيق'),
     ('🎧', 'الدعم الفني'),
   ];
 
@@ -43,7 +44,18 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       appBar: JisrAppBar(
         title: 'لوحة التحكم الإدارية',
-        // تم إزالة زر الدعم الفني من الـ AppBar لأنه موجود داخل التبويبات
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'البحث بالهوية',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -56,7 +68,11 @@ class _AdminScreenState extends State<AdminScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'لوحة التحكم الإدارية',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
                 ),
               ],
             ),
@@ -76,7 +92,9 @@ class _AdminScreenState extends State<AdminScreen> {
                 ? _UsersTab(admin: widget.admin)
                 : _tab == 1
                     ? _ChildrenTab(admin: widget.admin)
-                    : _SupportTicketsTab(admin: widget.admin),
+                    : _tab == 2
+                        ? const _VerificationTab()
+                        : _SupportTicketsTab(admin: widget.admin),
           ),
         ],
       ),
@@ -84,6 +102,7 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 }
 
+// ===== شريط التبويبات =====
 class _AdminTabBar extends StatelessWidget {
   final List<(String, String)> tabs;
   final int selected;
@@ -154,7 +173,7 @@ class _AdminTabBar extends StatelessWidget {
   }
 }
 
-// ===== تبويب المستخدمين =====
+// ===== تبويب المستخدمين (مع زر عرض الأطفال لولي الأمر) =====
 class _UsersTab extends StatefulWidget {
   final Map admin;
   const _UsersTab({required this.admin});
@@ -217,7 +236,10 @@ class _UsersTabState extends State<_UsersTab> {
         title: const Text('حذف المستخدم'),
         content: Text('هل أنت متأكد من حذف "${user['name']}"؟'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('حذف', style: TextStyle(color: Colors.red)),
@@ -265,6 +287,70 @@ class _UsersTabState extends State<_UsersTab> {
     );
   }
 
+  // عرض أطفال ولي الأمر
+  Future<void> _showParentChildren(Map user) async {
+    final children = await ApiService.getChildrenOfParent(user['id']);
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: JisrColors.of(context).card,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.child_care, color: AppColors.teal),
+                const SizedBox(width: 8),
+                Text(
+                  'أطفال ${user['name']}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: JisrColors.of(context).heading,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (children.isEmpty)
+              Center(
+                child: Text(
+                  'لا يوجد أطفال مرتبطين',
+                  style: TextStyle(color: JisrColors.of(context).muted),
+                ),
+              )
+            else
+              ...children.map((child) => ListTile(
+                    leading: const Icon(Icons.child_care, size: 32),
+                    title: Text(child['name'] ?? ''),
+                    subtitle: Text('العمر: ${child['age'] ?? '?'} سنة'),
+                    trailing: const Icon(Icons.chevron_left),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // يمكنك فتح شاشة تفاصيل الطفل هنا إذا أردت
+                    },
+                  )),
+          ],
+        ),
+      ),
+    );
+  }
+
   List get _filtered {
     final term = _search.trim().toLowerCase();
     if (term.isEmpty) return _users;
@@ -287,7 +373,9 @@ class _UsersTabState extends State<_UsersTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Text(_error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
           ],
@@ -322,11 +410,16 @@ class _UsersTabState extends State<_UsersTab> {
                   children: [
                     Row(
                       children: [
-                        Text('👥', style: TextStyle(fontSize: 22, color: c.heading)),
+                        Text('👥',
+                            style: TextStyle(fontSize: 22, color: c.heading)),
                         const SizedBox(width: 8),
                         Text(
                           'إدارة المستخدمين',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: c.heading,
+                          ),
                         ),
                       ],
                     ),
@@ -347,7 +440,8 @@ class _UsersTabState extends State<_UsersTab> {
             const SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
-                child: Text('لا يوجد مستخدمون مطابقون', style: TextStyle(fontSize: 16)),
+                child: Text('لا يوجد مستخدمون مطابقون',
+                    style: TextStyle(fontSize: 16)),
               ),
             )
           else
@@ -365,6 +459,7 @@ class _UsersTabState extends State<_UsersTab> {
                     user: _filtered[i],
                     onEdit: () => _openEdit(_filtered[i]),
                     onDelete: () => _deleteUser(_filtered[i]),
+                    onShowChildren: () => _showParentChildren(_filtered[i]),
                   ),
                   childCount: _filtered.length,
                 ),
@@ -380,8 +475,14 @@ class _UserCard extends StatelessWidget {
   final Map user;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onShowChildren;
 
-  const _UserCard({required this.user, required this.onEdit, required this.onDelete});
+  const _UserCard({
+    required this.user,
+    required this.onEdit,
+    required this.onDelete,
+    this.onShowChildren,
+  });
 
   (Color bg, Color fg) _roleColors(String role) {
     switch (role) {
@@ -434,7 +535,8 @@ class _UserCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${_roleIcons[role] ?? '👤'} ${_roleNames[role] ?? role}',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: pillFg),
+                  style: TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.bold, color: pillFg),
                 ),
               ),
               CircleAvatar(
@@ -442,7 +544,11 @@ class _UserCard extends StatelessWidget {
                 backgroundColor: c.tintTeal,
                 child: Text(
                   initial,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.tealDeep),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.tealDeep,
+                  ),
                 ),
               ),
             ],
@@ -452,7 +558,11 @@ class _UserCard extends StatelessWidget {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.heading),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: c.heading,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
@@ -464,6 +574,22 @@ class _UserCard extends StatelessWidget {
           if (phone != null && phone.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text('📞 $phone', style: TextStyle(fontSize: 12, color: c.muted)),
+          ],
+          if (role == 'parent' && onShowChildren != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.child_care, size: 16),
+                label: const Text('عرض الأطفال'),
+                onPressed: onShowChildren,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(0, 40),
+                  textStyle: const TextStyle(fontSize: 13),
+                  side: const BorderSide(color: AppColors.tealDeep),
+                ),
+              ),
+            ),
           ],
           const Spacer(),
           Row(
@@ -567,7 +693,10 @@ class _ChildrenTabState extends State<_ChildrenTab> {
         title: const Text('حذف الطفل'),
         content: Text('هل أنت متأكد من حذف "${child['name']}"؟'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('حذف', style: TextStyle(color: Colors.red)),
@@ -611,7 +740,9 @@ class _ChildrenTabState extends State<_ChildrenTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Text(_error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
           ],
@@ -631,7 +762,8 @@ class _ChildrenTabState extends State<_ChildrenTab> {
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     leading: const Icon(Icons.child_care, size: 40),
                     title: Text(child['name']?.toString() ?? ''),
                     subtitle: Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
@@ -656,7 +788,313 @@ class _ChildrenTabState extends State<_ChildrenTab> {
   }
 }
 
-// ===== تبويب الدعم الفني (الشكاوى) =====
+// ===== تبويب مراجعة التوثيق =====
+class _VerificationTab extends StatefulWidget {
+  const _VerificationTab();
+
+  @override
+  State<_VerificationTab> createState() => _VerificationTabState();
+}
+
+class _VerificationTabState extends State<_VerificationTab> {
+  List _requests = [];
+  bool _loading = true;
+  String? _error;
+  String _filter = 'users';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRequests();
+  }
+
+  Future<void> _loadRequests() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final requests = await ApiService.getVerificationRequests();
+      setState(() {
+        _requests = requests;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'تعذّر جلب الطلبات';
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _handleVerification(Map request, bool approve) async {
+    final id = request['id'];
+    bool success;
+    if (approve) {
+      success = await ApiService.approveVerification(id);
+    } else {
+      success = await ApiService.rejectVerification(id);
+    }
+
+    if (success) {
+      setState(() {
+        _requests.removeWhere((r) => r['id'] == id);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(approve ? '✅ تم اعتماد الطلب' : '❌ تم رفض الطلب'),
+          backgroundColor: approve ? Colors.green : Colors.red,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('فشلت العملية')),
+      );
+    }
+  }
+
+  List get _filteredRequests {
+    return _requests
+        .where((r) => r['type'] == _filter || _filter == 'all')
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+                onPressed: _loadRequests, child: const Text('إعادة المحاولة')),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              _FilterChip(
+                label: 'المستخدمون',
+                selected: _filter == 'users',
+                onTap: () => setState(() => _filter = 'users'),
+              ),
+              const SizedBox(width: 8),
+              _FilterChip(
+                label: 'الأطفال',
+                selected: _filter == 'children',
+                onTap: () => setState(() => _filter = 'children'),
+              ),
+              const SizedBox(width: 8),
+              _FilterChip(
+                label: 'الشهادات',
+                selected: _filter == 'certificates',
+                onTap: () => setState(() => _filter = 'certificates'),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _filteredRequests.isEmpty
+              ? Center(
+                  child: Text(
+                    'لا توجد طلبات معلقة',
+                    style: TextStyle(fontSize: 18, color: c.muted),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: _filteredRequests.length,
+                  itemBuilder: (context, i) {
+                    final request = _filteredRequests[i];
+                    return _VerificationRequestCard(
+                      request: request,
+                      onApprove: () => _handleVerification(request, true),
+                      onReject: () => _handleVerification(request, false),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.tealDeep : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: selected ? AppColors.tealDeep : Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.grey.shade700,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VerificationRequestCard extends StatelessWidget {
+  final Map request;
+  final VoidCallback onApprove;
+  final VoidCallback onReject;
+
+  const _VerificationRequestCard({
+    required this.request,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final name = request['name'] ?? '';
+    final email = request['email'] ?? '';
+    final type = request['type'];
+    final createdAt = request['created_at'] != null
+        ? DateTime.parse(request['created_at'])
+        : null;
+
+    IconData getIcon() {
+      switch (type) {
+        case 'children':
+          return Icons.child_care;
+        case 'certificates':
+          return Icons.workspace_premium;
+        default:
+          return Icons.person;
+      }
+    }
+
+    String getTypeName() {
+      switch (type) {
+        case 'children':
+          return 'طفل';
+        case 'certificates':
+          return 'شهادة';
+        default:
+          return 'مستخدم';
+      }
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: c.tintTeal,
+              child: Icon(getIcon(), color: AppColors.tealDeep),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: c.heading,
+                    ),
+                  ),
+                  Text(
+                    email,
+                    style: TextStyle(fontSize: 14, color: c.muted),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: c.tintOrange,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      getTypeName(),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: c.onTint,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  if (createdAt != null)
+                    Text(
+                      '${createdAt.day}/${createdAt.month}/${createdAt.year}',
+                      style: TextStyle(fontSize: 11, color: c.muted),
+                    ),
+                ],
+              ),
+            ),
+            Column(
+              children: [
+                ElevatedButton(
+                  onPressed: onApprove,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(80, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: const Text('اعتماد'),
+                ),
+                const SizedBox(height: 6),
+                OutlinedButton(
+                  onPressed: onReject,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    minimumSize: const Size(80, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: const Text('رفض'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ===== تبويب الدعم الفني =====
 class _SupportTicketsTab extends StatefulWidget {
   final Map admin;
   const _SupportTicketsTab({required this.admin});
@@ -716,12 +1154,17 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('حل الشكوى'),
-        content: Text('هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم بأنه تم حل المشكلة.'),
+        content: Text(
+            'هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم بأنه تم حل المشكلة.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
+            child:
+                const Text('تم الحل', style: TextStyle(color: Colors.green)),
           ),
         ],
       ),
@@ -729,7 +1172,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
 
     if (confirm == true) {
       try {
-        final res = await ApiService.authPut('/support/tickets/${ticket['id']}/resolve', {});
+        final res = await ApiService.authPut(
+            '/support/tickets/${ticket['id']}/resolve', {});
         if (res.statusCode == 200 || res.statusCode == 204) {
           setState(() {
             _tickets.removeWhere((t) => t['id'] == ticket['id']);
@@ -762,9 +1206,12 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Text(_error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadTickets, child: const Text('إعادة المحاولة')),
+            ElevatedButton(
+                onPressed: _loadTickets, child: const Text('إعادة المحاولة')),
           ],
         ),
       );
@@ -783,7 +1230,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
-                    leading: const Icon(Icons.support_agent, color: AppColors.orange),
+                    leading: const Icon(Icons.support_agent,
+                        color: AppColors.orange),
                     title: Text(ticket['subject']?.toString() ?? 'بدون موضوع'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -803,7 +1251,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                     ),
                     trailing: TextButton(
                       onPressed: () => _resolveTicket(ticket),
-                      child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
+                      child: const Text('تم الحل',
+                          style: TextStyle(color: Colors.green)),
                     ),
                   ),
                 );
@@ -813,6 +1262,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
   }
 }
 
+// ===== تعديل مستخدم (BottomSheet) =====
 class _EditUserSheet extends StatefulWidget {
   final Map user;
   final ValueChanged<Map> onSaved;
@@ -903,7 +1353,11 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: Text(
                       'تعديل المستخدم',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: c.heading,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -929,7 +1383,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 initialValue: _role,
                 decoration: const InputDecoration(labelText: 'الدور'),
                 items: _roleNames.entries
-                    .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+                    .map((e) => DropdownMenuItem(
+                        value: e.key, child: Text(e.value)))
                     .toList(),
                 onChanged: (v) {
                   if (v != null) setState(() => _role = v);
@@ -961,9 +1416,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _saving ? null : _save,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.green,
-                      ),
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: AppColors.green),
                       child: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
                     ),
                   ),
@@ -986,6 +1440,141 @@ class _StateBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(padding: const EdgeInsets.all(24), child: child),
+    );
+  }
+}
+
+// ===== شاشة البحث بالهوية =====
+class SearchByIdentityScreen extends StatefulWidget {
+  const SearchByIdentityScreen({super.key});
+
+  @override
+  State<SearchByIdentityScreen> createState() => _SearchByIdentityScreenState();
+}
+
+class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
+  final _searchCtrl = TextEditingController();
+  List _results = [];
+  bool _loading = false;
+  String? _error;
+
+  Future<void> _search() async {
+    final query = _searchCtrl.text.trim();
+    if (query.isEmpty) return;
+
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final results = await ApiService.searchByIdentity(query);
+      setState(() {
+        _results = results;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'تعذّر البحث';
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    return Scaffold(
+      appBar: JisrAppBar(title: 'البحث بالهوية'),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: 'أدخل رقم الهوية...',
+                      prefixIcon: Icon(Icons.credit_card),
+                      border: OutlineInputBorder(),
+                    ),
+                    onSubmitted: (_) => _search(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _search,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.orange,
+                    ),
+                    child: _loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('بحث'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? Center(
+                        child:
+                            Text(_error!, style: const TextStyle(color: Colors.red)))
+                    : _results.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.search, size: 64, color: c.muted),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'لا توجد نتائج مطابقة',
+                                  style:
+                                      TextStyle(fontSize: 18, color: c.muted),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: _results.length,
+                            itemBuilder: (context, i) {
+                              final result = _results[i];
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: c.tintTeal,
+                                    child: Icon(
+                                      result['type'] == 'child'
+                                          ? Icons.child_care
+                                          : Icons.person,
+                                      color: AppColors.tealDeep,
+                                    ),
+                                  ),
+                                  title: Text(result['name'] ?? ''),
+                                  subtitle: Text(
+                                    '${result['type'] == 'child' ? 'طفل' : result['role'] == 'parent' ? 'ولي أمر' : result['role']} • ${result['national_id'] ?? ''}',
+                                  ),
+                                  trailing: const Icon(Icons.chevron_left),
+                                  onTap: () {
+                                    // يمكنك فتح تفاصيل المستخدم/الطفل هنا
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+          ),
+        ],
+      ),
     );
   }
 }

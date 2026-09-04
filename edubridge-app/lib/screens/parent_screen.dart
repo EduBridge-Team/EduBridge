@@ -1,5 +1,6 @@
 // شاشة ولي الأمر - إدارة الأطفال ومتابعة تقدمهم
 import 'dart:convert';
+import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -158,7 +159,20 @@ class _ParentScreenState extends State<ParentScreen> {
                       backgroundColor: Colors.transparent,
                       builder: (_) => const SupportSheet(),
                     ),
+                    
                   ),
+                  IconButton(
+            icon: const Icon(Icons.workspace_premium, color: Colors.white),
+            tooltip: 'إضافة شهادة',
+            onPressed: () => showModalBottomSheet(
+             context: context,
+            isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => AddCertificateSheet(
+          onSaved: _loadData,
+    ),
+  ),
+),
                   Stack(
                     children: [
                       IconButton(

@@ -1,6 +1,7 @@
 // لوحة المختص — متابعة وتقييم الأطفال، تعيين معلمين، متابعة الخطط العلاجية
 import 'dart:convert';
 import 'dart:io';
+import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
@@ -558,6 +559,18 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       builder: (_) => const SupportSheet(),
                     ),
                   ),
+                  IconButton(
+                 icon: const Icon(Icons.workspace_premium, color: Colors.white),
+                 tooltip: 'إضافة شهادة',
+                 onPressed: () => showModalBottomSheet(
+                 context: context,
+                 isScrollControlled: true,
+                 backgroundColor: Colors.transparent,
+                 builder: (_) => AddCertificateSheet(
+                 onSaved:  _load, 
+    ),
+  ),
+),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
