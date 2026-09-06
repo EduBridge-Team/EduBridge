@@ -12,6 +12,7 @@ import {
   deleteUser,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
+import { Settings, Library, Phone, X, Link2, BookOpen } from 'lucide-react'
 import Footer from '../components/Footer'
 
 // أيقونة وصنف لون لكل دور — لتلوين الشارات كما في التصميم
@@ -25,9 +26,9 @@ const ROLE_META = {
 }
 
 const TABS = [
-  { id: 'users', label: '👥 جميع المستخدمين' },
-  { id: 'link', label: '🔗 ربط طفل بولي أمر' },
-  { id: 'lessons', label: '📚 جميع الدروس' },
+  { id: 'users', label: 'جميع المستخدمين' },
+  { id: 'link', label: 'ربط طفل بولي أمر' },
+  { id: 'lessons', label: 'جميع الدروس' },
 ]
 
 export default function AdminPage() {
@@ -43,7 +44,9 @@ export default function AdminPage() {
     <div>
       <main className="container">
         <div className="page-title">
-          <h2>⚙️ لوحة التحكم الإدارية</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Settings size={22} /> لوحة التحكم الإدارية
+          </h2>
         </div>
 
         {/* شريط التبويبات */}
@@ -149,7 +152,7 @@ function UsersTab() {
         <input
           className="admin-search"
           type="search"
-          placeholder="🔍 ابحث عن مستخدم..."
+          placeholder="ابحث عن مستخدم..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -165,13 +168,17 @@ function UsersTab() {
               <div key={u.id} className="user-card">
                 <div className="user-card-top">
                   <span className={`role-pill ${meta.cls}`}>
-                    {meta.icon} {ROLE_NAMES[u.role] || u.role}
+                    {ROLE_NAMES[u.role] || u.role}
                   </span>
                   <div className="user-avatar">{(u.name || '؟').trim().charAt(0)}</div>
                 </div>
                 <h4 className="user-name">{u.name}</h4>
                 <div className="user-email">{u.email}</div>
-                {u.phone && <div className="user-phone">📞 {u.phone}</div>}
+                {u.phone && (
+                  <div className="user-phone" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Phone size={13} /> {u.phone}
+                  </div>
+                )}
                 {u.verification_status && (
                   <div className={`user-verify ${u.verification_status}`}>
                     {u.verification_status === 'verified'
@@ -237,7 +244,7 @@ function EditUserModal({ user, onClose, onSaved }) {
         <div className="modal-head">
           <h3>تعديل المستخدم</h3>
           <button className="modal-close" onClick={onClose} aria-label="إغلاق">
-            ✕
+            <X size={20} />
           </button>
         </div>
         <form onSubmit={save}>
@@ -358,7 +365,9 @@ function LinkTab() {
   return (
     <section className="admin-panel">
       <div className="admin-panel-head">
-        <h3>🔗 ربط طفل بولي أمر</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Link2 size={20} /> ربط طفل بولي أمر
+        </h3>
       </div>
 
       <div className="card" style={{ maxWidth: 560 }}>
@@ -388,7 +397,7 @@ function LinkTab() {
           )}
 
           <button type="submit" className="btn full" disabled={submitting}>
-            {submitting ? 'جارِ الربط...' : '🔗 ربط'}
+            {submitting ? 'جارِ الربط...' : (<><Link2 size={18} /> ربط</>)}
           </button>
         </form>
       </div>
@@ -451,12 +460,14 @@ function LessonsTab() {
   return (
     <section className="admin-panel">
       <div className="admin-panel-head">
-        <h3>📚 جميع الدروس</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Library size={20} /> جميع الدروس
+        </h3>
       </div>
       {lessons.map((l) => (
         <div key={l.id} className="card">
           <div className="card-row">
-            <div className="avatar">📖</div>
+            <div className="avatar"><BookOpen size={22} /></div>
             <div>
               <h3>{l.title}</h3>
               {l.content && <div className="meta">{l.content}</div>}

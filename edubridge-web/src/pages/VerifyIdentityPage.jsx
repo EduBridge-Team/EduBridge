@@ -1,6 +1,7 @@
 // توثيق هويتي + شهاداتي (البطاقات 4 و 9) — لكل مستخدم
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { IdCard, Paperclip, Award, Check } from 'lucide-react'
 import {
   getUser,
   uploadFile,
@@ -141,7 +142,9 @@ export default function VerifyIdentityPage() {
   return (
     <div>
       <div className="page-title">
-        <h2>🪪 توثيق الهوية</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <IdCard size={20} /> توثيق الهوية
+        </h2>
       </div>
 
       <div className="card">
@@ -167,7 +170,7 @@ export default function VerifyIdentityPage() {
         />
         {idUrl && (
           <a href={fileUrl(idUrl)} target="_blank" rel="noreferrer" className="file-link">
-            📎 عرض الملف المرفوع
+            <Paperclip size={14} /> عرض الملف المرفوع
           </a>
         )}
 
@@ -181,7 +184,9 @@ export default function VerifyIdentityPage() {
 
       {isProfessional && (
         <div className="card">
-          <h3>📜 شهاداتي (إثبات الأهلية)</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Award size={18} /> شهاداتي (إثبات الأهلية)
+          </h3>
           <p className="dash-sub">
             أضف شهاداتك العلمية/المهنية؛ يعتمد الحساب بعد التحقق من الشهادات والهوية.
           </p>
@@ -196,7 +201,7 @@ export default function VerifyIdentityPage() {
                     <strong>{c.title}</strong> <StatusBadge status={c.status} />
                     {c.note && <div className="meta">ملاحظة: {c.note}</div>}
                     <a href={fileUrl(c.url)} target="_blank" rel="noreferrer" className="file-link">
-                      📎 عرض الشهادة
+                      <Paperclip size={14} /> عرض الشهادة
                     </a>
                   </div>
                   <button className="btn small danger" onClick={() => removeCert(c.id)}>
@@ -216,7 +221,11 @@ export default function VerifyIdentityPage() {
               accept=".jpg,.jpeg,.png,.webp,.pdf"
               onChange={(e) => upload(e.target.files[0], setCertUrl)}
             />
-            {certUrl && <span className="file-link">✓ تم رفع الملف</span>}
+            {certUrl && (
+              <span className="file-link">
+                <Check size={14} /> تم رفع الملف
+              </span>
+            )}
             <button className="btn" onClick={submitCert} disabled={busy}>
               إضافة شهادة
             </button>

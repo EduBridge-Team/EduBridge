@@ -1,6 +1,7 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowRight, User, ClipboardList, BookOpen, TrendingUp } from 'lucide-react'
 import { fetchChildDetails, fetchChildEvaluations } from '../api'
 
 const STATUS_TEXT = {
@@ -89,14 +90,16 @@ export default function ChildDetailsPage() {
     <div>
       <div className="page-title">
         <button className="back-btn" onClick={() => navigate(-1)} title="رجوع">
-          →
+          <ArrowRight size={18} />
         </button>
         <h2>{name}</h2>
       </div>
 
       {/* معلومات الطفل */}
       <div className="card">
-        <h3 style={{ marginTop: 0 }}>👤 معلومات الطفل</h3>
+        <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <User size={17} /> معلومات الطفل
+        </h3>
         <InfoRow label="الاسم" value={child?.name} />
         <InfoRow label="العمر" value={child?.age != null ? `${child.age} سنة` : null} />
         <InfoRow label="نوع الإعاقة" value={child?.disability_type || 'غير محدد'} />
@@ -112,7 +115,9 @@ export default function ChildDetailsPage() {
       {/* التقييمات */}
       {evaluations.length > 0 && (
         <>
-          <h3>📋 التقييمات</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ClipboardList size={18} /> التقييمات
+          </h3>
           {evaluations.map((ev) => {
             const date = formatDate(ev.created_at)
             return (
@@ -122,11 +127,11 @@ export default function ChildDetailsPage() {
                   {date && <span className="meta">{date}</span>}
                 </div>
                 {ev.recommendations && (
-                  <div style={{ marginTop: 8 }}>📝 {ev.recommendations}</div>
+                  <div style={{ marginTop: 8 }}>{ev.recommendations}</div>
                 )}
                 {ev.educational_plan && (
                   <div className="meta" style={{ marginTop: 6 }}>
-                    📚 الخطة التعليمية: {ev.educational_plan}
+                    الخطة التعليمية: {ev.educational_plan}
                   </div>
                 )}
               </div>
@@ -143,7 +148,7 @@ export default function ChildDetailsPage() {
             navigate(`/children/${childId}/lessons`, { state: { childName: name } })
           }
         >
-          📖 الدروس
+          <BookOpen size={18} /> الدروس
         </button>
         <button
           className="btn outline"
@@ -151,7 +156,7 @@ export default function ChildDetailsPage() {
             navigate(`/children/${childId}/progress`, { state: { childName: name } })
           }
         >
-          📈 التقدّم
+          <TrendingUp size={18} /> التقدّم
         </button>
       </div>
     </div>

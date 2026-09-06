@@ -1,6 +1,7 @@
 // لوحة ولي الأمر — إدارة الأطفال ومتابعة تقدّمهم (مطابقة لشاشة ولي الأمر في التطبيق)
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Bell, Pencil, Plus, Baby } from 'lucide-react'
 import { fetchChildren, fetchUnreadNotificationsCount, getUser } from '../api'
 
 // نص الحالة ولونها — نفس منطق التطبيق
@@ -66,7 +67,7 @@ export default function ParentDashboard() {
             title="الإشعارات"
             onClick={() => navigate('/notifications')}
           >
-            🔔
+            <Bell size={20} />
             {unread > 0 && <span className="bell-badge">{unread}</span>}
           </button>
         </div>
@@ -75,7 +76,7 @@ export default function ParentDashboard() {
       <div className="dash-head-row" style={{ marginBottom: 16 }}>
         <h3 style={{ margin: 0 }}>أطفالي</h3>
         <button className="btn success" onClick={() => navigate('/children/new')}>
-          ＋ إضافة طفل
+          <Plus size={18} /> إضافة طفل
         </button>
       </div>
 
@@ -93,7 +94,9 @@ export default function ParentDashboard() {
         </div>
       ) : children.length === 0 ? (
         <div className="state">
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🧒</div>
+          <div style={{ marginBottom: 8, color: 'var(--muted)' }}>
+            <Baby size={48} />
+          </div>
           لا يوجد أطفال مسجّلون بعد
           <div className="meta" style={{ marginTop: 6 }}>
             اضغط «إضافة طفل» لتسجيل طفلك الأول
@@ -140,7 +143,7 @@ export default function ParentDashboard() {
                     })
                   }
                 >
-                  ✏️
+                  <Pencil size={15} />
                 </button>
               </div>
             </div>

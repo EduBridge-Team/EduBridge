@@ -1,6 +1,7 @@
 // صفحة تقدّم الطفل: ملخّص + تفاصيل كل درس
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import { fetchChildProgress, fetchChildSummary } from '../api'
 
 // معلومات العرض لكل حالة
@@ -74,7 +75,7 @@ export default function ChildProgressPage() {
     <div>
       <div className="page-title">
         <button className="back-btn" onClick={() => navigate(-1)} title="رجوع">
-          →
+          <ArrowRight size={18} />
         </button>
         <h2>تقدّم {childName}</h2>
       </div>
@@ -89,25 +90,25 @@ export default function ChildProgressPage() {
               <div className="num" style={{ color: 'var(--green-deep)' }}>
                 {summary?.done ?? 0}
               </div>
-              <div className="lbl">مكتمل ✅</div>
+              <div className="lbl">مكتمل</div>
             </div>
             <div className="summary-card">
               <div className="num" style={{ color: 'var(--orange-deep)' }}>
                 {summary?.in_progress ?? 0}
               </div>
-              <div className="lbl">قيد التنفيذ 🔄</div>
+              <div className="lbl">قيد التنفيذ</div>
             </div>
             <div className="summary-card">
               <div className="num" style={{ color: 'var(--navy)' }}>
                 {summary?.not_started ?? 0}
               </div>
-              <div className="lbl">لم يبدأ ⏳</div>
+              <div className="lbl">لم يبدأ</div>
             </div>
             <div className="summary-card">
               <div className="num" style={{ color: 'var(--teal-deep)' }}>
                 {summary?.avg_score != null ? `${summary.avg_score}%` : '—'}
               </div>
-              <div className="lbl">متوسّط النتيجة ⭐</div>
+              <div className="lbl">متوسّط النتيجة</div>
             </div>
           </div>
 

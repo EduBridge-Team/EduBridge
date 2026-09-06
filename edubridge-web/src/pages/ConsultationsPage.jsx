@@ -1,6 +1,7 @@
 // دراسة الحالة مع المختصين (البطاقة 7)
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { Stethoscope, FileText } from 'lucide-react'
 import {
   getUser,
   fetchConsultations,
@@ -131,7 +132,9 @@ export default function ConsultationsPage() {
   return (
     <div>
       <div className="page-title">
-        <h2>🩺 دراسة الحالة مع المختصين</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Stethoscope size={20} /> دراسة الحالة مع المختصين
+        </h2>
       </div>
 
       {!isSpecialist && (
@@ -179,8 +182,12 @@ export default function ConsultationsPage() {
         items.map((k) => (
           <div key={k.id} className="card">
             <div className="ticket-head">
-              <h3 className="clickable" onClick={() => openDetail(k.id)}>
-                🧾 {k.title}
+              <h3
+                className="clickable"
+                onClick={() => openDetail(k.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <FileText size={17} /> {k.title}
               </h3>
               <Badge status={k.status} />
             </div>

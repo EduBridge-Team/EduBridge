@@ -1,6 +1,7 @@
 // صفحة دروس الطفل (حسب نوع إعاقته) مع «تمّ» والقراءة الصوتية
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check } from 'lucide-react'
 import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../api'
 
 export default function ChildLessonsPage() {
@@ -114,7 +115,7 @@ export default function ChildLessonsPage() {
     <div>
       <div className="page-title">
         <button className="back-btn" onClick={() => navigate('/')} title="رجوع">
-          →
+          <ArrowRight size={18} />
         </button>
         <h2>دروس {childName}</h2>
         <span className="spacer" style={{ flex: 1 }} />
@@ -126,7 +127,7 @@ export default function ChildLessonsPage() {
             })
           }
         >
-          📊 التقدّم
+          <ChartColumn size={16} /> التقدّم
         </button>
       </div>
 
@@ -143,13 +144,22 @@ export default function ChildLessonsPage() {
           const isDone = doneIds.has(lesson.id)
           return (
             <div key={lesson.id} className="card">
-              <h3>
-                {isDone ? '✅' : '📖'} {lesson.title}
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {isDone ? (
+                  <CircleCheckBig size={18} color="var(--green-deep)" />
+                ) : (
+                  <BookOpen size={18} />
+                )}{' '}
+                {lesson.title}
               </h3>
               {lesson.content && <p className="content">{lesson.content}</p>}
               <div className="actions">
                 <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
-                  {speakingId === lesson.id ? '⏹ إيقاف' : '🔊 استمع'}
+                  {speakingId === lesson.id ? (
+                    <><Square size={16} /> إيقاف</>
+                  ) : (
+                    <><Volume2 size={16} /> استمع</>
+                  )}
                 </button>
                 {canMarkDone && (
                   <button
@@ -157,7 +167,13 @@ export default function ChildLessonsPage() {
                     disabled={isDone || savingId === lesson.id}
                     onClick={() => handleDone(lesson.id)}
                   >
-                    {isDone ? '✔ مكتمل' : savingId === lesson.id ? 'جارِ الحفظ...' : 'تمّ'}
+                    {isDone ? (
+                      <><Check size={16} /> مكتمل</>
+                    ) : savingId === lesson.id ? (
+                      'جارِ الحفظ...'
+                    ) : (
+                      'تمّ'
+                    )}
                   </button>
                 )}
               </div>

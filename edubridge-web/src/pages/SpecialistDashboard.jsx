@@ -7,6 +7,7 @@ import {
   fetchChildProgress,
   markLessonDone,
 } from '../api'
+import { Stethoscope } from 'lucide-react'
 import Footer from '../components/Footer'
 
 // هل اكتمل الدرس اليوم؟ (مقارنة تاريخ الإتمام باليوم الحالي)
@@ -91,22 +92,24 @@ export default function SpecialistDashboard() {
     <div>
       <main className="container container-wide">
         <div className="dash-head">
-          <h2>🩺 لوحة المختص — متابعة وتقييم الخطط العلاجية</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Stethoscope size={22} /> لوحة المختص — متابعة وتقييم الخطط العلاجية
+          </h2>
           <p className="dash-sub">مرحباً {me.name}، إليك نظرة عامة على تقدّم الأطفال وخططهم العلاجية اليوم.</p>
         </div>
 
         {/* المؤشّرات */}
         <div className="summary-grid">
           <div className="summary-card">
-            <div className="num">⏳ {pending}</div>
+            <div className="num" style={{ color: 'var(--coral-deep)' }}>{pending}</div>
             <div className="lbl">مهام قيد الانتظار</div>
           </div>
           <div className="summary-card">
-            <div className="num">✅ {doneToday}</div>
+            <div className="num" style={{ color: 'var(--green-deep)' }}>{doneToday}</div>
             <div className="lbl">مهام منجزة (اليوم)</div>
           </div>
           <div className="summary-card">
-            <div className="num">👪 {totalChildren}</div>
+            <div className="num" style={{ color: 'var(--navy)' }}>{totalChildren}</div>
             <div className="lbl">إجمالي الأطفال</div>
           </div>
         </div>

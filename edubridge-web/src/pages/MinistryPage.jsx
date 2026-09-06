@@ -1,6 +1,7 @@
 // مراجعة المناهج من الوزارة (البطاقة 3)
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { Landmark, BookOpen } from 'lucide-react'
 import { getUser, fetchMinistryLessons, reviewLessonCurriculum } from '../api'
 
 function Badge({ status }) {
@@ -54,7 +55,9 @@ export default function MinistryPage() {
   return (
     <div className="container">
       <div className="page-title">
-        <h2>🏛️ مراجعة المناهج</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Landmark size={20} /> مراجعة المناهج
+        </h2>
       </div>
       <p className="dash-sub">
         تحقّق من مطابقة الدروس للمناهج المعتمدة لكل مستوى تعليمي واعتمدها أو ارفضها.
@@ -82,7 +85,9 @@ export default function MinistryPage() {
         lessons.map((l) => (
           <div key={l.id} className="card">
             <div className="ticket-head">
-              <h3>📖 {l.title}</h3>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <BookOpen size={17} /> {l.title}
+              </h3>
               <Badge status={l.curriculum_status} />
             </div>
             {l.content && <p className="content">{l.content}</p>}
