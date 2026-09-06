@@ -9,24 +9,22 @@ EduBridge is a **monorepo** containing several components:
 | `edubridge-app` | Mobile / app |
 | `deploy` | Deployment configuration |
 
-To keep work organized across these components, we follow a lightweight
-**GitHub Flow** based on short-lived branches merged into `main` via Pull Requests.
+To keep work organized across these components, we follow a **Git Flow–style**
+model: short-lived branches merge into `develop`, and `develop` is merged into
+`main` for each release.
 
 ## Long-lived branches
 
 | Branch | Purpose | Rules |
 |--------|---------|-------|
-| `main` | Production — always deployable | Protected. Changes land only through reviewed PRs. |
-
-> **Optional:** teams that want a staging buffer before production can add a
-> `develop` branch. Feature branches then merge into `develop`, and `develop`
-> is merged into `main` for each release. Start without it and add it only if
-> the team needs an integration stage.
+| `main` | Production — always deployable | Protected. Only updated via a PR from `develop` (or a `hotfix/*` branch). |
+| `develop` | Integration branch — where features land before release | Protected. All `feature/*` and `fix/*` PRs target this branch. |
 
 ## Short-lived branches
 
-Create one branch per unit of work, branched off the latest `main`, and delete it
-after the PR is merged.
+Create one branch per unit of work, branched off the latest `develop`
+(`hotfix/*` branches off `main` instead — see [Hotfixes](#hotfixes)), and
+delete it after the PR is merged.
 
 ### Naming convention
 
@@ -62,26 +60,40 @@ hotfix/api-auth-token-expiry
 
 ## Workflow
 
-1. **Sync** with the latest `main`:
+1. **Sync** with the latest `develop`:
    ```bash
-   git checkout main
-   git pull origin main
+   git checkout develop
+   git pull origin develop
    ```
 2. **Branch** for your work:
    ```bash
    git checkout -b feature/web-consultation-form
    ```
 3. **Commit** in small, focused steps with clear messages.
-4. **Push** and open a Pull Request into `main`:
+4. **Push** and open a Pull Request into `develop`:
    ```bash
    git push -u origin feature/web-consultation-form
    ```
 5. **Review** — at least one approval before merge.
 6. **Merge** the PR, then delete the branch.
 
+## Releases (`develop` → `main`)
+
+When `develop` has a stable batch of features ready to ship:
+
+1. Open a PR from `develop` into `main`.
+2. Review and merge.
+3. Tag the release on `main`, e.g.:
+   ```bash
+   git checkout main
+   git pull origin main
+   git tag -a v1.10.0 -m "Release v1.10.0"
+   git push origin v1.10.0
+   ```
+
 ## Hotfixes
 
-For an urgent production issue:
+For an urgent production issue that can't wait for the next `develop` → `main` release:
 
 ```bash
 git checkout main
@@ -91,8 +103,8 @@ git checkout -b hotfix/api-auth-token-expiry
 git push -u origin hotfix/api-auth-token-expiry
 ```
 
-Open a PR into `main`, fast-track the review, and merge.
-(If you use a `develop` branch, merge the hotfix back into `develop` too.)
+Open a PR into `main`, fast-track the review, and merge. Then merge (or
+cherry-pick) the same fix into `develop` so it isn't lost on the next release.
 
 ## Commit messages
 
