@@ -1,0 +1,21 @@
+name: Branch guard
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PR source branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [[ "$HEAD_REF" == "develop" || "$HEAD_REF" == hotfix/* ]]; then
+            echo "OK: '$HEAD_REF' is allowed to merge into main."
+          else
+            echo "PRs into 'main' must come from 'develop' or a 'hotfix/*' branch, not '$HEAD_REF'."
+            exit 1
+          fi
