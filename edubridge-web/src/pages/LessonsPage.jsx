@@ -1,6 +1,7 @@
 // صفحة تصفح كل الدروس مع بحث
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { BookOpen, Volume2, Square } from 'lucide-react'
 import { fetchLessons } from '../api'
 import LessonRatings from '../components/LessonRatings'
 
@@ -94,7 +95,7 @@ export default function LessonsPage() {
       <input
         ref={searchRef}
         type="search"
-        placeholder="🔍 ابحث عن درس..."
+        placeholder="ابحث عن درس..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         style={{ marginBottom: 20 }}
@@ -107,11 +108,17 @@ export default function LessonsPage() {
       ) : (
         filtered.map((lesson) => (
           <div key={lesson.id} className="card">
-            <h3>📖 {lesson.title}</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <BookOpen size={18} /> {lesson.title}
+            </h3>
             {lesson.content && <p className="content">{lesson.content}</p>}
             <div className="actions">
               <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
-                {speakingId === lesson.id ? '⏹ إيقاف' : '🔊 استمع'}
+                {speakingId === lesson.id ? (
+                  <><Square size={16} /> إيقاف</>
+                ) : (
+                  <><Volume2 size={16} /> استمع</>
+                )}
               </button>
               <LessonRatings lesson={lesson} />
             </div>

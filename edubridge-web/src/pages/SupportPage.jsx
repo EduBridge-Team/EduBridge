@@ -2,6 +2,7 @@
 // المستخدم ينشئ تذكرة ويتابعها؛ الأدمن يستعرض الكل ويرد ويغيّر الحالة.
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { LifeBuoy, TriangleAlert } from 'lucide-react'
 import { getUser, fetchTickets, createTicket, updateTicket } from '../api'
 
 const STATUS_LABELS = {
@@ -93,7 +94,9 @@ export default function SupportPage() {
   return (
     <div>
       <div className="page-title">
-        <h2>🛟 الدعم الفني والشكاوى</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <LifeBuoy size={20} /> الدعم الفني والشكاوى
+        </h2>
       </div>
 
       {!isAdmin && (
@@ -144,8 +147,12 @@ export default function SupportPage() {
         tickets.map((t) => (
           <div key={t.id} className="card ticket">
             <div className="ticket-head">
-              <h3>
-                {t.category === 'complaint' ? '⚠️ ' : '🛟 '}
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {t.category === 'complaint' ? (
+                  <TriangleAlert size={17} />
+                ) : (
+                  <LifeBuoy size={17} />
+                )}
                 {t.subject}
               </h3>
               <StatusBadge status={t.status} />

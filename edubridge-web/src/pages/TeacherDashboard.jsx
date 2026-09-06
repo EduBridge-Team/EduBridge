@@ -8,6 +8,7 @@ import {
   fetchDisabilityTypes,
   createLesson,
 } from '../api'
+import { Plus, BookOpen, Users, Eye, Volume2, Square, X } from 'lucide-react'
 import Footer from '../components/Footer'
 
 export default function TeacherDashboard() {
@@ -95,7 +96,7 @@ export default function TeacherDashboard() {
             <p className="dash-sub">إليك نظرة عامة على تقدّم طلابك والدروس المتاحة.</p>
           </div>
           <button className="btn success" onClick={() => setAdding(true)}>
-            ➕ إضافة درس جديد
+            <Plus size={18} /> إضافة درس جديد
           </button>
         </div>
 
@@ -116,11 +117,13 @@ export default function TeacherDashboard() {
             {/* الدروس */}
             <section>
               <div className="page-title">
-                <h2>📖 البحث في الدروس</h2>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <BookOpen size={20} /> البحث في الدروس
+                </h2>
               </div>
               <input
                 type="search"
-                placeholder="🔍 ابحث عن درس..."
+                placeholder="ابحث عن درس..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 style={{ marginBottom: 18 }}
@@ -137,7 +140,7 @@ export default function TeacherDashboard() {
                     return (
                       <div key={lesson.id} className="card lesson-card">
                         <div className="lesson-card-top">
-                          <div className="feature-icon">📖</div>
+                          <div className="feature-icon"><BookOpen size={20} /></div>
                           {tn && <span className="program-tag">{tn}</span>}
                         </div>
                         <h3>{lesson.title}</h3>
@@ -146,7 +149,7 @@ export default function TeacherDashboard() {
                           className="btn small navy full"
                           onClick={() => setViewing(lesson)}
                         >
-                          👁 عرض
+                          <Eye size={16} /> عرض
                         </button>
                       </div>
                     )
@@ -158,7 +161,9 @@ export default function TeacherDashboard() {
             {/* الأطفال */}
             <aside>
               <div className="page-title">
-                <h2>👪 جميع الأطفال</h2>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Users size={20} /> جميع الأطفال
+                </h2>
               </div>
               {children.length === 0 ? (
                 <div className="state">لا يوجد أطفال بعد</div>
@@ -222,7 +227,7 @@ export default function TeacherDashboard() {
                   setViewing(null)
                 }}
               >
-                ✕
+                <X size={20} />
               </button>
             </div>
             {typeName(viewing.disability_type_id) && (
@@ -233,7 +238,11 @@ export default function TeacherDashboard() {
             </p>
             <div className="modal-actions">
               <button className="btn outline" onClick={() => toggleSpeak(viewing)}>
-                {speaking ? '⏹ إيقاف' : '🔊 استمع'}
+                {speaking ? (
+                  <><Square size={16} /> إيقاف</>
+                ) : (
+                  <><Volume2 size={16} /> استمع</>
+                )}
               </button>
             </div>
           </div>
@@ -273,9 +282,11 @@ function AddLessonModal({ types, onClose, onCreated }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h3>➕ إضافة درس جديد</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Plus size={20} /> إضافة درس جديد
+          </h3>
           <button className="modal-close" onClick={onClose} aria-label="إغلاق">
-            ✕
+            <X size={20} />
           </button>
         </div>
         <form onSubmit={save}>

@@ -1,6 +1,7 @@
 // البحث برقم الهوية (البطاقة 2) — الموظفون فقط
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { Search, Baby, User } from 'lucide-react'
 import { getUser, searchByNationalId } from '../api'
 import { ROLE_NAMES } from '../roles'
 
@@ -51,7 +52,9 @@ export default function SearchPage() {
   return (
     <div>
       <div className="page-title">
-        <h2>🔎 البحث عن طريق رقم الهوية</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Search size={20} /> البحث عن طريق رقم الهوية
+        </h2>
       </div>
       <p className="dash-sub">
         ابحث عن طالب أو ولي أمر أو موظف برقم الهوية الكامل أو الجزئي.
@@ -80,8 +83,8 @@ export default function SearchPage() {
             {results.map((r) => (
               <div key={`${r.kind}-${r.id}`} className="card search-result">
                 <div>
-                  <h3>
-                    {r.kind === 'child' ? '🧒 ' : '👤 '}
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {r.kind === 'child' ? <Baby size={18} /> : <User size={18} />}
                     {r.name}
                     {r.kind === 'user' && (
                       <span className="role-badge">{ROLE_NAMES[r.role] || r.role}</span>

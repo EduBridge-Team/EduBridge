@@ -2,6 +2,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
+  ArrowRight,
+  Baby,
+  ClipboardCheck,
+  UserCheck,
+  BookOpen,
+  Bell,
+  BellOff,
+} from 'lucide-react'
+import {
   fetchNotifications,
   markAllNotificationsRead,
   markNotificationRead,
@@ -11,15 +20,15 @@ import {
 function iconFor(type) {
   switch (type) {
     case 'child_added':
-      return '👶'
+      return <Baby size={22} />
     case 'child_evaluated':
-      return '📋'
+      return <ClipboardCheck size={22} />
     case 'child_assigned':
-      return '👨‍🏫'
+      return <UserCheck size={22} />
     case 'lesson_added':
-      return '📚'
+      return <BookOpen size={22} />
     default:
-      return '🔔'
+      return <Bell size={22} />
   }
 }
 
@@ -84,7 +93,7 @@ export default function NotificationsPage() {
     <div>
       <div className="page-title">
         <button className="back-btn" onClick={() => navigate(-1)} title="رجوع">
-          →
+          <ArrowRight size={18} />
         </button>
         <h2>الإشعارات</h2>
         <div className="topbar-spacer" />
@@ -109,7 +118,9 @@ export default function NotificationsPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="state">
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🔕</div>
+          <div style={{ marginBottom: 8, color: 'var(--muted)' }}>
+            <BellOff size={48} />
+          </div>
           لا توجد إشعارات
         </div>
       ) : (

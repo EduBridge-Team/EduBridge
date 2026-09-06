@@ -1,6 +1,7 @@
 // مراجعة التوثيق (أدمن) — المستخدمون والأطفال والشهادات (البطاقات 1، 4، 9)
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { ShieldCheck, Paperclip, Baby } from 'lucide-react'
 import {
   getUser,
   fetchVerificationUsers,
@@ -95,7 +96,9 @@ export default function VerificationsPage() {
   return (
     <div className="container">
       <div className="page-title">
-        <h2>🛡️ مراجعة التوثيق</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ShieldCheck size={20} /> مراجعة التوثيق
+        </h2>
       </div>
 
       <div className="tabs">
@@ -125,7 +128,7 @@ export default function VerificationsPage() {
                 <div className="meta">{u.email} · هوية: {u.national_id || '—'}</div>
                 {u.id_document_url && (
                   <a href={fileUrl(u.id_document_url)} target="_blank" rel="noreferrer" className="file-link">
-                    📎 صورة الهوية
+                    <Paperclip size={14} /> صورة الهوية
                   </a>
                 )}
               </div>
@@ -143,16 +146,18 @@ export default function VerificationsPage() {
           children.map((c) => (
             <div key={c.id} className="card verify-row">
               <div>
-                <h3>🧒 {c.name}</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Baby size={18} /> {c.name}
+                </h3>
                 <div className="meta">
                   هوية الطفل: {c.child_national_id || '—'} · هوية ولي الأمر: {c.guardian_national_id || '—'}
                 </div>
                 <div className="file-links">
                   {c.guardian_id_document_url && (
-                    <a href={fileUrl(c.guardian_id_document_url)} target="_blank" rel="noreferrer" className="file-link">📎 هوية ولي الأمر</a>
+                    <a href={fileUrl(c.guardian_id_document_url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> هوية ولي الأمر</a>
                   )}
                   {c.kinship_document_url && (
-                    <a href={fileUrl(c.kinship_document_url)} target="_blank" rel="noreferrer" className="file-link">📎 مستند القرابة</a>
+                    <a href={fileUrl(c.kinship_document_url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> مستند القرابة</a>
                   )}
                 </div>
               </div>
@@ -172,7 +177,7 @@ export default function VerificationsPage() {
               <div>
                 <h3>{c.title} <Badge status={c.status} /></h3>
                 {c.user_name && <div className="meta">مقدّم من: {c.user_name} ({ROLE_NAMES[c.user_role] || c.user_role})</div>}
-                <a href={fileUrl(c.url)} target="_blank" rel="noreferrer" className="file-link">📎 عرض الشهادة</a>
+                <a href={fileUrl(c.url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> عرض الشهادة</a>
               </div>
               <div className="verify-actions">
                 <button className="btn small success" onClick={() => decideCert(c.id, 'verified')}>اعتماد</button>

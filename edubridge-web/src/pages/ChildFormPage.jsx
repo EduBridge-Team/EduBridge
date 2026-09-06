@@ -1,6 +1,7 @@
 // نموذج إضافة/تعديل طفل — يُستخدم للحالتين (مطابق لنموذج التطبيق)
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowRight, IdCard } from 'lucide-react'
 import { addChild, updateChild, uploadFile } from '../api'
 
 // تحويل نص مفصول بفواصل إلى قائمة (أو null إن كان فارغاً)
@@ -119,7 +120,7 @@ export default function ChildFormPage() {
     <div>
       <div className="page-title">
         <button className="back-btn" onClick={() => navigate(-1)} title="رجوع">
-          →
+          <ArrowRight size={18} />
         </button>
         <h2>{editing ? 'تعديل بيانات الطفل' : 'إضافة طفل جديد'}</h2>
       </div>
@@ -141,7 +142,7 @@ export default function ChildFormPage() {
 
           {/* توثيق الهوية وصلة القرابة — البطاقة 1 */}
           <fieldset className="id-fieldset">
-            <legend>🪪 توثيق الهوية وصلة القرابة</legend>
+            <legend><IdCard size={16} /> توثيق الهوية وصلة القرابة</legend>
 
             <label htmlFor="child_national_id">رقم هوية الطفل</label>
             <input

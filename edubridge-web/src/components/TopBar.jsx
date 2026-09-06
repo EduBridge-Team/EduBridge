@@ -1,6 +1,25 @@
-// الشريط العلوي — يظهر في كل الصفحات (متجاوب مع قائمة همبرغر)
+// الشريط العلوي — يظهر في كل الصفحات
+// بعد تسجيل الدخول: رابطان نصّيان (الرئيسية/لوحتي) + شريط أيقونات مضغوط
+// لروابط الدور + شريحة المستخدم. متجاوب مع قائمة همبرغر على الجوال.
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import {
+  Home,
+  LayoutDashboard,
+  BookOpen,
+  Info,
+  Users,
+  Search,
+  Stethoscope,
+  IdCard,
+  LifeBuoy,
+  Bell,
+  Settings,
+  ShieldCheck,
+  Landmark,
+  LogIn,
+  LogOut,
+} from 'lucide-react'
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
 
@@ -31,6 +50,41 @@ export default function TopBar() {
 
   const is = (...roles) => user && roles.includes(user.role)
 
+  // مسار لوحة الدور — يُستخدم لرابط «لوحتي»
+  const dashboardPath = user
+    ? {
+        admin: '/admin',
+        teacher: '/teacher',
+        specialist: '/specialist',
+        parent: '/parent',
+        ministry: '/ministry',
+      }[user.role] || '/'
+    : '/'
+
+  // روابط الدور المضغوطة في شريط الأيقونات
+  const stripLinks = [
+    { to: '/admin', label: 'لوحة التحكم', Icon: Settings, show: is('admin') },
+    { to: '/admin/verifications', label: 'مراجعة التوثيق', Icon: ShieldCheck, show: is('admin') },
+    { to: '/ministry', label: 'المناهج', Icon: Landmark, show: is('ministry', 'admin') },
+    { to: '/children', label: 'الأطفال', Icon: Users, show: Boolean(user) && user.role !== 'parent' },
+    { to: '/lessons', label: 'الدروس', Icon: BookOpen, show: Boolean(user) },
+    {
+      to: '/search',
+      label: 'بحث بالهوية',
+      Icon: Search,
+      show: is('teacher', 'specialist', 'admin', 'ministry', 'institution'),
+    },
+    {
+      to: '/consultations',
+      label: 'دراسة الحالة',
+      Icon: Stethoscope,
+      show: is('parent', 'teacher', 'specialist', 'admin'),
+    },
+    { to: '/verify', label: 'توثيق الهوية', Icon: IdCard, show: Boolean(user) },
+    { to: '/support', label: 'الدعم', Icon: LifeBuoy, show: Boolean(user) },
+    { to: '/about', label: 'من نحن', Icon: Info, show: Boolean(user) },
+  ].filter((l) => l.show)
+
   return (
     <header className="topbar">
       {/* الشعار والاسم — بداية الشريط (يمين في RTL) */}
@@ -59,54 +113,83 @@ export default function TopBar() {
 
       {/* لوحة التنقّل — أفقية على سطح المكتب، منسدلة على الجوال */}
       <div className={`topbar-menu ${open ? 'open' : ''}`}>
-        <nav className="topbar-nav">
-          <NavLink to="/" end>
-            🏠 الرئيسية
-          </NavLink>
-          {is('admin') && <NavLink to="/admin">⚙️ لوحة التحكم</NavLink>}
-          {is('admin') && <NavLink to="/admin/verifications">🛡️ التوثيق</NavLink>}
-          {is('teacher') && <NavLink to="/teacher">🧑‍🏫 لوحتي</NavLink>}
-          {is('specialist') && <NavLink to="/specialist">🩺 لوحتي</NavLink>}
-          {is('parent') && <NavLink to="/parent">👨‍👩‍👧 لوحتي</NavLink>}
-          {is('ministry', 'admin') && <NavLink to="/ministry">🏛️ المناهج</NavLink>}
-          {user && user.role !== 'parent' && <NavLink to="/children">الأطفال</NavLink>}
-          {user && <NavLink to="/lessons">📚 الدروس</NavLink>}
-          {is('teacher', 'specialist', 'admin', 'ministry', 'institution') && (
-            <NavLink to="/search">🔎 بحث بالهوية</NavLink>
-          )}
-          {is('parent', 'teacher', 'specialist', 'admin') && (
-            <NavLink to="/consultations">🩺 دراسة الحالة</NavLink>
-          )}
-          {user && <NavLink to="/verify">🪪 توثيق الهوية</NavLink>}
-          {user && <NavLink to="/support">🛟 الدعم</NavLink>}
-          {user && <NavLink to="/notifications">🔔 الإشعارات</NavLink>}
-          <NavLink to="/about">من نحن</NavLink>
-        </nav>
+        {user ? (
+          <>
+            {/* رابطان نصّيان أساسيان */}
+            <nav className="topbar-nav">
+              <NavLink to="/" end>
+                <Home size={16} /> الرئيسية
+              </NavLink>
+              <NavLink to={dashboardPath}>
+                <LayoutDashboard size={16} /> لوحتي
+              </NavLink>
+            </nav>
 
-        {/* منطقة المستخدم داخل القائمة (تظهر أدناه على الجوال) */}
-        <div className="topbar-actions">
-          {user ? (
-            <>
+            {/* شريط أيقونات روابط الدور */}
+            <div className="icon-strip">
+              {stripLinks.map(({ to, label, Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className="strip-btn"
+                  title={label}
+                  data-label={label}
+                  aria-label={label}
+                >
+                  <Icon size={16} />
+                </NavLink>
+              ))}
+              <span className="strip-sep" />
+              <NavLink
+                to="/notifications"
+                className="strip-btn"
+                title="الإشعارات"
+                data-label="الإشعارات"
+                aria-label="الإشعارات"
+              >
+                <Bell size={16} />
+                <span className="strip-dot" />
+              </NavLink>
+            </div>
+
+            {/* شريحة المستخدم */}
+            <div className="topbar-actions">
               <span className="user-chip">
                 <span className="user-name">{user.name}</span>
                 <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
+                <button className="chip-logout" onClick={handleLogout} title="خروج" aria-label="خروج">
+                  <LogOut size={14} />
+                </button>
               </span>
-              <button className="topbar-btn" onClick={handleLogout}>
-                خروج
+            </div>
+          </>
+        ) : (
+          <>
+            {/* حالة عدم تسجيل الدخول — روابط نصّية + زر دخول */}
+            <nav className="topbar-nav">
+              <NavLink to="/" end>
+                <Home size={16} /> الرئيسية
+              </NavLink>
+              <NavLink to="/lessons">
+                <BookOpen size={16} /> الدروس
+              </NavLink>
+              <NavLink to="/about">
+                <Info size={16} /> من نحن
+              </NavLink>
+            </nav>
+            <div className="topbar-actions">
+              <button
+                className="topbar-btn login-btn"
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/login')
+                }}
+              >
+                <LogIn size={16} /> تسجيل الدخول
               </button>
-            </>
-          ) : (
-            <button
-              className="topbar-btn login-btn"
-              onClick={() => {
-                setOpen(false)
-                navigate('/login')
-              }}
-            >
-              🔒 تسجيل الدخول
-            </button>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </header>
   )
