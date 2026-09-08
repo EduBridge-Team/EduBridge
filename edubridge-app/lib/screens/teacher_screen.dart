@@ -8,12 +8,11 @@ import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'welcome_screen.dart';
-import 'chat_screen.dart';
 import 'educational_plan_sheet.dart';
-import 'specialist_picker_sheet.dart';
 import 'support_sheet.dart';
 import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
+import 'conversations_screen.dart';
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
@@ -172,62 +171,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
     ).then((_) => _loadNotificationsCount());
   }
 
-  void _openChatWithSpecialist(Map child) async {
-    try {
-      final specialists = await ApiService.getSpecialists();
-      if (specialists.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لا يوجد مختصون متاحون للتواصل')),
-        );
-        return;
-      }
-
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (_) => SpecialistPickerSheet(
-          specialists: specialists,
-          childName: child['name'] ?? '',
-          onSelect: (specialist) {
-            Navigator.pop(context);
-            _openConversation(specialist, child);
-          },
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر تحميل المختصين: $e')),
-      );
-    }
-  }
-
-  Future<void> _openConversation(Map specialist, Map child) async {
-    try {
-      final conversationId = await ApiService.createConversation(
-        specialist['id'],
-        'مناقشة حالة ${child['name']}',
-      );
-
-      if (!mounted) return;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-            conversationId: conversationId,
-            otherUserName: specialist['name'] ?? '',
-            otherUserRole: 'مختص',
-            childName: child['name'] ?? '',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
-      );
-    }
-  }
-
   String _getStatusText(String? status) {
     switch (status) {
       case 'evaluated':
@@ -261,7 +204,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
             children: [
               _buildHeader(c),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     if (_tabIndex == 0)
@@ -407,20 +351,30 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       backgroundColor: Colors.transparent,
                       builder: (_) => const SupportSheet(),
                     ),
-                    
                   ),
                   IconButton(
-               icon: const Icon(Icons.workspace_premium, color: Colors.white),
-              tooltip: 'إضافة شهادة',
-               onPressed: () => showModalBottomSheet(
-               context: context,
-            isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-                 builder: (_) => AddCertificateSheet(
-                onSaved: _loadData,
-    ),
-  ),
-),
+                    icon: const Icon(Icons.chat_bubble, color: Colors.white),
+                    tooltip: 'المحادثات',
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ConversationsScreen(),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.workspace_premium,
+                        color: Colors.white),
+                    tooltip: 'إضافة شهادة',
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => AddCertificateSheet(
+                        onSaved: _loadData,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -433,8 +387,10 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 future: ApiService.getName(),
                 builder: (context, snap) {
                   final name = snap.data ?? 'المعلم';
-                  final childCount = _children.where((c) =>
-                      c['assigned_teacher_id'] == ApiService.getUserId()).length;
+                  final childCount = _children
+                      .where((c) =>
+                          c['assigned_teacher_id'] == ApiService.getUserId())
+                      .length;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -494,7 +450,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
   Widget _buildChildrenTab(JisrColors c) {
     final displayChildren = _showOnlyMyChildren
-        ? _children.where((c) => c['assigned_teacher_id'] == ApiService.getUserId()).toList()
+        ? _children
+            .where((c) => c['assigned_teacher_id'] == ApiService.getUserId())
+            .toList()
         : _children;
 
     if (displayChildren.isEmpty) {
@@ -538,7 +496,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
           child: Column(
             children: [
               ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 leading: CircleAvatar(
                   radius: 26,
                   backgroundColor: color,
@@ -575,9 +534,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(status).withValues(alpha: 0.15),
+                            color:
+                                _getStatusColor(status).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -623,18 +584,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         onPressed: () => _viewChildProgress(child),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 36),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        icon: const Icon(Icons.chat, size: 16),
-                        label: const Text('تواصل'),
-                        onPressed: () => _openChatWithSpecialist(child),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -671,12 +620,13 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     const SizedBox(height: 16),
                     Center(
                       child: Text(
-                        _lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
+                        _lessons.isEmpty
+                            ? 'لا توجد دروس بعد'
+                            : 'لا نتائج مطابقة لبحثك',
                         style: TextStyle(fontSize: 18, color: c.muted),
                       ),
                     ),
-                    if (_lessons.isEmpty)
-                      const SizedBox(height: 8),
+                    if (_lessons.isEmpty) const SizedBox(height: 8),
                     if (_lessons.isEmpty)
                       Center(
                         child: Text(
@@ -689,8 +639,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
               : ListView.builder(
                   padding: const EdgeInsets.all(12),
                   itemCount: filtered.length,
-                  itemBuilder: (context, i) =>
-                      _buildLessonCard(filtered[i], c),
+                  itemBuilder: (context, i) => _buildLessonCard(filtered[i], c),
                 ),
         ),
       ],
@@ -774,7 +723,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () => setState(() => _viewingLesson = null),
+                          onPressed: () =>
+                              setState(() => _viewingLesson = null),
                         ),
                       ],
                     ),
@@ -815,7 +765,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.video_library, color: AppColors.tealDeep),
+                            const Icon(Icons.video_library,
+                                color: AppColors.tealDeep),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -847,7 +798,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.audio_file, color: AppColors.greenDeep),
+                            const Icon(Icons.audio_file,
+                                color: AppColors.greenDeep),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -964,7 +916,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
     try {
       final result = await ApiService.createLessonWithMedia(
         title: _titleCtrl.text.trim(),
-        content: _contentCtrl.text.trim().isEmpty ? null : _contentCtrl.text.trim(),
+        content:
+            _contentCtrl.text.trim().isEmpty ? null : _contentCtrl.text.trim(),
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
         videoFile: _videoFile,
         audioFile: _audioFile,
@@ -1116,7 +1069,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.close, color: c.onTint, size: 18),
+                                icon: Icon(Icons.close,
+                                    color: c.onTint, size: 18),
                                 onPressed: _removeVideo,
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
@@ -1178,7 +1132,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.close, color: c.onTint, size: 18),
+                                icon: Icon(Icons.close,
+                                    color: c.onTint, size: 18),
                                 onPressed: _removeAudio,
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
@@ -1319,13 +1274,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : _notifications.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.notifications_off, size: 64, color: c.muted),
+                          Icon(Icons.notifications_off,
+                              size: 64, color: c.muted),
                           const SizedBox(height: 16),
                           Text(
                             'لا توجد إشعارات',
@@ -1346,7 +1304,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
                         return Card(
                           margin: const EdgeInsets.only(bottom: 8),
-                          color: isRead ? null : c.tintTeal.withValues(alpha: 0.3),
+                          color:
+                              isRead ? null : c.tintTeal.withValues(alpha: 0.3),
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(12),
                             leading: Text(
@@ -1356,7 +1315,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             title: Text(
                               n['title'] ?? '',
                               style: TextStyle(
-                                fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                                fontWeight: isRead
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
                                 color: c.heading,
                               ),
                             ),

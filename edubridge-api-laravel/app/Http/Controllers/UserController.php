@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-// إدارة المستخدمين — الأدمن يدير الكل؛ المعلّم/المختص يستعرض قائمة المعلّمين فقط
+// إدارة المستخدمين — الأدمن يدير الكل؛ المستخدمون يستعرضون قائمة المحادثات المتاحة
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +13,7 @@ class UserController extends Controller
 
     // عرض المستخدمين
     // - الأدمن: كل المستخدمين، مع فلترة اختيارية حسب الدور: ?role=parent
-    // - المعلّم/المختص: قائمة المعلّمين فقط (لتعيين معلّم للطفل) — إصلاح ظهور المعلّمين
+    // - بقية المستخدمين: جميع المستخدمين الآخرين لبدء محادثة عامة
     // GET /api/users
     public function index(Request $request)
     {
@@ -32,10 +32,10 @@ class UserController extends Controller
                     $query->where('role', $role);
                 }
             } else {
-                // غير الأدمن (معلّم/مختص) لا يرى إلا المعلّمين، وبحقول محدودة
+                // لا نعرض المستخدم الحالي لنفسه، ولا نعيد بيانات حساسة.
                 $query = DB::table('users')
                     ->select('id', 'name', 'email', 'phone', 'verification_status')
-                    ->where('role', 'teacher')
+                    ->where('id', '<>', $user->id)
                     ->orderBy('name');
             }
 

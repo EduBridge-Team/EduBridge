@@ -1,5 +1,4 @@
-// شاشة الدردشة - التواصل بين المعلم والمختص
-import 'dart:convert';
+// شاشة دردشة عامة بين أي مستخدمين مصادق عليهما.
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -8,14 +7,12 @@ class ChatScreen extends StatefulWidget {
   final int conversationId;
   final String otherUserName;
   final String otherUserRole;
-  final String childName;
 
   const ChatScreen({
     super.key,
     required this.conversationId,
     required this.otherUserName,
-    required this.otherUserRole,
-    required this.childName,
+    this.otherUserRole = '',
   });
 
   @override
@@ -109,7 +106,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: JisrAppBar(
-        title: '${widget.otherUserName} (${widget.otherUserRole})',
+        title: widget.otherUserRole.isEmpty
+            ? widget.otherUserName
+            : '${widget.otherUserName} (${widget.otherUserRole})',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -119,27 +118,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // رأس المحادثة مع اسم الطفل
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: c.tintTeal,
-              border: Border(bottom: BorderSide(color: c.line)),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.child_care, color: AppColors.tealDeep),
-                const SizedBox(width: 8),
-                Text(
-                  'مناقشة حالة: ${widget.childName}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: c.heading,
-                  ),
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
@@ -148,7 +126,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(_error!, style: const TextStyle(color: Colors.red)),
+                            Text(_error!,
+                                style: const TextStyle(color: Colors.red)),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadMessages,
@@ -162,7 +141,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.chat_bubble_outline, size: 64, color: c.muted),
+                                Icon(Icons.chat_bubble_outline,
+                                    size: 64, color: c.muted),
                                 const SizedBox(height: 16),
                                 Text(
                                   'لا توجد رسائل بعد',
@@ -171,7 +151,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 const SizedBox(height: 8),
                                 Text(
                                   'ابدأ المحادثة الآن',
-                                  style: TextStyle(fontSize: 14, color: c.muted),
+                                  style:
+                                      TextStyle(fontSize: 14, color: c.muted),
                                 ),
                               ],
                             ),
@@ -222,7 +203,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       filled: true,
                       fillColor: c.card,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
@@ -279,7 +261,8 @@ class _ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isMe)
             Container(
@@ -309,8 +292,12 @@ class _ChatBubble extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
-                  bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
+                  bottomLeft: isMe
+                      ? const Radius.circular(16)
+                      : const Radius.circular(4),
+                  bottomRight: isMe
+                      ? const Radius.circular(4)
+                      : const Radius.circular(16),
                 ),
                 boxShadow: [
                   BoxShadow(

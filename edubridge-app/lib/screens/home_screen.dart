@@ -5,6 +5,7 @@ import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
 import 'lessons_screen.dart';
+import 'conversations_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -143,7 +144,8 @@ class HomeScreen extends StatelessWidget {
                         icon: '⚙️',
                         tint: c.tintTeal,
                         title: 'لوحة التحكم الإدارية',
-                        subtitle: 'إدارة المستخدمين وربط الأطفال بأولياء الأمور',
+                        subtitle:
+                            'إدارة المستخدمين وربط الأطفال بأولياء الأمور',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -169,6 +171,19 @@ class HomeScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const LessonsScreen()),
+                        );
+                      },
+                    ),
+                    _MenuTile(
+                      icon: '💬',
+                      tint: c.tintOrange,
+                      title: 'المحادثات',
+                      subtitle: 'تواصل مع أي مستخدم بشكل مباشر',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ConversationsScreen()),
                         );
                       },
                     ),

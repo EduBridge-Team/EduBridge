@@ -32,9 +32,9 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 
     // إدارة المستخدمين — لوحة التحكم الإدارية
-    // القائمة متاحة للمعلّم/المختص (المعلّمون فقط) لتعيين معلّم للطفل — إصلاح البطاقة 12
+    // قائمة المستخدمين متاحة لإنشاء محادثات عامة وتعيين المعلّمين.
     Route::get('/users', [UserController::class, 'index'])
-        ->middleware('role:teacher,specialist,admin,institution');
+        ->middleware('role:parent,teacher,specialist,admin,institution,ministry');
     Route::put('/users/{id}', [UserController::class, 'update'])
         ->middleware('role:admin');
     // حذف مستخدم (أدمن) — البطاقة 11

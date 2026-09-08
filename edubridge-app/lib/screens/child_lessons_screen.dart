@@ -1,7 +1,6 @@
 // شاشة دروس الطفل (المناسبة لنوع إعاقته)
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'child_progress_screen.dart';
@@ -32,31 +31,16 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   // ولي الأمر يعرض فقط — لا يسجّل إتماماً
   bool _canMarkDone = false;
 
-  // القراءة الصوتية للدروس (accessibility)
-  final FlutterTts _tts = FlutterTts();
-  int? _speakingLessonId;
-
   @override
   void initState() {
     super.initState();
-    _initTts();
     _loadRole();
     _loadLessons();
   }
 
   @override
   void dispose() {
-    _tts.stop();
     super.dispose();
-  }
-
-  Future<void> _initTts() async {
-    await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45); // أبطأ قليلاً ليناسب الأطفال
-    // عند انتهاء القراءة نرجّع أيقونة السماعة لوضعها الطبيعي
-    _tts.setCompletionHandler(() {
-      if (mounted) setState(() => _speakingLessonId = null);
-    });
   }
 
   Future<void> _loadRole() async {
@@ -158,24 +142,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     }
   }
 
-  // قراءة الدرس صوتياً — أو إيقاف القراءة إذا كانت شغّالة
-  Future<void> _toggleSpeak(Map lesson) async {
-    final lessonId = lesson['id'];
-    if (_speakingLessonId == lessonId) {
-      await _tts.stop();
-      setState(() => _speakingLessonId = null);
-      return;
-    }
-
-    await _tts.stop();
-    setState(() => _speakingLessonId = lessonId);
-    final text = [
-      lesson['title'] ?? '',
-      lesson['content'] ?? '',
-    ].where((t) => t.isNotEmpty).join('. ');
-    await _tts.speak(text);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,8 +191,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.refresh, size: 28),
-                label:
-                    const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
+                label: const Text('إعادة المحاولة',
+                    style: TextStyle(fontSize: 18)),
                 onPressed: _loadLessons,
               ),
             ),
@@ -259,7 +225,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     final c = JisrColors.of(context);
     final lessonId = lesson['id'];
     final isDone = _doneLessonIds.contains(lessonId);
-    final isSpeaking = _speakingLessonId == lessonId;
     final isSaving = _savingLessonId == lessonId;
 
     return Card(
@@ -307,28 +272,10 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                 style: const TextStyle(fontSize: 15, height: 1.5),
               ),
             ],
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                // زر الاستماع — يقرأ الدرس صوتياً للطفل
-                Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      icon: Icon(
-                        isSpeaking ? Icons.stop_circle : Icons.volume_up,
-                        size: 28,
-                      ),
-                      label: Text(
-                        isSpeaking ? 'إيقاف' : 'استمع',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      onPressed: () => _toggleSpeak(lesson),
-                    ),
-                  ),
-                ),
-                // زر «تمّ» — للمعلّم/المختص/الأدمن فقط
-                if (_canMarkDone) ...[
+            if (_canMarkDone) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
                   const SizedBox(width: 8),
                   Expanded(
                     child: SizedBox(
@@ -359,8 +306,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                     ),
                   ),
                 ],
-              ],
-            ),
+              ),
+            ],
           ],
         ),
       ),

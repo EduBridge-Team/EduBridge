@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'conversations_screen.dart';
 import 'edit_child_screen.dart';
 
 const _roleNames = {
@@ -51,9 +52,20 @@ class _AdminScreenState extends State<AdminScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
+                MaterialPageRoute(
+                    builder: (_) => const SearchByIdentityScreen()),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.chat_bubble),
+            tooltip: 'المحادثات',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ConversationsScreen(),
+              ),
+            ),
           ),
         ],
       ),
@@ -141,7 +153,8 @@ class _AdminTabBar extends StatelessWidget {
               onTap: () => onChanged(i),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                 decoration: BoxDecoration(
                   color: active ? AppColors.tealDeep : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
@@ -260,7 +273,8 @@ class _UsersTabState extends State<_UsersTab> {
           );
         } else {
           setState(() {
-            _error = 'تعذّر حذف المستخدم. تأكد من دعم الـ Backend لهذه الخاصية.';
+            _error =
+                'تعذّر حذف المستخدم. تأكد من دعم الـ Backend لهذه الخاصية.';
           });
         }
       } catch (_) {
@@ -377,7 +391,8 @@ class _UsersTabState extends State<_UsersTab> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            ElevatedButton(
+                onPressed: _load, child: const Text('إعادة المحاولة')),
           ],
         ),
       );
@@ -744,7 +759,8 @@ class _ChildrenTabState extends State<_ChildrenTab> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            ElevatedButton(
+                onPressed: _load, child: const Text('إعادة المحاولة')),
           ],
         ),
       );
@@ -766,7 +782,8 @@ class _ChildrenTabState extends State<_ChildrenTab> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     leading: const Icon(Icons.child_care, size: 40),
                     title: Text(child['name']?.toString() ?? ''),
-                    subtitle: Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
+                    subtitle:
+                        Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -1041,8 +1058,8 @@ class _VerificationRequestCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: c.tintOrange,
                       borderRadius: BorderRadius.circular(8),
@@ -1163,8 +1180,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child:
-                const Text('تم الحل', style: TextStyle(color: Colors.green)),
+            child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
           ),
         ],
       ),
@@ -1285,8 +1301,10 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   void initState() {
     super.initState();
     _name = TextEditingController(text: widget.user['name']?.toString() ?? '');
-    _email = TextEditingController(text: widget.user['email']?.toString() ?? '');
-    _phone = TextEditingController(text: widget.user['phone']?.toString() ?? '');
+    _email =
+        TextEditingController(text: widget.user['email']?.toString() ?? '');
+    _phone =
+        TextEditingController(text: widget.user['phone']?.toString() ?? '');
     _role = widget.user['role']?.toString() ?? 'parent';
   }
 
@@ -1375,7 +1393,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
+                decoration:
+                    const InputDecoration(labelText: 'البريد الإلكتروني'),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
@@ -1383,8 +1402,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 initialValue: _role,
                 decoration: const InputDecoration(labelText: 'الدور'),
                 items: _roleNames.entries
-                    .map((e) => DropdownMenuItem(
-                        value: e.key, child: Text(e.value)))
+                    .map((e) =>
+                        DropdownMenuItem(value: e.key, child: Text(e.value)))
                     .toList(),
                 onChanged: (v) {
                   if (v != null) setState(() => _role = v);
@@ -1416,8 +1435,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _saving ? null : _save,
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.green),
                       child: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
                     ),
                   ),
@@ -1526,8 +1545,8 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
                     ? Center(
-                        child:
-                            Text(_error!, style: const TextStyle(color: Colors.red)))
+                        child: Text(_error!,
+                            style: const TextStyle(color: Colors.red)))
                     : _results.isEmpty
                         ? Center(
                             child: Column(

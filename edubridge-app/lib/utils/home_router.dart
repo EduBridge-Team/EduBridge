@@ -5,6 +5,8 @@ import '../screens/verify_identity_screen.dart';
 import '../screens/teacher_screen.dart';
 import '../screens/speclalist_screen.dart';
 import '../screens/parent_screen.dart';
+import '../screens/ministry_screen.dart';
+import '../widgets/verification_access_gate.dart';
 
 Future<Widget> homeScreenForRole() async {
   final role = await ApiService.getRole();
@@ -14,19 +16,19 @@ Future<Widget> homeScreenForRole() async {
     return const HomeScreen();
   }
 
-  // التحقق من التوثيق لباقي الأدوار
-  final verificationStatus = await ApiService.getVerificationStatus();
-  if (verificationStatus != 'approved') {
-    return const VerifyIdentityScreen();
-  }
+  
 
   switch (role) {
     case 'teacher':
-      return const TeacherScreen();
+      return const VerificationAccessGate(child: TeacherScreen());
     case 'specialist':
-      return const SpecialistDashboardScreen();
+      return const VerificationAccessGate(
+        child: SpecialistDashboardScreen(),
+      );
     case 'parent':
       return const ParentScreen(parent: {});
+    case 'ministry':
+      return const MinistryScreen();
     default:
       return const HomeScreen();
   }

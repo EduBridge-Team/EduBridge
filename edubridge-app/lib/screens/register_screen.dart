@@ -27,6 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'parent': 'ولي أمر',
     'teacher': 'معلّم',
     'specialist': 'مختص',
+    'ministry': 'وزارة',
+    'institution': 'مؤسسة',
   };
 
   Future<void> _register() async {
@@ -84,8 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(26),
                     ),
                     child: Icon(Icons.person_add,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.primary),
+                        size: 48, color: Theme.of(context).colorScheme.primary),
                   ),
                   const SizedBox(height: 24),
 
@@ -176,8 +177,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
-                    validator: (v) =>
-                        v != _passwordCtrl.text ? 'كلمتا المرور غير متطابقتين' : null,
+                    validator: (v) => v != _passwordCtrl.text
+                        ? 'كلمتا المرور غير متطابقتين'
+                        : null,
                   ),
                   const SizedBox(height: 16),
 
@@ -187,8 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
                         _error!,
-                        style:
-                            const TextStyle(color: Colors.red, fontSize: 16),
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
                       ),
                     ),
 
@@ -199,8 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: ElevatedButton(
                       onPressed: _loading ? null : _register,
                       child: _loading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white)
+                          ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('إنشاء الحساب',
                               style: TextStyle(fontSize: 20)),
                     ),

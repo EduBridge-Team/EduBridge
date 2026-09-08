@@ -540,12 +540,16 @@ class ApiService {
     String? fileUrl,
   }) async {
     try {
-      await authPost('/conversations/$conversationId/messages', {
+      final res = await authPost('/conversations/$conversationId/messages', {
         'content': content,
         'file_url': fileUrl,
       });
+      if (res.statusCode != 200 && res.statusCode != 201) {
+        final data = jsonDecode(res.body);
+        throw Exception(data['error'] ?? 'تعذّر إرسال الرسالة');
+      }
     } catch (e) {
-      throw Exception('تعذّر إرسال الرسالة');
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -579,9 +583,9 @@ class ApiService {
       if (res.statusCode == 200) {
         return data['users'] ?? [];
       }
-      return [];
+      throw Exception(data['error'] ?? 'تعذّر تحميل المستخدمين');
     } catch (e) {
-      return [];
+      throw Exception('تعذّر الاتصال بالسيرفر');
     }
   }
 
@@ -752,7 +756,7 @@ class ApiService {
       return [];
     }
   }
-  // ===== دوال إضافة الشهادة ودراسة الحالة =====
+  // ===== دوال الشهادات =====
 
   static Future<void> submitCertificate({
     required String title,
@@ -777,26 +781,6 @@ class ApiService {
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر حفظ الشهادة');
-      }
-    } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
-    }
-  }
-
-  static Future<void> requestConsultation({
-    required int childId,
-    required String title,
-    required String description,
-  }) async {
-    try {
-      final res = await authPost('/consultations', {
-        'child_id': childId,
-        'title': title,
-        'description': description,
-      });
-      final data = jsonDecode(res.body);
-      if (res.statusCode != 200 && res.statusCode != 201) {
-        throw Exception(data['error'] ?? 'تعذّر إرسال الطلب');
       }
     } catch (e) {
       throw Exception('تعذّر الاتصال بالسيرفر');

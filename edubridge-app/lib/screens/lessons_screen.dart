@@ -1,7 +1,6 @@
-// شاشة تصفّح كل الدروس مع بحث وقراءة صوتية — مثل صفحة «تصفح الدروس» في الموقع
+// شاشة تصفّح كل الدروس مع بحث
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -18,29 +17,15 @@ class _LessonsScreenState extends State<LessonsScreen> {
   String? _error;
   String _query = '';
 
-  // القراءة الصوتية (accessibility)
-  final FlutterTts _tts = FlutterTts();
-  int? _speakingLessonId;
-
   @override
   void initState() {
     super.initState();
-    _initTts();
     _loadLessons();
   }
 
   @override
   void dispose() {
-    _tts.stop();
     super.dispose();
-  }
-
-  Future<void> _initTts() async {
-    await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45); // أبطأ قليلاً ليناسب الأطفال
-    _tts.setCompletionHandler(() {
-      if (mounted) setState(() => _speakingLessonId = null);
-    });
   }
 
   Future<void> _loadLessons() async {
@@ -69,24 +54,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
         _loading = false;
       });
     }
-  }
-
-  // قراءة الدرس صوتياً أو إيقافها
-  Future<void> _toggleSpeak(Map lesson) async {
-    final lessonId = lesson['id'];
-    if (_speakingLessonId == lessonId) {
-      await _tts.stop();
-      setState(() => _speakingLessonId = null);
-      return;
-    }
-
-    await _tts.stop();
-    setState(() => _speakingLessonId = lessonId);
-    final text = [
-      (lesson['title'] ?? '').toString(),
-      (lesson['content'] ?? '').toString(),
-    ].where((t) => t.isNotEmpty).join('. ');
-    await _tts.speak(text);
   }
 
   // فلترة بالبحث على العنوان والمحتوى
@@ -165,8 +132,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
           Center(
             child: Text(
               _lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
-              style: TextStyle(
-                  fontSize: 18, color: JisrColors.of(context).muted),
+              style:
+                  TextStyle(fontSize: 18, color: JisrColors.of(context).muted),
             ),
           ),
         ],
@@ -181,7 +148,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   Widget _buildLessonCard(Map lesson) {
-    final isSpeaking = _speakingLessonId == lesson['id'];
     final content = (lesson['content'] ?? '').toString();
     final c = JisrColors.of(context);
 
@@ -223,22 +189,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 style: const TextStyle(fontSize: 15, height: 1.5),
               ),
             ],
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: OutlinedButton.icon(
-                icon: Icon(
-                  isSpeaking ? Icons.stop_circle : Icons.volume_up,
-                  size: 28,
-                ),
-                label: Text(
-                  isSpeaking ? 'إيقاف' : 'استمع',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                onPressed: () => _toggleSpeak(lesson),
-              ),
-            ),
           ],
         ),
       ),

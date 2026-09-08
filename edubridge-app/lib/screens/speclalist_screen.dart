@@ -7,11 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'welcome_screen.dart';
-import 'chat_screen.dart';
 import 'evaluation_sheet.dart';
 import 'educational_plan_sheet.dart';
 import 'support_sheet.dart';
 import 'child_progress_screen.dart';
+import 'conversations_screen.dart';
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -105,8 +105,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       final rows = <Map<String, dynamic>>[];
 
       for (final child in children) {
-        final pRes =
-            await ApiService.authGet('/progress/child/${child['id']}');
+        final pRes = await ApiService.authGet('/progress/child/${child['id']}');
         final pData = jsonDecode(pRes.body);
         final progress =
             pRes.statusCode == 200 ? (pData['progress'] ?? []) : [];
@@ -192,7 +191,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         teachers: _teachers,
         onSaved: (updatedChild) {
           setState(() {
-            final index = _rows.indexWhere((r) => r['child']['id'] == updatedChild['id']);
+            final index =
+                _rows.indexWhere((r) => r['child']['id'] == updatedChild['id']);
             if (index != -1) {
               _rows[index]['child'] = updatedChild;
             }
@@ -214,7 +214,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+          if (snapshot.hasError ||
+              snapshot.data == null ||
+              snapshot.data!.isEmpty) {
             return Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(20),
@@ -291,9 +293,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 style: TextStyle(color: c.muted),
               ),
             const SizedBox(height: 12),
-            _detailRow('🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
+            _detailRow(
+                '🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
             _detailRow('🏃 التقييم الحركي', evaluation['motor_assessment']),
-            _detailRow('💚 التقييم العاطفي', evaluation['emotional_assessment']),
+            _detailRow(
+                '💚 التقييم العاطفي', evaluation['emotional_assessment']),
             _detailRow('🤝 التقييم الاجتماعي', evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
             _detailRow('📚 الخطة التعليمية', evaluation['educational_plan']),
@@ -398,7 +402,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             children: [
               _buildHeader(c),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     if (_tabIndex == 0)
@@ -560,17 +565,28 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                   IconButton(
-                 icon: const Icon(Icons.workspace_premium, color: Colors.white),
-                 tooltip: 'إضافة شهادة',
-                 onPressed: () => showModalBottomSheet(
-                 context: context,
-                 isScrollControlled: true,
-                 backgroundColor: Colors.transparent,
-                 builder: (_) => AddCertificateSheet(
-                 onSaved:  _load, 
-    ),
-  ),
-),
+                    icon: const Icon(Icons.chat_bubble, color: Colors.white),
+                    tooltip: 'المحادثات',
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ConversationsScreen(),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.workspace_premium,
+                        color: Colors.white),
+                    tooltip: 'إضافة شهادة',
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => AddCertificateSheet(
+                        onSaved: _load,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -651,12 +667,13 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _rows.isEmpty ? 'لا يوجد أطفال مسجلون بعد' : 'لا نتائج مطابقة للبحث',
+              _rows.isEmpty
+                  ? 'لا يوجد أطفال مسجلون بعد'
+                  : 'لا نتائج مطابقة للبحث',
               style: TextStyle(fontSize: 18, color: c.muted),
             ),
           ),
-          if (_rows.isEmpty)
-            const SizedBox(height: 8),
+          if (_rows.isEmpty) const SizedBox(height: 8),
           if (_rows.isEmpty)
             Center(
               child: Text(
@@ -686,8 +703,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     final approving = _approvingId == childId;
     final status = child['status'] ?? 'pending';
     final isPending = status == 'pending' || status == '';
-    final color = AppColors.kidPalette[
-        _rows.indexOf(row) % AppColors.kidPalette.length];
+    final color =
+        AppColors.kidPalette[_rows.indexOf(row) % AppColors.kidPalette.length];
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -757,7 +774,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                     if (isPending)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: AppColors.orange.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
@@ -814,7 +832,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.orange,
                           ),
-                          icon: const Icon(Icons.assessment, color: Colors.white),
+                          icon:
+                              const Icon(Icons.assessment, color: Colors.white),
                           label: const Text('تقييم الطفل'),
                           onPressed: () => _openEvaluation(row),
                         )
@@ -864,36 +883,20 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             if (child['assigned_teacher_name'] != null) ...[
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: c.tintTeal,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.person, size: 16, color: AppColors.tealDeep),
+                    const Icon(Icons.person,
+                        size: 16, color: AppColors.tealDeep),
                     const SizedBox(width: 6),
                     Text(
                       'المعلم: ${child['assigned_teacher_name']}',
                       style: TextStyle(fontSize: 13, color: c.onTint),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: () => _openChatWithTeacher(child),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.teal,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'تواصل',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -916,7 +919,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         teachers: _teachers,
         onAssigned: (updatedChild) {
           setState(() {
-            final index = _rows.indexWhere((r) => r['child']['id'] == updatedChild['id']);
+            final index =
+                _rows.indexWhere((r) => r['child']['id'] == updatedChild['id']);
             if (index != -1) {
               _rows[index]['child'] = updatedChild;
             }
@@ -925,36 +929,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         },
       ),
     );
-  }
-
-  void _openChatWithTeacher(Map child) async {
-    try {
-      final teacherId = child['assigned_teacher_id'];
-      final teacherName = child['assigned_teacher_name'] ?? 'المعلم';
-      
-      final conversationId = await ApiService.createConversation(
-        teacherId,
-        'مناقشة حالة ${child['name']}',
-      );
-
-      if (!mounted) return;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-            conversationId: conversationId,
-            otherUserName: teacherName,
-            otherUserRole: 'معلم',
-            childName: child['name'] ?? '',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
-      );
-    }
   }
 
   Widget _buildLessonsTab(JisrColors c) {
@@ -984,8 +958,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: _lessons.length,
-      itemBuilder: (context, i) =>
-          _buildLessonCard(_lessons[i], c),
+      itemBuilder: (context, i) => _buildLessonCard(_lessons[i], c),
     );
   }
 
@@ -1243,7 +1216,8 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
                       subtitle: Text(teacher['email'] ?? ''),
                       value: teacher['id'],
                       groupValue: _selectedTeacherId,
-                      onChanged: (val) => setState(() => _selectedTeacherId = val),
+                      onChanged: (val) =>
+                          setState(() => _selectedTeacherId = val),
                     )),
                 if (_error != null)
                   Padding(
@@ -1270,7 +1244,8 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
                         ),
                         onPressed: _loading ? null : _assign,
                         child: _loading
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
                             : const Text('تعيين'),
                       ),
                     ),
@@ -1499,13 +1474,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : _notifications.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.notifications_off, size: 64, color: c.muted),
+                          Icon(Icons.notifications_off,
+                              size: 64, color: c.muted),
                           const SizedBox(height: 16),
                           Text(
                             'لا توجد إشعارات',
@@ -1526,7 +1504,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
                         return Card(
                           margin: const EdgeInsets.only(bottom: 8),
-                          color: isRead ? null : c.tintTeal.withValues(alpha: 0.3),
+                          color:
+                              isRead ? null : c.tintTeal.withValues(alpha: 0.3),
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(12),
                             leading: Text(
@@ -1536,7 +1515,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             title: Text(
                               n['title'] ?? '',
                               style: TextStyle(
-                                fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                                fontWeight: isRead
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
                                 color: c.heading,
                               ),
                             ),
@@ -1639,7 +1620,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
     try {
       final result = await ApiService.createLessonWithMedia(
         title: _titleCtrl.text.trim(),
-        content: _contentCtrl.text.trim().isEmpty ? null : _contentCtrl.text.trim(),
+        content:
+            _contentCtrl.text.trim().isEmpty ? null : _contentCtrl.text.trim(),
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
         videoFile: _videoFile,
         audioFile: _audioFile,
@@ -1791,7 +1773,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.close, color: c.onTint, size: 18),
+                                icon: Icon(Icons.close,
+                                    color: c.onTint, size: 18),
                                 onPressed: _removeVideo,
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
@@ -1853,7 +1836,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.close, color: c.onTint, size: 18),
+                                icon: Icon(Icons.close,
+                                    color: c.onTint, size: 18),
                                 onPressed: _removeAudio,
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
