@@ -36,8 +36,9 @@ echo "==> (3/3) نشر الموقع..."
 cp -r "$WEB_BUILD/assets" "$PUBLIC/"
 cp "$WEB_BUILD/icon.png" "$PUBLIC/"
 cp "$WEB_BUILD/app.html" "$PUBLIC/app.html"
-# صفحة سياسة الخصوصية (مطلوبة لنشر تطبيق Google Play)
+# صفحة سياسة الخصوصية + صفحة حذف الحساب (مطلوبتان لنشر تطبيق Google Play)
 [ -f "$WEB_BUILD/privacy.html" ] && cp "$WEB_BUILD/privacy.html" "$PUBLIC/privacy.html" || true
+[ -f "$WEB_BUILD/delete-account.html" ] && cp "$WEB_BUILD/delete-account.html" "$PUBLIC/delete-account.html" || true
 # ملفات مساعدة (اختيارية — نتجاهل غيابها)
 for f in favicon.svg logo.png icons.svg; do
   [ -f "$WEB_BUILD/$f" ] && cp "$WEB_BUILD/$f" "$PUBLIC/" || true
