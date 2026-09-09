@@ -707,6 +707,11 @@ class ApiService {
       return [];
     }
   }
+  /// التحقق مما إذا كان المستخدم موثقاً (approved)
+static Future<bool> isVerified() async {
+  final status = await getVerificationStatus();
+  return status == 'approved';
+}
 
   static Future<bool> approveVerification(int requestId) async {
     try {
@@ -802,4 +807,5 @@ class ApiService {
       throw Exception('تعذّر الاتصال بالسيرفر');
     }
   }
+  
 }

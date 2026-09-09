@@ -5,6 +5,7 @@ import '../screens/verify_identity_screen.dart';
 import '../screens/teacher_screen.dart';
 import '../screens/speclalist_screen.dart';
 import '../screens/parent_screen.dart';
+import '../screens/ministry_screen.dart';
 
 Future<Widget> homeScreenForRole() async {
   final role = await ApiService.getRole();
@@ -14,11 +15,8 @@ Future<Widget> homeScreenForRole() async {
     return const HomeScreen();
   }
 
-  // التحقق من التوثيق لباقي الأدوار
-  final verificationStatus = await ApiService.getVerificationStatus();
-  if (verificationStatus != 'approved') {
-    return const VerifyIdentityScreen();
-  }
+  // ✅ التعديل هنا: لا نوجه المعلم والمختص لشاشة التوثيق إجبارياً
+  // بل نتركهم يدخلون لواجهتهم، والشاشة نفسها (كما في الصورة) تعرض بطاقة "وثّق هويتك" لتفعيل الصلاحيات
 
   switch (role) {
     case 'teacher':
@@ -27,6 +25,9 @@ Future<Widget> homeScreenForRole() async {
       return const SpecialistDashboardScreen();
     case 'parent':
       return const ParentScreen(parent: {});
+    case 'ministry':
+    case 'institution':
+      return const MinistryScreen();
     default:
       return const HomeScreen();
   }

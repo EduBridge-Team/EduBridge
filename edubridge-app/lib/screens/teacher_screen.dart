@@ -1,4 +1,3 @@
-// لوحة المعلّم — عرض الأطفال الموزعين عليه، الخطة التعليمية، التواصل مع المختص
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,6 +13,8 @@ import 'specialist_picker_sheet.dart';
 import 'support_sheet.dart';
 import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
+import 'chats_screen.dart';
+import 'verify_identity_screen.dart'; // ✅ استيراد شاشة التوثيق
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
@@ -101,6 +102,22 @@ class _TeacherScreenState extends State<TeacherScreen> {
     } catch (_) {}
   }
 
+  // دالة فحص التوثيق
+  Future<bool> _checkVerification() async {
+    if (!await ApiService.isVerified()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('⚠️ يرجى توثيق الهوية أولاً لتفعيل هذه الصلاحية'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return false;
+    }
+    return true;
+  }
+
   String? _typeName(int? id) {
     if (id == null) return null;
     for (final t in _types) {
@@ -170,62 +187,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       context,
       MaterialPageRoute(builder: (_) => const NotificationsScreen()),
     ).then((_) => _loadNotificationsCount());
-  }
-
-  void _openChatWithSpecialist(Map child) async {
-    try {
-      final specialists = await ApiService.getSpecialists();
-      if (specialists.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لا يوجد مختصون متاحون للتواصل')),
-        );
-        return;
-      }
-
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (_) => SpecialistPickerSheet(
-          specialists: specialists,
-          childName: child['name'] ?? '',
-          onSelect: (specialist) {
-            Navigator.pop(context);
-            _openConversation(specialist, child);
-          },
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر تحميل المختصين: $e')),
-      );
-    }
-  }
-
-  Future<void> _openConversation(Map specialist, Map child) async {
-    try {
-      final conversationId = await ApiService.createConversation(
-        specialist['id'],
-        'مناقشة حالة ${child['name']}',
-      );
-
-      if (!mounted) return;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-            conversationId: conversationId,
-            otherUserName: specialist['name'] ?? '',
-            otherUserRole: 'مختص',
-            childName: child['name'] ?? '',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
-      );
-    }
   }
 
   String _getStatusText(String? status) {
@@ -333,9 +294,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null
                           ? _buildError()
-                          : _tabIndex == 0
-                              ? _buildChildrenTab(c)
-                              : _buildLessonsTab(c),
+                          : _buildBody(c), // ✅ استخدام _buildBody الجديد
                 ),
               ),
             ],
@@ -362,7 +321,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
       ),
       floatingActionButton: _tabIndex == 1
           ? FloatingActionButton.extended(
-              onPressed: () => setState(() => _adding = true),
+              onPressed: () async {
+                if (await _checkVerification()) {
+                  setState(() => _adding = true);
+                }
+              },
               icon: const Icon(Icons.add),
               label: const Text('إضافة درس'),
               backgroundColor: AppColors.green,
@@ -407,20 +370,32 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       backgroundColor: Colors.transparent,
                       builder: (_) => const SupportSheet(),
                     ),
-                    
                   ),
                   IconButton(
-               icon: const Icon(Icons.workspace_premium, color: Colors.white),
-              tooltip: 'إضافة شهادة',
-               onPressed: () => showModalBottomSheet(
-               context: context,
-            isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-                 builder: (_) => AddCertificateSheet(
-                onSaved: _loadData,
-    ),
-  ),
-),
+                    icon: const Icon(Icons.workspace_premium, color: Colors.white),
+                    tooltip: 'إضافة شهادة',
+                    onPressed: () async {
+                      if (await _checkVerification()) {
+                        if (!mounted) return;
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => AddCertificateSheet(onSaved: _loadData),
+                        );
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chat, color: Colors.white),
+                    tooltip: 'المحادثات',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -489,6 +464,79 @@ class _TeacherScreenState extends State<TeacherScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  // ✅ الدالة الجديدة: تعرض البطاقة فوق المحتوى
+  Widget _buildBody(JisrColors c) {
+    return FutureBuilder<bool>(
+      future: ApiService.isVerified(),
+      builder: (context, snapshot) {
+        final isVerified = snapshot.data ?? false;
+        return Column(
+          children: [
+            if (!isVerified) _buildVerificationBanner(c), // البطاقة
+            Expanded(
+              child: _tabIndex == 0 ? _buildChildrenTab(c) : _buildLessonsTab(c),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ✅ دالة بناء البطاقة
+  Widget _buildVerificationBanner(JisrColors c) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.verified_user, size: 48, color: AppColors.orange),
+          const SizedBox(height: 8),
+          Text(
+            'وثّق هويتك لتفعيل الصلاحيات',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: c.heading),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'يمكنك مشاهدة الأقسام الآن، ولن تتمكن من استخدامها إلا بعد موافقة الأدمن.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: c.muted),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.orange,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()),
+                );
+                if (mounted) setState(() {});
+              },
+              child: const Text('توثيق الهوية', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -623,18 +671,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         onPressed: () => _viewChildProgress(child),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 36),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        icon: const Icon(Icons.chat, size: 16),
-                        label: const Text('تواصل'),
-                        onPressed: () => _openChatWithSpecialist(child),
-                      ),
-                    ),
+                    // 🗑️ تم حذف زر "تواصل" هنا
                   ],
                 ),
               ),

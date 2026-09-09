@@ -1,6 +1,7 @@
-// لوحة المختص — متابعة وتقييم الأطفال، تعيين معلمين، متابعة الخطط العلاجية
+import 'dart:convert';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +13,8 @@ import 'evaluation_sheet.dart';
 import 'educational_plan_sheet.dart';
 import 'support_sheet.dart';
 import 'child_progress_screen.dart';
+import 'chats_screen.dart';
+import 'verify_identity_screen.dart'; // ✅ استيراد شاشة التوثيق
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -141,7 +144,24 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     } catch (_) {}
   }
 
+  // ✅ دالة فحص التوثيق
+  Future<bool> _checkVerification() async {
+    if (!await ApiService.isVerified()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('⚠️ يرجى توثيق الهوية أولاً لتفعيل هذه الصلاحية'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return false;
+    }
+    return true;
+  }
+
   Future<void> _approve(Map<String, dynamic> row) async {
+    if (!await _checkVerification()) return;
     final current = row['stats']['current'];
     if (current == null) return;
 
@@ -182,7 +202,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  void _openEvaluation(Map<String, dynamic> row) {
+  void _openEvaluation(Map<String, dynamic> row) async {
+    if (!await _checkVerification()) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -485,9 +506,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null
                           ? _buildError()
-                          : _tabIndex == 0
-                              ? _buildProgressTab(c)
-                              : _buildLessonsTab(c),
+                          : _buildBody(c), // ✅ استخدام _buildBody الجديد
                 ),
               ),
             ],
@@ -513,7 +532,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       floatingActionButton: _tabIndex == 1
           ? FloatingActionButton.extended(
-              onPressed: () => setState(() => _adding = true),
+              onPressed: () async {
+                if (await _checkVerification()) {
+                  setState(() => _adding = true);
+                }
+              },
               icon: const Icon(Icons.add),
               label: const Text('إضافة درس'),
               backgroundColor: AppColors.green,
@@ -560,17 +583,30 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                   IconButton(
-                 icon: const Icon(Icons.workspace_premium, color: Colors.white),
-                 tooltip: 'إضافة شهادة',
-                 onPressed: () => showModalBottomSheet(
-                 context: context,
-                 isScrollControlled: true,
-                 backgroundColor: Colors.transparent,
-                 builder: (_) => AddCertificateSheet(
-                 onSaved:  _load, 
-    ),
-  ),
-),
+                    icon: const Icon(Icons.workspace_premium, color: Colors.white),
+                    tooltip: 'إضافة شهادة',
+                    onPressed: () async {
+                      if (await _checkVerification()) {
+                        if (!mounted) return;
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => AddCertificateSheet(onSaved: _load),
+                        );
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chat, color: Colors.white),
+                    tooltip: 'المحادثات',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -637,6 +673,79 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  // ✅ الدالة الجديدة: تعرض البطاقة فوق المحتوى
+  Widget _buildBody(JisrColors c) {
+    return FutureBuilder<bool>(
+      future: ApiService.isVerified(),
+      builder: (context, snapshot) {
+        final isVerified = snapshot.data ?? false;
+        return Column(
+          children: [
+            if (!isVerified) _buildVerificationBanner(c), // البطاقة
+            Expanded(
+              child: _tabIndex == 0 ? _buildProgressTab(c) : _buildLessonsTab(c),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ✅ دالة بناء البطاقة
+  Widget _buildVerificationBanner(JisrColors c) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.verified_user, size: 48, color: AppColors.orange),
+          const SizedBox(height: 8),
+          Text(
+            'وثّق هويتك لتفعيل الصلاحيات',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: c.heading),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'يمكنك مشاهدة الأقسام الآن، ولن تتمكن من استخدامها إلا بعد موافقة الأدمن.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: c.muted),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.orange,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()),
+                );
+                if (mounted) setState(() {});
+              },
+              child: const Text('توثيق الهوية', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -877,24 +986,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       'المعلم: ${child['assigned_teacher_name']}',
                       style: TextStyle(fontSize: 13, color: c.onTint),
                     ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: () => _openChatWithTeacher(child),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.teal,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'تواصل',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // 🗑️ تم حذف زر "تواصل" هنا
                   ],
                 ),
               ),
@@ -905,7 +997,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     );
   }
 
-  void _openAssignTeacher(Map<String, dynamic> row) {
+  void _openAssignTeacher(Map<String, dynamic> row) async {
+    if (!await _checkVerification()) return;
     final child = row['child'];
     showModalBottomSheet(
       context: context,
@@ -925,36 +1018,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         },
       ),
     );
-  }
-
-  void _openChatWithTeacher(Map child) async {
-    try {
-      final teacherId = child['assigned_teacher_id'];
-      final teacherName = child['assigned_teacher_name'] ?? 'المعلم';
-      
-      final conversationId = await ApiService.createConversation(
-        teacherId,
-        'مناقشة حالة ${child['name']}',
-      );
-
-      if (!mounted) return;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-            conversationId: conversationId,
-            otherUserName: teacherName,
-            otherUserRole: 'معلم',
-            childName: child['name'] ?? '',
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
-      );
-    }
   }
 
   Widget _buildLessonsTab(JisrColors c) {
@@ -1063,7 +1126,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
 }
 
 // ===== مكوّنات مساعدة =====
-
 class _StatsCard extends StatelessWidget {
   final String icon;
   final String value;
