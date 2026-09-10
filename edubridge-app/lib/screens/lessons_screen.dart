@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'assistant_screen.dart';
 
 class LessonsScreen extends StatefulWidget {
   const LessonsScreen({super.key});
@@ -237,6 +238,26 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   style: const TextStyle(fontSize: 18),
                 ),
                 onPressed: () => _toggleSpeak(lesson),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.auto_awesome, size: 24),
+                label: const Text('اسأل نور عن الدرس'),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AssistantScreen(
+                      lessonContext: [
+                        'عنوان الدرس: ${lesson['title'] ?? ''}',
+                        if (content.isNotEmpty) 'محتوى الدرس: $content',
+                      ].join('\n'),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'child_progress_screen.dart';
+import 'assistant_screen.dart';
 
 class ChildLessonsScreen extends StatefulWidget {
   final int childId;
@@ -360,6 +361,27 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   ),
                 ],
               ],
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.auto_awesome, size: 24),
+                label: const Text('اسأل نور عن الدرس'),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AssistantScreen(
+                      lessonContext: [
+                        'عنوان الدرس: ${lesson['title'] ?? ''}',
+                        if (lesson['content'] != null)
+                          'محتوى الدرس: ${lesson['content']}',
+                      ].join('\n'),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

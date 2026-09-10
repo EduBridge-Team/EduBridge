@@ -4,11 +4,14 @@ import 'services/api_service.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
+import 'utils/navigation.dart';
+import 'widgets/pet_assistant_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // تحميل وضع الثيم (فاتح/ليلي) من التخزين المحلي
   await loadSavedThemeMode();
+  await ApiService.initializeAuthState();
 
   runApp(const ProviderScope(child: EduBridgeApp()));
 }
@@ -23,6 +26,7 @@ class EduBridgeApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: jisrThemeMode,
       builder: (context, mode, _) => MaterialApp(
+        navigatorKey: appNavigatorKey,
         title: 'EduBridge — جسر تعليمي',
         debugShowCheckedModeBanner: false,
         locale: const Locale('ar'),
@@ -32,7 +36,7 @@ class EduBridgeApp extends StatelessWidget {
         // تطبيق الاتجاه من اليمين لليسار على كامل التطبيق
         builder: (context, child) => Directionality(
           textDirection: TextDirection.rtl,
-          child: child!,
+          child: PetAssistantOverlay(child: child!),
         ),
         // شاشة البداية (Splash) ثم التوجيه إلى الشاشة المناسبة
         home: const WelcomeScreen(),
