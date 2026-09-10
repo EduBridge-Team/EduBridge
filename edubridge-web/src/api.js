@@ -324,3 +324,15 @@ export function addConsultationNote(id, content) {
     body: JSON.stringify({ content }),
   });
 }
+
+// ===== نور — المساعد الذكي (المسار محمي بالتوكن) =====
+export function askAssistant(messages, context) {
+  const recent = messages.slice(-12);
+  return request("/assistant/chat", {
+    method: "POST",
+    body: JSON.stringify({
+      messages: recent,
+      ...(context ? { context: context.slice(0, 1200) } : {}),
+    }),
+  });
+}

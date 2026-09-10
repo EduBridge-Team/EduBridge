@@ -2,6 +2,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { getToken } from './api'
 import TopBar from './components/TopBar'
+import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -227,6 +228,9 @@ export default function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* نور يظهر فقط للمستخدم المسجّل دخوله */}
+      <AssistantWidget />
     </div>
   )
 }
