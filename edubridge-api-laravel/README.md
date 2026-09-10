@@ -56,3 +56,21 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## مساعد نور الذكي
+
+أضف القيم التالية إلى ملف `.env` على الخادم، ثم شغّل `php artisan config:clear`:
+
+```env
+GEMINI_API_KEY=ضع_المفتاح_هنا
+GEMINI_MODEL=gemini-3.8-flash
+```
+
+احصل على مفتاح مجاني من [Google AI Studio](https://aistudio.google.com/apikey).
+يستدعي تطبيق Flutter المسار المحمي `POST /api/assistant/chat`. يبقى مفتاح Gemini
+على الخادم، ولا تتم إضافته إلى التطبيق أو المستودع.
+
+المسار يحذف البريد الإلكتروني والأرقام الطويلة من الرسائل ويرسل الطلب مع
+`store: false`. لا تُرسل بيانات طفل شخصية، وراجع متطلبات حماية الطفل والخصوصية
+قبل الإطلاق العام. الخطة المجانية محدودة المعدل وقد تستخدم Google المحتوى لتحسين
+منتجاتها، لذلك لا تستخدم بيانات حقيقية حساسة أثناء التجربة.

@@ -20,6 +20,7 @@ use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\AssistantController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -30,6 +31,10 @@ Route::post('/auth/google', [AuthController::class, 'google']);
 Route::middleware('auth.jwt')->group(function () {
     // مثال على مسار محمي — يعيد حمولة التوكن
     Route::get('/me', [AuthController::class, 'me']);
+
+    // مساعد «نور» الذكي — محمي ومحدود الطلبات لحماية الأطفال والتكلفة
+    Route::post('/assistant/chat', [AssistantController::class, 'chat'])
+        ->middleware('throttle:20,1');
 
     // إدارة المستخدمين — لوحة التحكم الإدارية
     // القائمة متاحة للمعلّم/المختص (المعلّمون فقط) لتعيين معلّم للطفل — إصلاح البطاقة 12
