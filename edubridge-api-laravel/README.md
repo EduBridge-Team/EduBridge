@@ -56,3 +56,22 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## مساعد نور الذكي
+
+أضف القيم التالية إلى ملف `.env` على الخادم، ثم شغّل `php artisan config:clear`:
+
+```env
+OPENAI_API_KEY=ضع_المفتاح_هنا
+OPENAI_MODEL=gpt-6-astra
+OPENAI_MODERATION_MODEL=omni-moderation-latest
+OPENAI_MODERATION_MODEL=omni-moderation-latest
+```
+
+يستدعي تطبيق Flutter المسار المحمي `POST /api/assistant/chat`. يبقى مفتاح OpenAI
+على الخادم، ولا تتم إضافته إلى التطبيق أو المستودع.
+
+المسار يحذف البريد الإلكتروني والأرقام الطويلة من الرسائل، يفحص آخر سؤال عبر
+Moderation API، ويرسل الطلب مع `store: false`. لا تُرسل بيانات طفل شخصية. إذا
+سيسمح المنتج لطفل دون سن الموافقة الرقمية باستخدام المساعد مباشرة، راجع متطلبات
+حماية الطفل والخصوصية وفعّل Zero Data Retention قبل الإطلاق العام.

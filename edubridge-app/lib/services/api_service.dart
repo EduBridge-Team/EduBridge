@@ -4,15 +4,24 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 
 class ApiService {
+  /// Drives UI that should only be visible while a user is signed in.
+  static final ValueNotifier<bool> isAuthenticated = ValueNotifier(false);
+
+  static Future<void> initializeAuthState() async {
+    isAuthenticated.value = await getToken() != null;
+  }
+
   // ===== دوال التخزين المحلي =====
 
   static Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
+    isAuthenticated.value = true;
   }
 
   static Future<String?> getToken() async {
@@ -48,6 +57,7 @@ class ApiService {
     await prefs.remove('role');
     await prefs.remove('name');
     await prefs.remove('userId');
+    isAuthenticated.value = false;
   }
 
   // ===== دوال المصادقة (Auth) =====
