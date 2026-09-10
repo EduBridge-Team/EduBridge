@@ -88,7 +88,7 @@ class AuthController extends Controller
             $now = time();
             $token = JWT::encode(
                 ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                env('JWT_SECRET'),
+                config('services.jwt.secret'),
                 'HS256'
             );
 
@@ -161,7 +161,7 @@ class AuthController extends Controller
             $now = time();
             $token = JWT::encode(
                 ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                env('JWT_SECRET'),
+                config('services.jwt.secret'),
                 'HS256'
             );
 
