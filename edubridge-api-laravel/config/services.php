@@ -39,5 +39,14 @@ return [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-3.8-flash'),
     ],
+    
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+        'model' => env('GROQ_MODEL', 'openai/gpt-oss-20b'),
+    ],
+
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+    ],
 
 ];

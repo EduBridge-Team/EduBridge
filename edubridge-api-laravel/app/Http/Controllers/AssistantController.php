@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class AssistantController extends Controller
 {
-    /** Send a short, role-aware conversation to Gemini from the server. */
+    /** Send a short, role-aware conversation to Groq from the server. */
     public function chat(Request $request)
     {
         $validated = $request->validate([
@@ -19,7 +19,7 @@ class AssistantController extends Controller
             'context' => ['nullable', 'string', 'max:1200'],
         ]);
 
-        $apiKey = config('services.gemini.key');
+        $apiKey = config('services.groq.key');
         if (! $apiKey) {
             return response()->json([
                 'error' => 'مساعد نور غير مفعّل على الخادم بعد.',
@@ -39,8 +39,17 @@ class AssistantController extends Controller
 
         $context = trim((string) ($validated['context'] ?? ''));
         $instructions = implode("\n", array_filter([
-            'أنت نور، رفيق EduBridge التعليمي الودود.',
+            'أنت مساعد EduBridge التعليمي الرسمي، واسمك نور.',
+            'وظيفتك الأساسية مساعدة المستخدم في التعلم وفهم الدروس والمهارات التعليمية.',
+            'أجب عن الأسئلة المتعلقة بالدروس، الواجبات، القراءة، الكتابة، الحساب، العلوم، التكنولوجيا، والمهارات اليومية التعليمية.',
+            'إذا كان السؤال خارج التعليم، أجب باختصار أن تخصصك هو التعليم داخل EduBridge، ثم اقترح ربط السؤال بموضوع تعليمي.',
+            'لا تقدّم استشارات طبية أو قانونية أو مالية أو سياسية.',
+            'لا تدخل في نقاشات ترفيهية أو شخصية طويلة خارج هدف التعلم.',
+            'كيّف الشرح مع عمر المستخدم واحتياجاته التعليمية عندما تتوفر هذه المعلومات.',
             "الدور الحالي للمستخدم: {$roleName}.",
+            'أجب بالعربية الواضحة والمختصرة، واستخدم كلمات إنجليزية فقط عندما تفيد الدرس.',
+            'راعِ أن المنصة تخدم أطفالاً من ذوي الاحتياجات الخاصة: استخدم لغة بسيطة، مشجعة، وغير حكمية.',
+            'ساعد في فهم الدروس، تبسيط الأفكار، واقتراح أنشطة تعليمية آمنة وقصيرة.',
             'أجب بالعربية الواضحة والمختصرة، واستخدم كلمات إنجليزية فقط عندما تفيد الدرس.',
             'راعِ أن المنصة تخدم أطفالاً من ذوي الاحتياجات الخاصة: استخدم لغة بسيطة، مشجعة، وغير حكمية.',
             'ساعد في فهم الدروس، تبسيط الأفكار، واقتراح أنشطة تعليمية آمنة وقصيرة.',
@@ -65,18 +74,22 @@ class AssistantController extends Controller
             ->implode("\n");
 
         try {
-            $response = Http::withHeaders(['x-goog-api-key' => $apiKey])
+            $response = Http::withToken($apiKey)
                 ->acceptJson()
                 ->timeout(35)
-                ->post('https://generativelanguage.googleapis.com/v1beta/interactions', [
-                    'model' => config('services.gemini.model'),
-                    'system_instruction' => $instructions,
-                    'input' => $transcript,
-                    'store' => false,
-                    'generation_config' => [
-                        'max_output_tokens' => 500,
-                        'thinking_level' => 'low',
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => config('services.groq.model'),
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => $instructions,
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $transcript,
+                        ],
                     ],
+                    'max_completion_tokens' => 500,
                 ]);
         } catch (ConnectionException $e) {
             report($e);
@@ -85,7 +98,7 @@ class AssistantController extends Controller
         }
 
         if (! $response->successful()) {
-            Log::warning('Gemini assistant request failed', [
+            Log::warning('Groq assistant request failed', [
                 'status' => $response->status(),
             ]);
 
@@ -123,21 +136,8 @@ class AssistantController extends Controller
 
     private function extractOutputText(array $payload): ?string
     {
-        foreach ($payload['steps'] ?? [] as $step) {
-            if (($step['type'] ?? null) !== 'model_output') {
-                continue;
-            }
-
-            foreach ($step['content'] ?? [] as $content) {
-                if (($content['type'] ?? null) === 'text') {
-                    $text = trim((string) ($content['text'] ?? ''));
-                    if ($text !== '') {
-                        return $text;
-                    }
-                }
-            }
-        }
-
-        return null;
+        $text = trim((string) ($payload['choices'][0]['message']['content'] ?? ''));
+    
+        return $text !== '' ? $text : null;
     }
 }
