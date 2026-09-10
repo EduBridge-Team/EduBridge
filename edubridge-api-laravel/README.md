@@ -62,16 +62,15 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 أضف القيم التالية إلى ملف `.env` على الخادم، ثم شغّل `php artisan config:clear`:
 
 ```env
-OPENAI_API_KEY=ضع_المفتاح_هنا
-OPENAI_MODEL=gpt-6-astra
-OPENAI_MODERATION_MODEL=omni-moderation-latest
-OPENAI_MODERATION_MODEL=omni-moderation-latest
+GEMINI_API_KEY=ضع_المفتاح_هنا
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
-يستدعي تطبيق Flutter المسار المحمي `POST /api/assistant/chat`. يبقى مفتاح OpenAI
+احصل على مفتاح مجاني من [Google AI Studio](https://aistudio.google.com/apikey).
+يستدعي تطبيق Flutter المسار المحمي `POST /api/assistant/chat`. يبقى مفتاح Gemini
 على الخادم، ولا تتم إضافته إلى التطبيق أو المستودع.
 
-المسار يحذف البريد الإلكتروني والأرقام الطويلة من الرسائل، يفحص آخر سؤال عبر
-Moderation API، ويرسل الطلب مع `store: false`. لا تُرسل بيانات طفل شخصية. إذا
-سيسمح المنتج لطفل دون سن الموافقة الرقمية باستخدام المساعد مباشرة، راجع متطلبات
-حماية الطفل والخصوصية وفعّل Zero Data Retention قبل الإطلاق العام.
+المسار يحذف البريد الإلكتروني والأرقام الطويلة من الرسائل ويرسل الطلب مع
+`store: false`. لا تُرسل بيانات طفل شخصية، وراجع متطلبات حماية الطفل والخصوصية
+قبل الإطلاق العام. الخطة المجانية محدودة المعدل وقد تستخدم Google المحتوى لتحسين
+منتجاتها، لذلك لا تستخدم بيانات حقيقية حساسة أثناء التجربة.

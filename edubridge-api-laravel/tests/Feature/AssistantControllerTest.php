@@ -13,21 +13,19 @@ class AssistantControllerTest extends TestCase
     public function test_it_returns_the_assistant_reply_without_storing_the_response(): void
     {
         config([
-            'services.openai.key' => 'test-key',
-            'services.openai.model' => 'test-model',
+            'services.gemini.key' => 'test-key',
+            'services.gemini.model' => 'test-model',
         ]);
 
-        Http::fake(fn (HttpRequest $request) => str_ends_with($request->url(), '/moderations')
-            ? Http::response(['results' => [['flagged' => false]]])
-            : Http::response([
-                'output' => [[
-                    'type' => 'message',
-                    'content' => [[
-                        'type' => 'output_text',
-                        'text' => 'لنشرح الفكرة بخطوات بسيطة.',
-                    ]],
+        Http::fake(fn () => Http::response([
+            'steps' => [[
+                'type' => 'model_output',
+                'content' => [[
+                    'type' => 'text',
+                    'text' => 'لنشرح الفكرة بخطوات بسيطة.',
                 ]],
-            ]));
+            ]],
+        ]));
 
         $request = Request::create(
             '/api/assistant/chat',
@@ -51,18 +49,19 @@ class AssistantControllerTest extends TestCase
             json_decode($response->getContent(), true)['reply'],
         );
         Http::assertSent(fn (HttpRequest $sent) =>
-            $sent->url() === 'https://api.openai.com/v1/responses'
+            $sent->url() === 'https://generativelanguage.googleapis.com/v1beta/interactions'
             && $sent['model'] === 'test-model'
             && $sent['store'] === false
-            && !str_contains(json_encode($sent->data()), 'test@example.com')
-            && !str_contains(json_encode($sent->data()), '0599123456')
-            && str_contains($sent['input'][0]['content'], 'معلّم')
+            && $sent->hasHeader('x-goog-api-key', 'test-key')
+            && ! str_contains(json_encode($sent->data()), 'test@example.com')
+            && ! str_contains(json_encode($sent->data()), '0599123456')
+            && str_contains($sent['system_instruction'], 'معلّم')
         );
     }
 
     public function test_it_reports_when_the_server_key_is_not_configured(): void
     {
-        config(['services.openai.key' => null]);
+        config(['services.gemini.key' => null]);
 
         $request = Request::create(
             '/api/assistant/chat',

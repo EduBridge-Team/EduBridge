@@ -35,10 +35,9 @@ return [
         ],
     ],
 
-    'openai' => [
-        'key' => env('OPENAI_API_KEY'),
-        'model' => env('OPENAI_MODEL', 'gpt-6-astra'),
-        'moderation_model' => env('OPENAI_MODERATION_MODEL', 'omni-moderation-latest'),
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.8-flash'),
     ],
 
 ];
