@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bot, Send, Sparkles, Trash2, X } from 'lucide-react'
+import { Send, Trash2, X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../api'
+import NoorPet from './NoorPet'
 
 const WELCOME = {
   id: 'welcome',
@@ -107,7 +108,7 @@ export default function AssistantWidget() {
       {open && (
         <section className="noor-panel" role="dialog" aria-label="محادثة نور">
           <header className="noor-header">
-            <span className="noor-avatar" aria-hidden="true"><Bot size={24} /></span>
+            <span className="noor-avatar" aria-hidden="true"><NoorPet size={44} /></span>
             <span>
               <strong>نور</strong>
               <small>المساعد الذكي التعليمي</small>
@@ -164,7 +165,7 @@ export default function AssistantWidget() {
         aria-expanded={open}
         aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
       >
-        <Sparkles size={21} />
+        <NoorPet size={52} />
         <span>اسأل نور</span>
       </button>
     </aside>
