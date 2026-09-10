@@ -45,4 +45,8 @@ return [
         'model' => env('GROQ_MODEL', 'openai/gpt-oss-20b'),
     ],
 
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+    ],
+
 ];
