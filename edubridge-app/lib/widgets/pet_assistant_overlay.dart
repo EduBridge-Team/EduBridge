@@ -16,16 +16,21 @@ class PetAssistantOverlay extends StatefulWidget {
 }
 
 class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
-  bool _assistantOpen = false;
-
   Future<void> _openAssistant() async {
     final navigator = appNavigatorKey.currentState;
-    if (navigator == null || _assistantOpen) return;
-    setState(() => _assistantOpen = true);
-    await navigator.push(
-      MaterialPageRoute(builder: (_) => const AssistantScreen()),
-    );
-    if (mounted) setState(() => _assistantOpen = false);
+    if (navigator == null || assistantScreenVisible.value) return;
+
+    // Mark it visible before pushing to prevent duplicate routes on a fast tap.
+    assistantScreenVisible.value = true;
+    try {
+      await navigator.push(
+        MaterialPageRoute(builder: (_) => const AssistantScreen()),
+      );
+    } finally {
+      // Always restore the launcher, including when the route is removed
+      // programmatically instead of with the system back button.
+      assistantScreenVisible.value = false;
+    }
   }
 
   @override
@@ -43,7 +48,6 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
                 final keyboardOpen = mediaQuery.viewInsets.bottom > 0;
                 if (!signedIn ||
                     assistantVisible ||
-                    _assistantOpen ||
                     keyboardOpen) {
                   return const SizedBox.shrink();
                 }
