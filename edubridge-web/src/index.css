@@ -2235,8 +2235,8 @@ textarea::placeholder {
 }
 
 .noor-launcher {
-    min-height: 52px;
-    padding: 0 18px;
+    min-height: 60px;
+    padding: 2px 16px 2px 5px;
     border: 2px solid var(--yellow);
     border-radius: 999px;
     background: var(--navy);
@@ -2301,13 +2301,76 @@ textarea::placeholder {
 }
 
 .noor-avatar {
-    width: 40px;
-    height: 40px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    background: var(--yellow);
-    color: var(--navy);
+    background: var(--surface);
     display: grid;
     place-items: center;
+    overflow: hidden;
+}
+
+.noor-pet {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+    animation: noor-pet-bob 2.6s ease-in-out infinite;
+}
+
+.noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.22); }
+.noor-pet-glow { fill: oklch(80% 0.13 85 / 0.28); }
+.noor-pet-body { fill: var(--teal); }
+.noor-pet-ear,
+.noor-pet-badge { fill: var(--navy); }
+.noor-pet-face { fill: #fff; }
+.noor-pet-eyes { fill: var(--navy-deep); animation: noor-pet-eyes 5.2s infinite; }
+.noor-pet-blink {
+    fill: none;
+    stroke: var(--navy-deep);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: noor-pet-blink 5.2s infinite;
+}
+.noor-pet-beak { fill: var(--coral); }
+.noor-pet-bridge {
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+}
+.noor-pet-sparkle {
+    fill: var(--yellow);
+    animation: noor-pet-sparkle 1.3s ease-in-out infinite alternate;
+}
+
+@keyframes noor-pet-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes noor-pet-eyes {
+    0%, 88%, 94%, 100% { opacity: 1; }
+    89%, 93% { opacity: 0; }
+}
+
+@keyframes noor-pet-blink {
+    0%, 88%, 94%, 100% { opacity: 0; }
+    89%, 93% { opacity: 1; }
+}
+
+@keyframes noor-pet-sparkle {
+    from { transform: translateY(-2px); opacity: 0.65; }
+    to { transform: translateY(2px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noor-pet,
+    .noor-pet-eyes,
+    .noor-pet-blink,
+    .noor-pet-sparkle {
+        animation: none;
+    }
 }
 
 .noor-icon-btn {
