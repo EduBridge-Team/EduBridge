@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:edubridge_app/screens/chats_screen.dart';
 import 'package:flutter/material.dart';
+import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'notifications_screen.dart';
@@ -11,6 +12,7 @@ import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 import 'add_child_screen.dart';
 import 'edit_child_screen.dart';
+import 'children_accessibility_overview_screen.dart';
 
 class ParentScreen extends StatefulWidget {
   const ParentScreen({super.key, required Map<dynamic, dynamic> parent});
@@ -30,6 +32,12 @@ class _ParentScreenState extends State<ParentScreen> {
     super.initState();
     _loadData();
     _loadNotificationsCount();
+  }
+
+  @override
+  void dispose() {
+    AccessibilityService.instance.setActiveChild(null);
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -93,12 +101,79 @@ class _ParentScreenState extends State<ParentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
     return Scaffold(
+      // ✅ AppBar مع 4 أزرار صغيرة
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+          ),
+        ),
+        title: Row(
+          children: [
+            Image.asset('assets/icon.png', width: 26, height: 26),
+            const SizedBox(width: 8),
+            const Text(
+              'جسر التعليمي',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          // ♿ احتياجات الأبناء
+          _appBarIcon(
+            icon: Icons.accessibility_new,
+            tooltip: 'احتياجات الأبناء الخاصة',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ChildrenAccessibilityOverviewScreen(),
+              ),
+            ),
+          ),
+          // 🎧 الدعم الفني
+          _appBarIcon(
+            icon: Icons.headset_mic,
+            tooltip: 'الدعم الفني',
+            onTap: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => const SupportSheet(),
+            ),
+          ),
+          // 💬 المحادثات
+          _appBarIcon(
+            icon: Icons.chat,
+            tooltip: 'المحادثات',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatsScreen()),
+              ).then((_) => _loadNotificationsCount());
+            },
+          ),
+          // 🎖️ إضافة شهادة
+          _appBarIcon(
+            icon: Icons.workspace_premium,
+            tooltip: 'إضافة شهادة',
+            onTap: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => AddCertificateSheet(onSaved: _loadData),
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: Column(
         children: [
-          _buildHeader(c),
+          _buildHeader(JisrColors.of(context)),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _loadData,
@@ -124,6 +199,25 @@ class _ParentScreenState extends State<ParentScreen> {
     );
   }
 
+  // ✅ دالة مساعدة لأيقونات AppBar — حجم صغير
+  Widget _appBarIcon({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return IconButton(
+      icon: Icon(icon, color: Colors.white, size: 18),
+      tooltip: tooltip,
+      onPressed: onTap,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  // ============================================================
+  //  الرأس — الإشعارات + الخروج + الترحيب
+  // ============================================================
   Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
@@ -134,86 +228,53 @@ class _ParentScreenState extends State<ParentScreen> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ─── الإشعارات + الخروج (حجم صغير) ───
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Image.asset('assets/icon.png', width: 32, height: 32),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'جسر التعليمي - ولي الأمر',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.headset_mic, color: Colors.white),
-                    onPressed: () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => const SupportSheet(),
-                    ),
-                        
-                  ),
-                  // أضف في داخل Row في الرأس (بعد أيقونة الدعم):
-                IconButton(
-                   icon: const Icon(Icons.chat, color: Colors.white),
-                  onPressed: () {
-                   Navigator.push(
-                    context,
-                  MaterialPageRoute(builder: (_) => const ChatsScreen()),
-                     ).then((_) => _loadNotificationsCount());
-  },
-),
-                  IconButton(
-            icon: const Icon(Icons.workspace_premium, color: Colors.white),
-            tooltip: 'إضافة شهادة',
-            onPressed: () => showModalBottomSheet(
-             context: context,
-            isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (_) => AddCertificateSheet(
-          onSaved: _loadData,
-    ),
-  ),
-),
+                  // 🔔 الإشعارات + شارة
                   Stack(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.notifications, color: Colors.white),
+                        icon: const Icon(Icons.notifications,
+                            color: Colors.white, size: 20),
+                        tooltip: 'الإشعارات',
+                        padding: EdgeInsets.zero,
+                        constraints:
+                            const BoxConstraints(minWidth: 32, minHeight: 32),
+                        visualDensity: VisualDensity.compact,
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const NotificationsScreen()),
                           ).then((_) => _loadNotificationsCount());
                         },
                       ),
                       if (_unreadCount > 0)
                         Positioned(
-                          right: 4,
-                          top: 4,
+                          right: 0,
+                          top: 0,
                           child: Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(3),
                             decoration: const BoxDecoration(
                               color: Colors.red,
                               shape: BoxShape.circle,
                             ),
                             constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
+                              minWidth: 15,
+                              minHeight: 15,
                             ),
                             child: Text(
                               '$_unreadCount',
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.center,
@@ -222,9 +283,16 @@ class _ParentScreenState extends State<ParentScreen> {
                         ),
                     ],
                   ),
+                  const SizedBox(width: 4),
+                  // 🚪 خروج
                   IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
+                    icon: const Icon(Icons.logout,
+                        color: Colors.white, size: 20),
                     tooltip: 'خروج',
+                    padding: EdgeInsets.zero,
+                    constraints:
+                        const BoxConstraints(minWidth: 32, minHeight: 32),
+                    visualDensity: VisualDensity.compact,
                     onPressed: () async {
                       await ApiService.logout();
                       if (context.mounted) {
@@ -234,7 +302,10 @@ class _ParentScreenState extends State<ParentScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+
+              const SizedBox(height: 4),
+
+              // ─── الترحيب ───
               FutureBuilder<String?>(
                 future: ApiService.getName(),
                 builder: (context, snap) {
@@ -250,6 +321,7 @@ class _ParentScreenState extends State<ParentScreen> {
                           color: Colors.white,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         'أضف أطفالك وتابع تقدمهم التعليمي',
                         style: TextStyle(
@@ -284,7 +356,8 @@ class _ParentScreenState extends State<ParentScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.refresh, size: 28),
-                label: const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
+                label: const Text('إعادة المحاولة',
+                    style: TextStyle(fontSize: 18)),
                 onPressed: _loadData,
               ),
             ),
@@ -298,16 +371,19 @@ class _ParentScreenState extends State<ParentScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.people_outline, size: 72, color: JisrColors.of(context).muted),
+            Icon(Icons.people_outline,
+                size: 72, color: JisrColors.of(context).muted),
             const SizedBox(height: 16),
             Text(
               'لا يوجد أطفال مسجلون بعد',
-              style: TextStyle(fontSize: 18, color: JisrColors.of(context).muted),
+              style: TextStyle(
+                  fontSize: 18, color: JisrColors.of(context).muted),
             ),
             const SizedBox(height: 8),
             Text(
               'اضغط على زر + لإضافة طفل جديد',
-              style: TextStyle(fontSize: 14, color: JisrColors.of(context).muted),
+              style: TextStyle(
+                  fontSize: 14, color: JisrColors.of(context).muted),
             ),
           ],
         ),
@@ -329,8 +405,15 @@ class _ParentScreenState extends State<ParentScreen> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              await AccessibilityService.instance.setActiveChild(
+                child['id'],
+                disabilityTypeHint: child['disability_type']?.toString(),
+              );
+
+              if (!context.mounted) return;
+
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ChildDetailsScreen(
@@ -339,6 +422,8 @@ class _ParentScreenState extends State<ParentScreen> {
                   ),
                 ),
               );
+
+              await AccessibilityService.instance.setActiveChild(null);
             },
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -379,7 +464,7 @@ class _ParentScreenState extends State<ParentScreen> {
                         if (child['assigned_teacher_name'] != null) ...[
                           Text(
                             'المعلم: ${child['assigned_teacher_name']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.tealDeep,
                               fontWeight: FontWeight.w500,
@@ -393,9 +478,11 @@ class _ParentScreenState extends State<ParentScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(status).withValues(alpha: 0.15),
+                          color:
+                              _getStatusColor(status).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -500,7 +587,9 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.red)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -514,7 +603,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.person, color: AppColors.teal),
+                                  const Icon(Icons.person,
+                                      color: AppColors.teal),
                                   const SizedBox(width: 8),
                                   Text(
                                     'معلومات الطفل',
@@ -528,21 +618,40 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                               ),
                               const SizedBox(height: 12),
                               _infoRow('الاسم', _childData?['name'] ?? ''),
-                              _infoRow('العمر', '${_childData?['age'] ?? '?'} سنة'),
-                              _infoRow('نوع الإعاقة', _childData?['disability_type'] ?? 'غير محدد'),
-                              if (_childData?['disability_description'] != null)
-                                _infoRow('تفاصيل الإعاقة', _childData?['disability_description']),
+                              _infoRow('العمر',
+                                  '${_childData?['age'] ?? '?'} سنة'),
+                              _infoRow(
+                                  'نوع الإعاقة',
+                                  _childData?['disability_type'] ??
+                                      'غير محدد'),
+                              if (_childData?['disability_description'] !=
+                                  null)
+                                _infoRow('تفاصيل الإعاقة',
+                                    _childData?['disability_description']),
                               if (_childData?['special_needs'] != null)
-                                _infoRow('احتياجات خاصة', _childData?['special_needs']),
-                              if (_childData?['preferred_learning_style'] != null)
-                                _infoRow('أسلوب التعلم المفضل', _childData?['preferred_learning_style']),
+                                _infoRow('احتياجات خاصة',
+                                    _childData?['special_needs']),
+                              if (_childData?['preferred_learning_style'] !=
+                                  null)
+                                _infoRow('أسلوب التعلم المفضل',
+                                    _childData?['preferred_learning_style']),
                               if (_childData?['strengths'] != null)
-                                _infoRow('نقاط القوة', (_childData?['strengths'] as List?)?.join(', ') ?? ''),
+                                _infoRow(
+                                    'نقاط القوة',
+                                    (_childData?['strengths'] as List?)
+                                            ?.join(', ') ??
+                                        ''),
                               if (_childData?['challenges'] != null)
-                                _infoRow('التحديات', (_childData?['challenges'] as List?)?.join(', ') ?? ''),
+                                _infoRow(
+                                    'التحديات',
+                                    (_childData?['challenges'] as List?)
+                                            ?.join(', ') ??
+                                        ''),
                               if (_childData?['assigned_teacher_name'] != null)
-                                _infoRow('المعلم المسؤول', _childData?['assigned_teacher_name']),
-                              _infoRow('الحالة', _getStatusText(_childData?['status'])),
+                                _infoRow('المعلم المسؤول',
+                                    _childData?['assigned_teacher_name']),
+                              _infoRow('الحالة',
+                                  _getStatusText(_childData?['status'])),
                             ],
                           ),
                         ),
@@ -551,7 +660,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                       if (_evaluations.isNotEmpty) ...[
                         Row(
                           children: [
-                            const Icon(Icons.assessment, color: AppColors.orange),
+                            const Icon(Icons.assessment,
+                                color: AppColors.orange),
                             const SizedBox(width: 8),
                             Text(
                               'التقييمات',
@@ -564,7 +674,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ..._evaluations.map((e) => _buildEvaluationCard(e, c)),
+                        ..._evaluations
+                            .map((e) => _buildEvaluationCard(e, c)),
                       ],
                       const SizedBox(height: 16),
                       Row(
@@ -573,8 +684,11 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                             child: ElevatedButton.icon(
                               icon: const Icon(Icons.menu_book),
                               label: const Text('الدروس'),
-                              onPressed: () {
-                                Navigator.push(
+                              onPressed: () async {
+                                await AccessibilityService.instance
+                                    .setActiveChild(widget.childId);
+                                if (!context.mounted) return;
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => ChildLessonsScreen(
@@ -591,8 +705,11 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                             child: OutlinedButton.icon(
                               icon: const Icon(Icons.insights),
                               label: const Text('التقدّم'),
-                              onPressed: () {
-                                Navigator.push(
+                              onPressed: () async {
+                                await AccessibilityService.instance
+                                    .setActiveChild(widget.childId);
+                                if (!context.mounted) return;
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => ChildProgressScreen(
@@ -655,13 +772,12 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.assignment, size: 20, color: AppColors.orange),
+                const Icon(Icons.assignment,
+                    size: 20, color: AppColors.orange),
                 const SizedBox(width: 8),
                 Text(
                   eval['evaluation_type'] ?? 'تقييم',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 if (date != null)

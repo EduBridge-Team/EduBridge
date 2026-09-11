@@ -1,10 +1,19 @@
-// شاشة دروس الطفل (المناسبة لنوع إعاقته)
+// شاشة دروس الطفل — مع كل الميزات التكيّفية
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
+import '../widgets/accessibility/audio_timer.dart';
+import '../widgets/accessibility/visual_alert.dart';
+import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/visual_timeline.dart';
+import '../widgets/accessibility/visual_timer.dart';
+import 'child_accessibility_settings_screen.dart';
 import 'child_progress_screen.dart';
+import 'educational_games_screen.dart';
 import 'assistant_screen.dart';
 
 class ChildLessonsScreen extends StatefulWidget {
@@ -28,12 +37,12 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
 
   // الدروس المكتملة (من سجلّ التقدّم) لعرض علامة ✓
   final Set<int> _doneLessonIds = {};
-  // الدرس الذي يجري حفظ إتمامه الآن (لتعطيل زره أثناء الطلب)
+  // الدرس الذي يجري حفظ إتمامه الآن
   int? _savingLessonId;
   // ولي الأمر يعرض فقط — لا يسجّل إتماماً
   bool _canMarkDone = false;
 
-  // القراءة الصوتية للدروس (accessibility)
+  // القراءة الصوتية للدروس
   final FlutterTts _tts = FlutterTts();
   int? _speakingLessonId;
 
@@ -43,6 +52,12 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     _initTts();
     _loadRole();
     _loadLessons();
+
+    // ✅ نضمن أن بروفايل هذا الطفل نشط أثناء عرض الشاشة
+    AccessibilityService.instance.setActiveChild(
+      widget.childId,
+      disabilityTypeHint: null,
+    );
   }
 
   @override
@@ -53,8 +68,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
 
   Future<void> _initTts() async {
     await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45); // أبطأ قليلاً ليناسب الأطفال
-    // عند انتهاء القراءة نرجّع أيقونة السماعة لوضعها الطبيعي
+    await _tts.setSpeechRate(0.45);
     _tts.setCompletionHandler(() {
       if (mounted) setState(() => _speakingLessonId = null);
     });
@@ -76,7 +90,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     });
 
     try {
-      // نجلب الدروس وسجلّ التقدّم معاً لمعرفة الدروس المكتملة
       final responses = await Future.wait([
         ApiService.authGet('/children/${widget.childId}/lessons'),
         ApiService.authGet('/progress/child/${widget.childId}'),
@@ -114,7 +127,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     }
   }
 
-  // تسجيل إتمام الدرس — POST /api/progress
+  // تسجيل إتمام الدرس
   Future<void> _markLessonDone(int lessonId) async {
     setState(() => _savingLessonId = lessonId);
 
@@ -128,38 +141,98 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       if (!mounted) return;
       if (res.statusCode == 201) {
         setState(() => _doneLessonIds.add(lessonId));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('أحسنت! تم تسجيل إتمام الدرس 🎉',
-                style: TextStyle(fontSize: 16)),
-            backgroundColor: Colors.green,
-          ),
+
+        // 🎉 احتفال متكيّف مع كل الحالات
+        await VisualCelebration.show(
+          context,
+          message: 'أكملت الدرس!',
+          emoji: '🏆',
+          childName: widget.childName,
+          duration: const Duration(seconds: 3),
         );
+
+        // 🎮 دعوة للألعاب بعد كل 3 دروس
+        if (mounted && _doneLessonIds.length % 3 == 0) {
+          _suggestGames();
+        }
       } else {
         final data = jsonDecode(res.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data['error'] ?? 'تعذّر تسجيل الإتمام',
-                style: const TextStyle(fontSize: 16)),
-            backgroundColor: Colors.red,
-          ),
+        notifyUser(
+          context,
+          data['error'] ?? 'تعذّر تسجيل الإتمام',
+          icon: Icons.error,
+          color: Colors.red,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('تعذّر الاتصال بالسيرفر', style: TextStyle(fontSize: 16)),
-          backgroundColor: Colors.red,
-        ),
+      notifyUser(
+        context,
+        'تعذّر الاتصال بالسيرفر',
+        icon: Icons.wifi_off,
+        color: Colors.red,
       );
     } finally {
       if (mounted) setState(() => _savingLessonId = null);
     }
   }
 
-  // قراءة الدرس صوتياً — أو إيقاف القراءة إذا كانت شغّالة
+  // دعوة للألعاب بعد كل 3 دروس
+  void _suggestGames() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          '🎮 وقت اللعب!',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'أكملت 3 دروس! هل تريد اللعب قليلاً؟',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('لاحقاً'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orange,
+                  ),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('هيا!'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EducationalGamesScreen(
+                          childName: widget.childName,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // قراءة الدرس صوتياً
   Future<void> _toggleSpeak(Map lesson) async {
     final lessonId = lesson['id'];
     if (_speakingLessonId == lessonId) {
@@ -183,7 +256,28 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       appBar: JisrAppBar(
         title: 'دروس ${widget.childName}',
         actions: [
-          // زر التقدّم — يفتح شاشة ملخّص وتفاصيل التقدّم
+          // زر إعدادات هذا الطفل
+          IconButton(
+            icon: const Icon(Icons.accessibility_new, size: 28),
+            tooltip: 'إعدادات ${widget.childName}',
+            onPressed: () async {
+              await AccessibilityService.instance.setActiveChild(
+                widget.childId,
+              );
+              if (!mounted) return;
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChildAccessibilitySettingsScreen(
+                    childId: widget.childId,
+                    childName: widget.childName,
+                  ),
+                ),
+              );
+              if (mounted) setState(() {});
+            },
+          ),
+          // زر التقدّم
           IconButton(
             icon: const Icon(Icons.insights, size: 28),
             tooltip: 'التقدّم',
@@ -197,7 +291,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   ),
                 ),
               );
-              // نحدّث القائمة بعد الرجوع (قد يتغيّر التقدّم)
               _loadLessons();
             },
           ),
@@ -210,10 +303,12 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     );
   }
 
+  // ============================================================
+  //  ✅ معدّلة: يعرض الرأس التكيّفي دائماً حتى لو لا توجد دروس
+  // ============================================================
   Widget _buildBody() {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (_loading) return const Center(child: CircularProgressIndicator());
+
     if (_error != null) {
       return Center(
         child: Column(
@@ -226,8 +321,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.refresh, size: 28),
-                label:
-                    const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
+                label: const Text('إعادة المحاولة',
+                    style: TextStyle(fontSize: 18)),
                 onPressed: _loadLessons,
               ),
             ),
@@ -235,15 +330,36 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         ),
       );
     }
+
+    // ✅ حتى لو لا توجد دروس، نُظهر الرأس التكيّفي (زر الألعاب + المؤقّت)
     if (_lessons.isEmpty) {
+      final c = JisrColors.of(context);
       return ListView(
-        children: const [
-          SizedBox(height: 120),
-          Icon(Icons.menu_book, size: 72, color: Colors.grey),
-          SizedBox(height: 16),
+        padding: const EdgeInsets.all(12),
+        children: [
+          _buildAdaptiveHeader(), // ← 🎮 زر الألعاب يظهر دائماً
+          const SizedBox(height: 40),
+          Icon(Icons.menu_book, size: 72, color: c.muted),
+          const SizedBox(height: 16),
           Center(
-            child:
-                Text('لا توجد دروس مناسبة بعد', style: TextStyle(fontSize: 18)),
+            child: Text(
+              'لا توجد دروس مناسبة بعد',
+              style: TextStyle(
+                fontSize: 18,
+                color: c.muted,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              'يمكنك اللعب بالألعاب التعليمية في الأعلى 🎮',
+              style: TextStyle(
+                fontSize: 14,
+                color: c.muted,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       );
@@ -251,11 +367,151 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(12),
-      itemCount: _lessons.length,
-      itemBuilder: (context, i) => _buildLessonCard(_lessons[i]),
+      itemCount: _lessons.length + 1,
+      itemBuilder: (context, i) {
+        if (i == 0) return _buildAdaptiveHeader();
+        return _buildLessonCard(_lessons[i - 1]);
+      },
     );
   }
 
+  // ============================================================
+  //  الرأس التكيّفي: زر الألعاب + المؤقّت + الخط الزمني
+  // ============================================================
+  Widget _buildAdaptiveHeader() {
+    final p = AccessibilityService.instance.profile.value;
+    final isBlind = p.type == DisabilityType.blind;
+    final items = <Widget>[];
+
+    // 🎮 زر الألعاب — دائماً مرئي
+    items.add(
+      Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EducationalGamesScreen(
+                childName: widget.childName,
+              ),
+            ),
+          ),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.orange, AppColors.yellow],
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  isBlind ? '🎧' : '🎮',
+                  style: const TextStyle(fontSize: 40),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isBlind ? 'ألعاب سمعية' : 'الألعاب التعليمية',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isBlind
+                            ? 'ألعاب يمكنك لعبها بأذنيك 🎧'
+                            : 'العب وتعلّم! 3 ألعاب ممتعة 🎉',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_left,
+                    color: Colors.white, size: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // 🕐 المؤقّت — بصري للأغلبية، سمعي للأعمى
+    if (p.visualTimerEnabled) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: isBlind
+              ? AudioTimer(
+                  total: const Duration(minutes: 5),
+                  childName: widget.childName,
+                  onFinished: () {
+                    TtsService.instance.speakLine('انتهى الوقت! أحسنت');
+                  },
+                )
+              : Center(
+                  child: VisualTimer(
+                    total: const Duration(minutes: 5),
+                    label: 'وقت القراءة المتبقي',
+                    showControls: true,
+                    onFinished: () {
+                      VisualCelebration.show(
+                        context,
+                        message: 'أحسنت! انتهى الوقت',
+                        emoji: '⏰',
+                        childName: widget.childName,
+                      );
+                    },
+                  ),
+                ),
+        ),
+      );
+    }
+
+    // 📋 الخط الزمني
+    if (p.predictableTimeline) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: VisualTimeline(
+            title: 'خطوات الدرس',
+            steps: [
+              const TimelineStep(
+                  emoji: '📖', label: 'اقرأ العنوان', done: true),
+              TimelineStep(
+                  emoji: '🎧',
+                  label: 'استمع للشرح',
+                  current: !_canMarkDone),
+              TimelineStep(
+                  emoji: '✍️',
+                  label: 'حلّ التمرين',
+                  done: _canMarkDone),
+              const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: items,
+    );
+  }
+
+  // ============================================================
+  //  بطاقة درس واحدة
+  // ============================================================
   Widget _buildLessonCard(Map lesson) {
     final c = JisrColors.of(context);
     final lessonId = lesson['id'];
@@ -272,7 +528,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           children: [
             Row(
               children: [
-                // أيقونة الدرس داخل مربّع ملوّن ناعم
                 Container(
                   width: 46,
                   height: 46,
@@ -311,7 +566,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                // زر الاستماع — يقرأ الدرس صوتياً للطفل
+                // زر الاستماع
                 Expanded(
                   child: SizedBox(
                     height: 56,
@@ -328,7 +583,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                     ),
                   ),
                 ),
-                // زر «تمّ» — للمعلّم/المختص/الأدمن فقط
+                // زر «تمّ» للمعلّم/المختص/الأدمن
                 if (_canMarkDone) ...[
                   const SizedBox(width: 8),
                   Expanded(
@@ -342,7 +597,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white),
                               )
-                            : Icon(isDone ? Icons.check_circle : Icons.check,
+                            : Icon(
+                                isDone ? Icons.check_circle : Icons.check,
                                 size: 28),
                         label: Text(
                           isDone ? 'مكتمل' : 'تمّ',

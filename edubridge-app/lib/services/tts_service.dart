@@ -58,6 +58,21 @@ class TtsService {
     await _tts.speak(_normalizeArabic(t));
   }
 
+  /// ✅ جديد — نطق بطيء جداً (لمتلازمة داون)
+  Future<void> speakLineSlow(String text) async {
+    await _ensureInit();
+    final t = text.trim();
+    if (t.isEmpty) return;
+    await _tts.stop();
+    await _tts.setSpeechRate(0.30); // أبطأ بكثير
+    activeLine.value = text;
+    isSpeaking.value = true;
+    await _tts.speak(_normalizeArabic(t));
+    // نرجع السرعة الطبيعية بعد الانتهاء
+    Future.delayed(const Duration(seconds: 5), () async {
+      await _tts.setSpeechRate(0.45);
+    });
+  }
   // إيقاف النطق فوراً
   Future<void> stop() async {
     await _tts.stop();

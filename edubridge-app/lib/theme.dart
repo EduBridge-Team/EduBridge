@@ -335,6 +335,91 @@ ThemeData buildJisrDarkTheme() {
   );
 }
 
+/// ✅ ثيم عالي التباين للعمى / ضعف البصر الشديد
+/// الإصلاح: نحدد كل نمط نص بشكل صريح بدل استخدام fontSizeFactor
+ThemeData buildHighContrastTheme() {
+  final base = buildJisrTheme();
+
+  return base.copyWith(
+    scaffoldBackgroundColor: Colors.black,
+    colorScheme: const ColorScheme.highContrastDark(
+      primary: Color(0xFFFFD400),
+      secondary: Color(0xFFFFD400),
+      surface: Colors.black,
+    ),
+    // ✅ كل نمط نص محدد بشكل صريح — لا fontSizeFactor
+    textTheme: base.textTheme.copyWith(
+      // Body
+      bodyLarge: const TextStyle(fontSize: 20, color: Colors.white),
+      bodyMedium: const TextStyle(fontSize: 18, color: Colors.white),
+      bodySmall: const TextStyle(fontSize: 16, color: Colors.white),
+      // Display
+      displayLarge: const TextStyle(
+          fontSize: 36,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      displayMedium: const TextStyle(
+          fontSize: 32,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      displaySmall: const TextStyle(
+          fontSize: 28,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      // Headline
+      headlineLarge: const TextStyle(
+          fontSize: 28,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      headlineMedium: const TextStyle(
+          fontSize: 24,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      headlineSmall: const TextStyle(
+          fontSize: 22,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      // Title
+      titleLarge: const TextStyle(
+          fontSize: 24,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
+      titleMedium: const TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.w600),
+      titleSmall: const TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+          fontWeight: FontWeight.w600),
+      // Label
+      labelLarge: const TextStyle(fontSize: 18, color: Colors.white),
+      labelMedium: const TextStyle(fontSize: 16, color: Colors.white),
+      labelSmall: const TextStyle(fontSize: 14, color: Colors.white),
+    ),
+    cardTheme: base.cardTheme.copyWith(
+      color: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFFFD400), width: 2),
+      ),
+    ),
+    inputDecorationTheme: base.inputDecorationTheme.copyWith(
+      fillColor: Colors.black,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.black,
+      foregroundColor: Color(0xFFFFD400),
+      elevation: 0,
+      titleTextStyle: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFFFFD400),
+      ),
+    ),
+  );
+}
+
 /// شريط علوي بتدرّج الهوية — بديل موحّد عن AppBar الافتراضي
 class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

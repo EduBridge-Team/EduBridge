@@ -198,23 +198,63 @@ class ApiService {
     String? preferredLearningStyle,
     List<String>? strengths,
     List<String>? challenges,
+    File? idCardFile,        // ✅ جديد — هوية الطفل
+    File? birthCertFile,     // ✅ جديد — شهادة الميلاد
   }) async {
     try {
-      final res = await authPost('/children', {
-        'name': name,
-        'age': age,
-        'disability_type': disabilityType,
-        'disability_description': disabilityDescription,
-        'medical_history': medicalHistory,
-        'psychologist_notes': psychologistNotes,
-        'special_needs': specialNeeds,
-        'preferred_learning_style': preferredLearningStyle,
-        'strengths': strengths,
-        'challenges': challenges,
-      });
+      final token = await getToken();
+      final uri = Uri.parse('${Config.baseUrl}/children');
 
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 201 || res.statusCode == 200) {
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer $token';
+
+      // ─── الحقول النصية ───
+      request.fields['name'] = name;
+      request.fields['age'] = age.toString();
+      if (disabilityType != null) {
+        request.fields['disability_type'] = disabilityType;
+      }
+      if (disabilityDescription != null) {
+        request.fields['disability_description'] = disabilityDescription;
+      }
+      if (medicalHistory != null) {
+        request.fields['medical_history'] = medicalHistory;
+      }
+      if (psychologistNotes != null) {
+        request.fields['psychologist_notes'] = psychologistNotes;
+      }
+      if (specialNeeds != null) {
+        request.fields['special_needs'] = specialNeeds;
+      }
+      if (preferredLearningStyle != null) {
+        request.fields['preferred_learning_style'] = preferredLearningStyle;
+      }
+      if (strengths != null && strengths.isNotEmpty) {
+        request.fields['strengths'] = jsonEncode(strengths);
+      }
+      if (challenges != null && challenges.isNotEmpty) {
+        request.fields['challenges'] = jsonEncode(challenges);
+      }
+
+      // ─── الملفات المرفوعة ───
+      if (idCardFile != null && await idCardFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('id_card', idCardFile.path),
+        );
+      }
+      if (birthCertFile != null && await birthCertFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+              'birth_certificate', birthCertFile.path),
+        );
+      }
+
+      // ─── الإرسال ───
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final data = jsonDecode(responseBody);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return data['child'];
       }
       throw Exception(data['error'] ?? 'فشل إضافة الطفل');
