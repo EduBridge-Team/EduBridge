@@ -1,15 +1,19 @@
+// خدمة إدارة موافقات الوزارة على تقييمات المختص
+// - تحفظ محلياً (offline-first)
+// - تُزامن مع الـ Backend عند توفّر الإنترنت
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
-/// خدمة إدارة موافقات الوزارة على تقييمات المختص
 class ApprovalService {
   static const _pendingKey = 'pending_ministry_approvals';
   static const _approvedKey = 'approved_plans';
   static const _rejectedKey = 'rejected_plans';
   static const _notificationsKey = 'approval_notifications';
 
-  // ===== المختص يرسل تقييماً جديداً =====
+  // ═══════════════════════════════════════════════════════
+  // 1. المختص يرسل تقييماً + خطة للوزارة
+  // ═══════════════════════════════════════════════════════
   static Future<void> submitForApproval({
     required int childId,
     required String childName,
@@ -27,7 +31,7 @@ class ApprovalService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
-    // 1. حفظ في قائمة الانتظار
+    // 1. حفظ محلياً في قائمة الانتظار
     final pending = await getPendingApprovals();
     final approval = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -45,31 +49,51 @@ class ApprovalService {
       'teaching_methods': teachingMethods,
       'status': 'pending',
       'submitted_at': DateTime.now().toIso8601String(),
+      'synced_to_server': false,
     };
     pending.add(approval);
     await prefs.setString(_pendingKey, jsonEncode(pending));
 
-    // 2. إشعار المختص بأن الطلب تم إرساله
+    // 2. إشعار المختص
     await _addNotification(
       forRole: 'specialist',
-      title: 'تم إرسال التقييم للوزارة',
+      title: '📤 تم إرسال التقييم للوزارة',
       body: 'تقييم الطفل $childName قيد مراجعة الوزارة',
       type: 'plan_submitted',
     );
 
-    // 3. محاولة إرسال للـ Backend (Best-effort)
+    // 3. محاولة الإرسال للـ Backend
     try {
-      await ApiService.authPost('/ministry/approvals', {
-        'child_id': childId,
-        'evaluation_id': evaluationId,
-        'educational_plan': educationalPlan,
-      });
+      final serverRes = await ApiService.submitForMinistryApproval(
+        childId: childId,
+        evaluationId: evaluationId,
+        educationalPlan: educationalPlan,
+        cognitiveAssessment: cognitiveAssessment,
+        motorAssessment: motorAssessment,
+        emotionalAssessment: emotionalAssessment,
+        socialAssessment: socialAssessment,
+        recommendations: recommendations,
+        teachingMethods: teachingMethods,
+        teacherId: teacherId,
+      );
+      if (serverRes != null) {
+        // تحديث القائمة المحلية بـ server_id
+        final updated = await getPendingApprovals();
+        final idx = updated.indexWhere((p) => p['id'] == approval['id']);
+        if (idx != -1) {
+          updated[idx]['server_id'] = serverRes['id'];
+          updated[idx]['synced_to_server'] = true;
+          await prefs.setString(_pendingKey, jsonEncode(updated));
+        }
+      }
     } catch (_) {
-      // نتجاهل الخطأ إذا لم يكن الـ Backend مدعوماً
+      // يُرسل لاحقاً عند عودة الإنترنت
     }
   }
 
-  // ===== جلب كل الطلبات المعلّقة (للوزارة) =====
+  // ═══════════════════════════════════════════════════════
+  // 2. جلب الطلبات المعلقة (للوزارة)
+  // ═══════════════════════════════════════════════════════
   static Future<List<Map<String, dynamic>>> getPendingApprovals() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_pendingKey);
@@ -78,7 +102,9 @@ class ApprovalService {
     return list.cast<Map<String, dynamic>>();
   }
 
-  // ===== الوزارة توافق على طلب =====
+  // ═══════════════════════════════════════════════════════
+  // 3. الوزارة توافق على الطلب
+  // ═══════════════════════════════════════════════════════
   static Future<void> approve({
     required String approvalId,
     required String specialistName,
@@ -91,7 +117,7 @@ class ApprovalService {
 
     final approval = pending.removeAt(index);
 
-    // 1. إضافة للقائمة المعتمدة (المعلم سيراها)
+    // 1. نقل للقائمة المعتمدة
     final approved = await getApprovedPlans();
     approval['status'] = 'approved';
     approval['decided_at'] = DateTime.now().toIso8601String();
@@ -105,29 +131,33 @@ class ApprovalService {
     await _addNotification(
       forRole: 'specialist',
       title: '✅ تم اعتماد الخطة من الوزارة',
-      body:
-          'خطة الطفل ${approval['child_name']} تمت الموافقة عليها من الوزارة',
+      body: 'خطة الطفل ${approval['child_name']} تمت الموافقة عليها',
       type: 'plan_approved',
     );
 
-    // 4. إشعار للمعلم (إذا كان هناك معلم معيّن)
+    // 4. إشعار للمعلم ليطبّق الخطة
     if (approval['teacher_id'] != null) {
       await _addNotification(
         forRole: 'teacher',
         title: '📚 خطة تعليمية جديدة معتمدة',
         body:
-            'تم اعتماد خطة الطفل ${approval['child_name']} من الوزارة — يمكنك الآن تطبيقها',
+            'تم اعتماد خطة الطفل ${approval['child_name']} — يمكنك الآن تطبيقها',
         type: 'plan_approved',
       );
     }
 
-    // 5. محاولة إرسال للـ Backend
+    // 5. إرسال للـ Backend
     try {
-      await ApiService.authPost('/ministry/approvals/$approvalId/approve', {});
+      final serverId = approval['server_id'] ?? approval['id'];
+      await ApiService.approveMinistryRequest(
+        serverId is int ? serverId : int.tryParse(serverId.toString()) ?? 0,
+      );
     } catch (_) {}
   }
 
-  // ===== الوزارة ترفض طلباً =====
+  // ═══════════════════════════════════════════════════════
+  // 4. الوزارة ترفض الطلب
+  // ═══════════════════════════════════════════════════════
   static Future<void> reject({
     required String approvalId,
     String? reason,
@@ -140,7 +170,7 @@ class ApprovalService {
 
     final approval = pending.removeAt(index);
 
-    // 1. إضافة لقائمة المرفوضة
+    // 1. نقل للقائمة المرفوضة
     final rejected = await getRejectedPlans();
     approval['status'] = 'rejected';
     approval['decided_at'] = DateTime.now().toIso8601String();
@@ -156,19 +186,23 @@ class ApprovalService {
       forRole: 'specialist',
       title: '❌ تم رفض الخطة من الوزارة',
       body:
-          'خطة الطفل ${approval['child_name']} تم رفضها${reason != null ? ': $reason' : ''}',
+          'خطة الطفل ${approval['child_name']} رُفضت${reason != null ? ': $reason' : ''}',
       type: 'plan_rejected',
     );
 
-    // 4. محاولة إرسال للـ Backend
+    // 4. إرسال للـ Backend
     try {
-      await ApiService.authPost('/ministry/approvals/$approvalId/reject', {
-        'reason': reason,
-      });
+      final serverId = approval['server_id'] ?? approval['id'];
+      await ApiService.rejectMinistryRequest(
+        serverId is int ? serverId : int.tryParse(serverId.toString()) ?? 0,
+        reason: reason,
+      );
     } catch (_) {}
   }
 
-  // ===== جلب الخطط المعتمدة (للمعلم) =====
+  // ═══════════════════════════════════════════════════════
+  // 5. جلب الخطط المعتمدة (للمعلم)
+  // ═══════════════════════════════════════════════════════
   static Future<List<Map<String, dynamic>>> getApprovedPlans() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_approvedKey);
@@ -177,7 +211,6 @@ class ApprovalService {
     return list.cast<Map<String, dynamic>>();
   }
 
-  // ===== جلب الخطط المرفوضة (للمختص) =====
   static Future<List<Map<String, dynamic>>> getRejectedPlans() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_rejectedKey);
@@ -186,7 +219,11 @@ class ApprovalService {
     return list.cast<Map<String, dynamic>>();
   }
 
-  // ===== هل خطة هذا الطفل معتمدة؟ (للمعلم) =====
+  // ═══════════════════════════════════════════════════════
+  // 6. الاستعلامات
+  // ═══════════════════════════════════════════════════════
+
+  /// هل خطة هذا الطفل معتمدة؟ (للمعلم)
   static Future<Map<String, dynamic>?> getApprovedPlanForChild(
       int childId) async {
     final approved = await getApprovedPlans();
@@ -197,7 +234,45 @@ class ApprovalService {
     }
   }
 
-  // ===== إدارة الإشعارات الخاصة بالموافقات =====
+  /// حالة التقييم لطفل (pending/approved/rejected/none)
+  static Future<String> getApprovalStatusForChild(int childId) async {
+    final pending = await getPendingApprovals();
+    if (pending.any((p) => p['child_id'] == childId)) return 'pending';
+
+    final approved = await getApprovedPlans();
+    if (approved.any((p) => p['child_id'] == childId)) return 'approved';
+
+    final rejected = await getRejectedPlans();
+    if (rejected.any((p) => p['child_id'] == childId)) return 'rejected';
+
+    return 'none';
+  }
+
+  /// جلب كل تقييمات طفل معيّن مع حالتها
+  static Future<List<Map<String, dynamic>>> getSubmissionsForChild(
+      int childId) async {
+    final pending = await getPendingApprovals();
+    final approved = await getApprovedPlans();
+    final rejected = await getRejectedPlans();
+
+    final all = <Map<String, dynamic>>[
+      ...pending.where((p) => p['child_id'] == childId),
+      ...approved.where((p) => p['child_id'] == childId),
+      ...rejected.where((p) => p['child_id'] == childId),
+    ];
+    all.sort((a, b) {
+      final da = DateTime.tryParse(a['submitted_at']?.toString() ?? '') ??
+          DateTime(2000);
+      final db = DateTime.tryParse(b['submitted_at']?.toString() ?? '') ??
+          DateTime(2000);
+      return db.compareTo(da);
+    });
+    return all;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // 7. إدارة الإشعارات
+  // ═══════════════════════════════════════════════════════
   static Future<void> _addNotification({
     required String forRole,
     required String title,
@@ -245,43 +320,4 @@ class ApprovalService {
     final notifs = await getNotificationsForRole(role);
     return notifs.where((n) => n['is_read'] != true).length;
   }
- 
-
-// ===== جلب كل تقييمات مختص معيّن مع حالتها =====
-static Future<List<Map<String, dynamic>>> getSubmissionsForChild(
-    int childId) async {
-  final prefs = await SharedPreferences.getInstance();
-
-  final pending = await getPendingApprovals();
-  final approved = await getApprovedPlans();
-  final rejected = await getRejectedPlans();
-
-  final all = <Map<String, dynamic>>[
-    ...pending.where((p) => p['child_id'] == childId),
-    ...approved.where((p) => p['child_id'] == childId),
-    ...rejected.where((p) => p['child_id'] == childId),
-  ];
-  all.sort((a, b) {
-    final da = DateTime.tryParse(a['submitted_at']?.toString() ?? '') ??
-        DateTime(2000);
-    final db = DateTime.tryParse(b['submitted_at']?.toString() ?? '') ??
-        DateTime(2000);
-    return db.compareTo(da);
-  });
-  return all;
-}
-
-// ===== حالة التقييم لطفل معيّن (pending/approved/rejected/none) =====
-static Future<String> getApprovalStatusForChild(int childId) async {
-  final pending = await getPendingApprovals();
-  if (pending.any((p) => p['child_id'] == childId)) return 'pending';
-
-  final approved = await getApprovedPlans();
-  if (approved.any((p) => p['child_id'] == childId)) return 'approved';
-
-  final rejected = await getRejectedPlans();
-  if (rejected.any((p) => p['child_id'] == childId)) return 'rejected';
-
-  return 'none';
-}
 }

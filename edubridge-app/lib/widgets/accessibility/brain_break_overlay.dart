@@ -1,10 +1,15 @@
 // نافذة "فاصل ذهني" تظهر تلقائياً كل X دقيقة لطفل ADHD
+// - تعمل تلقائياً حسب brainBreakIntervalMinutes
+// - يمكن استدعاؤها يدوياً عبر BrainBreakDialog.show(context)
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 
+// ═══════════════════════════════════════════════════════════
+//  BrainBreakScheduler — مجدول الفواصل الذهنية
+// ═══════════════════════════════════════════════════════════
 class BrainBreakScheduler extends StatefulWidget {
   final Widget child;
   const BrainBreakScheduler({super.key, required this.child});
@@ -48,8 +53,9 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   void _reschedule() {
     _timer?.cancel();
     final p = AccessibilityService.instance.profile.value;
-    if (!p.brainBreaksEnabled ||
-        _lifecycle != AppLifecycleState.resumed) return;
+    if (!p.brainBreaksEnabled || _lifecycle != AppLifecycleState.resumed) {
+      return;
+    }
     _timer = Timer(
       Duration(minutes: p.brainBreakIntervalMinutes),
       _showBrainBreak,
@@ -60,11 +66,7 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
     if (_showing || !mounted) return;
     _showing = true;
 
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => const _BrainBreakDialog(),
-    );
+    await BrainBreakDialog.show(context);
 
     _showing = false;
     _reschedule();
@@ -74,21 +76,37 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   Widget build(BuildContext context) => widget.child;
 }
 
-class _BrainBreakDialog extends StatefulWidget {
-  const _BrainBreakDialog();
+// ═══════════════════════════════════════════════════════════
+//  BrainBreakDialog — نافذة الفاصل الذهني (عامّة الآن)
+// ═══════════════════════════════════════════════════════════
+class BrainBreakDialog extends StatefulWidget {
+  const BrainBreakDialog({super.key});
+
+  /// ✅ استدعاء مباشر من أي مكان
+  static Future<void> show(BuildContext context) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const BrainBreakDialog(),
+    );
+  }
 
   @override
-  State<_BrainBreakDialog> createState() => _BrainBreakDialogState();
+  State<BrainBreakDialog> createState() => _BrainBreakDialogState();
 }
 
-class _BrainBreakDialogState extends State<_BrainBreakDialog> {
+class _BrainBreakDialogState extends State<BrainBreakDialog> {
   static const _moves = [
     ('🙆', 'قف ومدّد ذراعيك للأعلى'),
     ('🤸', 'قفزة صغيرة 5 مرات'),
     ('🤚', 'حرّك أصابعك بسرعة'),
     ('👀', 'انظر لشيء بعيد 10 ثوان'),
     ('🧘', 'خذ نفساً عميقاً 3 مرات'),
+    ('🦘', 'اقفز في مكانك 10 قفزات'),
+    ('💪', 'شدّ عضلات ذراعيك ثم أرخِها'),
+    ('🌀', 'دُر حول نفسك مرتين'),
   ];
+
   int _secondsLeft = 30;
   Timer? _t;
   int _moveIndex = 0;
@@ -97,9 +115,10 @@ class _BrainBreakDialogState extends State<_BrainBreakDialog> {
   void initState() {
     super.initState();
     _moveIndex = DateTime.now().millisecond % _moves.length;
-    TtsService.instance.speakLine(
-      'وقت الراحة! ${_moves[_moveIndex].$2}',
-    );
+
+    // ✅ نطق الحركة بصوت هادئ
+    TtsService.instance.speakLine('وقت الراحة! ${_moves[_moveIndex].$2}');
+
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       if (_secondsLeft <= 1) {
@@ -138,28 +157,48 @@ class _BrainBreakDialogState extends State<_BrainBreakDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('وقت الراحة 🎉',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: c.heading)),
+            // العنوان
+            Text(
+              'وقت الراحة 🎉',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: c.heading,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'استرخِ قليلاً لتعود أقوى',
+              style: TextStyle(fontSize: 13, color: c.muted),
+            ),
             const SizedBox(height: 20),
+
+            // الحركة (متحركة)
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.9, end: 1.1),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeInOut,
               builder: (_, v, child) =>
                   Transform.scale(scale: v, child: child),
-              child: Text(move.$1, style: const TextStyle(fontSize: 90)),
+              child: Text(
+                move.$1,
+                style: const TextStyle(fontSize: 90),
+              ),
             ),
             const SizedBox(height: 12),
+
+            // وصف الحركة
             Text(
               move.$2,
               textAlign: TextAlign.center,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 20),
+
+            // شريط التقدّم
             LinearProgressIndicator(
               value: progress,
               minHeight: 12,
@@ -168,9 +207,19 @@ class _BrainBreakDialogState extends State<_BrainBreakDialog> {
               borderRadius: BorderRadius.circular(8),
             ),
             const SizedBox(height: 8),
-            Text('$_secondsLeft ثانية',
-                style: TextStyle(fontSize: 15, color: c.muted)),
+
+            // العدّاد
+            Text(
+              '$_secondsLeft ثانية',
+              style: TextStyle(
+                fontSize: 15,
+                color: c.muted,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
+
+            // الأزرار
             Row(
               children: [
                 Expanded(
@@ -185,6 +234,10 @@ class _BrainBreakDialogState extends State<_BrainBreakDialog> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
                     label: const Text('جاهز'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.green,
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),

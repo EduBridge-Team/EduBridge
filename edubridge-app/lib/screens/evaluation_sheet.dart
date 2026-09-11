@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/approval_service.dart';
 import '../theme.dart';
 
 class EvaluationSheet extends StatefulWidget {
@@ -23,7 +24,6 @@ class EvaluationSheet extends StatefulWidget {
 class _EvaluationSheetState extends State<EvaluationSheet> {
   final _formKey = GlobalKey<FormState>();
 
-  // التقييمات
   final _cognitiveCtrl = TextEditingController();
   final _motorCtrl = TextEditingController();
   final _emotionalCtrl = TextEditingController();
@@ -59,7 +59,11 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
     try {
       final teachingMethods = _teachingMethodsCtrl.text.trim().isNotEmpty
-          ? _teachingMethodsCtrl.text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList()
+          ? _teachingMethodsCtrl.text
+              .split(',')
+              .map((s) => s.trim())
+              .where((s) => s.isNotEmpty)
+              .toList()
           : ['عام'];
 
       final result = await ApiService.evaluateChild(
@@ -92,10 +96,36 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
         }
         widget.onSaved(updatedChild);
 
+        // ✅ إرسال تلقائي للوزارة للموافقة
+        await ApprovalService.submitForApproval(
+          childId: widget.child['id'],
+          childName: widget.child['name'] ?? '',
+          evaluationId: result['id'] ?? 0,
+          evaluationData: result,
+          teacherId: _selectedTeacherId,
+          teacherName: widget.teachers
+                  .firstWhere(
+                    (t) => t['id'] == _selectedTeacherId,
+                    orElse: () => {'name': ''},
+                  )['name']
+                  ?.toString() ??
+              '',
+          educationalPlan: _educationalPlanCtrl.text.trim(),
+          cognitiveAssessment: _cognitiveCtrl.text.trim(),
+          motorAssessment: _motorCtrl.text.trim(),
+          emotionalAssessment: _emotionalCtrl.text.trim(),
+          socialAssessment: _socialCtrl.text.trim(),
+          recommendations: _recommendationsCtrl.text.trim(),
+          teachingMethods: teachingMethods,
+        );
+
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('تم تقييم الطفل بنجاح 🎉'),
+            content: Text('✅ تم التقييم وإرسال الخطة للوزارة'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
           ),
         );
         Navigator.pop(context);
@@ -151,9 +181,35 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+
+                // ✅ تنبيه مهم
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: c.tintOrange,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline,
+                          color: AppColors.orangeDeep, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'سيتم إرسال هذا التقييم للوزارة للموافقة قبل تطبيقه',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: c.onTint,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 16),
 
-                // نوع التقييم
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
                     labelText: 'نوع التقييم *',
@@ -161,15 +217,18 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                   ),
                   value: _evaluationType,
                   items: const [
-                    DropdownMenuItem(value: 'initial', child: Text('تقييم أولي')),
-                    DropdownMenuItem(value: 'follow_up', child: Text('متابعة')),
-                    DropdownMenuItem(value: 'final', child: Text('تقييم نهائي')),
+                    DropdownMenuItem(
+                        value: 'initial', child: Text('تقييم أولي')),
+                    DropdownMenuItem(
+                        value: 'follow_up', child: Text('متابعة')),
+                    DropdownMenuItem(
+                        value: 'final', child: Text('تقييم نهائي')),
                   ],
-                  onChanged: (v) => setState(() => _evaluationType = v ?? 'initial'),
+                  onChanged: (v) =>
+                      setState(() => _evaluationType = v ?? 'initial'),
                 ),
                 const SizedBox(height: 16),
 
-                // التقييم المعرفي
                 TextFormField(
                   controller: _cognitiveCtrl,
                   maxLines: 3,
@@ -178,11 +237,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.grain),
                     hintText: 'مستوى التفكير، الانتباه، الذاكرة، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // التقييم الحركي
                 TextFormField(
                   controller: _motorCtrl,
                   maxLines: 3,
@@ -191,11 +251,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.fitness_center),
                     hintText: 'المهارات الحركية الدقيقة والخشنة، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // التقييم العاطفي
                 TextFormField(
                   controller: _emotionalCtrl,
                   maxLines: 3,
@@ -204,11 +265,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.mood),
                     hintText: 'الحالة النفسية، التعامل مع المشاعر، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // التقييم الاجتماعي
                 TextFormField(
                   controller: _socialCtrl,
                   maxLines: 3,
@@ -217,11 +279,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.people),
                     hintText: 'التفاعل مع الآخرين، المهارات الاجتماعية، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // التوصيات
                 TextFormField(
                   controller: _recommendationsCtrl,
                   maxLines: 3,
@@ -230,11 +293,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.lightbulb),
                     hintText: 'توصيات للمعلم وولي الأمر، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // الخطة التعليمية
                 TextFormField(
                   controller: _educationalPlanCtrl,
                   maxLines: 3,
@@ -243,11 +307,12 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     prefixIcon: Icon(Icons.school),
                     hintText: 'الخطة الدراسية المقترحة، ...',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'هذا الحقل مطلوب'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
-                // طرق التدريس
                 TextFormField(
                   controller: _teachingMethodsCtrl,
                   decoration: const InputDecoration(
@@ -258,7 +323,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                 ),
                 const SizedBox(height: 16),
 
-                // تعيين معلم
                 DropdownButtonFormField<int?>(
                   decoration: const InputDecoration(
                     labelText: 'تعيين معلم (اختياري)',
@@ -266,17 +330,20 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                   ),
                   value: _selectedTeacherId,
                   items: [
-                    const DropdownMenuItem(value: null, child: Text('— لا تعيين —')),
+                    const DropdownMenuItem(
+                        value: null, child: Text('— لا تعيين —')),
                     ...widget.teachers.map((t) => DropdownMenuItem(
                           value: t['id'],
-                          child: Text('${t['name'] ?? ''} (${t['email'] ?? ''})'),
+                          child:
+                              Text('${t['name'] ?? ''} (${t['email'] ?? ''})'),
                         )),
                   ],
-                  onChanged: (v) => setState(() => _selectedTeacherId = v),
+                  onChanged: (v) =>
+                      setState(() => _selectedTeacherId = v),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'يمكنك تعيين معلم الآن أو لاحقاً من لوحة التحكم',
+                  'عند التعيين، سيتم إشعار المعلم بعد موافقة الوزارة',
                   style: TextStyle(fontSize: 12, color: c.muted),
                 ),
                 const SizedBox(height: 16),
@@ -306,8 +373,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                         ),
                         onPressed: _loading ? null : _submit,
                         child: _loading
-                            ? const CircularProgressIndicator(color: Colors.white)
-                            : const Text('حفظ التقييم'),
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Text('إرسال للوزارة'),
                       ),
                     ),
                   ],

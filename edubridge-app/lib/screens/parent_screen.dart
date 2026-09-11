@@ -1,4 +1,4 @@
-// شاشة ولي الأمر - إدارة الأطفال ومتابعة تقدمهم
+// شاشة ولي الأمر — إدارة الأطفال + الألعاب حسب العمر
 import 'dart:convert';
 import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:edubridge_app/screens/chats_screen.dart';
@@ -102,7 +102,6 @@ class _ParentScreenState extends State<ParentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ✅ AppBar مع 4 أزرار صغيرة
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -124,10 +123,9 @@ class _ParentScreenState extends State<ParentScreen> {
           ],
         ),
         actions: [
-          // ♿ احتياجات الأبناء
           _appBarIcon(
             icon: Icons.accessibility_new,
-            tooltip: 'احتياجات الأبناء الخاصة',
+            tooltip: 'احتياجات الأبناء',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -135,7 +133,6 @@ class _ParentScreenState extends State<ParentScreen> {
               ),
             ),
           ),
-          // 🎧 الدعم الفني
           _appBarIcon(
             icon: Icons.headset_mic,
             tooltip: 'الدعم الفني',
@@ -146,7 +143,6 @@ class _ParentScreenState extends State<ParentScreen> {
               builder: (_) => const SupportSheet(),
             ),
           ),
-          // 💬 المحادثات
           _appBarIcon(
             icon: Icons.chat,
             tooltip: 'المحادثات',
@@ -157,7 +153,6 @@ class _ParentScreenState extends State<ParentScreen> {
               ).then((_) => _loadNotificationsCount());
             },
           ),
-          // 🎖️ إضافة شهادة
           _appBarIcon(
             icon: Icons.workspace_premium,
             tooltip: 'إضافة شهادة',
@@ -199,7 +194,6 @@ class _ParentScreenState extends State<ParentScreen> {
     );
   }
 
-  // ✅ دالة مساعدة لأيقونات AppBar — حجم صغير
   Widget _appBarIcon({
     required IconData icon,
     required String tooltip,
@@ -215,9 +209,6 @@ class _ParentScreenState extends State<ParentScreen> {
     );
   }
 
-  // ============================================================
-  //  الرأس — الإشعارات + الخروج + الترحيب
-  // ============================================================
   Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
@@ -232,11 +223,9 @@ class _ParentScreenState extends State<ParentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── الإشعارات + الخروج (حجم صغير) ───
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // 🔔 الإشعارات + شارة
                   Stack(
                     children: [
                       IconButton(
@@ -246,13 +235,11 @@ class _ParentScreenState extends State<ParentScreen> {
                         padding: EdgeInsets.zero,
                         constraints:
                             const BoxConstraints(minWidth: 32, minHeight: 32),
-                        visualDensity: VisualDensity.compact,
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    const NotificationsScreen()),
+                                builder: (_) => const NotificationsScreen()),
                           ).then((_) => _loadNotificationsCount());
                         },
                       ),
@@ -284,7 +271,6 @@ class _ParentScreenState extends State<ParentScreen> {
                     ],
                   ),
                   const SizedBox(width: 4),
-                  // 🚪 خروج
                   IconButton(
                     icon: const Icon(Icons.logout,
                         color: Colors.white, size: 20),
@@ -292,7 +278,6 @@ class _ParentScreenState extends State<ParentScreen> {
                     padding: EdgeInsets.zero,
                     constraints:
                         const BoxConstraints(minWidth: 32, minHeight: 32),
-                    visualDensity: VisualDensity.compact,
                     onPressed: () async {
                       await ApiService.logout();
                       if (context.mounted) {
@@ -302,10 +287,7 @@ class _ParentScreenState extends State<ParentScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 4),
-
-              // ─── الترحيب ───
               FutureBuilder<String?>(
                 future: ApiService.getName(),
                 builder: (context, snap) {
@@ -419,6 +401,9 @@ class _ParentScreenState extends State<ParentScreen> {
                   builder: (_) => ChildDetailsScreen(
                     childId: child['id'],
                     childName: name,
+                    childAge: child['age'] is int ? child['age'] as int : 8,
+                    parentPhone: child['parent_phone']?.toString(),
+                    disabilityType: child['disability_type']?.toString(),
                   ),
                 ),
               );
@@ -527,11 +512,17 @@ class _ParentScreenState extends State<ParentScreen> {
 class ChildDetailsScreen extends StatefulWidget {
   final int childId;
   final String childName;
+  final int childAge;
+  final String? parentPhone;
+  final String? disabilityType;
 
   const ChildDetailsScreen({
     super.key,
     required this.childId,
     required this.childName,
+    required this.childAge,
+    this.parentPhone,
+    this.disabilityType,
   });
 
   @override
@@ -624,30 +615,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                                   'نوع الإعاقة',
                                   _childData?['disability_type'] ??
                                       'غير محدد'),
-                              if (_childData?['disability_description'] !=
+                              if (_childData?['assigned_teacher_name'] !=
                                   null)
-                                _infoRow('تفاصيل الإعاقة',
-                                    _childData?['disability_description']),
-                              if (_childData?['special_needs'] != null)
-                                _infoRow('احتياجات خاصة',
-                                    _childData?['special_needs']),
-                              if (_childData?['preferred_learning_style'] !=
-                                  null)
-                                _infoRow('أسلوب التعلم المفضل',
-                                    _childData?['preferred_learning_style']),
-                              if (_childData?['strengths'] != null)
-                                _infoRow(
-                                    'نقاط القوة',
-                                    (_childData?['strengths'] as List?)
-                                            ?.join(', ') ??
-                                        ''),
-                              if (_childData?['challenges'] != null)
-                                _infoRow(
-                                    'التحديات',
-                                    (_childData?['challenges'] as List?)
-                                            ?.join(', ') ??
-                                        ''),
-                              if (_childData?['assigned_teacher_name'] != null)
                                 _infoRow('المعلم المسؤول',
                                     _childData?['assigned_teacher_name']),
                               _infoRow('الحالة',
@@ -686,7 +655,10 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                               label: const Text('الدروس'),
                               onPressed: () async {
                                 await AccessibilityService.instance
-                                    .setActiveChild(widget.childId);
+                                    .setActiveChild(
+                                  widget.childId,
+                                  disabilityTypeHint: widget.disabilityType,
+                                );
                                 if (!context.mounted) return;
                                 await Navigator.push(
                                   context,
@@ -694,6 +666,9 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                                     builder: (_) => ChildLessonsScreen(
                                       childId: widget.childId,
                                       childName: widget.childName,
+                                      age: widget.childAge,
+                                      disabilityType: widget.disabilityType,
+                                      parentPhone: widget.parentPhone,
                                     ),
                                   ),
                                 );
@@ -792,11 +767,6 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
               Text(
                 '📝 ${eval['recommendations']}',
                 style: const TextStyle(fontSize: 14),
-              ),
-            if (eval['educational_plan'] != null)
-              Text(
-                '📚 الخطة التعليمية: ${eval['educational_plan']}',
-                style: TextStyle(fontSize: 14, color: c.muted),
               ),
           ],
         ),

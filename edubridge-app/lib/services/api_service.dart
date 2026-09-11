@@ -397,13 +397,14 @@ class ApiService {
       return null;
     }
   }
-
   static Future<Map<String, dynamic>?> createLessonWithMedia({
     required String title,
     String? content,
     int? disabilityTypeId,
     File? videoFile,
     File? audioFile,
+    String? targetType,
+    List<int>? targetChildIds,
   }) async {
     try {
       final token = await getToken();
@@ -419,6 +420,13 @@ class ApiService {
 
       if (disabilityTypeId != null) {
         request.fields['disability_type_id'] = disabilityTypeId.toString();
+      }
+
+      if (targetType != null) {
+        request.fields['target_type'] = targetType;
+      }
+      if (targetChildIds != null && targetChildIds.isNotEmpty) {
+        request.fields['target_child_ids'] = jsonEncode(targetChildIds);
       }
 
       if (videoFile != null && await videoFile.exists()) {
@@ -445,7 +453,6 @@ class ApiService {
       throw Exception('تعذّر الاتصال بالسيرفر');
     }
   }
-
   static Future<List<dynamic>> getDisabilityTypes() async {
     try {
       final res = await authGet('/disability-types');
@@ -855,6 +862,173 @@ static Future<bool> isVerified() async {
       }
     } catch (e) {
       throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+  }
+    // ===== دوال الموافقات الوزارية (Ministry Approvals) =====
+
+  /// إرسال تقييم + خطة للوزارة للموافقة
+  static Future<Map<String, dynamic>?> submitForMinistryApproval({
+    required int childId,
+    required int evaluationId,
+    required String educationalPlan,
+    required String cognitiveAssessment,
+    required String motorAssessment,
+    required String emotionalAssessment,
+    required String socialAssessment,
+    required String recommendations,
+    required List<String> teachingMethods,
+    int? teacherId,
+  }) async {
+    try {
+      final res = await authPost('/ministry/approvals', {
+        'child_id': childId,
+        'evaluation_id': evaluationId,
+        'educational_plan': educationalPlan,
+        'cognitive_assessment': cognitiveAssessment,
+        'motor_assessment': motorAssessment,
+        'emotional_assessment': emotionalAssessment,
+        'social_assessment': socialAssessment,
+        'recommendations': recommendations,
+        'teaching_methods': teachingMethods,
+        'teacher_id': teacherId,
+      });
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return data['approval'];
+      }
+      throw Exception(data['error'] ?? 'فشل إرسال الطلب');
+    } catch (e) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+  }
+
+  /// جلب كل الطلبات المعلقة (للوزارة)
+  static Future<List<dynamic>> getPendingApprovals() async {
+    try {
+      final res = await authGet('/ministry/approvals/pending');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['approvals'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// جلب كل الطلبات (معلقة + معتمدة + مرفوضة)
+  static Future<List<dynamic>> getAllApprovals({String? status}) async {
+    try {
+      final path = status != null
+          ? '/ministry/approvals?status=$status'
+          : '/ministry/approvals';
+      final res = await authGet(path);
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['approvals'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// الموافقة على طلب
+  static Future<bool> approveMinistryRequest(int approvalId) async {
+    try {
+      final res = await authPost(
+        '/ministry/approvals/$approvalId/approve',
+        {},
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// رفض طلب مع سبب
+  static Future<bool> rejectMinistryRequest(
+    int approvalId, {
+    String? reason,
+  }) async {
+    try {
+      final res = await authPost(
+        '/ministry/approvals/$approvalId/reject',
+        {'reason': reason ?? ''},
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// إشعارات الموافقات (للمختص/المعلم)
+  static Future<List<dynamic>> getApprovalNotifications() async {
+    try {
+      final res = await authGet('/ministry/approvals/notifications');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['notifications'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// حالة خطة الطفل (approved / pending / rejected / none)
+  static Future<String> getChildPlanStatus(int childId) async {
+    try {
+      final res = await authGet('/ministry/approvals/child/$childId/status');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['status'] ?? 'none';
+      }
+      return 'none';
+    } catch (e) {
+      return 'none';
+    }
+  }
+
+  /// الوزارة: عرض جميع المستخدمين (view only)
+  static Future<List<dynamic>> getMinistryUsers() async {
+    try {
+      final res = await authGet('/ministry/users');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['users'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// الوزارة: عرض جميع الأطفال (view only)
+  static Future<List<dynamic>> getMinistryChildren() async {
+    try {
+      final res = await authGet('/ministry/children');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data['children'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// الوزارة: إحصائيات شاملة
+  static Future<Map<String, dynamic>?> getMinistryStats() async {
+    try {
+      final res = await authGet('/ministry/stats');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return data;
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
   
