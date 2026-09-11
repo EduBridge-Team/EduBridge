@@ -2218,3 +2218,283 @@ textarea::placeholder {
 .user-verify.verified { color: var(--green-deep); }
 .user-verify.pending  { color: var(--coral-deep); }
 .user-verify.rejected { color: var(--danger-deep); }
+
+/* ============================================================
+   نور — المساعد الذكي (يظهر للمستخدم المسجّل فقط)
+   ============================================================ */
+
+.noor-assistant {
+    position: fixed;
+    inset-inline-start: 18px;
+    bottom: 18px;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.noor-launcher {
+    min-height: 60px;
+    padding: 2px 16px 2px 5px;
+    border: 2px solid var(--yellow);
+    border-radius: 999px;
+    background: var(--navy);
+    color: #fff;
+    box-shadow: 0 10px 28px oklch(22% 0.06 250 / 0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.noor-launcher:hover {
+    transform: translateY(-1px);
+    background: var(--teal-deep);
+}
+
+.noor-launcher:focus-visible,
+.noor-icon-btn:focus-visible,
+.noor-form button:focus-visible,
+.noor-form textarea:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+}
+
+.noor-panel {
+    width: min(390px, calc(100vw - 28px));
+    height: min(590px, calc(100vh - 100px));
+    min-height: 390px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 18px 55px oklch(22% 0.06 250 / 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.noor-header {
+    padding: 13px 14px;
+    background: var(--navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.noor-header > span:nth-child(2) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.noor-header strong {
+    font-size: 17px;
+}
+
+.noor-header small {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 11.5px;
+}
+
+.noor-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.noor-pet {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+    animation: noor-pet-bob 2.6s ease-in-out infinite;
+}
+
+.noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.22); }
+.noor-pet-glow { fill: oklch(80% 0.13 85 / 0.28); }
+.noor-pet-body { fill: var(--teal); }
+.noor-pet-ear,
+.noor-pet-badge { fill: var(--navy); }
+.noor-pet-face { fill: #fff; }
+.noor-pet-eyes { fill: var(--navy-deep); animation: noor-pet-eyes 5.2s infinite; }
+.noor-pet-blink {
+    fill: none;
+    stroke: var(--navy-deep);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: noor-pet-blink 5.2s infinite;
+}
+.noor-pet-beak { fill: var(--coral); }
+.noor-pet-bridge {
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+}
+.noor-pet-sparkle {
+    fill: var(--yellow);
+    animation: noor-pet-sparkle 1.3s ease-in-out infinite alternate;
+}
+
+@keyframes noor-pet-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes noor-pet-eyes {
+    0%, 88%, 94%, 100% { opacity: 1; }
+    89%, 93% { opacity: 0; }
+}
+
+@keyframes noor-pet-blink {
+    0%, 88%, 94%, 100% { opacity: 0; }
+    89%, 93% { opacity: 1; }
+}
+
+@keyframes noor-pet-sparkle {
+    from { transform: translateY(-2px); opacity: 0.65; }
+    to { transform: translateY(2px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noor-pet,
+    .noor-pet-eyes,
+    .noor-pet-blink,
+    .noor-pet-sparkle {
+        animation: none;
+    }
+}
+
+.noor-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.noor-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.noor-notice {
+    padding: 7px 14px;
+    background: oklch(95% 0.045 85);
+    color: var(--navy);
+    font-size: 12px;
+    text-align: center;
+}
+
+.noor-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.noor-message {
+    max-width: 86%;
+    padding: 10px 13px;
+    border-radius: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.noor-message.assistant {
+    align-self: flex-start;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-end-start-radius: 4px;
+}
+
+.noor-message.user {
+    align-self: flex-end;
+    background: var(--teal-deep);
+    color: #fff;
+    border-end-end-radius: 4px;
+}
+
+.noor-typing {
+    color: var(--muted);
+}
+
+.noor-error {
+    padding: 7px 14px;
+    background: var(--tint-coral);
+    color: var(--danger-deep);
+    font-size: 12px;
+}
+
+.noor-form {
+    padding: 10px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface);
+}
+
+.noor-form textarea {
+    flex: 1;
+    min-height: 44px;
+    max-height: 110px;
+    resize: vertical;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+}
+
+.noor-form button {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--coral);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.noor-form button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline: 10px;
+        bottom: 10px;
+        align-items: stretch;
+    }
+
+    .noor-panel {
+        width: 100%;
+        height: min(68vh, 560px);
+    }
+
+    .noor-launcher {
+        align-self: flex-start;
+    }
+}
