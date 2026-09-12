@@ -19,6 +19,7 @@ import {
   Landmark,
   LogIn,
   LogOut,
+  Accessibility,
 } from 'lucide-react'
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
@@ -68,6 +69,7 @@ export default function TopBar() {
     { to: '/ministry', label: 'المناهج', Icon: Landmark, show: is('ministry', 'admin') },
     { to: '/children', label: 'الأطفال', Icon: Users, show: Boolean(user) && user.role !== 'parent' },
     { to: '/lessons', label: 'الدروس', Icon: BookOpen, show: Boolean(user) },
+    { to: '/accessibility', label: 'إعدادات الوصول', Icon: Accessibility, show: Boolean(user) },
     {
       to: '/search',
       label: 'بحث بالهوية',

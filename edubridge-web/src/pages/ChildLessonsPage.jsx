@@ -1,8 +1,9 @@
 // صفحة دروس الطفل (حسب نوع إعاقته) مع «تمّ» والقراءة الصوتية
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check } from 'lucide-react'
+import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check, Gamepad2, Settings } from 'lucide-react'
 import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../api'
+import { applyAccessibilityProfile, getAccessibilityProfile } from '../accessibility'
 
 export default function ChildLessonsPage() {
   const { childId } = useParams()
@@ -48,6 +49,7 @@ export default function ChildLessonsPage() {
   }
 
   useEffect(() => {
+    applyAccessibilityProfile(getAccessibilityProfile(childId))
     load()
     // إيقاف أي قراءة صوتية عند مغادرة الصفحة
     return () => window.speechSynthesis?.cancel()
@@ -128,6 +130,12 @@ export default function ChildLessonsPage() {
           }
         >
           <ChartColumn size={16} /> التقدّم
+        </button>
+        <button className="btn small outline" onClick={() => navigate(`/children/${childId}/games`, { state: { childName } })}>
+          <Gamepad2 size={16} /> الألعاب
+        </button>
+        <button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
+          <Settings size={16} /> التكييف
         </button>
       </div>
 

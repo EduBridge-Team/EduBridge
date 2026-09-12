@@ -1,7 +1,7 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, User, ClipboardList, BookOpen, TrendingUp } from 'lucide-react'
+import { ArrowRight, User, ClipboardList, BookOpen, TrendingUp, Gamepad2, Accessibility } from 'lucide-react'
 import { fetchChildDetails, fetchChildEvaluations } from '../api'
 
 const STATUS_TEXT = {
@@ -157,6 +157,12 @@ export default function ChildDetailsPage() {
           }
         >
           <TrendingUp size={18} /> التقدّم
+        </button>
+        <button className="btn outline" onClick={() => navigate(`/children/${childId}/games`, { state: { childName: name } })}>
+          <Gamepad2 size={18} /> الألعاب التعليمية
+        </button>
+        <button className="btn outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
+          <Accessibility size={18} /> إعدادات الوصول
         </button>
       </div>
     </div>
