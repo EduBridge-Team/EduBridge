@@ -26,7 +26,6 @@ export const defaultProfile = {
   colorPatterns: false, noFlashing: false, calmColors: false, noTimers: false,
   speechExercises: false,
 }
-
 const recommended = {
   adhd: { brainBreaksEnabled: true, brainBreakIntervalMinutes: 12, visualTimerEnabled: true, reducedAnimations: true },
   autismMild: { predictableTimeline: true, reducedAnimations: true },

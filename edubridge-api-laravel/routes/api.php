@@ -21,6 +21,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AssistantController;
+use App\Http\Controllers\ConversationController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -35,6 +36,14 @@ Route::middleware('auth.jwt')->group(function () {
     // مساعد «نور» الذكي — محمي ومحدود الطلبات لحماية الأطفال والتكلفة
     Route::post('/assistant/chat', [AssistantController::class, 'chat'])
         ->middleware('throttle:20,1');
+
+    // المحادثات بين مستخدمي المنصة — نفس المسارات المستخدمة في التطبيق
+    Route::get('/conversation-users', [ConversationController::class, 'users']);
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::post('/conversations', [ConversationController::class, 'store']);
+    Route::get('/conversations/{id}/messages', [ConversationController::class, 'messages']);
+    Route::post('/conversations/{id}/messages', [ConversationController::class, 'send'])
+        ->middleware('throttle:60,1');
 
     // إدارة المستخدمين — لوحة التحكم الإدارية
     // القائمة متاحة للمعلّم/المختص (المعلّمون فقط) لتعيين معلّم للطفل — إصلاح البطاقة 12

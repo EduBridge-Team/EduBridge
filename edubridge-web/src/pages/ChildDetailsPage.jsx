@@ -9,7 +9,6 @@ const STATUS_TEXT = {
   assigned: 'تم التعيين ✓',
   pending: 'قيد الانتظار ⏳',
 }
-
 function formatDate(value) {
   if (!value) return null
   const d = new Date(value)

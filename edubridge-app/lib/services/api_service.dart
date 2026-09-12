@@ -625,6 +625,17 @@ class ApiService {
 
   // ===== دوال المستخدمين (Users) =====
 
+  static Future<List<dynamic>> getConversationUsers() async {
+    try {
+      final res = await authGet('/conversation-users');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) return data['users'] ?? [];
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
   static Future<List<dynamic>> getUsers({String? role}) async {
     try {
       String path = '/users';

@@ -336,3 +336,20 @@ export function askAssistant(messages, context) {
     }),
   });
 }
+
+// ===== المحادثات بين مستخدمي المنصة =====
+export function fetchConversationUsers() {
+  return request('/conversation-users');
+}
+export function fetchConversations() {
+  return request('/conversations');
+}
+export function createConversation(otherUserId, subject) {
+  return request('/conversations', { method: 'POST', body: JSON.stringify({ other_user_id: otherUserId, subject }) });
+}
+export function fetchConversationMessages(id) {
+  return request(`/conversations/${id}/messages`);
+}
+export function sendConversationMessage(id, content) {
+  return request(`/conversations/${id}/messages`, { method: 'POST', body: JSON.stringify({ content }) });
+}

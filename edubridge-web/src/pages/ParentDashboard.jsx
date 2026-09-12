@@ -1,7 +1,7 @@
 // لوحة ولي الأمر — إدارة الأطفال ومتابعة تقدّمهم (مطابقة لشاشة ولي الأمر في التطبيق)
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Pencil, Plus, Baby } from 'lucide-react'
+import { Bell, Pencil, Plus, Baby, Accessibility } from 'lucide-react'
 import { fetchChildren, fetchUnreadNotificationsCount, getUser } from '../api'
 
 // نص الحالة ولونها — نفس منطق التطبيق
@@ -75,9 +75,10 @@ export default function ParentDashboard() {
 
       <div className="dash-head-row" style={{ marginBottom: 16 }}>
         <h3 style={{ margin: 0 }}>أطفالي</h3>
-        <button className="btn success" onClick={() => navigate('/children/new')}>
-          <Plus size={18} /> إضافة طفل
-        </button>
+        <div className="actions" style={{ margin: 0 }}>
+          <button className="btn outline" onClick={() => navigate('/accessibility')}><Accessibility size={18} /> احتياجات الأبناء</button>
+          <button className="btn success" onClick={() => navigate('/children/new')}><Plus size={18} /> إضافة طفل</button>
+        </div>
       </div>
 
       {loading ? (

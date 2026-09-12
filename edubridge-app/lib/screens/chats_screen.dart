@@ -44,7 +44,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   Future<void> _startNewConversation() async {
     // جلب قائمة المستخدمين (جميع الأدوار) واختيار أحدهم
-    final users = await ApiService.getUsers();
+    final users = await ApiService.getConversationUsers();
     if (!mounted) return;
 
     showModalBottomSheet(

@@ -20,6 +20,9 @@ import {
   LogIn,
   LogOut,
   Accessibility,
+  MessageCircle,
+  Moon,
+  Sun,
 } from 'lucide-react'
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
@@ -29,6 +32,12 @@ export default function TopBar() {
   const location = useLocation()
   const user = getUser()
   const [open, setOpen] = useState(false)
+  const [dark, setDark] = useState(() => localStorage.getItem('edubridge_theme') === 'dark')
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+    localStorage.setItem('edubridge_theme', dark ? 'dark' : 'light')
+  }, [dark])
 
   // إغلاق القائمة تلقائياً عند تغيّر الصفحة
   useEffect(() => {
@@ -84,6 +93,7 @@ export default function TopBar() {
     },
     { to: '/verify', label: 'توثيق الهوية', Icon: IdCard, show: Boolean(user) },
     { to: '/support', label: 'الدعم', Icon: LifeBuoy, show: Boolean(user) },
+    { to: '/conversations', label: 'المحادثات', Icon: MessageCircle, show: Boolean(user) },
     { to: '/about', label: 'من نحن', Icon: Info, show: Boolean(user) },
   ].filter((l) => l.show)
 
@@ -156,6 +166,9 @@ export default function TopBar() {
 
             {/* شريحة المستخدم */}
             <div className="topbar-actions">
+              <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+                {dark ? <Sun size={17} /> : <Moon size={17} />}
+              </button>
               <span className="user-chip">
                 <span className="user-name">{user.name}</span>
                 <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
@@ -180,6 +193,9 @@ export default function TopBar() {
               </NavLink>
             </nav>
             <div className="topbar-actions">
+              <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+                {dark ? <Sun size={17} /> : <Moon size={17} />}
+              </button>
               <button
                 className="topbar-btn login-btn"
                 onClick={() => {

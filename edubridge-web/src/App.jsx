@@ -27,6 +27,7 @@ import ConsultationsPage from './pages/ConsultationsPage'
 import EducationalGamesPage from './pages/EducationalGamesPage'
 import AccessibilityPage from './pages/AccessibilityPage'
 import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
+import ConversationsPage from './pages/ConversationsPage'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
@@ -160,6 +161,10 @@ export default function App() {
         <Route
           path="/accessibility"
           element={<Protected><Page><AccessibilityOverviewPage /></Page></Protected>}
+        />
+        <Route
+          path="/conversations"
+          element={<Protected><Page><ConversationsPage /></Page></Protected>}
         />
         <Route
           path="/admin"
