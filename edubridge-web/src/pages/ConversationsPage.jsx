@@ -29,6 +29,8 @@ export default function ConversationsPage() {
     loadMessages(active.id)
     const timer = setInterval(() => loadMessages(active.id), 8000)
     return () => clearInterval(timer)
+    // active.id هو المفتاح المقصود؛ تغيير الرسائل لا يجب أن يعيد إنشاء المؤقّت
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.id])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 

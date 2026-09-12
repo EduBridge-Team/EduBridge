@@ -24,11 +24,6 @@ export default function TeacherDashboard() {
   const [viewing, setViewing] = useState(null) // درس قيد العرض
   const [speaking, setSpeaking] = useState(false)
 
-  // الحماية: للمعلّم فقط
-  if (!me || me.role !== 'teacher') {
-    return <Navigate to="/" replace />
-  }
-
   const load = async () => {
     setLoading(true)
     setError(null)
@@ -49,9 +44,15 @@ export default function TeacherDashboard() {
   }
 
   useEffect(() => {
+    if (!me || me.role !== 'teacher') return undefined
     load()
     return () => window.speechSynthesis?.cancel()
-  }, [])
+  }, [me?.role])
+
+  // الحماية: للمعلّم فقط — بعد تعريف جميع Hooks للحفاظ على ترتيبها
+  if (!me || me.role !== 'teacher') {
+    return <Navigate to="/" replace />
+  }
 
   // خريطة معرّف نوع الإعاقة → اسمه (لشارات الدروس)
   const typeName = (id) => types.find((t) => t.id === id)?.name
