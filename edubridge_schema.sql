@@ -151,6 +151,29 @@ CREATE TABLE notifications (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- المحادثات والرسائل بين المستخدمين
+CREATE TABLE conversations (
+    id                 SERIAL PRIMARY KEY,
+    participant_one_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    participant_two_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_by_id      INT REFERENCES users(id) ON DELETE SET NULL,
+    subject            VARCHAR(150),
+    created_at         TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at         TIMESTAMP NOT NULL DEFAULT NOW(),
+    CHECK (participant_one_id <> participant_two_id),
+    UNIQUE (participant_one_id, participant_two_id)
+);
+
+CREATE TABLE conversation_messages (
+    id              SERIAL PRIMARY KEY,
+    conversation_id INT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_id       INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content         TEXT,
+    file_url        VARCHAR(2048),
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    CHECK (content IS NOT NULL OR file_url IS NOT NULL)
+);
+
 
 -- ============================================================
 -- 3) فهارس تحسّن الأداء  
@@ -163,6 +186,11 @@ CREATE INDEX idx_progress_child        ON progress(child_id);
 CREATE INDEX idx_sessions_child        ON sessions(child_id);
 CREATE INDEX idx_notes_child           ON notes(child_id);
 CREATE INDEX idx_notifications_user    ON notifications(user_id);
+CREATE INDEX idx_conversations_participant_one ON conversations(participant_one_id);
+CREATE INDEX idx_conversations_participant_two ON conversations(participant_two_id);
+CREATE INDEX idx_conversations_updated_at ON conversations(updated_at DESC);
+CREATE INDEX idx_conversation_messages_conversation ON conversation_messages(conversation_id, id);
+CREATE INDEX idx_conversation_messages_sender ON conversation_messages(sender_id);
 
 
 -- ============================================================

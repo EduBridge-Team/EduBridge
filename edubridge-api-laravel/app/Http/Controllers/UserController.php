@@ -31,11 +31,18 @@ class UserController extends Controller
                 if ($role) {
                     $query->where('role', $role);
                 }
-            } else {
-                // غير الأدمن (معلّم/مختص) لا يرى إلا المعلّمين، وبحقول محدودة
+            } elseif ($user->role === 'parent') {
+                // ولي الأمر يتواصل مع الفريق التعليمي فقط، ولا يرى أولياء الأمور الآخرين.
                 $query = DB::table('users')
-                    ->select('id', 'name', 'email', 'phone', 'verification_status')
-                    ->where('role', 'teacher')
+                    ->select('id', 'name', 'email', 'role', 'phone', 'verification_status')
+                    ->whereIn('role', ['teacher', 'specialist'])
+                    ->orderBy('name');
+            } else {
+                // أعضاء الفريق يرون جهات التواصل المتاحة، مع استثناء حسابهم الحالي.
+                $query = DB::table('users')
+                    ->select('id', 'name', 'email', 'role', 'phone', 'verification_status')
+                    ->whereIn('role', ['teacher', 'specialist', 'admin', 'ministry', 'institution'])
+                    ->where('id', '!=', $user->id)
                     ->orderBy('name');
             }
 
