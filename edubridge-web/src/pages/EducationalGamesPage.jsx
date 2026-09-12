@@ -147,7 +147,7 @@ function SoundGame({ onScore, profile }) {
 function QuickGame({ onScore }) {
   const actions = ['صفّق مرة 👏', 'المس رأسك 🙆', 'ارفع يديك 🙌', 'قف ثم اجلس 🧍']
   const [round, setRound] = useState(0)
-  return <div className="quick-game"><div className="quick-action">{actions[round]}</div><p>نفّذ الحركة ثم اضغط «تم»</p><button className="btn" onClick={() => round === 4 ? onScore(100) : setRound(round + 1)}>تم ✓</button><div className="meta">{round + 1}/5</div></div>
+  return <div className="quick-game"><div className="quick-action">{actions[round]}</div><p>نفّذ الحركة ثم اضغط «تم»</p><button className="btn" onClick={() => round === actions.length - 1 ? onScore(100) : setRound(round + 1)}>تم ✓</button><div className="meta">{round + 1}/{actions.length}</div></div>
 }
 
 function RhythmGame({ onScore }) {
@@ -176,12 +176,12 @@ function GamePlayer({ game, age, profile, close }) {
 export default function EducationalGamesPage() {
   const { childId } = useParams(), navigate = useNavigate(), location = useLocation()
   const [child, setChild] = useState({ name: location.state?.childName || 'الطفل', age: 8 })
-  const [profile, setProfile] = useState(null), [active, setActive] = useState(null), breakTimer = useRef(null)
+  const [profile, setProfile] = useState(null), [active, setActive] = useState(null), [error, setError] = useState(''), breakTimer = useRef(null)
   useEffect(() => {
     fetchChildDetails(childId).then((data) => {
       const c = data.child || data, p = getAccessibilityProfile(childId, c.disability_type)
       setChild(c); setProfile(p); applyAccessibilityProfile(p)
-    })
+    }).catch((e) => setError(e.message))
     return () => clearTimeout(breakTimer.current)
   }, [childId])
   const group = ageGroup(Number(child.age) || 8), type = profile?.type || typeFromText(child.disability_type)
@@ -190,6 +190,7 @@ export default function EducationalGamesPage() {
     setActive(game)
     if (profile?.brainBreaksEnabled) breakTimer.current = setTimeout(() => alert('حان وقت فاصل ذهني قصير 🌿'), profile.brainBreakIntervalMinutes * 60000)
   }
+  if (error) return <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={() => navigate(-1)}>رجوع</button></div>
   if (!profile) return <div className="state"><div className="spinner" />جارِ تجهيز الألعاب...</div>
   return <div className="games-page">
     <div className="page-title"><button className="back-btn" onClick={() => navigate(-1)}><ArrowRight size={18} /></button><h2>الألعاب التعليمية</h2><span style={{ flex: 1 }} /><button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}><Settings size={16} /> إعدادات الوصول</button></div>
