@@ -1,9 +1,9 @@
 // طبقة الاتصال بالخادم — نفس الواجهة التي يستخدمها تطبيق الموبايل
 // في الإنتاج نحدّد عنوان الواجهة وقت البناء عبر المتغير:
 //   VITE_API_URL
-// في التطوير نستخدم اسم المضيف الحالي حتى يعمل الموقع من أي جهاز على الشبكة
-const BASE_URL =
-  import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`;
+// القيمة الافتراضية same-origin آمنة للإنتاج ولا تسبب mixed-content على HTTPS.
+// للتطوير المحلي يمكن تمرير VITE_API_URL=http://localhost:3000/api.
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 // التوكن وبيانات المستخدم في localStorage
 export function getToken() {
