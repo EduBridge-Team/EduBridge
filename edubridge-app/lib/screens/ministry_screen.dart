@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/approval_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import 'chats_screen.dart';
 import 'lessons_screen.dart';
 import 'support_sheet.dart';
@@ -93,6 +94,7 @@ class _MinistryScreenState extends State<MinistryScreen> {
                       MaterialPageRoute(builder: (_) => const ChatsScreen()),
                     ),
                   ),
+                  const LegalLinksButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     onPressed: () async {
