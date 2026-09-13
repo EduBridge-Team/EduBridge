@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import 'notifications_screen.dart';
 import 'support_sheet.dart';
 import 'child_lessons_screen.dart';
@@ -123,6 +124,7 @@ class _ParentScreenState extends State<ParentScreen> {
           ],
         ),
         actions: [
+          const LegalLinksButton(),
           _appBarIcon(
             icon: Icons.accessibility_new,
             tooltip: 'احتياجات الأبناء',
