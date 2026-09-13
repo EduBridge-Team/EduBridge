@@ -9,6 +9,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../services/approval_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import '../utils/navigation.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
@@ -524,6 +525,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       );
                     },
                   ),
+                  const LegalLinksButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
