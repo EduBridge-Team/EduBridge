@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -88,6 +89,7 @@ class HomeScreen extends StatelessWidget {
                             onPressed: toggleThemeMode,
                           ),
                         ),
+                        const LegalLinksButton(),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white),
                           tooltip: 'خروج',
