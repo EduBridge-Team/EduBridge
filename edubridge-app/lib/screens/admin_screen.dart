@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import '../utils/safe_bottom.dart';
 import 'edit_child_screen.dart';
 
@@ -46,6 +47,7 @@ class _AdminScreenState extends State<AdminScreen> {
       appBar: JisrAppBar(
         title: 'لوحة التحكم الإدارية',
         actions: [
+          const LegalLinksButton(),
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'البحث بالهوية',
