@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import '../utils/navigation.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
@@ -761,6 +762,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       );
                     },
                   ),
+                  const LegalLinksButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
