@@ -54,19 +54,23 @@ class SpecialistPickerSheet extends StatelessWidget {
             style: TextStyle(color: c.muted),
           ),
           const SizedBox(height: 16),
-          ...specialists.map((specialist) => ListTile(
+          ...specialists.map((specialist) {
+            final name = (specialist['name'] ?? '').toString();
+            final email = (specialist['email'] ?? '').toString();
+            return ListTile(
                 leading: CircleAvatar(
                   backgroundColor: AppColors.orange,
                   child: Text(
-                    (specialist['name'] ?? 'م').characters.first,
+                    name.trim().isEmpty ? 'م' : name.trim().characters.first,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
-                title: Text(specialist['name'] ?? 'مختص'),
-                subtitle: Text(specialist['email'] ?? ''),
+                title: Text(name.isEmpty ? 'مختص' : name),
+                subtitle: Text(email),
                 trailing: const Icon(Icons.chat_bubble_outline),
                 onTap: () => onSelect(specialist),
-              )),
+              );
+          }),
           if (specialists.isEmpty)
             Center(
               child: Text(
