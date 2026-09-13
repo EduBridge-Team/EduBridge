@@ -42,10 +42,20 @@ class EduBridgeApp extends StatelessWidget {
           builder: (context, child) => Directionality(
             textDirection: TextDirection.rtl,
             child: PetAssistantOverlay(
-              child: AdaptiveScaffold(child: child!), // ✅ جديد
+              // Keep every route above Android's gesture/navigation area. The
+              // top inset stays owned by each Scaffold/AppBar to avoid adding
+              // it twice on screens that already use SafeArea.
+              child: SafeArea(
+                top: false,
+                left: false,
+                right: false,
+                child: AdaptiveScaffold(child: child!),
+              ),
             ),
           ),
-          home: const WelcomeScreen(),
+          // Resolve the stored session on every cold start instead of always
+          // sending an already signed-in user back to the welcome screen.
+          home: const _HomeGate(),
           routes: {
             '/home': (context) => const _HomeGate(),
           },

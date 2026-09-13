@@ -43,8 +43,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Future<void> _startNewConversation() async {
-    // جلب قائمة المستخدمين (جميع الأدوار) واختيار أحدهم
-    final users = await ApiService.getConversationUsers();
+    List users;
+    try {
+      users = await ApiService.getConversationUsers();
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().replaceFirst('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      return;
+    }
     if (!mounted) return;
 
     showModalBottomSheet(

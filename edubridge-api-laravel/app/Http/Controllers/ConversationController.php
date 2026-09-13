@@ -10,6 +10,30 @@ class ConversationController extends Controller
 {
     private const STAFF_ROLES = ['teacher', 'specialist', 'admin', 'ministry', 'institution'];
 
+    // GET /api/conversation-users
+    // Returns only people the signed-in user is actually allowed to contact.
+    public function users(Request $request)
+    {
+        $me = $request->attributes->get('jwt_user');
+        $myId = (int) ($me->id ?? 0);
+        $myRole = (string) ($me->role ?? '');
+
+        try {
+            $users = DB::table('users')
+                ->where('id', '!=', $myId)
+                ->select('id', 'name', 'email', 'role')
+                ->orderBy('name')
+                ->get()
+                ->filter(fn ($user) => $this->canCommunicate($myRole, (string) $user->role))
+                ->values();
+
+            return response()->json(['users' => $users]);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(['error' => 'تعذّر تحميل جهات الاتصال'], 500);
+        }
+    }
+
     // GET /api/conversations
     public function index(Request $request)
     {

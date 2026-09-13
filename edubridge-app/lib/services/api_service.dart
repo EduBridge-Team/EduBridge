@@ -630,9 +630,14 @@ class ApiService {
       final res = await authGet('/conversation-users');
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) return data['users'] ?? [];
-      return [];
-    } catch (_) {
-      return [];
+      throw Exception(data['error'] ?? 'تعذّر تحميل جهات الاتصال');
+    } on SocketException {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    } on FormatException {
+      throw Exception('استجابة السيرفر غير صالحة');
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('تعذّر تحميل جهات الاتصال');
     }
   }
 
@@ -721,10 +726,17 @@ class ApiService {
 
   static Future<String?> getVerificationStatus() async {
     try {
-      final res = await authGet('/verification/status');
+      final res = await authGet('/me/verification');
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
-        return data['status']; // 'pending', 'approved', 'rejected', 'none'
+        final verification = data['verification'];
+        final status = verification is Map
+            ? verification['verification_status'] as String?
+            : null;
+
+        // The backend calls an accepted request "verified", while the
+        // existing app UI calls it "approved". Keep the UI contract stable.
+        return status == 'verified' ? 'approved' : (status ?? 'none');
       }
       return 'none';
     } catch (e) {
@@ -738,26 +750,56 @@ class ApiService {
   }) async {
     try {
       final token = await getToken();
-      final uri = Uri.parse('${Config.baseUrl}/verification/identity');
-      final request = http.MultipartRequest('POST', uri)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['national_id'] = nationalId;
-
-      if (await idImage.exists()) {
-        request.files.add(
-          await http.MultipartFile.fromPath('id_image', idImage.path),
-        );
+      if (token == null || token.isEmpty) {
+        throw Exception('انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً');
+      }
+      if (!await idImage.exists()) {
+        throw Exception('ملف الهوية غير موجود، يرجى اختياره مجدداً');
       }
 
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
-      final data = jsonDecode(responseBody);
+      // The backend uses one shared upload endpoint. It returns a public URL
+      // that is then attached to the signed-in user's verification request.
+      final uploadRequest = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Config.baseUrl}/uploads'),
+      )
+        ..headers['Authorization'] = 'Bearer $token'
+        ..files.add(await http.MultipartFile.fromPath('file', idImage.path));
+
+      final uploadResponse = await uploadRequest.send();
+      final uploadBody = await uploadResponse.stream.bytesToString();
+      final uploadData = jsonDecode(uploadBody);
+
+      if (uploadResponse.statusCode != 200 &&
+          uploadResponse.statusCode != 201) {
+        throw Exception(uploadData['error'] ?? 'تعذّر رفع صورة الهوية');
+      }
+
+      final documentUrl = uploadData['url'] as String?;
+      if (documentUrl == null || documentUrl.isEmpty) {
+        throw Exception('لم يُرجع السيرفر رابط ملف الهوية');
+      }
+
+      final response = await authPost('/me/identity', {
+        'national_id': nationalId,
+        'id_document_url': documentUrl,
+      });
+      final data = jsonDecode(response.body);
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر إرسال التوثيق');
       }
-    } catch (e) {
+    } on SocketException {
       throw Exception('تعذّر الاتصال بالسيرفر');
+    } on http.ClientException {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    } on FormatException {
+      throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
+    } catch (e) {
+      // Preserve meaningful validation/backend messages instead of replacing
+      // every failure with the misleading "connection" error.
+      if (e is Exception) rethrow;
+      throw Exception('تعذّر إرسال طلب التوثيق');
     }
   }
 

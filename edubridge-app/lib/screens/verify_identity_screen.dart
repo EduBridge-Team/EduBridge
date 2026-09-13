@@ -108,8 +108,9 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> with Widget
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
       });
     }

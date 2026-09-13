@@ -101,6 +101,21 @@ class ConversationControllerTest extends TestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function test_conversation_user_picker_only_returns_allowed_contacts(): void
+    {
+        $controller = app(ConversationController::class);
+
+        $parentResponse = $controller->users($this->request('GET', [], 1, 'parent'));
+        $parentUsers = json_decode($parentResponse->getContent(), true)['users'];
+        $this->assertSame(200, $parentResponse->getStatusCode());
+        $this->assertSame([2], array_column($parentUsers, 'id'));
+
+        $teacherResponse = $controller->users($this->request('GET', [], 2, 'teacher'));
+        $teacherUsers = json_decode($teacherResponse->getContent(), true)['users'];
+        $this->assertSame(200, $teacherResponse->getStatusCode());
+        $this->assertSame([3, 1], array_column($teacherUsers, 'id'));
+    }
+
     private function request(string $method, array $payload, int $id, string $role): Request
     {
         $request = Request::create('/api/conversations', $method, $payload);

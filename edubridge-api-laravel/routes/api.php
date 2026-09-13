@@ -38,6 +38,7 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('throttle:20,1');
 
     // المحادثات بين ولي الأمر والفريق التعليمي، وبين أعضاء الفريق
+    Route::get('/conversation-users', [ConversationController::class, 'users']);
     Route::get('/conversations', [ConversationController::class, 'index']);
     Route::post('/conversations', [ConversationController::class, 'store'])
         ->middleware('throttle:20,1');
