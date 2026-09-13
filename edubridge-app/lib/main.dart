@@ -29,6 +29,7 @@ class EduBridgeApp extends StatelessWidget {
         valueListenable: AccessibilityService.instance.profile,
         builder: (context, accProfile, __) => MaterialApp(
           navigatorKey: appNavigatorKey,
+          navigatorObservers: [jisrModalRouteObserver],
           title: 'EduBridge — جسر تعليمي',
           debugShowCheckedModeBanner: false,
           locale: const Locale('ar'),

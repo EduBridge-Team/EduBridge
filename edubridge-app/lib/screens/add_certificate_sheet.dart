@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/safe_bottom.dart';
 
 class AddCertificateSheet extends StatefulWidget {
   final VoidCallback onSaved;
@@ -65,7 +66,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = safeModalBottom(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),

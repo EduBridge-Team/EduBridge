@@ -44,40 +44,46 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
             return ValueListenableBuilder<bool>(
               valueListenable: assistantScreenVisible,
               builder: (context, assistantVisible, _) {
-                final mediaQuery = MediaQuery.of(context);
-                final keyboardOpen = mediaQuery.viewInsets.bottom > 0;
-                if (!signedIn ||
-                    assistantVisible ||
-                    keyboardOpen) {
-                  return const SizedBox.shrink();
-                }
+                return ValueListenableBuilder<bool>(
+                  valueListenable: modalSheetOpen,
+                  builder: (context, modalOpen, _) {
+                    final mediaQuery = MediaQuery.of(context);
+                    final keyboardOpen = mediaQuery.viewInsets.bottom > 0;
+                    if (!signedIn ||
+                        assistantVisible ||
+                        modalOpen ||
+                        keyboardOpen) {
+                      return const SizedBox.shrink();
+                    }
 
-                return PositionedDirectional(
-                  start: 14,
-                  bottom: mediaQuery.padding.bottom + 14,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: _openAssistant,
-                      customBorder: const CircleBorder(),
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: JisrColors.of(context).card,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.yellow, width: 2),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x33153A5B),
-                              blurRadius: 14,
-                              offset: Offset(0, 5),
+                    return PositionedDirectional(
+                      start: 14,
+                      bottom: mediaQuery.padding.bottom + 14,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _openAssistant,
+                          customBorder: const CircleBorder(),
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: JisrColors.of(context).card,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.yellow, width: 2),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x33153A5B),
+                                  blurRadius: 14,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
                             ),
-                          ],
+                            child: const PetAvatar(size: 68),
+                          ),
                         ),
-                        child: const PetAvatar(size: 68),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             );

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/safe_bottom.dart';
 
 class SupportSheet extends StatefulWidget {
   const SupportSheet({super.key});
@@ -70,7 +71,7 @@ class _SupportSheetState extends State<SupportSheet> {
     final c = JisrColors.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: safeModalBottom(context)),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(

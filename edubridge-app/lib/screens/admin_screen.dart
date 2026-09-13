@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/safe_bottom.dart';
 import 'edit_child_screen.dart';
 
 const _roleNames = {
@@ -1332,7 +1333,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = safeModalBottom(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
