@@ -19,7 +19,7 @@ val hasReleaseSigning =
     ).all { !it.isNullOrBlank() }
 
 android {
-    namespace = "com.example.edubridge_app"
+    namespace = "com.edubridge.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -33,8 +33,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Replace this before the first Google Play release.
-        applicationId = "com.example.edubridge_app"
+        applicationId = "com.edubridge.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
