@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/navigation.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
 import 'evaluation_sheet.dart';
@@ -46,6 +47,17 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     super.initState();
     _load().then((_) => _checkAndShowVerificationDialog());
     _loadNotificationsCount();
+  }
+
+  @override
+  void dispose() {
+    if (_adding) inlineModalOpen.value = false;
+    super.dispose();
+  }
+
+  void _setAdding(bool value) {
+    inlineModalOpen.value = value;
+    setState(() => _adding = value);
   }
 
   bool _isToday(String? ts) {
@@ -654,7 +666,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           if (_adding) _buildAddModal(c),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: _adding ? null : NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
         destinations: const [
@@ -670,11 +682,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           ),
         ],
       ),
-      floatingActionButton: _tabIndex == 1
+      floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
               onPressed: () async {
                 if (await _checkVerification()) {
-                  setState(() => _adding = true);
+                  _setAdding(true);
                 }
               },
               icon: const Icon(Icons.add),
@@ -1196,8 +1208,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return Positioned.fill(
       child: _AddLessonSheet(
         types: _types,
-        onClose: () => setState(() => _adding = false),
+        onClose: () => _setAdding(false),
         onCreated: (lesson) {
+          inlineModalOpen.value = false;
           setState(() {
             _lessons = [lesson, ..._lessons];
             _adding = false;

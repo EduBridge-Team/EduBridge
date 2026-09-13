@@ -9,6 +9,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../services/approval_service.dart';
 import '../theme.dart';
+import '../utils/navigation.dart';
 import 'welcome_screen.dart';
 import 'chat_screen.dart';
 import 'educational_plan_sheet.dart';
@@ -48,6 +49,24 @@ class _TeacherScreenState extends State<TeacherScreen> {
     super.initState();
     _loadData().then((_) => _checkAndShowVerificationDialog());
     _loadNotificationsCount();
+  }
+
+  @override
+  void dispose() {
+    if (_adding || _viewingLesson != null) {
+      inlineModalOpen.value = false;
+    }
+    super.dispose();
+  }
+
+  void _setAdding(bool value) {
+    inlineModalOpen.value = value;
+    setState(() => _adding = value);
+  }
+
+  void _setViewingLesson(Map? lesson) {
+    inlineModalOpen.value = lesson != null;
+    setState(() => _viewingLesson = lesson);
   }
 
   Future<void> _loadData() async {
@@ -286,7 +305,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 
   void _viewLesson(Map lesson) {
-    setState(() => _viewingLesson = lesson);
+    _setViewingLesson(lesson);
   }
 
   void _openNotifications() {
@@ -321,6 +340,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final inlineModalVisible = _adding || _viewingLesson != null;
 
     return Scaffold(
       body: Stack(
@@ -408,7 +428,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
           if (_adding) _buildAddModal(c),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: inlineModalVisible ? null : NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
         destinations: const [
@@ -424,11 +444,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
           ),
         ],
       ),
-      floatingActionButton: _tabIndex == 1
+      floatingActionButton: _tabIndex == 1 && !inlineModalVisible
           ? FloatingActionButton.extended(
               onPressed: () async {
                 if (await _checkVerification()) {
-                  setState(() => _adding = true);
+                  _setAdding(true);
                 }
               },
               icon: const Icon(Icons.add),
@@ -910,7 +930,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
     return Positioned.fill(
       child: GestureDetector(
-        onTap: () => setState(() => _viewingLesson = null),
+        onTap: () => _setViewingLesson(null),
         child: Container(
           color: Colors.black54,
           alignment: Alignment.center,
@@ -943,8 +963,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () =>
-                              setState(() => _viewingLesson = null),
+                          onPressed: () => _setViewingLesson(null),
                         ),
                       ],
                     ),
@@ -1029,8 +1048,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
     return Positioned.fill(
       child: _AddLessonSheet(
         types: _types,
-        onClose: () => setState(() => _adding = false),
+        onClose: () => _setAdding(false),
         onCreated: (lesson) {
+          inlineModalOpen.value = false;
           setState(() {
             _lessons = [lesson, ..._lessons];
             _adding = false;
