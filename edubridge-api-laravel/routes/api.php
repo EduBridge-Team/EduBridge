@@ -89,6 +89,19 @@ Route::middleware('auth.jwt')->group(function () {
     Route::put('/ministry/lessons/{id}', [MinistryController::class, 'review'])
         ->middleware('role:ministry,admin');
 
+
+    // عرض كل المستخدمين للوزارة (عرض فقط)
+    Route::get('/ministry/users', [MinistryController::class, 'users'])
+        ->middleware('role:ministry,admin');
+
+    // عرض كل الأطفال للوزارة (عرض فقط)
+    Route::get('/ministry/children', [MinistryController::class, 'children'])
+        ->middleware('role:ministry,admin');
+
+    // إحصائيات لوحة الوزارة (نظرة عامة)
+    Route::get('/ministry/stats', [MinistryController::class, 'stats'])
+        ->middleware('role:ministry,admin');
+
     // الدعم الفني والشكاوى (البطاقة 11)
     Route::get('/support', [SupportController::class, 'index']);
     Route::post('/support', [SupportController::class, 'store']);
