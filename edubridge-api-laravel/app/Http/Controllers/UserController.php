@@ -26,7 +26,9 @@ class UserController extends Controller
                     'verification_status', 'verified_at', 'created_at')
                 ->orderBy('name');
 
-            if ($user->role === 'admin') {
+            if ($user->role === 'admin' || $user->role === 'ministry' || $user->role === 'institution') {
+                // الوزارة/المؤسسة: نفس رؤية الأدمن الكاملة لكل المستخدمين (عرض فقط — لا تعديل ولا حذف،
+                // فالمسارات الخاصة بذلك مقصورة على الأدمن في routes/api.php)
                 $role = $request->query('role');
                 if ($role) {
                     $query->where('role', $role);
