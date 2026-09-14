@@ -36,6 +36,72 @@ class MinistryController extends Controller
         }
     }
 
+
+    // قائمة كل المستخدمين للوزارة (عرض فقط — لا تعديل ولا حذف)
+    // GET /api/ministry/users
+    public function users(Request $request)
+    {
+        try {
+            $users = DB::table('users')
+                // لا نُرجع password_hash أبداً
+                ->select('id', 'name', 'email', 'role', 'phone',
+                    'verification_status', 'created_at')
+                ->orderBy('name')
+                ->get();
+
+            return response()->json(['users' => $users]);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(['error' => 'خطأ في السيرفر'], 500);
+        }
+    }
+
+    // قائمة كل الأطفال للوزارة (عرض فقط)
+    // GET /api/ministry/children
+    public function children()
+    {
+        try {
+            $children = DB::table('children as c')
+                ->leftJoin('disability_types as dt', 'dt.id', '=', 'c.disability_type_id')
+                ->leftJoin('users as tu', 'tu.id', '=', 'c.assigned_teacher_id')
+                ->select('c.id', 'c.name', 'c.age', 'c.status', 'c.assigned_teacher_id',
+                    'c.disability_type', 'dt.name as disability_name',
+                    'tu.name as assigned_teacher_name')
+                ->orderBy('c.name')
+                ->get()
+                ->map(function ($c) {
+                    // للتوافق: لو ما فيه نوع إعاقة نصّي نستعمل اسم النوع من القائمة المرجعية
+                    if (empty($c->disability_type) && !empty($c->disability_name)) {
+                        $c->disability_type = $c->disability_name;
+                    }
+                    return $c;
+                });
+
+            return response()->json(['children' => $children]);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(['error' => 'خطأ في السيرفر'], 500);
+        }
+    }
+
+    // إحصائيات شاملة للوحة الوزارة (البطاقة: نظرة عامة)
+    // GET /api/ministry/stats
+    public function stats()
+    {
+        try {
+            return response()->json([
+                'children_count' => DB::table('children')->count(),
+                'users_count' => DB::table('users')->count(),
+                // "الطلبات المعلّقة" = دروس بانتظار مراجعة المنهج من الوزارة
+                'pending_approvals' => DB::table('lessons')->where('curriculum_status', 'pending')->count(),
+                'schools_count' => DB::table('organizations')->count(),
+            ]);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(['error' => 'خطأ في السيرفر'], 500);
+        }
+    }
+
     // اعتماد/رفض درس (وزارة)
     // PUT /api/ministry/lessons/:id   body: { status: approved|rejected, note? }
     public function review(Request $request, $id)
