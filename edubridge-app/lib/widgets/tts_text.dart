@@ -14,44 +14,56 @@ class TtsText extends StatelessWidget {
 
   const TtsText(
     this.text, {
+    super.key,
     this.style,
     this.textAlign,
     this.maxLines,
     this.overflow,
     this.enableTap = true,
-    super.key,
   });
- @override
+
+  @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: TtsService.instance.tapToRead, // تغيير
+      valueListenable: TtsService.instance.tapToRead,
       builder: (context, readingEnabled, _) {
+        // الوضع العادي: نص عادي بدون أي تدخل
         if (!readingEnabled || !enableTap) {
-          return Text(text);
+          return Text(
+            text,
+            style: style,
+            textAlign: textAlign,
+            maxLines: maxLines,
+            overflow: overflow,
+          );
         }
+
+        // وضع القراءة: النقر يقرأ النص + إبراز بصري
         return GestureDetector(
-          onTap: () => TtsService.instance.speakLine(text), // تغيير
+          onTap: () => TtsService.instance.speakLine(text),
           child: ValueListenableBuilder<String?>(
-            valueListenable: TtsService.instance.activeLine, // تغيير
+            valueListenable: TtsService.instance.activeLine,
             builder: (context, active, _) {
               final isSpeaking = active == text;
+              final baseStyle = style ?? const TextStyle();
               final effectiveStyle = isSpeaking
-                  ? (style ?? const TextStyle()).copyWith(
+                  ? baseStyle.copyWith(
                       color: Colors.blue,
                       backgroundColor: Colors.blue.withValues(alpha: 0.1),
                     )
                   : style;
-              return Text(text);
+
+              return Text(
+                text,
+                style: effectiveStyle,
+                textAlign: textAlign,
+                maxLines: maxLines,
+                overflow: overflow,
+              );
             },
           ),
         );
       },
     );
   }
-}
-  @override
-
-// الوصول إلى _currentText — نحتاج لإضافة getter في TtsService
-extension TtsServiceExt on TtsService {
-  static String get _currentText => ''; // سيتم تحديثه في الخدمة
 }

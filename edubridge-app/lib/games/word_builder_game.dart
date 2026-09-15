@@ -1,7 +1,7 @@
 // لعبة بناء الكلمة — للأعمار 7-14
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../theme.dart';
+
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
@@ -20,7 +20,6 @@ class WordBuilderGame extends StatefulWidget {
 }
 
 class _WordBuilderGameState extends State<WordBuilderGame> {
-  // كلمات متدرّجة حسب العمر
   static const _wordsByAge = {
     7: ['بيت', 'شمس', 'قمر', 'ماء', 'باب'],
     10: ['كتاب', 'مدرسة', 'شجرة', 'زهرة', 'سماء'],
@@ -31,6 +30,8 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
   late String _currentWord;
   late List<String> _scrambled;
   List<String> _userOrder = [];
+  // ✅ إصلاح: نتتبّع الحروف بالـ index بدل القيمة → يدعم الحروف المكررة
+  final Set<int> _usedIndices = {};
   int _round = 0;
   int _score = 0;
   final _rnd = Random();
@@ -57,19 +58,22 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     }
     _currentWord = _words[_rnd.nextInt(_words.length)];
     _scrambled = _currentWord.split('');
-    // خلط الحروف
     do {
       _scrambled.shuffle(_rnd);
     } while (_scrambled.join() == _currentWord && _currentWord.length > 1);
+
     _userOrder = [];
+    _usedIndices.clear(); // ✅ إصلاح
 
     TtsService.instance.speakLine('رتّب الحروف لتكوين كلمة');
     setState(() {});
   }
 
   void _tapLetter(int index) {
-    if (_userOrder.contains(_scrambled[index])) return;
+    // ✅ إصلاح: التحقق بالـ index وليس بالقيمة
+    if (_usedIndices.contains(index)) return;
     setState(() {
+      _usedIndices.add(index);
       _userOrder.add(_scrambled[index]);
     });
     if (_userOrder.length == _currentWord.length) {
@@ -89,7 +93,10 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
         if (mounted) _newRound();
       });
     } else {
-      setState(() => _userOrder = []);
+      setState(() {
+        _userOrder = [];
+        _usedIndices.clear();
+      });
       TtsService.instance.speakLine('حاول مرة أخرى');
     }
   }
@@ -122,9 +129,11 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text('الجولة: ${_round + 1}/$_totalRounds',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
                 Text('النقاط: $_score ⭐',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -133,7 +142,6 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               style: TextStyle(fontSize: 20, color: Colors.grey)),
           const SizedBox(height: 20),
 
-          // الخانات الفارغة
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Wrap(
@@ -144,7 +152,9 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
                 return Container(
                   width: 55, height: 65,
                   decoration: BoxDecoration(
-                    color: letter.isNotEmpty ? const Color(0xFF1AA9B2) : Colors.white,
+                    color: letter.isNotEmpty
+                        ? const Color(0xFF1AA9B2)
+                        : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: const Color(0xFF1AA9B2), width: 2,
@@ -167,14 +177,14 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               style: TextStyle(fontSize: 16, color: Colors.grey)),
           const SizedBox(height: 12),
 
-          // الحروف
           Padding(
             padding: const EdgeInsets.all(20),
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 12, runSpacing: 12,
               children: List.generate(_scrambled.length, (i) {
-                final used = _userOrder.contains(_scrambled[i]);
+                // ✅ إصلاح: التحقق بالـ index
+                final used = _usedIndices.contains(i);
                 return GestureDetector(
                   onTap: used ? null : () => _tapLetter(i),
                   child: Opacity(
@@ -184,11 +194,13 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: const Color(0xFF1AA9B2), width: 2),
+                        border: Border.all(
+                            color: const Color(0xFF1AA9B2), width: 2),
                       ),
                       alignment: Alignment.center,
                       child: Text(_scrambled[i],
-                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                          style: const TextStyle(
+                              fontSize: 32, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 );

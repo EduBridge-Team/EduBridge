@@ -56,57 +56,35 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // شعار جسر داخل هالة لونية ناعمة (متكيّفة مع الوضع)
-                Builder(builder: (context) {
-                  final c = JisrColors.of(context);
-                  return Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: SweepGradient(
-                        colors: [
-                          c.tintTeal,
-                          c.tintGreen,
-                          c.tintOrange,
-                          c.tintTeal,
-                        ],
-                      ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                      child:
-                          Image.asset('assets/icon.png', width: 88, height: 88),
-                    ),
-                  );
-                }),
-                const SizedBox(height: 18),
-                Text(
-                  'جسر التعليمي',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: JisrColors.of(context).heading,
-                  ),
-                ),
-                Text(
-                  'تعلم بلا حدود',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'فرص متساوية للجميع',
-                  style: TextStyle(
-                      fontSize: 15, color: JisrColors.of(context).muted),
-                ),
-                const SizedBox(height: 40),
+               Builder(builder: (context) {
+  final c = JisrColors.of(context);
+  return Container(
+    padding: const EdgeInsets.fromLTRB(18, 10, 18,10),
+   
+    child: Center(
+      child:
+      
+       Column(
+         children: [
+           Image.asset(
+            'assets/iconV.png',width: 250, height: 250,
+            fit: BoxFit.contain,
+                 ),
+          Text(
+            'تعليم بلا حدود',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 67, 246, 228),
+            ),
+          ), 
+         ],
+       ),
+    ),
+  );
+}),
 
+                
                 // حقل الإيميل
                 TextField(
                   controller: _emailCtrl,
@@ -166,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: const Text(
                     'ليس لديك حساب؟ أنشئ حساباً جديداً',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16,color: Color.fromARGB(255, 67, 246, 228)),
                   ),
                 ),
               ],

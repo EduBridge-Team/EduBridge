@@ -7,6 +7,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
+import '../widgets/speakable.dart';
 import 'notifications_screen.dart';
 import 'support_sheet.dart';
 import 'child_lessons_screen.dart';
@@ -15,8 +16,9 @@ import 'add_child_screen.dart';
 import 'edit_child_screen.dart';
 import 'children_accessibility_overview_screen.dart';
 
+
 class ParentScreen extends StatefulWidget {
-  const ParentScreen({super.key, required Map<dynamic, dynamic> parent});
+  const ParentScreen({super.key});
 
   @override
   State<ParentScreen> createState() => _ParentScreenState();
@@ -100,6 +102,64 @@ class _ParentScreenState extends State<ParentScreen> {
     }
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  بناء نص القراءة الصوتية لبطاقة طفل
+  // ═══════════════════════════════════════════════════════
+  String _buildChildSpeech(Map child) {
+    final name = (child['name'] ?? '').toString();
+    final age = child['age'] ?? '?';
+    final disabilityType =
+        (child['disability_type'] ?? 'غير محدد').toString();
+    final teacher = child['assigned_teacher_name']?.toString();
+    final status = child['status'];
+
+    final statusText = status == 'assigned'
+        ? 'تم التعيين'
+        : status == 'evaluated'
+            ? 'تم التقييم'
+            : 'قيد الانتظار';
+
+    final parts = <String>[
+      'الطفل $name',
+      'العمر $age سنة',
+      'الإعاقة $disabilityType',
+      if (teacher != null && teacher.isNotEmpty) 'المعلم $teacher',
+      'الحالة: $statusText',
+      'اضغط للدخول',
+    ];
+
+    return parts.join('، ');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  فتح تفاصيل الطفل
+  // ═══════════════════════════════════════════════════════
+  Future<void> _openChildDetails(BuildContext context, Map child) async {
+    final name = (child['name'] ?? '').toString();
+
+    await AccessibilityService.instance.setActiveChild(
+      child['id'],
+      disabilityTypeHint: child['disability_type']?.toString(),
+    );
+
+    if (!context.mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChildDetailsScreen(
+          childId: child['id'],
+          childName: name,
+          childAge: child['age'] is int ? child['age'] as int : 8,
+          parentPhone: child['parent_phone']?.toString(),
+          disabilityType: child['disability_type']?.toString(),
+        ),
+      ),
+    );
+
+    await AccessibilityService.instance.setActiveChild(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,16 +171,28 @@ class _ParentScreenState extends State<ParentScreen> {
         ),
         title: Row(
           children: [
-            Image.asset('assets/icon.png', width: 26, height: 26),
+            
+            Image.asset('assets/icon.png', width: 50, height: 50
+            ),
             const SizedBox(width: 8),
-            const Text(
-              'جسر التعليمي',
+          
+             const Text(
+              'Bridge',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 0, 171, 154),
+              ),
+            ),
+             const Text(
+              'Edu',
+              style: TextStyle(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
+             
           ],
         ),
         actions: [
@@ -385,33 +457,13 @@ class _ParentScreenState extends State<ParentScreen> {
         final color = AppColors.kidPalette[i % AppColors.kidPalette.length];
         final disabilityType = child['disability_type'] ?? 'غير محدد';
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () async {
-              await AccessibilityService.instance.setActiveChild(
-                child['id'],
-                disabilityTypeHint: child['disability_type']?.toString(),
-              );
-
-              if (!context.mounted) return;
-
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ChildDetailsScreen(
-                    childId: child['id'],
-                    childName: name,
-                    childAge: child['age'] is int ? child['age'] as int : 8,
-                    parentPhone: child['parent_phone']?.toString(),
-                    disabilityType: child['disability_type']?.toString(),
-                  ),
-                ),
-              );
-
-              await AccessibilityService.instance.setActiveChild(null);
-            },
+        // ✅ البطاقة مغلّفة بـ Speakable — تُقرأ عند تفعيل وضع القراءة
+        return Speakable(
+          text: _buildChildSpeech(child),
+          radius: 20,
+          onTap: () => _openChildDetails(context, child),
+          child: Card(
+            margin: const EdgeInsets.symmetric(vertical: 6),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -468,8 +520,8 @@ class _ParentScreenState extends State<ParentScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color:
-                              _getStatusColor(status).withValues(alpha: 0.15),
+                          color: _getStatusColor(status)
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -510,7 +562,9 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 }
 
-// ===== شاشة تفاصيل الطفل =====
+// ═══════════════════════════════════════════════════════
+//  شاشة تفاصيل الطفل
+// ═══════════════════════════════════════════════════════
 class ChildDetailsScreen extends StatefulWidget {
   final int childId;
   final String childName;

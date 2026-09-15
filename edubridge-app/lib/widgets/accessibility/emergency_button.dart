@@ -3,18 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../services/api_service.dart';
 import '../../theme.dart';
 
 class EmergencyButton extends StatefulWidget {
   final String childName;
   final String? parentPhone;
   final String? specialistPhone;
+  final int? childId;
 
   const EmergencyButton({
     super.key,
     required this.childName,
     this.parentPhone,
     this.specialistPhone,
+    this.childId,
   });
 
   @override
@@ -25,12 +28,10 @@ class _EmergencyButtonState extends State<EmergencyButton> {
   bool _sending = false;
 
   Future<void> _triggerEmergency() async {
-    // اهتزاز تأكيدي
     HapticFeedback.heavyImpact();
     await Future.delayed(const Duration(milliseconds: 150));
     HapticFeedback.heavyImpact();
 
-    // تأكيد قبل الإرسال
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -71,30 +72,32 @@ class _EmergencyButtonState extends State<EmergencyButton> {
 
     setState(() => _sending = true);
 
+    // ✅ إصلاح: إرسال فعلي للسيرفر عبر /support بأولوية عاجلة
+    bool serverSuccess = false;
     try {
-      // ✅ إرسال إشعار للـ Backend
-      // await ApiService.sendEmergencyAlert(childId: ...);
-
-      // ✅ اتصال هاتفي بالأهل
-      if (widget.parentPhone != null) {
-        await _callNumber(widget.parentPhone!);
-      }
-
-      if (!mounted) return;
-      setState(() => _sending = false);
-
-      // ✅ عرض تعليمات ما بعد الإرسال
-      _showInstructions();
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _sending = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('تعذّر إرسال التنبيه: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      final res = await ApiService.authPost('/support', {
+        'subject': '🚨 طوارئ: ${widget.childName}',
+        'message':
+            'تم تفعيل زر الطوارئ للطفل ${widget.childName}'
+            '${widget.childId != null ? ' (ID: ${widget.childId})' : ''}. '
+            'يُرجى التواصل فوراً.',
+        'priority': 'urgent',
+        'type': 'emergency',
+      });
+      serverSuccess = res.statusCode == 200 || res.statusCode == 201;
+    } catch (_) {
+      // نستمر بالاتصال الهاتفي حتى لو فشل الإرسال
     }
+
+    // ✅ اتصال هاتفي بالأهل
+    if (widget.parentPhone != null && widget.parentPhone!.isNotEmpty) {
+      await _callNumber(widget.parentPhone!);
+    }
+
+    if (!mounted) return;
+    setState(() => _sending = false);
+
+    _showInstructions(serverSuccess: serverSuccess);
   }
 
   Future<void> _callNumber(String phone) async {
@@ -106,38 +109,55 @@ class _EmergencyButtonState extends State<EmergencyButton> {
     } catch (_) {}
   }
 
-  void _showInstructions() {
+  void _showInstructions({required bool serverSuccess}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 32),
-            SizedBox(width: 8),
-            Text('تم إرسال التنبيه'),
+            Icon(
+              serverSuccess ? Icons.check_circle : Icons.warning_amber,
+              color: serverSuccess ? Colors.green : Colors.orange,
+              size: 32,
+            ),
+            const SizedBox(width: 8),
+            Text(serverSuccess ? 'تم إرسال التنبيه' : 'تنبيه محلي'),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            if (!serverSuccess)
+              Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  '⚠️ تعذّر إرسال التنبيه للسيرفر — تم الاتصال هاتفياً فقط.',
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+            const Text(
               'خطوات الأمان:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 12),
-            Text('1.  ابقَ هادئاً وضع الطفل في مكان آمن',
+            const SizedBox(height: 12),
+            const Text('1.  ابقَ هادئاً وضع الطفل في مكان آمن',
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            Text('2.  أبعد الأشياء الحادة عن الطفل',
+            const Text('2.  أبعد الأشياء الحادة عن الطفل',
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            Text('3.  لا تضع شيئاً في فمه',
+            const Text('3.  لا تضع شيئاً في فمه',
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            Text('4.  سجّل مدة النوبة',
+            const Text('4.  سجّل مدة النوبة',
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            Text('5.  إن استمرت أكثر من 5 دقائق → اتصل بالطبيب',
+            const Text('5.  إن استمرت أكثر من 5 دقائق → اتصل بالطبيب',
                 style: TextStyle(
                   fontSize: 15,
                   height: 1.6,

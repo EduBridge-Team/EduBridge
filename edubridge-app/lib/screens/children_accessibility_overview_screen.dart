@@ -75,7 +75,7 @@ class _ChildrenAccessibilityOverviewScreenState
           : _error != null
               ? Center(
                   child: Text(_error!,
-                      style: const TextStyle(color: Colors.red)))
+                      style: const TextStyle(color: Color.fromARGB(255, 54, 165, 244))))
               : _children.isEmpty
                   ? const Center(
                       child: Text('لا يوجد أبناء مسجّلون بعد',

@@ -36,22 +36,17 @@ class VisualCelebration extends StatefulWidget {
   }) async {
     final profile = AccessibilityService.instance.profile.value;
 
-    final isCalm =
-        profile.sensoryCalmMode || profile.reducedAnimations;
+    final isCalm = profile.sensoryCalmMode || profile.reducedAnimations;
     final isBlind = profile.type == DisabilityType.blind;
     final isDeaf = profile.type == DisabilityType.deaf;
     final isDown = profile.type == DisabilityType.downSyndrome;
-    final isAutismSevere =
-        profile.type == DisabilityType.autismSevere;
+    final isAutismSevere = profile.type == DisabilityType.autismSevere;
 
-    // ─── التعامل مع الصوت ───
+    // ─── الصوت ───
     if (playSound && !profile.sensoryCalmMode && !isDeaf) {
       if (isDown) {
-        // داون: صوت بطيء وكلمات بسيطة
-        EncouragementService.instance
-            .praiseForDown(childName: childName);
+        EncouragementService.instance.praiseForDown(childName: childName);
       } else if (isAutismSevere) {
-        // توحّد شديد: كلمة واحدة هادئة
         TtsService.instance.speakLine('أحسنت');
       } else if (childName != null && childName.isNotEmpty) {
         EncouragementService.instance.praiseByName(childName);
@@ -60,7 +55,7 @@ class VisualCelebration extends StatefulWidget {
       }
     }
 
-    // ─── للأعمى: اهتزاز قوي بدل الرؤية ───
+    // ─── للأعمى ───
     if (isBlind) {
       HapticFeedback.heavyImpact();
       await Future.delayed(const Duration(milliseconds: 150));
@@ -69,7 +64,7 @@ class VisualCelebration extends StatefulWidget {
       HapticFeedback.mediumImpact();
     }
 
-    // ─── للأصمّ: اهتزاز متكرر ───
+    // ─── للأصمّ ───
     if (isDeaf) {
       for (var i = 0; i < 3; i++) {
         HapticFeedback.heavyImpact();
@@ -77,14 +72,16 @@ class VisualCelebration extends StatefulWidget {
       }
     }
 
-    // ─── المدة النهائية ───
     final actualDuration = isCalm
         ? const Duration(seconds: 2)
         : isDeaf || isBlind
             ? const Duration(seconds: 4)
             : duration;
 
-    final overlay = Overlay.of(context);
+    // ✅ إصلاح: التحقق من overlay + try/catch عند الإزالة
+    final overlay = Overlay.maybeOf(context, rootOverlay: true);
+    if (overlay == null) return;
+
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => VisualCelebration(
@@ -96,11 +93,21 @@ class VisualCelebration extends StatefulWidget {
         deafMode: isDeaf,
       ),
     );
-    overlay.insert(entry);
 
-    await Future.delayed(
-        actualDuration + const Duration(milliseconds: 500));
-    if (entry.mounted) entry.remove();
+    try {
+      overlay.insert(entry);
+    } catch (_) {
+      return;
+    }
+
+    await Future.delayed(actualDuration + const Duration(milliseconds: 500));
+
+    // ✅ إصلاح: إزالة آمنة حتى لو أُزيل الـ entry سابقاً
+    try {
+      entry.remove();
+    } catch (_) {
+      // الـ entry أُزيل مسبقاً — لا شيء لفعله
+    }
   }
 
   @override
@@ -120,26 +127,22 @@ class _VisualCelebrationState extends State<VisualCelebration>
       duration: widget.duration,
     )..forward();
 
-    // ─── عدد النجوم والألوان حسب الحالة ───
     final int starCount;
     final List<Color> palette;
     final List<String> emojis;
     final double speedFactor;
 
     if (widget.calmMode) {
-      // توحّد: هادئ
       starCount = 8;
       palette = [AppColors.teal, AppColors.green];
       emojis = ['⭐', '✨'];
       speedFactor = 0.5;
     } else if (widget.blindMode) {
-      // أعمى: لا معنى للنجوم — نُظهر عدد قليل جداً
       starCount = 6;
       palette = [AppColors.yellow];
       emojis = ['⭐'];
       speedFactor = 0.7;
     } else if (widget.deafMode) {
-      // أصمّ: احتفال غني بصرياً
       starCount = 40;
       palette = [
         AppColors.orange,
@@ -151,7 +154,6 @@ class _VisualCelebrationState extends State<VisualCelebration>
       emojis = ['⭐', '🌟', '✨', '💫', '🏆', '🎉', '🎊'];
       speedFactor = 1.2;
     } else {
-      // عادي
       starCount = 30;
       palette = [
         AppColors.orange,
@@ -199,7 +201,6 @@ class _VisualCelebrationState extends State<VisualCelebration>
               color: Colors.black.withValues(alpha: progress * 0.35),
               child: Stack(
                 children: [
-                  // ⭐ النجوم المتطايرة
                   ..._stars.map((star) {
                     final cx = size.width * star.startX +
                         cos(star.angle) * star.distance * progress;
@@ -226,8 +227,6 @@ class _VisualCelebrationState extends State<VisualCelebration>
                       ),
                     );
                   }),
-
-                  // 🎯 رسالة التشجيع
                   Center(
                     child: Transform.scale(
                       scale: _ctrl.value < 0.3

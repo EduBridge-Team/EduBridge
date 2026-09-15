@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
 import 'screens/welcome_screen.dart';
@@ -7,15 +6,16 @@ import 'theme.dart';
 import 'utils/home_router.dart';
 import 'utils/navigation.dart';
 import 'widgets/accessibility/adaptive_scaffold.dart';
+import 'widgets/accessibility/voice_mic_overlay.dart';
 import 'widgets/pet_assistant_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await loadSavedThemeMode();
   await ApiService.initializeAuthState();
-  await AccessibilityService.instance.load(); // ✅ جديد
+  await AccessibilityService.instance.load();
 
-  runApp(const ProviderScope(child: EduBridgeApp()));
+  runApp(const EduBridgeApp());
 }
 
 class EduBridgeApp extends StatelessWidget {
@@ -25,15 +25,15 @@ class EduBridgeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: jisrThemeMode,
-      builder: (context, mode, _) => ValueListenableBuilder<AccessibilityProfile>(
+      builder: (context, mode, _) =>
+          ValueListenableBuilder<AccessibilityProfile>(
         valueListenable: AccessibilityService.instance.profile,
         builder: (context, accProfile, __) => MaterialApp(
           navigatorKey: appNavigatorKey,
           navigatorObservers: [jisrModalRouteObserver],
-          title: 'EduBridge — جسر تعليمي',
+          title: 'EduBridge — جسر تعليمي' ,
           debugShowCheckedModeBanner: false,
           locale: const Locale('ar'),
-          // ✅ اختيار الثيم حسب البروفايل النشط
           theme: accProfile.highContrast
               ? buildHighContrastTheme()
               : buildJisrTheme(),
@@ -42,19 +42,17 @@ class EduBridgeApp extends StatelessWidget {
           builder: (context, child) => Directionality(
             textDirection: TextDirection.rtl,
             child: PetAssistantOverlay(
-              // Keep every route above Android's gesture/navigation area. The
-              // top inset stays owned by each Scaffold/AppBar to avoid adding
-              // it twice on screens that already use SafeArea.
-              child: SafeArea(
-                top: false,
-                left: false,
-                right: false,
-                child: AdaptiveScaffold(child: child!),
+              child: VoiceMicOverlay(
+                child: SafeArea(
+                  top: false,
+                  left: false,
+                  right: false,
+                  bottom: false,
+                  child: AdaptiveScaffold(child: child!),
+                ),
               ),
             ),
           ),
-          // Resolve the stored session on every cold start instead of always
-          // sending an already signed-in user back to the welcome screen.
           home: const _HomeGate(),
           routes: {
             '/home': (context) => const _HomeGate(),

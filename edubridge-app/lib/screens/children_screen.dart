@@ -87,7 +87,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
     }
     if (_error != null) {
       return Center(
-        child: Text(_error!, style: const TextStyle(fontSize: 16, color: Colors.red)),
+        child: Text(_error!, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 0, 171, 154))),
       );
     }
     if (_children.isEmpty) {

@@ -37,24 +37,15 @@ class WelcomeScreen extends StatelessWidget {
               // ===== الشعار واسم المنصة + زر الوضع الليلي =====
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: c.line),
-                    ),
-                    child: Image.asset('assets/icon.png', width: 38, height: 38),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'جسر التعليمي',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: c.heading,
-                    ),
-                  ),
+                  Builder(builder: (context) {
+                    final c = JisrColors.of(context);
+                    return Container(
+                      padding: const EdgeInsets.all(5),
+                  
+                      child: Image.asset('assets/icon.png', width: 110, height: 110),
+                    );
+                  }),
+                 
                   const Spacer(),
                   ValueListenableBuilder<ThemeMode>(
                     valueListenable: jisrThemeMode,

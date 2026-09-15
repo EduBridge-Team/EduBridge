@@ -171,12 +171,12 @@ class _EditChildScreenState extends State<EditChildScreen> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.orangeDeep),
+                    Icon(Icons.info_outline, color: AppColors.teal),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'يمكنك تعديل البيانات الأساسية فقط. لا يمكنك تغيير المعلّم أو الأخصائي.',
-                        style: TextStyle(color: AppColors.orangeDeep, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -274,7 +274,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
 
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: const TextStyle(color: Color.fromARGB(255, 54, 143, 244))),
             ],
             const SizedBox(height: 24),
             ElevatedButton(

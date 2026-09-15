@@ -86,7 +86,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
     // ✅ تحقق أن الملفات المطلوبة مرفوعة
     if (_idCardFile == null) {
-      setState(() => _error = 'صورة هوية الطفل مطلوبة');
+      setState(() => _error = 'صورة هوية ولي الأمر مطلوبة');
       return;
     }
     if (_birthCertFile == null) {
@@ -205,7 +205,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'مطلوب رفع صورة هوية الطفل وشهادة الميلاد لإتمام التسجيل.',
+                        'مطلوب رفع صورة هوية ولي الامر وشهادة الميلاد لإتمام التسجيل.',
                         style: TextStyle(
                           color: c.onTint,
                           fontSize: 13.5,
@@ -257,7 +257,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                   color: c.card,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: AppColors.orange.withValues(alpha: 0.4),
+                    color: const Color.fromARGB(255, 38, 42, 249).withValues(alpha: 0.4),
                     width: 2,
                   ),
                 ),
@@ -267,7 +267,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                     Row(
                       children: [
                         const Icon(Icons.folder_special,
-                            color: AppColors.orange, size: 26),
+                            color: Color.fromARGB(255, 43, 242, 242), size: 26),
                         const SizedBox(width: 8),
                         Text(
                           'المستندات الرسمية',
@@ -282,7 +282,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.15),
+                            color: const Color.fromARGB(255, 54, 219, 244).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
@@ -290,7 +290,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: Color.fromARGB(255, 54, 152, 244),
                             ),
                           ),
                         ),
@@ -301,7 +301,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                     // ─── هوية الطفل ───
                     _buildFilePicker(
                       context: context,
-                      label: 'هوية الطفل',
+                      label: 'هوية ولي الامر',
                       sublabel: 'صورة واضحة للوجه الأمامي للهوية',
                       icon: Icons.credit_card,
                       file: _idCardFile,
@@ -322,7 +322,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                       file: _birthCertFile,
                       onPick: _pickBirthCert,
                       onRemove: () => setState(() => _birthCertFile = null),
-                      color: AppColors.orange,
+                      color: const Color.fromARGB(255, 43, 235, 242),
                     ),
                   ],
                 ),
@@ -333,7 +333,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _disabilityTypeCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'نوع الإعاقة (اختياري)',
+                  labelText: 'نوع الإعاقة ',
                   prefixIcon: Icon(Icons.medical_services),
                   hintText: 'مثال: إعاقة حركية، إعاقة سمعية، ...',
                 ),
@@ -345,7 +345,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _disabilityDescCtrl,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'وصف الإعاقة (اختياري)',
+                  labelText: 'وصف الإعاقة ',
                   prefixIcon: Icon(Icons.description),
                 ),
               ),
@@ -378,7 +378,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _specialNeedsCtrl,
                 maxLines: 2,
                 decoration: const InputDecoration(
-                  labelText: 'احتياجات خاصة (اختياري)',
+                  labelText: 'احتياجات خاصة ',
                   prefixIcon: Icon(Icons.help),
                   hintText: 'مثال: يحتاج إلى دعم إضافي في القراءة',
                 ),
@@ -411,7 +411,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _challengesCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'التحديات (اختياري)',
+                  labelText: 'التحديات ',
                   prefixIcon: Icon(Icons.warning),
                   hintText: 'أدخل التحديات مفصولة بفواصل، مثال: صعوبة في الكتابة، ...',
                 ),
@@ -424,21 +424,21 @@ class _AddChildScreenState extends State<AddChildScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
+                      color: const Color.fromARGB(255, 54, 152, 244).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.4)),
+                          color: const Color.fromARGB(255, 54, 168, 244).withValues(alpha: 0.4)),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline,
-                            color: Colors.red, size: 22),
+                            color: Color.fromARGB(255, 9, 189, 186), size: 22),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _error!,
                             style: const TextStyle(
-                                color: Colors.red, fontSize: 15),
+                                color: Color.fromARGB(255, 19, 198, 195), fontSize: 15),
                           ),
                         ),
                       ],
@@ -452,7 +452,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.green,
+                    backgroundColor: const Color.fromARGB(255, 25, 198, 195),
                   ),
                   child: _loading
                       ? const CircularProgressIndicator(color: Colors.white)
@@ -627,7 +627,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 ),
                 // زر حذف
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                  icon: const Icon(Icons.delete_outline_outlined, color: Colors.red, size: 20),
                   tooltip: 'حذف',
                   onPressed: onRemove,
                   constraints: const BoxConstraints(),

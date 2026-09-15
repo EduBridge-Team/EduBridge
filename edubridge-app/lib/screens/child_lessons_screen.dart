@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../utils/adaptive_theme.dart';
+import '../widgets/speakable.dart';
 import '../widgets/accessibility/audio_timer.dart';
 import '../widgets/accessibility/brain_break_overlay.dart';
 import '../widgets/accessibility/emergency_button.dart';
@@ -399,6 +400,28 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     );
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  بناء نص القراءة الصوتية لبطاقة درس
+  // ═══════════════════════════════════════════════════════
+  String _buildLessonSpeech(Map lesson, bool isDone, bool isSample) {
+    final title = (lesson['title'] ?? '').toString();
+    final content = (lesson['content'] ?? '').toString();
+
+    final parts = <String>[
+      'درس: $title',
+      if (content.isNotEmpty) content,
+      if (isSample)
+        'درس تجريبي'
+      else if (isDone)
+        'مكتمل'
+      else
+        'لم يكتمل بعد',
+      if (!isSample) 'اضغط لفتح الدرس',
+    ];
+
+    return parts.join('، ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = AccessibilityService.instance.profile.value;
@@ -502,45 +525,50 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         if (showSampleBanner && i == 1) {
           return Padding(
             padding: EdgeInsets.only(bottom: v.spacing),
-            child: Container(
-              padding: EdgeInsets.all(v.spacing - 4),
-              decoration: BoxDecoration(
-                color: v.accentColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(v.cardRadius),
-                border: Border.all(
-                  color: v.accentColor.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline,
-                      color: v.accentColor, size: v.iconSize),
-                  SizedBox(width: v.spacing - 6),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '📌 دروس تجريبية',
-                          style: TextStyle(
-                            fontSize: v.bodyFontSize,
-                            fontWeight: FontWeight.bold,
-                            color: v.accentColor,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'عندما تُضاف دروس حقيقية، ستظهر هنا تلقائياً',
-                          style: TextStyle(
-                            fontSize: v.bodyFontSize - 3,
-                            color: v.accentColor.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
+            child: Speakable(
+              text:
+                  'دروس تجريبية. عندما تُضاف دروس حقيقية، ستظهر هنا تلقائياً',
+              radius: v.cardRadius,
+              child: Container(
+                padding: EdgeInsets.all(v.spacing - 4),
+                decoration: BoxDecoration(
+                  color: v.accentColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(v.cardRadius),
+                  border: Border.all(
+                    color: v.accentColor.withValues(alpha: 0.3),
+                    width: 1.5,
                   ),
-                ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        color: v.accentColor, size: v.iconSize),
+                    SizedBox(width: v.spacing - 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '📌 دروس تجريبية',
+                            style: TextStyle(
+                              fontSize: v.bodyFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: v.accentColor,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'عندما تُضاف دروس حقيقية، ستظهر هنا تلقائياً',
+                            style: TextStyle(
+                              fontSize: v.bodyFontSize - 3,
+                              color: v.accentColor.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -552,6 +580,9 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     );
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  رأس الشاشة — كل عنصر مغلّف بـ Speakable
+  // ═══════════════════════════════════════════════════════
   Widget _buildAdaptiveHeader(AdaptiveVisuals v) {
     final p = AccessibilityService.instance.profile.value;
     final items = <Widget>[];
@@ -560,22 +591,30 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     final timerMinutes =
         (p.timerRenewalMinutes > 0) ? p.timerRenewalMinutes : 5;
 
-    // شارة البروفايل
+    // ✅ شارة البروفايل — مغلّفة
     items.add(
       Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Align(
           alignment: Alignment.center,
-          child: const ProfileBadge(showFullLabel: true),
+          child: Speakable(
+            text: 'الوضع الحالي: ${v.profileLabel}',
+            radius: 24,
+            child: const ProfileBadge(showFullLabel: true),
+          ),
         ),
       ),
     );
 
-    // زر الألعاب
+    // ✅ زر الألعاب — مغلّف
     items.add(
       Padding(
         padding: EdgeInsets.only(bottom: v.spacing),
-        child: InkWell(
+        child: Speakable(
+          text: p.type == DisabilityType.blind
+              ? 'ألعاب سمعية. ألعاب بأذنيك. اضغط للدخول'
+              : 'الألعاب التعليمية. العب وتعلّم، مناسبة لعمرك. اضغط للدخول',
+          radius: v.cardRadius,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -585,12 +624,14 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
               ),
             ),
           ),
-          borderRadius: BorderRadius.circular(v.cardRadius),
           child: Container(
             padding: EdgeInsets.all(v.spacing + 2),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [v.accentColor, v.accentColor.withValues(alpha: 0.7)],
+                colors: [
+                  v.accentColor,
+                  v.accentColor.withValues(alpha: 0.7),
+                ],
               ),
               borderRadius: BorderRadius.circular(v.cardRadius),
             ),
@@ -637,122 +678,138 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       ),
     );
 
-    // المؤقّت
+    // ✅ المؤقّت — مغلّف
     if (p.visualTimerEnabled && !p.noTimers) {
       items.add(
         Padding(
           padding: EdgeInsets.only(bottom: v.spacing),
-          child: p.type == DisabilityType.blind
-              ? AudioTimer(
-                  key: ValueKey('audio_timer_cycle_$_timerCycle'),
-                  total: Duration(minutes: timerMinutes),
-                  childName: widget.childName,
-                  onFinished: () async {
-                    TtsService.instance.speakLine(
-                      'انتهى الوقت! وقت الراحة $timerMinutes دقائق',
-                    );
-                    if (mounted) {
-                      await BrainBreakDialog.show(context);
+          child: Speakable(
+            text:
+                'مؤقّت الدرس. كل $timerMinutes دقائق يتجدّد تلقائياً. اضغط للتحكم بالمؤقّت',
+            radius: v.cardRadius,
+            child: p.type == DisabilityType.blind
+                ? AudioTimer(
+                    key: ValueKey('audio_timer_cycle_$_timerCycle'),
+                    total: Duration(minutes: timerMinutes),
+                    childName: widget.childName,
+                    onFinished: () async {
+                      TtsService.instance.speakLine(
+                        'انتهى الوقت! وقت الراحة $timerMinutes دقائق',
+                      );
                       if (mounted) {
-                        setState(() => _timerCycle++);
+                        await BrainBreakDialog.show(context);
+                        if (mounted) {
+                          setState(() => _timerCycle++);
+                        }
                       }
-                    }
-                  },
-                )
-              : Column(
-                  children: [
-                    if (_timerCycle > 0)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: v.accentColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: v.accentColor.withValues(alpha: 0.4),
-                              width: 1.5,
+                    },
+                  )
+                : Column(
+                    children: [
+                      if (_timerCycle > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: v.accentColor.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: v.accentColor.withValues(alpha: 0.4),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.refresh,
+                                    size: 16, color: v.accentColor),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '🔄 الدورة ${_timerCycle + 1}',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: v.accentColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.refresh,
-                                  size: 16, color: v.accentColor),
-                              const SizedBox(width: 6),
-                              Text(
-                                '🔄 الدورة ${_timerCycle + 1}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: v.accentColor,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ),
+                      Center(
+                        child: VisualTimer(
+                          key: ValueKey('timer_cycle_$_timerCycle'),
+                          total: Duration(minutes: timerMinutes),
+                          label: 'وقت القراءة المتبقي',
+                          showControls: true,
+                          onFinished: () async {
+                            await VisualCelebration.show(
+                              context,
+                              message: 'أحسنت! انتهت $timerMinutes دقائق',
+                              emoji: '⏰',
+                              childName: widget.childName,
+                              duration: const Duration(seconds: 2),
+                            );
+                            if (mounted) {
+                              await BrainBreakDialog.show(context);
+                            }
+                            if (mounted) {
+                              setState(() => _timerCycle++);
+                            }
+                          },
                         ),
                       ),
-                    Center(
-                      child: VisualTimer(
-                        key: ValueKey('timer_cycle_$_timerCycle'),
-                        total: Duration(minutes: timerMinutes),
-                        label: 'وقت القراءة المتبقي',
-                        showControls: true,
-                        onFinished: () async {
-                          await VisualCelebration.show(
-                            context,
-                            message: 'أحسنت! انتهت $timerMinutes دقائق',
-                            emoji: '⏰',
-                            childName: widget.childName,
-                            duration: const Duration(seconds: 2),
-                          );
-                          if (mounted) {
-                            await BrainBreakDialog.show(context);
-                          }
-                          if (mounted) {
-                            setState(() => _timerCycle++);
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      );
-    }
-
-    // الخط الزمني
-    if (p.predictableTimeline) {
-      items.add(
-        Padding(
-          padding: EdgeInsets.only(bottom: v.spacing),
-          child: VisualTimeline(
-            title: 'خطوات الدرس',
-            steps: [
-              const TimelineStep(
-                  emoji: '📖', label: 'اقرأ العنوان', done: true),
-              TimelineStep(
-                  emoji: '🎧',
-                  label: 'استمع للشرح',
-                  current: !_canMarkDone),
-              TimelineStep(
-                  emoji: '✍️',
-                  label: 'حلّ التمرين',
-                  done: _canMarkDone),
-              const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
-            ],
+                    ],
+                  ),
           ),
         ),
       );
     }
 
-    // زر الطوارئ
+    // ✅ الخط الزمني — مغلّف
+    if (p.predictableTimeline) {
+      items.add(
+        Padding(
+          padding: EdgeInsets.only(bottom: v.spacing),
+          child: Speakable(
+            text: 'خطوات الدرس: اقرأ العنوان، استمع للشرح، '
+                'حلّ التمرين، احصل على نجمة',
+            radius: v.cardRadius,
+            child: VisualTimeline(
+              title: 'خطوات الدرس',
+              steps: [
+                const TimelineStep(
+                    emoji: '📖', label: 'اقرأ العنوان', done: true),
+                TimelineStep(
+                    emoji: '🎧',
+                    label: 'استمع للشرح',
+                    current: !_canMarkDone),
+                TimelineStep(
+                    emoji: '✍️',
+                    label: 'حلّ التمرين',
+                    done: _canMarkDone),
+                const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ✅ زر الطوارئ — مغلّف
     if (p.emergencyButton) {
-      items.add(EmergencyButton(
-        childName: widget.childName,
-        parentPhone: widget.parentPhone,
-      ));
+      items.add(
+        Speakable(
+          text: 'زر الطوارئ. للحالات الطارئة فقط',
+          radius: v.cardRadius,
+          child: EmergencyButton(
+            childName: widget.childName,
+            parentPhone: widget.parentPhone,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -761,6 +818,9 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     );
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  بطاقة الدرس — مغلّفة بـ Speakable
+  // ═══════════════════════════════════════════════════════
   Widget _buildLessonCard(Map lesson, AdaptiveVisuals v) {
     final p = AccessibilityService.instance.profile.value;
 
@@ -772,26 +832,29 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     final isSaving = _savingLessonId == lessonId;
     final isSample = lessonId < 0;
 
-    return Container(
-      margin: EdgeInsets.only(bottom: v.spacing - 4),
-      decoration: BoxDecoration(
-        color: v.surfaceColor,
-        borderRadius: BorderRadius.circular(v.cardRadius),
-        border: Border.all(
-          color: isDone ? v.accentColor : v.accentColor.withValues(alpha: 0.2),
-          width: isDone ? 2.5 : 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: v.accentColor.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return Speakable(
+      text: _buildLessonSpeech(lesson, isDone, isSample),
+      radius: v.cardRadius,
+      onTap: isSample ? null : () => _openLesson(lesson),
+      child: Container(
+        margin: EdgeInsets.only(bottom: v.spacing - 4),
+        decoration: BoxDecoration(
+          color: v.surfaceColor,
+          borderRadius: BorderRadius.circular(v.cardRadius),
+          border: Border.all(
+            color: isDone
+                ? v.accentColor
+                : v.accentColor.withValues(alpha: 0.2),
+            width: isDone ? 2.5 : 1.5,
           ),
-        ],
-      ),
-      child: InkWell(
-        onTap: isSample ? null : () => _openLesson(lesson),
-        borderRadius: BorderRadius.circular(v.cardRadius),
+          boxShadow: [
+            BoxShadow(
+              color: v.accentColor.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Padding(
           padding: EdgeInsets.all(v.spacing - 2),
           child: Column(

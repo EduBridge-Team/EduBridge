@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../screens/welcome_screen.dart';
+
+import '../screens/welcome_screen.dart' show WelcomeScreen;
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../utils/navigation.dart';
 
-/// مجموعة أزرار قانونية موحّدة:
+/// مجموعة أزرار قانونية موحّدة لكل المستخدمين:
 /// - سياسة الخصوصية (رابط خارجي)
-/// - طلب حذف الحساب (رابط خارجي)
+/// - طلب حذف الحساب عبر الويب (رابط خارجي — متطلب Google Play)
 /// - حذف الحساب نهائياً (تنفيذ فعلي داخل التطبيق)
 class LegalLinksButton extends StatelessWidget {
   const LegalLinksButton({super.key});
@@ -27,13 +27,13 @@ class LegalLinksButton extends StatelessWidget {
   }
 
   // ═══════════════════════════════════════════════════════
-  //  حذف الحساب نهائياً
+  //  خطوات حذف الحساب
   // ═══════════════════════════════════════════════════════
   Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const _DeleteAccountDialog(),
+      builder: (_) => const _DeleteAccountDialog(),
     );
 
     if (confirmed != true) return;
@@ -43,7 +43,7 @@ class LegalLinksButton extends StatelessWidget {
   }
 
   Future<void> _executeDelete(BuildContext context) async {
-    // عرض تحميل
+    // نافذة تحميل
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -56,11 +56,8 @@ class LegalLinksButton extends StatelessWidget {
       await ApiService.deleteAccount();
 
       if (!context.mounted) return;
+      Navigator.of(context).pop(); // أغلق التحميل
 
-      // أغلق نافذة التحميل
-      Navigator.of(context).pop();
-
-      // رسالة نجاح
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم حذف حسابك بنجاح'),
@@ -68,7 +65,6 @@ class LegalLinksButton extends StatelessWidget {
         ),
       );
 
-      // توجيه لشاشة الترحيب
       await Future.delayed(const Duration(milliseconds: 800));
       if (!context.mounted) return;
 
@@ -78,8 +74,6 @@ class LegalLinksButton extends StatelessWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-
-      // أغلق نافذة التحميل
       Navigator.of(context).pop();
 
       final msg = e.toString().replaceFirst('Exception: ', '');
@@ -120,17 +114,18 @@ class LegalLinksButton extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.description_outlined),
-                title: const Text('طلب حذف الحساب والبيانات'),
-                subtitle: const Text('افتح خطوات إرسال طلب الحذف'),
+                title: const Text('طلب حذف الحساب (عبر الويب)'),
+                subtitle: const Text('افتح صفحة الخطوات الرسمية'),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _open(context, _deleteAccountUri);
                 },
               ),
               const Divider(height: 24),
-              // ✅ زر حذف الحساب نهائياً
+              // ✅ الحذف الفعلي داخل التطبيق
               ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                leading:
+                    const Icon(Icons.delete_forever, color: Colors.red),
                 title: const Text(
                   'حذف الحساب نهائياً',
                   style: TextStyle(
@@ -165,7 +160,7 @@ class LegalLinksButton extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════
-//  نافذة تأكيد حذف الحساب — مع تأكيد كتابي
+//  نافذة تأكيد الحذف — مع كتابة كلمة "حذف"
 // ═══════════════════════════════════════════════════════
 class _DeleteAccountDialog extends StatefulWidget {
   const _DeleteAccountDialog();
@@ -178,7 +173,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
   final _confirmCtrl = TextEditingController();
   bool _canDelete = false;
 
-  // الكلمة المطلوبة للتأكيد
+  /// الكلمة المطلوبة للتأكيد
   static const _confirmWord = 'حذف';
 
   @override
@@ -227,7 +222,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // تحذير
+            // ─── تحذير ───
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -254,10 +249,14 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                     style: TextStyle(fontSize: 13),
                   ),
                   SizedBox(height: 4),
-                  Text('• حسابك وبياناتك الشخصية', style: TextStyle(fontSize: 13)),
-                  Text('• جميع الأطفال المرتبطين بحسابك', style: TextStyle(fontSize: 13)),
-                  Text('• كل الدروس والتقدّم المسجّل', style: TextStyle(fontSize: 13)),
-                  Text('• الإشعارات والمحادثات', style: TextStyle(fontSize: 13)),
+                  Text('• حسابك وبياناتك الشخصية',
+                      style: TextStyle(fontSize: 13)),
+                  Text('• جميع الأطفال المرتبطين بحسابك',
+                      style: TextStyle(fontSize: 13)),
+                  Text('• كل الدروس والتقدّم المسجّل',
+                      style: TextStyle(fontSize: 13)),
+                  Text('• الإشعارات والمحادثات',
+                      style: TextStyle(fontSize: 13)),
                 ],
               ),
             ),
@@ -297,12 +296,10 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         ),
       ),
       actions: [
-        // زر إلغاء
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: const Text('إلغاء'),
         ),
-        // زر حذف — معطّل حتى الكتابة الصحيحة
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor:
@@ -311,9 +308,8 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
           ),
           icon: const Icon(Icons.delete_forever),
           label: const Text('حذف نهائي'),
-          onPressed: _canDelete
-              ? () => Navigator.pop(context, true)
-              : null,
+          onPressed:
+              _canDelete ? () => Navigator.pop(context, true) : null,
         ),
       ],
     );

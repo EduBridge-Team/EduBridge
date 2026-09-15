@@ -24,8 +24,11 @@ class _NumbersGameState extends State<NumbersGame> {
 
   late int _targetNumber;
   late List<int> _options;
+  // ✅ إصلاح: نخزّن الإيموجي في الـ state — لا يتغيّر مع كل rebuild
+  late String _currentEmoji;
 
   final _numberEmojis = ['🍎', '🍌', '🍇', '🍓', '🍊', '🥕'];
+  final _rnd = Random();
 
   @override
   void initState() {
@@ -35,14 +38,17 @@ class _NumbersGameState extends State<NumbersGame> {
 
   void _newRound() {
     if (_round >= _totalRounds) return;
-    final rnd = Random();
-    _targetNumber = 1 + rnd.nextInt(6);
+
+    _targetNumber = 1 + _rnd.nextInt(6);
 
     final set = <int>{_targetNumber};
     while (set.length < 4) {
-      set.add(1 + rnd.nextInt(6));
+      set.add(1 + _rnd.nextInt(6));
     }
     _options = set.toList()..shuffle();
+
+    // ✅ إصلاح: اختيار الإيموجي مرة واحدة لكل جولة
+    _currentEmoji = _numberEmojis[_rnd.nextInt(_numberEmojis.length)];
 
     EncouragementService.instance.praiseStart();
     setState(() {});
@@ -131,8 +137,6 @@ class _NumbersGameState extends State<NumbersGame> {
     final c = JisrColors.of(context);
     final profile = AccessibilityService.instance.profile.value;
     final largeTargets = profile.extraLargeTouchTargets;
-    final rnd = Random();
-    final emoji = _numberEmojis[rnd.nextInt(_numberEmojis.length)];
 
     return Scaffold(
       appBar: JisrAppBar(title: 'لعبة الأرقام 🔢'),
@@ -177,8 +181,9 @@ class _NumbersGameState extends State<NumbersGame> {
                     alignment: WrapAlignment.center,
                     children: List.generate(
                       _targetNumber,
+                      // ✅ إصلاح: استخدم _currentEmoji الثابتة
                       (_) => Text(
-                        emoji,
+                        _currentEmoji,
                         style: TextStyle(
                           fontSize: largeTargets ? 54 : 42,
                         ),

@@ -19,9 +19,6 @@ class QuickActionGame extends StatefulWidget {
 }
 
 class _QuickActionGameState extends State<QuickActionGame> {
-  // ═══════════════════════════════════════════════════════
-  //  الحركات — سجلات موضعية (emoji, label)
-  // ═══════════════════════════════════════════════════════
   static const _actions = [
     ('👏', 'صفّق'),
     ('🦘', 'اقفز'),
@@ -37,22 +34,18 @@ class _QuickActionGameState extends State<QuickActionGame> {
     ('🎯', 'المس رأسك'),
   ];
 
-  late (String, String) _currentAction;
+  // ✅ إصلاح: قيمة ابتدائية بدل late — يمنع LateInitializationError
+  (String, String) _currentAction = ('👏', 'صفّق');
+
   int _score = 0;
   int _round = 0;
   int _streak = 0;
 
-  // ═══════════════════════════════════════════════════════
-  //  المؤقّت — حسب عمر الطفل وبروفايله
-  // ═══════════════════════════════════════════════════════
   Timer? _ticker;
   int _secondsLeft = 30;
   bool _isPaused = false;
   bool _isFinished = false;
 
-  // ═══════════════════════════════════════════════════════
-  //  عدد الجولات
-  // ═══════════════════════════════════════════════════════
   static const _totalSeconds = 60;
 
   final _rnd = Random();
@@ -63,8 +56,8 @@ class _QuickActionGameState extends State<QuickActionGame> {
   @override
   void initState() {
     super.initState();
-    _newAction();
     _startTimer();
+    _newAction();
     EncouragementService.instance.praiseStart();
   }
 
@@ -75,9 +68,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     super.dispose();
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  المؤقّت
-  // ═══════════════════════════════════════════════════════
   void _startTimer() {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _isPaused || _isFinished) return;
@@ -88,7 +78,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
       } else {
         setState(() => _secondsLeft--);
 
-        // تنبيه كل 10 ثوان
         if (_secondsLeft == 10) {
           TtsService.instance.speakLine('عشر ثوانٍ متبقية!');
         }
@@ -99,11 +88,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
     });
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  حركة جديدة
-  // ═══════════════════════════════════════════════════════
   void _newAction() {
-    // اختيار حركة عشوائية مختلفة عن الحالية
     (String, String) next;
     do {
       next = _actions[_rnd.nextInt(_actions.length)];
@@ -113,9 +98,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     HapticFeedback.mediumImpact();
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  الضغط على "فعلتها"
-  // ═══════════════════════════════════════════════════════
   void _tapDone() {
     if (_isPaused || _isFinished) return;
 
@@ -126,20 +108,15 @@ class _QuickActionGameState extends State<QuickActionGame> {
       _streak++;
     });
 
-    // تشجيع كل 5 حركات
     if (_round % 5 == 0) {
       EncouragementService.instance.praiseStreak();
     } else {
-      // صوت قصير للتأكيد
       HapticFeedback.lightImpact();
     }
 
     _newAction();
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  إيقاف / متابعة
-  // ═══════════════════════════════════════════════════════
   void _pause() {
     setState(() => _isPaused = true);
     TtsService.instance.speakLine('توقفنا مؤقتاً');
@@ -150,14 +127,10 @@ class _QuickActionGameState extends State<QuickActionGame> {
     TtsService.instance.speakLine('نكمل');
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  إنهاء اللعبة
-  // ═══════════════════════════════════════════════════════
   void _onFinish() async {
     _isFinished = true;
     setState(() {});
 
-    // رسالة تشجيع حسب النتيجة
     String message;
     String emoji;
     if (_score >= 20) {
@@ -185,9 +158,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     if (mounted) Navigator.pop(context);
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  واجهة المستخدم
-  // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final large = _profile.extraLargeTouchTargets;
@@ -208,15 +178,11 @@ class _QuickActionGameState extends State<QuickActionGame> {
       ),
       body: Column(
         children: [
-          // ═══════════════════════════════════════════════
-          //  شريط المعلومات
-          // ═══════════════════════════════════════════════
           Container(
             padding: const EdgeInsets.all(16),
             color: Colors.white,
             child: Column(
               children: [
-                // المؤقّت الكبير
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -248,10 +214,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
-                // شريط التقدّم
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
@@ -264,10 +227,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                         : const Color(0xFFF2842B),
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
-                // النقاط + المتتالية
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -295,12 +255,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // ═══════════════════════════════════════════════
-          //  الحركة الحالية
-          // ═══════════════════════════════════════════════
           Expanded(
             child: Center(
               child: _isFinished
@@ -308,12 +263,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                   : _buildPlayingView(large),
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // ═══════════════════════════════════════════════
-          //  زر "فعلتها"
-          // ═══════════════════════════════════════════════
           if (!_isFinished)
             Padding(
               padding: const EdgeInsets.all(20),
@@ -349,9 +299,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  عرض اللعب
-  // ═══════════════════════════════════════════════════════
   Widget _buildPlayingView(bool large) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -367,8 +314,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // الإيموجي الكبير مع حركة نبض
           TweenAnimationBuilder<double>(
             key: ValueKey(_currentAction.$2),
             tween: Tween(begin: 0.9, end: 1.1),
@@ -401,10 +346,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
               ),
             ),
           ),
-
           const SizedBox(height: 24),
-
-          // اسم الحركة
           Text(
             _currentAction.$2,
             textAlign: TextAlign.center,
@@ -414,10 +356,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
               color: const Color(0xFF12283A),
             ),
           ),
-
           const SizedBox(height: 12),
-
-          // رسالة تحفيزية
           Text(
             _isPaused
                 ? '⏸️ متوقف مؤقتاً'
@@ -432,9 +371,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  عرض ما بعد الانتهاء
-  // ═══════════════════════════════════════════════════════
   Widget _buildFinishedView(bool large) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -464,9 +400,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  رقاقة إحصائيات
-  // ═══════════════════════════════════════════════════════
   Widget _statChip({
     required String icon,
     required String label,

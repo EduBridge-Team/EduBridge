@@ -1,5 +1,4 @@
-// شاشة الوزارة — لوحة إدارة شاملة
-import 'dart:convert';
+// شاشة الوزارة — لوحة إدارة شاملة (عرض فقط)
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/approval_service.dart';
@@ -41,9 +40,7 @@ class _MinistryScreenState extends State<MinistryScreen> {
                 ? const _OverviewTab()
                 : _tabIndex == 1
                     ? const _ApprovalsTab()
-                    : _tabIndex == 2
-                        ? const _UsersTab()
-                        : const _ChildrenTab(),
+                    : const _UsersTab(),
           ),
         ],
       ),
@@ -154,7 +151,6 @@ class _TabBar extends StatelessWidget {
     ('📊', 'نظرة عامة'),
     ('📤', 'الطلبات'),
     ('👥', 'المستخدمون'),
-    ('👶', 'الأطفال'),
   ];
 
   @override
@@ -177,7 +173,8 @@ class _TabBar extends StatelessWidget {
               onTap: () => onChanged(i),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                 decoration: BoxDecoration(
                   color: active ? AppColors.tealDeep : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
@@ -251,7 +248,6 @@ class _OverviewTabState extends State<_OverviewTab> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // إحصائيات
           Row(
             children: [
               _InfoCard(
@@ -332,7 +328,7 @@ class _OverviewTabState extends State<_OverviewTab> {
 }
 
 // ═══════════════════════════════════════════════════════
-// 2. تبويب الطلبات المعلقة (الأهم)
+// 2. تبويب الطلبات المعلقة
 // ═══════════════════════════════════════════════════════
 class _ApprovalsTab extends StatefulWidget {
   const _ApprovalsTab();
@@ -355,13 +351,11 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      // جلب من السيرفر أولاً
       final serverPending = await ApiService.getPendingApprovals();
       final serverProcessed = await ApiService.getAllApprovals(
         status: 'approved,rejected',
       );
 
-      // إذا السيرفر فشل، نستخدم المحلي
       if (serverPending.isEmpty) {
         final localPending = await ApprovalService.getPendingApprovals();
         final localApproved = await ApprovalService.getApprovedPlans();
@@ -418,13 +412,11 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
 
     if (confirmed != true) return;
 
-    // حفظ محلياً
     await ApprovalService.approve(
       approvalId: approval['id'].toString(),
       specialistName: 'الوزارة',
     );
 
-    // إرسال للسيرفر
     final serverId = approval['server_id'] ?? approval['id'];
     await ApiService.approveMinistryRequest(
       serverId is int ? serverId : int.tryParse(serverId.toString()) ?? 0,
@@ -493,9 +485,8 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
 
     await ApprovalService.reject(
       approvalId: approval['id'].toString(),
-      reason: reasonCtrl.text.trim().isEmpty
-          ? null
-          : reasonCtrl.text.trim(),
+      reason:
+          reasonCtrl.text.trim().isEmpty ? null : reasonCtrl.text.trim(),
     );
 
     final serverId = approval['server_id'] ?? approval['id'];
@@ -527,7 +518,6 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
       child: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          // قسم الطلبات المعلقة
           _sectionHeader(
             c,
             '📤 طلبات بانتظار المراجعة',
@@ -541,7 +531,6 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
 
           const SizedBox(height: 24),
 
-          // قسم السجل
           if (_processed.isNotEmpty) ...[
             _sectionHeader(
               c,
@@ -613,7 +602,6 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // رأس البطاقة
             Row(
               children: [
                 CircleAvatar(
@@ -666,17 +654,12 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
               ],
             ),
             const SizedBox(height: 12),
-
-            // ملخص
             _miniRow('📚 الخطة التعليمية', a['educational_plan'], c),
             if (a['recommendations'] != null)
               _miniRow('📝 التوصيات', a['recommendations'], c),
             if (a['teacher_name'] != null)
               _miniRow('👨‍🏫 المعلم المقترح', a['teacher_name'], c),
-
             const SizedBox(height: 12),
-
-            // أزرار
             Row(
               children: [
                 Expanded(
@@ -783,7 +766,8 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
 }
 
 // ═══════════════════════════════════════════════════════
-// 3. تبويب المستخدمين (عرض فقط)
+// 3. تبويب المستخدمون والأطفال (عرض فقط)
+//    نفس تصميم الأدمن — لكن بدون تعديل/حذف
 // ═══════════════════════════════════════════════════════
 class _UsersTab extends StatefulWidget {
   const _UsersTab();
@@ -794,24 +778,10 @@ class _UsersTab extends StatefulWidget {
 
 class _UsersTabState extends State<_UsersTab> {
   List _users = [];
+  List _children = [];
   bool _loading = true;
-  String _query = '';
-
-  static const _roleNames = {
-    'parent': 'ولي أمر',
-    'teacher': 'معلّم',
-    'specialist': 'مختص',
-    'admin': 'أدمن',
-    'ministry': 'وزارة',
-  };
-
-  static const _roleIcons = {
-    'admin': '🛡️',
-    'teacher': '📚',
-    'specialist': '🧩',
-    'parent': '👪',
-    'ministry': '🏛️',
-  };
+  String? _error;
+  String _search = '';
 
   @override
   void initState() {
@@ -820,180 +790,261 @@ class _UsersTabState extends State<_UsersTab> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
     try {
-      final users = await ApiService.getMinistryUsers();
+      final responses = await Future.wait([
+        ApiService.getMinistryUsers(),
+        ApiService.getMinistryChildren(),
+      ]);
+
       setState(() {
-        _users = users;
+        _users = responses[0];
+        _children = responses[1];
         _loading = false;
       });
     } catch (_) {
-      setState(() => _loading = false);
+      setState(() {
+        _error = 'تعذّر الاتصال بالسيرفر';
+        _loading = false;
+      });
     }
   }
 
-  List get _filtered {
-    final term = _query.trim().toLowerCase();
-    if (term.isEmpty) return _users;
+  // ─── فلترة حسب الدور + البحث ───
+  List _byRole(String role) {
+    final term = _search.trim().toLowerCase();
     return _users.where((u) {
+      if ((u['role'] ?? '').toString() != role) return false;
+      if (term.isEmpty) return true;
       final name = (u['name'] ?? '').toString().toLowerCase();
       final email = (u['email'] ?? '').toString().toLowerCase();
       return name.contains(term) || email.contains(term);
     }).toList();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
+  List get _teachers => _byRole('teacher');
+  List get _specialists => _byRole('specialist');
+  List get _parents => _byRole('parent');
 
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+  // ─── الأطفال المرتبطون بمستخدم ───
+  List _childrenForUser(Map user) {
+    final userId = user['id'];
+    final role = (user['role'] ?? '').toString();
+    return _children.where((c) {
+      if (role == 'teacher') {
+        return c['assigned_teacher_id'] == userId;
+      }
+      if (role == 'specialist') {
+        return c['assigned_specialist_id'] == userId ||
+            c['specialist_id'] == userId;
+      }
+      if (role == 'parent') {
+        return c['parent_id'] == userId || c['user_id'] == userId;
+      }
+      return false;
+    }).toList();
+  }
+
+  List get _filteredChildren {
+    final term = _search.trim().toLowerCase();
+    if (term.isEmpty) return _children;
+    return _children.where((c) {
+      final name = (c['name'] ?? '').toString().toLowerCase();
+      return name.contains(term);
+    }).toList();
+  }
+
+  String? _teacherNameFor(Map child) {
+    final id = child['assigned_teacher_id'];
+    if (id == null) return child['assigned_teacher_name']?.toString();
+    for (final u in _users) {
+      if (u['id'] == id && u['role'] == 'teacher') {
+        return u['name']?.toString();
+      }
     }
+    return child['assigned_teacher_name']?.toString();
+  }
 
-    return Column(
-      children: [
-        // بحث
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: TextField(
-            decoration: const InputDecoration(
-              hintText: '🔍 ابحث بالاسم أو الإيميل...',
-              prefixIcon: Icon(Icons.search),
+  String? _specialistNameFor(Map child) {
+    final id = child['assigned_specialist_id'] ?? child['specialist_id'];
+    if (id == null) return child['specialist_name']?.toString();
+    for (final u in _users) {
+      if (u['id'] == id && u['role'] == 'specialist') {
+        return u['name']?.toString();
+      }
+    }
+    return child['specialist_name']?.toString();
+  }
+
+  // ─── عرض أطفال مستخدم (عرض فقط) ───
+  void _showUserChildren(Map user) {
+    final children = _childrenForUser(user);
+    final role = (user['role'] ?? '').toString();
+    final roleLabel = role == 'teacher'
+        ? 'المعلّم'
+        : role == 'specialist'
+            ? 'المختص'
+            : 'ولي الأمر';
+    final roleEmoji =
+        role == 'teacher' ? '👨‍🏫' : role == 'specialist' ? '🧩' : '👪';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.75,
+        ),
+        decoration: BoxDecoration(
+          color: JisrColors.of(context).card,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(roleEmoji, style: const TextStyle(fontSize: 26)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'أطفال $roleLabel ${user['name'] ?? ''}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: JisrColors.of(context).heading,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(sheetContext),
+                ),
+              ],
             ),
-            onChanged: (v) => setState(() => _query = v),
-          ),
-        ),
-        // إشعار
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: c.tintTeal,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.visibility,
-                  color: AppColors.tealDeep, size: 18),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'وضع العرض فقط — لا يمكن التعديل',
-                  style: TextStyle(fontSize: 12, color: c.onTint),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        // القائمة
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: _load,
-            child: _filtered.isEmpty
-                ? ListView(
-                    children: const [
-                      SizedBox(height: 100),
-                      Center(child: Text('لا يوجد مستخدمون مطابقون')),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: JisrColors.of(context).tintTeal,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.child_care,
+                          size: 16, color: AppColors.tealDeep),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${children.length} ${children.length == 1 ? 'طفل' : 'أطفال'}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.tealDeep,
+                        ),
+                      ),
                     ],
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _filtered.length,
-                    itemBuilder: (context, i) {
-                      final u = _filtered[i];
-                      final role = (u['role'] ?? 'parent').toString();
-                      final name = (u['name'] ?? '').toString();
-                      final email = (u['email'] ?? '').toString();
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // شارة "عرض فقط"
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.visibility,
+                          size: 14, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(
+                        'عرض فقط',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (children.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.person_off,
+                          size: 48, color: JisrColors.of(context).muted),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لا يوجد أطفال مرتبطون حالياً',
+                        style: TextStyle(
+                          color: JisrColors.of(context).muted,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: children.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, i) {
+                    final child = children[i];
+                    final name = (child['name'] ?? '').toString();
+                    final age = child['age'] ?? '?';
+                    final status =
+                        (child['status'] ?? 'pending').toString();
 
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                AppColors.kidPalette[i % AppColors.kidPalette.length],
-                            child: Text(
-                              name.isNotEmpty
-                                  ? name.characters.first
-                                  : '؟',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            name,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(email,
-                                  style: TextStyle(
-                                      fontSize: 12, color: c.muted)),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: c.tintOrange,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '${_roleIcons[role] ?? "👤"} ${_roleNames[role] ?? role}',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: c.onTint,
-                                  ),
-                                ),
-                              ),
-                            ],
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors
+                            .kidPalette[i % AppColors.kidPalette.length],
+                        child: Text(
+                          name.isNotEmpty ? name.characters.first : '🙂',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    },
-                  ),
-          ),
+                      ),
+                      title: Text(
+                        name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('العمر: $age سنة'),
+                      trailing: _StatusBadge(status: status),
+                    );
+                  },
+                ),
+              ),
+          ],
         ),
-      ],
+      ),
     );
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// 4. تبويب الأطفال (عرض فقط)
-// ═══════════════════════════════════════════════════════
-class _ChildrenTab extends StatefulWidget {
-  const _ChildrenTab();
-
-  @override
-  State<_ChildrenTab> createState() => _ChildrenTabState();
-}
-
-class _ChildrenTabState extends State<_ChildrenTab> {
-  List _children = [];
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() => _loading = true);
-    try {
-      final children = await ApiService.getMinistryChildren();
-      setState(() {
-        _children = children;
-        _loading = false;
-      });
-    } catch (_) {
-      setState(() => _loading = false);
-    }
   }
 
   @override
@@ -1003,99 +1054,510 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
+    if (_error != null) {
+      return _StateBox(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _load,
+              child: const Text('إعادة المحاولة'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [
+          // ─── شريط "عرض فقط" ───
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.visibility,
+                    color: AppColors.tealDeep, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'وضع العرض فقط — لا يمكن التعديل أو الحذف',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: c.onTint,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // ─── حقل البحث ───
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            decoration: BoxDecoration(
+              color: c.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: c.line),
+            ),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: '🔍 ابحث بالاسم أو البريد...',
+                prefixIcon: Icon(Icons.search),
+                border: InputBorder.none,
+              ),
+              onChanged: (v) => setState(() => _search = v),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ─── المعلمون ───
+          _buildUserSection(
+            emoji: '👨‍🏫',
+            title: 'المعلّمون',
+            users: _teachers,
+            color: AppColors.greenDeep,
+            bgTint: c.tintGreen,
+          ),
+
+          // ─── المختصون ───
+          _buildUserSection(
+            emoji: '🧩',
+            title: 'المختصون',
+            users: _specialists,
+            color: AppColors.orangeDeep,
+            bgTint: c.tintOrange,
+          ),
+
+          // ─── أولياء الأمور ───
+          _buildUserSection(
+            emoji: '👪',
+            title: 'أولياء الأمور',
+            users: _parents,
+            color: AppColors.tealDeep,
+            bgTint: c.tintTeal,
+          ),
+
+          // ─── الأطفال ───
+          _buildChildrenSection(),
+        ],
+      ),
+    );
+  }
+
+  // ─── قسم المستخدمين (بدون أزرار) ───
+  Widget _buildUserSection({
+    required String emoji,
+    required String title,
+    required List users,
+    required Color color,
+    required Color bgTint,
+  }) {
+    final c = JisrColors.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // رأس القسم
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: bgTint,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 22)),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${users.length}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          if (users.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: c.line),
+              ),
+              child: Center(
+                child: Text(
+                  'لا يوجد $title مسجّلون',
+                  style: TextStyle(color: c.muted, fontSize: 14),
+                ),
+              ),
+            )
+          else
+            ...users.map((u) => _UserListTile(
+                  user: u,
+                  color: color,
+                  assignedChildrenCount: _childrenForUser(u).length,
+                  onTap: () => _showUserChildren(u),
+                )),
+        ],
+      ),
+    );
+  }
+
+  // ─── قسم الأطفال ───
+  Widget _buildChildrenSection() {
+    final c = JisrColors.of(context);
+    final children = _filteredChildren;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // إشعار
         Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: c.tintTeal,
-            borderRadius: BorderRadius.circular(10),
+            color: c.tintYellow,
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
             children: [
-              const Icon(Icons.visibility,
-                  color: AppColors.tealDeep, size: 18),
+              const Text('👶', style: TextStyle(fontSize: 22)),
               const SizedBox(width: 8),
-              Expanded(
+              Text(
+                'الأطفال',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Text(
-                  'عرض فقط — ${_children.length} طفل مسجّل',
-                  style: TextStyle(fontSize: 12, color: c.onTint),
+                  '${children.length}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.orangeDeep,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        // القائمة
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: _load,
-            child: _children.isEmpty
-                ? ListView(
-                    children: const [
-                      SizedBox(height: 100),
-                      Center(child: Text('لا يوجد أطفال مسجّلون')),
-                    ],
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    itemCount: _children.length,
-                    itemBuilder: (context, i) {
-                      final child = _children[i];
-                      final name = (child['name'] ?? '').toString();
-                      final status = child['status'] ?? 'pending';
-                      final color = AppColors
-                          .kidPalette[i % AppColors.kidPalette.length];
+        const SizedBox(height: 10),
 
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: color,
-                            child: Text(
-                              name.isNotEmpty
-                                  ? name.characters.first
-                                  : '🧒',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          title: Text(
-                            name,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'العمر: ${child['age'] ?? '?'} سنة • ${child['disability_type'] ?? 'غير محدد'}',
-                                style: TextStyle(fontSize: 12, color: c.muted),
-                              ),
-                              if (child['assigned_teacher_name'] != null)
-                                Text(
-                                  'المعلم: ${child['assigned_teacher_name']}',
-                                  style: TextStyle(
-                                      fontSize: 12, color: c.muted),
-                                ),
-                            ],
-                          ),
-                          trailing: _statusBadge(status, c),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ),
+        if (children.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: c.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: c.line),
+            ),
+            child: Center(
+              child: Text(
+                'لا يوجد أطفال مسجّلون',
+                style: TextStyle(color: c.muted, fontSize: 14),
+              ),
+            ),
+          )
+        else
+          ...List.generate(children.length, (i) {
+            final child = children[i];
+            return _ChildListTile(
+              child: child,
+              color:
+                  AppColors.kidPalette[i % AppColors.kidPalette.length],
+              assignedTeacherName: _teacherNameFor(child),
+              assignedSpecialistName: _specialistNameFor(child),
+            );
+          }),
       ],
     );
   }
+}
 
-  Widget _statusBadge(String status, JisrColors c) {
+// ═══════════════════════════════════════════════════════
+//  بطاقة مستخدم (عرض فقط)
+// ═══════════════════════════════════════════════════════
+class _UserListTile extends StatelessWidget {
+  final Map user;
+  final Color color;
+  final int assignedChildrenCount;
+  final VoidCallback onTap;
+
+  const _UserListTile({
+    required this.user,
+    required this.color,
+    required this.assignedChildrenCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final name = (user['name'] ?? '').toString();
+    final email = (user['email'] ?? '').toString();
+    final phone = user['phone']?.toString();
+    final initial =
+        name.trim().isNotEmpty ? name.trim().characters.first : '؟';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: c.line),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: color.withValues(alpha: 0.15),
+                  child: Text(
+                    initial,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        ),
+                      ),
+                      Text(
+                        email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: c.muted),
+                      ),
+                      if (phone != null && phone.isNotEmpty)
+                        Text(
+                          '📞 $phone',
+                          style:
+                              TextStyle(fontSize: 11.5, color: c.muted),
+                        ),
+                    ],
+                  ),
+                ),
+                // شارة "X أطفال"
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: assignedChildrenCount > 0
+                        ? AppColors.teal.withValues(alpha: 0.15)
+                        : c.line.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('👶', style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: 3),
+                      Text(
+                        '$assignedChildrenCount',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: assignedChildrenCount > 0
+                              ? AppColors.tealDeep
+                              : c.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.chevron_left, color: c.muted, size: 22),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  بطاقة طفل (عرض فقط)
+// ═══════════════════════════════════════════════════════
+class _ChildListTile extends StatelessWidget {
+  final Map child;
+  final Color color;
+  final String? assignedTeacherName;
+  final String? assignedSpecialistName;
+
+  const _ChildListTile({
+    required this.child,
+    required this.color,
+    this.assignedTeacherName,
+    this.assignedSpecialistName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final name = (child['name'] ?? '').toString();
+    final age = child['age'] ?? '?';
+    final disability = child['disability_type']?.toString();
+    final status = (child['status'] ?? 'pending').toString();
+    final initial =
+        name.trim().isNotEmpty ? name.trim().characters.first : '🧒';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: c.line),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: color,
+              child: Text(
+                initial,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: c.heading,
+                    ),
+                  ),
+                  Text(
+                    'العمر: $age سنة'
+                    '${disability != null && disability.isNotEmpty ? ' • $disability' : ''}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: c.muted),
+                  ),
+                  if (assignedTeacherName != null &&
+                      assignedTeacherName!.isNotEmpty)
+                    Text(
+                      '👨‍🏫 $assignedTeacherName',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.tealDeep,
+                      ),
+                    ),
+                  if (assignedSpecialistName != null &&
+                      assignedSpecialistName!.isNotEmpty)
+                    Text(
+                      '🧩 $assignedSpecialistName',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.orangeDeep,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            _StatusBadge(status: status),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  شارة حالة الطفل
+// ═══════════════════════════════════════════════════════
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
     String label;
     Color color;
     switch (status) {
@@ -1113,15 +1575,15 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 10.5,
           fontWeight: FontWeight.bold,
           color: color,
         ),
@@ -1260,6 +1722,19 @@ class _MenuTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StateBox extends StatelessWidget {
+  final Widget child;
+
+  const _StateBox({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(padding: const EdgeInsets.all(24), child: child),
     );
   }
 }

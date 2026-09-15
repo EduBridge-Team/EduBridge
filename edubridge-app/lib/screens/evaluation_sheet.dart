@@ -1,5 +1,4 @@
 // نموذج تقييم الطفل - للمختص
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/approval_service.dart';
@@ -125,7 +124,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ تم التقييم وإرسال الخطة للوزارة'),
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.tealAccent,
             duration: Duration(seconds: 3),
           ),
         );
@@ -164,7 +163,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.assessment, color: AppColors.orange),
+                    const Icon(Icons.assessment, color: Color.fromARGB(255, 20, 156, 219)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -354,7 +353,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       _error!,
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      style: const TextStyle(color: Color.fromARGB(255, 54, 165, 244), fontSize: 16),
                     ),
                   ),
 
