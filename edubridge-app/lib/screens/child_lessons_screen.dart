@@ -1,20 +1,41 @@
-// شاشة دروس الطفل (المناسبة لنوع إعاقته)
+// شاشة دروس الطفل — مع المؤقّت المتجدّد + الفاصل الذهني + الألعاب حسب العمر
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
+import '../utils/adaptive_theme.dart';
+import '../widgets/speakable.dart';
+import '../widgets/accessibility/audio_timer.dart';
+import '../widgets/accessibility/brain_break_overlay.dart';
+import '../widgets/accessibility/emergency_button.dart';
+import '../widgets/accessibility/profile_badge.dart';
+import '../widgets/accessibility/step_by_step_lesson.dart';
+import '../widgets/accessibility/visual_alert.dart';
+import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/visual_timeline.dart';
+import '../widgets/accessibility/visual_timer.dart';
+import 'child_accessibility_settings_screen.dart';
 import 'child_progress_screen.dart';
+import 'educational_games_screen.dart';
 import 'assistant_screen.dart';
 
 class ChildLessonsScreen extends StatefulWidget {
   final int childId;
   final String childName;
+  final int age;
+  final String? disabilityType;
+  final String? parentPhone;
 
   const ChildLessonsScreen({
     super.key,
     required this.childId,
     required this.childName,
+    this.age = 8,
+    this.disabilityType,
+    this.parentPhone,
   });
 
   @override
@@ -26,14 +47,12 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   bool _loading = true;
   String? _error;
 
-  // الدروس المكتملة (من سجلّ التقدّم) لعرض علامة ✓
   final Set<int> _doneLessonIds = {};
-  // الدرس الذي يجري حفظ إتمامه الآن (لتعطيل زره أثناء الطلب)
   int? _savingLessonId;
-  // ولي الأمر يعرض فقط — لا يسجّل إتماماً
   bool _canMarkDone = false;
 
-  // القراءة الصوتية للدروس (accessibility)
+  int _timerCycle = 0;
+
   final FlutterTts _tts = FlutterTts();
   int? _speakingLessonId;
 
@@ -43,6 +62,11 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     _initTts();
     _loadRole();
     _loadLessons();
+
+    AccessibilityService.instance.setActiveChild(
+      widget.childId,
+      disabilityTypeHint: widget.disabilityType,
+    );
   }
 
   @override
@@ -53,8 +77,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
 
   Future<void> _initTts() async {
     await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45); // أبطأ قليلاً ليناسب الأطفال
-    // عند انتهاء القراءة نرجّع أيقونة السماعة لوضعها الطبيعي
+    await _tts.setSpeechRate(0.45);
     _tts.setCompletionHandler(() {
       if (mounted) setState(() => _speakingLessonId = null);
     });
@@ -76,7 +99,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     });
 
     try {
-      // نجلب الدروس وسجلّ التقدّم معاً لمعرفة الدروس المكتملة
       final responses = await Future.wait([
         ApiService.authGet('/children/${widget.childId}/lessons'),
         ApiService.authGet('/progress/child/${widget.childId}'),
@@ -91,8 +113,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         if (progressRes.statusCode == 200) {
           final progress = jsonDecode(progressRes.body)['progress'] ?? [];
           for (final p in progress) {
-            if (p['status'] == 'done' && p['lesson_id'] != null) {
-              _doneLessonIds.add(p['lesson_id']);
+            if (p['status'] == 'done' && p['lesson_id'] is int) {
+              _doneLessonIds.add(p['lesson_id'] as int);
             }
           }
         }
@@ -114,7 +136,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     }
   }
 
-  // تسجيل إتمام الدرس — POST /api/progress
   Future<void> _markLessonDone(int lessonId) async {
     setState(() => _savingLessonId = lessonId);
 
@@ -128,64 +149,319 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       if (!mounted) return;
       if (res.statusCode == 201) {
         setState(() => _doneLessonIds.add(lessonId));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('أحسنت! تم تسجيل إتمام الدرس 🎉',
-                style: TextStyle(fontSize: 16)),
-            backgroundColor: Colors.green,
-          ),
+        await VisualCelebration.show(
+          context,
+          message: 'أكملت الدرس!',
+          emoji: '🏆',
+          childName: widget.childName,
+          duration: const Duration(seconds: 3),
         );
+        if (mounted && _doneLessonIds.length % 3 == 0) {
+          _suggestGames();
+        }
       } else {
         final data = jsonDecode(res.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data['error'] ?? 'تعذّر تسجيل الإتمام',
-                style: const TextStyle(fontSize: 16)),
-            backgroundColor: Colors.red,
-          ),
-        );
+        notifyUser(context, data['error'] ?? 'تعذّر تسجيل الإتمام',
+            icon: Icons.error, color: Colors.red);
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('تعذّر الاتصال بالسيرفر', style: TextStyle(fontSize: 16)),
-          backgroundColor: Colors.red,
-        ),
-      );
+      notifyUser(context, 'تعذّر الاتصال بالسيرفر',
+          icon: Icons.wifi_off, color: Colors.red);
     } finally {
       if (mounted) setState(() => _savingLessonId = null);
     }
   }
 
-  // قراءة الدرس صوتياً — أو إيقاف القراءة إذا كانت شغّالة
+  void _suggestGames() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('🎮 وقت اللعب!',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        content: const Text('أكملت 3 دروس! هل تريد اللعب قليلاً؟',
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+        actions: [
+          Row(children: [
+            Expanded(
+                child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('لاحقاً'))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orange),
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('هيا!'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EducationalGamesScreen(
+                        childName: widget.childName,
+                        age: widget.age,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ]),
+        ],
+      ),
+    );
+  }
+
   Future<void> _toggleSpeak(Map lesson) async {
-    final lessonId = lesson['id'];
-    if (_speakingLessonId == lessonId) {
+    final rawId = lesson['id'];
+    if (_speakingLessonId == rawId) {
       await _tts.stop();
       setState(() => _speakingLessonId = null);
       return;
     }
 
     await _tts.stop();
-    setState(() => _speakingLessonId = lessonId);
+    setState(() => _speakingLessonId = rawId is int ? rawId : null);
     final text = [
       lesson['title'] ?? '',
       lesson['content'] ?? '',
     ].where((t) => t.isNotEmpty).join('. ');
-    await _tts.speak(text);
+
+    final p = AccessibilityService.instance.profile.value;
+    if (p.slowSpeech) {
+      await TtsService.instance.speakLineSlow(text);
+      if (mounted) setState(() => _speakingLessonId = null);
+    } else {
+      await _tts.speak(text);
+    }
+  }
+
+  void _openLesson(Map lesson) {
+    final p = AccessibilityService.instance.profile.value;
+    if (p.stepByStepLessons) {
+      _openStepByStep(lesson);
+      return;
+    }
+    _showLessonDetail(lesson);
+  }
+
+  void _openStepByStep(Map lesson) {
+    final title = (lesson['title'] ?? '').toString();
+    final content = (lesson['content'] ?? '').toString();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => StepByStepLesson(
+          lessonTitle: title,
+          childName: widget.childName,
+          steps: [
+            LessonStep(
+              title: 'مقدمة',
+              content: 'سنتعلّم اليوم: $title',
+              imageEmoji: '📚',
+              realLifeExample: 'هذا الموضوع موجود في حياتنا اليومية.',
+            ),
+            if (content.isNotEmpty)
+              LessonStep(
+                title: 'المحتوى',
+                content: content,
+                imageEmoji: '📖',
+                realLifeExample: 'جرّب أن تجد مثالاً مشابهاً في بيتك.',
+              ),
+            const LessonStep(
+              title: 'التطبيق',
+              content: 'هيا نطبّق ما تعلّمناه معاً!',
+              imageEmoji: '✍️',
+              realLifeExample: 'اطلب من والدتك مساعدتك في تمرين.',
+            ),
+            const LessonStep(
+              title: 'أحسنت!',
+              content: 'أكملت هذا الدرس. أنت رائع!',
+              imageEmoji: '🌟',
+            ),
+          ],
+        ),
+      ),
+    ).then((_) {
+      final id = lesson['id'];
+      if (_canMarkDone && mounted && id is int && id > 0) {
+        _askToMarkDone(id);
+      }
+    });
+  }
+
+  void _askToMarkDone(int lessonId) {
+    if (_doneLessonIds.contains(lessonId)) return;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('🎉 أكملت الدرس!',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        content: const Text('هل تريد تسجيل إتمام الدرس؟',
+            textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('لاحقاً')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+            onPressed: () {
+              Navigator.pop(context);
+              _markLessonDone(lessonId);
+            },
+            child: const Text('نعم، سجّل'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLessonDetail(Map lesson) {
+    final title = (lesson['title'] ?? '').toString();
+    final content = (lesson['content'] ?? '').toString();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _buildDetailModal(title, content),
+    );
+  }
+
+  Widget _buildDetailModal(String title, String content) {
+    final p = AccessibilityService.instance.profile.value;
+    final v = AdaptiveVisuals.fromProfile(p);
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: v.surfaceColor,
+        borderRadius: BorderRadius.circular(v.cardRadius),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: v.titleFontSize + 4,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (content.isNotEmpty)
+              Text(content,
+                  style: TextStyle(fontSize: v.bodyFontSize, height: 1.6)),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: v.buttonHeight,
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.auto_awesome, size: v.iconSize),
+                label: Text('اسأل نور',
+                    style: TextStyle(fontSize: v.bodyFontSize)),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssistantScreen(
+                        lessonContext: 'عنوان: $title\n$content',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  بناء نص القراءة الصوتية لبطاقة درس
+  // ═══════════════════════════════════════════════════════
+  String _buildLessonSpeech(Map lesson, bool isDone, bool isSample) {
+    final title = (lesson['title'] ?? '').toString();
+    final content = (lesson['content'] ?? '').toString();
+
+    final parts = <String>[
+      'درس: $title',
+      if (content.isNotEmpty) content,
+      if (isSample)
+        'درس تجريبي'
+      else if (isDone)
+        'مكتمل'
+      else
+        'لم يكتمل بعد',
+      if (!isSample) 'اضغط لفتح الدرس',
+    ];
+
+    return parts.join('، ');
   }
 
   @override
   Widget build(BuildContext context) {
+    final p = AccessibilityService.instance.profile.value;
+    final v = AdaptiveVisuals.fromProfile(p);
+
     return Scaffold(
-      appBar: JisrAppBar(
-        title: 'دروس ${widget.childName}',
+      appBar: AppBar(
+        flexibleSpace: Container(color: v.accentColor),
+        title: Text(
+          'دروس ${widget.childName}',
+          style: TextStyle(
+            fontSize: v.titleFontSize - 2,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         actions: [
-          // زر التقدّم — يفتح شاشة ملخّص وتفاصيل التقدّم
           IconButton(
-            icon: const Icon(Icons.insights, size: 28),
+            icon: Icon(Icons.accessibility_new, size: v.iconSize),
+            tooltip: 'إعدادات ${widget.childName}',
+            onPressed: () async {
+              await AccessibilityService.instance.setActiveChild(
+                widget.childId,
+              );
+              if (!mounted) return;
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChildAccessibilitySettingsScreen(
+                    childId: widget.childId,
+                    childName: widget.childName,
+                    disabilityTypeHint: widget.disabilityType,
+                  ),
+                ),
+              );
+              if (mounted) setState(() {});
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.insights, size: v.iconSize),
             tooltip: 'التقدّم',
             onPressed: () async {
               await Navigator.push(
@@ -197,7 +473,6 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   ),
                 ),
               );
-              // نحدّث القائمة بعد الرجوع (قد يتغيّر التقدّم)
               _loadLessons();
             },
           ),
@@ -205,15 +480,14 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadLessons,
-        child: _buildBody(),
+        child: _buildBody(v),
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  Widget _buildBody(AdaptiveVisuals v) {
+    if (_loading) return const Center(child: CircularProgressIndicator());
+
     if (_error != null) {
       return Center(
         child: Column(
@@ -223,11 +497,11 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                 style: const TextStyle(fontSize: 16, color: Colors.red)),
             const SizedBox(height: 16),
             SizedBox(
-              height: 56,
+              height: v.buttonHeight,
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.refresh, size: 28),
-                label:
-                    const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
+                icon: Icon(Icons.refresh, size: v.iconSize),
+                label: Text('إعادة المحاولة',
+                    style: TextStyle(fontSize: v.bodyFontSize)),
                 onPressed: _loadLessons,
               ),
             ),
@@ -235,157 +509,532 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         ),
       );
     }
-    if (_lessons.isEmpty) {
-      return ListView(
-        children: const [
-          SizedBox(height: 120),
-          Icon(Icons.menu_book, size: 72, color: Colors.grey),
-          SizedBox(height: 16),
-          Center(
-            child:
-                Text('لا توجد دروس مناسبة بعد', style: TextStyle(fontSize: 18)),
-          ),
-        ],
-      );
-    }
+
+    final p = AccessibilityService.instance.profile.value;
+
+    final lessonsToShow =
+        _lessons.isEmpty ? _getSampleLessons(p.type) : _lessons;
+    final showSampleBanner = _lessons.isEmpty;
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: _lessons.length,
-      itemBuilder: (context, i) => _buildLessonCard(_lessons[i]),
+      padding: EdgeInsets.all(v.spacing - 4),
+      itemCount: lessonsToShow.length + (showSampleBanner ? 2 : 1),
+      itemBuilder: (context, i) {
+        if (i == 0) return _buildAdaptiveHeader(v);
+
+        if (showSampleBanner && i == 1) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: v.spacing),
+            child: Speakable(
+              text:
+                  'دروس تجريبية. عندما تُضاف دروس حقيقية، ستظهر هنا تلقائياً',
+              radius: v.cardRadius,
+              child: Container(
+                padding: EdgeInsets.all(v.spacing - 4),
+                decoration: BoxDecoration(
+                  color: v.accentColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(v.cardRadius),
+                  border: Border.all(
+                    color: v.accentColor.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        color: v.accentColor, size: v.iconSize),
+                    SizedBox(width: v.spacing - 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '📌 دروس تجريبية',
+                            style: TextStyle(
+                              fontSize: v.bodyFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: v.accentColor,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'عندما تُضاف دروس حقيقية، ستظهر هنا تلقائياً',
+                            style: TextStyle(
+                              fontSize: v.bodyFontSize - 3,
+                              color: v.accentColor.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        final lessonIndex = i - (showSampleBanner ? 2 : 1);
+        return _buildLessonCard(lessonsToShow[lessonIndex], v);
+      },
     );
   }
 
-  Widget _buildLessonCard(Map lesson) {
-    final c = JisrColors.of(context);
-    final lessonId = lesson['id'];
-    final isDone = _doneLessonIds.contains(lessonId);
-    final isSpeaking = _speakingLessonId == lessonId;
-    final isSaving = _savingLessonId == lessonId;
+  // ═══════════════════════════════════════════════════════
+  //  رأس الشاشة — كل عنصر مغلّف بـ Speakable
+  // ═══════════════════════════════════════════════════════
+  Widget _buildAdaptiveHeader(AdaptiveVisuals v) {
+    final p = AccessibilityService.instance.profile.value;
+    final items = <Widget>[];
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                // أيقونة الدرس داخل مربّع ملوّن ناعم
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: isDone ? c.tintGreen : c.tintTeal,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    isDone ? Icons.check_circle : Icons.menu_book,
-                    size: 28,
-                    color: isDone
-                        ? c.success
-                        : Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    lesson['title'] ?? '',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: c.heading,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (lesson['content'] != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                lesson['content'],
-                style: const TextStyle(fontSize: 15, height: 1.5),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                // زر الاستماع — يقرأ الدرس صوتياً للطفل
-                Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      icon: Icon(
-                        isSpeaking ? Icons.stop_circle : Icons.volume_up,
-                        size: 28,
-                      ),
-                      label: Text(
-                        isSpeaking ? 'إيقاف' : 'استمع',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      onPressed: () => _toggleSpeak(lesson),
-                    ),
-                  ),
-                ),
-                // زر «تمّ» — للمعلّم/المختص/الأدمن فقط
-                if (_canMarkDone) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SizedBox(
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        icon: isSaving
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Colors.white),
-                              )
-                            : Icon(isDone ? Icons.check_circle : Icons.check,
-                                size: 28),
-                        label: Text(
-                          isDone ? 'مكتمل' : 'تمّ',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isDone ? AppColors.greenDeep : AppColors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: (isDone || isSaving)
-                            ? null
-                            : () => _markLessonDone(lessonId),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.auto_awesome, size: 24),
-                label: const Text('اسأل نور عن الدرس'),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AssistantScreen(
-                      lessonContext: [
-                        'عنوان الدرس: ${lesson['title'] ?? ''}',
-                        if (lesson['content'] != null)
-                          'محتوى الدرس: ${lesson['content']}',
-                      ].join('\n'),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+    // قيمة آمنة للمؤقّت
+    final timerMinutes =
+        (p.timerRenewalMinutes > 0) ? p.timerRenewalMinutes : 5;
+
+    // ✅ شارة البروفايل — مغلّفة
+    items.add(
+      Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Align(
+          alignment: Alignment.center,
+          child: Speakable(
+            text: 'الوضع الحالي: ${v.profileLabel}',
+            radius: 24,
+            child: const ProfileBadge(showFullLabel: true),
+          ),
         ),
       ),
     );
+
+    // ✅ زر الألعاب — مغلّف
+    items.add(
+      Padding(
+        padding: EdgeInsets.only(bottom: v.spacing),
+        child: Speakable(
+          text: p.type == DisabilityType.blind
+              ? 'ألعاب سمعية. ألعاب بأذنيك. اضغط للدخول'
+              : 'الألعاب التعليمية. العب وتعلّم، مناسبة لعمرك. اضغط للدخول',
+          radius: v.cardRadius,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EducationalGamesScreen(
+                childName: widget.childName,
+                age: widget.age,
+              ),
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(v.spacing + 2),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  v.accentColor,
+                  v.accentColor.withValues(alpha: 0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(v.cardRadius),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  p.type == DisabilityType.blind ? '🎧' : '🎮',
+                  style: TextStyle(fontSize: v.iconSize + 10),
+                ),
+                SizedBox(width: v.spacing),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        p.type == DisabilityType.blind
+                            ? 'ألعاب سمعية'
+                            : 'الألعاب التعليمية',
+                        style: TextStyle(
+                          fontSize: v.bodyFontSize + 1,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        p.type == DisabilityType.blind
+                            ? 'ألعاب بأذنيك 🎧'
+                            : 'العب وتعلّم — مناسبة لعمرك 🎉',
+                        style: TextStyle(
+                          fontSize: v.bodyFontSize - 3,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_left,
+                    color: Colors.white, size: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // ✅ المؤقّت — مغلّف
+    if (p.visualTimerEnabled && !p.noTimers) {
+      items.add(
+        Padding(
+          padding: EdgeInsets.only(bottom: v.spacing),
+          child: Speakable(
+            text:
+                'مؤقّت الدرس. كل $timerMinutes دقائق يتجدّد تلقائياً. اضغط للتحكم بالمؤقّت',
+            radius: v.cardRadius,
+            child: p.type == DisabilityType.blind
+                ? AudioTimer(
+                    key: ValueKey('audio_timer_cycle_$_timerCycle'),
+                    total: Duration(minutes: timerMinutes),
+                    childName: widget.childName,
+                    onFinished: () async {
+                      TtsService.instance.speakLine(
+                        'انتهى الوقت! وقت الراحة $timerMinutes دقائق',
+                      );
+                      if (mounted) {
+                        await BrainBreakDialog.show(context);
+                        if (mounted) {
+                          setState(() => _timerCycle++);
+                        }
+                      }
+                    },
+                  )
+                : Column(
+                    children: [
+                      if (_timerCycle > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: v.accentColor.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: v.accentColor.withValues(alpha: 0.4),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.refresh,
+                                    size: 16, color: v.accentColor),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '🔄 الدورة ${_timerCycle + 1}',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: v.accentColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      Center(
+                        child: VisualTimer(
+                          key: ValueKey('timer_cycle_$_timerCycle'),
+                          total: Duration(minutes: timerMinutes),
+                          label: 'وقت القراءة المتبقي',
+                          showControls: true,
+                          onFinished: () async {
+                            await VisualCelebration.show(
+                              context,
+                              message: 'أحسنت! انتهت $timerMinutes دقائق',
+                              emoji: '⏰',
+                              childName: widget.childName,
+                              duration: const Duration(seconds: 2),
+                            );
+                            if (mounted) {
+                              await BrainBreakDialog.show(context);
+                            }
+                            if (mounted) {
+                              setState(() => _timerCycle++);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      );
+    }
+
+    // ✅ الخط الزمني — مغلّف
+    if (p.predictableTimeline) {
+      items.add(
+        Padding(
+          padding: EdgeInsets.only(bottom: v.spacing),
+          child: Speakable(
+            text: 'خطوات الدرس: اقرأ العنوان، استمع للشرح، '
+                'حلّ التمرين، احصل على نجمة',
+            radius: v.cardRadius,
+            child: VisualTimeline(
+              title: 'خطوات الدرس',
+              steps: [
+                const TimelineStep(
+                    emoji: '📖', label: 'اقرأ العنوان', done: true),
+                TimelineStep(
+                    emoji: '🎧',
+                    label: 'استمع للشرح',
+                    current: !_canMarkDone),
+                TimelineStep(
+                    emoji: '✍️',
+                    label: 'حلّ التمرين',
+                    done: _canMarkDone),
+                const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ✅ زر الطوارئ — مغلّف
+    if (p.emergencyButton) {
+      items.add(
+        Speakable(
+          text: 'زر الطوارئ. للحالات الطارئة فقط',
+          radius: v.cardRadius,
+          child: EmergencyButton(
+            childName: widget.childName,
+            parentPhone: widget.parentPhone,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: items,
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  بطاقة الدرس — مغلّفة بـ Speakable
+  // ═══════════════════════════════════════════════════════
+  Widget _buildLessonCard(Map lesson, AdaptiveVisuals v) {
+    final p = AccessibilityService.instance.profile.value;
+
+    final rawId = lesson['id'];
+    final int lessonId = (rawId is int) ? rawId : -999;
+
+    final isDone = _doneLessonIds.contains(lessonId);
+    final isSpeaking = _speakingLessonId == lessonId;
+    final isSaving = _savingLessonId == lessonId;
+    final isSample = lessonId < 0;
+
+    return Speakable(
+      text: _buildLessonSpeech(lesson, isDone, isSample),
+      radius: v.cardRadius,
+      onTap: isSample ? null : () => _openLesson(lesson),
+      child: Container(
+        margin: EdgeInsets.only(bottom: v.spacing - 4),
+        decoration: BoxDecoration(
+          color: v.surfaceColor,
+          borderRadius: BorderRadius.circular(v.cardRadius),
+          border: Border.all(
+            color: isDone
+                ? v.accentColor
+                : v.accentColor.withValues(alpha: 0.2),
+            width: isDone ? 2.5 : 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: v.accentColor.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(v.spacing - 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: v.iconSize + 18,
+                    height: v.iconSize + 18,
+                    decoration: BoxDecoration(
+                      color: isDone
+                          ? v.accentColor.withValues(alpha: 0.15)
+                          : v.accentColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(v.cardRadius - 8),
+                    ),
+                    child: Icon(
+                      isDone ? Icons.check_circle : Icons.menu_book,
+                      size: v.iconSize,
+                      color: v.accentColor,
+                    ),
+                  ),
+                  SizedBox(width: v.spacing - 2),
+                  Expanded(
+                    child: Text(
+                      (lesson['title'] ?? '').toString(),
+                      style: TextStyle(
+                        fontSize: v.bodyFontSize + 2,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  if (p.stepByStepLessons)
+                    Icon(Icons.list_alt,
+                        color: v.accentColor, size: v.iconSize)
+                  else if (!isSample)
+                    Icon(Icons.chevron_left,
+                        color: v.accentColor, size: v.iconSize),
+                ],
+              ),
+              if (lesson['content'] != null &&
+                  !p.stepByStepLessons) ...[
+                SizedBox(height: v.spacing - 6),
+                Text(
+                  (lesson['content'] ?? '').toString(),
+                  style: TextStyle(fontSize: v.bodyFontSize, height: 1.5),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              SizedBox(height: v.spacing - 4),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: v.buttonHeight - 8,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: v.accentColor,
+                          side: BorderSide(color: v.accentColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(v.cardRadius - 10),
+                          ),
+                        ),
+                        icon: Icon(
+                          isSpeaking ? Icons.stop_circle : Icons.volume_up,
+                          size: v.iconSize - 4,
+                        ),
+                        label: Text(isSpeaking ? 'إيقاف' : 'استمع',
+                            style: TextStyle(fontSize: v.bodyFontSize - 2)),
+                        onPressed: () => _toggleSpeak(lesson),
+                      ),
+                    ),
+                  ),
+                  if (_canMarkDone && !isSample) ...[
+                    SizedBox(width: v.spacing - 6),
+                    Expanded(
+                      child: SizedBox(
+                        height: v.buttonHeight - 8,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                isDone ? AppColors.greenDeep : v.accentColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(v.cardRadius - 10),
+                            ),
+                          ),
+                          icon: isSaving
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white),
+                                )
+                              : Icon(
+                                  isDone ? Icons.check_circle : Icons.check,
+                                  size: v.iconSize - 4),
+                          label: Text(isDone ? 'مكتمل' : 'تمّ',
+                              style: TextStyle(fontSize: v.bodyFontSize - 2)),
+                          onPressed: (isDone || isSaving)
+                              ? null
+                              : () => _markLessonDone(lessonId),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _getSampleLessons(DisabilityType type) {
+    switch (type) {
+      case DisabilityType.adhd:
+        return [
+          {'id': -1, 'title': '⚡ الأرقام السريعة', 'content': 'لعبة سريعة لتعلّم الأرقام من 1 إلى 10.'},
+          {'id': -2, 'title': '🎨 ألوان حولنا', 'content': 'تعرّف على الألوان الأساسية.'},
+          {'id': -3, 'title': '🏃 حروف وحركة', 'content': 'اقفز مع كل حرف.'},
+        ];
+      case DisabilityType.autismMild:
+      case DisabilityType.autismSevere:
+        return [
+          {'id': -1, 'title': '🌅 الروتين اليومي', 'content': 'خطوات الصباح.'},
+          {'id': -2, 'title': '🔢 العدّ من 1 إلى 5', 'content': 'واحد، اثنان...'},
+          {'id': -3, 'title': '🎨 الألوان الهادئة', 'content': 'اللون الأزرق.'},
+        ];
+      case DisabilityType.downSyndrome:
+        return [
+          {'id': -1, 'title': '🍎 الفواكه', 'content': 'هذه تفاحة 🍎.'},
+          {'id': -2, 'title': '🐶 الحيوانات', 'content': 'هذا كلب 🐶.'},
+          {'id': -3, 'title': '🌞 الطقس', 'content': 'الشمس مشرقة ☀️.'},
+        ];
+      case DisabilityType.blind:
+        return [
+          {'id': -1, 'title': '🎵 أصوات الحيوانات', 'content': 'استمع للأصوات.'},
+          {'id': -2, 'title': '✋ الملمس والأشكال', 'content': 'المربع والمستطيل.'},
+        ];
+      case DisabilityType.deaf:
+        return [
+          {'id': -1, 'title': '🤟 حروف الإشارة', 'content': 'إشارة الألف 👍.'},
+          {'id': -2, 'title': '📖 القراءة البصرية', 'content': 'بيت 🏠، شمس ☀️.'},
+        ];
+      case DisabilityType.stuttering:
+        return [
+          {'id': -1, 'title': '🐢 القراءة البطيئة', 'content': 'اقرأ ببطء.'},
+          {'id': -2, 'title': '🎵 الإيقاع والكلام', 'content': 'انقر مع الكلمات.'},
+        ];
+      case DisabilityType.speechDisorders:
+        return [
+          {'id': -1, 'title': '👄 تمارين النطق', 'content': 'قل: را را را.'},
+          {'id': -2, 'title': '🎤 أصوات الحروف', 'content': 'ب مثل بيضة 🥚.'},
+        ];
+      case DisabilityType.mildIntellectual:
+        return [
+          {'id': -1, 'title': '🧼 غسل اليدين', 'content': 'افتح الماء.'},
+          {'id': -2, 'title': '🍽️ آداب الطعام', 'content': 'اجلس على الكرسي.'},
+          {'id': -3, 'title': '👕 ترتيب الملابس', 'content': 'افتح الخزانة.'},
+        ];
+      case DisabilityType.colorBlindness:
+        return [
+          {'id': -1, 'title': '🔴 الألوان بالرموز', 'content': 'أحمر ▲ - أزرق ■.'},
+          {'id': -2, 'title': '🎨 الأنماط والتصنيف', 'content': 'صنّف حسب الشكل.'},
+        ];
+      case DisabilityType.epilepsy:
+        return [
+          {'id': -1, 'title': '🧘 التنفّس الهادئ', 'content': 'خذ نفساً عميقاً.'},
+          {'id': -2, 'title': '📖 قصة هادئة', 'content': 'أرنب صغير 🐰.'},
+        ];
+      default:
+        return [
+          {'id': -1, 'title': '📖 درس تجريبي', 'content': 'درس لعرض المحتوى.'},
+          {'id': -2, 'title': '🎯 درس قابل للتخصيص', 'content': 'خصّصه كما تريد.'},
+        ];
+    }
   }
 }

@@ -1,20 +1,23 @@
+// شاشة المعلم — مع الخطة المعتمدة + الألعاب حسب العمر
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
+import 'add_certificate_sheet.dart';
+import 'notifications_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
+import '../services/approval_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
+import '../utils/navigation.dart';
 import 'welcome_screen.dart';
-import 'chat_screen.dart';
 import 'educational_plan_sheet.dart';
-import 'specialist_picker_sheet.dart';
 import 'support_sheet.dart';
 import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 import 'chats_screen.dart';
-import 'verify_identity_screen.dart'; // ✅ استيراد شاشة التوثيق
+import 'verify_identity_screen.dart';
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
@@ -38,11 +41,31 @@ class _TeacherScreenState extends State<TeacherScreen> {
   bool _adding = false;
   bool _showOnlyMyChildren = true;
 
+  bool _verificationDialogShown = false;
+
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadData().then((_) => _checkAndShowVerificationDialog());
     _loadNotificationsCount();
+  }
+
+  @override
+  void dispose() {
+    if (_adding || _viewingLesson != null) {
+      inlineModalOpen.value = false;
+    }
+    super.dispose();
+  }
+
+  void _setAdding(bool value) {
+    inlineModalOpen.value = value;
+    setState(() => _adding = value);
+  }
+
+  void _setViewingLesson(Map? lesson) {
+    inlineModalOpen.value = lesson != null;
+    setState(() => _viewingLesson = lesson);
   }
 
   Future<void> _loadData() async {
@@ -102,7 +125,105 @@ class _TeacherScreenState extends State<TeacherScreen> {
     } catch (_) {}
   }
 
-  // دالة فحص التوثيق
+  Future<void> _checkAndShowVerificationDialog() async {
+    if (_verificationDialogShown) return;
+
+    final isVerified = await ApiService.isVerified();
+    if (isVerified) return;
+    if (!mounted) return;
+
+    _verificationDialogShown = true;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          contentPadding: const EdgeInsets.all(24),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.verified_user,
+                  size: 48,
+                  color: AppColors.orange,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'توثيق الهوية مطلوب',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: JisrColors.of(context).heading,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'عزيزي المعلم، يجب توثيق هويتك للاستفادة من كامل صلاحيات التطبيق.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: JisrColors.of(context).muted,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  icon: const Icon(Icons.verified_user, size: 22),
+                  label: const Text(
+                    'توثيق الهوية الآن',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(dialogContext);
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const VerifyIdentityScreen(),
+                      ),
+                    );
+                    if (mounted) {
+                      final nowVerified = await ApiService.isVerified();
+                      if (nowVerified) {
+                        setState(() {});
+                      } else {
+                        _verificationDialogShown = false;
+                        _checkAndShowVerificationDialog();
+                      }
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<bool> _checkVerification() async {
     if (!await ApiService.isVerified()) {
       if (mounted) {
@@ -146,12 +267,16 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 
   void _openChild(Map child) {
+    final age = child['age'] is int ? child['age'] as int : 8;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChildLessonsScreen(
           childId: child['id'],
           childName: (child['name'] ?? '').toString(),
+          age: age,
+          disabilityType: child['disability_type']?.toString(),
+          parentPhone: child['parent_phone']?.toString(),
         ),
       ),
     ).then((_) => _loadData());
@@ -179,7 +304,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 
   void _viewLesson(Map lesson) {
-    setState(() => _viewingLesson = lesson);
+    _setViewingLesson(lesson);
   }
 
   void _openNotifications() {
@@ -214,6 +339,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final inlineModalVisible = _adding || _viewingLesson != null;
 
     return Scaffold(
       body: Stack(
@@ -222,7 +348,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
             children: [
               _buildHeader(c),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     if (_tabIndex == 0)
@@ -242,10 +369,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                           ),
                           Text(
                             _showOnlyMyChildren ? 'أطفالي فقط' : 'جميع الأطفال',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: c.muted,
-                            ),
+                            style: TextStyle(fontSize: 12, color: c.muted),
                           ),
                         ],
                       ),
@@ -294,7 +418,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null
                           ? _buildError()
-                          : _buildBody(c), // ✅ استخدام _buildBody الجديد
+                          : _buildBody(c),
                 ),
               ),
             ],
@@ -303,7 +427,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
           if (_adding) _buildAddModal(c),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: inlineModalVisible ? null : NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
         destinations: const [
@@ -319,11 +443,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
           ),
         ],
       ),
-      floatingActionButton: _tabIndex == 1
+      floatingActionButton: _tabIndex == 1 && !inlineModalVisible
           ? FloatingActionButton.extended(
               onPressed: () async {
                 if (await _checkVerification()) {
-                  setState(() => _adding = true);
+                  _setAdding(true);
                 }
               },
               icon: const Icon(Icons.add),
@@ -350,11 +474,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
             children: [
               Row(
                 children: [
-                  Image.asset('assets/icon.png', width: 32, height: 32),
+                  Image.asset('assets/brand_icon.png', width: 32, height: 32),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'جسر التعليمي - المعلم',
+                      'EduBridge · المعلم',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -372,7 +496,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.workspace_premium, color: Colors.white),
+                    icon: const Icon(Icons.workspace_premium,
+                        color: Colors.white),
                     tooltip: 'إضافة شهادة',
                     onPressed: () async {
                       if (await _checkVerification()) {
@@ -381,7 +506,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (_) => AddCertificateSheet(onSaved: _loadData),
+                          builder: (_) =>
+                              AddCertificateSheet(onSaved: _loadData),
                         );
                       }
                     },
@@ -392,10 +518,12 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                        MaterialPageRoute(
+                            builder: (_) => const ChatsScreen()),
                       );
                     },
                   ),
+                  const LegalLinksButton(),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
                     tooltip: 'خروج',
@@ -408,8 +536,10 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 future: ApiService.getName(),
                 builder: (context, snap) {
                   final name = snap.data ?? 'المعلم';
-                  final childCount = _children.where((c) =>
-                      c['assigned_teacher_id'] == ApiService.getUserId()).length;
+                  final childCount = _children
+                      .where((c) =>
+                          c['assigned_teacher_id'] == ApiService.getUserId())
+                      .length;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -467,82 +597,15 @@ class _TeacherScreenState extends State<TeacherScreen> {
     );
   }
 
-  // ✅ الدالة الجديدة: تعرض البطاقة فوق المحتوى
   Widget _buildBody(JisrColors c) {
-    return FutureBuilder<bool>(
-      future: ApiService.isVerified(),
-      builder: (context, snapshot) {
-        final isVerified = snapshot.data ?? false;
-        return Column(
-          children: [
-            if (!isVerified) _buildVerificationBanner(c), // البطاقة
-            Expanded(
-              child: _tabIndex == 0 ? _buildChildrenTab(c) : _buildLessonsTab(c),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ✅ دالة بناء البطاقة
-  Widget _buildVerificationBanner(JisrColors c) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: c.line),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.navy.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.verified_user, size: 48, color: AppColors.orange),
-          const SizedBox(height: 8),
-          Text(
-            'وثّق هويتك لتفعيل الصلاحيات',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: c.heading),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'يمكنك مشاهدة الأقسام الآن، ولن تتمكن من استخدامها إلا بعد موافقة الأدمن.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: c.muted),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()),
-                );
-                if (mounted) setState(() {});
-              },
-              child: const Text('توثيق الهوية', style: TextStyle(fontSize: 16)),
-            ),
-          ),
-        ],
-      ),
-    );
+    return _tabIndex == 0 ? _buildChildrenTab(c) : _buildLessonsTab(c);
   }
 
   Widget _buildChildrenTab(JisrColors c) {
     final displayChildren = _showOnlyMyChildren
-        ? _children.where((c) => c['assigned_teacher_id'] == ApiService.getUserId()).toList()
+        ? _children
+            .where((c) => c['assigned_teacher_id'] == ApiService.getUserId())
+            .toList()
         : _children;
 
     if (displayChildren.isEmpty) {
@@ -559,15 +622,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
               style: TextStyle(fontSize: 18, color: c.muted),
             ),
           ),
-          if (_showOnlyMyChildren) ...[
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                'سيظهر الأطفال هنا عندما يقوم المختص بتعيينهم لك',
-                style: TextStyle(fontSize: 14, color: c.muted),
-              ),
-            ),
-          ],
         ],
       );
     }
@@ -586,7 +640,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
           child: Column(
             children: [
               ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 leading: CircleAvatar(
                   radius: 26,
                   backgroundColor: color,
@@ -620,24 +675,21 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         'العمر: ${child['age']} سنة',
                         style: TextStyle(fontSize: 13, color: c.muted),
                       ),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(status).withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            _getStatusText(status),
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: _getStatusColor(status),
-                            ),
-                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(status).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _getStatusText(status),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: _getStatusColor(status),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -654,9 +706,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
                           minimumSize: const Size(0, 36),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                        icon: const Icon(Icons.school, size: 16),
+                        icon: const Icon(Icons.verified, size: 16),
                         label: const Text('الخطة'),
-                        onPressed: () => _viewEducationalPlan(child),
+                        onPressed: () => _openApprovedPlan(child),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -671,7 +723,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         onPressed: () => _viewChildProgress(child),
                       ),
                     ),
-                    // 🗑️ تم حذف زر "تواصل" هنا
                   ],
                 ),
               ),
@@ -679,6 +730,74 @@ class _TeacherScreenState extends State<TeacherScreen> {
           ),
         );
       },
+    );
+  }
+
+  Future<void> _openApprovedPlan(Map child) async {
+    Map<String, dynamic>? plan;
+
+    try {
+      plan = await ApprovalService.getApprovedPlanForChild(child['id']);
+
+      if (plan == null) {
+        final serverPlans =
+            await ApiService.getAllApprovals(status: 'approved');
+        for (final p in serverPlans) {
+          if (p['child_id'] == child['id']) {
+            plan = Map<String, dynamic>.from(p);
+            break;
+          }
+        }
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+
+    if (plan == null) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.schedule, color: Colors.orange, size: 32),
+              SizedBox(width: 8),
+              Text('الخطة قيد المراجعة'),
+            ],
+          ),
+          content: Text(
+            'لم يتم اعتماد خطة "${child['name']}" من الوزارة بعد.\n\n'
+            'يمكنك عرض الخطة الأولية من المختص.',
+            style: const TextStyle(fontSize: 15, height: 1.6),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إغلاق'),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal,
+              ),
+              icon: const Icon(Icons.school),
+              label: const Text('الخطة الأولية'),
+              onPressed: () {
+                Navigator.pop(context);
+                _viewEducationalPlan(child);
+              },
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ApprovedPlanSheet(plan: plan!),
     );
   }
 
@@ -694,7 +813,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
             decoration: const InputDecoration(
               hintText: 'ابحث عن درس...',
               prefixIcon: Icon(Icons.search),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             ),
             onChanged: (v) => setState(() => _query = v),
           ),
@@ -708,19 +828,12 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     const SizedBox(height: 16),
                     Center(
                       child: Text(
-                        _lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
+                        _lessons.isEmpty
+                            ? 'لا توجد دروس بعد'
+                            : 'لا نتائج مطابقة لبحثك',
                         style: TextStyle(fontSize: 18, color: c.muted),
                       ),
                     ),
-                    if (_lessons.isEmpty)
-                      const SizedBox(height: 8),
-                    if (_lessons.isEmpty)
-                      Center(
-                        child: Text(
-                          'أضف درساً جديداً باستخدام زر +',
-                          style: TextStyle(fontSize: 14, color: c.muted),
-                        ),
-                      ),
                   ],
                 )
               : ListView.builder(
@@ -737,6 +850,24 @@ class _TeacherScreenState extends State<TeacherScreen> {
   Widget _buildLessonCard(Map lesson, JisrColors c) {
     final title = (lesson['title'] ?? '').toString();
     final tag = _typeName(lesson['disability_type_id']);
+    final targetType = lesson['target_type']?.toString() ?? 'everyone';
+
+    String targetBadge;
+    Color targetColor;
+    switch (targetType) {
+      case 'byDisability':
+        targetBadge = '🎯 حسب الإعاقة';
+        targetColor = AppColors.teal;
+        break;
+      case 'specificChildren':
+        final count = (lesson['target_child_ids'] as List?)?.length ?? 0;
+        targetBadge = '👥 $count طلاب';
+        targetColor = AppColors.orange;
+        break;
+      default:
+        targetBadge = '🌍 للجميع';
+        targetColor = AppColors.green;
+    }
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -759,9 +890,30 @@ class _TeacherScreenState extends State<TeacherScreen> {
             color: c.heading,
           ),
         ),
-        subtitle: tag != null
-            ? Text(tag, style: const TextStyle(fontSize: 12))
-            : null,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (tag != null)
+              Text(tag, style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 4),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: targetColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                targetBadge,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: targetColor,
+                ),
+              ),
+            ),
+          ],
+        ),
         trailing: const Icon(Icons.chevron_left),
         onTap: () => _viewLesson(lesson),
       ),
@@ -778,7 +930,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
     return Positioned.fill(
       child: GestureDetector(
-        onTap: () => setState(() => _viewingLesson = null),
+        onTap: () => _setViewingLesson(null),
         child: Container(
           color: Colors.black54,
           alignment: Alignment.center,
@@ -811,7 +963,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () => setState(() => _viewingLesson = null),
+                          onPressed: () => _setViewingLesson(null),
                         ),
                       ],
                     ),
@@ -852,23 +1004,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.video_library, color: AppColors.tealDeep),
+                            const Icon(Icons.video_library,
+                                color: AppColors.tealDeep),
                             const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '📹 فيديو مرفق',
-                                style: TextStyle(color: c.onTint),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.play_arrow, size: 28),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('سيتم تشغيل الفيديو قريباً'),
-                                  ),
-                                );
-                              },
+                            const Expanded(
+                              child: Text('📹 فيديو مرفق'),
                             ),
                           ],
                         ),
@@ -884,23 +1024,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.audio_file, color: AppColors.greenDeep),
+                            const Icon(Icons.audio_file,
+                                color: AppColors.greenDeep),
                             const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '🎵 تسجيل صوتي مرفق',
-                                style: TextStyle(color: c.onTint),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.play_arrow, size: 28),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('سيتم تشغيل التسجيل قريباً'),
-                                  ),
-                                );
-                              },
+                            const Expanded(
+                              child: Text('🎵 تسجيل صوتي مرفق'),
                             ),
                           ],
                         ),
@@ -920,8 +1048,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
     return Positioned.fill(
       child: _AddLessonSheet(
         types: _types,
-        onClose: () => setState(() => _adding = false),
+        onClose: () => _setAdding(false),
         onCreated: (lesson) {
+          inlineModalOpen.value = false;
           setState(() {
             _lessons = [lesson, ..._lessons];
             _adding = false;
@@ -938,7 +1067,124 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 }
 
-// ================== مكوّن إضافة الدرس ==================
+// ═══════════════════════════════════════════════════════
+//  شاشة عرض الخطة المعتمدة
+// ═══════════════════════════════════════════════════════
+class _ApprovedPlanSheet extends StatelessWidget {
+  final Map plan;
+
+  const _ApprovedPlanSheet({required this.plan});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.verified, color: Colors.green, size: 32),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'الخطة المعتمدة - ${plan['child_name'] ?? ''}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: c.heading,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle,
+                      color: Colors.green, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'تم اعتماد هذه الخطة من الوزارة',
+                      style: TextStyle(fontSize: 13, color: c.onTint),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            _section('📚 الخطة التعليمية', plan['educational_plan'], c),
+            _section('🧠 التقييم المعرفي', plan['cognitive_assessment'], c),
+            _section('🏃 التقييم الحركي', plan['motor_assessment'], c),
+            _section('💚 التقييم العاطفي', plan['emotional_assessment'], c),
+            _section('🤝 التقييم الاجتماعي', plan['social_assessment'], c),
+            _section('📝 التوصيات', plan['recommendations'], c),
+            if (plan['teaching_methods'] != null) ...[
+              const SizedBox(height: 12),
+              const Text('🎓 طرق التدريس المقترحة',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6, runSpacing: 6,
+                children: (plan['teaching_methods'] as List? ?? [])
+                    .map((m) => Chip(
+                          label: Text(m.toString()),
+                          backgroundColor: c.tintGreen,
+                        ))
+                    .toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _section(String label, dynamic value, JisrColors c) {
+    if (value == null || value.toString().trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 4),
+          Text(value.toString(),
+              style: TextStyle(fontSize: 14, height: 1.5, color: c.body)),
+        ],
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  شاشة إضافة درس
+// ═══════════════════════════════════════════════════════
+enum LessonTarget { everyone, byDisability, specificChildren }
+
 class _AddLessonSheet extends StatefulWidget {
   final List types;
   final VoidCallback onClose;
@@ -963,33 +1209,56 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
   bool _saving = false;
   String? _error;
 
+  LessonTarget _target = LessonTarget.everyone;
+  final Set<int> _selectedChildIds = {};
+  List _allChildren = [];
+  bool _loadingChildren = false;
+
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChildren();
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _contentCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadChildren() async {
+    setState(() => _loadingChildren = true);
+    try {
+      final res = await ApiService.authGet('/children');
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        setState(() => _allChildren = data['children'] ?? []);
+      }
+    } catch (_) {} finally {
+      if (mounted) setState(() => _loadingChildren = false);
+    }
+  }
 
   Future<void> _pickVideo() async {
     final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() => _videoFile = File(video.path));
-    }
+    if (video != null) setState(() => _videoFile = File(video.path));
   }
 
   Future<void> _pickAudio() async {
     final XFile? audio = await _picker.pickMedia();
-    if (audio != null) {
-      setState(() => _audioFile = File(audio.path));
-    }
-  }
-
-  void _removeVideo() {
-    setState(() => _videoFile = null);
-  }
-
-  void _removeAudio() {
-    setState(() => _audioFile = null);
+    if (audio != null) setState(() => _audioFile = File(audio.path));
   }
 
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
       setState(() => _error = 'عنوان الدرس مطلوب');
+      return;
+    }
+    if (_target == LessonTarget.specificChildren && _selectedChildIds.isEmpty) {
+      setState(() => _error = 'اختر طالباً واحداً على الأقل');
       return;
     }
 
@@ -1005,10 +1274,13 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
         videoFile: _videoFile,
         audioFile: _audioFile,
+        targetType: _target.name,
+        targetChildIds: _target == LessonTarget.specificChildren
+            ? _selectedChildIds.toList()
+            : null,
       );
 
       if (!mounted) return;
-
       if (result != null) {
         widget.onCreated(result);
       } else {
@@ -1051,13 +1323,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                   Row(
                     children: [
                       const Expanded(
-                        child: Text(
-                          '➕ إضافة درس جديد',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: Text('➕ إضافة درس جديد',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -1083,24 +1350,115 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                       prefixIcon: Icon(Icons.description),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String?>(
-                    decoration: const InputDecoration(
-                      labelText: 'نوع الإعاقة المستهدَف',
-                      prefixIcon: Icon(Icons.medical_services),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: c.tintTeal,
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    value: _typeId,
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('— عام (كل الأنواع) —'),
-                      ),
-                      ...widget.types.map((t) => DropdownMenuItem(
-                            value: t['id'].toString(),
-                            child: Text((t['name'] ?? '').toString()),
-                          )),
-                    ],
-                    onChanged: (v) => setState(() => _typeId = v),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.people, color: AppColors.tealDeep, size: 24),
+                            const SizedBox(width: 8),
+                            Text('من سيستفيد من الدرس؟',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: c.onTint,
+                                )),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        RadioListTile<LessonTarget>(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('كل الطلاب'),
+                          value: LessonTarget.everyone,
+                          groupValue: _target,
+                          onChanged: (v) => setState(() => _target = v!),
+                        ),
+                        RadioListTile<LessonTarget>(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('حسب نوع الإعاقة'),
+                          value: LessonTarget.byDisability,
+                          groupValue: _target,
+                          onChanged: (v) => setState(() => _target = v!),
+                        ),
+                        RadioListTile<LessonTarget>(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('طلاب محدّدون'),
+                          value: LessonTarget.specificChildren,
+                          groupValue: _target,
+                          onChanged: (v) => setState(() => _target = v!),
+                        ),
+                        if (_target == LessonTarget.byDisability) ...[
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String?>(
+                            decoration: const InputDecoration(
+                              labelText: 'نوع الإعاقة',
+                              filled: true,
+                            ),
+                            value: _typeId,
+                            items: [
+                              const DropdownMenuItem(value: null, child: Text('— عام —')),
+                              ...widget.types.map((t) => DropdownMenuItem(
+                                    value: t['id'].toString(),
+                                    child: Text((t['name'] ?? '').toString()),
+                                  )),
+                            ],
+                            onChanged: (v) => setState(() => _typeId = v),
+                          ),
+                        ],
+                        if (_target == LessonTarget.specificChildren) ...[
+                          const SizedBox(height: 12),
+                          if (_loadingChildren)
+                            const Center(child: CircularProgressIndicator())
+                          else if (_allChildren.isEmpty)
+                            const Text('لا يوجد طلاب مسجّلون')
+                          else
+                            Container(
+                              constraints: const BoxConstraints(maxHeight: 200),
+                              decoration: BoxDecoration(
+                                color: c.card,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _allChildren.length,
+                                itemBuilder: (context, i) {
+                                  final child = _allChildren[i];
+                                  final id = child['id'] as int;
+                                  final selected = _selectedChildIds.contains(id);
+                                  return CheckboxListTile(
+                                    dense: true,
+                                    title: Text(child['name']?.toString() ?? ''),
+                                    subtitle: Text(
+                                      child['disability_type']?.toString() ?? 'غير محدد',
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                    value: selected,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        if (v == true) {
+                                          _selectedChildIds.add(id);
+                                        } else {
+                                          _selectedChildIds.remove(id);
+                                        }
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -1112,16 +1470,14 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '🎬 فيديو الدرس (اختياري)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: c.onTint,
-                          ),
-                        ),
-                        if (_videoFile == null) ...[
-                          const SizedBox(height: 8),
+                        Text('🎬 فيديو الدرس',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: c.onTint,
+                            )),
+                        const SizedBox(height: 8),
+                        if (_videoFile == null)
                           SizedBox(
                             width: double.infinity,
                             height: 40,
@@ -1130,13 +1486,12 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 backgroundColor: AppColors.teal,
                                 foregroundColor: Colors.white,
                               ),
-                              icon: const Icon(Icons.upload_file, size: 18),
+                              icon: const Icon(Icons.video_library, size: 18),
                               label: const Text('اختر ملف فيديو'),
                               onPressed: _pickVideo,
                             ),
-                          ),
-                        ] else ...[
-                          const SizedBox(height: 8),
+                          )
+                        else
                           Row(
                             children: [
                               Icon(Icons.check_circle, color: c.success),
@@ -1154,13 +1509,12 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.close, color: c.onTint, size: 18),
-                                onPressed: _removeVideo,
+                                onPressed: () => setState(() => _videoFile = null),
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
                             ],
                           ),
-                        ],
                       ],
                     ),
                   ),
@@ -1174,16 +1528,14 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '🎙️ تسجيل صوتي (اختياري)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: c.onTint,
-                          ),
-                        ),
-                        if (_audioFile == null) ...[
-                          const SizedBox(height: 8),
+                        Text('🎙️ تسجيل صوتي (اختياري)',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: c.onTint,
+                            )),
+                        const SizedBox(height: 8),
+                        if (_audioFile == null)
                           SizedBox(
                             width: double.infinity,
                             height: 40,
@@ -1196,9 +1548,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                               label: const Text('اختر ملف صوت'),
                               onPressed: _pickAudio,
                             ),
-                          ),
-                        ] else ...[
-                          const SizedBox(height: 8),
+                          )
+                        else
                           Row(
                             children: [
                               Icon(Icons.check_circle, color: c.success),
@@ -1216,13 +1567,12 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.close, color: c.onTint, size: 18),
-                                onPressed: _removeAudio,
+                                onPressed: () => setState(() => _audioFile = null),
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
                             ],
                           ),
-                        ],
                       ],
                     ),
                   ),
@@ -1260,175 +1610,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
           ),
         ),
       ),
-    );
-  }
-}
-
-// ===== شاشة الإشعارات =====
-class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
-
-  @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
-}
-
-class _NotificationsScreenState extends State<NotificationsScreen> {
-  List _notifications = [];
-  bool _loading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNotifications();
-  }
-
-  Future<void> _loadNotifications() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-
-    try {
-      final notifications = await ApiService.getNotifications();
-      setState(() {
-        _notifications = notifications;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'تعذّر تحميل الإشعارات';
-        _loading = false;
-      });
-    }
-  }
-
-  Future<void> _markRead(int id) async {
-    try {
-      await ApiService.markNotificationRead(id);
-      setState(() {
-        _notifications = _notifications.map((n) {
-          if (n['id'] == id) {
-            n['is_read'] = true;
-          }
-          return n;
-        }).toList();
-      });
-    } catch (_) {}
-  }
-
-  String _getIcon(String type) {
-    switch (type) {
-      case 'child_added':
-        return '👶';
-      case 'child_evaluated':
-        return '📋';
-      case 'child_assigned':
-        return '👨‍🏫';
-      case 'lesson_added':
-        return '📚';
-      default:
-        return '🔔';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
-    return Scaffold(
-      appBar: JisrAppBar(
-        title: 'الإشعارات',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadNotifications,
-          ),
-          TextButton(
-            onPressed: () async {
-              await ApiService.markAllNotificationsRead();
-              _loadNotifications();
-            },
-            child: const Text('تحديد الكل كمقروء'),
-          ),
-        ],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-              : _notifications.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.notifications_off, size: 64, color: c.muted),
-                          const SizedBox(height: 16),
-                          Text(
-                            'لا توجد إشعارات',
-                            style: TextStyle(fontSize: 18, color: c.muted),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: _notifications.length,
-                      itemBuilder: (context, i) {
-                        final n = _notifications[i];
-                        final isRead = n['is_read'] ?? false;
-                        final date = n['created_at'] != null
-                            ? DateTime.parse(n['created_at'])
-                            : null;
-
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          color: isRead ? null : c.tintTeal.withValues(alpha: 0.3),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(12),
-                            leading: Text(
-                              _getIcon(n['type'] ?? ''),
-                              style: const TextStyle(fontSize: 28),
-                            ),
-                            title: Text(
-                              n['title'] ?? '',
-                              style: TextStyle(
-                                fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-                                color: c.heading,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  n['body'] ?? '',
-                                  style: TextStyle(color: c.body),
-                                ),
-                                if (date != null)
-                                  Text(
-                                    '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: c.muted,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            trailing: isRead
-                                ? null
-                                : Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                            onTap: () => _markRead(n['id']),
-                          ),
-                        );
-                      },
-                    ),
     );
   }
 }

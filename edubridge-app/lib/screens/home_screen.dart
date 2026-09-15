@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -43,12 +44,12 @@ class HomeScreen extends StatelessWidget {
             width: double.infinity,
             decoration: const BoxDecoration(
               gradient: AppColors.headerGradient,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 22),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 26),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,12 +61,12 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Image.asset('assets/icon.png',
+                          child: Image.asset('assets/brand_icon.png',
                               width: 36, height: 36),
                         ),
                         const SizedBox(width: 10),
                         const Text(
-                          'جسر التعليمي',
+                          'EduBridge',
                           style: TextStyle(
                             fontSize: 19,
                             fontWeight: FontWeight.bold,
@@ -88,6 +89,7 @@ class HomeScreen extends StatelessWidget {
                             onPressed: toggleThemeMode,
                           ),
                         ),
+                        const LegalLinksButton(),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white),
                           tooltip: 'خروج',

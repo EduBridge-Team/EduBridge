@@ -1,4 +1,5 @@
 // lib/services/tts_service.dart
+// خدمة النطق الصوتي — مع دعم سرعات متعددة بدون timers متصارعة
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -13,8 +14,16 @@ class TtsService {
   final ValueNotifier<bool> tapToRead = ValueNotifier<bool>(false);
   // السطر الجاري نطقه حالياً
   final ValueNotifier<String?> activeLine = ValueNotifier<String?>(null);
-  // هل يتم النطق حالياً؟ (اختياري)
+  // هل يتم النطق حالياً؟
   final ValueNotifier<bool> isSpeaking = ValueNotifier<bool>(false);
+
+  // ✅ ثوابت السرعات — مصدر واحد للحقيقة
+  static const double _normalRate = 0.45;
+  static const double _slowRate = 0.30;
+
+  // ✅ عدّاد أجيال: كل استدعاء نطق جديد يُبطِل ما قبله
+  //    هذا يمنع أي سطر قديم من التأثير على السطر الحالي
+  int _speakGeneration = 0;
 
   // دالة تهيئة ثابتة تُستدعى من main.dart
   static Future<void> init() async {
@@ -25,7 +34,7 @@ class TtsService {
   Future<void> _ensureInit() async {
     if (_ready) return;
     await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45);
+    await _tts.setSpeechRate(_normalRate);
     _tts.setCompletionHandler(() {
       activeLine.value = null;
       isSpeaking.value = false;
@@ -47,19 +56,42 @@ class TtsService {
     }
   }
 
-  // نطق سطر معين
-  Future<void> speakLine(String text) async {
+  /// ✅ الدالة الموحّدة للنطق — تُدار السرعة والعمر معاً
+  ///    - تُبطِل أي طلب أقدم عبر عدّاد الأجيال
+  ///    - تضبط السرعة قبل كل speak() — بدون Future.delayed
+  Future<void> _speak(String text, {required double rate}) async {
     await _ensureInit();
     final t = text.trim();
     if (t.isEmpty) return;
+
+    // كل استدعاء جديد يزيد العدّاد — الطلبات الأقدم تُعتبر ملغاة
+    final generation = ++_speakGeneration;
+
+    // إيقاف أي نطق جارٍ (قد يُشغّل cancelHandler — لا مشكلة)
     await _tts.stop();
+
+    // لو وصل استدعاء أحدث أثناء stop() → لا نكمل
+    if (generation != _speakGeneration) return;
+
+    // ضبط السرعة قبل النطق مباشرة — لا timers، لا تخمين
+    await _tts.setSpeechRate(rate);
+
     activeLine.value = text;
     isSpeaking.value = true;
     await _tts.speak(_normalizeArabic(t));
   }
 
-  // إيقاف النطق فوراً
+  /// نطق عادي (سرعة 0.45) — للاستخدام العام
+  Future<void> speakLine(String text) =>
+      _speak(text, rate: _normalRate);
+
+  /// نطق بطيء (سرعة 0.30) — لمتلازمة داون واضطرابات النطق
+  Future<void> speakLineSlow(String text) =>
+      _speak(text, rate: _slowRate);
+
+  // إيقاف النطق فوراً — يُبطِل أي طلب جارٍ أيضاً
   Future<void> stop() async {
+    _speakGeneration++; // إبطال أي _speak يعمل حالياً
     await _tts.stop();
     activeLine.value = null;
     isSpeaking.value = false;

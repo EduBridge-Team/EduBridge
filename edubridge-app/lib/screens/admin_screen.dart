@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/legal_links_button.dart';
+import '../utils/safe_bottom.dart';
 import 'edit_child_screen.dart';
 
 const _roleNames = {
@@ -31,8 +33,7 @@ class _AdminScreenState extends State<AdminScreen> {
   int _tab = 0;
 
   static const _tabs = [
-    ('👥', 'المستخدمين'),
-    ('👶', 'الأطفال'),
+    ('👥', 'المستخدمون'),
     ('🛡️', 'مراجعة التوثيق'),
     ('🎧', 'الدعم الفني'),
   ];
@@ -45,13 +46,15 @@ class _AdminScreenState extends State<AdminScreen> {
       appBar: JisrAppBar(
         title: 'لوحة التحكم الإدارية',
         actions: [
+          const LegalLinksButton(),
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'البحث بالهوية',
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
+                MaterialPageRoute(
+                    builder: (_) => const SearchByIdentityScreen()),
               );
             },
           ),
@@ -91,10 +94,8 @@ class _AdminScreenState extends State<AdminScreen> {
             child: _tab == 0
                 ? _UsersTab(admin: widget.admin)
                 : _tab == 1
-                    ? _ChildrenTab(admin: widget.admin)
-                    : _tab == 2
-                        ? const _VerificationTab()
-                        : _SupportTicketsTab(admin: widget.admin),
+                    ? const _VerificationTab()
+                    : _SupportTicketsTab(admin: widget.admin),
           ),
         ],
       ),
@@ -141,14 +142,16 @@ class _AdminTabBar extends StatelessWidget {
               onTap: () => onChanged(i),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                 decoration: BoxDecoration(
                   color: active ? AppColors.tealDeep : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                   boxShadow: active
                       ? [
                           BoxShadow(
-                            color: AppColors.tealDeep.withValues(alpha: 0.45),
+                            color:
+                                AppColors.tealDeep.withValues(alpha: 0.45),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -173,7 +176,10 @@ class _AdminTabBar extends StatelessWidget {
   }
 }
 
-// ===== تبويب المستخدمين (مع زر عرض الأطفال لولي الأمر) =====
+// ═══════════════════════════════════════════════════════════
+//  تبويب موحّد: المستخدمون + الأطفال
+//  الأقسام: المعلمون | المختصون | أولياء الأمور | الأطفال
+// ═══════════════════════════════════════════════════════════
 class _UsersTab extends StatefulWidget {
   final Map admin;
   const _UsersTab({required this.admin});
@@ -184,6 +190,7 @@ class _UsersTab extends StatefulWidget {
 
 class _UsersTabState extends State<_UsersTab> {
   List _users = [];
+  List _children = [];
   bool _loading = true;
   String? _error;
   String _search = '';
@@ -201,26 +208,50 @@ class _UsersTabState extends State<_UsersTab> {
     });
 
     try {
-      final res = await ApiService.authGet('/users');
-      final data = jsonDecode(res.body);
+      // جلب المستخدمين والأطفال بالتوازي
+      final responses = await Future.wait([
+        ApiService.authGet('/users'),
+        ApiService.authGet('/children'),
+      ]);
 
-      if (res.statusCode == 200) {
-        List usersList = [];
-        if (data is List) {
-          usersList = data;
-        } else if (data is Map) {
-          usersList = data['users'] ?? data['data'] ?? [];
-        }
-        setState(() {
-          _users = usersList;
-          _loading = false;
-        });
-      } else {
+      final usersRes = responses[0];
+      final childrenRes = responses[1];
+
+      if (usersRes.statusCode != 200) {
+        final data = jsonDecode(usersRes.body);
         setState(() {
           _error = data['error']?.toString() ?? 'تعذّر جلب المستخدمين';
           _loading = false;
         });
+        return;
       }
+
+      // معالجة قائمة المستخدمين
+      final usersData = jsonDecode(usersRes.body);
+      List usersList = [];
+      if (usersData is List) {
+        usersList = usersData;
+      } else if (usersData is Map) {
+        usersList = usersData['users'] ?? usersData['data'] ?? [];
+      }
+
+      // معالجة قائمة الأطفال
+      List childrenList = [];
+      if (childrenRes.statusCode == 200) {
+        final childrenData = jsonDecode(childrenRes.body);
+        if (childrenData is Map) {
+          childrenList =
+              childrenData['children'] ?? childrenData['data'] ?? [];
+        } else if (childrenData is List) {
+          childrenList = childrenData;
+        }
+      }
+
+      setState(() {
+        _users = usersList;
+        _children = childrenList;
+        _loading = false;
+      });
     } catch (_) {
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
@@ -229,8 +260,78 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
+  // ─── فلترة حسب الدور + البحث ───
+  List _byRole(String role) {
+    final term = _search.trim().toLowerCase();
+    return _users.where((u) {
+      if ((u['role'] ?? '').toString() != role) return false;
+      if (term.isEmpty) return true;
+      final name = (u['name'] ?? '').toString().toLowerCase();
+      final email = (u['email'] ?? '').toString().toLowerCase();
+      return name.contains(term) || email.contains(term);
+    }).toList();
+  }
+
+  List get _teachers => _byRole('teacher');
+  List get _specialists => _byRole('specialist');
+  List get _parents => _byRole('parent');
+
+  // ─── الأطفال المرتبطون بمستخدم ───
+  List _childrenForUser(Map user) {
+    final userId = user['id'];
+    final role = (user['role'] ?? '').toString();
+    return _children.where((c) {
+      if (role == 'teacher') {
+        return c['assigned_teacher_id'] == userId;
+      }
+      if (role == 'specialist') {
+        // نحاول أكثر من اسم محتمل حسب الـ Backend
+        return c['assigned_specialist_id'] == userId ||
+            c['specialist_id'] == userId;
+      }
+      if (role == 'parent') {
+        return c['parent_id'] == userId ||
+            c['user_id'] == userId;
+      }
+      return false;
+    }).toList();
+  }
+
+  List get _filteredChildren {
+    final term = _search.trim().toLowerCase();
+    if (term.isEmpty) return _children;
+    return _children.where((c) {
+      final name = (c['name'] ?? '').toString().toLowerCase();
+      return name.contains(term);
+    }).toList();
+  }
+
+  String? _teacherNameFor(Map child) {
+    final id = child['assigned_teacher_id'];
+    if (id == null) return null;
+    for (final u in _users) {
+      if (u['id'] == id && u['role'] == 'teacher') {
+        return u['name']?.toString();
+      }
+    }
+    // احتياط: قد يكون الاسم مخزّناً مباشرة
+    return child['assigned_teacher_name']?.toString();
+  }
+
+  String? _specialistNameFor(Map child) {
+    final id = child['assigned_specialist_id'] ?? child['specialist_id'];
+    if (id == null) return child['specialist_name']?.toString();
+    for (final u in _users) {
+      if (u['id'] == id && u['role'] == 'specialist') {
+        return u['name']?.toString();
+      }
+    }
+    return child['specialist_name']?.toString();
+  }
+
+  // ─── حذف مستخدم ───
   Future<void> _deleteUser(Map user) async {
-    bool? confirm = await showDialog<bool>(
+    final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('حذف المستخدم'),
@@ -252,18 +353,19 @@ class _UsersTabState extends State<_UsersTab> {
       try {
         final res = await ApiService.authDelete('/users/${user['id']}');
         if (res.statusCode == 200 || res.statusCode == 204) {
-          setState(() {
-            _users.removeWhere((u) => u['id'] == user['id']);
-          });
+          setState(() => _users.removeWhere((u) => u['id'] == user['id']));
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تم حذف المستخدم بنجاح')),
           );
         } else {
-          setState(() {
-            _error = 'تعذّر حذف المستخدم. تأكد من دعم الـ Backend لهذه الخاصية.';
-          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تعذّر حذف المستخدم')),
+          );
         }
       } catch (_) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
         );
@@ -271,423 +373,9 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
-  void _openEdit(Map user) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _EditUserSheet(
-        user: user,
-        onSaved: (updated) => setState(() {
-          _users = _users
-              .map((u) => u['id'] == updated['id'] ? updated : u)
-              .toList();
-        }),
-      ),
-    );
-  }
-
-  // عرض أطفال ولي الأمر
-  Future<void> _showParentChildren(Map user) async {
-    final children = await ApiService.getChildrenOfParent(user['id']);
-    if (!mounted) return;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: JisrColors.of(context).card,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.child_care, color: AppColors.teal),
-                const SizedBox(width: 8),
-                Text(
-                  'أطفال ${user['name']}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: JisrColors.of(context).heading,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (children.isEmpty)
-              Center(
-                child: Text(
-                  'لا يوجد أطفال مرتبطين',
-                  style: TextStyle(color: JisrColors.of(context).muted),
-                ),
-              )
-            else
-              ...children.map((child) => ListTile(
-                    leading: const Icon(Icons.child_care, size: 32),
-                    title: Text(child['name'] ?? ''),
-                    subtitle: Text('العمر: ${child['age'] ?? '?'} سنة'),
-                    trailing: const Icon(Icons.chevron_left),
-                    onTap: () {
-                      Navigator.pop(context);
-                      // يمكنك فتح شاشة تفاصيل الطفل هنا إذا أردت
-                    },
-                  )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List get _filtered {
-    final term = _search.trim().toLowerCase();
-    if (term.isEmpty) return _users;
-    return _users.where((u) {
-      final name = (u['name'] ?? '').toString().toLowerCase();
-      final email = (u['email'] ?? '').toString().toLowerCase();
-      return name.contains(term) || email.contains(term);
-    }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (_error != null) {
-      return _StateBox(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: c.card,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: c.line),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.navy.withValues(alpha: 0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Text('👥',
-                            style: TextStyle(fontSize: 22, color: c.heading)),
-                        const SizedBox(width: 8),
-                        Text(
-                          'إدارة المستخدمين',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: c.heading,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      decoration: const InputDecoration(
-                        hintText: '🔍 ابحث عن مستخدم...',
-                        prefixIcon: Icon(Icons.search),
-                      ),
-                      onChanged: (v) => setState(() => _search = v),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          if (_filtered.isEmpty)
-            const SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Text('لا يوجد مستخدمون مطابقون',
-                    style: TextStyle(fontSize: 16)),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.72,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) => _UserCard(
-                    user: _filtered[i],
-                    onEdit: () => _openEdit(_filtered[i]),
-                    onDelete: () => _deleteUser(_filtered[i]),
-                    onShowChildren: () => _showParentChildren(_filtered[i]),
-                  ),
-                  childCount: _filtered.length,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserCard extends StatelessWidget {
-  final Map user;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final VoidCallback? onShowChildren;
-
-  const _UserCard({
-    required this.user,
-    required this.onEdit,
-    required this.onDelete,
-    this.onShowChildren,
-  });
-
-  (Color bg, Color fg) _roleColors(String role) {
-    switch (role) {
-      case 'teacher':
-        return (AppColors.tintGreen, AppColors.greenDeep);
-      case 'specialist':
-        return (AppColors.tintOrange, AppColors.orangeDeep);
-      case 'admin':
-        return (const Color(0xFFE6EDF4), AppColors.navy);
-      default:
-        return (const Color(0xFFECEFF2), AppColors.muted);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-    final role = (user['role'] ?? 'parent').toString();
-    final name = (user['name'] ?? '').toString();
-    final email = (user['email'] ?? '').toString();
-    final phone = user['phone']?.toString();
-    final (pillBg, pillFg) = _roleColors(role);
-    final initial = name.trim().isNotEmpty ? name.trim().characters.first : '؟';
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: c.line),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.navy.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: pillBg,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  '${_roleIcons[role] ?? '👤'} ${_roleNames[role] ?? role}',
-                  style: TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.bold, color: pillFg),
-                ),
-              ),
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: c.tintTeal,
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.tealDeep,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: c.heading,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            email,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: c.muted),
-          ),
-          if (phone != null && phone.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text('📞 $phone', style: TextStyle(fontSize: 12, color: c.muted)),
-          ],
-          if (role == 'parent' && onShowChildren != null) ...[
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.child_care, size: 16),
-                label: const Text('عرض الأطفال'),
-                onPressed: onShowChildren,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 40),
-                  textStyle: const TextStyle(fontSize: 13),
-                  side: const BorderSide(color: AppColors.tealDeep),
-                ),
-              ),
-            ),
-          ],
-          const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onEdit,
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 44),
-                    textStyle: const TextStyle(fontSize: 15),
-                  ),
-                  child: const Text('تعديل'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete, color: Colors.red),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ===== تبويب الأطفال =====
-class _ChildrenTab extends StatefulWidget {
-  final Map admin;
-  const _ChildrenTab({required this.admin});
-
-  @override
-  State<_ChildrenTab> createState() => _ChildrenTabState();
-}
-
-class _ChildrenTabState extends State<_ChildrenTab> {
-  List _children = [];
-  bool _loading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-
-    try {
-      final res = await ApiService.authGet('/children');
-      final data = jsonDecode(res.body);
-
-      if (res.statusCode == 200) {
-        List childrenList = [];
-        if (data is List) {
-          childrenList = data;
-        } else if (data is Map) {
-          childrenList = data['children'] ?? data['data'] ?? [];
-        }
-        setState(() {
-          _children = childrenList;
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _error = data['error']?.toString() ?? 'تعذّر جلب الأطفال';
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
-  }
-
-  Future<void> _editChild(Map child) async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EditChildScreen(
-          child: child,
-          currentUserRole: 'admin',
-          currentUser: widget.admin,
-        ),
-      ),
-    );
-    if (result == true) _load();
-  }
-
+  // ─── حذف طفل ───
   Future<void> _deleteChild(Map child) async {
-    bool? confirm = await showDialog<bool>(
+    final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('حذف الطفل'),
@@ -709,23 +397,199 @@ class _ChildrenTabState extends State<_ChildrenTab> {
       try {
         final res = await ApiService.authDelete('/children/${child['id']}');
         if (res.statusCode == 200 || res.statusCode == 204) {
-          setState(() {
-            _children.removeWhere((c) => c['id'] == child['id']);
-          });
+          setState(
+              () => _children.removeWhere((c) => c['id'] == child['id']));
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تم حذف الطفل بنجاح')),
           );
         } else {
-          setState(() {
-            _error = 'تعذّر حذف الطفل. تأكد من دعم الـ Backend لهذه الخاصية.';
-          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تعذّر حذف الطفل')),
+          );
         }
       } catch (_) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
         );
       }
     }
+  }
+
+  // ─── فتح تعديل مستخدم ───
+  void _openEdit(Map user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _EditUserSheet(
+        user: user,
+        onSaved: (updated) => setState(() {
+          _users = _users
+              .map((u) => u['id'] == updated['id'] ? updated : u)
+              .toList();
+        }),
+      ),
+    );
+  }
+
+  // ─── فتح تعديل طفل ───
+  void _openEditChild(Map child) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditChildScreen(
+          child: child,
+          currentUserRole: 'admin',
+          currentUser: widget.admin,
+        ),
+      ),
+    ).then((result) {
+      if (result == true) _load();
+    });
+  }
+
+  // ─── عرض أطفال مستخدم (معلّم/مختص/ولي أمر) ───
+  void _showUserChildren(Map user) {
+    final children = _childrenForUser(user);
+    final role = (user['role'] ?? '').toString();
+    final roleLabel = role == 'teacher'
+        ? 'المعلّم'
+        : role == 'specialist'
+            ? 'المختص'
+            : 'ولي الأمر';
+    final roleEmoji =
+        role == 'teacher' ? '👨‍🏫' : role == 'specialist' ? '🧩' : '👪';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.75,
+        ),
+        decoration: BoxDecoration(
+          color: JisrColors.of(context).card,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(roleEmoji, style: const TextStyle(fontSize: 26)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'أطفال $roleLabel ${user['name'] ?? ''}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: JisrColors.of(context).heading,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline_outlined),
+                  onPressed: () => Navigator.pop(sheetContext),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: JisrColors.of(context).tintTeal,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.child_care,
+                      size: 16, color: AppColors.tealDeep),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${children.length} ${children.length == 1 ? 'طفل' : 'أطفال'}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.tealDeep,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (children.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.person_off,
+                          size: 48, color: JisrColors.of(context).muted),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لا يوجد أطفال مرتبطون حالياً',
+                        style: TextStyle(
+                          color: JisrColors.of(context).muted,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: children.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, i) {
+                    final child = children[i];
+                    final name = (child['name'] ?? '').toString();
+                    final age = child['age'] ?? '?';
+                    final status =
+                        (child['status'] ?? 'pending').toString();
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors
+                            .kidPalette[i % AppColors.kidPalette.length],
+                        child: Text(
+                          name.isNotEmpty ? name.characters.first : '🙂',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('العمر: $age سنة'),
+                      trailing: _StatusBadge(status: status),
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _openEditChild(child);
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -740,11 +604,16 @@ class _ChildrenTabState extends State<_ChildrenTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            ElevatedButton(
+              onPressed: _load,
+              child: const Text('إعادة المحاولة'),
+            ),
           ],
         ),
       );
@@ -752,38 +621,541 @@ class _ChildrenTabState extends State<_ChildrenTab> {
 
     return RefreshIndicator(
       onRefresh: _load,
-      child: _children.isEmpty
-          ? const Center(child: Text('لا يوجد أطفال مسجلين'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _children.length,
-              itemBuilder: (context, index) {
-                final child = _children[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    leading: const Icon(Icons.child_care, size: 40),
-                    title: Text(child['name']?.toString() ?? ''),
-                    subtitle: Text('العمر: ${child['age']?.toString() ?? '-'} سنة'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => _editChild(child),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteChild(child),
-                        ),
-                      ],
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [
+          // ─── حقل البحث ───
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            decoration: BoxDecoration(
+              color: c.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: c.line),
+            ),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: '🔍 ابحث بالاسم أو البريد...',
+                prefixIcon: Icon(Icons.search),
+                border: InputBorder.none,
+              ),
+              onChanged: (v) => setState(() => _search = v),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ─── المعلمون ───
+          _buildUserSection(
+            emoji: '👨‍🏫',
+            title: 'المعلّمون',
+            users: _teachers,
+            color: AppColors.greenDeep,
+            bgTint: c.tintGreen,
+          ),
+
+          // ─── المختصون ───
+          _buildUserSection(
+            emoji: '🧩',
+            title: 'المختصون',
+            users: _specialists,
+            color: AppColors.orangeDeep,
+            bgTint: c.tintOrange,
+          ),
+
+          // ─── أولياء الأمور ───
+          _buildUserSection(
+            emoji: '👪',
+            title: 'أولياء الأمور',
+            users: _parents,
+            color: AppColors.tealDeep,
+            bgTint: c.tintTeal,
+          ),
+
+          // ─── الأطفال ───
+          _buildChildrenSection(),
+        ],
+      ),
+    );
+  }
+
+  // ─── قسم المستخدمين ───
+  Widget _buildUserSection({
+    required String emoji,
+    required String title,
+    required List users,
+    required Color color,
+    required Color bgTint,
+  }) {
+    final c = JisrColors.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // رأس القسم
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: bgTint,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 22)),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${users.length}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: color,
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
+          ),
+          const SizedBox(height: 10),
+
+          // البطاقات
+          if (users.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: c.line),
+              ),
+              child: Center(
+                child: Text(
+                  'لا يوجد $title مسجّلون',
+                  style: TextStyle(color: c.muted, fontSize: 14),
+                ),
+              ),
+            )
+          else
+            ...users.map((u) => _UserListTile(
+                  user: u,
+                  color: color,
+                  assignedChildrenCount: _childrenForUser(u).length,
+                  onTap: () => _showUserChildren(u),
+                  onEdit: () => _openEdit(u),
+                  onDelete: () => _deleteUser(u),
+                )),
+        ],
+      ),
+    );
+  }
+
+  // ─── قسم الأطفال ───
+  Widget _buildChildrenSection() {
+    final c = JisrColors.of(context);
+    final children = _filteredChildren;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: c.tintYellow,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
+            children: [
+              const Text('👶', style: TextStyle(fontSize: 22)),
+              const SizedBox(width: 8),
+              Text(
+                'الأطفال',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${children.length}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.orangeDeep,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        if (children.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: c.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: c.line),
+            ),
+            child: Center(
+              child: Text(
+                'لا يوجد أطفال مسجّلون',
+                style: TextStyle(color: c.muted, fontSize: 14),
+              ),
+            ),
+          )
+        else
+          ...List.generate(children.length, (i) {
+            final child = children[i];
+            return _ChildListTile(
+              child: child,
+              color:
+                  AppColors.kidPalette[i % AppColors.kidPalette.length],
+              assignedTeacherName: _teacherNameFor(child),
+              assignedSpecialistName: _specialistNameFor(child),
+              onTap: () => _openEditChild(child),
+              onDelete: () => _deleteChild(child),
+            );
+          }),
+      ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  بطاقة مستخدم (صف)
+// ═══════════════════════════════════════════════════════════
+class _UserListTile extends StatelessWidget {
+  final Map user;
+  final Color color;
+  final int assignedChildrenCount;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const _UserListTile({
+    required this.user,
+    required this.color,
+    required this.assignedChildrenCount,
+    required this.onTap,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final name = (user['name'] ?? '').toString();
+    final email = (user['email'] ?? '').toString();
+    final phone = user['phone']?.toString();
+    final initial =
+        name.trim().isNotEmpty ? name.trim().characters.first : '؟';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: c.line),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: color.withValues(alpha: 0.15),
+                  child: Text(
+                    initial,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        ),
+                      ),
+                      Text(
+                        email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: c.muted),
+                      ),
+                      if (phone != null && phone.isNotEmpty)
+                        Text(
+                          '📞 $phone',
+                          style:
+                              TextStyle(fontSize: 11.5, color: c.muted),
+                        ),
+                    ],
+                  ),
+                ),
+                // شارة "X أطفال"
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: assignedChildrenCount > 0
+                        ? AppColors.teal.withValues(alpha: 0.15)
+                        : c.line.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('👶', style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: 3),
+                      Text(
+                        '$assignedChildrenCount',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: assignedChildrenCount > 0
+                              ? AppColors.tealDeep
+                              : c.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 4),
+                // أزرار
+                IconButton(
+                  icon: const Icon(Icons.edit,
+                      size: 20, color: Colors.blue),
+                  tooltip: 'تعديل',
+                  onPressed: onEdit,
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(6),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline_outlined,
+                      size: 20, color: Colors.red),
+                  tooltip: 'حذف',
+                  onPressed: onDelete,
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(6),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  بطاقة طفل (صف)
+// ═══════════════════════════════════════════════════════════
+class _ChildListTile extends StatelessWidget {
+  final Map child;
+  final Color color;
+  final String? assignedTeacherName;
+  final String? assignedSpecialistName;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+
+  const _ChildListTile({
+    required this.child,
+    required this.color,
+    this.assignedTeacherName,
+    this.assignedSpecialistName,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final name = (child['name'] ?? '').toString();
+    final age = child['age'] ?? '?';
+    final disability = child['disability_type']?.toString();
+    final initial =
+        name.trim().isNotEmpty ? name.trim().characters.first : '🧒';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: c.line),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: color,
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        ),
+                      ),
+                      Text(
+                        'العمر: $age سنة'
+                        '${disability != null && disability.isNotEmpty ? ' • $disability' : ''}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: c.muted),
+                      ),
+                      if (assignedTeacherName != null &&
+                          assignedTeacherName!.isNotEmpty)
+                        Text(
+                          '👨‍🏫 $assignedTeacherName',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AppColors.tealDeep,
+                          ),
+                        ),
+                      if (assignedSpecialistName != null &&
+                          assignedSpecialistName!.isNotEmpty)
+                        Text(
+                          '🧩 $assignedSpecialistName',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AppColors.orangeDeep,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit_attributes_outlined,
+                      size: 20, color: Colors.blue),
+                  tooltip: 'تعديل',
+                  onPressed: onTap,
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(6),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline_outlined,
+                      size: 20, color: Colors.red),
+                  tooltip: 'حذف',
+                  onPressed: onDelete,
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(6),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  شارة حالة الطفل
+// ═══════════════════════════════════════════════════════════
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    String label;
+    Color color;
+    switch (status) {
+      case 'evaluated':
+        label = 'تم التقييم';
+        color = AppColors.green;
+        break;
+      case 'assigned':
+        label = 'تم التعيين';
+        color = AppColors.teal;
+        break;
+      default:
+        label = 'قيد الانتظار';
+        color = AppColors.orange;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
     );
   }
 }
@@ -875,7 +1247,8 @@ class _VerificationTabState extends State<_VerificationTab> {
             Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
-                onPressed: _loadRequests, child: const Text('إعادة المحاولة')),
+                onPressed: _loadRequests,
+                child: const Text('إعادة المحاولة')),
           ],
         ),
       );
@@ -1179,7 +1552,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
             _tickets.removeWhere((t) => t['id'] == ticket['id']);
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم حل الشكوى وإرسال إشعار للمستخدم')),
+            const SnackBar(
+                content: Text('تم حل الشكوى وإرسال إشعار للمستخدم')),
           );
         } else {
           setState(() {
@@ -1211,7 +1585,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                 style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 16),
             ElevatedButton(
-                onPressed: _loadTickets, child: const Text('إعادة المحاولة')),
+                onPressed: _loadTickets,
+                child: const Text('إعادة المحاولة')),
           ],
         ),
       );
@@ -1232,7 +1607,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                   child: ListTile(
                     leading: const Icon(Icons.support_agent,
                         color: AppColors.orange),
-                    title: Text(ticket['subject']?.toString() ?? 'بدون موضوع'),
+                    title: Text(ticket['subject']?.toString() ??
+                        'بدون موضوع'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1245,7 +1621,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                         if (user['name'] != null)
                           Text(
                             'من: ${user['name']}',
-                            style: TextStyle(fontSize: 12, color: c.muted),
+                            style: TextStyle(
+                                fontSize: 12, color: c.muted),
                           ),
                       ],
                     ),
@@ -1284,9 +1661,12 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   @override
   void initState() {
     super.initState();
-    _name = TextEditingController(text: widget.user['name']?.toString() ?? '');
-    _email = TextEditingController(text: widget.user['email']?.toString() ?? '');
-    _phone = TextEditingController(text: widget.user['phone']?.toString() ?? '');
+    _name =
+        TextEditingController(text: widget.user['name']?.toString() ?? '');
+    _email =
+        TextEditingController(text: widget.user['email']?.toString() ?? '');
+    _phone =
+        TextEditingController(text: widget.user['phone']?.toString() ?? '');
     _role = widget.user['role']?.toString() ?? 'parent';
   }
 
@@ -1332,7 +1712,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = safeModalBottom(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -1375,7 +1755,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
+                decoration:
+                    const InputDecoration(labelText: 'البريد الإلكتروني'),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
@@ -1408,7 +1789,9 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _saving ? null : () => Navigator.pop(context),
+                      onPressed: _saving
+                          ? null
+                          : () => Navigator.pop(context),
                       child: const Text('إلغاء'),
                     ),
                   ),
@@ -1416,8 +1799,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _saving ? null : _save,
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.green),
                       child: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
                     ),
                   ),
@@ -1449,7 +1832,8 @@ class SearchByIdentityScreen extends StatefulWidget {
   const SearchByIdentityScreen({super.key});
 
   @override
-  State<SearchByIdentityScreen> createState() => _SearchByIdentityScreenState();
+  State<SearchByIdentityScreen> createState() =>
+      _SearchByIdentityScreenState();
 }
 
 class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
@@ -1514,7 +1898,8 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                       backgroundColor: AppColors.orange,
                     ),
                     child: _loading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(
+                            color: Colors.white)
                         : const Text('بحث'),
                   ),
                 ),
@@ -1526,19 +1911,20 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
                     ? Center(
-                        child:
-                            Text(_error!, style: const TextStyle(color: Colors.red)))
+                        child: Text(_error!,
+                            style: const TextStyle(color: Colors.red)))
                     : _results.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.search, size: 64, color: c.muted),
+                                Icon(Icons.search,
+                                    size: 64, color: c.muted),
                                 const SizedBox(height: 16),
                                 Text(
                                   'لا توجد نتائج مطابقة',
-                                  style:
-                                      TextStyle(fontSize: 18, color: c.muted),
+                                  style: TextStyle(
+                                      fontSize: 18, color: c.muted),
                                 ),
                               ],
                             ),
@@ -1564,7 +1950,8 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                                   subtitle: Text(
                                     '${result['type'] == 'child' ? 'طفل' : result['role'] == 'parent' ? 'ولي أمر' : result['role']} • ${result['national_id'] ?? ''}',
                                   ),
-                                  trailing: const Icon(Icons.chevron_left),
+                                  trailing:
+                                      const Icon(Icons.chevron_left),
                                   onTap: () {
                                     // يمكنك فتح تفاصيل المستخدم/الطفل هنا
                                   },

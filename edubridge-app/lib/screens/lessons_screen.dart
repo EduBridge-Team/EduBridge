@@ -1,9 +1,10 @@
-// شاشة تصفّح كل الدروس مع بحث وقراءة صوتية — مثل صفحة «تصفح الدروس» في الموقع
+// شاشة تصفّح كل الدروس مع بحث وقراءة صوتية
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/speakable.dart';
 import 'assistant_screen.dart';
 
 class LessonsScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   String? _error;
   String _query = '';
 
-  // القراءة الصوتية (accessibility)
+  // القراءة الصوتية
   final FlutterTts _tts = FlutterTts();
   int? _speakingLessonId;
 
@@ -38,7 +39,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
 
   Future<void> _initTts() async {
     await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45); // أبطأ قليلاً ليناسب الأطفال
+    await _tts.setSpeechRate(0.45);
     _tts.setCompletionHandler(() {
       if (mounted) setState(() => _speakingLessonId = null);
     });
@@ -82,12 +83,26 @@ class _LessonsScreenState extends State<LessonsScreen> {
     }
 
     await _tts.stop();
-    setState(() => _speakingLessonId = lessonId);
+    setState(() => _speakingLessonId = lessonId is int ? lessonId : null);
     final text = [
       (lesson['title'] ?? '').toString(),
       (lesson['content'] ?? '').toString(),
     ].where((t) => t.isNotEmpty).join('. ');
     await _tts.speak(text);
+  }
+
+  // ✅ بناء نص القراءة الصوتية لبطاقة درس
+  String _buildLessonSpeech(Map lesson) {
+    final title = (lesson['title'] ?? '').toString();
+    final content = (lesson['content'] ?? '').toString();
+
+    final parts = <String>[
+      'درس: $title',
+      if (content.isNotEmpty) content,
+      'اضغط لسماع الدرس',
+    ];
+
+    return parts.join('، ');
   }
 
   // فلترة بالبحث على العنوان والمحتوى
@@ -186,81 +201,87 @@ class _LessonsScreenState extends State<LessonsScreen> {
     final content = (lesson['content'] ?? '').toString();
     final c = JisrColors.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: c.tintGreen,
-                    borderRadius: BorderRadius.circular(14),
+    // ✅ البطاقة مغلّفة بـ Speakable
+    return Speakable(
+      text: _buildLessonSpeech(lesson),
+      radius: 16,
+      onTap: null, // لا تنقّل تلقائي — فقط قراءة عند الوضع
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: c.tintGreen,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(Icons.menu_book, size: 28, color: c.success),
                   ),
-                  child: Icon(Icons.menu_book, size: 28, color: c.success),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    (lesson['title'] ?? '').toString(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: c.heading,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      (lesson['title'] ?? '').toString(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: c.heading,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              if (content.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  content,
+                  style: const TextStyle(fontSize: 15, height: 1.5),
                 ),
               ],
-            ),
-            if (content.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  icon: Icon(
+                    isSpeaking ? Icons.stop_circle : Icons.volume_up,
+                    size: 28,
+                  ),
+                  label: Text(
+                    isSpeaking ? 'إيقاف' : 'استمع',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  onPressed: () => _toggleSpeak(lesson),
+                ),
+              ),
               const SizedBox(height: 8),
-              Text(
-                content,
-                style: const TextStyle(fontSize: 15, height: 1.5),
-              ),
-            ],
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: OutlinedButton.icon(
-                icon: Icon(
-                  isSpeaking ? Icons.stop_circle : Icons.volume_up,
-                  size: 28,
-                ),
-                label: Text(
-                  isSpeaking ? 'إيقاف' : 'استمع',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                onPressed: () => _toggleSpeak(lesson),
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.auto_awesome, size: 24),
-                label: const Text('اسأل نور عن الدرس'),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AssistantScreen(
-                      lessonContext: [
-                        'عنوان الدرس: ${lesson['title'] ?? ''}',
-                        if (content.isNotEmpty) 'محتوى الدرس: $content',
-                      ].join('\n'),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.auto_awesome, size: 24),
+                  label: const Text('اسأل نور عن الدرس'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssistantScreen(
+                        lessonContext: [
+                          'عنوان الدرس: ${lesson['title'] ?? ''}',
+                          if (content.isNotEmpty) 'محتوى الدرس: $content',
+                        ].join('\n'),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

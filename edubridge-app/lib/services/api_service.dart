@@ -1,5 +1,6 @@
 // lib/services/api_service.dart
 // طبقة الاتصال بالـ API - كاملة ومتكاملة مع جميع التحديثات الجديدة
+// ✅ إصلاح: معالجة أخطاء موحّدة تحافظ على رسائل الخادم الفعلية
 
 import 'dart:convert';
 import 'dart:io';
@@ -11,9 +12,48 @@ import '../config.dart';
 class ApiService {
   /// Drives UI that should only be visible while a user is signed in.
   static final ValueNotifier<bool> isAuthenticated = ValueNotifier(false);
+   static final ValueNotifier<String?> userRole = ValueNotifier<String?>(null);
+
 
   static Future<void> initializeAuthState() async {
     isAuthenticated.value = await getToken() != null;
+     final prefs = await SharedPreferences.getInstance();
+    userRole.value = prefs.getString('role');
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ✅ معالج أخطاء موحّد
+  //  - يحوّل أخطاء الشبكة إلى رسالة عربية واضحة
+  //  - يحافظ على رسائل الخادم الحقيقية (صلاحيات، تحقق، ...)
+  // ═══════════════════════════════════════════════════════════
+  static Never _handleError(Object error) {
+    if (error is SocketException) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+    if (error is http.ClientException) {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    }
+    if (error is FormatException) {
+      throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
+    }
+    if (error is Exception) {
+      // احتفظ بالخطأ الأصلي (رسالة الخادم، رفض الصلاحية، ...)
+      throw error;
+    }
+    throw Exception('حدث خطأ غير متوقع');
+  }
+
+  /// يقرأ JSON من استجابة HTTP بأمان
+  static Map<String, dynamic> _decodeBody(http.Response res) {
+    if (res.body.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(res.body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      return {};
+    } catch (_) {
+      return {};
+    }
   }
 
   // ===== دوال التخزين المحلي =====
@@ -34,6 +74,8 @@ class ApiService {
     await prefs.setString('role', user['role'] ?? '');
     await prefs.setString('name', user['name'] ?? '');
     await prefs.setInt('userId', user['id'] ?? 0);
+    final role = user['role'] ?? '';
+    userRole.value = role.isEmpty ? null : role;
   }
 
   static Future<String?> getRole() async {
@@ -58,6 +100,7 @@ class ApiService {
     await prefs.remove('name');
     await prefs.remove('userId');
     isAuthenticated.value = false;
+     userRole.value = null;
   }
 
   // ===== دوال المصادقة (Auth) =====
@@ -70,7 +113,7 @@ class ApiService {
         body: jsonEncode({'email': email, 'password': password}),
       );
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
 
       if (res.statusCode == 200) {
         await _saveToken(data['token']);
@@ -101,7 +144,7 @@ class ApiService {
         }),
       );
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
 
       if (res.statusCode == 201) {
         return null; // نجاح
@@ -177,13 +220,13 @@ class ApiService {
   static Future<Map<String, dynamic>?> getChildren() async {
     try {
       final res = await authGet('/children');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data;
       }
       throw Exception(data['error'] ?? 'فشل جلب الأطفال');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
@@ -198,35 +241,74 @@ class ApiService {
     String? preferredLearningStyle,
     List<String>? strengths,
     List<String>? challenges,
+    File? idCardFile,
+    File? birthCertFile,
   }) async {
     try {
-      final res = await authPost('/children', {
-        'name': name,
-        'age': age,
-        'disability_type': disabilityType,
-        'disability_description': disabilityDescription,
-        'medical_history': medicalHistory,
-        'psychologist_notes': psychologistNotes,
-        'special_needs': specialNeeds,
-        'preferred_learning_style': preferredLearningStyle,
-        'strengths': strengths,
-        'challenges': challenges,
-      });
+      final token = await getToken();
+      final uri = Uri.parse('${Config.baseUrl}/children');
 
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 201 || res.statusCode == 200) {
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer $token';
+
+      request.fields['name'] = name;
+      request.fields['age'] = age.toString();
+      if (disabilityType != null) {
+        request.fields['disability_type'] = disabilityType;
+      }
+      if (disabilityDescription != null) {
+        request.fields['disability_description'] = disabilityDescription;
+      }
+      if (medicalHistory != null) {
+        request.fields['medical_history'] = medicalHistory;
+      }
+      if (psychologistNotes != null) {
+        request.fields['psychologist_notes'] = psychologistNotes;
+      }
+      if (specialNeeds != null) {
+        request.fields['special_needs'] = specialNeeds;
+      }
+      if (preferredLearningStyle != null) {
+        request.fields['preferred_learning_style'] = preferredLearningStyle;
+      }
+      if (strengths != null && strengths.isNotEmpty) {
+        request.fields['strengths'] = jsonEncode(strengths);
+      }
+      if (challenges != null && challenges.isNotEmpty) {
+        request.fields['challenges'] = jsonEncode(challenges);
+      }
+
+      if (idCardFile != null && await idCardFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('id_card', idCardFile.path),
+        );
+      }
+      if (birthCertFile != null && await birthCertFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+              'birth_certificate', birthCertFile.path),
+        );
+      }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final data = responseBody.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(responseBody) as Map<String, dynamic>);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return data['child'];
       }
       throw Exception(data['error'] ?? 'فشل إضافة الطفل');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
   static Future<Map<String, dynamic>?> getChildDetails(int childId) async {
     try {
       final res = await authGet('/children/$childId');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['child'];
       }
@@ -240,20 +322,20 @@ class ApiService {
       int childId, Map<String, dynamic> data) async {
     try {
       final res = await authPut('/children/$childId', data);
-      final responseData = jsonDecode(res.body);
+      final responseData = _decodeBody(res);
       if (res.statusCode == 200) {
         return responseData['child'];
       }
       throw Exception(responseData['error'] ?? 'فشل تحديث بيانات الطفل');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
   static Future<List<dynamic>> getChildLessons(int childId) async {
     try {
       final res = await authGet('/children/$childId/lessons');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['lessons'] ?? [];
       }
@@ -290,20 +372,20 @@ class ApiService {
         'teaching_methods': teachingMethods,
       });
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return data['evaluation'];
       }
       throw Exception(data['error'] ?? 'فشل تقييم الطفل');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
   static Future<List<dynamic>> getChildEvaluations(int childId) async {
     try {
       final res = await authGet('/evaluations/child/$childId');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['evaluations'] ?? [];
       }
@@ -320,13 +402,13 @@ class ApiService {
         'teacher_id': teacherId,
       });
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['child'];
       }
       throw Exception(data['error'] ?? 'فشل تعيين المعلم');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
@@ -335,7 +417,7 @@ class ApiService {
   static Future<List<dynamic>> getLessons() async {
     try {
       final res = await authGet('/lessons');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['lessons'] ?? [];
       }
@@ -348,7 +430,7 @@ class ApiService {
   static Future<Map<String, dynamic>?> getLessonDetails(int lessonId) async {
     try {
       final res = await authGet('/lessons/$lessonId');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['lesson'];
       }
@@ -364,6 +446,8 @@ class ApiService {
     int? disabilityTypeId,
     File? videoFile,
     File? audioFile,
+    String? targetType,
+    List<int>? targetChildIds,
   }) async {
     try {
       final token = await getToken();
@@ -376,9 +460,14 @@ class ApiService {
       if (content != null && content.trim().isNotEmpty) {
         request.fields['content'] = content.trim();
       }
-
       if (disabilityTypeId != null) {
         request.fields['disability_type_id'] = disabilityTypeId.toString();
+      }
+      if (targetType != null) {
+        request.fields['target_type'] = targetType;
+      }
+      if (targetChildIds != null && targetChildIds.isNotEmpty) {
+        request.fields['target_child_ids'] = jsonEncode(targetChildIds);
       }
 
       if (videoFile != null && await videoFile.exists()) {
@@ -386,7 +475,6 @@ class ApiService {
           await http.MultipartFile.fromPath('video', videoFile.path),
         );
       }
-
       if (audioFile != null && await audioFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('audio', audioFile.path),
@@ -395,21 +483,23 @@ class ApiService {
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      final data = jsonDecode(responseBody);
+      final data = responseBody.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(responseBody) as Map<String, dynamic>);
 
       if (response.statusCode == 201) {
         return data['lesson'];
       }
       throw Exception(data['error'] ?? 'فشل إنشاء الدرس');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
   static Future<List<dynamic>> getDisabilityTypes() async {
     try {
       final res = await authGet('/disability-types');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['disability_types'] ?? [];
       }
@@ -424,10 +514,8 @@ class ApiService {
   static Future<Map<String, dynamic>?> getChildProgress(int childId) async {
     try {
       final res = await authGet('/progress/child/$childId');
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 200) {
-        return data;
-      }
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data;
       return null;
     } catch (e) {
       return null;
@@ -438,7 +526,7 @@ class ApiService {
       int childId) async {
     try {
       final res = await authGet('/progress/child/$childId/summary');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['summary'];
       }
@@ -462,13 +550,13 @@ class ApiService {
         'score': score,
       });
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return data['progress'];
       }
       throw Exception(data['error'] ?? 'فشل تسجيل التقدم');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
@@ -477,7 +565,7 @@ class ApiService {
   static Future<List<dynamic>> getNotifications() async {
     try {
       final res = await authGet('/notifications');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['notifications'] ?? [];
       }
@@ -490,7 +578,7 @@ class ApiService {
   static Future<int> getUnreadNotificationsCount() async {
     try {
       final res = await authGet('/notifications/unread/count');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['count'] ?? 0;
       }
@@ -503,16 +591,16 @@ class ApiService {
   static Future<void> markNotificationRead(int notificationId) async {
     try {
       await authPut('/notifications/$notificationId/read', {});
-    } catch (e) {
-      // تجاهل الخطأ
+    } catch (_) {
+      // تجاهل — الإشعار سيُعلَّم كمقروء عند أول فرصة تالية
     }
   }
 
   static Future<void> markAllNotificationsRead() async {
     try {
       await authPost('/notifications/read-all', {});
-    } catch (e) {
-      // تجاهل الخطأ
+    } catch (_) {
+      // تجاهل
     }
   }
 
@@ -521,7 +609,7 @@ class ApiService {
   static Future<List<dynamic>> getConversations() async {
     try {
       final res = await authGet('/conversations');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['conversations'] ?? [];
       }
@@ -534,7 +622,7 @@ class ApiService {
   static Future<List<dynamic>> getMessages(int conversationId) async {
     try {
       final res = await authGet('/conversations/$conversationId/messages');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['messages'] ?? [];
       }
@@ -555,7 +643,7 @@ class ApiService {
         'file_url': fileUrl,
       });
     } catch (e) {
-      throw Exception('تعذّر إرسال الرسالة');
+      _handleError(e);
     }
   }
 
@@ -566,17 +654,28 @@ class ApiService {
         'subject': subject,
       });
 
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 201) {
         return data['conversation']['id'];
       }
       throw Exception(data['error'] ?? 'فشل إنشاء المحادثة');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
   // ===== دوال المستخدمين (Users) =====
+
+  static Future<List<dynamic>> getConversationUsers() async {
+    try {
+      final res = await authGet('/conversation-users');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['users'] ?? [];
+      throw Exception(data['error'] ?? 'تعذّر تحميل جهات الاتصال');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
 
   static Future<List<dynamic>> getUsers({String? role}) async {
     try {
@@ -585,7 +684,7 @@ class ApiService {
         path += '?role=$role';
       }
       final res = await authGet(path);
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['users'] ?? [];
       }
@@ -611,13 +710,13 @@ class ApiService {
       int userId, Map<String, dynamic> data) async {
     try {
       final res = await authPut('/users/$userId', data);
-      final responseData = jsonDecode(res.body);
+      final responseData = _decodeBody(res);
       if (res.statusCode == 200) {
         return responseData['user'];
       }
       throw Exception(responseData['error'] ?? 'فشل تحديث المستخدم');
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
@@ -635,10 +734,8 @@ class ApiService {
   static Future<Map<String, dynamic>?> getDashboardStats() async {
     try {
       final res = await authGet('/dashboard/stats');
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 200) {
-        return data;
-      }
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data;
       return null;
     } catch (e) {
       return null;
@@ -649,7 +746,7 @@ class ApiService {
     try {
       final res =
           await authGet('/lessons/search?q=${Uri.encodeComponent(query)}');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['lessons'] ?? [];
       }
@@ -659,14 +756,20 @@ class ApiService {
     }
   }
 
-  // ===== دوال التوثيق (Verification) - جديدة =====
+  // ===== دوال التوثيق (Verification) =====
 
   static Future<String?> getVerificationStatus() async {
     try {
-      final res = await authGet('/verification/status');
-      final data = jsonDecode(res.body);
+      final res = await authGet('/me/verification');
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['status']; // 'pending', 'approved', 'rejected', 'none'
+        final verification = data['verification'];
+        final status = verification is Map
+            ? verification['verification_status'] as String?
+            : null;
+        // الخادم يسمّي الحالة المقبولة "verified" بينما الواجهة تستخدم
+        // "approved" — نبقي العقد كما هو للواجهة.
+        return status == 'verified' ? 'approved' : (status ?? 'none');
       }
       return 'none';
     } catch (e) {
@@ -680,35 +783,61 @@ class ApiService {
   }) async {
     try {
       final token = await getToken();
-      final uri = Uri.parse('${Config.baseUrl}/verification/identity');
-      final request = http.MultipartRequest('POST', uri)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['national_id'] = nationalId;
-
-      if (await idImage.exists()) {
-        request.files.add(
-          await http.MultipartFile.fromPath('id_image', idImage.path),
-        );
+      if (token == null || token.isEmpty) {
+        throw Exception('انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً');
+      }
+      if (!await idImage.exists()) {
+        throw Exception('ملف الهوية غير موجود، يرجى اختياره مجدداً');
       }
 
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
-      final data = jsonDecode(responseBody);
+      final uploadRequest = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Config.baseUrl}/uploads'),
+      )
+        ..headers['Authorization'] = 'Bearer $token'
+        ..files.add(await http.MultipartFile.fromPath('file', idImage.path));
+
+      final uploadResponse = await uploadRequest.send();
+      final uploadBody = await uploadResponse.stream.bytesToString();
+      final uploadData = uploadBody.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(uploadBody) as Map<String, dynamic>);
+
+      if (uploadResponse.statusCode != 200 &&
+          uploadResponse.statusCode != 201) {
+        throw Exception(uploadData['error'] ?? 'تعذّر رفع صورة الهوية');
+      }
+
+      final documentUrl = uploadData['url'] as String?;
+      if (documentUrl == null || documentUrl.isEmpty) {
+        throw Exception('لم يُرجع السيرفر رابط ملف الهوية');
+      }
+
+      final response = await authPost('/me/identity', {
+        'national_id': nationalId,
+        'id_document_url': documentUrl,
+      });
+      final data = _decodeBody(response);
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر إرسال التوثيق');
       }
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
-  // ===== دوال الأدمن (Admin) - جديدة =====
+  static Future<bool> isVerified() async {
+    final status = await getVerificationStatus();
+    return status == 'approved';
+  }
+
+  // ===== دوال الأدمن (Admin) =====
 
   static Future<List<dynamic>> getVerificationRequests() async {
     try {
       final res = await authGet('/admin/verifications');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['requests'] ?? [];
       }
@@ -717,11 +846,6 @@ class ApiService {
       return [];
     }
   }
-  /// التحقق مما إذا كان المستخدم موثقاً (approved)
-static Future<bool> isVerified() async {
-  final status = await getVerificationStatus();
-  return status == 'approved';
-}
 
   static Future<bool> approveVerification(int requestId) async {
     try {
@@ -745,7 +869,7 @@ static Future<bool> isVerified() async {
     try {
       final res =
           await authGet('/admin/search?q=${Uri.encodeComponent(query)}');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['results'] ?? [];
       }
@@ -758,7 +882,7 @@ static Future<bool> isVerified() async {
   static Future<List<dynamic>> getChildrenOfParent(int parentId) async {
     try {
       final res = await authGet('/users/$parentId/children');
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['children'] ?? [];
       }
@@ -767,7 +891,8 @@ static Future<bool> isVerified() async {
       return [];
     }
   }
-  // ===== دوال إضافة الشهادة ودراسة الحالة =====
+
+  // ===== دوال الشهادات والاستشارات =====
 
   static Future<void> submitCertificate({
     required String title,
@@ -788,13 +913,15 @@ static Future<bool> isVerified() async {
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      final data = jsonDecode(responseBody);
+      final data = responseBody.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(responseBody) as Map<String, dynamic>);
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر حفظ الشهادة');
       }
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
 
@@ -809,13 +936,191 @@ static Future<bool> isVerified() async {
         'title': title,
         'description': description,
       });
-      final data = jsonDecode(res.body);
+      final data = _decodeBody(res);
       if (res.statusCode != 200 && res.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر إرسال الطلب');
       }
     } catch (e) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
+      _handleError(e);
     }
   }
-  
+
+  // ===== دوال الموافقات الوزارية (Ministry Approvals) =====
+
+  static Future<Map<String, dynamic>?> submitForMinistryApproval({
+    required int childId,
+    required int evaluationId,
+    required String educationalPlan,
+    required String cognitiveAssessment,
+    required String motorAssessment,
+    required String emotionalAssessment,
+    required String socialAssessment,
+    required String recommendations,
+    required List<String> teachingMethods,
+    int? teacherId,
+  }) async {
+    try {
+      final res = await authPost('/ministry/approvals', {
+        'child_id': childId,
+        'evaluation_id': evaluationId,
+        'educational_plan': educationalPlan,
+        'cognitive_assessment': cognitiveAssessment,
+        'motor_assessment': motorAssessment,
+        'emotional_assessment': emotionalAssessment,
+        'social_assessment': socialAssessment,
+        'recommendations': recommendations,
+        'teaching_methods': teachingMethods,
+        'teacher_id': teacherId,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return data['approval'];
+      }
+      throw Exception(data['error'] ?? 'فشل إرسال الطلب');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<List<dynamic>> getPendingApprovals() async {
+    try {
+      final res = await authGet('/ministry/approvals/pending');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['approvals'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> getAllApprovals({String? status}) async {
+    try {
+      final path = status != null
+          ? '/ministry/approvals?status=$status'
+          : '/ministry/approvals';
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['approvals'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<bool> approveMinistryRequest(int approvalId) async {
+    try {
+      final res = await authPost(
+        '/ministry/approvals/$approvalId/approve',
+        {},
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> rejectMinistryRequest(
+    int approvalId, {
+    String? reason,
+  }) async {
+    try {
+      final res = await authPost(
+        '/ministry/approvals/$approvalId/reject',
+        {'reason': reason ?? ''},
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<List<dynamic>> getApprovalNotifications() async {
+    try {
+      final res = await authGet('/ministry/approvals/notifications');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['notifications'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<String> getChildPlanStatus(int childId) async {
+    try {
+      final res = await authGet('/ministry/approvals/child/$childId/status');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['status'] ?? 'none';
+      }
+      return 'none';
+    } catch (e) {
+      return 'none';
+    }
+  }
+
+  static Future<List<dynamic>> getMinistryUsers() async {
+    try {
+      final res = await authGet('/ministry/users');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['users'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> getMinistryChildren() async {
+    try {
+      final res = await authGet('/ministry/children');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['children'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getMinistryStats() async {
+    try {
+      final res = await authGet('/ministry/stats');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data;
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+  /// حذف الحساب نهائياً — لا يمكن التراجع
+static Future<void> deleteAccount() async {
+  try {
+    final res = await authDelete('/me');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200 || res.statusCode == 204) {
+      // مسح الجلسة المحلية
+      await logout();
+      return;
+    }
+    throw Exception(data['error'] ?? 'تعذّر حذف الحساب');
+  } on SocketException {
+    throw Exception('تعذّر الاتصال بالسيرفر');
+  } on http.ClientException {
+    throw Exception('تعذّر الاتصال بالسيرفر');
+  } on FormatException {
+    throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
+  } catch (e) {
+    if (e is Exception) rethrow;
+    throw Exception('تعذّر حذف الحساب');
+  }
+}
+
 }

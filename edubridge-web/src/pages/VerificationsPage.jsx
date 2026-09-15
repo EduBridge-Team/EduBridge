@@ -14,7 +14,7 @@ import {
 import { ROLE_NAMES } from '../roles'
 
 const API_ORIGIN = (
-  import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`
+  import.meta.env.VITE_API_URL || '/api'
 ).replace(/\/api\/?$/, '')
 const fileUrl = (u) => (!u ? '#' : u.startsWith('http') ? u : `${API_ORIGIN}${u}`)
 

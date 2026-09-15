@@ -1,6 +1,6 @@
 // هوية «جسر التعليمي» — نظام التصميم المشترك للتطبيق
-// لوحة ألوان مستوحاة من الشعار: كحلي، تركوازي، أخضر، برتقالي
-// مع خلفية دافئة وحوافّ دائرية
+// لوحة ألوان مستوحاة من شعار Edu Bridge:
+// أزرق ملكي عميق + تركوازي مشرق + خلفيات بيضاء مزرقة
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,55 +26,108 @@ Future<void> toggleThemeMode() async {
 class AppColors {
   AppColors._();
 
-  // الألوان الأساسية
-  static const navy = Color(0xFF153A5B);
-  static const navyDeep = Color(0xFF0D2740);
-  static const teal = Color(0xFF1AA9B2);
-  static const tealDeep = Color(0xFF0F7D84);
-  static const green = Color(0xFF57B25A);
+  // ═══════════════════════════════════════════════════════
+  //  الألوان الأساسية (من الشعار الجديد)
+  // ═══════════════════════════════════════════════════════
+
+  /// اللون الأساسي — أزرق ملكي عميق
+  static const navy = Color(0xFF1769C2);
+  static const navyDeep = Color(0xFF0D55AA);
+
+  /// اللون الثانوي — تركوازي الشعار
+  static const teal = Color(0xFF21BFD0);
+  static const tealDeep = Color(0xFF119EAE);
+
+  /// أزرق متوسط (وسط التدرّج في الشعار)
+  static const blue = Color(0xFF2A8AD5);
+
+  /// تركوازي فاتح (لمسات)
+  static const lightTeal = Color(0xFF69D4CA);
+
+  // ═══════════════════════════════════════════════════════
+  //  الألوان الدلالية (وظيفية — تبقى كما هي)
+  // ═══════════════════════════════════════════════════════
+
+  static const green = Color(0xFF57B25A);       // نجاح
   static const greenDeep = Color(0xFF3F9142);
-  static const orange = Color(0xFFF2842B);
+  static const orange = Color(0xFFF2842B);      // تنبيه
   static const orangeDeep = Color(0xFFD96E17);
-  static const yellow = Color(0xFFFFC23C);
-  static const pink = Color(0xFFF06C8B);
+  static const yellow = Color(0xFFFFC23C);      // تحذير خفيف
+  static const pink = Color(0xFFF06C8B);        // لمسة مميزة
+  static const red = Color(0xFFE53935);         // خطأ
 
-  // خلفيات وأسطح
-  static const cream = Color(0xFFFDF6EC);
-  static const tintTeal = Color(0xFFD7F1F2);
-  static const tintGreen = Color(0xFFDDF1DD);
-  static const tintOrange = Color(0xFFFDE3CD);
-  static const tintYellow = Color(0xFFFFEEC1);
+  // ═══════════════════════════════════════════════════════
+  //  الخلفيات (بيضاء مزرقة بدل الكريمي)
+  // ═══════════════════════════════════════════════════════
 
-  // نصوص وحدود
-  static const ink = Color(0xFF12283A);
-  static const muted = Color(0xFF5C7183);
-  static const lineCool = Color(0xFFDFEEF2);
+  /// الخلفية العامة — أبيض مزرَق
+  static const cream = Color(0xFFF8FCFF);
 
-  /// ألوان متناوبة لبطاقات/صور الأطفال
-  static const kidPalette = [teal, green, orange, pink, navy];
+  /// خلفيات خفيفة جداً — للتلوين الداخلي
+  static const tintBlue = Color(0xFFE9F5FF);    // أزرق فاتح جداً
+  static const tintTeal = Color(0xFFE4F9FB);    // تركوازي فاتح جداً
+  static const tintGreen = Color(0xFFE5F4E5);
+  static const tintOrange = Color(0xFFFFF0E0);
+  static const tintYellow = Color(0xFFFFF8E1);
 
-  /// تدرّج الهوية للرؤوس (كحلي ← تركوازي)
+  // ═══════════════════════════════════════════════════════
+  //  النصوص والحدود (زرقاء بدل الرمادي الدافئ)
+  // ═══════════════════════════════════════════════════════
+
+  /// نص داكن — أزرق مزرق
+  static const ink = Color(0xFF183F6B);
+  static const muted = Color(0xFF6884A4);
+
+  /// حدود — أزرق فاتح جداً
+  static const lineCool = Color(0xFFD9EBF7);
+
+  // ═══════════════════════════════════════════════════════
+  //  لوحة ألوان متناوبة للأطفال (زرقاء/تركوازية)
+  // ═══════════════════════════════════════════════════════
+
+  static const kidPalette = [
+    Color(0xFF1769C2), // أزرق ملكي
+    Color(0xFF21BFD0), // تركوازي
+    Color(0xFF2A8AD5), // أزرق متوسط
+    Color(0xFF69D4CA), // تركوازي فاتح
+    Color(0xFF119EAE), // تركوازي عميق
+  ];
+
+  // ═══════════════════════════════════════════════════════
+  //  تدرّج الهوية للرؤوس — من الشعار (أزرق → تركوازي)
+  // ═══════════════════════════════════════════════════════
+
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
-    colors: [navy, Color(0xFF185A78), tealDeep],
+    colors: [
+      Color(0xFF0D55AA),
+      Color(0xFF1769C2),
+      Color(0xFF21BFD0),
+    ],
+  );
+
+  /// تدرّج ثانوي للأزرار الكبيرة (اختياري)
+  static const accentGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [blue, teal],
   );
 }
 
 /// ألوان متكيّفة مع الوضع (فاتح/ليلي) — للنصوص والخلفيات الملوّنة
-/// الاستخدام داخل build: final c = JisrColors.of(context);
 class JisrColors {
-  final Color heading; // العناوين (بدل navy)
-  final Color body; // النصوص (بدل ink)
-  final Color muted; // النصوص الثانوية
-  final Color line; // الحدود
-  final Color card; // خلفية البطاقات
+  final Color heading;
+  final Color body;
+  final Color muted;
+  final Color line;
+  final Color card;
   final Color tintTeal;
   final Color tintGreen;
   final Color tintOrange;
   final Color tintYellow;
-  final Color onTint; // نص فوق الخلفيات الملوّنة
-  final Color success; // نصوص النجاح/الشارات المحقّقة
+  final Color onTint;
+  final Color success;
 
   const JisrColors({
     required this.heading,
@@ -104,16 +157,15 @@ class JisrColors {
     success: AppColors.greenDeep,
   );
 
-  // ألوان الوضع الليلي — ثوابت مستقلة لاستخدامها داخل const
-  static const darkHeading = Color(0xFFDCEBF7);
-  static const darkBody = Color(0xFFC6D8E6);
+  static const darkHeading = Color(0xFFDCE8F7);
+  static const darkBody = Color(0xFFC6D6E8);
 
   static const dark = JisrColors(
     heading: darkHeading,
     body: darkBody,
     muted: Color(0xFF8FA6B8),
-    line: Color(0xFF24425C),
-    card: Color(0xFF14324B),
+    line: Color(0xFF243D5C),
+    card: Color(0xFF152B45),
     tintTeal: Color(0xFF0E3A3E),
     tintGreen: Color(0xFF173A22),
     tintOrange: Color(0xFF43301A),
@@ -126,21 +178,21 @@ class JisrColors {
       Theme.of(context).brightness == Brightness.dark ? dark : light;
 }
 
-/// ثيم التطبيق الموحّد
+/// ثيم التطبيق الموحّد (فاتح)
 ThemeData buildJisrTheme() {
   final base = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.teal,
-      primary: AppColors.tealDeep,
-      secondary: AppColors.orange,
+      seedColor: AppColors.navy,
+      primary: AppColors.navy,
+      secondary: AppColors.teal,
       surface: Colors.white,
     ),
     scaffoldBackgroundColor: AppColors.cream,
   );
 
   return base.copyWith(
-    // نصوص أكبر قليلاً لسهولة القراءة (accessibility)
+    // نصوص أكبر قليلاً لسهولة القراءة
     textTheme: base.textTheme.copyWith(
       bodyMedium: const TextStyle(fontSize: 16, color: AppColors.ink),
       titleLarge: const TextStyle(
@@ -150,7 +202,7 @@ ThemeData buildJisrTheme() {
       ),
     ),
 
-    // شريط علوي كحلي — يُستبدل بتدرّج في الشاشات عبر flexibleSpace
+    // شريط علوي شفاف — يُستبدل بتدرّج في الشاشات عبر flexibleSpace
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
@@ -163,25 +215,25 @@ ThemeData buildJisrTheme() {
       ),
     ),
 
-    // بطاقات بيضاء بحوافّ دائرية وظل ناعم
+    // بطاقات بيضاء بحوافّ دائرية وظل ناعم أزرق
     cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         side: const BorderSide(color: AppColors.lineCool),
       ),
-      shadowColor: const Color(0x33153A5B), // كحلي بشفافية 20٪
+      shadowColor: const Color(0x332E5AAC),
     ),
 
-    // أزرار برتقالية كبيرة (≥ 56) بحوافّ دائرية
+    // أزرار أساسية — أزرق ملكي
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.orange,
+        backgroundColor: AppColors.navy,
         foregroundColor: Colors.white,
         minimumSize: const Size(56, 56),
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
       ),
     ),
@@ -190,7 +242,7 @@ ThemeData buildJisrTheme() {
         foregroundColor: AppColors.navy,
         minimumSize: const Size(56, 56),
         side: const BorderSide(color: AppColors.lineCool, width: 2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     ),
@@ -208,15 +260,15 @@ ThemeData buildJisrTheme() {
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.lineCool, width: 2),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.lineCool, width: 2),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.teal, width: 2),
       ),
       labelStyle: const TextStyle(color: AppColors.muted),
@@ -231,10 +283,37 @@ ThemeData buildJisrTheme() {
 
     progressIndicatorTheme:
         const ProgressIndicatorThemeData(color: AppColors.teal),
+
+    // شريط التبويبات السفلي
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      indicatorColor: AppColors.tintTeal,
+      elevation: 0,
+      height: 72,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? AppColors.navy
+              : AppColors.muted,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.navy,
+      foregroundColor: Colors.white,
+      elevation: 2,
+    ),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.lineCool,
+      thickness: 1,
+    ),
   );
 }
 
-/// ثيم الوضع الليلي — نفس الهوية على خلفية كحلية داكنة هادئة
+/// ثيم الوضع الليلي — أزرق داكن
 ThemeData buildJisrDarkTheme() {
   const bg = Color(0xFF0B1E30);
   const card = JisrColors.dark;
@@ -243,10 +322,10 @@ ThemeData buildJisrDarkTheme() {
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.teal,
+      seedColor: AppColors.navy,
       brightness: Brightness.dark,
       primary: AppColors.teal,
-      secondary: AppColors.orange,
+      secondary: AppColors.lightTeal,
       surface: card.card,
     ),
     scaffoldBackgroundColor: bg,
@@ -277,12 +356,12 @@ ThemeData buildJisrDarkTheme() {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: Color(0xFF24425C)),
+        side: const BorderSide(color: Color(0xFF243D5C)),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.orange,
+        backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,
         minimumSize: const Size(56, 56),
         elevation: 0,
@@ -332,6 +411,72 @@ ThemeData buildJisrDarkTheme() {
     ),
     progressIndicatorTheme:
         const ProgressIndicatorThemeData(color: AppColors.teal),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: card.card,
+      indicatorColor: AppColors.tintTeal,
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
+/// ثيم عالي التباين للعمى / ضعف البصر الشديد
+ThemeData buildHighContrastTheme() {
+  final base = buildJisrTheme();
+
+  return base.copyWith(
+    scaffoldBackgroundColor: Colors.black,
+    colorScheme: const ColorScheme.highContrastDark(
+      primary: Color(0xFFFFD400),
+      secondary: Color(0xFFFFD400),
+      surface: Colors.black,
+    ),
+    textTheme: base.textTheme.copyWith(
+      bodyLarge: const TextStyle(fontSize: 20, color: Colors.white),
+      bodyMedium: const TextStyle(fontSize: 18, color: Colors.white),
+      bodySmall: const TextStyle(fontSize: 16, color: Colors.white),
+      displayLarge: const TextStyle(
+          fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
+      displayMedium: const TextStyle(
+          fontSize: 32, color: Colors.white, fontWeight: FontWeight.bold),
+      displaySmall: const TextStyle(
+          fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold),
+      headlineLarge: const TextStyle(
+          fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold),
+      headlineMedium: const TextStyle(
+          fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+      headlineSmall: const TextStyle(
+          fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
+      titleLarge: const TextStyle(
+          fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+      titleMedium: const TextStyle(
+          fontSize: 20, color: Colors.white, fontWeight: FontWeight.w600),
+      titleSmall: const TextStyle(
+          fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+      labelLarge: const TextStyle(fontSize: 18, color: Colors.white),
+      labelMedium: const TextStyle(fontSize: 16, color: Colors.white),
+      labelSmall: const TextStyle(fontSize: 14, color: Colors.white),
+    ),
+    cardTheme: base.cardTheme.copyWith(
+      color: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFFFD400), width: 2),
+      ),
+    ),
+    inputDecorationTheme:
+        base.inputDecorationTheme.copyWith(fillColor: Colors.black),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.black,
+      foregroundColor: Color(0xFFFFD400),
+      elevation: 0,
+      titleTextStyle: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFFFFD400),
+      ),
+    ),
   );
 }
 

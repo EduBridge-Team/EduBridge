@@ -38,11 +38,6 @@ export default function SpecialistDashboard() {
   const [error, setError] = useState(null)
   const [approvingId, setApprovingId] = useState(null)
 
-  // الحماية: للمختص فقط
-  if (!me || me.role !== 'specialist') {
-    return <Navigate to="/" replace />
-  }
-
   const load = async () => {
     setLoading(true)
     setError(null)
@@ -66,8 +61,14 @@ export default function SpecialistDashboard() {
   }
 
   useEffect(() => {
+    if (!me || me.role !== 'specialist') return
     load()
-  }, [])
+  }, [me?.role])
+
+  // الحماية: للمختص فقط — بعد تعريف جميع Hooks للحفاظ على ترتيبها
+  if (!me || me.role !== 'specialist') {
+    return <Navigate to="/" replace />
+  }
 
   // اعتماد الدرس الحالي للطفل كمنجز
   const approve = async (row) => {

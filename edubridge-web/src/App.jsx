@@ -24,6 +24,10 @@ import VerificationsPage from './pages/VerificationsPage'
 import SupportPage from './pages/SupportPage'
 import MinistryPage from './pages/MinistryPage'
 import ConsultationsPage from './pages/ConsultationsPage'
+import EducationalGamesPage from './pages/EducationalGamesPage'
+import AccessibilityPage from './pages/AccessibilityPage'
+import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
+import ConversationsPage from './pages/ConversationsPage'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
@@ -145,6 +149,22 @@ export default function App() {
               </Page>
             </Protected>
           }
+        />
+        <Route
+          path="/children/:childId/games"
+          element={<Protected><Page><EducationalGamesPage /></Page></Protected>}
+        />
+        <Route
+          path="/children/:childId/accessibility"
+          element={<Protected><Page><AccessibilityPage /></Page></Protected>}
+        />
+        <Route
+          path="/accessibility"
+          element={<Protected><Page><AccessibilityOverviewPage /></Page></Protected>}
+        />
+        <Route
+          path="/conversations"
+          element={<Protected><Page><ConversationsPage /></Page></Protected>}
         />
         <Route
           path="/admin"

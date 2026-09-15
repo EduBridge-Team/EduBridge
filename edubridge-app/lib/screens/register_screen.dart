@@ -75,19 +75,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  // أيقونة ترحيبية داخل مربّع ملوّن ناعم
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      color: JisrColors.of(context).tintTeal,
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                    child: Icon(Icons.person_add,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.primary),
+                  Image.asset(
+                    'assets/brand_logo.png',
+                    width: 210,
+                    height: 105,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 24),
+                  Text(
+                    'ابدأ رحلتك مع EduBridge',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: JisrColors.of(context).heading,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'أنشئ حسابك واختر الدور المناسب لك',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: JisrColors.of(context).muted,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
 
                   // حقل الاسم
                   TextFormField(

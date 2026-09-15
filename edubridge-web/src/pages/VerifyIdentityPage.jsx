@@ -13,7 +13,7 @@ import {
 } from '../api'
 
 const API_ORIGIN = (
-  import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`
+  import.meta.env.VITE_API_URL || '/api'
 ).replace(/\/api\/?$/, '')
 
 // يحوّل مسار مخزّن (/uploads/..) إلى رابط كامل قابل للفتح

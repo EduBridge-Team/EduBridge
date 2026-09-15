@@ -20,6 +20,7 @@ echo "==> (1/3) ترقية قاعدة البيانات..."
 cd "$API"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_parent_features.sql')); echo 'db-ok';"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_board_cards.sql')); echo 'db-cards-ok';"
+php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_conversations.sql')); echo 'db-chat-ok';"
 
 # 2) مسح إعدادات Laravel المؤقتة (config + routes + cache) حتى تُحمَّل المسارات الجديدة
 echo "==> (2/3) مسح إعدادات Laravel والمسارات..."
@@ -40,7 +41,7 @@ cp "$WEB_BUILD/app.html" "$PUBLIC/app.html"
 [ -f "$WEB_BUILD/privacy.html" ] && cp "$WEB_BUILD/privacy.html" "$PUBLIC/privacy.html" || true
 [ -f "$WEB_BUILD/delete-account.html" ] && cp "$WEB_BUILD/delete-account.html" "$PUBLIC/delete-account.html" || true
 # ملفات مساعدة (اختيارية — نتجاهل غيابها)
-for f in favicon.svg logo.png icons.svg; do
+for f in favicon.svg logo.png icon.png icons.svg edubridge-logo.png edubridge-icon.png robots.txt sitemap.xml google6bb517e2daec9cd0.html; do
   [ -f "$WEB_BUILD/$f" ] && cp "$WEB_BUILD/$f" "$PUBLIC/" || true
 done
 

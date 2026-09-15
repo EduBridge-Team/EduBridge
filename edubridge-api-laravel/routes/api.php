@@ -21,6 +21,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AssistantController;
+use App\Http\Controllers\ConversationController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -36,10 +37,19 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/assistant/chat', [AssistantController::class, 'chat'])
         ->middleware('throttle:20,1');
 
+    // المحادثات بين ولي الأمر والفريق التعليمي، وبين أعضاء الفريق
+    Route::get('/conversation-users', [ConversationController::class, 'users']);
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::post('/conversations', [ConversationController::class, 'store'])
+        ->middleware('throttle:20,1');
+    Route::get('/conversations/{conversationId}/messages', [ConversationController::class, 'messages']);
+    Route::post('/conversations/{conversationId}/messages', [ConversationController::class, 'send'])
+        ->middleware('throttle:60,1');
+
     // إدارة المستخدمين — لوحة التحكم الإدارية
     // القائمة متاحة للمعلّم/المختص (المعلّمون فقط) لتعيين معلّم للطفل — إصلاح البطاقة 12
     Route::get('/users', [UserController::class, 'index'])
-        ->middleware('role:teacher,specialist,admin,institution');
+        ->middleware('role:parent,teacher,specialist,admin,ministry,institution');
     Route::put('/users/{id}', [UserController::class, 'update'])
         ->middleware('role:admin');
     // حذف مستخدم (أدمن) — البطاقة 11
@@ -77,6 +87,19 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/ministry/lessons', [MinistryController::class, 'lessons'])
         ->middleware('role:ministry,admin');
     Route::put('/ministry/lessons/{id}', [MinistryController::class, 'review'])
+        ->middleware('role:ministry,admin');
+
+
+    // عرض كل المستخدمين للوزارة (عرض فقط)
+    Route::get('/ministry/users', [MinistryController::class, 'users'])
+        ->middleware('role:ministry,admin');
+
+    // عرض كل الأطفال للوزارة (عرض فقط)
+    Route::get('/ministry/children', [MinistryController::class, 'children'])
+        ->middleware('role:ministry,admin');
+
+    // إحصائيات لوحة الوزارة (نظرة عامة)
+    Route::get('/ministry/stats', [MinistryController::class, 'stats'])
         ->middleware('role:ministry,admin');
 
     // الدعم الفني والشكاوى (البطاقة 11)

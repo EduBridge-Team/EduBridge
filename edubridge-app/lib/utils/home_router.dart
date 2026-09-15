@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../screens/home_screen.dart';
-import '../screens/verify_identity_screen.dart';
 import '../screens/teacher_screen.dart';
 import '../screens/speclalist_screen.dart';
 import '../screens/parent_screen.dart';
@@ -24,7 +23,7 @@ Future<Widget> homeScreenForRole() async {
     case 'specialist':
       return const SpecialistDashboardScreen();
     case 'parent':
-      return const ParentScreen(parent: {});
+      return const ParentScreen();
     case 'ministry':
     case 'institution':
       return const MinistryScreen();

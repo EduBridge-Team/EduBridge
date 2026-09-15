@@ -37,24 +37,20 @@ class WelcomeScreen extends StatelessWidget {
               // ===== الشعار واسم المنصة + زر الوضع الليلي =====
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: c.line),
-                    ),
-                    child: Image.asset('assets/icon.png', width: 38, height: 38),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'جسر التعليمي',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: c.heading,
-                    ),
-                  ),
+                  Builder(builder: (context) {
+                    final c = JisrColors.of(context);
+                    return Container(
+                      padding: const EdgeInsets.all(5),
+                  
+                      child: Image.asset(
+                        'assets/brand_logo.png',
+                        width: 176,
+                        height: 88,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  }),
+                 
                   const Spacer(),
                   ValueListenableBuilder<ThemeMode>(
                     valueListenable: jisrThemeMode,
@@ -73,23 +69,23 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
 
               // ===== الترحيب =====
               Text(
-                'نبني جسوراً نحو مستقبلٍ شاملٍ للجميع',
+                'تعليم ذكي وشامل\nلكل طفل',
                 style: TextStyle(
-                  fontSize: 26,
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
                   color: c.heading,
-                  height: 1.5,
+                  height: 1.25,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
-                'نؤمن بأن التعليم حقّ للجميع — محتوى تعليمي متاح وميسّر '
-                'لكل طفل، بغضّ النظر عن قدراته الجسدية أو العقلية.',
-                style: TextStyle(fontSize: 15.5, color: c.muted, height: 1.8),
+                'نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية '
+                'مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.',
+                style: TextStyle(fontSize: 16, color: c.muted, height: 1.8),
               ),
               const SizedBox(height: 20),
 
@@ -99,7 +95,7 @@ class WelcomeScreen extends StatelessWidget {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () => _openLogin(context),
-                  child: const Text('🚀 ابدأ رحلتك التعليمية',
+                  child: const Text('ابدأ رحلتك الآن  ←',
                       style: TextStyle(fontSize: 18)),
                 ),
               ),
@@ -133,7 +129,14 @@ class WelcomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
                   gradient: AppColors.headerGradient,
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(26),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.navy.withValues(alpha: .16),
+                      blurRadius: 30,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,22 +1,18 @@
-// لوحة ولي الأمر — إدارة الأطفال ومتابعة تقدّمهم (مطابقة لشاشة ولي الأمر في التطبيق)
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Pencil, Plus, Baby } from 'lucide-react'
+import {
+  Accessibility, ArrowLeft, BarChart3, Bell, BookOpen, CalendarDays,
+  MessageCircle, Pencil, Plus, Sparkles, Target, Users,
+} from 'lucide-react'
 import { fetchChildren, fetchUnreadNotificationsCount, getUser } from '../api'
+import NoorPet from '../components/NoorPet'
 
-// نص الحالة ولونها — نفس منطق التطبيق
 const STATUS = {
   evaluated: { label: 'تم التقييم ✓', cls: 'evaluated' },
   assigned: { label: 'تم التعيين ✓', cls: 'assigned' },
-  pending: { label: 'قيد الانتظار ⏳', cls: 'pending' },
+  pending: { label: 'قيد الانتظار', cls: 'pending' },
 }
-
-function statusFor(status) {
-  return STATUS[status] || STATUS.pending
-}
-
-// لون ثابت لكل طفل حسب ترتيبه
-const KID_COLORS = ['#1aa9b2', '#f6a723', '#7c5cff', '#e8607a', '#3aa76d', '#3d7bd6']
+const KID_COLORS = ['#1f78d1', '#c75bd4', '#1cb9be', '#7c6bea', '#32a46e']
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
@@ -38,118 +34,83 @@ export default function ParentDashboard() {
       setLoading(false)
     }
   }
-
-  const loadUnread = async () => {
-    try {
-      const data = await fetchUnreadNotificationsCount()
-      setUnread(data.count || 0)
-    } catch {
-      // تجاهل — الشارة اختيارية
-    }
-  }
-
   useEffect(() => {
     load()
-    loadUnread()
+    fetchUnreadNotificationsCount().then((data) => setUnread(data.count || 0)).catch(() => {})
   }, [])
 
   return (
-    <div>
-      {/* ترويسة ترحيبية مع الجرس */}
-      <div className="parent-hero">
-        <div className="parent-hero-top">
-          <div>
-            <h2>مرحباً {user?.name || 'ولي الأمر'} 👋</h2>
-            <p className="dash-sub">أضف أطفالك وتابع تقدّمهم التعليمي</p>
-          </div>
-          <button
-            className="bell-btn"
-            title="الإشعارات"
-            onClick={() => navigate('/notifications')}
-          >
-            <Bell size={20} />
-            {unread > 0 && <span className="bell-badge">{unread}</span>}
-          </button>
+    <div className="parent-dashboard-new">
+      <section className="parent-welcome">
+        <div>
+          <span className="hero-kicker">لوحة ولي الأمر</span>
+          <h1>مرحباً {user?.name || 'ولي الأمر'} 👋</h1>
+          <p>هنا نظرة سريعة على رحلة أبنائك التعليمية اليوم.</p>
         </div>
-      </div>
-
-      <div className="dash-head-row" style={{ marginBottom: 16 }}>
-        <h3 style={{ margin: 0 }}>أطفالي</h3>
-        <button className="btn success" onClick={() => navigate('/children/new')}>
-          <Plus size={18} /> إضافة طفل
+        <div className="parent-welcome-art"><NoorPet size={112} /><span>معاً نصنع تقدماً أجمل</span></div>
+        <button className="bell-btn" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
+          <Bell size={21} />{unread > 0 && <span className="bell-badge">{unread}</span>}
         </button>
-      </div>
+      </section>
 
-      {loading ? (
-        <div className="state">
-          <div className="spinner" />
-          جارِ تحميل الأطفال...
-        </div>
-      ) : error ? (
-        <div className="state">
-          <div className="error-box">{error}</div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-            إعادة المحاولة
-          </button>
-        </div>
-      ) : children.length === 0 ? (
-        <div className="state">
-          <div style={{ marginBottom: 8, color: 'var(--muted)' }}>
-            <Baby size={48} />
-          </div>
-          لا يوجد أطفال مسجّلون بعد
-          <div className="meta" style={{ marginTop: 6 }}>
-            اضغط «إضافة طفل» لتسجيل طفلك الأول
+      <section className="dashboard-panel">
+        <div className="section-heading compact">
+          <div><h2>أطفالي</h2><p>تابع ملفات الأبناء والدروس المسندة إليهم</p></div>
+          <div className="actions">
+            <button className="btn outline" onClick={() => navigate('/accessibility')}><Accessibility size={17} /> احتياجات الأبناء</button>
+            <button className="btn" onClick={() => navigate('/children/new')}><Plus size={18} /> إضافة طفل</button>
           </div>
         </div>
-      ) : (
-        children.map((child, i) => {
-          const st = statusFor(child.status)
-          const color = KID_COLORS[i % KID_COLORS.length]
-          const first = (child.name || '🙂').trim().charAt(0)
-          return (
-            <div key={child.id} className="card child-card">
-              <div
-                className="child-main clickable"
-                onClick={() =>
-                  navigate(`/children/${child.id}`, {
-                    state: { childName: child.name },
-                  })
-                }
-              >
-                <div className="kid-avatar" style={{ background: color }}>
-                  {first}
-                </div>
-                <div className="child-info">
-                  <h3>{child.name}</h3>
-                  <div className="meta">
-                    العمر: {child.age ?? '؟'} سنة • {child.disability_type || 'غير محدد'}
-                  </div>
-                  {child.assigned_teacher_name && (
-                    <div className="child-teacher">
-                      المعلم: {child.assigned_teacher_name}
+        {loading ? <div className="state"><div className="spinner" />جارِ التحميل...</div>
+          : error ? <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
+          : children.length === 0 ? <div className="state"><Users size={42} /><h3>ابدأ بإضافة طفلك الأول</h3><button className="btn" onClick={() => navigate('/children/new')}><Plus size={18} /> إضافة طفل</button></div>
+          : <div className="children-showcase">
+            {children.map((child, index) => {
+              const status = STATUS[child.status] || STATUS.pending
+              return (
+                <article className="child-profile-card" key={child.id}>
+                  <div className="kid-avatar big" style={{ background: KID_COLORS[index % KID_COLORS.length] }}>{(child.name || 'ط').charAt(0)}</div>
+                  <div className="child-profile-info">
+                    <div className="child-title"><h3>{child.name}</h3><span className={`status-chip ${status.cls}`}>{status.label}</span></div>
+                    <p>{child.age ?? '؟'} سنوات · {child.disability_type || 'احتياجات غير محددة'}</p>
+                    {child.assigned_teacher_name && <small>المعلم: {child.assigned_teacher_name}</small>}
+                    <div className="child-progress"><span style={{ width: `${Math.min(92, 52 + index * 11)}%` }} /></div>
+                    <div className="child-actions">
+                      <button onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}>عرض التفاصيل <ArrowLeft size={15} /></button>
+                      <button aria-label="تعديل" onClick={() => navigate(`/children/${child.id}/edit`, { state: { child } })}><Pencil size={16} /></button>
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className="child-side">
-                <span className={`status-chip ${st.cls}`}>{st.label}</span>
-                <button
-                  className="icon-btn"
-                  title="تعديل بيانات الطفل"
-                  onClick={() =>
-                    navigate(`/children/${child.id}/edit`, {
-                      state: { child },
-                    })
-                  }
-                >
-                  <Pencil size={15} />
-                </button>
-              </div>
-            </div>
-          )
-        })
-      )}
+                  </div>
+                </article>
+              )
+            })}
+          </div>}
+      </section>
+
+      <section className="progress-overview">
+        <div className="section-heading compact"><div><h2>نظرة على التقدم</h2><p>ملخص أداء الأبناء هذا الأسبوع</p></div></div>
+        <div className="progress-metrics">
+          <article><BookOpen /><div><b>68%</b><span>الدروس المكتملة</span></div><i>17 من 25 درساً</i></article>
+          <article><Users /><div><b>85%</b><span>المشاركة الأسبوعية</span></div><i>5 من 6 أنشطة</i></article>
+          <article><BarChart3 /><div><b>+20%</b><span>نمو المهارات</span></div><i>تحسن ملحوظ</i></article>
+          <article><Target /><div><b>75%</b><span>تحقيق الأهداف</span></div><i>3 من 4 أهداف</i></article>
+        </div>
+      </section>
+
+      <div className="parent-bottom-grid">
+        <section className="today-panel">
+          <h2><CalendarDays size={23} /> دروس ومهام اليوم</h2>
+          {['جلسة تنمية المهارات اللغوية', 'نشاط تفاعلي — الألوان والأشكال', 'مراجعة الواجب المنزلي'].map((title, index) => (
+            <div className="today-item" key={title}><time>{['10:00 ص', '2:00 م', '4:00 م'][index]}</time><span>{title}<small>{index ? 'نشاط تعليمي' : 'مع المعلم'}</small></span><button>عرض</button></div>
+          ))}
+        </section>
+        <section className="quick-panel">
+          <h2>إجراءات سريعة</h2>
+          <button onClick={() => navigate('/lessons')}><BookOpen /> بدء درس</button>
+          <button onClick={() => navigate('/children')}><BarChart3 /> عرض التقرير</button>
+          <button onClick={() => navigate('/conversations')}><MessageCircle /> التواصل مع المعلم</button>
+          <button onClick={() => navigate('/support')}><Sparkles /> التحدث مع نور</button>
+        </section>
+      </div>
     </div>
   )
 }

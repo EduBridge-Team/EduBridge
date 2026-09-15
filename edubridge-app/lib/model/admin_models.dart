@@ -1,9 +1,14 @@
+// نماذج لوحة تحكم الأدمن
+// ملاحظة: تمت إعادة تسمية Child إلى AdminChild لتجنّب التعارض
+// مع Child في child_model.dart (الذي يحتوي حقولاً كاملة).
+// لبيانات الطفل الكاملة استخدم: import 'child_model.dart';
+
 class AdminUser {
   final String id;
   final String name;
   final String email;
   final String role; // 1: Parent, 2: Teacher, 3: Specialist
-  final List<Child> children;
+  final List<AdminChild> children;
 
   AdminUser({
     required this.id,
@@ -13,7 +18,6 @@ class AdminUser {
     this.children = const [],
   });
 
-  // دالة منJson المفقودة (هنا سبب الخطأ)
   factory AdminUser.fromJson(Map<String, dynamic> json) {
     return AdminUser(
       id: json['id'].toString(),
@@ -21,25 +25,27 @@ class AdminUser {
       email: json['email'] ?? '',
       role: json['role'].toString(),
       children: (json['children'] as List<dynamic>? ?? [])
-          .map((e) => Child.fromJson(e))
+          .map((e) => AdminChild.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
 }
 
-class Child {
+/// ملخص طفل للعرض في قوائم الأدمن فقط.
+/// لبيانات الطفل الكاملة استخدم Child من child_model.dart
+class AdminChild {
   final String id;
   final String name;
   final int age;
 
-  Child({
+  AdminChild({
     required this.id,
     required this.name,
     required this.age,
   });
 
-  factory Child.fromJson(Map<String, dynamic> json) {
-    return Child(
+  factory AdminChild.fromJson(Map<String, dynamic> json) {
+    return AdminChild(
       id: json['id'].toString(),
       name: json['name'] ?? '',
       age: json['age'] ?? 0,

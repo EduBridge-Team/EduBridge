@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -15,6 +14,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
   List _conversations = [];
   bool _loading = true;
   String? _error;
+
+  String _text(Object? value, {String fallback = ''}) {
+    final text = value?.toString() ?? '';
+    return text.isEmpty ? fallback : text;
+  }
+
+  String _initial(Object? value) {
+    final text = _text(value, fallback: '؟').trim();
+    return text.isEmpty ? '؟' : text.characters.first;
+  }
 
   @override
   void initState() {
@@ -43,8 +52,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Future<void> _startNewConversation() async {
-    // جلب قائمة المستخدمين (جميع الأدوار) واختيار أحدهم
-    final users = await ApiService.getUsers();
+    List users;
+    try {
+      users = await ApiService.getConversationUsers();
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().replaceFirst('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+      return;
+    }
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -117,10 +135,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         itemCount: _conversations.length,
                         itemBuilder: (context, i) {
                           final conv = _conversations[i];
-                          final otherName = conv['other_user_name'] ?? 'مستخدم';
-                          final lastMsg = conv['last_message'] ?? '';
+                          final otherName = _text(
+                            conv['other_user_name'],
+                            fallback: 'مستخدم',
+                          );
+                          final lastMsg = _text(conv['last_message']);
                           final lastDate = conv['last_message_at'] != null
-                              ? DateTime.tryParse(conv['last_message_at'])
+                              ? DateTime.tryParse(
+                                  conv['last_message_at'].toString(),
+                                )
                               : null;
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 6),
@@ -128,7 +151,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               leading: CircleAvatar(
                                 backgroundColor: AppColors.kidPalette[i % AppColors.kidPalette.length],
                                 child: Text(
-                                  otherName.isNotEmpty ? otherName.characters.first : '؟',
+                                  _initial(otherName),
                                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 ),
                               ),
@@ -214,16 +237,20 @@ class _UserPickerSheet extends StatelessWidget {
                 itemCount: users.length,
                 itemBuilder: (context, i) {
                   final user = users[i];
+                  final userName = (user['name'] ?? '').toString();
+                  final userEmail = (user['email'] ?? '').toString();
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundColor: AppColors.kidPalette[i % AppColors.kidPalette.length],
                       child: Text(
-                        (user['name'] ?? '؟').characters.first,
+                        userName.trim().isEmpty
+                            ? '؟'
+                            : userName.trim().characters.first,
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    title: Text(user['name'] ?? ''),
-                    subtitle: Text(user['email'] ?? ''),
+                    title: Text(userName),
+                    subtitle: Text(userEmail),
                     onTap: () => onSelect(user),
                   );
                 },

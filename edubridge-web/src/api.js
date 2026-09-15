@@ -1,9 +1,9 @@
 // طبقة الاتصال بالخادم — نفس الواجهة التي يستخدمها تطبيق الموبايل
 // في الإنتاج نحدّد عنوان الواجهة وقت البناء عبر المتغير:
 //   VITE_API_URL
-// في التطوير نستخدم اسم المضيف الحالي حتى يعمل الموقع من أي جهاز على الشبكة
-const BASE_URL =
-  import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/api`;
+// القيمة الافتراضية same-origin آمنة للإنتاج ولا تسبب mixed-content على HTTPS.
+// للتطوير المحلي يمكن تمرير VITE_API_URL=http://localhost:3000/api.
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 // التوكن وبيانات المستخدم في localStorage
 export function getToken() {
@@ -335,4 +335,21 @@ export function askAssistant(messages, context) {
       ...(context ? { context: context.slice(0, 1200) } : {}),
     }),
   });
+}
+
+// ===== المحادثات بين مستخدمي المنصة =====
+export function fetchConversationUsers() {
+  return request('/conversation-users');
+}
+export function fetchConversations() {
+  return request('/conversations');
+}
+export function createConversation(otherUserId, subject) {
+  return request('/conversations', { method: 'POST', body: JSON.stringify({ other_user_id: otherUserId, subject }) });
+}
+export function fetchConversationMessages(id) {
+  return request(`/conversations/${id}/messages`);
+}
+export function sendConversationMessage(id, content) {
+  return request(`/conversations/${id}/messages`, { method: 'POST', body: JSON.stringify({ content }) });
 }
