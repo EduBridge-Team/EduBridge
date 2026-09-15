@@ -523,12 +523,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand-blue); box
 .page-title h2 { color: var(--brand-ink); }
 .noor-launcher { background: linear-gradient(135deg, var(--brand-blue), var(--brand-cyan)); box-shadow: 0 14px 35px rgba(23,105,194,.25); }
 .noor-panel { border-color: var(--brand-line); box-shadow: 0 22px 65px rgba(17,67,111,.2); }
-.noor-pet-body { fill: #eafaff; stroke: #75d5e5; stroke-width: 1; }
-.noor-pet-ear, .noor-pet-badge { fill: var(--brand-blue); }
-.noor-pet-face { fill: #0a3869; }
-.noor-pet-eyes { fill: #fff; }
-.noor-pet-beak { fill: var(--brand-cyan); }
-.noor-pet-bridge { stroke: #fff; }
 
 @media (max-width: 1050px) {
   .home-hero { grid-template-columns: 1fr 1fr; gap: 24px; }
