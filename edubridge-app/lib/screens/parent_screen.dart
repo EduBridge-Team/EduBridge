@@ -7,6 +7,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
+import '../widgets/dashboard_menu.dart';
 import '../widgets/speakable.dart';
 import 'notifications_screen.dart';
 import 'support_sheet.dart';
@@ -188,46 +189,82 @@ class _ParentScreenState extends State<ParentScreen> {
           ],
         ),
         actions: [
-          const LegalLinksButton(),
-          _appBarIcon(
-            icon: Icons.accessibility_new,
-            tooltip: 'احتياجات الأبناء',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const ChildrenAccessibilityOverviewScreen(),
+          DashboardMenu(
+            showMicrophoneToggle: true,
+            badgeCount: _unreadCount,
+            actions: [
+              DashboardMenuAction(
+                id: 'notifications',
+                label: 'الإشعارات',
+                icon: Icons.notifications_outlined,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationsScreen(),
+                  ),
+                ).then((_) => _loadNotificationsCount()),
               ),
-            ),
-          ),
-          _appBarIcon(
-            icon: Icons.headset_mic,
-            tooltip: 'الدعم الفني',
-            onTap: () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => const SupportSheet(),
-            ),
-          ),
-          _appBarIcon(
-            icon: Icons.chat,
-            tooltip: 'المحادثات',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ChatsScreen()),
-              ).then((_) => _loadNotificationsCount());
-            },
-          ),
-          _appBarIcon(
-            icon: Icons.workspace_premium,
-            tooltip: 'إضافة شهادة',
-            onTap: () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => AddCertificateSheet(onSaved: _loadData),
-            ),
+              DashboardMenuAction(
+                id: 'accessibility',
+                label: 'احتياجات الأبناء',
+                icon: Icons.accessibility_new,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ChildrenAccessibilityOverviewScreen(),
+                  ),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'support',
+                label: 'الدعم الفني',
+                icon: Icons.headset_mic,
+                onSelected: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => const SupportSheet(),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'chats',
+                label: 'المحادثات',
+                icon: Icons.chat_outlined,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                ).then((_) => _loadNotificationsCount()),
+              ),
+              DashboardMenuAction(
+                id: 'certificate',
+                label: 'إضافة شهادة',
+                icon: Icons.workspace_premium_outlined,
+                onSelected: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => AddCertificateSheet(onSaved: _loadData),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'legal',
+                label: 'الخصوصية والحساب',
+                icon: Icons.privacy_tip_outlined,
+                onSelected: () => const LegalLinksButton().show(context),
+              ),
+              DashboardMenuAction(
+                id: 'logout',
+                label: 'تسجيل الخروج',
+                icon: Icons.logout,
+                destructive: true,
+                onSelected: () async {
+                  await ApiService.logout();
+                  if (context.mounted) {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }
+                },
+              ),
+            ],
           ),
           const SizedBox(width: 4),
         ],
@@ -260,21 +297,6 @@ class _ParentScreenState extends State<ParentScreen> {
     );
   }
 
-  Widget _appBarIcon({
-    required IconData icon,
-    required String tooltip,
-    required VoidCallback onTap,
-  }) {
-    return IconButton(
-      icon: Icon(icon, color: Colors.white, size: 18),
-      tooltip: tooltip,
-      onPressed: onTap,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-
   Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
@@ -289,70 +311,6 @@ class _ParentScreenState extends State<ParentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Stack(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.notifications,
-                            color: Colors.white, size: 20),
-                        tooltip: 'الإشعارات',
-                        padding: EdgeInsets.zero,
-                        constraints:
-                            const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const NotificationsScreen()),
-                          ).then((_) => _loadNotificationsCount());
-                        },
-                      ),
-                      if (_unreadCount > 0)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 15,
-                              minHeight: 15,
-                            ),
-                            child: Text(
-                              '$_unreadCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 4),
-                  IconButton(
-                    icon: const Icon(Icons.logout,
-                        color: Colors.white, size: 20),
-                    tooltip: 'خروج',
-                    padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints(minWidth: 32, minHeight: 32),
-                    onPressed: () async {
-                      await ApiService.logout();
-                      if (context.mounted) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }
-                    },
-                  ),
-                ],
-              ),
               const SizedBox(height: 4),
               FutureBuilder<String?>(
                 future: ApiService.getName(),

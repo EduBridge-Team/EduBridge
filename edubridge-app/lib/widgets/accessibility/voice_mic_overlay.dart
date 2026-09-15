@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/api_service.dart';
+import '../../services/overlay_visibility_service.dart';
 import '../../services/voice_command_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
@@ -103,8 +104,10 @@ class _VoiceMicOverlayState extends State<VoiceMicOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: OverlayVisibilityService.microphoneVisible,
+      builder: (context, microphoneEnabled, _) => LayoutBuilder(
+        builder: (context, constraints) {
         final mq = MediaQuery.of(context);
         final b = _bounds(constraints, mq);
         final x = b.minX + (b.maxX - b.minX) * _xFraction;
@@ -135,7 +138,8 @@ class _VoiceMicOverlayState extends State<VoiceMicOverlay> {
                               builder: (context, inlineOpen, _) {
                                 final keyboardOpen =
                                     mq.viewInsets.bottom > 0;
-                                if (!signedIn ||
+                                if (!microphoneEnabled ||
+                                    !signedIn ||
                                     assistantVisible ||
                                     modalOpen ||
                                     inlineOpen ||
@@ -192,7 +196,8 @@ class _VoiceMicOverlayState extends State<VoiceMicOverlay> {
             ),
           ],
         );
-      },
+        },
+      ),
     );
   }
 }

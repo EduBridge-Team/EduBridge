@@ -92,7 +92,7 @@ class LegalLinksButton extends StatelessWidget {
     }
   }
 
-  void _showLegalLinks(BuildContext context) {
+  void show(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -159,7 +159,7 @@ class LegalLinksButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.privacy_tip_outlined, color: Colors.white),
       tooltip: 'الخصوصية وحذف الحساب',
-      onPressed: () => _showLegalLinks(context),
+      onPressed: () => show(context),
     );
   }
 }

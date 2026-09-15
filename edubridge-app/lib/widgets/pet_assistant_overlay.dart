@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/assistant_screen.dart';
 import '../services/api_service.dart';
+import '../services/overlay_visibility_service.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
 import 'pet_avatar.dart';
@@ -162,8 +163,10 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: OverlayVisibilityService.assistantVisible,
+      builder: (context, launcherEnabled, _) => LayoutBuilder(
+        builder: (context, constraints) {
         final mediaQuery = MediaQuery.of(context);
         final bounds = _bounds(constraints, mediaQuery);
 
@@ -193,7 +196,8 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
                           builder: (context, inlineOpen, _) {
                             final keyboardOpen =
                                 mediaQuery.viewInsets.bottom > 0;
-                            if (!signedIn ||
+                            if (!launcherEnabled ||
+                                !signedIn ||
                                 assistantVisible ||
                                 modalOpen ||
                                 inlineOpen ||
@@ -260,7 +264,8 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
             ),
           ],
         );
-      },
+        },
+      ),
     );
   }
 }
