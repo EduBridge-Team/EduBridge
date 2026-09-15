@@ -63,11 +63,11 @@ class _MinistryScreenState extends State<MinistryScreen> {
             children: [
               Row(
                 children: [
-                  Image.asset('assets/icon.png', width: 32, height: 32),
+                  Image.asset('assets/brand_icon.png', width: 32, height: 32),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'جسر التعليمي - وزارة/مؤسسة',
+                      'EduBridge · وزارة/مؤسسة',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,

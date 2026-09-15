@@ -172,20 +172,12 @@ class _ParentScreenState extends State<ParentScreen> {
         title: Row(
           children: [
             
-            Image.asset('assets/icon.png', width: 50, height: 50
+            Image.asset('assets/brand_icon.png', width: 42, height: 42
             ),
             const SizedBox(width: 8),
           
              const Text(
-              'Bridge',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 0, 171, 154),
-              ),
-            ),
-             const Text(
-              'Edu',
+              'EduBridge',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
