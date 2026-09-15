@@ -12,6 +12,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
     paths:
       - "edubridge-app/**"
       - ".github/workflows/android-build.yml"
@@ -86,7 +87,16 @@ jobs:
             -storepass "$ANDROID_KEYSTORE_PASSWORD" \
             -alias "$ANDROID_KEY_ALIAS" > /dev/null
 
-      - name: Build release APK
+      - name: Build unsigned release APK for pull request
+        if: github.event_name == 'pull_request'
+        run: flutter build apk --release
+
+      - name: Build unsigned release AAB for pull request
+        if: github.event_name == 'pull_request'
+        run: flutter build appbundle --release
+
+      - name: Build signed release APK
+        if: github.event_name != 'pull_request'
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/upload-keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -94,7 +104,8 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: flutter build apk --release
 
-      - name: Build release AAB
+      - name: Build signed release AAB
+        if: github.event_name != 'pull_request'
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/upload-keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

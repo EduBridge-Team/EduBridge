@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../services/approval_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
+import '../widgets/dashboard_menu.dart';
 import 'chats_screen.dart';
 import 'lessons_screen.dart';
 import 'support_sheet.dart';
@@ -75,31 +76,48 @@ class _MinistryScreenState extends State<MinistryScreen> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.headset_mic, color: Colors.white),
-                    onPressed: () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => const SupportSheet(),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.chat, color: Colors.white),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ChatsScreen()),
-                    ),
-                  ),
-                  const LegalLinksButton(),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                    onPressed: () async {
-                      await ApiService.logout();
-                      if (context.mounted) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }
-                    },
+                  DashboardMenu(
+                    actions: [
+                      DashboardMenuAction(
+                        id: 'support',
+                        label: 'الدعم الفني',
+                        icon: Icons.headset_mic,
+                        onSelected: () => showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => const SupportSheet(),
+                        ),
+                      ),
+                      DashboardMenuAction(
+                        id: 'chats',
+                        label: 'المحادثات',
+                        icon: Icons.chat_outlined,
+                        onSelected: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                        ),
+                      ),
+                      DashboardMenuAction(
+                        id: 'legal',
+                        label: 'الخصوصية والحساب',
+                        icon: Icons.privacy_tip_outlined,
+                        onSelected: () =>
+                            const LegalLinksButton().show(context),
+                      ),
+                      DashboardMenuAction(
+                        id: 'logout',
+                        label: 'تسجيل الخروج',
+                        icon: Icons.logout,
+                        destructive: true,
+                        onSelected: () async {
+                          await ApiService.logout();
+                          if (context.mounted) {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
