@@ -10,6 +10,7 @@ import '../services/api_service.dart';
 import '../services/approval_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
+import '../widgets/dashboard_menu.dart';
 import '../utils/navigation.dart';
 import 'welcome_screen.dart';
 import 'educational_plan_sheet.dart';
@@ -486,48 +487,63 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.headset_mic, color: Colors.white),
-                    onPressed: () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => const SupportSheet(),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.workspace_premium,
-                        color: Colors.white),
-                    tooltip: 'إضافة شهادة',
-                    onPressed: () async {
-                      if (await _checkVerification()) {
-                        if (!mounted) return;
-                        showModalBottomSheet(
+                  DashboardMenu(
+                    badgeCount: _unreadCount,
+                    actions: [
+                      DashboardMenuAction(
+                        id: 'support',
+                        label: 'الدعم الفني',
+                        icon: Icons.headset_mic,
+                        onSelected: () => showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (_) =>
-                              AddCertificateSheet(onSaved: _loadData),
-                        );
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.chat, color: Colors.white),
-                    tooltip: 'المحادثات',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ChatsScreen()),
-                      );
-                    },
-                  ),
-                  const LegalLinksButton(),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                    tooltip: 'خروج',
-                    onPressed: _logout,
+                          builder: (_) => const SupportSheet(),
+                        ),
+                      ),
+                      DashboardMenuAction(
+                        id: 'certificate',
+                        label: 'إضافة شهادة',
+                        icon: Icons.workspace_premium_outlined,
+                        onSelected: () async {
+                          if (await _checkVerification()) {
+                            if (!mounted) return;
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) =>
+                                  AddCertificateSheet(onSaved: _loadData),
+                            );
+                          }
+                        },
+                      ),
+                      DashboardMenuAction(
+                        id: 'chats',
+                        label: 'المحادثات',
+                        icon: Icons.chat_outlined,
+                        onSelected: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ChatsScreen(),
+                          ),
+                        ),
+                      ),
+                      DashboardMenuAction(
+                        id: 'legal',
+                        label: 'الخصوصية والحساب',
+                        icon: Icons.privacy_tip_outlined,
+                        onSelected: () =>
+                            const LegalLinksButton().show(context),
+                      ),
+                      DashboardMenuAction(
+                        id: 'logout',
+                        label: 'تسجيل الخروج',
+                        icon: Icons.logout,
+                        destructive: true,
+                        onSelected: _logout,
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
+import 'services/overlay_visibility_service.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -14,6 +15,7 @@ void main() async {
   await loadSavedThemeMode();
   await ApiService.initializeAuthState();
   await AccessibilityService.instance.load();
+  await OverlayVisibilityService.initialize();
 
   runApp(const EduBridgeApp());
 }

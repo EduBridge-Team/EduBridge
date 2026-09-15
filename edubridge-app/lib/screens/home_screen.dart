@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
+import '../widgets/dashboard_menu.dart';
 import 'welcome_screen.dart';
 import 'admin_screen.dart';
 import 'children_screen.dart';
@@ -74,26 +75,29 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        ValueListenableBuilder<ThemeMode>(
-                          valueListenable: jisrThemeMode,
-                          builder: (context, mode, _) => IconButton(
-                            icon: Icon(
-                              mode == ThemeMode.dark
-                                  ? Icons.light_mode
-                                  : Icons.dark_mode,
-                              color: Colors.white,
+                        DashboardMenu(
+                          actions: [
+                            DashboardMenuAction(
+                              id: 'theme',
+                              label: 'تبديل وضع العرض',
+                              icon: Icons.contrast,
+                              onSelected: toggleThemeMode,
                             ),
-                            tooltip: mode == ThemeMode.dark
-                                ? 'الوضع الفاتح'
-                                : 'الوضع الليلي',
-                            onPressed: toggleThemeMode,
-                          ),
-                        ),
-                        const LegalLinksButton(),
-                        IconButton(
-                          icon: const Icon(Icons.logout, color: Colors.white),
-                          tooltip: 'خروج',
-                          onPressed: () => _logout(context),
+                            DashboardMenuAction(
+                              id: 'legal',
+                              label: 'الخصوصية والحساب',
+                              icon: Icons.privacy_tip_outlined,
+                              onSelected: () =>
+                                  const LegalLinksButton().show(context),
+                            ),
+                            DashboardMenuAction(
+                              id: 'logout',
+                              label: 'تسجيل الخروج',
+                              icon: Icons.logout,
+                              destructive: true,
+                              onSelected: () => _logout(context),
+                            ),
+                          ],
                         ),
                       ],
                     ),
