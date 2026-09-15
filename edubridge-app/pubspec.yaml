@@ -35,4 +35,6 @@ flutter:
   assets:
     - assets/icon.png
     - assets/iconV.png
+    - assets/brand_icon.png
+    - assets/brand_logo.png
     

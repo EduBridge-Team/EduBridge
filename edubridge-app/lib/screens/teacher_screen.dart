@@ -474,11 +474,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
             children: [
               Row(
                 children: [
-                  Image.asset('assets/icon.png', width: 32, height: 32),
+                  Image.asset('assets/brand_icon.png', width: 32, height: 32),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'جسر التعليمي - المعلم',
+                      'EduBridge · المعلم',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
