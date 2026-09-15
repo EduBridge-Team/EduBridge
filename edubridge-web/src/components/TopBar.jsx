@@ -101,11 +101,7 @@ export default function TopBar() {
     <header className="topbar">
       {/* الشعار والاسم — بداية الشريط (يمين في RTL) */}
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <img src="/icon.png" alt="شعار جسر" />
-        <div className="wordmark">
-          <span className="main">EduBridge</span>
-          <span className="sub">جسر تعليمي</span>
-        </div>
+        <img className="brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
       </div>
 
       {/* زر الهمبرغر — يظهر على الشاشات الصغيرة */}
@@ -131,6 +127,9 @@ export default function TopBar() {
             <nav className="topbar-nav">
               <NavLink to="/" end>
                 <Home size={16} /> الرئيسية
+              </NavLink>
+              <NavLink to="/about">
+                <Info size={16} /> من نحن
               </NavLink>
               <NavLink to={dashboardPath}>
                 <LayoutDashboard size={16} /> لوحتي
@@ -191,6 +190,9 @@ export default function TopBar() {
               <NavLink to="/about">
                 <Info size={16} /> من نحن
               </NavLink>
+              <NavLink to="/support">
+                <LifeBuoy size={16} /> تواصل معنا
+              </NavLink>
             </nav>
             <div className="topbar-actions">
               <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
@@ -205,6 +207,7 @@ export default function TopBar() {
               >
                 <LogIn size={16} /> تسجيل الدخول
               </button>
+              <button className="topbar-btn signup-btn" onClick={() => navigate('/register')}>إنشاء حساب</button>
             </div>
           </>
         )}

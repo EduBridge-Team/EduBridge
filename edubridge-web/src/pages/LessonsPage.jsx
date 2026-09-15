@@ -1,14 +1,24 @@
-// صفحة تصفح كل الدروس مع بحث
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { BookOpen, Volume2, Square } from 'lucide-react'
+import {
+  BookOpen, Clock3, Grid2X2, Headphones, Palette, Search, Sparkles, Square,
+  Volume2, X,
+} from 'lucide-react'
 import { fetchLessons } from '../api'
 import LessonRatings from '../components/LessonRatings'
+import NoorPet from '../components/NoorPet'
+
+const CATEGORIES = ['الكل', 'القراءة', 'الرياضيات', 'مهارات الحياة', 'التواصل', 'الفنون']
+const VISUALS = [
+  { icon: '📖', cls: 'blue' }, { icon: '🔢', cls: 'purple' }, { icon: '🌱', cls: 'green' },
+  { icon: '🧑‍🤝‍🧑', cls: 'aqua' }, { icon: '🎧', cls: 'violet' }, { icon: '🎨', cls: 'peach' },
+]
 
 export default function LessonsPage() {
   const location = useLocation()
   const [lessons, setLessons] = useState([])
   const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('الكل')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [speakingId, setSpeakingId] = useState(null)
@@ -32,14 +42,10 @@ export default function LessonsPage() {
     return () => window.speechSynthesis?.cancel()
   }, [])
 
-  // عند القدوم من أيقونة البحث في الشريط العلوي نركّز حقل البحث
   useEffect(() => {
-    if (!loading && location.state?.focusSearch) {
-      searchRef.current?.focus()
-    }
+    if (!loading && location.state?.focusSearch) searchRef.current?.focus()
   }, [loading, location.state])
 
-  // قراءة الدرس صوتياً أو إيقافها
   const toggleSpeak = (lesson) => {
     const synth = window.speechSynthesis
     if (!synth) return
@@ -49,9 +55,7 @@ export default function LessonsPage() {
       return
     }
     synth.cancel()
-    const utter = new SpeechSynthesisUtterance(
-      [lesson.title, lesson.content].filter(Boolean).join('. '),
-    )
+    const utter = new SpeechSynthesisUtterance([lesson.title, lesson.content].filter(Boolean).join('. '))
     utter.lang = 'ar'
     utter.rate = 0.85
     utter.onend = () => setSpeakingId(null)
@@ -59,72 +63,94 @@ export default function LessonsPage() {
     synth.speak(utter)
   }
 
-  // فلترة بالبحث على العنوان والمحتوى
-  const filtered = lessons.filter(
-    (l) =>
-      !query.trim() ||
-      (l.title || '').includes(query.trim()) ||
-      (l.content || '').includes(query.trim()),
-  )
-
-  if (loading) {
-    return (
-      <div className="state">
-        <div className="spinner" />
-        جارِ تحميل الدروس...
-      </div>
-    )
-  }
-  if (error) {
-    return (
-      <div className="state">
-        <div className="error-box">{error}</div>
-        <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-          إعادة المحاولة
-        </button>
-      </div>
-    )
-  }
+  const filtered = useMemo(() => lessons.filter((lesson) => {
+    const text = `${lesson.title || ''} ${lesson.content || ''} ${lesson.category || ''}`
+    const matchesQuery = !query.trim() || text.includes(query.trim())
+    const matchesCategory = category === 'الكل' || text.includes(category)
+    return matchesQuery && matchesCategory
+  }), [lessons, query, category])
 
   return (
-    <div>
-      <div className="page-title">
-        <h2>تصفح الدروس</h2>
-      </div>
-
-      <input
-        ref={searchRef}
-        type="search"
-        placeholder="ابحث عن درس..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{ marginBottom: 20 }}
-      />
-
-      {filtered.length === 0 ? (
-        <div className="state">
-          {lessons.length === 0 ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك'}
+    <div className="lessons-redesign">
+      <section className="lessons-hero">
+        <span className="hero-kicker">تعلّم واكتشف بطريقتك</span>
+        <h1>الدروس والمحتوى التعليمي</h1>
+        <p>محتوى تفاعلي آمن وممتع، صُمم ليناسب مستوى واحتياجات كل طفل.</p>
+        <div className="lesson-search">
+          <Search size={22} />
+          <input ref={searchRef} type="search" placeholder="ابحث عن درس أو مهارة..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          {query && <button aria-label="مسح البحث" onClick={() => setQuery('')}><X size={18} /></button>}
         </div>
-      ) : (
-        filtered.map((lesson) => (
-          <div key={lesson.id} className="card">
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <BookOpen size={18} /> {lesson.title}
-            </h3>
-            {lesson.content && <p className="content">{lesson.content}</p>}
-            <div className="actions">
-              <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
-                {speakingId === lesson.id ? (
-                  <><Square size={16} /> إيقاف</>
-                ) : (
-                  <><Volume2 size={16} /> استمع</>
-                )}
-              </button>
-              <LessonRatings lesson={lesson} />
-            </div>
+        <div className="category-chips">
+          {CATEGORIES.map((item) => (
+            <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>
+              {item === 'الكل' && <Grid2X2 size={16} />}{item}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div className="lessons-layout">
+        <main>
+          <div className="section-heading compact">
+            <div><h2>الدروس المتاحة</h2><p>{filtered.length} درساً مناسباً لرحلة التعلّم</p></div>
           </div>
-        ))
-      )}
+
+          {loading ? (
+            <div className="state"><div className="spinner" />جارِ تحميل الدروس...</div>
+          ) : error ? (
+            <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
+          ) : filtered.length === 0 ? (
+            <div className="state">لا توجد نتائج مطابقة لبحثك</div>
+          ) : (
+            <div className="lesson-cards-grid">
+              {filtered.map((lesson, index) => {
+                const visual = VISUALS[index % VISUALS.length]
+                return (
+                  <article key={lesson.id} className="lesson-card-new">
+                    <div className={`lesson-visual ${visual.cls}`}><span>{visual.icon}</span></div>
+                    <div className="lesson-body">
+                      <span className="lesson-tag">{lesson.category || CATEGORIES[(index % (CATEGORIES.length - 1)) + 1]}</span>
+                      <h3>{lesson.title}</h3>
+                      {lesson.content && <p>{lesson.content}</p>}
+                      <div className="lesson-meta"><Clock3 size={15} /> {lesson.duration || 15} دقيقة</div>
+                      <div className="lesson-card-actions">
+                        <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
+                          {speakingId === lesson.id ? <><Square size={15} /> إيقاف</> : <><Volume2 size={15} /> استمع</>}
+                        </button>
+                        <LessonRatings lesson={lesson} />
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          )}
+        </main>
+
+        <aside className="lessons-side">
+          <section className="noor-lessons-card">
+            <span className="hero-kicker">مساعدك الذكي</span>
+            <h2>اسأل <em>نور</em></h2>
+            <p>دائماً بجانبك في رحلة التعلّم</p>
+            <NoorPet size={150} />
+            <span className="noor-speech">مرحباً! كيف يمكنني مساعدتك اليوم؟ 👋</span>
+            <ul>
+              <li><Sparkles size={17} /> اقترح درساً مناسباً لمستواي</li>
+              <li><BookOpen size={17} /> ساعدني في فهم هذا الدرس</li>
+              <li><Headphones size={17} /> أريد أن أتدرّب على القراءة</li>
+              <li><Palette size={17} /> اقترح نشاطاً ممتعاً</li>
+            </ul>
+          </section>
+          <section className="daily-picks">
+            <h3>موصى لك اليوم</h3>
+            <p>اختيارات تناسب تقدّمك واهتماماتك</p>
+            {VISUALS.slice(1, 4).map((item, index) => (
+              <div key={item.icon}><span className={item.cls}>{item.icon}</span><b>{['الأشكال الهندسية', 'مهن وأعمال', 'الألوان من حولنا'][index]}</b></div>
+            ))}
+          </section>
+        </aside>
+      </div>
     </div>
   )
 }
