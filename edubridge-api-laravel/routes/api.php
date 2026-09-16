@@ -22,6 +22,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\UserSettingsController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -32,6 +33,10 @@ Route::post('/auth/google', [AuthController::class, 'google']);
 Route::middleware('auth.jwt')->group(function () {
     // مثال على مسار محمي — يعيد حمولة التوكن
     Route::get('/me', [AuthController::class, 'me']);
+
+    // تفضيلات العرض والمساعد — تتم مزامنتها بين أجهزة المستخدم
+    Route::get('/settings', [UserSettingsController::class, 'show']);
+    Route::put('/settings', [UserSettingsController::class, 'update']);
 
     // مساعد «نور» الذكي — محمي ومحدود الطلبات لحماية الأطفال والتكلفة
     Route::post('/assistant/chat', [AssistantController::class, 'chat'])
