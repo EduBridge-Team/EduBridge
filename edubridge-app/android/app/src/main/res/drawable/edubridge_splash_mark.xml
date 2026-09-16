@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="144dp"
+    android:height="144dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Graduation cap -->
+    <path
+        android:fillColor="#0B78E3"
+        android:pathData="M54,12 L96,33 L54,54 L12,33 Z" />
+    <path
+        android:fillColor="#19C7D4"
+        android:pathData="M84,38 L90,35 L90,57 C93,58 95,61 95,64 C95,68 92,71 88,71 C84,71 81,68 81,64 C81,61 83,58 86,57 Z" />
+
+    <!-- Head -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#19C7D4"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:pathData="M54,59 A13,13 0,1 1,53.99 59" />
+
+    <!-- Inclusive / bridge body mark -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#0B78E3"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M16,91 C23,73 37,72 54,91 C71,72 85,73 92,91" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#19C7D4"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:pathData="M31,84 C39,94 46,99 54,99 C62,99 69,94 77,84" />
+</vector>
