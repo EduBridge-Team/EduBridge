@@ -64,6 +64,12 @@ android {
     }
 }
 
+dependencies {
+    // Use the AndroidX splash API on all supported Android versions so there is
+    // exactly one native splash screen before Flutter renders the real UI.
+    implementation("androidx.core:core-splashscreen:1.0.1")
+}
+
 flutter {
     source = "../.."
 }
