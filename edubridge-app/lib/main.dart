@@ -1,4 +1,6 @@
 // main.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
@@ -7,7 +9,6 @@ import 'services/overlay_visibility_service.dart';
 import 'services/user_settings_sync_service.dart';
 import 'services/websocket_service.dart';
 import 'screens/notifications_screen.dart';
-import 'screens/splash_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -17,60 +18,36 @@ import 'widgets/accessibility/voice_mic_overlay.dart';
 import 'widgets/notification_snackbar.dart';
 import 'widgets/pet_assistant_overlay.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const EduBridgeBootstrap());
+
+  // Keep Android's native system splash visible while the local startup state
+  // is prepared. Flutter does not render a second splash screen anymore.
+  await Future.wait([
+    loadSavedThemeMode(),
+    ApiService.initializeAuthState(),
+    AccessibilityService.instance.load(),
+    OverlayVisibilityService.initialize(),
+  ]);
+
+  final token = await ApiService.getToken();
+  final initialHome = token == null
+      ? const WelcomeScreen()
+      : homeScreenForRole();
+
+  runApp(EduBridgeApp(initialHome: initialHome));
+
+  // Network-backed startup work runs after the first real app frame so the
+  // native splash transitions directly to the destination screen.
+  if (token != null) {
+    unawaited(_startAuthenticatedServices(token));
+  }
 }
 
-class EduBridgeBootstrap extends StatefulWidget {
-  const EduBridgeBootstrap({super.key});
-
-  @override
-  State<EduBridgeBootstrap> createState() => _EduBridgeBootstrapState();
-}
-
-class _EduBridgeBootstrapState extends State<EduBridgeBootstrap> {
-  late final Future<Widget> _initialHomeFuture = _initializeApp();
-
-  Future<Widget> _initializeApp() async {
-    await loadSavedThemeMode();
-    await ApiService.initializeAuthState();
-    await AccessibilityService.instance.load();
-    await OverlayVisibilityService.initialize();
-
-    final token = await ApiService.getToken();
-    if (token == null) {
-      return const WelcomeScreen();
-    }
-
-    // Remote preferences override local defaults when available.
-    // If the backend is offline, the service keeps the locally saved values.
-    await UserSettingsSyncService.syncFromServer();
-
-    WebSocketService().connect(token);
-    await NotificationListenerService.instance.initialize();
-    return homeScreenForRole();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Widget>(
-      future: _initialHomeFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'EduBridge',
-            home: SplashScreen(),
-          );
-        }
-
-        return EduBridgeApp(
-          initialHome: snapshot.data ?? const WelcomeScreen(),
-        );
-      },
-    );
-  }
+Future<void> _startAuthenticatedServices(String token) async {
+  await UserSettingsSyncService.syncFromServer();
+  WebSocketService().connect(token);
+  await NotificationListenerService.instance.initialize();
 }
 
 class EduBridgeApp extends StatelessWidget {
