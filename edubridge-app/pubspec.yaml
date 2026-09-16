@@ -31,10 +31,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # أصول التطبيق (شعار جسر)
+  # أصول الهوية المستخدمة فعلياً داخل التطبيق
   assets:
-    - assets/icon.png
-    - assets/iconV.png
     - assets/brand_icon.png
     - assets/brand_logo.png
-    
