@@ -40,6 +40,7 @@ cd "$API"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_parent_features.sql')); echo 'db-ok';"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_board_cards.sql')); echo 'db-cards-ok';"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_conversations.sql')); echo 'db-chat-ok';"
+php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_user_settings.sql')); echo 'db-settings-ok';"
 
 # 3) مسح إعدادات Laravel المؤقتة (config + routes + cache) حتى تُحمَّل المسارات الجديدة
 echo "==> (3/4) مسح إعدادات Laravel والمسارات..."
