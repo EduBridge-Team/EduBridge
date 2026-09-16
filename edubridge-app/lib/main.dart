@@ -150,5 +150,6 @@ Future<Widget> _initialScreen() async {
   if (token == null) {
     return const WelcomeScreen();
   }
+  await UserSettingsSyncService.syncFromServer();
   return homeScreenForRole();
 }
