@@ -16,7 +16,8 @@
     <application
         android:label="EduBridge"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/edubridge_launcher"
+        android:roundIcon="@drawable/edubridge_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
