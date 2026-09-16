@@ -96,7 +96,10 @@ export default function TopBar() {
     <header className={`topbar ${user ? `topbar-${user.role}` : 'topbar-guest'}`}>
       {/* الشعار والاسم — بداية الشريط (يمين في RTL) */}
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <img className="brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
+        <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
+          <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
+          <span className="brand-wordmark">EduBridge</span>
+        </div>
       </div>
 
       {/* زر الهمبرغر — يظهر على الشاشات الصغيرة */}
