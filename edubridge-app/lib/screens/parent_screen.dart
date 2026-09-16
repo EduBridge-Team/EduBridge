@@ -88,11 +88,11 @@ class _ParentScreenState extends State<ParentScreen> {
   Color _getStatusColor(String? status) {
     switch (status) {
       case 'evaluated':
-        return AppColors.green;
+        return AppColors.blue;
       case 'assigned':
         return AppColors.teal;
       default:
-        return AppColors.orange;
+        return const Color.fromARGB(255, 90, 151, 250);
     }
   }
 
@@ -575,7 +575,7 @@ class _ParentScreenState extends State<ParentScreen> {
                     height: 44,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.purple,
+                        backgroundColor: const Color.fromARGB(255, 109, 191, 212),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
