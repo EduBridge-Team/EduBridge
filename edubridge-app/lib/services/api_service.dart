@@ -1,6 +1,5 @@
 // lib/services/api_service.dart
-// طبقة الاتصال بالـ API - كاملة ومتكاملة مع جميع التحديثات الجديدة
-// ✅ إصلاح: معالجة أخطاء موحّدة تحافظ على رسائل الخادم الفعلية
+// طبقة الاتصال بالـ API - كاملة ومتكاملة مع جميع التحديثات
 
 import 'dart:convert';
 import 'dart:io';
@@ -8,23 +7,21 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
+import 'websocket_service.dart';
+import 'notification_listener_service.dart';
 
 class ApiService {
-  /// Drives UI that should only be visible while a user is signed in.
   static final ValueNotifier<bool> isAuthenticated = ValueNotifier(false);
-   static final ValueNotifier<String?> userRole = ValueNotifier<String?>(null);
-
+  static final ValueNotifier<String?> userRole = ValueNotifier<String?>(null);
 
   static Future<void> initializeAuthState() async {
     isAuthenticated.value = await getToken() != null;
-     final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     userRole.value = prefs.getString('role');
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  ✅ معالج أخطاء موحّد
-  //  - يحوّل أخطاء الشبكة إلى رسالة عربية واضحة
-  //  - يحافظ على رسائل الخادم الحقيقية (صلاحيات، تحقق، ...)
+  //  معالج أخطاء موحّد
   // ═══════════════════════════════════════════════════════════
   static Never _handleError(Object error) {
     if (error is SocketException) {
@@ -37,13 +34,11 @@ class ApiService {
       throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
     }
     if (error is Exception) {
-      // احتفظ بالخطأ الأصلي (رسالة الخادم، رفض الصلاحية، ...)
       throw error;
     }
     throw Exception('حدث خطأ غير متوقع');
   }
 
-  /// يقرأ JSON من استجابة HTTP بأمان
   static Map<String, dynamic> _decodeBody(http.Response res) {
     if (res.body.isEmpty) return {};
     try {
@@ -94,13 +89,16 @@ class ApiService {
   }
 
   static Future<void> logout() async {
+    WebSocketService().disconnect();
+    NotificationListenerService.instance.dispose();
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('role');
     await prefs.remove('name');
     await prefs.remove('userId');
     isAuthenticated.value = false;
-     userRole.value = null;
+    userRole.value = null;
   }
 
   // ===== دوال المصادقة (Auth) =====
@@ -120,7 +118,14 @@ class ApiService {
         if (data['user'] != null) {
           await saveUserData(data['user']);
         }
-        return null; // نجاح
+
+        final token = data['token'];
+        if (token != null) {
+          WebSocketService().connect(token);
+          await NotificationListenerService.instance.initialize();
+        }
+
+        return null;
       }
       return data['error'] ?? 'فشل تسجيل الدخول';
     } catch (e) {
@@ -147,7 +152,7 @@ class ApiService {
       final data = _decodeBody(res);
 
       if (res.statusCode == 201) {
-        return null; // نجاح
+        return null;
       }
       return data['error'] ?? 'فشل إنشاء الحساب';
     } catch (e) {
@@ -269,7 +274,8 @@ class ApiService {
         request.fields['special_needs'] = specialNeeds;
       }
       if (preferredLearningStyle != null) {
-        request.fields['preferred_learning_style'] = preferredLearningStyle;
+        request.fields['preferred_learning_style'] =
+            preferredLearningStyle;
       }
       if (strengths != null && strengths.isNotEmpty) {
         request.fields['strengths'] = jsonEncode(strengths);
@@ -280,7 +286,8 @@ class ApiService {
 
       if (idCardFile != null && await idCardFile.exists()) {
         request.files.add(
-          await http.MultipartFile.fromPath('id_card', idCardFile.path),
+          await http.MultipartFile.fromPath(
+              'id_card', idCardFile.path),
         );
       }
       if (birthCertFile != null && await birthCertFile.exists()) {
@@ -427,7 +434,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getLessonDetails(int lessonId) async {
+  static Future<Map<String, dynamic>?> getLessonDetails(
+      int lessonId) async {
     try {
       final res = await authGet('/lessons/$lessonId');
       final data = _decodeBody(res);
@@ -461,7 +469,8 @@ class ApiService {
         request.fields['content'] = content.trim();
       }
       if (disabilityTypeId != null) {
-        request.fields['disability_type_id'] = disabilityTypeId.toString();
+        request.fields['disability_type_id'] =
+            disabilityTypeId.toString();
       }
       if (targetType != null) {
         request.fields['target_type'] = targetType;
@@ -511,7 +520,8 @@ class ApiService {
 
   // ===== دوال التقدم (Progress) =====
 
-  static Future<Map<String, dynamic>?> getChildProgress(int childId) async {
+  static Future<Map<String, dynamic>?> getChildProgress(
+      int childId) async {
     try {
       final res = await authGet('/progress/child/$childId');
       final data = _decodeBody(res);
@@ -591,17 +601,13 @@ class ApiService {
   static Future<void> markNotificationRead(int notificationId) async {
     try {
       await authPut('/notifications/$notificationId/read', {});
-    } catch (_) {
-      // تجاهل — الإشعار سيُعلَّم كمقروء عند أول فرصة تالية
-    }
+    } catch (_) {}
   }
 
   static Future<void> markAllNotificationsRead() async {
     try {
       await authPost('/notifications/read-all', {});
-    } catch (_) {
-      // تجاهل
-    }
+    } catch (_) {}
   }
 
   // ===== دوال المحادثات (Conversations) =====
@@ -621,7 +627,8 @@ class ApiService {
 
   static Future<List<dynamic>> getMessages(int conversationId) async {
     try {
-      final res = await authGet('/conversations/$conversationId/messages');
+      final res =
+          await authGet('/conversations/$conversationId/messages');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['messages'] ?? [];
@@ -647,7 +654,8 @@ class ApiService {
     }
   }
 
-  static Future<int> createConversation(int otherUserId, String subject) async {
+  static Future<int> createConversation(
+      int otherUserId, String subject) async {
     try {
       final res = await authPost('/conversations', {
         'other_user_id': otherUserId,
@@ -744,8 +752,8 @@ class ApiService {
 
   static Future<List<dynamic>> searchLessons(String query) async {
     try {
-      final res =
-          await authGet('/lessons/search?q=${Uri.encodeComponent(query)}');
+      final res = await authGet(
+          '/lessons/search?q=${Uri.encodeComponent(query)}');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['lessons'] ?? [];
@@ -767,8 +775,6 @@ class ApiService {
         final status = verification is Map
             ? verification['verification_status'] as String?
             : null;
-        // الخادم يسمّي الحالة المقبولة "verified" بينما الواجهة تستخدم
-        // "approved" — نبقي العقد كما هو للواجهة.
         return status == 'verified' ? 'approved' : (status ?? 'none');
       }
       return 'none';
@@ -784,7 +790,8 @@ class ApiService {
     try {
       final token = await getToken();
       if (token == null || token.isEmpty) {
-        throw Exception('انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً');
+        throw Exception(
+            'انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً');
       }
       if (!await idImage.exists()) {
         throw Exception('ملف الهوية غير موجود، يرجى اختياره مجدداً');
@@ -795,7 +802,8 @@ class ApiService {
         Uri.parse('${Config.baseUrl}/uploads'),
       )
         ..headers['Authorization'] = 'Bearer $token'
-        ..files.add(await http.MultipartFile.fromPath('file', idImage.path));
+        ..files.add(
+            await http.MultipartFile.fromPath('file', idImage.path));
 
       final uploadResponse = await uploadRequest.send();
       final uploadBody = await uploadResponse.stream.bytesToString();
@@ -849,7 +857,8 @@ class ApiService {
 
   static Future<bool> approveVerification(int requestId) async {
     try {
-      final res = await authPost('/admin/verifications/$requestId/approve', {});
+      final res = await authPost(
+          '/admin/verifications/$requestId/approve', {});
       return res.statusCode == 200;
     } catch (e) {
       return false;
@@ -858,7 +867,8 @@ class ApiService {
 
   static Future<bool> rejectVerification(int requestId) async {
     try {
-      final res = await authPost('/admin/verifications/$requestId/reject', {});
+      final res =
+          await authPost('/admin/verifications/$requestId/reject', {});
       return res.statusCode == 200;
     } catch (e) {
       return false;
@@ -867,8 +877,8 @@ class ApiService {
 
   static Future<List<dynamic>> searchByIdentity(String query) async {
     try {
-      final res =
-          await authGet('/admin/search?q=${Uri.encodeComponent(query)}');
+      final res = await authGet(
+          '/admin/search?q=${Uri.encodeComponent(query)}');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['results'] ?? [];
@@ -1053,7 +1063,8 @@ class ApiService {
 
   static Future<String> getChildPlanStatus(int childId) async {
     try {
-      final res = await authGet('/ministry/approvals/child/$childId/status');
+      final res = await authGet(
+          '/ministry/approvals/child/$childId/status');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['status'] ?? 'none';
@@ -1100,27 +1111,433 @@ class ApiService {
       return null;
     }
   }
-  /// حذف الحساب نهائياً — لا يمكن التراجع
-static Future<void> deleteAccount() async {
-  try {
-    final res = await authDelete('/me');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200 || res.statusCode == 204) {
-      // مسح الجلسة المحلية
-      await logout();
-      return;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ✅ الإضافات الجديدة
+  // ═══════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════
+  //  الواجبات (Homework)
+  // ═══════════════════════════════════════════════════════════
+  static Future<List<dynamic>> getHomeworks({int? childId}) async {
+    try {
+      final path = childId != null
+          ? '/homeworks?child_id=$childId'
+          : '/homeworks';
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['homeworks'] ?? [];
+      return [];
+    } catch (e) {
+      return [];
     }
-    throw Exception(data['error'] ?? 'تعذّر حذف الحساب');
-  } on SocketException {
-    throw Exception('تعذّر الاتصال بالسيرفر');
-  } on http.ClientException {
-    throw Exception('تعذّر الاتصال بالسيرفر');
-  } on FormatException {
-    throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
+  }
+
+  static Future<Map<String, dynamic>?> createHomework({
+    required String title,
+    required String description,
+    required DateTime dueDate,
+    String? subject,
+    required List<int> assignedChildIds,
+    List<File>? attachments,
+  }) async {
+    try {
+      final token = await getToken();
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Config.baseUrl}/homeworks'),
+      )..headers['Authorization'] = 'Bearer $token';
+
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['due_date'] = dueDate.toIso8601String();
+      if (subject != null) request.fields['subject'] = subject;
+      request.fields['assigned_child_ids'] = jsonEncode(assignedChildIds);
+
+      if (attachments != null) {
+        for (final file in attachments) {
+          if (await file.exists()) {
+            request.files.add(
+              await http.MultipartFile.fromPath(
+                  'attachments', file.path),
+            );
+          }
+        }
+      }
+
+      final response = await request.send();
+      final body = await response.stream.bytesToString();
+      final data = body.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(body) as Map<String, dynamic>);
+
+      if (response.statusCode == 201) return data['homework'];
+      throw Exception(data['error'] ?? 'فشل إنشاء الواجب');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<Map<String, dynamic>?> submitHomework({
+    required int homeworkId,
+    required int childId,
+    String? textAnswer,
+    File? file, List<File>? files,
+  }) async {
+    try {
+      final token = await getToken();
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Config.baseUrl}/homeworks/$homeworkId/submit'),
+      )..headers['Authorization'] = 'Bearer $token';
+
+      request.fields['child_id'] = childId.toString();
+      if (textAnswer != null) {
+        request.fields['text_answer'] = textAnswer;
+      }
+      if (file != null && await file.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('file', file.path),
+        );
+      }
+
+      final response = await request.send();
+      final body = await response.stream.bytesToString();
+      final data = body.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(body) as Map<String, dynamic>);
+
+      if (response.statusCode == 201) return data['submission'];
+      throw Exception(data['error'] ?? 'فشل تسليم الواجب');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<bool> gradeHomework({
+    required int submissionId,
+    required int grade,
+    String? feedback,
+  }) async {
+    try {
+      final res = await authPut(
+          '/homeworks/submissions/$submissionId/grade', {
+        'grade': grade,
+        'feedback': feedback,
+      });
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  العلاج النفسي (Therapy)
+  // ═══════════════════════════════════════════════════════════
+  static Future<List<dynamic>> getTherapySessions({int? childId}) async {
+    try {
+      final path = childId != null
+          ? '/therapy/sessions?child_id=$childId'
+          : '/therapy/sessions';
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['sessions'] ?? [];
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createTherapySession({
+    required int childId,
+    required String type,
+    required DateTime scheduledAt,
+    int durationMinutes = 45,
+    String? goals,
+  }) async {
+    try {
+      final res = await authPost('/therapy/sessions', {
+        'child_id': childId,
+        'type': type,
+        'scheduled_at': scheduledAt.toIso8601String(),
+        'duration_minutes': durationMinutes,
+        'goals': goals,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 201) return data['session'];
+      throw Exception(data['error'] ?? 'فشل إنشاء الجلسة');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<bool> completeTherapySession({
+    required int sessionId,
+    required String notes,
+    required String recommendations,
+    int? moodRating,
+    List<String>? tags,
+  }) async {
+    try {
+      final res = await authPut(
+          '/therapy/sessions/$sessionId/complete', {
+        'notes': notes,
+        'recommendations': recommendations,
+        'mood_rating': moodRating,
+        'tags': tags,
+      });
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  التقارير الأسبوعية (Weekly Reports)
+  // ═══════════════════════════════════════════════════════════
+  static Future<Map<String, dynamic>?> getWeeklyReport({
+    required int childId,
+    DateTime? weekStart,
+  }) async {
+    try {
+      final week = weekStart ?? _lastMonday();
+      final res = await authGet(
+        '/reports/weekly?child_id=$childId&week_start=${week.toIso8601String()}',
+      );
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['report'];
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<List<dynamic>> getChildWeeklyReports(int childId) async {
+    try {
+      final res = await authGet('/reports/weekly/child/$childId');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['reports'] ?? [];
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static DateTime _lastMonday() {
+    final now = DateTime.now();
+    return now.subtract(Duration(days: now.weekday - 1));
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  فريق الرعاية (Care Team)
+  // ═══════════════════════════════════════════════════════════
+  static Future<Map<String, dynamic>?> getCareTeam(int childId) async {
+    try {
+      final res = await authGet('/children/$childId/care-team');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['care_team'];
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<bool> addCareTeamMember({
+    required int childId,
+    required int userId,
+    required String role,
+    String? specialty,
+    String? subject,
+  }) async {
+    try {
+      final res = await authPost('/children/$childId/care-team', {
+        'user_id': userId,
+        'role': role,
+        'specialty': specialty,
+        'subject': subject,
+      });
+      return res.statusCode == 200 || res.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> removeCareTeamMember({
+    required int childId,
+    required int userId,
+  }) async {
+    try {
+      final res = await authDelete(
+          '/children/$childId/care-team/$userId');
+      return res.statusCode == 200 || res.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  تقييم الخطة (Plan Evaluation)
+  // ═══════════════════════════════════════════════════════════
+  static Future<bool> evaluatePlanAppropriateness({
+    required int childId,
+    required int planId,
+    required bool isAppropriate,
+    String? notesForTeacher,
+    List<String>? recommendedChanges,
+  }) async {
+    try {
+      final res = await authPost('/plans/$planId/evaluate', {
+        'child_id': childId,
+        'is_plan_appropriate': isAppropriate,
+        'notes_for_teacher': notesForTeacher,
+        'recommended_changes': recommendedChanges,
+      });
+      return res.statusCode == 200 || res.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  إحصائيات الوزارة (Ministry Statistics)
+  // ═══════════════════════════════════════════════════════════
+  static Future<Map<String, dynamic>?> getMinistryStatistics() async {
+    try {
+      final res = await authGet('/ministry/statistics');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data;
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getMinistryProgressStats() async {
+    try {
+      final res = await authGet('/ministry/statistics/progress');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data;
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+// ═══════════════════════════════════════════════════════════
+//  طلبات الجلسات النفسية (Therapy Requests)
+// ═══════════════════════════════════════════════════════════
+
+/// ولي الأمر يُرسل طلب جلسة نفسية
+static Future<Map<String, dynamic>?> createTherapyRequest({
+  required int childId,
+  required String reason,
+  String? description,
+  String urgency = 'medium',
+}) async {
+  try {
+    final res = await authPost('/therapy/requests', {
+      'child_id': childId,
+      'reason': reason,
+      'description': description,
+      'urgency': urgency,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return data['request'];
+    }
+    throw Exception(data['error'] ?? 'فشل إرسال الطلب');
   } catch (e) {
-    if (e is Exception) rethrow;
-    throw Exception('تعذّر حذف الحساب');
+    _handleError(e);
   }
 }
 
+/// جلب الطلبات (مع فلترة)
+static Future<List<dynamic>> getTherapyRequests({
+  int? childId,
+  String? status,
+}) async {
+  try {
+    final params = <String>[];
+    if (childId != null) params.add('child_id=$childId');
+    if (status != null) params.add('status=$status');
+    final path = params.isEmpty
+        ? '/therapy/requests'
+        : '/therapy/requests?${params.join('&')}';
+
+    final res = await authGet(path);
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) {
+      return data['requests'] ?? [];
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+/// هل لدى الطفل طلب قيد المراجعة؟ (للبادج)
+static Future<bool> hasPendingTherapyRequest(int childId) async {
+  try {
+    final res =
+        await authGet('/therapy/requests/child/$childId/pending');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) {
+      return data['has_pending'] == true;
+    }
+    return false;
+  } catch (_) {
+    return false;
+  }
+}
+
+/// المختص يُحدّد موعد الجلسة + رابط Meeting
+static Future<bool> scheduleTherapyRequest({
+  required int requestId,
+  required DateTime scheduledAt,
+  required String meetingLink,
+  String? notes,
+}) async {
+  try {
+    final res = await authPut('/therapy/requests/$requestId/schedule', {
+      'scheduled_at': scheduledAt.toIso8601String(),
+      'meeting_link': meetingLink,
+      'specialist_notes': notes,
+    });
+    return res.statusCode == 200;
+  } catch (e) {
+    return false;
+  }
+}
+
+/// إلغاء الطلب (من الأب أو المختص)
+static Future<bool> cancelTherapyRequest(int requestId) async {
+  try {
+    final res =
+        await authPut('/therapy/requests/$requestId/cancel', {});
+    return res.statusCode == 200;
+  } catch (e) {
+    return false;
+  }
+}
+  // ===== حذف الحساب =====
+  static Future<void> deleteAccount() async {
+    try {
+      final res = await authDelete('/me');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        await logout();
+        return;
+      }
+      throw Exception(data['error'] ?? 'تعذّر حذف الحساب');
+    } on SocketException {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    } on http.ClientException {
+      throw Exception('تعذّر الاتصال بالسيرفر');
+    } on FormatException {
+      throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('تعذّر حذف الحساب');
+    }
+  }
+  
 }

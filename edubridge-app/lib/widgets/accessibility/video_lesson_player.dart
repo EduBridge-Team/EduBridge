@@ -51,7 +51,6 @@ class _VideoLessonPlayerState extends State<VideoLessonPlayer> {
       _controller = source;
       await _controller!.initialize();
 
-      // بطء السرعة للإعاقة الذهنية
       if (_profile.slowSpeech) {
         await _controller!.setPlaybackSpeed(0.75);
       }
@@ -61,13 +60,11 @@ class _VideoLessonPlayerState extends State<VideoLessonPlayer> {
       if (!mounted) return;
       setState(() => _initialized = true);
 
-      // للأصمّ: فعّل الترجمات تلقائياً
       if (_profile.type == DisabilityType.deaf ||
           _profile.visualAlertsEnabled) {
         setState(() => _showSubtitles = true);
       }
 
-      // للأعمى: وصف صوتي تلقائي
       if (_profile.type == DisabilityType.blind) {
         _startAudioDescription();
       }
@@ -86,7 +83,6 @@ class _VideoLessonPlayerState extends State<VideoLessonPlayer> {
   void _onVideoProgress() {
     if (_controller == null || !mounted) return;
 
-    // التكرار التلقائي للإعاقة الذهنية
     if (_controller!.value.position >= _controller!.value.duration &&
         _profile.type == DisabilityType.mildIntellectual) {
       _controller!.seekTo(Duration.zero);

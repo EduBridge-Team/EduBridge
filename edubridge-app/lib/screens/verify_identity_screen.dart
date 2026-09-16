@@ -130,7 +130,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> with Widget
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.hourglass_top, size: 72, color: AppColors.orange),
+                const Icon(Icons.hourglass_top, size: 72, color: AppColors.tealDeep),
                 const SizedBox(height: 16),
                 Text(
                   'طلبك قيد المراجعة',
@@ -175,7 +175,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> with Widget
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cancel, size: 72, color: Colors.red),
+                const Icon(Icons.cancel, size: 72, color: AppColors.teal),
                 const SizedBox(height: 16),
                 Text(
                   'تم رفض طلب التوثيق',
@@ -310,7 +310,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> with Widget
               child: ElevatedButton(
                 onPressed: _loading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.tealDeep,
                 ),
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)

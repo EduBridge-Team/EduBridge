@@ -1,20 +1,15 @@
-// هوية «جسر التعليمي» — نظام التصميم المشترك للتطبيق
-// لوحة ألوان مستوحاة من شعار Edu Bridge:
-// أزرق ملكي عميق + تركوازي مشرق + خلفيات بيضاء مزرقة
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// وضع الثيم الحالي (فاتح/ليلي) — تستمع له MaterialApp وتتبدل فوراً
 final ValueNotifier<ThemeMode> jisrThemeMode = ValueNotifier(ThemeMode.light);
 
-/// تحميل الوضع المحفوظ عند تشغيل التطبيق
 Future<void> loadSavedThemeMode() async {
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('dark_mode') ?? false;
   jisrThemeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
 }
 
-/// تبديل الوضع وحفظ الاختيار محلياً
 Future<void> toggleThemeMode() async {
   final isDark = jisrThemeMode.value != ThemeMode.dark;
   jisrThemeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
@@ -22,13 +17,9 @@ Future<void> toggleThemeMode() async {
   await prefs.setBool('dark_mode', isDark);
 }
 
-/// ألوان الهوية — مصدر واحد لكل الشاشات
 class AppColors {
   AppColors._();
 
-  // ═══════════════════════════════════════════════════════
-  //  الألوان الأساسية (من الشعار الجديد)
-  // ═══════════════════════════════════════════════════════
 
   /// اللون الأساسي — أزرق ملكي عميق
   static const navy = Color(0xFF1769C2);
@@ -44,9 +35,6 @@ class AppColors {
   /// تركوازي فاتح (لمسات)
   static const lightTeal = Color(0xFF69D4CA);
 
-  // ═══════════════════════════════════════════════════════
-  //  الألوان الدلالية (وظيفية — تبقى كما هي)
-  // ═══════════════════════════════════════════════════════
 
   static const green = Color(0xFF57B25A);       // نجاح
   static const greenDeep = Color(0xFF3F9142);
@@ -54,37 +42,23 @@ class AppColors {
   static const orangeDeep = Color(0xFFD96E17);
   static const yellow = Color(0xFFFFC23C);      // تحذير خفيف
   static const pink = Color(0xFFF06C8B);        // لمسة مميزة
-  static const red = Color(0xFFE53935);         // خطأ
+  static const red = Color(0xFFE53935);    
+  static const purple = Color(0xFF8B6DD4);     // خطأ
 
-  // ═══════════════════════════════════════════════════════
-  //  الخلفيات (بيضاء مزرقة بدل الكريمي)
-  // ═══════════════════════════════════════════════════════
 
-  /// الخلفية العامة — أبيض مزرَق
   static const cream = Color(0xFFF8FCFF);
 
-  /// خلفيات خفيفة جداً — للتلوين الداخلي
   static const tintBlue = Color(0xFFE9F5FF);    // أزرق فاتح جداً
   static const tintTeal = Color(0xFFE4F9FB);    // تركوازي فاتح جداً
   static const tintGreen = Color(0xFFE5F4E5);
   static const tintOrange = Color(0xFFFFF0E0);
   static const tintYellow = Color(0xFFFFF8E1);
 
-  // ═══════════════════════════════════════════════════════
-  //  النصوص والحدود (زرقاء بدل الرمادي الدافئ)
-  // ═══════════════════════════════════════════════════════
 
-  /// نص داكن — أزرق مزرق
   static const ink = Color(0xFF183F6B);
   static const muted = Color(0xFF6884A4);
 
-  /// حدود — أزرق فاتح جداً
   static const lineCool = Color(0xFFD9EBF7);
-
-  // ═══════════════════════════════════════════════════════
-  //  لوحة ألوان متناوبة للأطفال (زرقاء/تركوازية)
-  // ═══════════════════════════════════════════════════════
-
   static const kidPalette = [
     Color(0xFF1769C2), // أزرق ملكي
     Color(0xFF21BFD0), // تركوازي
@@ -93,21 +67,16 @@ class AppColors {
     Color(0xFF119EAE), // تركوازي عميق
   ];
 
-  // ═══════════════════════════════════════════════════════
-  //  تدرّج الهوية للرؤوس — من الشعار (أزرق → تركوازي)
-  // ═══════════════════════════════════════════════════════
-
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     colors: [
-      Color(0xFF0D55AA),
+      Color.fromARGB(255, 7, 56, 111),
       Color(0xFF1769C2),
       Color(0xFF21BFD0),
     ],
   );
 
-  /// تدرّج ثانوي للأزرار الكبيرة (اختياري)
   static const accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -115,7 +84,6 @@ class AppColors {
   );
 }
 
-/// ألوان متكيّفة مع الوضع (فاتح/ليلي) — للنصوص والخلفيات الملوّنة
 class JisrColors {
   final Color heading;
   final Color body;
@@ -178,7 +146,6 @@ class JisrColors {
       Theme.of(context).brightness == Brightness.dark ? dark : light;
 }
 
-/// ثيم التطبيق الموحّد (فاتح)
 ThemeData buildJisrTheme() {
   final base = ThemeData(
     useMaterial3: true,
@@ -192,7 +159,6 @@ ThemeData buildJisrTheme() {
   );
 
   return base.copyWith(
-    // نصوص أكبر قليلاً لسهولة القراءة
     textTheme: base.textTheme.copyWith(
       bodyMedium: const TextStyle(fontSize: 16, color: AppColors.ink),
       titleLarge: const TextStyle(
@@ -202,7 +168,6 @@ ThemeData buildJisrTheme() {
       ),
     ),
 
-    // شريط علوي شفاف — يُستبدل بتدرّج في الشاشات عبر flexibleSpace
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
@@ -215,7 +180,6 @@ ThemeData buildJisrTheme() {
       ),
     ),
 
-    // بطاقات بيضاء بحوافّ دائرية وظل ناعم أزرق
     cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 0,
@@ -253,7 +217,6 @@ ThemeData buildJisrTheme() {
       ),
     ),
 
-    // حقول إدخال بيضاء دائرية الحواف
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
@@ -421,7 +384,6 @@ ThemeData buildJisrDarkTheme() {
   );
 }
 
-/// ثيم عالي التباين للعمى / ضعف البصر الشديد
 ThemeData buildHighContrastTheme() {
   final base = buildJisrTheme();
 
@@ -480,7 +442,6 @@ ThemeData buildHighContrastTheme() {
   );
 }
 
-/// شريط علوي بتدرّج الهوية — بديل موحّد عن AppBar الافتراضي
 class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;

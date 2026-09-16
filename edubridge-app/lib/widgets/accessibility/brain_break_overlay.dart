@@ -7,9 +7,6 @@ import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 
-// ═══════════════════════════════════════════════════════════
-//  BrainBreakScheduler — مجدول الفواصل الذهنية
-// ═══════════════════════════════════════════════════════════
 class BrainBreakScheduler extends StatefulWidget {
   final Widget child;
   const BrainBreakScheduler({super.key, required this.child});

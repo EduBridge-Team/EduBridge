@@ -202,9 +202,6 @@ class _VoiceMicOverlayState extends State<VoiceMicOverlay> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  زر المايك
-// ═══════════════════════════════════════════════════════
 class _MicButton extends StatelessWidget {
   final VoiceCommandService service;
   const _MicButton({required this.service});
@@ -246,9 +243,6 @@ class _MicButton extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  فقاعة فوق الزر تُظهر ما يسمعه المايك + الرد
-// ═══════════════════════════════════════════════════════
 class _ListeningBubble extends StatelessWidget {
   final VoiceCommandService service;
   const _ListeningBubble({required this.service});

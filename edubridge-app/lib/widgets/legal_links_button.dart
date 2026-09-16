@@ -5,10 +5,6 @@ import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
 
-/// مجموعة أزرار قانونية موحّدة:
-/// - سياسة الخصوصية (رابط خارجي)
-/// - طلب حذف الحساب (رابط خارجي)
-/// - حذف الحساب نهائياً (تنفيذ فعلي داخل التطبيق)
 class LegalLinksButton extends StatelessWidget {
   const LegalLinksButton({super.key});
 
@@ -26,9 +22,6 @@ class LegalLinksButton extends StatelessWidget {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  حذف الحساب نهائياً
-  // ═══════════════════════════════════════════════════════
   Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -57,10 +50,8 @@ class LegalLinksButton extends StatelessWidget {
 
       if (!context.mounted) return;
 
-      // أغلق نافذة التحميل
       Navigator.of(context).pop();
 
-      // رسالة نجاح
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم حذف حسابك بنجاح'),
@@ -68,7 +59,6 @@ class LegalLinksButton extends StatelessWidget {
         ),
       );
 
-      // توجيه لشاشة الترحيب
       await Future.delayed(const Duration(milliseconds: 800));
       if (!context.mounted) return;
 
@@ -79,7 +69,6 @@ class LegalLinksButton extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
 
-      // أغلق نافذة التحميل
       Navigator.of(context).pop();
 
       final msg = e.toString().replaceFirst('Exception: ', '');
@@ -164,9 +153,6 @@ class LegalLinksButton extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  نافذة تأكيد حذف الحساب — مع تأكيد كتابي
-// ═══════════════════════════════════════════════════════
 class _DeleteAccountDialog extends StatefulWidget {
   const _DeleteAccountDialog();
 

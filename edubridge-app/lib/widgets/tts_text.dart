@@ -1,9 +1,6 @@
-// Widget محسّن للنصوص — يقرأ الصوت عند النقر إذا كان الوضع مفعّلاً
 import 'package:flutter/material.dart';
 import '../services/tts_service.dart';
 
-/// نص عادي + قراءة صوتية عند النقر
-/// الاستخدام: TtsText('النص هنا')
 class TtsText extends StatelessWidget {
   final String text;
   final TextStyle? style;
@@ -27,7 +24,6 @@ class TtsText extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: TtsService.instance.tapToRead,
       builder: (context, readingEnabled, _) {
-        // الوضع العادي: نص عادي بدون أي تدخل
         if (!readingEnabled || !enableTap) {
           return Text(
             text,
@@ -38,7 +34,6 @@ class TtsText extends StatelessWidget {
           );
         }
 
-        // وضع القراءة: النقر يقرأ النص + إبراز بصري
         return GestureDetector(
           onTap: () => TtsService.instance.speakLine(text),
           child: ValueListenableBuilder<String?>(

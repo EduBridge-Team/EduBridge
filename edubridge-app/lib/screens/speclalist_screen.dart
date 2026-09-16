@@ -1,4 +1,4 @@
-// شاشة المختص — التقييم، تعيين المعلم، ومتابعة التقدّم
+// شاشة المختص — التقييم + العلاج النفسي + تقييم الخطة + قراءة تقرير المعلم
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,10 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
+import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../utils/navigation.dart';
+import 'plan_evaluation_screen.dart';
+import 'therapy_requests_screen.dart';
+import 'therapy_sessions_screen.dart';
 import 'welcome_screen.dart';
 import 'evaluation_sheet.dart';
 import 'support_sheet.dart';
@@ -18,6 +22,8 @@ import 'child_progress_screen.dart';
 import 'chats_screen.dart';
 import 'verify_identity_screen.dart';
 import 'notifications_screen.dart';
+import 'weekly_report_screen.dart';                    // ✅ جديد
+import 'create_specialist_progress_screen.dart';       // ✅ جديد
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -27,7 +33,8 @@ class SpecialistDashboardScreen extends StatefulWidget {
       _SpecialistDashboardScreenState();
 }
 
-class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
+class _SpecialistDashboardScreenState
+    extends State<SpecialistDashboardScreen> {
   int _tabIndex = 0;
 
   List<Map<String, dynamic>> _rows = [];
@@ -38,17 +45,14 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   String? _error;
   int? _approvingId;
   bool _adding = false;
-  int _unreadCount = 0;
   String _searchQuery = '';
 
-  // ✅ لضمان ظهور نافذة التوثيق مرة واحدة فقط
   bool _verificationDialogShown = false;
 
   @override
   void initState() {
     super.initState();
     _load().then((_) => _checkAndShowVerificationDialog());
-    _loadNotificationsCount();
   }
 
   @override
@@ -77,7 +81,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         progress.where((r) => r['status'] == 'in_progress').length;
     final doneToday = progress
         .where((r) =>
-            r['status'] == 'done' && _isToday(r['completed_at']?.toString()))
+            r['status'] == 'done' &&
+            _isToday(r['completed_at']?.toString()))
         .length;
     final pct = total > 0 ? ((done / total) * 100).round() : 0;
     final current = progress.cast<Map?>().firstWhere(
@@ -152,23 +157,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  Future<void> _loadNotificationsCount() async {
-    try {
-      final count = await ApiService.getUnreadNotificationsCount();
-      if (mounted) {
-        setState(() => _unreadCount = count);
-      }
-    } catch (_) {}
-  }
-
-  // ✅ نافذة التوثيق المنبثقة
   Future<void> _checkAndShowVerificationDialog() async {
     if (_verificationDialogShown) return;
-
     final isVerified = await ApiService.isVerified();
     if (isVerified) return;
     if (!mounted) return;
-
     _verificationDialogShown = true;
 
     await showDialog(
@@ -233,7 +226,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   icon: const Icon(Icons.verified_user, size: 22),
                   label: const Text(
                     'توثيق الهوية الآن',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -262,7 +256,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     );
   }
 
-  // ✅ دالة فحص التوثيق
   Future<bool> _checkVerification() async {
     if (!await ApiService.isVerified()) {
       if (mounted) {
@@ -320,7 +313,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  // ✅ تفعيل بروفايل الطفل قبل فتح التقييم + الرجوع عند الإغلاق
   void _openEvaluation(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
 
@@ -356,7 +348,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     });
   }
 
-  // ✅ تفعيل بروفايل الطفل قبل عرض التقييم + الرجوع عند الإغلاق
   Future<void> _viewEvaluation(int childId) async {
     final row = _rows.firstWhere(
       (r) => r['child']['id'] == childId,
@@ -394,11 +385,13 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.assessment, size: 48, color: Colors.grey),
+                  const Icon(Icons.assessment,
+                      size: 48, color: Colors.grey),
                   const SizedBox(height: 12),
                   Text(
                     'لا يوجد تقييم مسجل',
-                    style: TextStyle(color: JisrColors.of(context).muted),
+                    style:
+                        TextStyle(color: JisrColors.of(context).muted),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -462,12 +455,17 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 style: TextStyle(color: c.muted),
               ),
             const SizedBox(height: 12),
-            _detailRow('🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
-            _detailRow('🏃 التقييم الحركي', evaluation['motor_assessment']),
-            _detailRow('💚 التقييم العاطفي', evaluation['emotional_assessment']),
-            _detailRow('🤝 التقييم الاجتماعي', evaluation['social_assessment']),
+            _detailRow(
+                '🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
+            _detailRow(
+                '🏃 التقييم الحركي', evaluation['motor_assessment']),
+            _detailRow(
+                '💚 التقييم العاطفي', evaluation['emotional_assessment']),
+            _detailRow(
+                '🤝 التقييم الاجتماعي', evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
-            _detailRow('📚 الخطة التعليمية', evaluation['educational_plan']),
+            _detailRow(
+                '📚 الخطة التعليمية', evaluation['educational_plan']),
             if (evaluation['teaching_methods'] != null) ...[
               const SizedBox(height: 8),
               const Text(
@@ -532,7 +530,64 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    ).then((_) => _loadNotificationsCount());
+    );
+  }
+
+  void _openTherapy() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TherapySessionsScreen(),
+      ),
+    );
+  }
+
+  void _openPlanEvaluation(Map<String, dynamic> row) {
+    final child = row['child'];
+    final planId = child['current_plan_id'] ?? 0;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlanEvaluationScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+          planId: planId is int ? planId : 0,
+        ),
+      ),
+    );
+  }
+
+  // ✅ جديد: قراءة تقرير المعلم الأسبوعي
+  Future<void> _openTeacherReport(Map<String, dynamic> row) async {
+    final child = row['child'];
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WeeklyReportScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+  }
+
+  // ✅ جديد: كتابة تقدّم الطفل بناءً على تقرير المعلم
+  Future<void> _writeProgressBasedOnReport(
+      Map<String, dynamic> row) async {
+    if (!await _checkVerification()) return;
+    if (!mounted) return;
+
+    final child = row['child'];
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateSpecialistProgressScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+    if (result == true) _load();
   }
 
   List get _pendingChildren {
@@ -582,43 +637,51 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 8),
                           ),
-                          onChanged: (v) => setState(() => _searchQuery = v),
+                          onChanged: (v) =>
+                              setState(() => _searchQuery = v),
                         ),
                       ),
                     const Spacer(),
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.notifications_outlined),
-                          onPressed: _openNotifications,
-                          tooltip: 'الإشعارات',
-                        ),
-                        if (_unreadCount > 0)
-                          Positioned(
-                            right: 4,
-                            top: 4,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
-                              child: Text(
-                                '$_unreadCount',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                    ValueListenableBuilder<int>(
+                      valueListenable:
+                          NotificationListenerService.instance.unreadCount,
+                      builder: (context, count, _) {
+                        return Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                  Icons.notifications_outlined),
+                              onPressed: _openNotifications,
+                              tooltip: 'الإشعارات',
                             ),
-                          ),
-                      ],
+                            if (count > 0)
+                              Positioned(
+                                right: 4,
+                                top: 4,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Text(
+                                    '$count',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -655,7 +718,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 child: RefreshIndicator(
                   onRefresh: _load,
                   child: _loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(
+                          child: CircularProgressIndicator())
                       : _error != null
                           ? _buildError()
                           : _buildBody(c),
@@ -666,22 +730,25 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           if (_adding) _buildAddModal(c),
         ],
       ),
-      bottomNavigationBar: _adding ? null : NavigationBar(
-        selectedIndex: _tabIndex,
-        onDestinationSelected: (i) => setState(() => _tabIndex = i),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.insights_outlined),
-            selectedIcon: Icon(Icons.insights),
-            label: 'التقدّم',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
-          ),
-        ],
-      ),
+      bottomNavigationBar: _adding
+          ? null
+          : NavigationBar(
+              selectedIndex: _tabIndex,
+              onDestinationSelected: (i) =>
+                  setState(() => _tabIndex = i),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.insights_outlined),
+                  selectedIcon: Icon(Icons.insights),
+                  label: 'التقدّم',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.menu_book_outlined),
+                  selectedIcon: Icon(Icons.menu_book),
+                  label: 'الدروس',
+                ),
+              ],
+            ),
       floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
               onPressed: () async {
@@ -713,7 +780,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             children: [
               Row(
                 children: [
-                  Image.asset('assets/brand_icon.png', width: 32, height: 32),
+                  Image.asset('assets/brand_icon.png',
+                      width: 32, height: 32),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
@@ -726,8 +794,24 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                   DashboardMenu(
-                    badgeCount: _unreadCount,
                     actions: [
+                      DashboardMenuAction(
+                           id: 'therapy_requests',
+                           label: 'طلبات الدعم النفسي',
+                           icon: Icons.psychology_alt,
+                         onSelected: () => Navigator.push(
+                         context,
+                         MaterialPageRoute(
+                            builder: (_) => const TherapyRequestsScreen(),
+    ),
+  ),
+),
+                    DashboardMenuAction(
+  id: 'therapy',
+  label: 'الجلسات المجدولة',
+  icon: Icons.event_available,
+  onSelected: _openTherapy,
+),
                       DashboardMenuAction(
                         id: 'support',
                         label: 'الدعم الفني',
@@ -908,6 +992,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ─── رأس البطاقة ───
             Row(
               children: [
                 CircleAvatar(
@@ -935,6 +1020,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       if (!context.mounted) return;
 
                       await Navigator.push(
+                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (_) => ChildProgressScreen(
@@ -961,7 +1047,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         if (need.isNotEmpty)
                           Text(
                             'الإعاقة: $need',
-                            style: TextStyle(fontSize: 13, color: c.muted),
+                            style:
+                                TextStyle(fontSize: 13, color: c.muted),
                           ),
                       ],
                     ),
@@ -975,7 +1062,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.orange,
+                        color: AppColors.tealDeep,
                       ),
                     ),
                     if (isPending)
@@ -999,6 +1086,65 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 ),
               ],
             ),
+                        // ✅ بادج: هل يوجد طلب دعم نفسي؟
+            if (child['has_pending_therapy_request'] == true) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.purple.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.purple, width: 2),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.psychology,
+                        color: AppColors.purple, size: 28),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '🧠 طلب دعم نفسي',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppColors.purple,
+                            ),
+                          ),
+                          Text(
+                            'ولي الأمر يطلب جلسة نفسية لهذا الطفل',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purple,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(0, 36),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const TherapyRequestsScreen(),
+                        ),
+                      ),
+                      child: const Text('اعرض',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -1006,8 +1152,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               children: [
                 if (current != null)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: c.tintOrange,
                       borderRadius: BorderRadius.circular(12),
@@ -1020,16 +1166,18 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 if ((stats['inProgress'] as int) > 0)
                   _CountBadge(
                     '${stats['inProgress']} قيد التنفيذ',
-                    color: AppColors.orange,
+                    color: const Color.fromARGB(255, 43, 93, 242),
                   ),
                 if ((stats['done'] as int) > 0)
                   _CountBadge(
                     '${stats['done']} ✅ مكتمل',
-                    color: AppColors.green,
+                    color: AppColors.lightTeal,
                   ),
               ],
             ),
             const SizedBox(height: 12),
+
+            // ─── الصف الأول: تقييم + تعيين + اعتماد ───
             Row(
               children: [
                 Expanded(
@@ -1064,7 +1212,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.green,
+                        backgroundColor: AppColors.lightTeal,
                       ),
                       icon: approving
                           ? const SizedBox(
@@ -1075,22 +1223,88 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.check, color: Colors.white),
+                          : const Icon(Icons.check,
+                              color: Colors.white),
                       label: Text(
                         approving ? 'جارٍ...' : 'اعتماد',
                         style: const TextStyle(fontSize: 14),
                       ),
-                      onPressed: approving ? null : () => _approve(row),
+                      onPressed:
+                          approving ? null : () => _approve(row),
                     ),
                   ),
                 ],
               ],
             ),
+
+            // ✅ الصف الجديد: تقرير المعلم + اكتب تقدّم
+            if (!isPending) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 42),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        foregroundColor: AppColors.tealDeep,
+                        side: const BorderSide(
+                            color: AppColors.tealDeep, width: 1.5),
+                      ),
+                      icon: const Icon(Icons.article, size: 18),
+                      label: const Text(
+                        'تقرير المعلم',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                      onPressed: () => _openTeacherReport(row),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 42),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        backgroundColor: AppColors.lightTeal,
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.edit_note, size: 18),
+                      label: const Text(
+                        'اكتب تقدّم',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                      onPressed: () =>
+                          _writeProgressBasedOnReport(row),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // ✅ زر تقييم الخطة
+            if (!isPending && child['current_plan_id'] != null) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.lightTeal,
+                    side: const BorderSide(color: AppColors.lightTeal),
+                  ),
+                  icon: const Icon(Icons.rate_review),
+                  label: const Text('تقييم الخطة الحالية'),
+                  onPressed: () => _openPlanEvaluation(row),
+                ),
+              ),
+            ],
+
             if (child['assigned_teacher_name'] != null) ...[
               const SizedBox(height: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: c.tintTeal,
                   borderRadius: BorderRadius.circular(12),
@@ -1176,7 +1390,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 46,
           height: 46,
@@ -1522,7 +1737,8 @@ class _LessonDetailSheet extends StatelessWidget {
             if (content.isNotEmpty)
               Text(
                 content,
-                style: TextStyle(fontSize: 16, height: 1.5, color: c.body),
+                style:
+                    TextStyle(fontSize: 16, height: 1.5, color: c.body),
               ),
             if (videoUrl != null) ...[
               const SizedBox(height: 12),
@@ -1537,15 +1753,14 @@ class _LessonDetailSheet extends StatelessWidget {
                     const Icon(Icons.video_library,
                         color: AppColors.tealDeep),
                     const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text('📹 فيديو مرفق'),
-                    ),
+                    const Expanded(child: Text('📹 فيديو مرفق')),
                     IconButton(
                       icon: const Icon(Icons.play_arrow, size: 28),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('سيتم تشغيل الفيديو قريباً'),
+                            content:
+                                Text('سيتم تشغيل الفيديو قريباً'),
                           ),
                         );
                       },
@@ -1567,15 +1782,14 @@ class _LessonDetailSheet extends StatelessWidget {
                     const Icon(Icons.audio_file,
                         color: AppColors.greenDeep),
                     const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text('🎵 تسجيل صوتي مرفق'),
-                    ),
+                    const Expanded(child: Text('🎵 تسجيل صوتي مرفق')),
                     IconButton(
                       icon: const Icon(Icons.play_arrow, size: 28),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('سيتم تشغيل التسجيل قريباً'),
+                            content:
+                                Text('سيتم تشغيل التسجيل قريباً'),
                           ),
                         );
                       },
@@ -1628,7 +1842,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
   }
 
   Future<void> _pickVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    final XFile? video =
+        await _picker.pickVideo(source: ImageSource.gallery);
     if (video != null) {
       setState(() => _videoFile = File(video.path));
     }
@@ -1639,14 +1854,6 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
     if (audio != null) {
       setState(() => _audioFile = File(audio.path));
     }
-  }
-
-  void _removeVideo() {
-    setState(() => _videoFile = null);
-  }
-
-  void _removeAudio() {
-    setState(() => _audioFile = null);
   }
 
   Future<void> _save() async {
@@ -1663,8 +1870,9 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
     try {
       final result = await ApiService.createLessonWithMedia(
         title: _titleCtrl.text.trim(),
-        content:
-            _contentCtrl.text.trim().isEmpty ? null : _contentCtrl.text.trim(),
+        content: _contentCtrl.text.trim().isEmpty
+            ? null
+            : _contentCtrl.text.trim(),
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
         videoFile: _videoFile,
         audioFile: _audioFile,
@@ -1793,7 +2001,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 backgroundColor: AppColors.teal,
                                 foregroundColor: Colors.white,
                               ),
-                              icon: const Icon(Icons.upload_file, size: 18),
+                              icon: const Icon(Icons.upload_file,
+                                  size: 18),
                               label: const Text('اختر ملف فيديو'),
                               onPressed: _pickVideo,
                             ),
@@ -1802,7 +2011,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              Icon(Icons.check_circle, color: c.success),
+                              Icon(Icons.check_circle,
+                                  color: c.success),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -1818,7 +2028,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                               IconButton(
                                 icon: Icon(Icons.close,
                                     color: c.onTint, size: 18),
-                                onPressed: _removeVideo,
+                                onPressed: () =>
+                                    setState(() => _videoFile = null),
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
@@ -1856,7 +2067,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                                 backgroundColor: AppColors.green,
                                 foregroundColor: Colors.white,
                               ),
-                              icon: const Icon(Icons.upload_file, size: 18),
+                              icon: const Icon(Icons.upload_file,
+                                  size: 18),
                               label: const Text('اختر ملف صوت'),
                               onPressed: _pickAudio,
                             ),
@@ -1865,7 +2077,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              Icon(Icons.check_circle, color: c.success),
+                              Icon(Icons.check_circle,
+                                  color: c.success),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -1881,7 +2094,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                               IconButton(
                                 icon: Icon(Icons.close,
                                     color: c.onTint, size: 18),
-                                onPressed: _removeAudio,
+                                onPressed: () =>
+                                    setState(() => _audioFile = null),
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
@@ -1893,7 +2107,8 @@ class _AddLessonSheetState extends State<_AddLessonSheet> {
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 8),
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                    Text(_error!,
+                        style: const TextStyle(color: Colors.red)),
                   ],
                   const SizedBox(height: 16),
                   Row(

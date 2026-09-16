@@ -1,7 +1,4 @@
-// نماذج لوحة تحكم الأدمن
-// ملاحظة: تمت إعادة تسمية Child إلى AdminChild لتجنّب التعارض
-// مع Child في child_model.dart (الذي يحتوي حقولاً كاملة).
-// لبيانات الطفل الكاملة استخدم: import 'child_model.dart';
+
 
 class AdminUser {
   final String id;

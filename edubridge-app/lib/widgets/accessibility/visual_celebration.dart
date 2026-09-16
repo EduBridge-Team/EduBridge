@@ -25,7 +25,6 @@ class VisualCelebration extends StatefulWidget {
     this.deafMode = false,
   });
 
-  /// استدعاء سريع — يتكيّف تلقائياً حسب بروفايل الطفل
   static Future<void> show(
     BuildContext context, {
     String message = 'أحسنت!',
@@ -78,7 +77,6 @@ class VisualCelebration extends StatefulWidget {
             ? const Duration(seconds: 4)
             : duration;
 
-    // ✅ إصلاح: التحقق من overlay + try/catch عند الإزالة
     final overlay = Overlay.maybeOf(context, rootOverlay: true);
     if (overlay == null) return;
 

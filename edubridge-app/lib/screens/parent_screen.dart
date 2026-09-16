@@ -1,10 +1,11 @@
-// شاشة ولي الأمر — إدارة الأطفال + الألعاب حسب العمر
+// lib/screens/parent_screen.dart
 import 'dart:convert';
 import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:edubridge_app/screens/chats_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
+import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
@@ -16,7 +17,10 @@ import 'child_progress_screen.dart';
 import 'add_child_screen.dart';
 import 'edit_child_screen.dart';
 import 'children_accessibility_overview_screen.dart';
-
+import 'child_homework_screen.dart';
+import 'weekly_report_screen.dart';
+import 'care_team_screen.dart';
+import 'create_therapy_request_screen.dart';  // ✅ جديد
 
 class ParentScreen extends StatefulWidget {
   const ParentScreen({super.key});
@@ -29,13 +33,11 @@ class _ParentScreenState extends State<ParentScreen> {
   List _children = [];
   bool _loading = true;
   String? _error;
-  int _unreadCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
-    _loadNotificationsCount();
   }
 
   @override
@@ -72,15 +74,6 @@ class _ParentScreenState extends State<ParentScreen> {
     }
   }
 
-  Future<void> _loadNotificationsCount() async {
-    try {
-      final count = await ApiService.getUnreadNotificationsCount();
-      if (mounted) {
-        setState(() => _unreadCount = count);
-      }
-    } catch (_) {}
-  }
-
   String _getStatusText(String? status) {
     switch (status) {
       case 'evaluated':
@@ -103,9 +96,6 @@ class _ParentScreenState extends State<ParentScreen> {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  بناء نص القراءة الصوتية لبطاقة طفل
-  // ═══════════════════════════════════════════════════════
   String _buildChildSpeech(Map child) {
     final name = (child['name'] ?? '').toString();
     final age = child['age'] ?? '?';
@@ -120,21 +110,16 @@ class _ParentScreenState extends State<ParentScreen> {
             ? 'تم التقييم'
             : 'قيد الانتظار';
 
-    final parts = <String>[
+    return [
       'الطفل $name',
       'العمر $age سنة',
       'الإعاقة $disabilityType',
       if (teacher != null && teacher.isNotEmpty) 'المعلم $teacher',
       'الحالة: $statusText',
       'اضغط للدخول',
-    ];
-
-    return parts.join('، ');
+    ].join('، ');
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  فتح تفاصيل الطفل
-  // ═══════════════════════════════════════════════════════
   Future<void> _openChildDetails(BuildContext context, Map child) async {
     final name = (child['name'] ?? '').toString();
 
@@ -161,6 +146,56 @@ class _ParentScreenState extends State<ParentScreen> {
     await AccessibilityService.instance.setActiveChild(null);
   }
 
+  void _openHomework(Map child) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChildHomeworkScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+  }
+
+  void _openWeeklyReport(Map child) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WeeklyReportScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+  }
+
+  void _openCareTeam(Map child) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CareTeamScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+  }
+
+  // ✅ جديد: فتح شاشة طلب جلسة نفسية
+  Future<void> _openTherapyRequest(Map child) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateTherapyRequestScreen(
+          childId: child['id'],
+          childName: (child['name'] ?? '').toString(),
+        ),
+      ),
+    );
+    if (result == true) _loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,12 +207,9 @@ class _ParentScreenState extends State<ParentScreen> {
         ),
         title: Row(
           children: [
-            
-            Image.asset('assets/brand_icon.png', width: 42, height: 42
-            ),
+            Image.asset('assets/brand_icon.png', width: 42, height: 42),
             const SizedBox(width: 8),
-          
-             const Text(
+            const Text(
               'EduBridge',
               style: TextStyle(
                 fontSize: 20,
@@ -185,13 +217,11 @@ class _ParentScreenState extends State<ParentScreen> {
                 color: Colors.white,
               ),
             ),
-             
           ],
         ),
         actions: [
           DashboardMenu(
             showMicrophoneToggle: true,
-            badgeCount: _unreadCount,
             actions: [
               DashboardMenuAction(
                 id: 'notifications',
@@ -202,7 +232,7 @@ class _ParentScreenState extends State<ParentScreen> {
                   MaterialPageRoute(
                     builder: (_) => const NotificationsScreen(),
                   ),
-                ).then((_) => _loadNotificationsCount()),
+                ),
               ),
               DashboardMenuAction(
                 id: 'accessibility',
@@ -211,7 +241,8 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ChildrenAccessibilityOverviewScreen(),
+                    builder: (_) =>
+                        const ChildrenAccessibilityOverviewScreen(),
                   ),
                 ),
               ),
@@ -233,7 +264,7 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ChatsScreen()),
-                ).then((_) => _loadNotificationsCount()),
+                ),
               ),
               DashboardMenuAction(
                 id: 'certificate',
@@ -407,7 +438,6 @@ class _ParentScreenState extends State<ParentScreen> {
         final color = AppColors.kidPalette[i % AppColors.kidPalette.length];
         final disabilityType = child['disability_type'] ?? 'غير محدد';
 
-        // ✅ البطاقة مغلّفة بـ Speakable — تُقرأ عند تفعيل وضع القراءة
         return Speakable(
           text: _buildChildSpeech(child),
           radius: 20,
@@ -416,91 +446,149 @@ class _ParentScreenState extends State<ParentScreen> {
             margin: const EdgeInsets.symmetric(vertical: 6),
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: color,
-                    child: Text(
-                      name.isNotEmpty ? name.characters.first : '🙂',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: JisrColors.of(context).heading,
-                          ),
-                        ),
-                        Text(
-                          'العمر: $age سنة • $disabilityType',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: JisrColors.of(context).muted,
-                          ),
-                        ),
-                        if (child['assigned_teacher_name'] != null) ...[
-                          Text(
-                            'المعلم: ${child['assigned_teacher_name']}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: AppColors.tealDeep,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(status)
-                              .withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: color,
                         child: Text(
-                          _getStatusText(status),
-                          style: TextStyle(
-                            fontSize: 12,
+                          name.isNotEmpty ? name.characters.first : '🙂',
+                          style: const TextStyle(
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: _getStatusColor(status),
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => EditChildScreen(
-                                child: child,
-                                currentUserRole: 'parent',
-                                currentUser: {},
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: JisrColors.of(context).heading,
                               ),
                             ),
-                          );
-                          if (result == true) _loadData();
-                        },
+                            Text(
+                              'العمر: $age سنة • $disabilityType',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: JisrColors.of(context).muted,
+                              ),
+                            ),
+                            if (child['assigned_teacher_name'] != null)
+                              Text(
+                                'المعلم: ${child['assigned_teacher_name']}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.tealDeep,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(status)
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _getStatusText(status),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: _getStatusColor(status),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          IconButton(
+                            icon:
+                                const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => EditChildScreen(
+                                    child: child,
+                                    currentUserRole: 'parent',
+                                    currentUser: {},
+                                  ),
+                                ),
+                              );
+                              if (result == true) _loadData();
+                            },
+                          ),
+                        ],
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  // ✅ الصف الأول: 3 أزرار
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _quickActionButton(
+                          icon: Icons.assignment,
+                          label: 'الواجبات',
+                          color: AppColors.orange,
+                          onTap: () => _openHomework(child),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _quickActionButton(
+                          icon: Icons.bar_chart,
+                          label: 'التقرير',
+                          color: AppColors.teal,
+                          onTap: () => _openWeeklyReport(child),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _quickActionButton(
+                          icon: Icons.groups,
+                          label: 'الفريق',
+                          color: AppColors.pink,
+                          onTap: () => _openCareTeam(child),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // ✅ الصف الثاني: زر طلب جلسة نفسية
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purple,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.psychology, size: 20),
+                      label: const Text(
+                        'طلب جلسة نفسية',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () => _openTherapyRequest(child),
+                    ),
                   ),
                 ],
               ),
@@ -510,10 +598,44 @@ class _ParentScreenState extends State<ParentScreen> {
       },
     );
   }
+
+  Widget _quickActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════
-//  شاشة تفاصيل الطفل
+//  شاشة تفاصيل الطفل (كما هي — بدون تغيير)
 // ═══════════════════════════════════════════════════════
 class ChildDetailsScreen extends StatefulWidget {
   final int childId;
@@ -614,7 +736,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              _infoRow('الاسم', _childData?['name'] ?? ''),
+                              _infoRow(
+                                  'الاسم', _childData?['name'] ?? ''),
                               _infoRow('العمر',
                                   '${_childData?['age'] ?? '?'} سنة'),
                               _infoRow(
@@ -663,7 +786,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                                 await AccessibilityService.instance
                                     .setActiveChild(
                                   widget.childId,
-                                  disabilityTypeHint: widget.disabilityType,
+                                  disabilityTypeHint:
+                                      widget.disabilityType,
                                 );
                                 if (!context.mounted) return;
                                 await Navigator.push(
@@ -673,7 +797,8 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
                                       childId: widget.childId,
                                       childName: widget.childName,
                                       age: widget.childAge,
-                                      disabilityType: widget.disabilityType,
+                                      disabilityType:
+                                          widget.disabilityType,
                                       parentPhone: widget.parentPhone,
                                     ),
                                   ),
@@ -729,9 +854,7 @@ class _ChildDetailsScreenState extends State<ChildDetailsScreen> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                color: JisrColors.of(context).body,
-              ),
+              style: TextStyle(color: JisrColors.of(context).body),
             ),
           ),
         ],

@@ -1,10 +1,8 @@
-// زر «القراءة باللمس» — يُفعّل وضعاً يقرأ أي سطر يلمسه المستخدم صوتياً بالعربية.
 import 'package:flutter/material.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 
 class ListenButton extends StatelessWidget {
-  // لون الأيقونة (أبيض فوق الرأس المتدرّج مثلاً)
   final Color? color;
 
   const ListenButton({super.key, this.color});
@@ -18,7 +16,6 @@ class ListenButton extends StatelessWidget {
           icon: Icon(
             on ? Icons.touch_app : Icons.volume_up,
             size: 28,
-            // عند التفعيل نُبرز الأيقونة (أخضر) ما لم يُطلب لون ثابت (أبيض)
             color: on ? (color ?? AppColors.green) : color,
           ),
           tooltip: on

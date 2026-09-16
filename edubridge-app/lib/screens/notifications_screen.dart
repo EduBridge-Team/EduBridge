@@ -1,8 +1,7 @@
-// شاشة الإشعارات — نسخة موحّدة (مشتركة بين جميع الأدوار)
-// تُستخدم من: parent_screen، teacher_screen، speclalist_screen، admin_screen
-import 'dart:convert';
+// lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
 
@@ -14,7 +13,6 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  List _notifications = [];
   bool _loading = true;
   bool _markingAll = false;
   String? _error;
@@ -22,22 +20,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
+    _load();
   }
 
-  Future<void> _loadNotifications() async {
+  Future<void> _load() async {
     setState(() {
       _loading = true;
       _error = null;
     });
-
     try {
-      final notifications = await ApiService.getNotifications();
+      await NotificationListenerService.instance.reloadAll();
       if (!mounted) return;
-      setState(() {
-        _notifications = notifications;
-        _loading = false;
-      });
+      setState(() => _loading = false);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -51,12 +45,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       await ApiService.markNotificationRead(id);
       if (!mounted) return;
-      setState(() {
-        _notifications = _notifications.map((n) {
-          if (n['id'] == id) n['is_read'] = true;
-          return n;
-        }).toList();
-      });
+
+      final current = NotificationListenerService.instance.notifications.value;
+      NotificationListenerService.instance.notifications.value =
+          current.map((n) {
+        if (n['id'] == id) {
+          return {...n as Map, 'is_read': true};
+        }
+        return n;
+      }).toList();
+
+      await NotificationListenerService.instance.refresh();
     } catch (_) {}
   }
 
@@ -67,11 +66,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       await ApiService.markAllNotificationsRead();
       if (!mounted) return;
-      setState(() {
-        _notifications = _notifications
-            .map((n) => {...n, 'is_read': true})
-            .toList();
-      });
+
+      final current = NotificationListenerService.instance.notifications.value;
+      NotificationListenerService.instance.notifications.value =
+          current.map((n) => {...n as Map, 'is_read': true}).toList();
+
+      await NotificationListenerService.instance.refresh();
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديد جميع الإشعارات كمقروءة')),
       );
@@ -85,6 +86,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  // ✅ محدّثة — إضافة أيقونات الجلسات النفسية
   String _getIcon(String type) {
     switch (type) {
       case 'child_added':
@@ -101,6 +103,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return '❌';
       case 'plan_submitted':
         return '📤';
+      case 'homework_assigned':
+        return '📝';
+      case 'homework_submitted':
+        return '📥';
+      case 'homework_submitted_late':
+        return '⏰';
+      case 'homework_graded':
+        return '⭐';
+      case 'weekly_report_created':
+        return '📊';
+      case 'specialist_progress_created':
+        return '🧠';
+      case 'plan_evaluation_created':
+        return '📋';
+      case 'therapy_session_scheduled':
+        return '🗓️';
+      // ✅ جديد
+      case 'therapy_request_created':
+        return '🧠';
+      case 'therapy_scheduled':
+        return '📅';
+      case 'therapy_request_cancelled':
+        return '❌';
       default:
         return '🔔';
     }
@@ -109,7 +134,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final hasUnread = _notifications.any((n) => n['is_read'] != true);
 
     return Scaffold(
       appBar: JisrAppBar(
@@ -118,25 +142,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'تحديث',
-            onPressed: _loading ? null : _loadNotifications,
+            onPressed: _loading ? null : _load,
           ),
-          if (hasUnread)
-            TextButton(
-              onPressed: _markingAll ? null : _markAllRead,
-              child: _markingAll
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
+          ValueListenableBuilder<int>(
+            valueListenable: NotificationListenerService.instance.unreadCount,
+            builder: (context, count, _) {
+              if (count == 0) return const SizedBox.shrink();
+              return TextButton(
+                onPressed: _markingAll ? null : _markAllRead,
+                child: _markingAll
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text(
+                        'تحديد الكل',
+                        style: TextStyle(color: Colors.white, fontSize: 13),
                       ),
-                    )
-                  : const Text(
-                      'تحديد الكل كمقروء',
-                      style: TextStyle(color: Colors.white, fontSize: 13),
-                    ),
-            ),
+              );
+            },
+          ),
         ],
       ),
       body: _buildBody(c),
@@ -147,7 +176,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
-
     if (_error != null) {
       return Center(
         child: Column(
@@ -159,36 +187,41 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ElevatedButton.icon(
               icon: const Icon(Icons.refresh),
               label: const Text('إعادة المحاولة'),
-              onPressed: _loadNotifications,
+              onPressed: _load,
             ),
           ],
         ),
       );
     }
 
-    if (_notifications.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.notifications_off, size: 64, color: c.muted),
-            const SizedBox(height: 16),
-            Text(
-              'لا توجد إشعارات',
-              style: TextStyle(fontSize: 18, color: c.muted),
+    return ValueListenableBuilder<List<dynamic>>(
+      valueListenable: NotificationListenerService.instance.notifications,
+      builder: (context, list, _) {
+        if (list.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.notifications_off, size: 64, color: c.muted),
+                const SizedBox(height: 16),
+                Text(
+                  'لا توجد إشعارات',
+                  style: TextStyle(fontSize: 18, color: c.muted),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    return RefreshIndicator(
-      onRefresh: _loadNotifications,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: _notifications.length,
-        itemBuilder: (context, i) => _buildTile(_notifications[i], c),
-      ),
+        return RefreshIndicator(
+          onRefresh: _load,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: list.length,
+            itemBuilder: (context, i) => _buildTile(list[i] as Map, c),
+          ),
+        );
+      },
     );
   }
 

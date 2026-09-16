@@ -1,13 +1,18 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
+import 'services/notification_listener_service.dart';
 import 'services/overlay_visibility_service.dart';
+import 'services/websocket_service.dart';
+import 'screens/notifications_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
 import 'utils/navigation.dart';
 import 'widgets/accessibility/adaptive_scaffold.dart';
 import 'widgets/accessibility/voice_mic_overlay.dart';
+import 'widgets/notification_snackbar.dart';
 import 'widgets/pet_assistant_overlay.dart';
 
 void main() async {
@@ -16,6 +21,12 @@ void main() async {
   await ApiService.initializeAuthState();
   await AccessibilityService.instance.load();
   await OverlayVisibilityService.initialize();
+
+  final token = await ApiService.getToken();
+  if (token != null) {
+    WebSocketService().connect(token);
+    await NotificationListenerService.instance.initialize();
+  }
 
   runApp(const EduBridgeApp());
 }
@@ -33,7 +44,7 @@ class EduBridgeApp extends StatelessWidget {
         builder: (context, accProfile, __) => MaterialApp(
           navigatorKey: appNavigatorKey,
           navigatorObservers: [jisrModalRouteObserver],
-          title: 'EduBridge — جسر تعليمي' ,
+          title: 'EduBridge — جسر تعليمي',
           debugShowCheckedModeBanner: false,
           locale: const Locale('ar'),
           theme: accProfile.highContrast
@@ -43,14 +54,16 @@ class EduBridgeApp extends StatelessWidget {
           themeMode: mode,
           builder: (context, child) => Directionality(
             textDirection: TextDirection.rtl,
-            child: PetAssistantOverlay(
-              child: VoiceMicOverlay(
-                child: SafeArea(
-                  top: false,
-                  left: false,
-                  right: false,
-                  bottom: false,
-                  child: AdaptiveScaffold(child: child!),
+            child: NotificationSnackbarHost(
+              child: PetAssistantOverlay(
+                child: VoiceMicOverlay(
+                  child: SafeArea(
+                    top: false,
+                    left: false,
+                    right: false,
+                    bottom: false,
+                    child: AdaptiveScaffold(child: child!),
+                  ),
                 ),
               ),
             ),
@@ -58,6 +71,7 @@ class EduBridgeApp extends StatelessWidget {
           home: const _HomeGate(),
           routes: {
             '/home': (context) => const _HomeGate(),
+            '/notifications': (context) => const NotificationsScreen(),
           },
         ),
       ),

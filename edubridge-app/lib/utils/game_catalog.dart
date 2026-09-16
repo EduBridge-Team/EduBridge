@@ -1,3 +1,4 @@
+// utils/game_catalog.dart
 // فهرس الألعاب — يُحدّد أي لعبة تناسب أي عمر وإعاقة
 import '../services/accessibility_service.dart';
 
@@ -31,7 +32,7 @@ class GameInfo {
   final String emoji;
   final List<AgeGroup> ages;
   final List<DisabilityType> disabilities;
-  final bool isUniversal; // تناسب الجميع
+  final bool isUniversal;
 
   const GameInfo({
     required this.id,
@@ -187,17 +188,17 @@ const kGameCatalog = <GameInfo>[
     disabilities: [DisabilityType.deaf],
   ),
 
-  // ═══ الحركة (ADHD) ═══
+  // ═══ الحركة (ADHD) — ✅ محدّث لكل الأعمار ═══
   GameInfo(
     id: 'quick_action',
     title: 'الحركة السريعة',
     description: 'تحرّك بسرعة! 30 ثانية',
     emoji: '⚡',
-    ages: [AgeGroup.preschool, AgeGroup.primary],
+    ages: [AgeGroup.preschool, AgeGroup.primary, AgeGroup.preparatory],
     disabilities: [DisabilityType.adhd],
   ),
 
-  // ═══ الإيقاع (التأتأة) ═══
+  // ═══ الإيقاع (التأتأة) — ✅ محدّث لكل الأعمار ═══
   GameInfo(
     id: 'rhythm',
     title: 'الإيقاع',
@@ -209,18 +210,23 @@ const kGameCatalog = <GameInfo>[
       DisabilityType.speechDisorders,
     ],
   ),
+
+  // ═══ القراءة المتقدمة — ✅ جديد ═══
+  GameInfo(
+    id: 'advanced_reading',
+    title: 'القراءة المتقدمة',
+    description: 'نصوص وفهم قرائي',
+    emoji: '📚',
+    ages: [AgeGroup.preparatory],
+    isUniversal: true,
+  ),
 ];
 
 /// الألعاب المناسبة لبروفايل معيّن + عمر
 List<GameInfo> gamesFor(DisabilityType type, AgeGroup age) {
   return kGameCatalog.where((game) {
-    // 1. يجب أن تناسب العمر
     if (!game.ages.contains(age)) return false;
-
-    // 2. إذا كانت "للجميع" → مناسبة
     if (game.isUniversal) return true;
-
-    // 3. إذا كانت مخصّصة → يجب أن يكون النوع ضمن disabilities
     return game.disabilities.contains(type);
   }).toList();
 }
