@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart';
 
 /// أنواع الإعاقات المدعومة
 enum DisabilityType {
@@ -29,7 +30,7 @@ class AccessibilityProfile {
   final bool brainBreaksEnabled;
   final int brainBreakIntervalMinutes;
   final bool visualTimerEnabled;
-  final int timerRenewalMinutes;      // ✅ جديد — كل كم دقيقة يتجدّد المؤقّت
+  final int timerRenewalMinutes;
   final bool reducedAnimations;
   final bool predictableTimeline;
   final bool sensoryCalmMode;
@@ -60,7 +61,7 @@ class AccessibilityProfile {
     this.brainBreaksEnabled = false,
     this.brainBreakIntervalMinutes = 15,
     this.visualTimerEnabled = false,
-    this.timerRenewalMinutes = 5,        // ✅ افتراضي 5 دقائق
+    this.timerRenewalMinutes = 5,
     this.reducedAnimations = false,
     this.predictableTimeline = false,
     this.sensoryCalmMode = false,
@@ -90,7 +91,7 @@ class AccessibilityProfile {
     bool? brainBreaksEnabled,
     int? brainBreakIntervalMinutes,
     bool? visualTimerEnabled,
-    int? timerRenewalMinutes,            // ✅ جديد
+    int? timerRenewalMinutes,
     bool? reducedAnimations,
     bool? predictableTimeline,
     bool? sensoryCalmMode,
@@ -120,7 +121,7 @@ class AccessibilityProfile {
       brainBreakIntervalMinutes:
           brainBreakIntervalMinutes ?? this.brainBreakIntervalMinutes,
       visualTimerEnabled: visualTimerEnabled ?? this.visualTimerEnabled,
-      timerRenewalMinutes: timerRenewalMinutes ?? this.timerRenewalMinutes, // ✅
+      timerRenewalMinutes: timerRenewalMinutes ?? this.timerRenewalMinutes,
       reducedAnimations: reducedAnimations ?? this.reducedAnimations,
       predictableTimeline: predictableTimeline ?? this.predictableTimeline,
       sensoryCalmMode: sensoryCalmMode ?? this.sensoryCalmMode,
@@ -153,9 +154,6 @@ class AccessibilityProfile {
     String? customName,
   }) {
     switch (type) {
-      // ═══════════════════════════════════════
-      // 1. ADHD
-      // ═══════════════════════════════════════
       case DisabilityType.adhd:
         return const AccessibilityProfile(
           type: DisabilityType.adhd,
@@ -165,10 +163,6 @@ class AccessibilityProfile {
           timerRenewalMinutes: 5,
           reducedAnimations: true,
         );
-
-      // ═══════════════════════════════════════
-      // 2. توحّد
-      // ═══════════════════════════════════════
       case DisabilityType.autismMild:
         return const AccessibilityProfile(
           type: DisabilityType.autismMild,
@@ -176,7 +170,6 @@ class AccessibilityProfile {
           reducedAnimations: true,
           timerRenewalMinutes: 10,
         );
-
       case DisabilityType.autismSevere:
         return const AccessibilityProfile(
           type: DisabilityType.autismSevere,
@@ -185,10 +178,6 @@ class AccessibilityProfile {
           sensoryCalmMode: true,
           timerRenewalMinutes: 10,
         );
-
-      // ═══════════════════════════════════════
-      // 3. داون
-      // ═══════════════════════════════════════
       case DisabilityType.downSyndrome:
         return const AccessibilityProfile(
           type: DisabilityType.downSyndrome,
@@ -200,10 +189,6 @@ class AccessibilityProfile {
           noTimers: true,
           timerRenewalMinutes: 3,
         );
-
-      // ═══════════════════════════════════════
-      // 4. أعمى
-      // ═══════════════════════════════════════
       case DisabilityType.blind:
         return const AccessibilityProfile(
           type: DisabilityType.blind,
@@ -213,20 +198,12 @@ class AccessibilityProfile {
           visualTimerEnabled: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 5. أصمّ
-      // ═══════════════════════════════════════
       case DisabilityType.deaf:
         return const AccessibilityProfile(
           type: DisabilityType.deaf,
           visualAlertsEnabled: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 6. تأتأة
-      // ═══════════════════════════════════════
       case DisabilityType.stuttering:
         return const AccessibilityProfile(
           type: DisabilityType.stuttering,
@@ -237,10 +214,6 @@ class AccessibilityProfile {
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 7. اضطرابات نطق
-      // ═══════════════════════════════════════
       case DisabilityType.speechDisorders:
         return const AccessibilityProfile(
           type: DisabilityType.speechDisorders,
@@ -250,10 +223,6 @@ class AccessibilityProfile {
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 8. إعاقة ذهنية بسيطة
-      // ═══════════════════════════════════════
       case DisabilityType.mildIntellectual:
         return const AccessibilityProfile(
           type: DisabilityType.mildIntellectual,
@@ -266,10 +235,6 @@ class AccessibilityProfile {
           reducedAnimations: true,
           timerRenewalMinutes: 3,
         );
-
-      // ═══════════════════════════════════════
-      // 9. عمى ألوان
-      // ═══════════════════════════════════════
       case DisabilityType.colorBlindness:
         return const AccessibilityProfile(
           type: DisabilityType.colorBlindness,
@@ -278,10 +243,6 @@ class AccessibilityProfile {
           colorFiltersEnabled: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 10. صرع
-      // ═══════════════════════════════════════
       case DisabilityType.epilepsy:
         return const AccessibilityProfile(
           type: DisabilityType.epilepsy,
@@ -293,10 +254,6 @@ class AccessibilityProfile {
           noTimers: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 11. أخرى
-      // ═══════════════════════════════════════
       case DisabilityType.other:
         return AccessibilityProfile(
           type: DisabilityType.other,
@@ -306,23 +263,18 @@ class AccessibilityProfile {
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
         );
-
-      // ═══════════════════════════════════════
-      // 12. بدون
-      // ═══════════════════════════════════════
       case DisabilityType.none:
         return const AccessibilityProfile(type: DisabilityType.none);
     }
   }
 
-  // ─── JSON ───
   Map<String, dynamic> toJson() => {
         'type': type.name,
         'customDisabilityName': customDisabilityName,
         'brainBreaksEnabled': brainBreaksEnabled,
         'brainBreakIntervalMinutes': brainBreakIntervalMinutes,
         'visualTimerEnabled': visualTimerEnabled,
-        'timerRenewalMinutes': timerRenewalMinutes,      // ✅
+        'timerRenewalMinutes': timerRenewalMinutes,
         'reducedAnimations': reducedAnimations,
         'predictableTimeline': predictableTimeline,
         'sensoryCalmMode': sensoryCalmMode,
@@ -356,7 +308,7 @@ class AccessibilityProfile {
       brainBreaksEnabled: j['brainBreaksEnabled'] ?? false,
       brainBreakIntervalMinutes: j['brainBreakIntervalMinutes'] ?? 15,
       visualTimerEnabled: j['visualTimerEnabled'] ?? false,
-      timerRenewalMinutes: j['timerRenewalMinutes'] ?? 5,  // ✅
+      timerRenewalMinutes: j['timerRenewalMinutes'] ?? 5,
       reducedAnimations: j['reducedAnimations'] ?? false,
       predictableTimeline: j['predictableTimeline'] ?? false,
       sensoryCalmMode: j['sensoryCalmMode'] ?? false,
@@ -428,7 +380,6 @@ DisabilityType disabilityTypeFromString(String? s) {
   return DisabilityType.other;
 }
 
-/// التسميات العربية
 const disabilityLabels = {
   DisabilityType.none: 'بدون تكييف',
   DisabilityType.adhd: 'فرط الحركة وتشتت الانتباه',
@@ -445,7 +396,6 @@ const disabilityLabels = {
   DisabilityType.other: 'أخرى (يُحدّدها ولي الأمر)',
 };
 
-/// الرموز التعبيرية لكل نوع
 const disabilityEmojis = {
   DisabilityType.none: '⚪',
   DisabilityType.adhd: '⚡',
@@ -462,9 +412,6 @@ const disabilityEmojis = {
   DisabilityType.other: '✏️',
 };
 
-// ═══════════════════════════════════════════════════════════
-//  الخدمة الرئيسية
-// ═══════════════════════════════════════════════════════════
 class AccessibilityService {
   AccessibilityService._();
   static final AccessibilityService instance = AccessibilityService._();
@@ -482,9 +429,6 @@ class AccessibilityService {
   static const _kParentKey = 'acc_parent_profile';
   static const _kChildKeyPrefix = 'acc_child_profile_';
 
-  // ═══════════════════════════════════════════════════════
-  //  الوصول السريع
-  // ═══════════════════════════════════════════════════════
   bool get isAdhd => profile.value.type == DisabilityType.adhd;
   bool get isAutism =>
       profile.value.type == DisabilityType.autismMild ||
@@ -506,9 +450,6 @@ class AccessibilityService {
   Map<int, AccessibilityProfile> get allChildProfiles =>
       Map.unmodifiable(_childProfiles);
 
-  // ═══════════════════════════════════════════════════════
-  //  التحميل والحفظ
-  // ═══════════════════════════════════════════════════════
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -549,9 +490,49 @@ class AccessibilityService {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  تبديل الطفل النشط
-  // ═══════════════════════════════════════════════════════
+  Future<AccessibilityProfile?> _loadRemoteChild(int childId) async {
+    try {
+      if (await ApiService.getToken() == null) return null;
+      final response =
+          await ApiService.authGet('/children/$childId/accessibility-profile');
+      if (response.statusCode != 200 || response.body.isEmpty) return null;
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map || decoded['profile'] is! Map) return null;
+      return AccessibilityProfile.fromJson(
+        Map<String, dynamic>.from(decoded['profile'] as Map),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _pushRemoteChild(
+    int childId,
+    AccessibilityProfile next,
+  ) async {
+    try {
+      if (await ApiService.getToken() == null) return;
+      await ApiService.authPut(
+        '/children/$childId/accessibility-profile',
+        {'profile': next.toJson()},
+      );
+    } catch (_) {
+      // يبقى الحفظ المحلي صالحاً في وضع عدم الاتصال.
+    }
+  }
+
+  /// يجلب أحدث إعدادات الطفل من الخادم إن وجدت ويحدّث النسخة المحلية.
+  Future<bool> syncChildProfile(int childId) async {
+    final remote = await _loadRemoteChild(childId);
+    if (remote == null) return false;
+    _childProfiles[childId] = remote;
+    await _persistChild(childId, remote);
+    if (activeChildId.value == childId) {
+      profile.value = remote;
+    }
+    return true;
+  }
+
   Future<void> setActiveChild(
     int? childId, {
     String? disabilityTypeHint,
@@ -565,25 +546,29 @@ class AccessibilityService {
     }
 
     if (forceReload || !_childProfiles.containsKey(childId)) {
-      final type = disabilityTypeFromString(disabilityTypeHint);
-      final customName =
-          type == DisabilityType.other ? disabilityTypeHint : null;
+      final remote = await _loadRemoteChild(childId);
+      if (remote != null) {
+        _childProfiles[childId] = remote;
+        await _persistChild(childId, remote);
+      } else {
+        final type = disabilityTypeFromString(disabilityTypeHint);
+        final customName =
+            type == DisabilityType.other ? disabilityTypeHint : null;
 
-      final created = AccessibilityProfile.recommendedFor(
-        type,
-        customName: customName,
-      );
+        final created = AccessibilityProfile.recommendedFor(
+          type,
+          customName: customName,
+        );
 
-      _childProfiles[childId] = created;
-      await _persistChild(childId, created);
+        _childProfiles[childId] = created;
+        await _persistChild(childId, created);
+        await _pushRemoteChild(childId, created);
+      }
     }
 
     profile.value = _childProfiles[childId]!;
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  التحديث
-  // ═══════════════════════════════════════════════════════
   Future<void> updateActive(AccessibilityProfile next) async {
     if (activeChildId.value == null) {
       _parentProfile = next;
@@ -594,6 +579,7 @@ class AccessibilityService {
       _childProfiles[id] = next;
       await _persistChild(id, next);
       profile.value = next;
+      await _pushRemoteChild(id, next);
     }
   }
 
@@ -606,6 +592,7 @@ class AccessibilityService {
     if (activeChildId.value == childId) {
       profile.value = next;
     }
+    await _pushRemoteChild(childId, next);
   }
 
   Future<void> applyRecommendedForChild(
