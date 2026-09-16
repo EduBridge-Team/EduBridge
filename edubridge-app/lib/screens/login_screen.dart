@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/home_router.dart';
+import '../widgets/brand_lockup.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -92,13 +93,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           tooltip: 'رجوع',
                         ),
                       ),
-                      Image.asset(
-                        'assets/brand_logo.png',
-                        width: 220,
-                        height: 110,
-                        fit: BoxFit.contain,
+                      const BrandLockup(
+                        iconSize: 70,
+                        fontSize: 39,
+                        gap: 11,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 18),
                       Text(
                         'أهلاً بعودتك',
                         style: TextStyle(
