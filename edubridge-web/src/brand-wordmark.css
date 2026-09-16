@@ -1,0 +1,74 @@
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  direction: ltr;
+  user-select: none;
+}
+
+.brand-lockup-icon {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.brand-wordmark {
+  display: inline-block;
+  font-family: 'Baloo Bhaijaan 2', 'Tajawal', system-ui, sans-serif;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  white-space: nowrap;
+  background: linear-gradient(90deg, #1769c2 0%, #43c6e6 48%, #1769c2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-lockup--topbar .brand-lockup-icon {
+  width: 46px;
+  height: 46px;
+}
+
+.brand-lockup--topbar .brand-wordmark {
+  font-size: 31px;
+}
+
+.brand-lockup--footer {
+  margin-bottom: 12px;
+}
+
+.brand-lockup--footer .brand-lockup-icon {
+  width: 58px;
+  height: 58px;
+}
+
+.brand-lockup--footer .brand-wordmark {
+  font-size: 39px;
+}
+
+[data-theme='dark'] .brand-wordmark {
+  background: linear-gradient(90deg, #2c7dd6 0%, #6fe1e7 52%, #2c7dd6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (max-width: 720px) {
+  .brand-lockup--topbar {
+    gap: 7px;
+  }
+
+  .brand-lockup--topbar .brand-lockup-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-lockup--topbar .brand-wordmark {
+    font-size: 27px;
+    letter-spacing: -.8px;
+  }
+}
