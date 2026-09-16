@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- خلفية إقلاع محايدة فقط؛ شاشة EduBridge الفعلية تُرسم داخل Flutter لتجنب ظهور سبلاشين. -->
+<!-- شاشة الإقلاع الوحيدة قبل Flutter: خلفية هوية EduBridge مع الشعار في المنتصف. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
             <solid android:color="#F8FCFF"/>
         </shape>
+    </item>
+    <item android:gravity="center">
+        <bitmap
+            android:src="@drawable/splash_icon"
+            android:gravity="center"
+            android:filter="true" />
     </item>
 </layer-list>
