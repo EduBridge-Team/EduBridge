@@ -7,7 +7,10 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-identity">
-          <img src="/edubridge-logo.png" alt="EduBridge" />
+          <div className="brand-lockup brand-lockup--footer" aria-label="EduBridge">
+            <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
+            <span className="brand-wordmark">EduBridge</span>
+          </div>
           <p>معاً، لكل طفل فرصة. تعليم ذكي وشامل يدعم رحلة كل متعلم.</p>
         </div>
         <div>
