@@ -31,9 +31,12 @@ Future<void> main() async {
   ]);
 
   final token = await ApiService.getToken();
-  final initialHome = token == null
-      ? const WelcomeScreen()
-      : homeScreenForRole();
+  final Widget initialHome;
+  if (token == null) {
+    initialHome = const WelcomeScreen();
+  } else {
+    initialHome = await homeScreenForRole();
+  }
 
   runApp(EduBridgeApp(initialHome: initialHome));
 
