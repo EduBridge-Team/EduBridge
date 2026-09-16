@@ -23,6 +23,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
+use App\Http\Controllers\ChildAccessibilityProfileController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -94,7 +95,6 @@ Route::middleware('auth.jwt')->group(function () {
     Route::put('/ministry/lessons/{id}', [MinistryController::class, 'review'])
         ->middleware('role:ministry,admin');
 
-
     // عرض كل المستخدمين للوزارة (عرض فقط)
     Route::get('/ministry/users', [MinistryController::class, 'users'])
         ->middleware('role:ministry,admin');
@@ -134,6 +134,10 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:teacher,specialist,admin');
     Route::get('/children/{id}/lessons', [ChildController::class, 'lessons']);
     Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild']);
+
+    // إعدادات التكييف الخاصة بكل طفل — متزامنة بين الأجهزة
+    Route::get('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'show']);
+    Route::put('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'update']);
 
     // التقييمات
     Route::get('/evaluations/child/{childId}', [EvaluationController::class, 'byChild']);
