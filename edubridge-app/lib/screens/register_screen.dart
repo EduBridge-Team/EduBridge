@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/brand_lockup.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -75,12 +76,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  Image.asset(
-                    'assets/brand_logo.png',
-                    width: 210,
-                    height: 105,
-                    fit: BoxFit.contain,
+                  const BrandLockup(
+                    iconSize: 68,
+                    fontSize: 38,
+                    gap: 10,
                   ),
+                  const SizedBox(height: 14),
                   Text(
                     'ابدأ رحلتك مع EduBridge',
                     textAlign: TextAlign.center,
