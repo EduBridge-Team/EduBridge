@@ -51,6 +51,18 @@ function DashboardRedirect() {
   return <Navigate to={dashboardFor(getUser())} replace />
 }
 
+// الصفحة الرئيسية العامة تبقى للزوار فقط. المستخدم المسجّل يذهب مباشرة للوحة دوره.
+function HomeRedirect() {
+  if (!getToken()) return <HomePage />
+  return <Navigate to={dashboardFor(getUser())} replace />
+}
+
+// لا نعيد عرض صفحات الدخول/التسجيل لمستخدم لديه جلسة فعّالة.
+function GuestOnly({ children }) {
+  if (getToken()) return <Navigate to={dashboardFor(getUser())} replace />
+  return children
+}
+
 // حاوية موحّدة لصفحات المحتوى
 function Page({ children }) {
   return <main className="container">{children}</main>
@@ -63,8 +75,8 @@ export default function App() {
       <TopBar />
 
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
+        <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
         <Route path="/dashboard" element={<DashboardRedirect />} />
         <Route
           path="/about"
@@ -74,8 +86,8 @@ export default function App() {
             </Page>
           }
         />
-        {/* الصفحة الرئيسية — عامة بدون تسجيل دخول */}
-        <Route path="/" element={<HomePage />} />
+        {/* الصفحة الرئيسية — للزائر فقط، والمستخدم المسجّل يُفتح له dashboard دوره */}
+        <Route path="/" element={<HomeRedirect />} />
         {/* لوحة ولي الأمر */}
         <Route
           path="/parent"
