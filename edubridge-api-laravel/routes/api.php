@@ -24,6 +24,7 @@ use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
+use App\Http\Controllers\TherapyRequestController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -121,6 +122,20 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:specialist,admin');
     Route::post('/consultations/{id}/notes', [ConsultationController::class, 'addNote'])
         ->middleware('role:specialist,admin');
+
+    // طلبات الدعم النفسي — ولي الأمر يرسل، والمختص يراجع ويحدد الموعد والرابط
+    Route::post('/therapy/requests', [TherapyRequestController::class, 'store'])
+        ->middleware(['role:parent', 'throttle:10,1']);
+    Route::get('/therapy/requests', [TherapyRequestController::class, 'index'])
+        ->middleware('role:parent,specialist,admin');
+    Route::get('/therapy/requests/child/{childId}/pending', [TherapyRequestController::class, 'pendingForChild'])
+        ->middleware('role:parent,specialist,admin');
+    Route::put('/therapy/requests/{id}/schedule', [TherapyRequestController::class, 'schedule'])
+        ->middleware('role:specialist,admin');
+    Route::put('/therapy/requests/{id}/complete', [TherapyRequestController::class, 'complete'])
+        ->middleware('role:specialist,admin');
+    Route::put('/therapy/requests/{id}/cancel', [TherapyRequestController::class, 'cancel'])
+        ->middleware('role:parent,specialist,admin');
 
     // الأطفال
     Route::post('/children', [ChildController::class, 'store'])
