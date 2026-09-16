@@ -3,7 +3,7 @@ name: Build deployable website
 on:
   push:
     branches:
-      - redesign/brand-identity-2026
+      - main
     paths:
       - 'edubridge-web/**'
       - '.github/workflows/web-deploy-build.yml'
