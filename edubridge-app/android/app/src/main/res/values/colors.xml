@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- خلفية الأيقونة التكيفية -->
-    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_launcher_background">#EAF7FC</color>
     <!-- خلفية سبلاش أندرويد 12+ (أزرق فاتح من هوية جسر) -->
-    <color name="splash_background">#FFFFFF</color>
+    <color name="splash_background">#F8FCFF</color>
 </resources>

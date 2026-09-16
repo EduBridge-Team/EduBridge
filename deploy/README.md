@@ -9,7 +9,7 @@
 2. من تطبيق **Termius** افتح جلسة SSH على الخادم، ونفّذ:
 
    ```bash
-   cd ~/EduBridge && git pull && bash deploy/deploy.sh
+   cd ~/EduBridge && git pull --ff-only && bash deploy/deploy.sh
    ```
 
 3. افتح `https://edubridge.alwaysdata.net` واضغط **Ctrl+Shift+R** لتجاوز الكاش.
@@ -20,8 +20,10 @@
    (آمن وقابل للتكرار — `IF NOT EXISTS`، لا يمسّ بيانات موجودة) عبر اتصال
    Laravel نفسه (بدون إدخال كلمات مرور).
 2. **يمسح إعدادات Laravel** المؤقتة (`php artisan config:clear`).
-3. **ينشر الموقع**: ينسخ `deploy/web` (assets + icon.png + app.html) إلى
-   مجلد `public` في الواجهة الخلفية.
+3. **ينظّف كاش Laravel** حتى تُحمّل الإعدادات والمسارات الجديدة.
+4. **ينشر الموقع**: يستبدل ملفات `assets` القديمة كوحدة واحدة، ثم ينسخ كامل
+   محتوى `deploy/web` — بما فيه صور الهوية الجديدة — إلى مجلد `public` دون
+   المساس بملفات Laravel.
 
 > نسخة الموقع في `deploy/web` مبنية بـ `VITE_API_URL=/api`. لإعادة بنائها لاحقاً:
 > `cd edubridge-web && VITE_API_URL=/api npm run build` ثم انسخ ناتج `dist`

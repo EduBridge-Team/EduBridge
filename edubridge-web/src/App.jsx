@@ -1,6 +1,7 @@
 // المسارات + الشريط العلوي + حماية الصفحات بالتوكن
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { getToken } from './api'
+import { getToken, getUser } from './api'
+import { dashboardFor } from './roleRoutes'
 import TopBar from './components/TopBar'
 import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
@@ -28,11 +29,26 @@ import EducationalGamesPage from './pages/EducationalGamesPage'
 import AccessibilityPage from './pages/AccessibilityPage'
 import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
 import ConversationsPage from './pages/ConversationsPage'
+import InstitutionDashboard from './pages/InstitutionDashboard'
 
 // صفحة محمية: بدون توكن نحوّل المستخدم لتسجيل الدخول
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
   return children
+}
+
+function RoleProtected({ roles, children }) {
+  if (!getToken()) return <Navigate to="/login" replace />
+  const user = getUser()
+  if (!user || !roles.includes(user.role)) {
+    return <Navigate to={dashboardFor(user)} replace />
+  }
+  return children
+}
+
+function DashboardRedirect() {
+  if (!getToken()) return <Navigate to="/login" replace />
+  return <Navigate to={dashboardFor(getUser())} replace />
 }
 
 // حاوية موحّدة لصفحات المحتوى
@@ -49,6 +65,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<DashboardRedirect />} />
         <Route
           path="/about"
           element={
@@ -63,11 +80,11 @@ export default function App() {
         <Route
           path="/parent"
           element={
-            <Protected>
+            <RoleProtected roles={['parent']}>
               <Page>
                 <ParentDashboard />
               </Page>
-            </Protected>
+            </RoleProtected>
           }
         />
         <Route
@@ -169,17 +186,17 @@ export default function App() {
         <Route
           path="/admin"
           element={
-            <Protected>
+            <RoleProtected roles={['admin']}>
               <AdminPage />
-            </Protected>
+            </RoleProtected>
           }
         />
         <Route
           path="/admin/verifications"
           element={
-            <Protected>
+            <RoleProtected roles={['admin']}>
               <VerificationsPage />
-            </Protected>
+            </RoleProtected>
           }
         />
         <Route
@@ -225,25 +242,33 @@ export default function App() {
         <Route
           path="/ministry"
           element={
-            <Protected>
+            <RoleProtected roles={['ministry', 'admin']}>
               <MinistryPage />
-            </Protected>
+            </RoleProtected>
           }
         />
         <Route
           path="/teacher"
           element={
-            <Protected>
+            <RoleProtected roles={['teacher']}>
               <TeacherDashboard />
-            </Protected>
+            </RoleProtected>
           }
         />
         <Route
           path="/specialist"
           element={
-            <Protected>
+            <RoleProtected roles={['specialist']}>
               <SpecialistDashboard />
-            </Protected>
+            </RoleProtected>
+          }
+        />
+        <Route
+          path="/institution"
+          element={
+            <RoleProtected roles={['institution']}>
+              <InstitutionDashboard />
+            </RoleProtected>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

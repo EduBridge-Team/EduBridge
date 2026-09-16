@@ -34,58 +34,143 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ===== الشعار واسم المنصة + زر الوضع الليلي =====
+              // ===== الشعار + زر الوضع الليلي =====
               Row(
                 children: [
-                  Builder(builder: (context) {
-                    final c = JisrColors.of(context);
-                    return Container(
-                      padding: const EdgeInsets.all(5),
-                  
-                      child: Image.asset(
-                        'assets/brand_logo.png',
-                        width: 176,
-                        height: 88,
-                        fit: BoxFit.contain,
-                      ),
-                    );
-                  }),
-                 
+                  Image.asset(
+                    'assets/brand_logo.png',
+                    width: 164,
+                    height: 72,
+                    fit: BoxFit.contain,
+                  ),
                   const Spacer(),
                   ValueListenableBuilder<ThemeMode>(
                     valueListenable: jisrThemeMode,
-                    builder: (context, mode, _) => IconButton(
-                      icon: Icon(
-                        mode == ThemeMode.dark
-                            ? Icons.light_mode
-                            : Icons.dark_mode,
-                        color: c.heading,
+                    builder: (context, mode, _) => Container(
+                      decoration: BoxDecoration(
+                        color: c.card,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: c.line),
                       ),
-                      tooltip: mode == ThemeMode.dark
-                          ? 'الوضع الفاتح'
-                          : 'الوضع الليلي',
-                      onPressed: toggleThemeMode,
+                      child: IconButton(
+                        icon: Icon(
+                          mode == ThemeMode.dark
+                              ? Icons.light_mode
+                              : Icons.dark_mode,
+                          color: c.heading,
+                        ),
+                        tooltip: mode == ThemeMode.dark
+                            ? 'الوضع الفاتح'
+                            : 'الوضع الليلي',
+                        onPressed: toggleThemeMode,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // ===== الترحيب =====
-              Text(
-                'تعليم ذكي وشامل\nلكل طفل',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: c.heading,
-                  height: 1.25,
+              // ===== بطاقة الهوية الرئيسية =====
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+                decoration: BoxDecoration(
+                  gradient: AppColors.headerGradient,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.navy.withValues(alpha: .2),
+                      blurRadius: 34,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية '
-                'مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.',
-                style: TextStyle(fontSize: 16, color: c.muted, height: 1.8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 11,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: .14),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: .2),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'معاً، نحو تعليم أكثر شمولاً',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'تعليم ذكي وشامل\nلكل طفل',
+                                style: TextStyle(
+                                  fontSize: 31,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  height: 1.22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 82,
+                          height: 82,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: .94),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Image.asset('assets/brand_icon.png'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'أدوات تعليمية مرنة تربط الطفل بأسرته ومعلميه ومختصيه في تجربة واحدة آمنة.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFFE4F6FF),
+                        height: 1.7,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _HeroPill(
+                          icon: Icons.accessibility_new,
+                          label: 'متاح للجميع',
+                        ),
+                        _HeroPill(
+                          icon: Icons.auto_awesome,
+                          label: 'تعلّم مخصّص',
+                        ),
+                        _HeroPill(
+                          icon: Icons.shield_outlined,
+                          label: 'بيئة آمنة',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -114,11 +199,26 @@ class WelcomeScreen extends StatelessWidget {
               // ===== الإحصاءات =====
               Row(
                 children: [
-                  _StatCard(emoji: '💙', value: '٩٨٪', label: 'رضا المتعلمين', tint: c.tintTeal),
+                  _StatCard(
+                    emoji: '💙',
+                    value: '٩٨٪',
+                    label: 'رضا المتعلمين',
+                    tint: c.tintTeal,
+                  ),
                   const SizedBox(width: 10),
-                  _StatCard(emoji: '🎓', value: '+٥٠٠٠', label: 'طالب مُمكَّن', tint: c.tintGreen),
+                  _StatCard(
+                    emoji: '🎓',
+                    value: '+٥٠٠٠',
+                    label: 'طالب مُمكَّن',
+                    tint: c.tintGreen,
+                  ),
                   const SizedBox(width: 10),
-                  _StatCard(emoji: '🤝', value: '١٢٠', label: 'شريك تعليمي', tint: c.tintOrange),
+                  _StatCard(
+                    emoji: '🤝',
+                    value: '١٢٠',
+                    label: 'شريك تعليمي',
+                    tint: c.tintOrange,
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -230,6 +330,39 @@ class WelcomeScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _HeroPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .13),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: Colors.white),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }

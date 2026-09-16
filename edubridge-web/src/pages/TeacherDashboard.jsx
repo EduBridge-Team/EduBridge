@@ -89,8 +89,8 @@ export default function TeacherDashboard() {
   }
 
   return (
-    <div>
-      <main className="container container-wide">
+    <div className="role-page role-teacher">
+      <main className="container container-wide role-dashboard">
         <div className="dash-head dash-head-row">
           <div>
             <h2>مرحباً {me.name}،</h2>

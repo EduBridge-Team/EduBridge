@@ -53,7 +53,7 @@ export default function MinistryPage() {
   }
 
   return (
-    <div className="container">
+    <div className="container role-dashboard role-ministry">
       <div className="page-title">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Landmark size={20} /> مراجعة المناهج

@@ -41,8 +41,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div>
-      <main className="container">
+    <div className="role-page role-admin">
+      <main className="container role-dashboard">
         <div className="page-title">
           <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Settings size={22} /> لوحة التحكم الإدارية

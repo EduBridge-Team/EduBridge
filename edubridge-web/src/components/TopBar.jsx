@@ -14,6 +14,7 @@ import {
   IdCard,
   LifeBuoy,
   Bell,
+  Building2,
   Settings,
   ShieldCheck,
   Landmark,
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react'
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
+import { dashboardFor } from '../roleRoutes'
 
 export default function TopBar() {
   const navigate = useNavigate()
@@ -61,21 +63,14 @@ export default function TopBar() {
   const is = (...roles) => user && roles.includes(user.role)
 
   // مسار لوحة الدور — يُستخدم لرابط «لوحتي»
-  const dashboardPath = user
-    ? {
-        admin: '/admin',
-        teacher: '/teacher',
-        specialist: '/specialist',
-        parent: '/parent',
-        ministry: '/ministry',
-      }[user.role] || '/'
-    : '/'
+  const dashboardPath = dashboardFor(user)
 
   // روابط الدور المضغوطة في شريط الأيقونات
   const stripLinks = [
     { to: '/admin', label: 'لوحة التحكم', Icon: Settings, show: is('admin') },
     { to: '/admin/verifications', label: 'مراجعة التوثيق', Icon: ShieldCheck, show: is('admin') },
     { to: '/ministry', label: 'المناهج', Icon: Landmark, show: is('ministry', 'admin') },
+    { to: '/institution', label: 'إدارة المؤسسة', Icon: Building2, show: is('institution') },
     { to: '/children', label: 'الأطفال', Icon: Users, show: Boolean(user) && user.role !== 'parent' },
     { to: '/lessons', label: 'الدروس', Icon: BookOpen, show: Boolean(user) },
     { to: '/accessibility', label: 'إعدادات الوصول', Icon: Accessibility, show: Boolean(user) },
@@ -98,7 +93,7 @@ export default function TopBar() {
   ].filter((l) => l.show)
 
   return (
-    <header className="topbar">
+    <header className={`topbar ${user ? `topbar-${user.role}` : 'topbar-guest'}`}>
       {/* الشعار والاسم — بداية الشريط (يمين في RTL) */}
       <div className="topbar-brand" onClick={() => navigate('/')}>
         <img className="brand-logo" src="/edubridge-logo.png" alt="EduBridge" />

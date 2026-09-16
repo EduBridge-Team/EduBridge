@@ -15,6 +15,9 @@ build/
 dist/
 *.apk
 
+# ملفات الهوية المصدرية الكبيرة — تبقى محلية
+branding/*.pdf
+
 # ملفات النظام والمحررات
 .DS_Store
 Thumbs.db
@@ -28,3 +31,6 @@ Thumbs.db
 # ملف تعليمات Claude — محلي فقط
 CLAUDE.md
 
+
+# Local secrets
+secrets/

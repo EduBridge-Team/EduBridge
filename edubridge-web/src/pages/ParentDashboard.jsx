@@ -40,7 +40,7 @@ export default function ParentDashboard() {
   }, [])
 
   return (
-    <div className="parent-dashboard-new">
+    <div className="parent-dashboard-new role-dashboard role-parent">
       <section className="parent-welcome">
         <div>
           <span className="hero-kicker">لوحة ولي الأمر</span>

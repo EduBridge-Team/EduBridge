@@ -2,22 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { googleLogin, login } from '../api'
-
-// الصفحة التي يهبط عليها المستخدم بعد الدخول حسب دوره — لكل دور لوحته
-function landingFor(user) {
-  switch (user?.role) {
-    case 'admin':
-      return '/admin'
-    case 'teacher':
-      return '/teacher'
-    case 'specialist':
-      return '/specialist'
-    case 'parent':
-      return '/parent'
-    default:
-      return '/children'
-  }
-}
+import { dashboardFor } from '../roleRoutes'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -53,7 +38,7 @@ export default function LoginPage() {
           setLoading(true)
           try {
             const u = await googleLogin(response.credential)
-            navigate(landingFor(u))
+            navigate(dashboardFor(u))
           } catch (err) {
             setError(err.message)
           } finally {
@@ -98,7 +83,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const u = await login(email.trim(), password)
-      navigate(landingFor(u))
+      navigate(dashboardFor(u))
     } catch (err) {
       setError(err.message)
     } finally {

@@ -1,11 +1,11 @@
 {
-    "name": "edubridge_app",
-    "short_name": "edubridge_app",
+    "name": "EduBridge - جسر التعليمي",
+    "short_name": "EduBridge",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F8FCFF",
+    "theme_color": "#1769C2",
+    "description": "منصة تعليمية ذكية وشاملة تدعم رحلة كل طفل.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

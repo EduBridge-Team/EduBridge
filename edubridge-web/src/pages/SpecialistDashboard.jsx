@@ -90,8 +90,8 @@ export default function SpecialistDashboard() {
   const pending = rows.reduce((s, r) => s + r.stats.inProgress, 0)
 
   return (
-    <div>
-      <main className="container container-wide">
+    <div className="role-page role-specialist">
+      <main className="container container-wide role-dashboard">
         <div className="dash-head">
           <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Stethoscope size={22} /> لوحة المختص — متابعة وتقييم الخطط العلاجية

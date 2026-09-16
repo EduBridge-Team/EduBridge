@@ -5,13 +5,15 @@ import '../screens/teacher_screen.dart';
 import '../screens/speclalist_screen.dart';
 import '../screens/parent_screen.dart';
 import '../screens/ministry_screen.dart';
+import '../screens/admin_screen.dart';
+import '../screens/institution_screen.dart';
 
 Future<Widget> homeScreenForRole() async {
   final role = await ApiService.getRole();
 
   // 🛡️ استثناء الأدمن: لا يُطلب منه التوثيق، يدخل مباشرة
   if (role == 'admin') {
-    return const HomeScreen();
+    return const AdminScreen(admin: {});
   }
 
   // ✅ التعديل هنا: لا نوجه المعلم والمختص لشاشة التوثيق إجبارياً
@@ -25,8 +27,9 @@ Future<Widget> homeScreenForRole() async {
     case 'parent':
       return const ParentScreen();
     case 'ministry':
-    case 'institution':
       return const MinistryScreen();
+    case 'institution':
+      return const InstitutionScreen();
     default:
       return const HomeScreen();
   }
