@@ -9,6 +9,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';
 import '../theme.dart';
+import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../utils/navigation.dart';
@@ -764,7 +765,7 @@ class _SpecialistDashboardScreenState
     );
   }
 
-  Widget _buildHeader(JisrColors c) {
+    Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -778,40 +779,54 @@ class _SpecialistDashboardScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ─── الصف العلوي: الأفاتار يمين + العنوان وسط + القائمة يسار ───
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/brand_icon.png',
-                      width: 32, height: 32),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'EduBridge · المختص',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  // ✅ الأفاتار — يظهر على اليمين (أول عنصر في RTL)
+                  const ProfileAvatarButton(size: 42),
+
+                  // ✅ العنوان في الوسط
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/brand_icon.png',
+                        width: 40,
+                        height: 40,
                       ),
-                    ),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'EduBridge',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
+
+                  // ✅ القائمة — تظهر على اليسار (آخر عنصر في RTL)
                   DashboardMenu(
                     actions: [
                       DashboardMenuAction(
-                           id: 'therapy_requests',
-                           label: 'طلبات الدعم النفسي',
-                           icon: Icons.psychology_alt,
-                         onSelected: () => Navigator.push(
-                         context,
-                         MaterialPageRoute(
+                        id: 'therapy_requests',
+                        label: 'طلبات الدعم النفسي',
+                        icon: Icons.psychology_alt,
+                        onSelected: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
                             builder: (_) => const TherapyRequestsScreen(),
-    ),
-  ),
-),
-                    DashboardMenuAction(
-  id: 'therapy',
-  label: 'الجلسات المجدولة',
-  icon: Icons.event_available,
-  onSelected: _openTherapy,
-),
+                          ),
+                        ),
+                      ),
+                      DashboardMenuAction(
+                        id: 'therapy',
+                        label: 'الجلسات المجدولة',
+                        icon: Icons.event_available,
+                        onSelected: _openTherapy,
+                      ),
                       DashboardMenuAction(
                         id: 'support',
                         label: 'الدعم الفني',
@@ -870,6 +885,7 @@ class _SpecialistDashboardScreenState
                 ],
               ),
               const SizedBox(height: 12),
+              // ─── الترحيب ───
               FutureBuilder<String?>(
                 future: ApiService.getName(),
                 builder: (context, snap) {

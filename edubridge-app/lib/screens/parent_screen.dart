@@ -7,6 +7,7 @@ import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';
 import '../theme.dart';
+import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../widgets/speakable.dart';
@@ -199,26 +200,35 @@ class _ParentScreenState extends State<ParentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+            appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: AppColors.headerGradient,
           ),
         ),
+        // ✅ الأفاتار على اليمين
+        leadingWidth: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(right: 12, top: 6, bottom: 6),
+          child: const ProfileAvatarButton(),
+        ),
+        // ✅ شعار في المنتصف
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/brand_icon.png', width: 42, height: 42),
-            const SizedBox(width: 8),
+            Image.asset('assets/brand_icon.png', width: 36, height: 36),
+            const SizedBox(width: 6),
             const Text(
               'EduBridge',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
           ],
         ),
+        centerTitle: true,
         actions: [
           DashboardMenu(
             showMicrophoneToggle: true,

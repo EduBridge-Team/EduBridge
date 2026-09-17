@@ -1518,6 +1518,118 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
     return false;
   }
 }
+  // ═══════════════════════════════════════════════════════════
+  //  الملف الشخصي (Profile)
+  // ═══════════════════════════════════════════════════════════
+
+  /// جلب الملف الشخصي للمستخدم الحالي
+  static Future<Map<String, dynamic>?> getProfile() async {
+    try {
+      final res = await authGet('/me');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['user'] ?? data;
+      }
+      throw Exception(data['error'] ?? 'تعذّر تحميل الملف الشخصي');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  /// تغيير كلمة المرور
+  static Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final res = await authPut('/me/password', {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return;
+      }
+      throw Exception(data['error'] ?? 'فشل تغيير كلمة المرور');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+    // ═══════════════════════════════════════════════════════════
+  //  صورة البروفايل (Profile Picture)
+  // ═══════════════════════════════════════════════════════════
+
+  /// رفع صورة البروفايل
+  static Future<String?> uploadProfilePicture(File image) async {
+    try {
+      final token = await getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('انتهت جلسة تسجيل الدخول');
+      }
+      if (!await image.exists()) {
+        throw Exception('ملف الصورة غير موجود');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${Config.baseUrl}/me/avatar'),
+      )
+        ..headers['Authorization'] = 'Bearer $token'
+        ..files.add(
+          await http.MultipartFile.fromPath('avatar', image.path),
+        );
+
+      final response = await request.send();
+      final body = await response.stream.bytesToString();
+      final data = body.isEmpty
+          ? <String, dynamic>{}
+          : (jsonDecode(body) as Map<String, dynamic>);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final url = data['avatar_url'] as String?;
+        if (url != null) {
+          // ✅ احفظ محلياً للاستخدام السريع
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('avatar_url', url);
+        }
+        return url;
+      }
+      throw Exception(data['error'] ?? 'فشل رفع الصورة');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  /// حذف صورة البروفايل (رجوع للحرف)
+  static Future<bool> removeProfilePicture() async {
+    try {
+      final res = await authDelete('/me/avatar');
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('avatar_url');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// جلب رابط صورة البروفايل المحفوظ
+  static Future<String?> getSavedAvatarUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('avatar_url');
+  }
+
+  /// حفظ رابط صورة البروفايل محلياً
+  static Future<void> saveAvatarUrl(String? url) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (url == null || url.isEmpty) {
+      await prefs.remove('avatar_url');
+    } else {
+      await prefs.setString('avatar_url', url);
+    }
+  }
   // ===== حذف الحساب =====
   static Future<void> deleteAccount() async {
     try {
