@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,39 @@ class ChildAccessMiddleware
     {
         $user = $request->attributes->get('jwt_user');
         if (!$user) {
-            return response()->json(['error' => 'غير مصرح'], 401);
+            return $next($request);
+        }
+
+        // قائمة الأطفال: الوزارة والمؤسسة تستخدمان مساراتهما المخصصة،
+        // والمعلّم لا يرى إلا الأطفال المسندين إليه.
+        if ($request->is('api/children') && $request->isMethod('get')) {
+            if (in_array($user->role, ['ministry', 'institution'], true)) {
+                return response()->json(['error' => 'هذه الصفحة غير متاحة لهذا الدور'], 403);
+            }
+
+            $response = $next($request);
+            if ($user->role !== 'teacher' || !($response instanceof JsonResponse)) {
+                return $response;
+            }
+
+            $payload = $response->getData(true);
+            $payload['children'] = array_values(array_filter(
+                $payload['children'] ?? [],
+                fn ($child) => (int) ($child['assigned_teacher_id'] ?? 0) === (int) $user->id
+            ));
+            $response->setData($payload);
+            return $response;
+        }
+
+        $childScoped =
+            $request->is('api/children/*') ||
+            $request->is('api/progress/child/*') ||
+            $request->is('api/evaluations/child/*') ||
+            $request->is('api/sessions/child/*') ||
+            $request->is('api/therapy/requests/child/*');
+
+        if (!$childScoped) {
+            return $next($request);
         }
 
         $childId = $request->route('childId') ?? $request->route('id');
