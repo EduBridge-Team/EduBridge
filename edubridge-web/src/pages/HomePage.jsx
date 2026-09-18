@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -68,6 +69,10 @@ const IMPACT = [
   },
 ]
 
+const HERO_TITLE_LINE_ONE = 'تعليم ذكي وشامل'
+const HERO_TITLE_LINE_TWO = 'لكل طفل'
+const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
+
 const SUCCESS_STORIES = [
   {
     avatar: 'أ',
@@ -93,13 +98,71 @@ export default function HomePage() {
   const navigate = useNavigate()
   const loggedIn = Boolean(getToken())
   const user = getUser()
+  const [heroTitleLength, setHeroTitleLength] = useState(0)
+  const [heroDeleting, setHeroDeleting] = useState(false)
+
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setHeroTitleLength(HERO_TITLE.length)
+      setHeroDeleting(false)
+      return undefined
+    }
+
+    let timeout
+
+    if (!heroDeleting && heroTitleLength < HERO_TITLE.length) {
+      timeout = window.setTimeout(
+        () => setHeroTitleLength((length) => Math.min(length + 1, HERO_TITLE.length)),
+        82,
+      )
+    } else if (!heroDeleting && heroTitleLength === HERO_TITLE.length) {
+      timeout = window.setTimeout(() => setHeroDeleting(true), 1800)
+    } else if (heroDeleting && heroTitleLength > 0) {
+      timeout = window.setTimeout(
+        () => setHeroTitleLength((length) => Math.max(length - 1, 0)),
+        44,
+      )
+    } else {
+      timeout = window.setTimeout(() => setHeroDeleting(false), 420)
+    }
+
+    return () => window.clearTimeout(timeout)
+  }, [heroDeleting, heroTitleLength])
+
+  const visibleHeroTitle = HERO_TITLE.slice(0, heroTitleLength)
+  const typedHeroLineOne = visibleHeroTitle.slice(0, HERO_TITLE_LINE_ONE.length)
+  const typedHeroLineTwo = visibleHeroTitle.length > HERO_TITLE_LINE_ONE.length
+    ? visibleHeroTitle.slice(HERO_TITLE_LINE_ONE.length + 1)
+    : ''
+  const cursorOnFirstLine = heroTitleLength <= HERO_TITLE_LINE_ONE.length
 
   return (
     <div className="landing new-landing reference-home">
       <section className="home-hero reference-hero">
+        <div className="hero-decorations" aria-hidden="true">
+          <span className="hero-deco hero-deco-dots" />
+          <span className="hero-deco hero-deco-ring hero-deco-ring-a" />
+          <span className="hero-deco hero-deco-ring hero-deco-ring-b" />
+          <span className="hero-deco hero-deco-spark hero-deco-spark-a">✦</span>
+          <span className="hero-deco hero-deco-spark hero-deco-spark-b">✦</span>
+          <span className="hero-deco hero-deco-plus">+</span>
+          <span className="hero-deco hero-deco-bubble hero-deco-bubble-a" />
+          <span className="hero-deco hero-deco-bubble hero-deco-bubble-b" />
+        </div>
+
         <div className="home-hero-copy">
           <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
-          <h1>تعليم ذكي وشامل<br /><span>لكل طفل</span></h1>
+          <h1 className="hero-typewriter" aria-label={HERO_TITLE}>
+            <span className="hero-type-line hero-type-line-one">
+              {typedHeroLineOne}
+              {cursorOnFirstLine && <i className="hero-type-cursor" aria-hidden="true" />}
+            </span>
+            <br />
+            <span className="hero-type-line hero-type-accent">
+              {typedHeroLineTwo}
+              {!cursorOnFirstLine && <i className="hero-type-cursor" aria-hidden="true" />}
+            </span>
+          </h1>
           <p>
             في EduBridge نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية
             مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.
