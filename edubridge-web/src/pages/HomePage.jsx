@@ -5,7 +5,6 @@ import {
   BookOpen,
   CheckCircle2,
   Heart,
-  LayoutDashboard,
   Play,
   ShieldCheck,
   Sparkles,
@@ -14,28 +13,31 @@ import {
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
-import HeroTypewriter from '../components/HeroTypewriter'
 import NoorPet from '../components/NoorPet'
 import { dashboardFor } from '../roleRoutes'
+import '../homepage-reference.css'
 
 const AUDIENCES = [
   {
     icon: '👩‍👦',
     title: 'ولي الأمر',
     text: 'تابع تقدّم طفلك وادعمه في كل خطوة',
-    points: ['تقارير واضحة ومبسّطة', 'أنشطة مقترحة للمنزل', 'تواصل مباشر مع المعلمين'],
+    points: ['مراقبة التقدّم والتقارير', 'أنشطة مخصصة للمنزل', 'تواصل مباشر مع المعلمين'],
+    tone: 'tone-parent',
   },
   {
     icon: '🧑‍🏫',
     title: 'المعلم',
     text: 'أدوات ذكية لتعليم أكثر فاعلية',
     points: ['خطط دروس مرنة', 'محتوى تفاعلي متنوع', 'متابعة أداء الطلاب'],
+    tone: 'tone-teacher',
   },
   {
     icon: '🫶',
     title: 'المختص',
     text: 'دعم احترافي يصنع فرقاً حقيقياً',
     points: ['أدوات تقييم متقدمة', 'برامج تدخل مخصصة', 'تعاون مع فريق العمل'],
+    tone: 'tone-specialist',
   },
 ]
 
@@ -43,28 +45,25 @@ const FEATURES = [
   { Icon: BookOpen, title: 'دروس مخصصة', text: 'محتوى يناسب مستوى وقدرات كل طفل' },
   { Icon: BarChart3, title: 'متابعة التقدم', text: 'تقارير واضحة لقياس النمو والإنجازات' },
   { Icon: Users, title: 'تعاون مستمر', text: 'تواصل فعّال بين الأسرة والمعلمين والمختصين' },
-  { Icon: ShieldCheck, title: 'إتاحة وشمولية', text: 'تجربة مرنة لمختلف القدرات والاحتياجات' },
+  { Icon: ShieldCheck, title: 'إتاحة وشمولية', text: 'تصميم يدعم مختلف القدرات والاحتياجات' },
   { Icon: Sparkles, title: 'مساعد ذكي', text: 'مساندة فورية وإرشاد تعليمي مع نور' },
 ]
 
-const PRODUCT_VIEWS = [
+const IMPACT = [
   {
-    image: '/brand-homepage.webp',
-    label: 'الرئيسية',
-    title: 'بداية واضحة لكل رحلة تعلّم',
-    text: 'وصول سريع إلى الأدوات والخدمات المناسبة لكل مستخدم.',
+    icon: '💙',
+    title: 'رحلة أوضح للأسرة',
+    text: 'لوحات متابعة مبسطة تساعد ولي الأمر على فهم التقدّم وما يحتاجه الطفل في الخطوة التالية.',
   },
   {
-    image: '/brand-lessons.webp',
-    label: 'الدروس',
-    title: 'محتوى تعليمي سهل الاستكشاف',
-    text: 'دروس مصنفة وتجربة بصرية تراعي اختلاف القدرات.',
+    icon: '📚',
+    title: 'تعليم أكثر مرونة',
+    text: 'أدوات ودروس قابلة للتخصيص تساعد المعلم على بناء تجربة أقرب لقدرات كل متعلم.',
   },
   {
-    image: '/brand-parent.webp',
-    label: 'ولي الأمر',
-    title: 'متابعة تمنح الأسرة صورة كاملة',
-    text: 'تقدّم الطفل، أنشطته وتوصياته في مكان واحد.',
+    icon: '🤝',
+    title: 'فريق يعمل معاً',
+    text: 'تجمع المنصة الأسرة والمعلم والمختص حول صورة واحدة وتواصل أسهل وأكثر استمرارية.',
   },
 ]
 
@@ -74,21 +73,23 @@ export default function HomePage() {
   const user = getUser()
 
   return (
-    <div className="landing new-landing">
-      <section className="home-hero">
+    <div className="landing new-landing reference-home">
+      <section className="home-hero reference-hero">
         <div className="home-hero-copy">
           <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
-          <HeroTypewriter />
+          <h1>تعليم ذكي وشامل<br /><span>لكل طفل</span></h1>
           <p>
             في EduBridge نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية
             مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.
           </p>
+
           <div className="hero-actions">
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/register')}>
               ابدأ رحلتك الآن <ArrowLeft size={18} />
             </button>
             <a className="btn outline" href="#features"><Play size={18} /> شاهد ما نقدمه</a>
           </div>
+
           <div className="hero-promises">
             <span><Users size={18} /> تعليم شامل</span>
             <span><Heart size={18} /> فرص متساوية</span>
@@ -96,13 +97,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="home-hero-visual" aria-label="معاينة منصة EduBridge">
-          <div className="hero-product-frame">
-            <div className="hero-window-bar" aria-hidden="true"><i /><i /><i /><span>edubridge.app</span></div>
-            <img src="/brand-homepage.webp" alt="معاينة الصفحة الرئيسية لمنصة EduBridge" />
+        <div className="reference-hero-art" aria-label="واجهة تعريفية لمنصة EduBridge">
+          <div className="hero-loop loop-one" aria-hidden="true" />
+          <div className="hero-loop loop-two" aria-hidden="true" />
+          <div className="hero-image-shell">
+            <img src="/brand-feature.webp" alt="EduBridge — تعليم ذكي وشامل" />
           </div>
-          <div className="hero-note progress"><BarChart3 size={22} /><span><b>تقدم ملحوظ</b><small>+80% هذا الأسبوع</small></span></div>
-          <div className="hero-note future"><BookOpen size={22} /><span><b>تعلّم بطريقتك</b><small>مستقبل أكثر إشراقاً</small></span></div>
+          <div className="hero-note progress"><BarChart3 size={22} /><span><b>تقدم ملحوظ</b><small>متابعة مستمرة</small></span></div>
+          <div className="hero-note future"><BookOpen size={22} /><span><b>مستقبل أكثر إشراقاً</b><small>تعلّم بطريقتك</small></span></div>
+          <span className="hero-hand-note">كل طفل يستطيع<br />أن يتعلّم بطريقته ♡</span>
         </div>
       </section>
 
@@ -112,8 +115,8 @@ export default function HomePage() {
           <a href="#features" className="soft-link">اكتشف المزيد <ArrowLeft size={16} /></a>
         </div>
         <div className="audience-grid">
-          {AUDIENCES.map((item, index) => (
-            <article className={`audience-card tone-${index + 1}`} key={item.title}>
+          {AUDIENCES.map((item) => (
+            <article className={'audience-card ' + item.tone} key={item.title}>
               <div className="audience-icon">{item.icon}</div>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
@@ -129,44 +132,26 @@ export default function HomePage() {
         <div className="home-features-grid">
           {FEATURES.map(({ Icon, title, text }) => (
             <article className="home-feature" key={title}>
-              <span><Icon size={28} /></span><h3>{title}</h3><p>{text}</p>
+              <span><Icon size={28} /></span>
+              <h3>{title}</h3>
+              <p>{text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="product-showcase" aria-labelledby="product-showcase-title">
-        <div className="product-showcase-heading">
-          <span className="hero-kicker"><LayoutDashboard size={18} /> تجربة واحدة، لكل الأدوار</span>
-          <h2 id="product-showcase-title">مصممة حول احتياج المستخدم</h2>
-          <p>هوية موحّدة وتجربة سلسة تمتد من الصفحة الرئيسية إلى الدروس ولوحة ولي الأمر.</p>
-        </div>
-        <div className="product-view-grid">
-          {PRODUCT_VIEWS.map((view) => (
-            <article className="product-view-card" key={view.label}>
-              <div className="product-view-image"><img src={view.image} alt={`معاينة ${view.label} في EduBridge`} /></div>
-              <div className="product-view-copy">
-                <span>{view.label}</span>
-                <h3>{view.title}</h3>
-                <p>{view.text}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-section noor-showcase">
+      <section className="home-section noor-showcase reference-noor">
         <div className="noor-bubbles">
-          <span>كيف أساعد طفلي اليوم؟ 👋</span>
-          <span>اقترح نشاطاً مناسباً له</span>
-          <span>بسّط لي هذا الدرس</span>
+          <span>👋 كيف أساعد طفلك اليوم؟</span>
+          <span>أريد أن أتعلم بطريقة أسهل</span>
+          <span>يمكنني اقتراح أنشطة مناسبة لك</span>
         </div>
         <div className="noor-figure"><NoorPet size={190} trackMouse /></div>
         <div className="noor-copy">
-          <span className="hero-kicker">رفيق التعلّم الذكي</span>
+          <span className="hero-kicker">دعم ذكي.. في كل خطوة</span>
           <h2>مساعدك الذكي <em>نور</em></h2>
-          <p>نور يجيب عن الأسئلة، يبسّط الدروس ويقترح أنشطة وإرشادات فورية للطلاب والمعلمين والأهل.</p>
-          <button className="btn" onClick={() => navigate(loggedIn ? '/parent' : '/login')}>جرّب نور الآن <ArrowLeft size={17} /></button>
+          <p>نور هو المساعد الذكي من EduBridge، يجيب عن أسئلتك ويقترح أنشطة ودروساً مخصصة ويقدم إرشادات فورية للأسرة والمعلمين.</p>
+          <button className="btn" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/login')}>جرّب نور الآن <ArrowLeft size={17} /></button>
         </div>
       </section>
 
@@ -177,15 +162,18 @@ export default function HomePage() {
         <div><Volume2 /><b>12+</b><span>دولة حول العالم</span></div>
       </section>
 
-      <section className="brand-download-banner">
-        <img src="/brand-feature.webp" alt="EduBridge — لأن كل قدرة تستحق أن تُكتشف" />
-        <div>
-          <span>EduBridge على هاتفك</span>
-          <h2>التعلّم والدعم، أينما كنتم</h2>
-          <p>تابع الدروس والتقدّم وتواصل مع فريق الدعم من التطبيق.</p>
-          <a className="btn" href="https://github.com/EduBridge-Team/EduBridge/releases/latest" target="_blank" rel="noreferrer">
-            تحميل التطبيق <ArrowLeft size={18} />
-          </a>
+      <section className="home-section impact-section" aria-labelledby="impact-title">
+        <div className="section-heading">
+          <div><h2 id="impact-title">تجربة تصنع فرقاً</h2><p>كل جزء في EduBridge مصمم ليجعل رحلة التعلّم أبسط وأكثر ترابطاً</p></div>
+        </div>
+        <div className="impact-grid">
+          {IMPACT.map((item) => (
+            <article className="impact-card" key={item.title}>
+              <span>{item.icon}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 

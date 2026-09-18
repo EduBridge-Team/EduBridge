@@ -54,7 +54,7 @@ export default function TopBar() {
   ].filter((link) => link.show)
 
   return (
-    <header className={`topbar ${user ? `topbar-${user.role}` : 'topbar-guest'}`}>
+    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
         <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
           <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
@@ -62,13 +62,13 @@ export default function TopBar() {
         </div>
       </div>
 
-      <button className={`hamburger ${open ? 'is-open' : ''}`} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+      <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         <span /><span /><span />
       </button>
 
       {open && <div className="topbar-backdrop" onClick={() => setOpen(false)} />}
 
-      <div className={`topbar-menu ${open ? 'open' : ''}`}>
+      <div className={'topbar-menu ' + (open ? 'open' : '')}>
         {user ? (
           <>
             <nav className="topbar-nav">
@@ -105,6 +105,9 @@ export default function TopBar() {
             <nav className="topbar-nav">
               <NavLink to="/" end><Home size={16} /> الرئيسية</NavLink>
               <NavLink to="/about"><Info size={16} /> من نحن</NavLink>
+              <a href="/#features"><Users size={16} /> الخدمات</a>
+              <NavLink to="/lessons"><BookOpen size={16} /> الدروس</NavLink>
+              <a href="/#contact"><LifeBuoy size={16} /> تواصل معنا</a>
             </nav>
             <div className="topbar-actions">
               <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>

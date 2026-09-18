@@ -4,7 +4,7 @@ import { Headphones, MapPin, Smartphone } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" id="contact">
       <div className="footer-grid">
         <div className="footer-identity">
           <div className="brand-lockup brand-lockup--footer" aria-label="EduBridge">
