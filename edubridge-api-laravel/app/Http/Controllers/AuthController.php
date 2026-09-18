@@ -7,6 +7,8 @@ use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\QueryException;
 
 class AuthController extends Controller
 {
@@ -21,6 +23,40 @@ class AuthController extends Controller
     private function getGoogleClientId(): ?string
     {
         return env('GOOGLE_CLIENT_ID') ?: getenv('GOOGLE_CLIENT_ID') ?: ($_ENV['GOOGLE_CLIENT_ID'] ?? null);
+    }
+
+    private function getPasswordColumn(): ?string
+    {
+        if (Schema::hasColumn('users', 'password_hash')) {
+            return 'password_hash';
+        }
+
+        if (Schema::hasColumn('users', 'password')) {
+            return 'password';
+        }
+
+        return null;
+    }
+
+    private function issueToken(object $user): string
+    {
+        $jwtSecret = $this->getJwtSecret();
+        if (!$jwtSecret) {
+            throw new \RuntimeException('JWT_SECRET_MISSING');
+        }
+
+        $role = isset($user->role) && is_string($user->role) ? trim($user->role) : '';
+        if ($role === '') {
+            throw new \RuntimeException('USER_ROLE_MISSING');
+        }
+
+        $now = time();
+
+        return JWT::encode(
+            ['id' => $user->id, 'role' => $role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
+            $jwtSecret,
+            'HS256'
+        );
     }
 
     // إنشاء حساب جديد
@@ -47,24 +83,32 @@ class AuthController extends Controller
         }
 
         try {
-            // تشفير الباسورد قبل التخزين (bcrypt)
+            // ندعم قواعد البيانات القديمة والجديدة: password_hash أو password.
+            $passwordColumn = $this->getPasswordColumn();
+            if (!$passwordColumn) {
+                return response()->json([
+                    'error' => 'بنية جدول المستخدمين غير مكتملة على السيرفر',
+                    'code' => 'AUTH_PASSWORD_COLUMN_MISSING',
+                ], 500);
+            }
+
             $insert = [
                 'name' => $name,
                 'email' => $email,
-                'password_hash' => password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]),
+                $passwordColumn => password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]),
                 'role' => $role,
-                'phone' => $phone,
             ];
+
+            if (Schema::hasColumn('users', 'phone')) {
+                $insert['phone'] = $phone;
+            }
             // رقم الهوية اختياري عند التسجيل (يُستكمل التوثيق لاحقاً)
-            if ($request->filled('national_id')) {
+            if ($request->filled('national_id') && Schema::hasColumn('users', 'national_id')) {
                 $insert['national_id'] = trim((string) $request->input('national_id'));
             }
             $id = DB::table('users')->insertGetId($insert);
 
-            $user = DB::table('users')
-                ->select('id', 'name', 'email', 'role', 'phone', 'national_id',
-                    'verification_status', 'created_at')
-                ->find($id);
+            $user = DB::table('users')->find($id);
 
             return response()->json(['user' => $user], 201);
         } catch (\Throwable $e) {
@@ -85,25 +129,46 @@ class AuthController extends Controller
         }
 
         try {
+            $passwordColumn = $this->getPasswordColumn();
+            if (!$passwordColumn) {
+                return response()->json([
+                    'error' => 'بنية جدول المستخدمين غير مكتملة على السيرفر',
+                    'code' => 'AUTH_PASSWORD_COLUMN_MISSING',
+                ], 500);
+            }
+
             $user = DB::table('users')->where('email', $email)->first();
 
-            // نفس الرسالة سواء الإيميل غلط أو الباسورد غلط (أأمن)
-            if (!$user || !password_verify($password, $user->password_hash)) {
+            // نفس الرسالة سواء الإيميل غلط أو الباسورد غلط (أأمن).
+            $storedHash = $user?->{$passwordColumn} ?? null;
+            if (!$user || !is_string($storedHash) || $storedHash === '' || !password_verify($password, $storedHash)) {
                 return response()->json(['error' => 'بيانات الدخول غير صحيحة'], 401);
             }
 
-            // إنشاء التوكن — نفس الحمولة والصلاحية (7 أيام)
-            $jwtSecret = $this->getJwtSecret();
-            if (!$jwtSecret) {
-                return response()->json(['error' => 'إعداد المصادقة على السيرفر غير مكتمل'], 500);
+            if (!isset($user->role) || !is_string($user->role) || trim($user->role) === '') {
+                return response()->json([
+                    'error' => 'بيانات الدور للحساب غير مكتملة على السيرفر',
+                    'code' => 'AUTH_ROLE_MISSING',
+                ], 500);
             }
 
-            $now = time();
-            $token = JWT::encode(
-                ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                $jwtSecret,
-                'HS256'
-            );
+            try {
+                $token = $this->issueToken($user);
+            } catch (\RuntimeException $e) {
+                report($e);
+
+                if ($e->getMessage() === 'JWT_SECRET_MISSING') {
+                    return response()->json([
+                        'error' => 'إعداد المصادقة على السيرفر غير مكتمل',
+                        'code' => 'AUTH_JWT_SECRET_MISSING',
+                    ], 500);
+                }
+
+                return response()->json([
+                    'error' => 'تعذر إنشاء جلسة الدخول',
+                    'code' => 'AUTH_TOKEN_FAILED',
+                ], 500);
+            }
 
             return response()->json([
                 'token' => $token,
@@ -115,9 +180,18 @@ class AuthController extends Controller
                     'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
+        } catch (QueryException $e) {
+            report($e);
+            return response()->json([
+                'error' => 'تعذر قراءة بيانات الحساب من قاعدة البيانات',
+                'code' => 'AUTH_DB_ERROR',
+            ], 500);
         } catch (\Throwable $e) {
             report($e);
-            return response()->json(['error' => 'خطأ في السيرفر'], 500);
+            return response()->json([
+                'error' => 'تعذر إكمال تسجيل الدخول على السيرفر',
+                'code' => 'AUTH_SERVER_ERROR',
+            ], 500);
         }
     }
 
@@ -171,17 +245,19 @@ class AuthController extends Controller
                     ->find($id);
             }
 
-            $jwtSecret = $this->getJwtSecret();
-            if (!$jwtSecret) {
-                return response()->json(['error' => 'إعداد المصادقة على السيرفر غير مكتمل'], 500);
+            try {
+                $token = $this->issueToken($user);
+            } catch (\RuntimeException $e) {
+                report($e);
+                return response()->json([
+                    'error' => $e->getMessage() === 'JWT_SECRET_MISSING'
+                        ? 'إعداد المصادقة على السيرفر غير مكتمل'
+                        : 'تعذر إنشاء جلسة الدخول',
+                    'code' => $e->getMessage() === 'JWT_SECRET_MISSING'
+                        ? 'AUTH_JWT_SECRET_MISSING'
+                        : 'AUTH_TOKEN_FAILED',
+                ], 500);
             }
-
-            $now = time();
-            $token = JWT::encode(
-                ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                $jwtSecret,
-                'HS256'
-            );
 
             return response()->json([
                 'token' => $token,

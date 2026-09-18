@@ -74,6 +74,31 @@ php artisan config:clear
 php artisan route:clear
 php artisan cache:clear
 
+# فحص المصادقة قبل إكمال النشر: قاعدة البيانات + عمود كلمة المرور + JWT.
+echo "==> فحص جاهزية تسجيل الدخول..."
+php artisan tinker --execute='
+$columns = \Illuminate\Support\Facades\Schema::getColumnListing("users");
+$passwordColumn = in_array("password_hash", $columns, true)
+    ? "password_hash"
+    : (in_array("password", $columns, true) ? "password" : null);
+if (!$passwordColumn) {
+    throw new \RuntimeException("users table has no password_hash/password column");
+}
+if (!in_array("role", $columns, true)) {
+    throw new \RuntimeException("users table has no role column");
+}
+$secret = config("services.jwt.secret") ?: env("JWT_SECRET") ?: getenv("JWT_SECRET");
+if (!is_string($secret) || trim($secret) === "") {
+    throw new \RuntimeException("JWT_SECRET is missing");
+}
+\Firebase\JWT\JWT::encode(
+    ["id" => 0, "role" => "parent", "iat" => time(), "exp" => time() + 60],
+    trim($secret),
+    "HS256"
+);
+echo "auth-ok password-column=" . $passwordColumn;
+'
+
 # 4) نشر الحزمة. نستبدل assets كوحدة واحدة حتى لا تبقى ملفات builds قديمة.
 echo "==> (4/4) نشر الموقع والهوية الجديدة..."
 ASSETS_NEXT="$PUBLIC/.edubridge-assets-next-$$"
