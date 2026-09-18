@@ -10,6 +10,7 @@ import {
   Sparkles,
   Users,
   Volume2,
+  Quote,
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
@@ -64,6 +65,27 @@ const IMPACT = [
     icon: '🤝',
     title: 'فريق يعمل معاً',
     text: 'تجمع المنصة الأسرة والمعلم والمختص حول صورة واحدة وتواصل أسهل وأكثر استمرارية.',
+  },
+]
+
+const SUCCESS_STORIES = [
+  {
+    avatar: 'أ',
+    role: 'ولي أمر',
+    title: 'متابعة أوضح في كل خطوة',
+    text: 'أصبحت متابعة التقدّم والأنشطة أسهل، وأصبح لدى الأسرة تصور أوضح لما يحتاجه الطفل في المرحلة التالية.',
+  },
+  {
+    avatar: 'م',
+    role: 'معلمة',
+    title: 'تعليم أكثر مرونة',
+    text: 'تساعد الأدوات المرنة والمحتوى المتنوع على تكييف الدروس بصورة أفضل مع قدرات كل طالب واحتياجاته.',
+  },
+  {
+    avatar: 'خ',
+    role: 'مختص',
+    title: 'تعاون يصنع فرقاً',
+    text: 'وجود الأسرة والمعلم والمختص في مساحة واحدة يجعل المتابعة أكثر ترابطاً ويسهّل بناء خطة دعم مشتركة.',
   },
 ]
 
@@ -169,6 +191,32 @@ export default function HomePage() {
               <span>{item.icon}</span>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-section success-stories-section" aria-labelledby="success-stories-title">
+        <div className="section-heading success-heading">
+          <div>
+            <span className="hero-kicker">تجارب تلهمنا</span>
+            <h2 id="success-stories-title">قصص نجاح ملهمة</h2>
+            <p>نماذج لرحلات تعليمية أكثر وضوحاً وتعاوناً مع EduBridge</p>
+          </div>
+        </div>
+        <div className="success-stories-grid">
+          {SUCCESS_STORIES.map((story) => (
+            <article className="success-story-card" key={story.title}>
+              <Quote className="story-quote" size={24} aria-hidden="true" />
+              <h3>{story.title}</h3>
+              <p>{story.text}</p>
+              <div className="story-person">
+                <span className="story-avatar" aria-hidden="true">{story.avatar}</span>
+                <div>
+                  <b>{story.role}</b>
+                  <small>من مجتمع EduBridge</small>
+                </div>
+              </div>
             </article>
           ))}
         </div>
