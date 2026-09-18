@@ -779,3 +779,51 @@
     font-size: 22px;
   }
 }
+
+
+/* HQ transparent hero: give the artwork more visual weight without affecting mobile text. */
+@media (min-width: 1025px) {
+  .reference-home .reference-hero {
+    grid-template-columns: .90fr 1.10fr;
+    gap: 24px;
+  }
+
+  .reference-hero-art {
+    width: 114%;
+    justify-self: center;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 760px;
+    filter: drop-shadow(0 20px 44px rgba(25, 111, 173, .10));
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1024px) {
+  .reference-home .reference-hero {
+    grid-template-columns: .88fr 1.12fr;
+    gap: 12px;
+  }
+
+  .reference-hero-art {
+    width: 118%;
+    justify-self: center;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 780px) {
+  .reference-hero-art {
+    width: 100%;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 680px;
+  }
+}
