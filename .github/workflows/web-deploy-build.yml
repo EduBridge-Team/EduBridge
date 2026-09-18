@@ -30,6 +30,18 @@ jobs:
           cache: npm
           cache-dependency-path: edubridge-web/package-lock.json
 
+      - name: Rebuild HQ transparent hero asset
+        run: |
+          cat edubridge-web/.hero-parts/hero.*.b64 | tr -d '\n\r' | base64 -d > edubridge-web/public/edubridge-hero-child.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('edubridge-web/public/edubridge-hero-child.webp')
+          data = p.read_bytes()
+          assert len(data) > 50000, f'Hero asset is unexpectedly small: {len(data)} bytes'
+          assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', 'Invalid WebP hero asset'
+          print(f'HQ hero ready: {len(data)} bytes')
+          PY
+
       - name: Install and build
         working-directory: edubridge-web
         env:
