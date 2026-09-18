@@ -40,12 +40,13 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          rm -rf deploy/web/assets
-          mkdir -p deploy/web/assets
-          cp edubridge-web/dist/index.html deploy/web/app.html
-          cp -R edubridge-web/dist/assets/. deploy/web/assets/
-          cp edubridge-web/dist/edubridge-logo.png deploy/web/edubridge-logo.png
-          cp edubridge-web/dist/edubridge-icon.png deploy/web/edubridge-icon.png
+          # Copy the complete Vite output, including every file from public/.
+          # This prevents newly added hero/brand images from disappearing in production.
+          rm -rf deploy/web
+          mkdir -p deploy/web
+          cp -R edubridge-web/dist/. deploy/web/
+          cp deploy/web/index.html deploy/web/app.html
+          rm -f deploy/web/index.html
 
       - name: Commit deploy bundle
         run: |

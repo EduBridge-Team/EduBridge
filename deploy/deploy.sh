@@ -27,7 +27,8 @@ for required in \
   "$WEB_BUILD/app.html" \
   "$WEB_BUILD/assets" \
   "$WEB_BUILD/edubridge-logo.png" \
-  "$WEB_BUILD/edubridge-icon.png"; do
+  "$WEB_BUILD/edubridge-icon.png" \
+  "$WEB_BUILD/edubridge-hero-child.webp"; do
   [ -e "$required" ] || {
     echo "خطأ: ملف مطلوب للنشر غير موجود: $required" >&2
     exit 1
