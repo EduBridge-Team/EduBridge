@@ -367,3 +367,62 @@
   .pd-child-title .status-chip { margin-top: 4px; display: inline-flex; }
   .pd-quick-actions { grid-template-columns: 1fr; }
 }
+
+
+/* Screenshot polish: keep the desktop dashboard physically aligned like the reference. */
+.parent-dashboard-v2 {
+  direction: ltr;
+}
+
+.parent-dashboard-v2 .pd-sidebar,
+.parent-dashboard-v2 .pd-main {
+  direction: rtl;
+}
+
+/* Slightly widen the desktop content and keep the hero/cards balanced on narrow desktop-site viewports. */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .parent-dashboard-v2 {
+    grid-template-columns: minmax(0, 1fr) 196px;
+  }
+
+  .pd-toolbar {
+    padding-inline: 18px;
+    gap: 12px;
+  }
+
+  .pd-content {
+    width: min(100% - 24px, 1040px);
+  }
+
+  .pd-hero {
+    grid-template-columns: 1.05fr .95fr;
+    padding-inline: 24px;
+  }
+
+  .pd-hero-art img {
+    width: min(390px, 120%);
+  }
+
+  .pd-section {
+    padding: 16px;
+  }
+
+  .pd-child-card {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .pd-kid-avatar {
+    width: 80px;
+    height: 80px;
+    flex-basis: 80px;
+  }
+
+  .pd-metric-card {
+    min-height: 170px;
+  }
+
+  .pd-noor-side {
+    padding-inline: 9px;
+  }
+}
