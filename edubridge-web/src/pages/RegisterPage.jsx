@@ -53,10 +53,19 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="center-page">
-      <div className="auth-card">
-        <img src="/icon.png" alt="شعار جسر" />
-        <h1>إنشاء حساب</h1>
+    <div className="center-page auth-page auth-page-register">
+      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-a" aria-hidden="true" />
+      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-b" aria-hidden="true" />
+      <div className="auth-page-decor auth-page-decor-dots" aria-hidden="true" />
+      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-a" aria-hidden="true">✦</div>
+      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-b" aria-hidden="true">✦</div>
+      <div className="auth-card auth-card-branded">
+        <div className="auth-card-corner-dots" aria-hidden="true" />
+        <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
+        <h1>EduBridge</h1>
+        <div className="subtitle">جسر تعليمي</div>
+        <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
+        <h2 className="auth-form-title">إنشاء حساب</h2>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="name">الاسم</label>
