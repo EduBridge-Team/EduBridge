@@ -834,3 +834,49 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand-blue); box
   .today-item { grid-template-columns: 65px 1fr; }
   .today-item button { grid-column: 2; justify-self: start; }
 }
+
+
+/* Animated landing headline imported from the reviewed web snapshot. */
+.hero-typewriter {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.home-hero h1 .hero-typewriter-highlight {
+  background: linear-gradient(90deg, var(--brand-blue) 8%, var(--brand-cyan) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-typewriter-cursor {
+  display: inline-block;
+  width: 4px;
+  height: .82em;
+  margin-inline-start: 4px;
+  vertical-align: -0.08em;
+  background: var(--brand-blue);
+  border-radius: 2px;
+  animation: hero-cursor-blink 1s step-end infinite;
+}
+@keyframes hero-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-typewriter-cursor {
+    animation: none !important;
+    opacity: 1;
+  }
+}

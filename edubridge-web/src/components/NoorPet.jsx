@@ -1,12 +1,50 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 
-export default function NoorPet({ size = 76, className = '' }) {
+const MAX_ROTATE = 9
+const MAX_SHIFT = 3.5
+const TRACK_RADIUS = 420
+
+export default function NoorPet({ size = 76, className = '', trackMouse = false }) {
   const instanceId = useId().replaceAll(':', '')
   const glowId = `noor-glow-${instanceId}`
   const shadowId = `noor-shadow-${instanceId}`
+  const svgRef = useRef(null)
+  const headRef = useRef(null)
+
+  useEffect(() => {
+    if (!trackMouse) return undefined
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+
+    const svgEl = svgRef.current
+    const headEl = headRef.current
+    if (!svgEl || !headEl) return undefined
+
+    const handleMove = (event) => {
+      const rect = svgEl.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+      const dx = Math.max(-1, Math.min(1, (event.clientX - centerX) / TRACK_RADIUS))
+      const dy = Math.max(-1, Math.min(1, (event.clientY - centerY) / TRACK_RADIUS))
+
+      headEl.style.transform =
+        `translate(${(dx * MAX_SHIFT).toFixed(2)}px, ${(dy * MAX_SHIFT).toFixed(2)}px) rotate(${(dx * MAX_ROTATE).toFixed(2)}deg)`
+    }
+
+    const handleLeave = () => {
+      headEl.style.transform = ''
+    }
+
+    window.addEventListener('mousemove', handleMove)
+    window.addEventListener('mouseleave', handleLeave)
+    return () => {
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseleave', handleLeave)
+    }
+  }, [trackMouse])
 
   return (
     <svg
+      ref={svgRef}
       className={`noor-pet ${className}`.trim()}
       width={size}
       height={size}
@@ -30,20 +68,22 @@ export default function NoorPet({ size = 76, className = '' }) {
         className="noor-pet-body"
         d="M13 30 Q8 13 25 16 Q38 4 51 16 Q68 13 63 30 Q70 54 54 64 Q38 72 22 64 Q6 54 13 30 Z"
       />
-      <path className="noor-pet-ear" d="M16 28 L13 10 L28 20 Z" />
-      <path className="noor-pet-ear" d="M60 28 L63 10 L48 20 Z" />
-      <ellipse className="noor-pet-face" cx="38" cy="39.5" rx="18" ry="15.5" />
+      <g className="noor-pet-head" ref={headRef}>
+        <path className="noor-pet-ear" d="M16 28 L13 10 L28 20 Z" />
+        <path className="noor-pet-ear" d="M60 28 L63 10 L48 20 Z" />
+        <ellipse className="noor-pet-face" cx="38" cy="39.5" rx="18" ry="15.5" />
 
-      <g className="noor-pet-eyes">
-        <circle cx="30" cy="36" r="2.8" />
-        <circle cx="46" cy="36" r="2.8" />
-      </g>
-      <g className="noor-pet-blink">
-        <path d="M27 37 H33" />
-        <path d="M43 37 H49" />
-      </g>
+        <g className="noor-pet-eyes">
+          <circle cx="30" cy="36" r="2.8" />
+          <circle cx="46" cy="36" r="2.8" />
+        </g>
+        <g className="noor-pet-blink">
+          <path d="M27 37 H33" />
+          <path d="M43 37 H49" />
+        </g>
 
-      <path className="noor-pet-beak" d="M34 42 L42 42 L38 47 Z" />
+        <path className="noor-pet-beak" d="M34 42 L42 42 L38 47 Z" />
+      </g>
       <circle className="noor-pet-badge" cx="38" cy="58" r="7" />
       <g className="noor-pet-bridge">
         <path d="M33 57.5 A5 3.5 0 0 1 43 57.5" />
