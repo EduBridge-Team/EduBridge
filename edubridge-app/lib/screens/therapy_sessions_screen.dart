@@ -27,6 +27,7 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
     setState(() => _loading = true);
     try {
       final list = await ApiService.getTherapySessions(childId: widget.childId);
+      if (!mounted) return;
       setState(() {
         _sessions = list
             .map((e) => TherapySession.fromJson(e as Map<String, dynamic>))
@@ -34,7 +35,7 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
         _loading = false;
       });
     } catch (_) {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -168,6 +169,13 @@ class _CreateSessionSheetState extends State<_CreateSessionSheet> {
   final _childIdCtrl = TextEditingController();
   bool _saving = false;
 
+  @override
+  void dispose() {
+    _goalsCtrl.dispose();
+    _childIdCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _save() async {
     final childId =
         widget.childId ?? int.tryParse(_childIdCtrl.text.trim()) ?? 0;
@@ -191,6 +199,7 @@ class _CreateSessionSheetState extends State<_CreateSessionSheet> {
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('فشل: $e')),
@@ -233,8 +242,9 @@ class _CreateSessionSheetState extends State<_CreateSessionSheet> {
                   prefixIcon: Icon(Icons.child_care),
                 ),
               ),
+            // ✅ إصلاح: initialValue بدل value
             DropdownButtonFormField<TherapySessionType>(
-              value: _type,
+              initialValue: _type,
               decoration: const InputDecoration(labelText: 'نوع الجلسة'),
               items: TherapySessionType.values
                   .map((t) => DropdownMenuItem(
@@ -242,7 +252,9 @@ class _CreateSessionSheetState extends State<_CreateSessionSheet> {
                         child: Text(t.name),
                       ))
                   .toList(),
-              onChanged: (v) => setState(() => _type = v!),
+              onChanged: (v) {
+                if (v != null) setState(() => _type = v);
+              },
             ),
             const SizedBox(height: 12),
             TextField(

@@ -1,11 +1,15 @@
-// شاشة تقدّم الطفل — ملخّص + تفاصيل التقدّم بكل درس
+// screens/child_progress_screen.dart
+// تقدّم الطفل — مع كل ميزات التكييف
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/tts_service.dart';
+import '../services/reward_service.dart';
 import '../theme.dart';
-import '../widgets/listen_button.dart';
-import '../widgets/speakable.dart';
+import '../utils/adaptive_helper.dart';
+import '../widgets/accessibility/adaptive_card.dart';
+import '../widgets/accessibility/adaptive_text.dart';
+import '../widgets/accessibility/adaptive_wrapper.dart';
+
 
 class ChildProgressScreen extends StatefulWidget {
   final int childId;
@@ -24,6 +28,7 @@ class ChildProgressScreen extends StatefulWidget {
 class _ChildProgressScreenState extends State<ChildProgressScreen> {
   Map? _summary;
   List _progress = [];
+  int _stars = 0;
   bool _loading = true;
   String? _error;
 
@@ -31,15 +36,15 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   void initState() {
     super.initState();
     _loadProgress();
+    _loadStars();
   }
 
-  @override
-  void dispose() {
-    TtsService.instance.stop(); // إيقاف القراءة عند مغادرة الشاشة
-    super.dispose();
+  Future<void> _loadStars() async {
+    final stars = await RewardService.instance.getStars(widget.childId);
+    if (!mounted) return;
+    setState(() => _stars = stars);
   }
 
-  // جلب الملخّص والتفاصيل معاً
   Future<void> _loadProgress() async {
     setState(() {
       _loading = true;
@@ -62,10 +67,8 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           _loading = false;
         });
       } else {
-        final data = jsonDecode(
-            summaryRes.statusCode != 200 ? summaryRes.body : detailsRes.body);
         setState(() {
-          _error = data['error'] ?? 'تعذّر جلب التقدّم';
+          _error = 'تعذّر جلب التقدّم';
           _loading = false;
         });
       }
@@ -79,88 +82,227 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: JisrAppBar(
-        title: 'تقدّم ${widget.childName}',
-        actions: const [
-          // تفعيل وضع القراءة باللمس (accessibility)
-          ListenButton(),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadProgress,
-        child: _buildBody(),
+    return AdaptiveWrapper(
+      screenTitle: 'تقدّم ${widget.childName}',
+      child: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: AppColors.headerGradient,
+            ),
+          ),
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.insights, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                'تقدّم ${widget.childName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          actions: [
+            // النجوم
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  const Text('⭐', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$_stars',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        body: RefreshIndicator(
+          onRefresh: _loadProgress,
+          child: _buildBody(),
+        ),
       ),
     );
   }
 
   Widget _buildBody() {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (_loading) return const Center(child: CircularProgressIndicator());
+
     if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 60, color: Colors.red),
+              SizedBox(height: AdaptiveHelper.spacing),
+              AdaptiveText(
+                _error!,
+                textAlign: TextAlign.center,
+                color: Colors.red,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_progress.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_error!,
-                style: const TextStyle(fontSize: 16, color: Colors.red)),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.refresh, size: 28),
-                label:
-                    const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
-                onPressed: _loadProgress,
-              ),
+            Icon(
+              Icons.insights,
+              size: AdaptiveHelper.iconSize * 2,
+              color: Colors.grey,
+            ),
+            SizedBox(height: AdaptiveHelper.spacing),
+            const AdaptiveText(
+              'لا يوجد تقدّم مسجّل بعد',
+              type: AdaptiveTextType.subtitle,
             ),
           ],
         ),
       );
     }
-    if (_progress.isEmpty) {
-      return ListView(
-        // قائمة قابلة للتمرير حتى يعمل السحب للتحديث مع القائمة الفارغة — ListView
-        children: const [
-          SizedBox(height: 120),
-          Icon(Icons.insights, size: 72, color: Colors.grey),
-          SizedBox(height: 16),
-          Center(
-            child: Text('لا يوجد تقدّم مسجّل بعد',
-                style: TextStyle(fontSize: 18)),
-          ),
-        ],
-      );
-    }
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(AdaptiveHelper.spacing),
       children: [
         _buildSummaryCards(),
-        const SizedBox(height: 20),
+        SizedBox(height: AdaptiveHelper.spacing * 2),
         _buildRewardsSection(),
-        const SizedBox(height: 20),
-        const Text(
+        SizedBox(height: AdaptiveHelper.spacing * 2),
+        const AdaptiveText(
           'تفاصيل الدروس',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          type: AdaptiveTextType.title,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AdaptiveHelper.spacing),
         ..._progress.map((p) => _buildProgressTile(p)),
       ],
     );
   }
 
-  // ===== المكافآت: نجوم لكل درس مكتمل + شارات إنجاز =====
-  Widget _buildRewardsSection() {
-    final c = JisrColors.of(context);
+  Widget _buildSummaryCards() {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
-    final total = done + inProgress + notStarted;
-    final avgScore = double.tryParse('${_summary?['avg_score'] ?? ''}');
+    final avgScore = _summary?['avg_score'];
 
-    // الشارات: (أيقونة، اسم، شرط التحقيق، تلميح عند القفل)
+    final total = done + inProgress + notStarted;
+    final percent = total > 0 ? done / total : 0.0;
+
+    return Column(
+      children: [
+        // حلقة الإنجاز
+        SizedBox(
+          width: 160,
+          height: 160,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 160,
+                height: 160,
+                child: CircularProgressIndicator(
+                  value: percent,
+                  strokeWidth: 14,
+                  strokeCap: StrokeCap.round,
+                  color: AppColors.green,
+                  backgroundColor: Colors.grey.shade200,
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${(percent * 100).round()}%',
+                    style: TextStyle(
+                      fontSize: AdaptiveHelper.titleFontSize + 10,
+                      fontWeight: FontWeight.bold,
+                      color: AdaptiveHelper.textColor(context),
+                    ),
+                  ),
+                  AdaptiveText(
+                    'الإنجاز',
+                    type: AdaptiveTextType.caption,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: AdaptiveHelper.spacing),
+        Row(
+          children: [
+            _summaryCard('مكتمل', '$done', Icons.check_circle, AppColors.green),
+            SizedBox(width: AdaptiveHelper.spacing / 2),
+            _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew,
+                AppColors.orangeDeep),
+          ],
+        ),
+        SizedBox(height: AdaptiveHelper.spacing / 2),
+        Row(
+          children: [
+            _summaryCard('لم يبدأ', '$notStarted', Icons.hourglass_empty,
+                AppColors.muted),
+            SizedBox(width: AdaptiveHelper.spacing / 2),
+            _summaryCard(
+              'متوسّط',
+              avgScore != null ? '$avgScore%' : '—',
+              Icons.star,
+              AppColors.yellow,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _summaryCard(
+      String label, String value, IconData icon, Color color) {
+    return Expanded(
+      child: AdaptiveCard(
+        child: Column(
+          children: [
+            Icon(icon, size: AdaptiveHelper.iconSize, color: color),
+            SizedBox(height: AdaptiveHelper.spacing / 4),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: AdaptiveHelper.titleFontSize,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            AdaptiveText(label, type: AdaptiveTextType.caption),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRewardsSection() {
+    final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
+
     final badges = <({String emoji, String title, bool earned, String hint})>[
       (
         emoji: '🌟',
@@ -180,319 +322,142 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         earned: done >= 10,
         hint: done >= 10 ? '' : 'بقي ${10 - done} دروس',
       ),
-      (
-        emoji: '🎓',
-        title: 'أكملتها كلها!',
-        earned: total > 0 && done == total,
-        hint: 'أكمل كل الدروس',
-      ),
-      if (avgScore != null)
-        (
-          emoji: '💯',
-          title: 'العلامة الرائعة',
-          earned: avgScore >= 90,
-          hint: 'متوسّط ٩٠٪ فأعلى',
-        ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        const AdaptiveText(
           'المكافآت 🎉',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          type: AdaptiveTextType.title,
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: AdaptiveHelper.spacing),
 
-        // شريط النجوم: نجمة لكل درس مكتمل (قابل للقراءة باللمس)
-        Speakable(
-          radius: 18,
-          text:
-              'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'}، نجمة عن كل درس مكتمل',
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: c.tintYellow,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
-              children: [
-                const Text('⭐', style: TextStyle(fontSize: 30)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'جمع ${widget.childName} $done ${done == 1 ? 'نجمة' : done == 2 ? 'نجمتين' : done >= 3 && done <= 10 ? 'نجوم' : 'نجمة'} — نجمة عن كل درس مكتمل',
-                    style: TextStyle(
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w600,
-                      color: c.onTint,
-                    ),
-                  ),
+        // شريط النجوم
+        AdaptiveCard(
+          child: Row(
+            children: [
+              Text('⭐', style: TextStyle(fontSize: AdaptiveHelper.iconSize)),
+              SizedBox(width: AdaptiveHelper.spacing / 2),
+              Expanded(
+                child: AdaptiveText(
+                  'جمع ${widget.childName} $_stars نجمة',
+                  type: AdaptiveTextType.body,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: AdaptiveHelper.spacing),
 
-        // بطاقات الشارات
+        // الشارات
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: 1.55,
+          mainAxisSpacing: AdaptiveHelper.spacing / 2,
+          crossAxisSpacing: AdaptiveHelper.spacing / 2,
+          childAspectRatio: 1.4,
           children: badges.map((b) => _buildBadgeCard(b)).toList(),
         ),
       ],
     );
   }
 
-  // بطاقة شارة واحدة: ملوّنة عند التحقيق، رمادية بقفل قبل ذلك
   Widget _buildBadgeCard(
       ({String emoji, String title, bool earned, String hint}) badge) {
-    final c = JisrColors.of(context);
-    // نص القراءة باللمس: اسم الشارة وحالتها (محققة/مقفلة + تلميح)
-    final spoken = badge.earned
-        ? 'شارة ${badge.title}، محققة'
-        : 'شارة ${badge.title}، مقفلة${badge.hint.isNotEmpty ? '، ${badge.hint}' : ''}';
-    return Speakable(
-      radius: 18,
-      text: spoken,
-      child: Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: badge.earned ? c.tintGreen : c.card,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: badge.earned ? AppColors.green : c.line,
-          width: 2,
-        ),
-      ),
+    return AdaptiveCard(
+      backgroundColor: badge.earned
+          ? AppColors.green.withValues(alpha: 0.1)
+          : AdaptiveHelper.cardColor(context),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             badge.earned ? badge.emoji : '🔒',
-            style: TextStyle(
-              fontSize: 28,
-              color: badge.earned ? null : c.muted,
-            ),
+            style: TextStyle(fontSize: AdaptiveHelper.iconSize + 8),
           ),
-          const SizedBox(height: 6),
-          Text(
+          SizedBox(height: AdaptiveHelper.spacing / 4),
+          AdaptiveText(
             badge.title,
+            type: AdaptiveTextType.caption,
+            fontWeight: FontWeight.bold,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: badge.earned ? c.success : c.muted,
-            ),
+            color: badge.earned ? AppColors.green : null,
           ),
-          if (!badge.earned && badge.hint.isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
+          if (!badge.earned && badge.hint.isNotEmpty)
+            AdaptiveText(
               badge.hint,
+              type: AdaptiveTextType.label,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11.5, color: c.muted),
             ),
-          ],
         ],
       ),
-      ),
     );
   }
 
-  // بطاقات الملخّص: مكتمل / جاري / لم يبدأ / متوسّط النتيجة
-  Widget _buildSummaryCards() {
-    final c = JisrColors.of(context);
-    final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
-    final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
-    final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
-    final avgScore = _summary?['avg_score'];
-
-    // حلقة الإنجاز: نسبة الدروس المكتملة من الإجمالي
-    final total = done + inProgress + notStarted;
-    final percent = total > 0 ? done / total : 0.0;
-
-    return Column(
-      children: [
-        // ===== حلقة إنجاز محفّزة (قابلة للقراءة باللمس) =====
-        Speakable(
-          text: 'نسبة الإنجاز ${(percent * 100).round()} بالمئة',
-          radius: 70,
-          child: SizedBox(
-          width: 130,
-          height: 130,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 130,
-                height: 130,
-                child: CircularProgressIndicator(
-                  value: percent,
-                  strokeWidth: 11,
-                  strokeCap: StrokeCap.round,
-                  color: AppColors.green,
-                  backgroundColor: c.line,
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${(percent * 100).round()}%',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: c.heading,
-                    ),
-                  ),
-                  Text(
-                    'الإنجاز',
-                    style: TextStyle(fontSize: 13, color: c.muted),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            _summaryCard(
-                'مكتمل', '$done', Icons.check_circle, c.success),
-            const SizedBox(width: 8),
-            _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew,
-                AppColors.orangeDeep),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            _summaryCard('لم يبدأ', '$notStarted', Icons.hourglass_empty,
-                c.muted),
-            const SizedBox(width: 8),
-            _summaryCard(
-              'متوسّط النتيجة',
-              avgScore != null ? '$avgScore%' : '—',
-              Icons.star,
-              Theme.of(context).colorScheme.primary,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _summaryCard(String label, String value, IconData icon, Color color) {
-    return Expanded(
-      // قابل للقراءة باللمس: يقرأ العنوان وقيمته
-      child: Speakable(
-        text: '$label: $value',
-        child: Card(
-          child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-          child: Column(
-            children: [
-              Icon(icon, size: 36, color: color),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(label,
-                  style: const TextStyle(fontSize: 15),
-                  textAlign: TextAlign.center),
-            ],
-          ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // صف تفاصيل التقدّم بدرس واحد
   Widget _buildProgressTile(Map p) {
     final status = p['status'] ?? 'not_started';
     final statusInfo = _statusInfo(status);
     final score = p['score'];
-    final completedAt = _formatDate(p['completed_at']);
+    final title = (p['lesson_title'] ?? '').toString();
 
-    // نص القراءة باللمس: عنوان الدرس وحالته ونتيجته
-    final spoken = [
-      (p['lesson_title'] ?? '').toString(),
-      statusInfo.label,
-      if (score != null) 'النتيجة $score بالمئة',
-      if (completedAt != null) 'أُكمل في $completedAt',
-    ].where((s) => s.isNotEmpty).join('، ');
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      child: Speakable(
-        text: spoken,
-        child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(statusInfo.icon, size: 34, color: statusInfo.color),
-        title: Text(
-          p['lesson_title'] ?? '',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+    return Padding(
+      padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing / 2),
+      child: AdaptiveCard(
+        child: Row(
+          children: [
+            Icon(
+              statusInfo.icon,
+              size: AdaptiveHelper.iconSize,
+              color: statusInfo.color,
+            ),
+            SizedBox(width: AdaptiveHelper.spacing),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AdaptiveText(
+                    title,
+                    type: AdaptiveTextType.body,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  AdaptiveText(
+                    statusInfo.label +
+                        (score != null ? ' • النتيجة: $score%' : ''),
+                    type: AdaptiveTextType.caption,
+                    color: statusInfo.color,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            [
-              statusInfo.label,
-              if (score != null) 'النتيجة: $score%',
-              if (completedAt != null) 'أُكمل في: $completedAt',
-            ].join(' • '),
-            style: TextStyle(fontSize: 15, color: statusInfo.color),
-          ),
-        ),
-      ),
       ),
     );
   }
 
-  // معلومات العرض لكل حالة (نص + أيقونة + لون)
   ({String label, IconData icon, Color color}) _statusInfo(String status) {
     switch (status) {
       case 'done':
         return (
           label: 'مكتمل',
           icon: Icons.check_circle,
-          color: JisrColors.of(context).success
+          color: AppColors.green,
         );
       case 'in_progress':
         return (
           label: 'قيد التنفيذ',
           icon: Icons.autorenew,
-          color: AppColors.orangeDeep
+          color: AppColors.orangeDeep,
         );
       default:
         return (
           label: 'لم يبدأ',
           icon: Icons.hourglass_empty,
-          color: JisrColors.of(context).muted
+          color: AppColors.muted,
         );
     }
-  }
-
-  // تنسيق التاريخ بشكل مقروء (يوم/شهر/سنة)
-  String? _formatDate(dynamic value) {
-    if (value == null) return null;
-    final date = DateTime.tryParse('$value');
-    if (date == null) return null;
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

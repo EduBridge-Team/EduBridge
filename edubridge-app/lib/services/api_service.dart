@@ -448,12 +448,16 @@ class ApiService {
     }
   }
 
+  /// ✅ مُحدَّثة: يقبل الملفات الجديدة (ترجمات، لغة إشارة، وصف صوتي)
   static Future<Map<String, dynamic>?> createLessonWithMedia({
     required String title,
     String? content,
     int? disabilityTypeId,
     File? videoFile,
     File? audioFile,
+    File? captionFile,
+    File? signLanguageFile,
+    String? audioDescription,
     String? targetType,
     List<int>? targetChildIds,
   }) async {
@@ -469,8 +473,7 @@ class ApiService {
         request.fields['content'] = content.trim();
       }
       if (disabilityTypeId != null) {
-        request.fields['disability_type_id'] =
-            disabilityTypeId.toString();
+        request.fields['disability_type_id'] = disabilityTypeId.toString();
       }
       if (targetType != null) {
         request.fields['target_type'] = targetType;
@@ -478,7 +481,11 @@ class ApiService {
       if (targetChildIds != null && targetChildIds.isNotEmpty) {
         request.fields['target_child_ids'] = jsonEncode(targetChildIds);
       }
+      if (audioDescription != null && audioDescription.trim().isNotEmpty) {
+        request.fields['audio_description'] = audioDescription.trim();
+      }
 
+      // ✅ الملفات الأساسية
       if (videoFile != null && await videoFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('video', videoFile.path),
@@ -487,6 +494,19 @@ class ApiService {
       if (audioFile != null && await audioFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('audio', audioFile.path),
+        );
+      }
+
+      // ✅ الملفات الجديدة
+      if (captionFile != null && await captionFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath('caption', captionFile.path),
+        );
+      }
+      if (signLanguageFile != null && await signLanguageFile.exists()) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+              'sign_language', signLanguageFile.path),
         );
       }
 
@@ -1113,10 +1133,6 @@ class ApiService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  ✅ الإضافات الجديدة
-  // ═══════════════════════════════════════════════════════════
-
-  // ═══════════════════════════════════════════════════════════
   //  الواجبات (Homework)
   // ═══════════════════════════════════════════════════════════
   static Future<List<dynamic>> getHomeworks({int? childId}) async {
@@ -1178,11 +1194,13 @@ class ApiService {
     }
   }
 
+  /// ✅ مُصلَّحة: ترسل كل الملفات (file + files)
   static Future<Map<String, dynamic>?> submitHomework({
     required int homeworkId,
     required int childId,
     String? textAnswer,
-    File? file, List<File>? files,
+    File? file,
+    List<File>? files,
   }) async {
     try {
       final token = await getToken();
@@ -1192,13 +1210,22 @@ class ApiService {
       )..headers['Authorization'] = 'Bearer $token';
 
       request.fields['child_id'] = childId.toString();
-      if (textAnswer != null) {
+      if (textAnswer != null && textAnswer.isNotEmpty) {
         request.fields['text_answer'] = textAnswer;
       }
-      if (file != null && await file.exists()) {
-        request.files.add(
-          await http.MultipartFile.fromPath('file', file.path),
-        );
+
+      // ✅ اجمع كل الملفات (المفرد + المتعدد)
+      final allFiles = <File>[
+        if (file != null) file,
+        ...?files,
+      ];
+
+      for (final f in allFiles) {
+        if (await f.exists()) {
+          request.files.add(
+            await http.MultipartFile.fromPath('files', f.path),
+          );
+        }
       }
 
       final response = await request.send();
@@ -1207,7 +1234,9 @@ class ApiService {
           ? <String, dynamic>{}
           : (jsonDecode(body) as Map<String, dynamic>);
 
-      if (response.statusCode == 201) return data['submission'];
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return data['submission'] ?? data;
+      }
       throw Exception(data['error'] ?? 'فشل تسليم الواجب');
     } catch (e) {
       _handleError(e);
@@ -1422,107 +1451,103 @@ class ApiService {
       return null;
     }
   }
-// ═══════════════════════════════════════════════════════════
-//  طلبات الجلسات النفسية (Therapy Requests)
-// ═══════════════════════════════════════════════════════════
 
-/// ولي الأمر يُرسل طلب جلسة نفسية
-static Future<Map<String, dynamic>?> createTherapyRequest({
-  required int childId,
-  required String reason,
-  String? description,
-  String urgency = 'medium',
-}) async {
-  try {
-    final res = await authPost('/therapy/requests', {
-      'child_id': childId,
-      'reason': reason,
-      'description': description,
-      'urgency': urgency,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 200 || res.statusCode == 201) {
-      return data['request'];
+  // ═══════════════════════════════════════════════════════════
+  //  طلبات الجلسات النفسية (Therapy Requests)
+  // ═══════════════════════════════════════════════════════════
+
+  static Future<Map<String, dynamic>?> createTherapyRequest({
+    required int childId,
+    required String reason,
+    String? description,
+    String urgency = 'medium',
+  }) async {
+    try {
+      final res = await authPost('/therapy/requests', {
+        'child_id': childId,
+        'reason': reason,
+        'description': description,
+        'urgency': urgency,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return data['request'];
+      }
+      throw Exception(data['error'] ?? 'فشل إرسال الطلب');
+    } catch (e) {
+      _handleError(e);
     }
-    throw Exception(data['error'] ?? 'فشل إرسال الطلب');
-  } catch (e) {
-    _handleError(e);
   }
-}
 
-/// جلب الطلبات (مع فلترة)
-static Future<List<dynamic>> getTherapyRequests({
-  int? childId,
-  String? status,
-}) async {
-  try {
-    final params = <String>[];
-    if (childId != null) params.add('child_id=$childId');
-    if (status != null) params.add('status=$status');
-    final path = params.isEmpty
-        ? '/therapy/requests'
-        : '/therapy/requests?${params.join('&')}';
+  static Future<List<dynamic>> getTherapyRequests({
+    int? childId,
+    String? status,
+  }) async {
+    try {
+      final params = <String>[];
+      if (childId != null) params.add('child_id=$childId');
+      if (status != null) params.add('status=$status');
+      final path = params.isEmpty
+          ? '/therapy/requests'
+          : '/therapy/requests?${params.join('&')}';
 
-    final res = await authGet(path);
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) {
-      return data['requests'] ?? [];
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['requests'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
     }
-    return [];
-  } catch (e) {
-    return [];
   }
-}
 
-/// هل لدى الطفل طلب قيد المراجعة؟ (للبادج)
-static Future<bool> hasPendingTherapyRequest(int childId) async {
-  try {
-    final res =
-        await authGet('/therapy/requests/child/$childId/pending');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) {
-      return data['has_pending'] == true;
+  static Future<bool> hasPendingTherapyRequest(int childId) async {
+    try {
+      final res =
+          await authGet('/therapy/requests/child/$childId/pending');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return data['has_pending'] == true;
+      }
+      return false;
+    } catch (_) {
+      return false;
     }
-    return false;
-  } catch (_) {
-    return false;
   }
-}
 
-/// المختص يُحدّد موعد الجلسة + رابط Meeting
-static Future<bool> scheduleTherapyRequest({
-  required int requestId,
-  required DateTime scheduledAt,
-  required String meetingLink,
-  String? notes,
-}) async {
-  try {
-    final res = await authPut('/therapy/requests/$requestId/schedule', {
-      'scheduled_at': scheduledAt.toIso8601String(),
-      'meeting_link': meetingLink,
-      'specialist_notes': notes,
-    });
-    return res.statusCode == 200;
-  } catch (e) {
-    return false;
+  static Future<bool> scheduleTherapyRequest({
+    required int requestId,
+    required DateTime scheduledAt,
+    required String meetingLink,
+    String? notes,
+  }) async {
+    try {
+      final res = await authPut('/therapy/requests/$requestId/schedule', {
+        'scheduled_at': scheduledAt.toIso8601String(),
+        'meeting_link': meetingLink,
+        'specialist_notes': notes,
+      });
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-/// إلغاء الطلب (من الأب أو المختص)
-static Future<bool> cancelTherapyRequest(int requestId) async {
-  try {
-    final res =
-        await authPut('/therapy/requests/$requestId/cancel', {});
-    return res.statusCode == 200;
-  } catch (e) {
-    return false;
+  static Future<bool> cancelTherapyRequest(int requestId) async {
+    try {
+      final res =
+          await authPut('/therapy/requests/$requestId/cancel', {});
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
-}
+
   // ═══════════════════════════════════════════════════════════
   //  الملف الشخصي (Profile)
   // ═══════════════════════════════════════════════════════════
 
-  /// جلب الملف الشخصي للمستخدم الحالي
   static Future<Map<String, dynamic>?> getProfile() async {
     try {
       final res = await authGet('/me');
@@ -1536,7 +1561,6 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
     }
   }
 
-  /// تغيير كلمة المرور
   static Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
@@ -1555,11 +1579,11 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
       _handleError(e);
     }
   }
-    // ═══════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════
   //  صورة البروفايل (Profile Picture)
   // ═══════════════════════════════════════════════════════════
 
-  /// رفع صورة البروفايل
   static Future<String?> uploadProfilePicture(File image) async {
     try {
       final token = await getToken();
@@ -1588,7 +1612,6 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final url = data['avatar_url'] as String?;
         if (url != null) {
-          // ✅ احفظ محلياً للاستخدام السريع
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('avatar_url', url);
         }
@@ -1600,7 +1623,6 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
     }
   }
 
-  /// حذف صورة البروفايل (رجوع للحرف)
   static Future<bool> removeProfilePicture() async {
     try {
       final res = await authDelete('/me/avatar');
@@ -1615,13 +1637,11 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
     }
   }
 
-  /// جلب رابط صورة البروفايل المحفوظ
   static Future<String?> getSavedAvatarUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('avatar_url');
   }
 
-  /// حفظ رابط صورة البروفايل محلياً
   static Future<void> saveAvatarUrl(String? url) async {
     final prefs = await SharedPreferences.getInstance();
     if (url == null || url.isEmpty) {
@@ -1630,6 +1650,7 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
       await prefs.setString('avatar_url', url);
     }
   }
+
   // ===== حذف الحساب =====
   static Future<void> deleteAccount() async {
     try {
@@ -1651,5 +1672,4 @@ static Future<bool> cancelTherapyRequest(int requestId) async {
       throw Exception('تعذّر حذف الحساب');
     }
   }
-  
 }

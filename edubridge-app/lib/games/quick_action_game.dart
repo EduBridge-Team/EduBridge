@@ -46,7 +46,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
   bool _isPaused = false;
   bool _isFinished = false;
 
-  static const _totalSeconds = 60;
+  static const _totalSeconds = 30;
 
   final _rnd = Random();
 

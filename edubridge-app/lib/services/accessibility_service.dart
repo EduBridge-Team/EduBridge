@@ -1,8 +1,7 @@
-// خدمة التكييف الديناميكي — تدعم بروفايل منفصل لكل طفل
+// خدمة التكييف الديناميكي — تدعم بروفايل منفصل لكل طفل + ميزات كل الإعاقات
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api_service.dart';
 
 /// أنواع الإعاقات المدعومة
 enum DisabilityType {
@@ -18,6 +17,8 @@ enum DisabilityType {
   mildIntellectual,
   colorBlindness,
   epilepsy,
+  motorDisability,        // إعاقات حركية
+  multipleDisabilities,   // إعاقات متعددة
   other,
 }
 
@@ -26,7 +27,9 @@ class AccessibilityProfile {
   final DisabilityType type;
   final String? customDisabilityName;
 
-  // ─── الميزات الأساسية ───
+  // ═══════════════════════════════════════════════════════════
+  //  ─── الميزات العامة ───
+  // ═══════════════════════════════════════════════════════════
   final bool brainBreaksEnabled;
   final int brainBreakIntervalMinutes;
   final bool visualTimerEnabled;
@@ -40,8 +43,6 @@ class AccessibilityProfile {
   final bool highContrast;
   final bool gestureNavigationEnabled;
   final bool visualAlertsEnabled;
-
-  // ─── الخصائص الخاصة ───
   final bool slowSpeech;
   final bool rhythmReading;
   final bool stepByStepLessons;
@@ -54,6 +55,54 @@ class AccessibilityProfile {
   final bool emergencyButton;
   final bool noTimers;
   final bool speechExercises;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ميزات الإعاقات البصرية
+  // ═══════════════════════════════════════════════════════════
+  final bool screenReaderOptimized;
+  final bool detailedAltText;
+  final bool audioDescriptions;
+  final bool keyboardShortcuts;
+  final bool textOnlyMode;
+  final bool largeMouseCursor;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ميزات الإعاقات السمعية
+  // ═══════════════════════════════════════════════════════════
+  final bool videoCaptions;
+  final bool soundDescriptions;
+  final bool signLanguageTranslation;
+  final bool visualNotifications;
+  final bool flashAlerts;
+  final bool vibrationAlerts;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ميزات اضطرابات النطق
+  // ═══════════════════════════════════════════════════════════
+  final bool voiceToText;
+  final bool wordPrediction;
+  final bool pictureCommunication;
+  final bool shortSentences;
+  final bool unlimitedTime;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ميزات الإعاقات الحركية
+  // ═══════════════════════════════════════════════════════════
+  final bool keyboardOnlyNavigation;
+  final bool voiceControl;
+  final bool eyeTrackingOptimized;
+  final bool switchControl;
+  final bool noTimedInteractions;
+
+  // ═══════════════════════════════════════════════════════════
+  //  ميزات الإعاقات الذهنية
+  // ═══════════════════════════════════════════════════════════
+  final bool iconOnlyMode;
+  final bool verySimpleLanguage;
+  final bool repetitionMode;
+  final bool rewardSystem;
+  final bool routineStructure;
+  final bool maxOptionsCount3;
 
   const AccessibilityProfile({
     required this.type,
@@ -83,6 +132,34 @@ class AccessibilityProfile {
     this.emergencyButton = false,
     this.noTimers = false,
     this.speechExercises = false,
+    this.screenReaderOptimized = false,
+    this.detailedAltText = false,
+    this.audioDescriptions = false,
+    this.keyboardShortcuts = false,
+    this.textOnlyMode = false,
+    this.largeMouseCursor = false,
+    this.videoCaptions = false,
+    this.soundDescriptions = false,
+    this.signLanguageTranslation = false,
+    this.visualNotifications = false,
+    this.flashAlerts = false,
+    this.vibrationAlerts = false,
+    this.voiceToText = false,
+    this.wordPrediction = false,
+    this.pictureCommunication = false,
+    this.shortSentences = false,
+    this.unlimitedTime = false,
+    this.keyboardOnlyNavigation = false,
+    this.voiceControl = false,
+    this.eyeTrackingOptimized = false,
+    this.switchControl = false,
+    this.noTimedInteractions = false,
+    this.iconOnlyMode = false,
+    this.verySimpleLanguage = false,
+    this.repetitionMode = false,
+    this.rewardSystem = false,
+    this.routineStructure = false,
+    this.maxOptionsCount3 = false,
   });
 
   AccessibilityProfile copyWith({
@@ -113,6 +190,35 @@ class AccessibilityProfile {
     bool? emergencyButton,
     bool? noTimers,
     bool? speechExercises,
+    bool? screenReaderOptimized,
+    bool? detailedAltText,
+    bool? audioDescriptions,
+    bool? keyboardShortcuts,
+    bool? textOnlyMode,
+    bool? largeMouseCursor,
+    bool? videoCaptions,
+    bool? soundDescriptions,
+    bool? signLanguageTranslation,
+    bool? visualNotifications,
+    bool? flashAlerts,
+    bool? vibrationAlerts,
+    bool? voiceToText,
+    bool? wordPrediction,
+    bool? pictureCommunication,
+    bool? shortSentences,
+    bool? unlimitedTime,
+    bool? keyboardOnlyNavigation,
+    bool? voiceControl,
+    bool? eyeTrackingOptimized,
+    bool? switchControl,
+    bool? oneHandMode,
+    bool? noTimedInteractions,
+    bool? iconOnlyMode,
+    bool? verySimpleLanguage,
+    bool? repetitionMode,
+    bool? rewardSystem,
+    bool? routineStructure,
+    bool? maxOptionsCount3,
   }) {
     return AccessibilityProfile(
       type: type ?? this.type,
@@ -145,6 +251,38 @@ class AccessibilityProfile {
       emergencyButton: emergencyButton ?? this.emergencyButton,
       noTimers: noTimers ?? this.noTimers,
       speechExercises: speechExercises ?? this.speechExercises,
+      screenReaderOptimized:
+          screenReaderOptimized ?? this.screenReaderOptimized,
+      detailedAltText: detailedAltText ?? this.detailedAltText,
+      audioDescriptions: audioDescriptions ?? this.audioDescriptions,
+      keyboardShortcuts: keyboardShortcuts ?? this.keyboardShortcuts,
+      textOnlyMode: textOnlyMode ?? this.textOnlyMode,
+      largeMouseCursor: largeMouseCursor ?? this.largeMouseCursor,
+      videoCaptions: videoCaptions ?? this.videoCaptions,
+      soundDescriptions: soundDescriptions ?? this.soundDescriptions,
+      signLanguageTranslation:
+          signLanguageTranslation ?? this.signLanguageTranslation,
+      visualNotifications: visualNotifications ?? this.visualNotifications,
+      flashAlerts: flashAlerts ?? this.flashAlerts,
+      vibrationAlerts: vibrationAlerts ?? this.vibrationAlerts,
+      voiceToText: voiceToText ?? this.voiceToText,
+      wordPrediction: wordPrediction ?? this.wordPrediction,
+      pictureCommunication:
+          pictureCommunication ?? this.pictureCommunication,
+      shortSentences: shortSentences ?? this.shortSentences,
+      unlimitedTime: unlimitedTime ?? this.unlimitedTime,
+      keyboardOnlyNavigation:
+          keyboardOnlyNavigation ?? this.keyboardOnlyNavigation,
+      voiceControl: voiceControl ?? this.voiceControl,
+      eyeTrackingOptimized:
+          eyeTrackingOptimized ?? this.eyeTrackingOptimized,
+     
+      iconOnlyMode: iconOnlyMode ?? this.iconOnlyMode,
+      verySimpleLanguage: verySimpleLanguage ?? this.verySimpleLanguage,
+      repetitionMode: repetitionMode ?? this.repetitionMode,
+      rewardSystem: rewardSystem ?? this.rewardSystem,
+      routineStructure: routineStructure ?? this.routineStructure,
+      maxOptionsCount3: maxOptionsCount3 ?? this.maxOptionsCount3,
     );
   }
 
@@ -162,14 +300,21 @@ class AccessibilityProfile {
           brainBreakIntervalMinutes: 12,
           timerRenewalMinutes: 5,
           reducedAnimations: true,
+          rewardSystem: true,
+          noTimedInteractions: false,
         );
+
       case DisabilityType.autismMild:
         return const AccessibilityProfile(
           type: DisabilityType.autismMild,
           predictableTimeline: true,
           reducedAnimations: true,
           timerRenewalMinutes: 10,
+          routineStructure: true,
+          iconOnlyMode: false,
+          maxOptionsCount3: true,
         );
+
       case DisabilityType.autismSevere:
         return const AccessibilityProfile(
           type: DisabilityType.autismSevere,
@@ -177,7 +322,12 @@ class AccessibilityProfile {
           reducedAnimations: true,
           sensoryCalmMode: true,
           timerRenewalMinutes: 10,
+          routineStructure: true,
+          iconOnlyMode: true,
+          maxOptionsCount3: true,
+          verySimpleLanguage: true,
         );
+
       case DisabilityType.downSyndrome:
         return const AccessibilityProfile(
           type: DisabilityType.downSyndrome,
@@ -188,7 +338,17 @@ class AccessibilityProfile {
           slowSpeech: true,
           noTimers: true,
           timerRenewalMinutes: 3,
+          verySimpleLanguage: true,
+          repetitionMode: true,
+          rewardSystem: true,
+          routineStructure: true,
+          maxOptionsCount3: true,
+          pictureCommunication: true,
+          unlimitedTime: true,
+          videoCaptions: true,
+          detailedAltText: true,
         );
+
       case DisabilityType.blind:
         return const AccessibilityProfile(
           type: DisabilityType.blind,
@@ -197,13 +357,29 @@ class AccessibilityProfile {
           autoReadOnTap: true,
           visualTimerEnabled: true,
           timerRenewalMinutes: 5,
+          noFlashing: true,
+          screenReaderOptimized: true,
+          detailedAltText: true,
+          audioDescriptions: true,
+          keyboardShortcuts: true,
+          textOnlyMode: true,
+          largeMouseCursor: true,
+          keyboardOnlyNavigation: true,
         );
+
       case DisabilityType.deaf:
         return const AccessibilityProfile(
           type: DisabilityType.deaf,
           visualAlertsEnabled: true,
           timerRenewalMinutes: 5,
+          videoCaptions: true,
+          soundDescriptions: true,
+          signLanguageTranslation: true,
+          visualNotifications: true,
+          flashAlerts: true,
+          vibrationAlerts: true,
         );
+
       case DisabilityType.stuttering:
         return const AccessibilityProfile(
           type: DisabilityType.stuttering,
@@ -213,7 +389,13 @@ class AccessibilityProfile {
           reducedAnimations: true,
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
+          voiceToText: true,
+          pictureCommunication: true,
+          shortSentences: true,
+          unlimitedTime: true,
+          noTimedInteractions: true,
         );
+
       case DisabilityType.speechDisorders:
         return const AccessibilityProfile(
           type: DisabilityType.speechDisorders,
@@ -222,7 +404,13 @@ class AccessibilityProfile {
           noTimers: true,
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
+          voiceToText: true,
+          wordPrediction: true,
+          pictureCommunication: true,
+          shortSentences: true,
+          unlimitedTime: true,
         );
+
       case DisabilityType.mildIntellectual:
         return const AccessibilityProfile(
           type: DisabilityType.mildIntellectual,
@@ -234,7 +422,15 @@ class AccessibilityProfile {
           noTimers: true,
           reducedAnimations: true,
           timerRenewalMinutes: 3,
+          verySimpleLanguage: true,
+          shortSentences: true,
+          rewardSystem: true,
+          routineStructure: true,
+          repetitionMode: true,
+          maxOptionsCount3: true,
+          pictureCommunication: true,
         );
+
       case DisabilityType.colorBlindness:
         return const AccessibilityProfile(
           type: DisabilityType.colorBlindness,
@@ -242,7 +438,9 @@ class AccessibilityProfile {
           colorPatterns: true,
           colorFiltersEnabled: true,
           timerRenewalMinutes: 5,
+          detailedAltText: true,
         );
+
       case DisabilityType.epilepsy:
         return const AccessibilityProfile(
           type: DisabilityType.epilepsy,
@@ -254,6 +452,51 @@ class AccessibilityProfile {
           noTimers: true,
           timerRenewalMinutes: 5,
         );
+
+      // ═══════════════════════════════════════
+      // ✅ إصلاح: أُزيل oneHandMode من البروفايل الافتراضي
+      //    لأنه كان يقص الشاشة إلى 70% ويعطّل الـ AppBar.
+      //    من يحتاج وضع اليد الواحدة يمكنه تفعيله يدوياً.
+      // ═══════════════════════════════════════
+      case DisabilityType.motorDisability:
+        return const AccessibilityProfile(
+          type: DisabilityType.motorDisability,
+          extraLargeTouchTargets: true,
+          reducedAnimations: true,
+          noTimers: true,
+          timerRenewalMinutes: 5,
+          keyboardOnlyNavigation: true,
+          keyboardShortcuts: true,
+          voiceControl: true,
+          eyeTrackingOptimized: true,
+          switchControl: true,
+          // oneHandMode: true,   ← ❌ أُزيل: كان يقص الشاشة إلى 70%
+          noTimedInteractions: true,
+          largeMouseCursor: true,
+        );
+
+      case DisabilityType.multipleDisabilities:
+        return const AccessibilityProfile(
+          type: DisabilityType.multipleDisabilities,
+          extraLargeTouchTargets: true,
+          autoReadOnTap: true,
+          slowSpeech: true,
+          noTimers: true,
+          reducedAnimations: true,
+          highContrast: true,
+          visualAlertsEnabled: true,
+          screenReaderOptimized: true,
+          detailedAltText: true,
+          videoCaptions: true,
+          signLanguageTranslation: true,
+          verySimpleLanguage: true,
+          pictureCommunication: true,
+          keyboardOnlyNavigation: true,
+          voiceControl: true,
+          rewardSystem: true,
+          maxOptionsCount3: true,
+        );
+
       case DisabilityType.other:
         return AccessibilityProfile(
           type: DisabilityType.other,
@@ -263,11 +506,13 @@ class AccessibilityProfile {
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
         );
+
       case DisabilityType.none:
         return const AccessibilityProfile(type: DisabilityType.none);
     }
   }
 
+  // ─── JSON ───
   Map<String, dynamic> toJson() => {
         'type': type.name,
         'customDisabilityName': customDisabilityName,
@@ -296,6 +541,34 @@ class AccessibilityProfile {
         'emergencyButton': emergencyButton,
         'noTimers': noTimers,
         'speechExercises': speechExercises,
+        'screenReaderOptimized': screenReaderOptimized,
+        'detailedAltText': detailedAltText,
+        'audioDescriptions': audioDescriptions,
+        'keyboardShortcuts': keyboardShortcuts,
+        'textOnlyMode': textOnlyMode,
+        'largeMouseCursor': largeMouseCursor,
+        'videoCaptions': videoCaptions,
+        'soundDescriptions': soundDescriptions,
+        'signLanguageTranslation': signLanguageTranslation,
+        'visualNotifications': visualNotifications,
+        'flashAlerts': flashAlerts,
+        'vibrationAlerts': vibrationAlerts,
+        'voiceToText': voiceToText,
+        'wordPrediction': wordPrediction,
+        'pictureCommunication': pictureCommunication,
+        'shortSentences': shortSentences,
+        'unlimitedTime': unlimitedTime,
+        'keyboardOnlyNavigation': keyboardOnlyNavigation,
+        'voiceControl': voiceControl,
+        'eyeTrackingOptimized': eyeTrackingOptimized,
+        'switchControl': switchControl,
+        'noTimedInteractions': noTimedInteractions,
+        'iconOnlyMode': iconOnlyMode,
+        'verySimpleLanguage': verySimpleLanguage,
+        'repetitionMode': repetitionMode,
+        'rewardSystem': rewardSystem,
+        'routineStructure': routineStructure,
+        'maxOptionsCount3': maxOptionsCount3,
       };
 
   factory AccessibilityProfile.fromJson(Map<String, dynamic> j) {
@@ -330,6 +603,34 @@ class AccessibilityProfile {
       emergencyButton: j['emergencyButton'] ?? false,
       noTimers: j['noTimers'] ?? false,
       speechExercises: j['speechExercises'] ?? false,
+      screenReaderOptimized: j['screenReaderOptimized'] ?? false,
+      detailedAltText: j['detailedAltText'] ?? false,
+      audioDescriptions: j['audioDescriptions'] ?? false,
+      keyboardShortcuts: j['keyboardShortcuts'] ?? false,
+      textOnlyMode: j['textOnlyMode'] ?? false,
+      largeMouseCursor: j['largeMouseCursor'] ?? false,
+      videoCaptions: j['videoCaptions'] ?? false,
+      soundDescriptions: j['soundDescriptions'] ?? false,
+      signLanguageTranslation: j['signLanguageTranslation'] ?? false,
+      visualNotifications: j['visualNotifications'] ?? false,
+      flashAlerts: j['flashAlerts'] ?? false,
+      vibrationAlerts: j['vibrationAlerts'] ?? false,
+      voiceToText: j['voiceToText'] ?? false,
+      wordPrediction: j['wordPrediction'] ?? false,
+      pictureCommunication: j['pictureCommunication'] ?? false,
+      shortSentences: j['shortSentences'] ?? false,
+      unlimitedTime: j['unlimitedTime'] ?? false,
+      keyboardOnlyNavigation: j['keyboardOnlyNavigation'] ?? false,
+      voiceControl: j['voiceControl'] ?? false,
+      eyeTrackingOptimized: j['eyeTrackingOptimized'] ?? false,
+      switchControl: j['switchControl'] ?? false,
+      noTimedInteractions: j['noTimedInteractions'] ?? false,
+      iconOnlyMode: j['iconOnlyMode'] ?? false,
+      verySimpleLanguage: j['verySimpleLanguage'] ?? false,
+      repetitionMode: j['repetitionMode'] ?? false,
+      rewardSystem: j['rewardSystem'] ?? false,
+      routineStructure: j['routineStructure'] ?? false,
+      maxOptionsCount3: j['maxOptionsCount3'] ?? false,
     );
   }
 }
@@ -339,47 +640,80 @@ DisabilityType disabilityTypeFromString(String? s) {
   if (s == null || s.trim().isEmpty) return DisabilityType.none;
   final lower = s.toLowerCase();
 
-  if (lower.contains('adhd') || s.contains('فرط') || s.contains('تشتت')) {
-    return DisabilityType.adhd;
-  }
-  if (s.contains('توحد') || s.contains('توحّد') || lower.contains('autis')) {
-    if (s.contains('شديد') || lower.contains('severe')) {
-      return DisabilityType.autismSevere;
-    }
-    return DisabilityType.autismMild;
-  }
-  if (s.contains('داون') || lower.contains('down')) {
-    return DisabilityType.downSyndrome;
-  }
-  if (lower.contains('blind') || s.contains('عمى')) {
+  if (s.contains('عمى الألوان')) return DisabilityType.colorBlindness;
+
+  if (s.contains('شبه كفيف') ||
+      s.contains('كفيف كلي') ||
+      s.contains('فقد عين واحدة') ||
+      lower.contains('blind')) {
     return DisabilityType.blind;
   }
-  if (lower.contains('deaf') || s.contains('طرش')) {
+
+  if (s.startsWith('ضعف سمع') ||
+      s.contains('أصم') ||
+      s.contains('زارعي القوقعة') ||
+      lower.contains('deaf')) {
     return DisabilityType.deaf;
   }
-  if (lower.contains('stutter') || s.contains('تأتأة') || s.contains('تلعثم')) {
+
+  if (s.contains('تأتأة') ||
+      s.contains('تلعثم') ||
+      lower.contains('stutter')) {
     return DisabilityType.stuttering;
   }
-  if (lower.contains('speech') || s.contains('نطق') || s.contains('لثغة')) {
+
+  if (s.contains('تأخر اللغة') ||
+      s.contains('الحبسة') ||
+      s.contains('تأخر النطق') ||
+      s.contains('تأخر في الكلام') ||
+      lower.contains('speech')) {
     return DisabilityType.speechDisorders;
   }
-  if (lower.contains('intellect') ||
-      s.contains('ذهنية') ||
-      s.contains('عقلية') ||
-      s.contains('إعاقة بسيطة')) {
-    return DisabilityType.mildIntellectual;
+
+  if (s.startsWith('شلل') ||
+      s.contains('استسقاء') ||
+      s.contains('إصابات الحبل') ||
+      s.contains('العظم الزجاجي')) {
+    return DisabilityType.motorDisability;
   }
-  if ((lower.contains('color') && lower.contains('blind')) ||
-      s.contains('عمى الألوان') ||
-      s.contains('عمى ألوان')) {
-    return DisabilityType.colorBlindness;
-  }
-  if (lower.contains('epilep') || s.contains('صرع')) {
+
+  if (s.contains('الصرع') || lower.contains('epilep')) {
     return DisabilityType.epilepsy;
   }
+
+  if (s.contains('طيف التوحّد')) {
+    if (s.contains('شديد')) return DisabilityType.autismSevere;
+    return DisabilityType.autismMild;
+  }
+
+  if (s.contains('فرط الحركة') ||
+      s.contains('تشتت الانتباه') ||
+      lower.contains('adhd')) {
+    return DisabilityType.adhd;
+  }
+
+  if (s.contains('اضطرابات سلوك')) return DisabilityType.adhd;
+
+  if (s.contains('متلازمة داون') || lower.contains('down')) {
+    return DisabilityType.downSyndrome;
+  }
+
+  if (s.contains('صعوبة تعلم') ||
+      s.contains('تخلف عقلي') ||
+      lower.contains('intellect')) {
+    return DisabilityType.mildIntellectual;
+  }
+
+  if (s.contains('أمراض عصبية') ||
+      s.contains('إصابات دماغ') ||
+      s.contains('ضمور في الدماغ')) {
+    return DisabilityType.epilepsy;
+  }
+
   return DisabilityType.other;
 }
 
+/// التسميات العربية
 const disabilityLabels = {
   DisabilityType.none: 'بدون تكييف',
   DisabilityType.adhd: 'فرط الحركة وتشتت الانتباه',
@@ -393,9 +727,12 @@ const disabilityLabels = {
   DisabilityType.mildIntellectual: 'إعاقة ذهنية بسيطة',
   DisabilityType.colorBlindness: 'عمى الألوان',
   DisabilityType.epilepsy: 'الصرع',
-  DisabilityType.other: 'أخرى (يُحدّدها ولي الأمر)',
+  DisabilityType.motorDisability: 'إعاقة حركية',
+  DisabilityType.multipleDisabilities: 'إعاقات متعددة',
+  DisabilityType.other: 'أخرى',
 };
 
+/// الرموز التعبيرية
 const disabilityEmojis = {
   DisabilityType.none: '⚪',
   DisabilityType.adhd: '⚡',
@@ -409,9 +746,14 @@ const disabilityEmojis = {
   DisabilityType.mildIntellectual: '🧠',
   DisabilityType.colorBlindness: '🌈',
   DisabilityType.epilepsy: '⚕️',
+  DisabilityType.motorDisability: '🦽',
+  DisabilityType.multipleDisabilities: '♿',
   DisabilityType.other: '✏️',
 };
 
+// ═══════════════════════════════════════════════════════════
+//  الخدمة الرئيسية
+// ═══════════════════════════════════════════════════════════
 class AccessibilityService {
   AccessibilityService._();
   static final AccessibilityService instance = AccessibilityService._();
@@ -436,6 +778,7 @@ class AccessibilityService {
   bool get isDown => profile.value.type == DisabilityType.downSyndrome;
   bool get isBlind => profile.value.type == DisabilityType.blind;
   bool get isDeaf => profile.value.type == DisabilityType.deaf;
+  bool get isMotor => profile.value.type == DisabilityType.motorDisability;
 
   double get minTouchSize =>
       profile.value.extraLargeTouchTargets ? 88 : 56;
@@ -490,49 +833,6 @@ class AccessibilityService {
     );
   }
 
-  Future<AccessibilityProfile?> _loadRemoteChild(int childId) async {
-    try {
-      if (await ApiService.getToken() == null) return null;
-      final response =
-          await ApiService.authGet('/children/$childId/accessibility-profile');
-      if (response.statusCode != 200 || response.body.isEmpty) return null;
-      final decoded = jsonDecode(response.body);
-      if (decoded is! Map || decoded['profile'] is! Map) return null;
-      return AccessibilityProfile.fromJson(
-        Map<String, dynamic>.from(decoded['profile'] as Map),
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> _pushRemoteChild(
-    int childId,
-    AccessibilityProfile next,
-  ) async {
-    try {
-      if (await ApiService.getToken() == null) return;
-      await ApiService.authPut(
-        '/children/$childId/accessibility-profile',
-        {'profile': next.toJson()},
-      );
-    } catch (_) {
-      // يبقى الحفظ المحلي صالحاً في وضع عدم الاتصال.
-    }
-  }
-
-  /// يجلب أحدث إعدادات الطفل من الخادم إن وجدت ويحدّث النسخة المحلية.
-  Future<bool> syncChildProfile(int childId) async {
-    final remote = await _loadRemoteChild(childId);
-    if (remote == null) return false;
-    _childProfiles[childId] = remote;
-    await _persistChild(childId, remote);
-    if (activeChildId.value == childId) {
-      profile.value = remote;
-    }
-    return true;
-  }
-
   Future<void> setActiveChild(
     int? childId, {
     String? disabilityTypeHint,
@@ -546,24 +846,17 @@ class AccessibilityService {
     }
 
     if (forceReload || !_childProfiles.containsKey(childId)) {
-      final remote = await _loadRemoteChild(childId);
-      if (remote != null) {
-        _childProfiles[childId] = remote;
-        await _persistChild(childId, remote);
-      } else {
-        final type = disabilityTypeFromString(disabilityTypeHint);
-        final customName =
-            type == DisabilityType.other ? disabilityTypeHint : null;
+      final type = disabilityTypeFromString(disabilityTypeHint);
+      final customName =
+          type == DisabilityType.other ? disabilityTypeHint : null;
 
-        final created = AccessibilityProfile.recommendedFor(
-          type,
-          customName: customName,
-        );
+      final created = AccessibilityProfile.recommendedFor(
+        type,
+        customName: customName,
+      );
 
-        _childProfiles[childId] = created;
-        await _persistChild(childId, created);
-        await _pushRemoteChild(childId, created);
-      }
+      _childProfiles[childId] = created;
+      await _persistChild(childId, created);
     }
 
     profile.value = _childProfiles[childId]!;
@@ -579,7 +872,6 @@ class AccessibilityService {
       _childProfiles[id] = next;
       await _persistChild(id, next);
       profile.value = next;
-      await _pushRemoteChild(id, next);
     }
   }
 
@@ -592,7 +884,6 @@ class AccessibilityService {
     if (activeChildId.value == childId) {
       profile.value = next;
     }
-    await _pushRemoteChild(childId, next);
   }
 
   Future<void> applyRecommendedForChild(

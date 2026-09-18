@@ -1,3 +1,4 @@
+// lib/utils/adaptive_theme.dart
 // محوّل البروفايل إلى خصائص بصرية ملموسة
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
@@ -34,6 +35,9 @@ class AdaptiveVisuals {
 
   static AdaptiveVisuals fromProfile(AccessibilityProfile p) {
     switch (p.type) {
+      // ═══════════════════════════════════════════════════
+      // 1. ADHD
+      // ═══════════════════════════════════════════════════
       case DisabilityType.adhd:
         return const AdaptiveVisuals(
           accentColor: Color(0xFFF2842B),
@@ -50,6 +54,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFFF2842B),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 2. التوحّد
+      // ═══════════════════════════════════════════════════
       case DisabilityType.autismMild:
       case DisabilityType.autismSevere:
         return const AdaptiveVisuals(
@@ -67,6 +74,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF1AA9B2),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 3. متلازمة داون
+      // ═══════════════════════════════════════════════════
       case DisabilityType.downSyndrome:
         return const AdaptiveVisuals(
           accentColor: Color(0xFF57B25A),
@@ -83,6 +93,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF57B25A),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 4. كفيف
+      // ═══════════════════════════════════════════════════
       case DisabilityType.blind:
         return const AdaptiveVisuals(
           accentColor: Color(0xFFFFD400),
@@ -99,6 +112,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFFFFD400),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 5. أصمّ
+      // ═══════════════════════════════════════════════════
       case DisabilityType.deaf:
         return const AdaptiveVisuals(
           accentColor: Color(0xFFF06C8B),
@@ -115,6 +131,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFFF06C8B),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 6. تأتأة
+      // ═══════════════════════════════════════════════════
       case DisabilityType.stuttering:
         return const AdaptiveVisuals(
           accentColor: Color(0xFF8B6DD4),
@@ -131,6 +150,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF8B6DD4),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 7. اضطرابات النطق
+      // ═══════════════════════════════════════════════════
       case DisabilityType.speechDisorders:
         return const AdaptiveVisuals(
           accentColor: Color(0xFF4A90A4),
@@ -147,6 +169,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF4A90A4),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 8. إعاقة ذهنية بسيطة
+      // ═══════════════════════════════════════════════════
       case DisabilityType.mildIntellectual:
         return const AdaptiveVisuals(
           accentColor: Color(0xFFD98B2B),
@@ -163,6 +188,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFFD98B2B),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 9. عمى الألوان
+      // ═══════════════════════════════════════════════════
       case DisabilityType.colorBlindness:
         return const AdaptiveVisuals(
           accentColor: Color(0xFF3A6EA5),
@@ -179,6 +207,9 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF3A6EA5),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 10. الصرع
+      // ═══════════════════════════════════════════════════
       case DisabilityType.epilepsy:
         return const AdaptiveVisuals(
           accentColor: Color(0xFF6B7C93),
@@ -195,6 +226,47 @@ class AdaptiveVisuals {
           profileBadgeColor: Color(0xFF6B7C93),
         );
 
+      // ═══════════════════════════════════════════════════
+      // 11. ✅ جديد — إعاقة حركية
+      // ═══════════════════════════════════════════════════
+      case DisabilityType.motorDisability:
+        return const AdaptiveVisuals(
+          accentColor: Color(0xFF5C6BC0),       // نيلي
+          surfaceColor: Color(0xFFF3F4FB),
+          cardRadius: 22,
+          buttonHeight: 80,                     // أزرار كبيرة للحركة
+          iconSize: 40,
+          titleFontSize: 22,
+          bodyFontSize: 18,
+          spacing: 20,                           // فواصل كبيرة
+          animationSpeed: Duration(milliseconds: 250),
+          profileLabel: 'وضع التحكم المساعد',
+          profileEmoji: '🦽',
+          profileBadgeColor: Color(0xFF5C6BC0),
+        );
+
+      // ═══════════════════════════════════════════════════
+      // 12. ✅ جديد — إعاقات متعددة
+      // ═══════════════════════════════════════════════════
+      case DisabilityType.multipleDisabilities:
+        return const AdaptiveVisuals(
+          accentColor: Color(0xFF8B5A2B),       // بني ذهبي
+          surfaceColor: Color(0xFFFAF6F0),
+          cardRadius: 24,
+          buttonHeight: 88,                     // أزرار كبرى
+          iconSize: 44,
+          titleFontSize: 24,
+          bodyFontSize: 20,
+          spacing: 20,
+          animationSpeed: Duration(milliseconds: 180),
+          profileLabel: 'وضع شامل',
+          profileEmoji: '♿',
+          profileBadgeColor: Color(0xFF8B5A2B),
+        );
+
+      // ═══════════════════════════════════════════════════
+      // 13. أخرى
+      // ═══════════════════════════════════════════════════
       case DisabilityType.other:
         return AdaptiveVisuals(
           accentColor: AppColors.teal,
@@ -211,6 +283,9 @@ class AdaptiveVisuals {
           profileBadgeColor: AppColors.teal,
         );
 
+      // ═══════════════════════════════════════════════════
+      // 14. بدون تكييف
+      // ═══════════════════════════════════════════════════
       case DisabilityType.none:
         return const AdaptiveVisuals(
           accentColor: AppColors.tealDeep,

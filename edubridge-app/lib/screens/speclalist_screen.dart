@@ -1,10 +1,7 @@
 // شاشة المختص — التقييم + العلاج النفسي + تقييم الخطة + قراءة تقرير المعلم
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';
@@ -13,6 +10,8 @@ import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../utils/navigation.dart';
+import 'add_certificate_sheet.dart';
+import 'add_lesson_sheet.dart';
 import 'plan_evaluation_screen.dart';
 import 'therapy_requests_screen.dart';
 import 'therapy_sessions_screen.dart';
@@ -23,8 +22,8 @@ import 'child_progress_screen.dart';
 import 'chats_screen.dart';
 import 'verify_identity_screen.dart';
 import 'notifications_screen.dart';
-import 'weekly_report_screen.dart';                    // ✅ جديد
-import 'create_specialist_progress_screen.dart';       // ✅ جديد
+import 'weekly_report_screen.dart';
+import 'create_specialist_progress_screen.dart';
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
@@ -82,8 +81,7 @@ class _SpecialistDashboardScreenState
         progress.where((r) => r['status'] == 'in_progress').length;
     final doneToday = progress
         .where((r) =>
-            r['status'] == 'done' &&
-            _isToday(r['completed_at']?.toString()))
+            r['status'] == 'done' && _isToday(r['completed_at']?.toString()))
         .length;
     final pct = total > 0 ? ((done / total) * 100).round() : 0;
     final current = progress.cast<Map?>().firstWhere(
@@ -120,6 +118,7 @@ class _SpecialistDashboardScreenState
       final teachersData = jsonDecode(responses[3].body);
 
       if (responses[0].statusCode != 200) {
+        if (!mounted) return;
         setState(() {
           _error = childrenData['error'] ?? 'تعذّر جلب البيانات';
           _loading = false;
@@ -143,6 +142,7 @@ class _SpecialistDashboardScreenState
         });
       }
 
+      if (!mounted) return;
       setState(() {
         _rows = rows;
         _lessons = lessonsData['lessons'] ?? [];
@@ -151,6 +151,7 @@ class _SpecialistDashboardScreenState
         _loading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _loading = false;
@@ -227,8 +228,8 @@ class _SpecialistDashboardScreenState
                   icon: const Icon(Icons.verified_user, size: 22),
                   label: const Text(
                     'توثيق الهوية الآن',
-                    style: TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -238,14 +239,14 @@ class _SpecialistDashboardScreenState
                         builder: (_) => const VerifyIdentityScreen(),
                       ),
                     );
-                    if (mounted) {
-                      final nowVerified = await ApiService.isVerified();
-                      if (nowVerified) {
-                        setState(() {});
-                      } else {
-                        _verificationDialogShown = false;
-                        _checkAndShowVerificationDialog();
-                      }
+                    if (!mounted) return;
+                    final nowVerified = await ApiService.isVerified();
+                    if (!mounted) return;
+                    if (nowVerified) {
+                      setState(() {});
+                    } else {
+                      _verificationDialogShown = false;
+                      _checkAndShowVerificationDialog();
                     }
                   },
                 ),
@@ -289,6 +290,7 @@ class _SpecialistDashboardScreenState
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         await _load();
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ تم اعتماد إنجاز الدرس'),
@@ -391,8 +393,7 @@ class _SpecialistDashboardScreenState
                   const SizedBox(height: 12),
                   Text(
                     'لا يوجد تقييم مسجل',
-                    style:
-                        TextStyle(color: JisrColors.of(context).muted),
+                    style: TextStyle(color: JisrColors.of(context).muted),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -558,7 +559,6 @@ class _SpecialistDashboardScreenState
     );
   }
 
-  // ✅ جديد: قراءة تقرير المعلم الأسبوعي
   Future<void> _openTeacherReport(Map<String, dynamic> row) async {
     final child = row['child'];
     await Navigator.push(
@@ -572,7 +572,6 @@ class _SpecialistDashboardScreenState
     );
   }
 
-  // ✅ جديد: كتابة تقدّم الطفل بناءً على تقرير المعلم
   Future<void> _writeProgressBasedOnReport(
       Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
@@ -765,7 +764,7 @@ class _SpecialistDashboardScreenState
     );
   }
 
-    Widget _buildHeader(JisrColors c) {
+  Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -779,14 +778,10 @@ class _SpecialistDashboardScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── الصف العلوي: الأفاتار يمين + العنوان وسط + القائمة يسار ───
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // ✅ الأفاتار — يظهر على اليمين (أول عنصر في RTL)
                   const ProfileAvatarButton(size: 42),
-
-                  // ✅ العنوان في الوسط
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -806,8 +801,6 @@ class _SpecialistDashboardScreenState
                       ),
                     ],
                   ),
-
-                  // ✅ القائمة — تظهر على اليسار (آخر عنصر في RTL)
                   DashboardMenu(
                     actions: [
                       DashboardMenuAction(
@@ -885,7 +878,6 @@ class _SpecialistDashboardScreenState
                 ],
               ),
               const SizedBox(height: 12),
-              // ─── الترحيب ───
               FutureBuilder<String?>(
                 future: ApiService.getName(),
                 builder: (context, snap) {
@@ -1008,7 +1000,6 @@ class _SpecialistDashboardScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── رأس البطاقة ───
             Row(
               children: [
                 CircleAvatar(
@@ -1036,7 +1027,6 @@ class _SpecialistDashboardScreenState
                       if (!context.mounted) return;
 
                       await Navigator.push(
-                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (_) => ChildProgressScreen(
@@ -1102,7 +1092,7 @@ class _SpecialistDashboardScreenState
                 ),
               ],
             ),
-                        // ✅ بادج: هل يوجد طلب دعم نفسي؟
+
             if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
@@ -1193,7 +1183,6 @@ class _SpecialistDashboardScreenState
             ),
             const SizedBox(height: 12),
 
-            // ─── الصف الأول: تقييم + تعيين + اعتماد ───
             Row(
               children: [
                 Expanded(
@@ -1253,7 +1242,6 @@ class _SpecialistDashboardScreenState
               ],
             ),
 
-            // ✅ الصف الجديد: تقرير المعلم + اكتب تقدّم
             if (!isPending) ...[
               const SizedBox(height: 8),
               Row(
@@ -1299,7 +1287,6 @@ class _SpecialistDashboardScreenState
               ),
             ],
 
-            // ✅ زر تقييم الخطة
             if (!isPending && child['current_plan_id'] != null) ...[
               const SizedBox(height: 8),
               SizedBox(
@@ -1403,6 +1390,11 @@ class _SpecialistDashboardScreenState
     final title = (lesson['title'] ?? '').toString();
     final tag = _typeName(lesson['disability_type_id']);
 
+    final hasVideo =
+        (lesson['video_url']?.toString().isNotEmpty ?? false);
+    final hasAudio =
+        (lesson['audio_url']?.toString().isNotEmpty ?? false);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
@@ -1415,7 +1407,15 @@ class _SpecialistDashboardScreenState
             color: c.tintGreen,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(Icons.menu_book, size: 28, color: c.success),
+          child: Icon(
+            hasVideo
+                ? Icons.play_circle_fill
+                : hasAudio
+                    ? Icons.volume_up
+                    : Icons.menu_book,
+            size: 28,
+            color: c.success,
+          ),
         ),
         title: Text(
           title,
@@ -1453,7 +1453,7 @@ class _SpecialistDashboardScreenState
 
   Widget _buildAddModal(JisrColors c) {
     return Positioned.fill(
-      child: _AddLessonSheet(
+      child: AddLessonSheet(
         types: _types,
         onClose: () => _setAdding(false),
         onCreated: (lesson) {
@@ -1585,6 +1585,7 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
         _selectedTeacherId!,
       );
 
+      if (!mounted) return;
       if (result != null) {
         widget.onAssigned(result);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1596,6 +1597,7 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
         Navigator.pop(context);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
         _loading = false;
@@ -1710,6 +1712,9 @@ class _LessonDetailSheet extends StatelessWidget {
     final content = (lesson['content'] ?? '').toString();
     final videoUrl = lesson['video_url'];
     final audioUrl = lesson['audio_url'];
+    final captionUrl = lesson['caption_url'];
+    final signUrl = lesson['sign_language_url'];
+    final audioDesc = lesson['audio_description'];
     final createdAt = lesson['created_at'] != null
         ? DateTime.parse(lesson['created_at'])
         : null;
@@ -1758,60 +1763,62 @@ class _LessonDetailSheet extends StatelessWidget {
               ),
             if (videoUrl != null) ...[
               const SizedBox(height: 12),
+              _mediaChip(
+                Icons.video_library,
+                '📹 فيديو مرفق',
+                AppColors.tealDeep,
+                c.tintTeal,
+              ),
+            ],
+            if (captionUrl != null) ...[
+              const SizedBox(height: 6),
+              _mediaChip(
+                Icons.closed_caption,
+                '📝 ترجمات مرفقة',
+                AppColors.pink,
+                AppColors.pink.withValues(alpha: 0.1),
+              ),
+            ],
+            if (signUrl != null) ...[
+              const SizedBox(height: 6),
+              _mediaChip(
+                Icons.sign_language,
+                '🤟 لغة إشارة مرفقة',
+                AppColors.purple,
+                AppColors.purple.withValues(alpha: 0.1),
+              ),
+            ],
+            if (audioDesc != null && audioDesc.toString().isNotEmpty) ...[
+              const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: c.tintTeal,
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.video_library,
-                        color: AppColors.tealDeep),
+                    const Icon(Icons.record_voice_over,
+                        color: AppColors.orangeDeep, size: 20),
                     const SizedBox(width: 8),
-                    const Expanded(child: Text('📹 فيديو مرفق')),
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow, size: 28),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('سيتم تشغيل الفيديو قريباً'),
-                          ),
-                        );
-                      },
+                    Expanded(
+                      child: Text(
+                        '🔊 وصف صوتي: $audioDesc',
+                        style: const TextStyle(fontSize: 13),
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
             if (audioUrl != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: c.tintGreen,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.audio_file,
-                        color: AppColors.greenDeep),
-                    const SizedBox(width: 8),
-                    const Expanded(child: Text('🎵 تسجيل صوتي مرفق')),
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow, size: 28),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('سيتم تشغيل التسجيل قريباً'),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 6),
+              _mediaChip(
+                Icons.audio_file,
+                '🎵 تسجيل صوتي مرفق',
+                AppColors.greenDeep,
+                c.tintGreen,
               ),
             ],
           ],
@@ -1819,342 +1826,20 @@ class _LessonDetailSheet extends StatelessWidget {
       ),
     );
   }
-}
 
-// ═══════════════════════════════════════════════════════
-//  شاشة إضافة الدرس (Inline Modal) — نسخة المختص
-// ═══════════════════════════════════════════════════════
-class _AddLessonSheet extends StatefulWidget {
-  final List types;
-  final VoidCallback onClose;
-  final void Function(Map lesson) onCreated;
-
-  const _AddLessonSheet({
-    required this.types,
-    required this.onClose,
-    required this.onCreated,
-  });
-
-  @override
-  State<_AddLessonSheet> createState() => _AddLessonSheetState();
-}
-
-class _AddLessonSheetState extends State<_AddLessonSheet> {
-  final _titleCtrl = TextEditingController();
-  final _contentCtrl = TextEditingController();
-  String? _typeId;
-  File? _videoFile;
-  File? _audioFile;
-  bool _saving = false;
-  String? _error;
-
-  final ImagePicker _picker = ImagePicker();
-
-  @override
-  void dispose() {
-    _titleCtrl.dispose();
-    _contentCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickVideo() async {
-    final XFile? video =
-        await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() => _videoFile = File(video.path));
-    }
-  }
-
-  Future<void> _pickAudio() async {
-    final XFile? audio = await _picker.pickMedia();
-    if (audio != null) {
-      setState(() => _audioFile = File(audio.path));
-    }
-  }
-
-  Future<void> _save() async {
-    if (_titleCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'عنوان الدرس مطلوب');
-      return;
-    }
-
-    setState(() {
-      _saving = true;
-      _error = null;
-    });
-
-    try {
-      final result = await ApiService.createLessonWithMedia(
-        title: _titleCtrl.text.trim(),
-        content: _contentCtrl.text.trim().isEmpty
-            ? null
-            : _contentCtrl.text.trim(),
-        disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
-        videoFile: _videoFile,
-        audioFile: _audioFile,
-      );
-
-      if (!mounted) return;
-
-      if (result != null) {
-        widget.onCreated(result);
-      } else {
-        setState(() {
-          _error = 'فشل حفظ الدرس';
-          _saving = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر: $e';
-        _saving = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
-    return GestureDetector(
-      onTap: widget.onClose,
-      child: Container(
-        color: Colors.black54,
-        alignment: Alignment.center,
-        child: GestureDetector(
-          onTap: () {},
-          child: SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: c.card,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          '➕ إضافة درس جديد',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: widget.onClose,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _titleCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'عنوان الدرس *',
-                      prefixIcon: Icon(Icons.title),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _contentCtrl,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'المحتوى النصي',
-                      hintText: 'اكتب محتوى الدرس (اختياري)...',
-                      prefixIcon: Icon(Icons.description),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String?>(
-                    decoration: const InputDecoration(
-                      labelText: 'نوع الإعاقة المستهدَف',
-                      prefixIcon: Icon(Icons.medical_services),
-                    ),
-                    value: _typeId,
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('— عام (كل الأنواع) —'),
-                      ),
-                      ...widget.types.map((t) => DropdownMenuItem(
-                            value: t['id'].toString(),
-                            child: Text((t['name'] ?? '').toString()),
-                          )),
-                    ],
-                    onChanged: (v) => setState(() => _typeId = v),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: c.tintTeal,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '🎬 فيديو الدرس (اختياري)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: c.onTint,
-                          ),
-                        ),
-                        if (_videoFile == null) ...[
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.teal,
-                                foregroundColor: Colors.white,
-                              ),
-                              icon: const Icon(Icons.upload_file,
-                                  size: 18),
-                              label: const Text('اختر ملف فيديو'),
-                              onPressed: _pickVideo,
-                            ),
-                          ),
-                        ] else ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.check_circle,
-                                  color: c.success),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _videoFile!.path.split('/').last,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: c.onTint,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.close,
-                                    color: c.onTint, size: 18),
-                                onPressed: () =>
-                                    setState(() => _videoFile = null),
-                                constraints: const BoxConstraints(),
-                                padding: EdgeInsets.zero,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: c.tintGreen,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '🎙️ تسجيل صوتي (اختياري)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: c.onTint,
-                          ),
-                        ),
-                        if (_audioFile == null) ...[
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                              icon: const Icon(Icons.upload_file,
-                                  size: 18),
-                              label: const Text('اختر ملف صوت'),
-                              onPressed: _pickAudio,
-                            ),
-                          ),
-                        ] else ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.check_circle,
-                                  color: c.success),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _audioFile!.path.split('/').last,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: c.onTint,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.close,
-                                    color: c.onTint, size: 18),
-                                onPressed: () =>
-                                    setState(() => _audioFile = null),
-                                constraints: const BoxConstraints(),
-                                padding: EdgeInsets.zero,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 8),
-                    Text(_error!,
-                        style: const TextStyle(color: Colors.red)),
-                  ],
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: widget.onClose,
-                          child: const Text('إلغاء'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.green,
-                          ),
-                          onPressed: _saving ? null : _save,
-                          child: Text(
-                            _saving ? 'جارِ الحفظ...' : 'حفظ الدرس',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+  Widget _mediaChip(IconData icon, String label, Color color, Color bg) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 8),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 13))),
+        ],
       ),
     );
   }

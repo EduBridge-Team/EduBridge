@@ -70,13 +70,14 @@ class _NoorPainter extends CustomPainter {
     final scale = size.width / 76;
     canvas.scale(scale);
 
+    // ✅ إصلاح: withValues بدل withOpacity المُهمَلة
     final shadow = Paint()
-      ..color = Colors.black.withOpacity(dark ? .3 : .16)
+      ..color = Colors.black.withValues(alpha: dark ? .3 : .16)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
     canvas.drawOval(const Rect.fromLTWH(14, 64, 48, 8), shadow);
 
     final glow = Paint()
-      ..color = AppColors.yellow.withOpacity(.28)
+      ..color = AppColors.yellow.withValues(alpha: .28)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
     canvas.drawCircle(const Offset(38, 35), 31, glow);
 
@@ -110,7 +111,8 @@ class _NoorPainter extends CustomPainter {
       ear,
     );
 
-    final face = Paint()..color = dark ? const Color(0xFFE8F7F8) : Colors.white;
+    final face = Paint()
+      ..color = dark ? const Color(0xFFE8F7F8) : Colors.white;
     canvas.drawOval(const Rect.fromLTWH(20, 24, 36, 31), face);
 
     final blink = phase > .9;
@@ -143,7 +145,13 @@ class _NoorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.7
       ..strokeCap = StrokeCap.round;
-    canvas.drawArc(const Rect.fromLTWH(33, 54, 10, 7), math.pi, math.pi, false, bridge);
+    canvas.drawArc(
+      const Rect.fromLTWH(33, 54, 10, 7),
+      math.pi,
+      math.pi,
+      false,
+      bridge,
+    );
     canvas.drawLine(const Offset(32, 59), const Offset(44, 59), bridge);
 
     final sparkle = Paint()..color = AppColors.yellow;

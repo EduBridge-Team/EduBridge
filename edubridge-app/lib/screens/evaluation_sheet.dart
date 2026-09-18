@@ -82,7 +82,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
       if (!mounted) return;
 
       if (result != null) {
-        // تحديث بيانات الطفل
         final updatedChild = widget.child;
         updatedChild['status'] = 'evaluated';
         if (_selectedTeacherId != null) {
@@ -96,7 +95,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
         }
         widget.onSaved(updatedChild);
 
-        // ✅ إرسال تلقائي للوزارة للموافقة
         await ApprovalService.submitForApproval(
           childId: widget.child['id'],
           childName: widget.child['name'] ?? '',
@@ -131,6 +129,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
         Navigator.pop(context);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
         _loading = false;
@@ -163,7 +162,8 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.assessment, color: Color.fromARGB(255, 20, 156, 219)),
+                    const Icon(Icons.assessment,
+                        color: Color.fromARGB(255, 20, 156, 219)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -183,7 +183,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                 ),
                 const SizedBox(height: 8),
 
-                // ✅ تنبيه مهم
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -210,12 +209,13 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                 ),
                 const SizedBox(height: 16),
 
+                // ✅ إصلاح: initialValue بدل value
                 DropdownButtonFormField<String>(
+                  initialValue: _evaluationType,
                   decoration: const InputDecoration(
                     labelText: 'نوع التقييم *',
                     prefixIcon: Icon(Icons.category),
                   ),
-                  value: _evaluationType,
                   items: const [
                     DropdownMenuItem(
                         value: 'initial', child: Text('تقييم أولي')),
@@ -323,12 +323,13 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                 ),
                 const SizedBox(height: 16),
 
+                // ✅ إصلاح: initialValue بدل value
                 DropdownButtonFormField<int?>(
+                  initialValue: _selectedTeacherId,
                   decoration: const InputDecoration(
                     labelText: 'تعيين معلم (اختياري)',
                     prefixIcon: Icon(Icons.person_add),
                   ),
-                  value: _selectedTeacherId,
                   items: [
                     const DropdownMenuItem(
                         value: null, child: Text('— لا تعيين —')),
@@ -353,7 +354,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       _error!,
-                      style: const TextStyle(color: Color.fromARGB(255, 54, 165, 244), fontSize: 16),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 54, 165, 244),
+                          fontSize: 16),
                     ),
                   ),
 

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/accessibility/profile_avatar_button.dart';
+import '../widgets/dashboard_menu.dart';
 import '../widgets/legal_links_button.dart';
 import '../utils/safe_bottom.dart';
 import 'edit_child_screen.dart';
@@ -43,21 +45,75 @@ class _AdminScreenState extends State<AdminScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(
-        title: 'لوحة التحكم الإدارية',
+      // ✅ AppBar مخصص مع: رجوع + بحث + بروفايل + هامبرغر
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+          ),
+        ),
+       
+        title: const Text(
+          'لوحة التحكم الإدارية',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+        centerTitle: false,
         actions: [
-          const LegalLinksButton(),
+          // ✅ زر البحث بالهوية
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.white),
             tooltip: 'البحث بالهوية',
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => const SearchByIdentityScreen()),
+                  builder: (_) => const SearchByIdentityScreen(),
+                ),
               );
             },
           ),
+
+          // ✅ زر البروفايل
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: Center(
+              child: ProfileAvatarButton(
+                size: 38,
+                backgroundColor: Colors.white,
+              ),
+            ),
+          ),
+
+          // ✅ قائمة الهامبرغر
+          DashboardMenu(
+            actions: [
+              DashboardMenuAction(
+                id: 'legal',
+                label: 'الخصوصية والحساب',
+                icon: Icons.privacy_tip_outlined,
+                onSelected: () => const LegalLinksButton().show(context),
+              ),
+              DashboardMenuAction(
+                id: 'logout',
+                label: 'تسجيل الخروج',
+                icon: Icons.logout,
+                destructive: true,
+                onSelected: () async {
+                  await ApiService.logout();
+                  if (context.mounted) {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: Column(
@@ -178,7 +234,6 @@ class _AdminTabBar extends StatelessWidget {
 
 // ═══════════════════════════════════════════════════════════
 //  تبويب موحّد: المستخدمون + الأطفال
-//  الأقسام: المعلمون | المختصون | أولياء الأمور | الأطفال
 // ═══════════════════════════════════════════════════════════
 class _UsersTab extends StatefulWidget {
   final Map admin;
@@ -208,7 +263,6 @@ class _UsersTabState extends State<_UsersTab> {
     });
 
     try {
-      // جلب المستخدمين والأطفال بالتوازي
       final responses = await Future.wait([
         ApiService.authGet('/users'),
         ApiService.authGet('/children'),
@@ -226,7 +280,6 @@ class _UsersTabState extends State<_UsersTab> {
         return;
       }
 
-      // معالجة قائمة المستخدمين
       final usersData = jsonDecode(usersRes.body);
       List usersList = [];
       if (usersData is List) {
@@ -235,7 +288,6 @@ class _UsersTabState extends State<_UsersTab> {
         usersList = usersData['users'] ?? usersData['data'] ?? [];
       }
 
-      // معالجة قائمة الأطفال
       List childrenList = [];
       if (childrenRes.statusCode == 200) {
         final childrenData = jsonDecode(childrenRes.body);
@@ -260,7 +312,6 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
-  // ─── فلترة حسب الدور + البحث ───
   List _byRole(String role) {
     final term = _search.trim().toLowerCase();
     return _users.where((u) {
@@ -276,7 +327,6 @@ class _UsersTabState extends State<_UsersTab> {
   List get _specialists => _byRole('specialist');
   List get _parents => _byRole('parent');
 
-  // ─── الأطفال المرتبطون بمستخدم ───
   List _childrenForUser(Map user) {
     final userId = user['id'];
     final role = (user['role'] ?? '').toString();
@@ -285,7 +335,6 @@ class _UsersTabState extends State<_UsersTab> {
         return c['assigned_teacher_id'] == userId;
       }
       if (role == 'specialist') {
-        // نحاول أكثر من اسم محتمل حسب الـ Backend
         return c['assigned_specialist_id'] == userId ||
             c['specialist_id'] == userId;
       }
@@ -314,7 +363,6 @@ class _UsersTabState extends State<_UsersTab> {
         return u['name']?.toString();
       }
     }
-    // احتياط: قد يكون الاسم مخزّناً مباشرة
     return child['assigned_teacher_name']?.toString();
   }
 
@@ -329,7 +377,6 @@ class _UsersTabState extends State<_UsersTab> {
     return child['specialist_name']?.toString();
   }
 
-  // ─── حذف مستخدم ───
   Future<void> _deleteUser(Map user) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -373,7 +420,6 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
-  // ─── حذف طفل ───
   Future<void> _deleteChild(Map child) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -418,7 +464,6 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
-  // ─── فتح تعديل مستخدم ───
   void _openEdit(Map user) {
     showModalBottomSheet(
       context: context,
@@ -435,7 +480,6 @@ class _UsersTabState extends State<_UsersTab> {
     );
   }
 
-  // ─── فتح تعديل طفل ───
   void _openEditChild(Map child) {
     Navigator.push(
       context,
@@ -451,7 +495,6 @@ class _UsersTabState extends State<_UsersTab> {
     });
   }
 
-  // ─── عرض أطفال مستخدم (معلّم/مختص/ولي أمر) ───
   void _showUserChildren(Map user) {
     final children = _childrenForUser(user);
     final role = (user['role'] ?? '').toString();
@@ -496,7 +539,7 @@ class _UsersTabState extends State<_UsersTab> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline_outlined),
+                  icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(sheetContext),
                 ),
               ],
@@ -625,7 +668,6 @@ class _UsersTabState extends State<_UsersTab> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          // ─── حقل البحث ───
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
@@ -644,7 +686,6 @@ class _UsersTabState extends State<_UsersTab> {
           ),
           const SizedBox(height: 16),
 
-          // ─── المعلمون ───
           _buildUserSection(
             emoji: '👨‍🏫',
             title: 'المعلّمون',
@@ -652,8 +693,6 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.greenDeep,
             bgTint: c.tintGreen,
           ),
-
-          // ─── المختصون ───
           _buildUserSection(
             emoji: '🧩',
             title: 'المختصون',
@@ -661,8 +700,6 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.orangeDeep,
             bgTint: c.tintOrange,
           ),
-
-          // ─── أولياء الأمور ───
           _buildUserSection(
             emoji: '👪',
             title: 'أولياء الأمور',
@@ -670,15 +707,12 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.tealDeep,
             bgTint: c.tintTeal,
           ),
-
-          // ─── الأطفال ───
           _buildChildrenSection(),
         ],
       ),
     );
   }
 
-  // ─── قسم المستخدمين ───
   Widget _buildUserSection({
     required String emoji,
     required String title,
@@ -693,7 +727,6 @@ class _UsersTabState extends State<_UsersTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // رأس القسم
           Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -735,7 +768,6 @@ class _UsersTabState extends State<_UsersTab> {
           ),
           const SizedBox(height: 10),
 
-          // البطاقات
           if (users.isEmpty)
             Container(
               padding: const EdgeInsets.all(20),
@@ -765,7 +797,6 @@ class _UsersTabState extends State<_UsersTab> {
     );
   }
 
-  // ─── قسم الأطفال ───
   Widget _buildChildrenSection() {
     final c = JisrColors.of(context);
     final children = _filteredChildren;
@@ -847,7 +878,7 @@ class _UsersTabState extends State<_UsersTab> {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  بطاقة مستخدم (صف)
+//  بطاقة مستخدم
 // ═══════════════════════════════════════════════════════════
 class _UserListTile extends StatelessWidget {
   final Map user;
@@ -933,7 +964,6 @@ class _UserListTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                // شارة "X أطفال"
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
@@ -962,7 +992,6 @@ class _UserListTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                // أزرار
                 IconButton(
                   icon: const Icon(Icons.edit,
                       size: 20, color: Colors.blue),
@@ -989,7 +1018,7 @@ class _UserListTile extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  بطاقة طفل (صف)
+//  بطاقة طفل
 // ═══════════════════════════════════════════════════════════
 class _ChildListTile extends StatelessWidget {
   final Map child;
@@ -1528,7 +1557,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
       builder: (ctx) => AlertDialog(
         title: const Text('حل الشكوى'),
         content: Text(
-            'هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم بأنه تم حل المشكلة.'),
+            'هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -1557,7 +1586,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
           );
         } else {
           setState(() {
-            _error = 'تعذّر حل الشكوى. تأكد من دعم الـ Backend لهذه الخاصية.';
+            _error = 'تعذّر حل الشكوى. تأكد من دعم الـ Backend.';
           });
         }
       } catch (_) {

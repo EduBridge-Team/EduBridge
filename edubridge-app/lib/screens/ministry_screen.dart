@@ -5,6 +5,7 @@ import '../services/approval_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
+import '../widgets/accessibility/profile_avatar_button.dart';
 import 'chats_screen.dart';
 import 'lessons_screen.dart';
 import 'support_sheet.dart';
@@ -76,6 +77,17 @@ class _MinistryScreenState extends State<MinistryScreen> {
                       ),
                     ),
                   ),
+                  // ✅ زر البروفايل
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    child: Center(
+                      child: ProfileAvatarButton(
+                        size: 38,
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                  // قائمة الهامبرغر
                   DashboardMenu(
                     actions: [
                       DashboardMenuAction(
@@ -95,7 +107,8 @@ class _MinistryScreenState extends State<MinistryScreen> {
                         icon: Icons.chat_outlined,
                         onSelected: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const ChatsScreen()),
                         ),
                       ),
                       DashboardMenuAction(
@@ -785,7 +798,6 @@ class _ApprovalsTabState extends State<_ApprovalsTab> {
 
 // ═══════════════════════════════════════════════════════
 // 3. تبويب المستخدمون والأطفال (عرض فقط)
-//    نفس تصميم الأدمن — لكن بدون تعديل/حذف
 // ═══════════════════════════════════════════════════════
 class _UsersTab extends StatefulWidget {
   const _UsersTab();
@@ -832,7 +844,6 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
-  // ─── فلترة حسب الدور + البحث ───
   List _byRole(String role) {
     final term = _search.trim().toLowerCase();
     return _users.where((u) {
@@ -848,7 +859,6 @@ class _UsersTabState extends State<_UsersTab> {
   List get _specialists => _byRole('specialist');
   List get _parents => _byRole('parent');
 
-  // ─── الأطفال المرتبطون بمستخدم ───
   List _childrenForUser(Map user) {
     final userId = user['id'];
     final role = (user['role'] ?? '').toString();
@@ -898,7 +908,6 @@ class _UsersTabState extends State<_UsersTab> {
     return child['specialist_name']?.toString();
   }
 
-  // ─── عرض أطفال مستخدم (عرض فقط) ───
   void _showUserChildren(Map user) {
     final children = _childrenForUser(user);
     final role = (user['role'] ?? '').toString();
@@ -976,7 +985,6 @@ class _UsersTabState extends State<_UsersTab> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // شارة "عرض فقط"
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 6),
@@ -984,11 +992,10 @@ class _UsersTabState extends State<_UsersTab> {
                     color: Colors.grey.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.visibility,
-                          size: 14, color: Colors.grey),
+                    children: [
+                      Icon(Icons.visibility, size: 14, color: Colors.grey),
                       SizedBox(width: 4),
                       Text(
                         'عرض فقط',
@@ -1034,8 +1041,7 @@ class _UsersTabState extends State<_UsersTab> {
                     final child = children[i];
                     final name = (child['name'] ?? '').toString();
                     final age = child['age'] ?? '?';
-                    final status =
-                        (child['status'] ?? 'pending').toString();
+                    final status = (child['status'] ?? 'pending').toString();
 
                     return ListTile(
                       leading: CircleAvatar(
@@ -1098,7 +1104,6 @@ class _UsersTabState extends State<_UsersTab> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          // ─── شريط "عرض فقط" ───
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -1125,7 +1130,6 @@ class _UsersTabState extends State<_UsersTab> {
           ),
           const SizedBox(height: 12),
 
-          // ─── حقل البحث ───
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
@@ -1144,7 +1148,6 @@ class _UsersTabState extends State<_UsersTab> {
           ),
           const SizedBox(height: 16),
 
-          // ─── المعلمون ───
           _buildUserSection(
             emoji: '👨‍🏫',
             title: 'المعلّمون',
@@ -1152,8 +1155,6 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.greenDeep,
             bgTint: c.tintGreen,
           ),
-
-          // ─── المختصون ───
           _buildUserSection(
             emoji: '🧩',
             title: 'المختصون',
@@ -1161,8 +1162,6 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.orangeDeep,
             bgTint: c.tintOrange,
           ),
-
-          // ─── أولياء الأمور ───
           _buildUserSection(
             emoji: '👪',
             title: 'أولياء الأمور',
@@ -1170,15 +1169,12 @@ class _UsersTabState extends State<_UsersTab> {
             color: AppColors.tealDeep,
             bgTint: c.tintTeal,
           ),
-
-          // ─── الأطفال ───
           _buildChildrenSection(),
         ],
       ),
     );
   }
 
-  // ─── قسم المستخدمين (بدون أزرار) ───
   Widget _buildUserSection({
     required String emoji,
     required String title,
@@ -1193,7 +1189,6 @@ class _UsersTabState extends State<_UsersTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // رأس القسم
           Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -1262,7 +1257,6 @@ class _UsersTabState extends State<_UsersTab> {
     );
   }
 
-  // ─── قسم الأطفال ───
   Widget _buildChildrenSection() {
     final c = JisrColors.of(context);
     final children = _filteredChildren;
@@ -1330,8 +1324,7 @@ class _UsersTabState extends State<_UsersTab> {
             final child = children[i];
             return _ChildListTile(
               child: child,
-              color:
-                  AppColors.kidPalette[i % AppColors.kidPalette.length],
+              color: AppColors.kidPalette[i % AppColors.kidPalette.length],
               assignedTeacherName: _teacherNameFor(child),
               assignedSpecialistName: _specialistNameFor(child),
             );
@@ -1424,7 +1417,6 @@ class _UserListTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                // شارة "X أطفال"
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),

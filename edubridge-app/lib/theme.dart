@@ -441,7 +441,62 @@ ThemeData buildHighContrastTheme() {
     ),
   );
 }
+/// ثيم عالي التباين — للكفيف
+ThemeData buildBlindHighContrastTheme() {
+  final base = buildJisrTheme();
 
+  return base.copyWith(
+    scaffoldBackgroundColor: Colors.black,
+    colorScheme: const ColorScheme.highContrastDark(
+      primary: Color(0xFFFFD400),
+      secondary: Color(0xFFFFD400),
+      surface: Colors.black,
+      onPrimary: Colors.black,
+      onSecondary: Colors.black,
+      onSurface: Colors.white,
+    ),
+    textTheme: base.textTheme.apply(
+      bodyColor: Colors.white,
+      displayColor: Colors.white,
+    ),
+    cardTheme: CardThemeData(
+      color: const Color(0xFF1A1A1A),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFFFFD400), width: 2.5),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFFFD400),
+        foregroundColor: Colors.black,
+        minimumSize: const Size(80, 80),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        textStyle: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.black,
+      foregroundColor: const Color(0xFFFFD400),
+      elevation: 0,
+      titleTextStyle: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFFFFD400),
+      ),
+    ),
+    dividerTheme: const DividerThemeData(
+      color: Color(0xFFFFD400),
+      thickness: 2,
+    ),
+  );
+}
 class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;

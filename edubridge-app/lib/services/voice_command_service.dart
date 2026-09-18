@@ -29,7 +29,6 @@ import '../screens/notifications_screen.dart';
 import '../screens/assistant_screen.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
-import 'accessibility_service.dart';
 import 'tts_service.dart';
 
 class VoiceCommandService {
@@ -40,20 +39,12 @@ class VoiceCommandService {
   bool _initialized = false;
   bool _available = false;
 
-  /// هل المايك يسمع حالياً؟
   final ValueNotifier<bool> isListening = ValueNotifier<bool>(false);
-
-  /// آخر ما سمعه المايك (للعرض)
   final ValueNotifier<String> lastHeard = ValueNotifier<String>('');
-
-  /// آخر ردّ فعلي من الخدمة
   final ValueNotifier<String> lastReply = ValueNotifier<String>('');
 
   bool get isAvailable => _available;
 
-  // ═══════════════════════════════════════════════════════
-  //  التهيئة
-  // ═══════════════════════════════════════════════════════
   Future<bool> initialize() async {
     if (_initialized) return _available;
     _initialized = true;
@@ -79,9 +70,6 @@ class VoiceCommandService {
     isListening.value = false;
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  بدء الاستماع
-  // ═══════════════════════════════════════════════════════
   Future<void> startListening() async {
     if (!await initialize()) {
       await _speak('الميكروفون غير متاح على هذا الجهاز');
@@ -123,9 +111,6 @@ class VoiceCommandService {
     } catch (_) {}
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  معالجة النتيجة
-  // ═══════════════════════════════════════════════════════
   void _onResult(SpeechRecognitionResult result) {
     final text = result.recognizedWords.trim();
     if (text.isEmpty) return;
@@ -137,16 +122,11 @@ class VoiceCommandService {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  محرّك تنفيذ الأوامر
-  // ═══════════════════════════════════════════════════════
   Future<void> _executeCommand(String rawText) async {
     final text = _normalize(rawText);
     final nav = appNavigatorKey.currentState;
 
-    // ═══════════════════════════════════════════════════════
-    //  1. أوامر القراءة
-    // ═══════════════════════════════════════════════════════
+    // ═══ 1. أوامر القراءة ═══
     if (_matches(text, [
       'اقرا', 'اقراء', 'قراءه', 'قرايه',
       'شغل القراءه', 'فعل القراءه', 'ابدا القراءه', 'وضع القراءه',
@@ -172,20 +152,16 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══════════════════════════════════════════════════════
-    //  2. التنقل
-    // ═══════════════════════════════════════════════════════
+    // ═══ 2. التنقل ═══
     if (nav == null) {
       await _reply('تعذّر التنقل');
       return;
     }
 
-    // ✅ شاشة الألعاب (قبل الألعاب المحددة — لأن "العب" عام)
     if (_matches(text, [
       'الالعاب', 'العاب', 'العب', 'لعبه', 'العبه', 'التعليميه',
       'افتح الالعاب', 'افتح العاب', 'قائمه الالعاب', 'شاشه الالعاب',
     ])) {
-      // تحقق أنه ما طلب لعبة محددة
       final specificGame = _detectSpecificGame(text);
       if (specificGame == null) {
         await _reply('سأفتح شاشة الألعاب التعليمية');
@@ -199,7 +175,6 @@ class VoiceCommandService {
       }
     }
 
-    // ✅ ألعاب محددة بالاسم
     final gameId = _detectSpecificGame(text);
     if (gameId != null) {
       final widget = _gameWidgetFor(gameId);
@@ -210,7 +185,6 @@ class VoiceCommandService {
       }
     }
 
-    // ✅ الأطفال
     if (_matches(text, [
       'اطفال', 'الاطفال', 'الاولاد', 'اولاد', 'ولاد',
       'قائمه الاطفال', 'قائمة الاطفال',
@@ -220,14 +194,12 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ الدروس
     if (_matches(text, ['دروس', 'الدروس', 'درس'])) {
       await _reply('سأفتح الدروس');
       nav.push(MaterialPageRoute(builder: (_) => const LessonsScreen()));
       return;
     }
 
-    // ✅ التقدّم
     if (_matches(text, [
       'تقدم', 'التقدم', 'انجاز', 'انجازات', 'الانجازات',
       'مكافات', 'نجوم', 'شارات',
@@ -239,7 +211,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ الإشعارات
     if (_matches(text, [
       'اشعارات', 'الاشعارات', 'تنبيهات', 'تنبيه', 'جرس',
     ])) {
@@ -248,7 +219,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ المحادثات
     if (_matches(text, [
       'محادثات', 'المحادثات', 'محادثه', 'المحادثه',
       'رسائل', 'الرسائل', 'رساله', 'شات',
@@ -258,7 +228,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ المساعد
     if (_matches(text, [
       'مساعد', 'المساعد', 'نور', 'روبوت', 'ذكاء', 'اسال',
     ])) {
@@ -267,7 +236,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ الاحتياجات
     if (_matches(text, [
       'احتياجات', 'الاحتياجات', 'اعدادات', 'الاعدادات',
       'تكييف', 'تخصيص',
@@ -279,7 +247,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ الرئيسية
     if (_matches(text, [
       'رئيسيه', 'الرئيسيه', 'رئيسي', 'الصفحه الاولى', 'البدايه', 'هوم',
     ])) {
@@ -288,7 +255,6 @@ class VoiceCommandService {
       return;
     }
 
-    // ✅ ارجع
     if (_matches(text, ['ارجع', 'رجوع', 'للخلف', 'خلف', 'باك'])) {
       if (nav.canPop()) {
         nav.pop();
@@ -299,9 +265,7 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══════════════════════════════════════════════════════
-    //  3. الثيم
-    // ═══════════════════════════════════════════════════════
+    // ═══ 3. الثيم ═══
     if (_matches(text, ['ليلي', 'الليلي', 'ظلام', 'داكن', 'مظلم'])) {
       await toggleThemeMode();
       await _reply('بدّلت للوضع الليلي');
@@ -314,9 +278,7 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══════════════════════════════════════════════════════
-    //  4. معلومات
-    // ═══════════════════════════════════════════════════════
+    // ═══ 4. معلومات ═══
     if (_matches(text, [
       'مساعده', 'مساعدة', 'اوامر', 'الاوامر', 'شو بتعمل', 'شو تقدر',
     ])) {
@@ -329,87 +291,65 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══════════════════════════════════════════════════════
-    //  5. لم أفهم
-    // ═══════════════════════════════════════════════════════
     await _reply(
       'سمعتك تقول: $rawText. جرّب: افتح الألعاب، الدروس، الأطفال، أو اقرأ',
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  كشف اسم اللعبة المحددة من النص
-  //  يُرجع id اللعبة أو null
-  // ═══════════════════════════════════════════════════════
   String? _detectSpecificGame(String text) {
-    // ⚠️ ترتيب الفحص مهم: الأكثر تخصيصاً أولاً
-
-    // 🎵 الإيقاع
     if (_matches(text, ['ايقاع', 'الايقاع', 'نقر', 'طرق'])) {
       return 'rhythm';
     }
 
-    // ⚡ الحركة السريعة
-    if (_matches(text, ['حركه سريعه', 'الحركه السريعه', 'حركه', 'الح ركه', 'نشاط'])) {
+    // ✅ إصلاح: أُزيلت "الح ركه" (كانت فيها مسافة خاطئة)
+    if (_matches(text, ['حركه سريعه', 'الحركه السريعه', 'حركه', 'نشاط'])) {
       return 'quick';
     }
 
-    // 🤟 لغة الإشارة
     if (_matches(text, ['اشاره', 'الاشاره', 'لغه الاشاره', 'الصم'])) {
       return 'sign';
     }
 
-    // 📖 رتّب القصة
     if (_matches(text, ['قصه', 'القصه', 'رت ب', 'رت ب القصه', 'قصص'])) {
       return 'story';
     }
 
-    // 🧩 الترتيب / التسلسل
     if (_matches(text, ['ترتيب', 'الترتيب', 'تسلسل', 'التسلسل'])) {
       return 'sequence';
     }
 
-    // 🔤 بناء الكلمة
     if (_matches(text, ['بناء الكلمه', 'بناء كلمه', 'ابني كلمه', 'حروف'])) {
       return 'word_builder';
     }
 
-    // 💙 الكلمات البصرية
     if (_matches(text, ['كلمات بصريه', 'الكلمات البصريه', 'كلمات', 'الكلمات'])) {
       return 'visual_words';
     }
 
-    // ➕ سباق الحساب / الرياضيات
     if (_matches(text, ['حساب', 'الحساب', 'رياضيات', 'الرياضيات', 'سباق'])) {
       return 'math';
     }
 
-    // 🔢 الأرقام / العد
     if (_matches(text, ['ارقام', 'الارقام', 'عدد', 'العد', 'رقم'])) {
       return 'numbers';
     }
 
-    // 🌈 الرموز / عمى الألوان
     if (_matches(text, ['رموز', 'الرموز', 'عمي الالوان', 'نمط', 'انماط'])) {
       return 'symbols';
     }
 
-    // 🎨 الألوان
     if (_matches(text, ['الوان', 'الالوان', 'لون', 'لوني'])) {
       return 'colors';
     }
 
-    // 🔺 الأشكال
     if (_matches(text, ['اشكال', 'الاشكال', 'شكل', 'مربع', 'دايره', 'مثلث'])) {
       return 'shapes';
     }
 
-    // 🎴 المطابقة
     if (_matches(text, ['مطابقه', 'المطابقه', 'اذواج', 'ازواج', 'بطاقات'])) {
       return 'matching';
     }
 
-    // 🔊 لعبة الأصوات / أصوات الحيوانات
     if (_matches(text, [
       'اصوات', 'الاصوات', 'صوت', 'سمع', 'سمعيه', 'حيوانات صوتيه',
     ])) {
@@ -419,9 +359,6 @@ class VoiceCommandService {
     return null;
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  إرجاع الـ widget المناسب لكل لعبة
-  // ═══════════════════════════════════════════════════════
   Widget? _gameWidgetFor(String gameId) {
     const name = 'بطل';
     const age = 8;
@@ -460,9 +397,6 @@ class VoiceCommandService {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  اسم اللعبة للردّ الصوتي
-  // ═══════════════════════════════════════════════════════
   String _gameDisplayName(String gameId) {
     switch (gameId) {
       case 'audio':
@@ -498,34 +432,20 @@ class VoiceCommandService {
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  أدوات مساعدة
-  // ═══════════════════════════════════════════════════════
-
-  /// تنظيف النص من التشكيل وتوحيد الألف والهمزات
   String _normalize(String input) {
     var t = input.trim();
-    // إزالة التشكيل
     t = t.replaceAll(RegExp(r'[\u064B-\u0652]'), '');
-    // إزالة التطويل
     t = t.replaceAll('\u0640', '');
-    // توحيد الألف (أ إ آ ٱ → ا)
     t = t.replaceAll(RegExp('[أإآٱ]'), 'ا');
-    // توحيد الهمزة (ئ → ي، ؤ → و)
     t = t.replaceAll('ئ', 'ي');
     t = t.replaceAll('ؤ', 'و');
-    // توحيد الياء (ى → ي)
     t = t.replaceAll('ى', 'ي');
-    // توحيد التاء المربوطة (ة → ه)
     t = t.replaceAll('ة', 'ه');
-    // إزالة رموز الترقيم
     t = t.replaceAll(RegExp(r'[،.,!؟?]'), ' ');
-    // توحيد المسافات
     t = t.replaceAll(RegExp(r'\s+'), ' ').trim();
     return t;
   }
 
-  /// مطابقة مرنة
   bool _matches(String text, List<String> keywords) {
     for (final k in keywords) {
       if (text.contains(_normalize(k))) return true;

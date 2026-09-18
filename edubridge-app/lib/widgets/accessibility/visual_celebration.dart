@@ -100,7 +100,6 @@ class VisualCelebration extends StatefulWidget {
 
     await Future.delayed(actualDuration + const Duration(milliseconds: 500));
 
-    // ✅ إصلاح: إزالة آمنة حتى لو أُزيل الـ entry سابقاً
     try {
       entry.remove();
     } catch (_) {
@@ -126,40 +125,23 @@ class _VisualCelebrationState extends State<VisualCelebration>
     )..forward();
 
     final int starCount;
-    final List<Color> palette;
     final List<String> emojis;
     final double speedFactor;
 
     if (widget.calmMode) {
       starCount = 8;
-      palette = [AppColors.teal, AppColors.green];
       emojis = ['⭐', '✨'];
       speedFactor = 0.5;
     } else if (widget.blindMode) {
       starCount = 6;
-      palette = [AppColors.yellow];
       emojis = ['⭐'];
       speedFactor = 0.7;
     } else if (widget.deafMode) {
       starCount = 40;
-      palette = [
-        AppColors.orange,
-        AppColors.yellow,
-        AppColors.teal,
-        AppColors.green,
-        AppColors.pink,
-      ];
       emojis = ['⭐', '🌟', '✨', '💫', '🏆', '🎉', '🎊'];
       speedFactor = 1.2;
     } else {
       starCount = 30;
-      palette = [
-        AppColors.orange,
-        AppColors.yellow,
-        AppColors.teal,
-        AppColors.green,
-        AppColors.pink,
-      ];
       emojis = ['⭐', '🌟', '✨', '💫', '🏆', '🎉', '🎊'];
       speedFactor = 1.0;
     }
@@ -172,7 +154,6 @@ class _VisualCelebrationState extends State<VisualCelebration>
         angle: rnd.nextDouble() * 2 * pi,
         distance: (120 + rnd.nextDouble() * 220) * speedFactor,
         size: 14 + rnd.nextDouble() * 20,
-        color: palette[rnd.nextInt(palette.length)],
         emoji: emojis[rnd.nextInt(emojis.length)],
       );
     });
@@ -281,9 +262,9 @@ class _VisualCelebrationState extends State<VisualCelebration>
   }
 }
 
+// ✅ إصلاح: حذف حقل color الميت
 class _Star {
   final double startX, startY, angle, distance, size;
-  final Color color;
   final String emoji;
 
   _Star({
@@ -292,7 +273,6 @@ class _Star {
     required this.angle,
     required this.distance,
     required this.size,
-    required this.color,
     required this.emoji,
   });
 }

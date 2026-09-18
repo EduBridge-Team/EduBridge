@@ -1,8 +1,8 @@
 // شاشة تصفّح كل الدروس مع بحث وقراءة صوتية
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
 import 'assistant_screen.dart';
@@ -20,29 +20,19 @@ class _LessonsScreenState extends State<LessonsScreen> {
   String? _error;
   String _query = '';
 
-  // القراءة الصوتية
-  final FlutterTts _tts = FlutterTts();
+  // ✅ إصلاح: نستخدم TtsService بدل FlutterTts مباشر
   int? _speakingLessonId;
 
   @override
   void initState() {
     super.initState();
-    _initTts();
     _loadLessons();
   }
 
   @override
   void dispose() {
-    _tts.stop();
+    TtsService.instance.stop();
     super.dispose();
-  }
-
-  Future<void> _initTts() async {
-    await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.45);
-    _tts.setCompletionHandler(() {
-      if (mounted) setState(() => _speakingLessonId = null);
-    });
   }
 
   Future<void> _loadLessons() async {
@@ -55,17 +45,20 @@ class _LessonsScreenState extends State<LessonsScreen> {
       final res = await ApiService.authGet('/lessons');
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
+        if (!mounted) return;
         setState(() {
           _lessons = data['lessons'] ?? [];
           _loading = false;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _error = data['error'] ?? 'تعذّر جلب الدروس';
           _loading = false;
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _loading = false;
@@ -73,25 +66,33 @@ class _LessonsScreenState extends State<LessonsScreen> {
     }
   }
 
-  // قراءة الدرس صوتياً أو إيقافها
+  // ✅ إصلاح: استخدام TtsService.instance بدل FlutterTts
   Future<void> _toggleSpeak(Map lesson) async {
     final lessonId = lesson['id'];
     if (_speakingLessonId == lessonId) {
-      await _tts.stop();
-      setState(() => _speakingLessonId = null);
+      await TtsService.instance.stop();
+      if (mounted) setState(() => _speakingLessonId = null);
       return;
     }
 
-    await _tts.stop();
+    await TtsService.instance.stop();
+    if (!mounted) return;
     setState(() => _speakingLessonId = lessonId is int ? lessonId : null);
+
     final text = [
       (lesson['title'] ?? '').toString(),
       (lesson['content'] ?? '').toString(),
     ].where((t) => t.isNotEmpty).join('. ');
-    await _tts.speak(text);
+
+    if (text.trim().isEmpty) {
+      if (mounted) setState(() => _speakingLessonId = null);
+      return;
+    }
+
+    await TtsService.instance.speakLine(text);
+    if (mounted) setState(() => _speakingLessonId = null);
   }
 
-  // ✅ بناء نص القراءة الصوتية لبطاقة درس
   String _buildLessonSpeech(Map lesson) {
     final title = (lesson['title'] ?? '').toString();
     final content = (lesson['content'] ?? '').toString();
@@ -105,7 +106,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
     return parts.join('، ');
   }
 
-  // فلترة بالبحث على العنوان والمحتوى
   List get _filtered {
     final q = _query.trim();
     if (q.isEmpty) return _lessons;
@@ -122,7 +122,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
       appBar: const JisrAppBar(title: 'تصفح الدروس'),
       body: Column(
         children: [
-          // حقل البحث
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
             child: TextField(
@@ -201,11 +200,10 @@ class _LessonsScreenState extends State<LessonsScreen> {
     final content = (lesson['content'] ?? '').toString();
     final c = JisrColors.of(context);
 
-    // ✅ البطاقة مغلّفة بـ Speakable
     return Speakable(
       text: _buildLessonSpeech(lesson),
       radius: 16,
-      onTap: null, // لا تنقّل تلقائي — فقط قراءة عند الوضع
+      onTap: null,
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 6),
         child: Padding(
