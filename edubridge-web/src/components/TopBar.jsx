@@ -36,6 +36,7 @@ export default function TopBar() {
 
   const is = (...roles) => user && roles.includes(user.role)
   const dashboardPath = dashboardFor(user)
+  const isParentDashboard = user?.role === 'parent' && location.pathname === '/parent'
 
   const stripLinks = [
     { to: '/admin', label: 'إدارة النظام', Icon: Settings, show: is('admin') },
@@ -54,7 +55,7 @@ export default function TopBar() {
   ].filter((link) => link.show)
 
   return (
-    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest')}>
+    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isParentDashboard ? ' parent-dashboard-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
         <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
           <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />

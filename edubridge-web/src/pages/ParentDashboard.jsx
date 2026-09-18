@@ -1,33 +1,103 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Accessibility, ArrowLeft, BarChart3, Bell, BookOpen,
-  MessageCircle, Pencil, Plus, Sparkles, Users,
+  ArrowLeft, BarChart3, Bell, BookOpen, Home, MessageCircle,
+  Plus, Search, Settings, Sparkles, Users,
 } from 'lucide-react'
-import { fetchChildren, fetchUnreadNotificationsCount, getUser } from '../api'
+import {
+  fetchChildLessons,
+  fetchChildSummary,
+  fetchChildren,
+  fetchConversations,
+  fetchUnreadNotificationsCount,
+  getUser,
+} from '../api'
 import NoorPet from '../components/NoorPet'
+import './ParentDashboard.css'
 
 const STATUS = {
   evaluated: { label: 'تم التقييم', cls: 'evaluated' },
   assigned: { label: 'تم تعيين معلّم', cls: 'assigned' },
   pending: { label: 'بانتظار المتابعة', cls: 'pending' },
 }
+
 const KID_COLORS = ['#1f78d1', '#c75bd4', '#1cb9be', '#7c6bea', '#32a46e']
+
+function clampPercent(value) {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return 0
+  return Math.max(0, Math.min(100, Math.round(n)))
+}
+
+function RingMetric({ value, label, detail, icon }) {
+  const pct = clampPercent(value)
+  return (
+    <article className="pd-metric-card">
+      <div className="pd-metric-head">
+        <span>{label}</span>
+        <span className="pd-metric-icon">{icon}</span>
+      </div>
+      <div className="pd-ring-wrap">
+        <div className="pd-ring" style={{ '--pd-progress': `${pct * 3.6}deg` }}>
+          <div className="pd-ring-center"><b>{pct}%</b></div>
+        </div>
+      </div>
+      <small>{detail}</small>
+    </article>
+  )
+}
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
   const user = getUser()
+
   const [children, setChildren] = useState([])
   const [unread, setUnread] = useState(0)
+  const [summaries, setSummaries] = useState({})
+  const [conversations, setConversations] = useState([])
+  const [lessons, setLessons] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [query, setQuery] = useState('')
 
   const load = async () => {
     setLoading(true)
     setError(null)
+
     try {
-      const data = await fetchChildren()
-      setChildren(data.children || [])
+      const [childrenData, unreadData, conversationData] = await Promise.all([
+        fetchChildren(),
+        fetchUnreadNotificationsCount().catch(() => ({ count: 0 })),
+        fetchConversations().catch(() => ({ conversations: [] })),
+      ])
+
+      const kids = childrenData.children || []
+      setChildren(kids)
+      setUnread(unreadData.count || 0)
+      setConversations(conversationData.conversations || [])
+
+      const summaryEntries = await Promise.all(
+        kids.map(async (child) => {
+          try {
+            const data = await fetchChildSummary(child.id)
+            return [child.id, data.summary || {}]
+          } catch {
+            return [child.id, {}]
+          }
+        }),
+      )
+      setSummaries(Object.fromEntries(summaryEntries))
+
+      if (kids[0]) {
+        try {
+          const data = await fetchChildLessons(kids[0].id)
+          setLessons(data.lessons || [])
+        } catch {
+          setLessons([])
+        }
+      } else {
+        setLessons([])
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -37,79 +107,285 @@ export default function ParentDashboard() {
 
   useEffect(() => {
     load()
-    fetchUnreadNotificationsCount().then((data) => setUnread(data.count || 0)).catch(() => {})
   }, [])
 
-  const stats = useMemo(() => ({
-    total: children.length,
-    assigned: children.filter((c) => c.status === 'assigned').length,
-    evaluated: children.filter((c) => c.status === 'evaluated').length,
-    pending: children.filter((c) => !c.status || c.status === 'pending').length,
-  }), [children])
+  const dashboardStats = useMemo(() => {
+    let done = 0
+    let inProgress = 0
+    let notStarted = 0
+    const scores = []
+
+    Object.values(summaries).forEach((summary) => {
+      done += Number(summary.done || 0)
+      inProgress += Number(summary.in_progress || 0)
+      notStarted += Number(summary.not_started || 0)
+      if (summary.avg_score != null && Number.isFinite(Number(summary.avg_score))) {
+        scores.push(Number(summary.avg_score))
+      }
+    })
+
+    const totalLessons = done + inProgress + notStarted
+    const completion = totalLessons ? (done / totalLessons) * 100 : 0
+    const engagement = totalLessons ? ((done + inProgress) / totalLessons) * 100 : 0
+    const avgScore = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0
+    const supported = children.filter((child) => ['assigned', 'evaluated'].includes(child.status)).length
+    const supportRate = children.length ? (supported / children.length) * 100 : 0
+
+    return {
+      completion: clampPercent(completion),
+      engagement: clampPercent(engagement),
+      avgScore: clampPercent(avgScore),
+      supportRate: clampPercent(supportRate),
+      done,
+      totalLessons,
+    }
+  }, [children, summaries])
+
+  const normalizedQuery = query.trim().toLowerCase()
+  const visibleChildren = normalizedQuery
+    ? children.filter((child) => [child.name, child.assigned_teacher_name, child.disability_name, child.disability_type]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedQuery)))
+    : children
+
+  const visibleLessons = normalizedQuery
+    ? lessons.filter((lesson) => String(lesson.title || '').toLowerCase().includes(normalizedQuery))
+    : lessons
+
+  const openNoor = () => {
+    const launcher = document.querySelector('.noor-launcher')
+    if (launcher) {
+      launcher.click()
+      return
+    }
+    navigate('/support')
+  }
+
+  const navItems = [
+    { label: 'الرئيسية', icon: <Home size={21} />, onClick: () => navigate('/parent'), active: true },
+    { label: 'أطفالي', icon: <Users size={21} />, onClick: () => navigate('/children') },
+    { label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
+    { label: 'التقدم', icon: <BarChart3 size={21} />, onClick: () => children[0] && navigate(`/children/${children[0].id}/progress`, { state: { childName: children[0].name } }) },
+    { label: 'المحادثات', icon: <MessageCircle size={21} />, onClick: () => navigate('/conversations'), badge: conversations.length },
+    { label: 'المساعد نور', icon: <Sparkles size={21} />, onClick: openNoor },
+    { label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
+  ]
 
   return (
-    <div className="parent-dashboard-new role-dashboard role-parent">
-      <section className="parent-welcome">
-        <div>
-          <span className="hero-kicker">لوحة ولي الأمر</span>
-          <h1>مرحباً {user?.name || 'ولي الأمر'} 👋</h1>
-          <p>تابع ملفات أبنائك، الدروس، التقدّم والتواصل مع الفريق التعليمي من مكان واحد.</p>
-        </div>
-        <div className="parent-welcome-art"><NoorPet size={112} /><span>معاً ندعم رحلة التعلّم</span></div>
-        <button className="bell-btn" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
-          <Bell size={21} />{unread > 0 && <span className="bell-badge">{unread}</span>}
+    <div className="parent-dashboard-v2" dir="rtl">
+      <aside className="pd-sidebar" aria-label="قائمة ولي الأمر">
+        <button className="pd-brand" onClick={() => navigate('/parent')} aria-label="EduBridge">
+          <img src="/edubridge-icon.png" alt="" />
+          <span>EduBridge</span>
         </button>
-      </section>
 
-      <section className="dashboard-panel">
-        <div className="section-heading compact">
-          <div><h2>أبنائي</h2><p>تظهر هنا الملفات المرتبطة بحسابك فقط.</p></div>
-          <div className="actions">
-            <button className="btn outline" onClick={() => navigate('/accessibility')}><Accessibility size={17} /> إعدادات الوصول</button>
-            <button className="btn" onClick={() => navigate('/children/new')}><Plus size={18} /> إضافة طفل</button>
+        <nav className="pd-side-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.label}
+              className={item.active ? 'active' : ''}
+              onClick={item.onClick}
+              disabled={item.label === 'التقدم' && !children[0]}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+              {item.badge > 0 && <em>{Math.min(item.badge, 99)}</em>}
+            </button>
+          ))}
+        </nav>
+
+        <div className="pd-noor-side">
+          <NoorPet size={118} />
+          <strong>نور</strong>
+          <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
+          <button onClick={openNoor}>ابدأ المحادثة الآن</button>
+        </div>
+      </aside>
+
+      <div className="pd-main">
+        <header className="pd-toolbar">
+          <label className="pd-search">
+            <Search size={20} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="ابحث عن طفل أو درس..."
+            />
+          </label>
+
+          <button className="pd-notification" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
+            <Bell size={20} />
+            {unread > 0 && <span>{Math.min(unread, 99)}</span>}
+          </button>
+
+          <div className="pd-profile">
+            <span className="pd-user-avatar">{(user?.name || 'و').charAt(0)}</span>
+            <div><strong>{user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></div>
           </div>
-        </div>
-        {loading ? <div className="state"><div className="spinner" />جارِ التحميل...</div>
-          : error ? <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
-          : children.length === 0 ? <div className="state"><Users size={42} /><h3>لا يوجد أطفال مرتبطون بحسابك بعد</h3><p>يمكنك إضافة طفل للبدء بمتابعة رحلته التعليمية.</p><button className="btn" onClick={() => navigate('/children/new')}><Plus size={18} /> إضافة طفل</button></div>
-          : <div className="children-showcase">
-            {children.map((child, index) => {
-              const status = STATUS[child.status] || STATUS.pending
-              return (
-                <article className="child-profile-card" key={child.id}>
-                  <div className="kid-avatar big" style={{ background: KID_COLORS[index % KID_COLORS.length] }}>{(child.name || 'ط').charAt(0)}</div>
-                  <div className="child-profile-info">
-                    <div className="child-title"><h3>{child.name}</h3><span className={`status-chip ${status.cls}`}>{status.label}</span></div>
-                    <p>{child.age ?? 'العمر غير محدد'}{typeof child.age === 'number' ? ' سنوات' : ''} · {child.disability_type || child.disability_name || 'الاحتياجات غير محددة'}</p>
-                    {child.assigned_teacher_name && <small>المعلّم المسؤول: {child.assigned_teacher_name}</small>}
-                    <div className="child-actions">
-                      <button onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}>عرض التفاصيل <ArrowLeft size={15} /></button>
-                      <button aria-label={`تعديل بيانات ${child.name}`} onClick={() => navigate(`/children/${child.id}/edit`, { state: { child } })}><Pencil size={16} /></button>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>}
-      </section>
+        </header>
 
-      <section className="progress-overview">
-        <div className="section-heading compact"><div><h2>ملخص الملفات</h2><p>أرقام حقيقية مبنية على الملفات المرتبطة بحسابك.</p></div></div>
-        <div className="progress-metrics">
-          <article><Users /><div><b>{stats.total}</b><span>إجمالي الأبناء</span></div><i>ملفات مرتبطة بحسابك</i></article>
-          <article><BookOpen /><div><b>{stats.assigned}</b><span>تم تعيين معلّم لهم</span></div><i>جاهزون للمتابعة التعليمية</i></article>
-          <article><BarChart3 /><div><b>{stats.evaluated}</b><span>تم تقييمهم</span></div><i>بحسب حالة الملف الحالية</i></article>
-          <article><Bell /><div><b>{stats.pending}</b><span>بانتظار المتابعة</span></div><i>{unread} إشعار غير مقروء</i></article>
-        </div>
-      </section>
+        <main className="pd-content">
+          <section className="pd-hero">
+            <div className="pd-hero-copy">
+              <span>لوحة ولي الأمر</span>
+              <h1>مرحباً {user?.name || 'ولي الأمر'} <b>👋</b></h1>
+              <h2>من الرائع رؤيتك مجدداً!</h2>
+              <p>هنا نظرة سريعة على رحلة أبنائك التعليمية اليوم.</p>
+            </div>
+            <div className="pd-hero-art" aria-hidden="true">
+              <img src="/edubridge-hero-child.webp" alt="" />
+            </div>
+            <span className="pd-deco pd-deco-a" aria-hidden="true">✦</span>
+            <span className="pd-deco pd-deco-b" aria-hidden="true">✦</span>
+          </section>
 
-      <section className="quick-panel">
-        <h2>إجراءات سريعة</h2>
-        <button onClick={() => navigate('/lessons')}><BookOpen /> تصفّح الدروس</button>
-        <button onClick={() => navigate('/children')}><BarChart3 /> عرض ملفات الأبناء</button>
-        <button onClick={() => navigate('/conversations')}><MessageCircle /> التواصل مع الفريق التعليمي</button>
-        <button onClick={() => navigate('/support')}><Sparkles /> الدعم والمساعدة</button>
-      </section>
+          <section className="pd-section pd-children-section">
+            <div className="pd-section-head">
+              <div><h2>أطفالي</h2><p>ملفات أبنائك المرتبطة بحسابك.</p></div>
+              <div className="pd-head-actions">
+                <button className="pd-link-btn" onClick={() => navigate('/children')}>عرض الكل <ArrowLeft size={15} /></button>
+                <button className="pd-primary-mini" onClick={() => navigate('/children/new')}><Plus size={16} /> إضافة طفل</button>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="pd-state"><div className="spinner" /> جارِ تحميل البيانات...</div>
+            ) : error ? (
+              <div className="pd-state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
+            ) : visibleChildren.length === 0 ? (
+              <div className="pd-empty">
+                <Users size={34} />
+                <h3>{normalizedQuery ? 'لا توجد نتائج مطابقة' : 'لا يوجد أطفال مرتبطون بحسابك بعد'}</h3>
+                <p>{normalizedQuery ? 'جرّب كلمة بحث مختلفة.' : 'أضف طفلاً للبدء بمتابعة رحلته التعليمية.'}</p>
+                {!normalizedQuery && <button onClick={() => navigate('/children/new')}><Plus size={17} /> إضافة طفل</button>}
+              </div>
+            ) : (
+              <div className="pd-children-grid">
+                {visibleChildren.slice(0, 2).map((child, index) => {
+                  const status = STATUS[child.status] || STATUS.pending
+                  const summary = summaries[child.id] || {}
+                  const childTotal = Number(summary.done || 0) + Number(summary.in_progress || 0) + Number(summary.not_started || 0)
+                  const childPct = childTotal ? clampPercent((Number(summary.done || 0) / childTotal) * 100) : 0
+
+                  return (
+                    <article className={`pd-child-card pd-child-card-${index % 2 ? 'pink' : 'blue'}`} key={child.id}>
+                      <div className="pd-kid-avatar" style={{ '--kid-color': KID_COLORS[index % KID_COLORS.length] }}>
+                        {(child.name || 'ط').charAt(0)}
+                      </div>
+                      <div className="pd-child-main">
+                        <div className="pd-child-title">
+                          <h3>{child.name}</h3>
+                          <span className={`status-chip ${status.cls}`}>{status.label}</span>
+                        </div>
+                        <p>{typeof child.age === 'number' ? `${child.age} سنوات` : 'العمر غير محدد'}</p>
+                        <div className="pd-child-meta">
+                          <span><small>المستوى الحالي</small><b>{child.disability_name || child.disability_type || 'برنامج تعليمي مخصص'}</b></span>
+                          <span><small>المعلّم</small><b>{child.assigned_teacher_name || 'بانتظار التعيين'}</b></span>
+                        </div>
+                        <div className="pd-child-progress"><i style={{ width: `${childPct}%` }} /></div>
+                        <button onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}>عرض التفاصيل <ArrowLeft size={15} /></button>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+
+          <section className="pd-section pd-progress-section">
+            <div className="pd-section-head">
+              <div><h2>نظرة على التقدم</h2><p>مؤشرات حقيقية محسوبة من سجلات الدروس والتقدّم.</p></div>
+              <span className="pd-period">هذا الأسبوع</span>
+            </div>
+
+            <div className="pd-metrics-grid">
+              <RingMetric
+                value={dashboardStats.completion}
+                label="الدروس المكتملة"
+                detail={dashboardStats.totalLessons ? `${dashboardStats.done} من ${dashboardStats.totalLessons} درساً` : 'لا توجد بيانات دروس بعد'}
+                icon={<BookOpen size={20} />}
+              />
+              <RingMetric
+                value={dashboardStats.engagement}
+                label="المشاركة التعليمية"
+                detail="الدروس المكتملة أو قيد التنفيذ"
+                icon={<Users size={20} />}
+              />
+              <article className="pd-metric-card pd-bars-card">
+                <div className="pd-metric-head"><span>متوسط النتائج</span><span className="pd-metric-icon"><BarChart3 size={20} /></span></div>
+                <div className="pd-bars" aria-hidden="true">
+                  {[34, 47, 58, 71, dashboardStats.avgScore || 20].map((height, index) => <i key={index} style={{ height: `${Math.max(18, height)}%` }} />)}
+                </div>
+                <b className="pd-bars-value">{dashboardStats.avgScore ? `${dashboardStats.avgScore}%` : '—'}</b>
+                <small>{dashboardStats.avgScore ? 'متوسط نتائج التقييمات' : 'لا توجد نتائج مسجلة بعد'}</small>
+              </article>
+              <RingMetric
+                value={dashboardStats.supportRate}
+                label="جاهزية المتابعة"
+                detail={children.length ? 'نسبة الملفات المقيّمة أو المعيّن لها معلّم' : 'أضف طفلاً للبدء'}
+                icon={<Sparkles size={20} />}
+              />
+            </div>
+          </section>
+
+          <div className="pd-lower-grid">
+            <section className="pd-section pd-today">
+              <div className="pd-section-head">
+                <div><h2>دروس مقترحة اليوم</h2><p>{children[0] ? `محتوى مناسب لـ ${children[0].name}` : 'أضف طفلاً لعرض الدروس المناسبة'}</p></div>
+                <BookOpen size={23} />
+              </div>
+              <div className="pd-list">
+                {visibleLessons.slice(0, 3).length ? visibleLessons.slice(0, 3).map((lesson, index) => (
+                  <article key={lesson.id}>
+                    <span className="pd-list-icon">{index === 1 ? '🎨' : index === 2 ? '🏠' : '📘'}</span>
+                    <div><strong>{lesson.title}</strong><small>{children[0]?.name || 'الطفل'} · درس تعليمي</small></div>
+                    <button onClick={() => children[0] && navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } })}>عرض الدرس</button>
+                  </article>
+                )) : <div className="pd-mini-empty">لا توجد دروس مقترحة حالياً.</div>}
+              </div>
+            </section>
+
+            <section className="pd-section pd-conversations">
+              <div className="pd-section-head">
+                <div><h2>المحادثات الأخيرة</h2><p>آخر تواصل مع الفريق التعليمي.</p></div>
+                <button className="pd-link-btn" onClick={() => navigate('/conversations')}>عرض الكل <ArrowLeft size={15} /></button>
+              </div>
+              <div className="pd-list">
+                {conversations.slice(0, 3).length ? conversations.slice(0, 3).map((conversation) => (
+                  <article key={conversation.id} className="pd-chat-row">
+                    <span className="pd-chat-avatar">{(conversation.other_user_name || 'م').charAt(0)}</span>
+                    <div><strong>{conversation.other_user_name || 'فريق EduBridge'}</strong><small>{conversation.last_message || 'ابدأ المحادثة الآن'}</small></div>
+                    <span className="pd-chat-dot" />
+                  </article>
+                )) : <div className="pd-mini-empty">لا توجد محادثات بعد.</div>}
+              </div>
+            </section>
+          </div>
+
+          <section className="pd-quick-actions">
+            <h2>إجراءات سريعة</h2>
+            <button className="primary" onClick={() => children[0] ? navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } }) : navigate('/lessons')}><BookOpen size={19} /> بدء درس</button>
+            <button onClick={() => children[0] ? navigate(`/children/${children[0].id}/progress`, { state: { childName: children[0].name } }) : navigate('/children')}><BarChart3 size={19} /> عرض التقرير</button>
+            <button onClick={() => navigate('/conversations')}><MessageCircle size={19} /> التواصل مع المعلم</button>
+            <button onClick={openNoor}><Sparkles size={19} /> التحدث مع نور</button>
+          </section>
+
+          <section className="pd-noor-banner">
+            <div className="pd-noor-copy">
+              <span>مساعدك الذكي</span>
+              <h2><b>نور</b> معك في كل خطوة</h2>
+              <p>اسأل عن تقدم طفلك، أو احصل على نصائح تعليمية مخصصة لدعم تعلمه.</p>
+              <button onClick={openNoor}>ابدأ المحادثة الآن <ArrowLeft size={16} /></button>
+            </div>
+            <NoorPet size={150} />
+            <div className="pd-noor-bubbles" aria-hidden="true">
+              <span>ما هي أنشطة اليوم؟ 💡</span>
+              <span>كيف يمكنني دعم طفلي في المنزل؟ 💬</span>
+              <span>أريد تقريراً عن تقدم عمر 📊</span>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   )
 }
