@@ -97,15 +97,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="reference-hero-art" aria-label="واجهة تعريفية لمنصة EduBridge">
-          <div className="hero-loop loop-one" aria-hidden="true" />
-          <div className="hero-loop loop-two" aria-hidden="true" />
-          <div className="hero-image-shell">
-            <img src="/brand-feature.webp" alt="EduBridge — تعليم ذكي وشامل" />
-          </div>
-          <div className="hero-note progress"><BarChart3 size={22} /><span><b>تقدم ملحوظ</b><small>متابعة مستمرة</small></span></div>
-          <div className="hero-note future"><BookOpen size={22} /><span><b>مستقبل أكثر إشراقاً</b><small>تعلّم بطريقتك</small></span></div>
-          <span className="hero-hand-note">كل طفل يستطيع<br />أن يتعلّم بطريقته ♡</span>
+        <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
+          <img
+            className="reference-hero-image"
+            src="/edubridge-hero-child.webp"
+            alt="طفل مبتسم مع عناصر EduBridge التعليمية"
+          />
         </div>
       </section>
 

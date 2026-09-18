@@ -56,10 +56,7 @@ export default function TopBar() {
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
-          <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
-          <span className="brand-wordmark">EduBridge</span>
-        </div>
+        <img className="topbar-full-logo" src="/edubridge-logo.png" alt="EduBridge" />
       </div>
 
       <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
@@ -102,18 +99,15 @@ export default function TopBar() {
           </>
         ) : (
           <>
-            <nav className="topbar-nav">
-              <NavLink to="/" end><Home size={16} /> الرئيسية</NavLink>
-              <NavLink to="/about"><Info size={16} /> من نحن</NavLink>
-              <a href="/#features"><Users size={16} /> الخدمات</a>
-              <NavLink to="/lessons"><BookOpen size={16} /> الدروس</NavLink>
-              <a href="/#contact"><LifeBuoy size={16} /> تواصل معنا</a>
+            <nav className="topbar-nav guest-nav">
+              <NavLink to="/" end>الرئيسية</NavLink>
+              <NavLink to="/about">من نحن</NavLink>
+              <a href="/#features">الخدمات</a>
+              <NavLink to="/lessons">الدروس</NavLink>
+              <a href="/#contact">تواصل معنا</a>
             </nav>
-            <div className="topbar-actions">
-              <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
-                {dark ? <Sun size={17} /> : <Moon size={17} />}
-              </button>
-              <button className="topbar-btn login-btn" onClick={() => { setOpen(false); navigate('/login') }}><LogIn size={16} /> تسجيل الدخول</button>
+            <div className="topbar-actions guest-actions">
+              <button className="topbar-btn login-btn" onClick={() => { setOpen(false); navigate('/login') }}>تسجيل الدخول</button>
               <button className="topbar-btn signup-btn" onClick={() => navigate('/register')}>إنشاء حساب</button>
             </div>
           </>
