@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
+import HeroTypewriter from '../components/HeroTypewriter'
 import NoorPet from '../components/NoorPet'
 import { dashboardFor } from '../roleRoutes'
 
@@ -77,7 +78,7 @@ export default function HomePage() {
       <section className="home-hero">
         <div className="home-hero-copy">
           <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
-          <h1>تعليم ذكي وشامل<br /><span>لكل طفل</span></h1>
+          <HeroTypewriter />
           <p>
             في EduBridge نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية
             مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.
@@ -160,7 +161,7 @@ export default function HomePage() {
           <span>اقترح نشاطاً مناسباً له</span>
           <span>بسّط لي هذا الدرس</span>
         </div>
-        <div className="noor-figure"><NoorPet size={190} /></div>
+        <div className="noor-figure"><NoorPet size={190} trackMouse /></div>
         <div className="noor-copy">
           <span className="hero-kicker">رفيق التعلّم الذكي</span>
           <h2>مساعدك الذكي <em>نور</em></h2>
