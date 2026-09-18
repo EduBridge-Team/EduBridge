@@ -122,8 +122,17 @@ if ! mv "$ASSETS_NEXT" "$PUBLIC/assets"; then
   exit 1
 fi
 
-# نسخ جميع الملفات العامة، بما فيها صور الهوية الجديدة، دون المساس بملفات Laravel.
-find "$WEB_BUILD" -mindepth 1 -maxdepth 1 ! -name assets -exec cp -a {} "$PUBLIC/" \;
+# نسخ جميع ملفات الواجهة العامة ما عدا .htaccess.
+# مهم: .htaccess الخاص بـ Vite SPA يحتوي FallbackResource، ونسخه فوق
+# Laravel public/.htaccess يمنع /api من الوصول إلى index.php ويسبب Apache HTTP 500.
+find "$WEB_BUILD" -mindepth 1 -maxdepth 1 \
+  ! -name assets \
+  ! -name .htaccess \
+  -exec cp -a {} "$PUBLIC/" \;
+
+# أعد دائماً ملف Laravel .htaccess الأصلي من الـ commit الحالي.
+# هذا يصلح أيضاً أي نشر قديم سبق أن استبدله بملف SPA.
+git -C "$ROOT" show HEAD:edubridge-api-laravel/public/.htaccess > "$PUBLIC/.htaccess"
 
 [ ! -d "$ASSETS_OLD" ] || rm -rf -- "$ASSETS_OLD"
 trap - EXIT

@@ -59,6 +59,9 @@ jobs:
           cp -R edubridge-web/dist/. deploy/web/
           cp deploy/web/index.html deploy/web/app.html
           rm -f deploy/web/index.html
+          # Laravel owns the document-root .htaccess. Never bundle the SPA
+          # FallbackResource file, otherwise /api requests fail at Apache level.
+          rm -f deploy/web/.htaccess
 
       - name: Commit deploy bundle
         run: |
