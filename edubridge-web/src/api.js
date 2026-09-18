@@ -34,10 +34,26 @@ async function request(path, options = {}) {
     throw new Error("تعذّر الاتصال بالسيرفر");
   }
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || "حدث خطأ غير متوقع");
+  const raw = await res.text();
+  let data = {};
+  if (raw) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = {};
+    }
   }
+
+  if (!res.ok) {
+    const serverMessage =
+      data.error ||
+      data.message ||
+      (res.status >= 500
+        ? `خطأ في السيرفر (HTTP ${res.status})`
+        : `تعذّر إكمال الطلب (HTTP ${res.status})`);
+    throw new Error(serverMessage);
+  }
+
   return data;
 }
 

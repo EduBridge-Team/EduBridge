@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
+    private function getJwtSecret(): ?string
+    {
+        $secret = config('services.jwt.secret') ?: env('JWT_SECRET') ?: getenv('JWT_SECRET') ?: ($_ENV['JWT_SECRET'] ?? null);
+        $secret = is_string($secret) ? trim($secret) : null;
+
+        return $secret !== '' ? $secret : null;
+    }
+
     private function getGoogleClientId(): ?string
     {
         return env('GOOGLE_CLIENT_ID') ?: getenv('GOOGLE_CLIENT_ID') ?: ($_ENV['GOOGLE_CLIENT_ID'] ?? null);
@@ -59,7 +67,7 @@ class AuthController extends Controller
                 ->find($id);
 
             return response()->json(['user' => $user], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
@@ -85,10 +93,15 @@ class AuthController extends Controller
             }
 
             // إنشاء التوكن — نفس الحمولة والصلاحية (7 أيام)
+            $jwtSecret = $this->getJwtSecret();
+            if (!$jwtSecret) {
+                return response()->json(['error' => 'إعداد المصادقة على السيرفر غير مكتمل'], 500);
+            }
+
             $now = time();
             $token = JWT::encode(
                 ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                config('services.jwt.secret'),
+                $jwtSecret,
                 'HS256'
             );
 
@@ -102,7 +115,7 @@ class AuthController extends Controller
                     'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
@@ -158,10 +171,15 @@ class AuthController extends Controller
                     ->find($id);
             }
 
+            $jwtSecret = $this->getJwtSecret();
+            if (!$jwtSecret) {
+                return response()->json(['error' => 'إعداد المصادقة على السيرفر غير مكتمل'], 500);
+            }
+
             $now = time();
             $token = JWT::encode(
                 ['id' => $user->id, 'role' => $user->role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-                config('services.jwt.secret'),
+                $jwtSecret,
                 'HS256'
             );
 
@@ -175,7 +193,7 @@ class AuthController extends Controller
                     'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }

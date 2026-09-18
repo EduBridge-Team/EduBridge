@@ -35,6 +35,25 @@ for required in \
   }
 done
 
+# ضمان وجود JWT_SECRET ثابت قبل تشغيل المصادقة.
+# إذا كان المتغير موجوداً بقيمة فلا نغيّره حتى لا تصبح التوكنات الحالية غير صالحة.
+ENV_FILE="$API/.env"
+if [ ! -f "$ENV_FILE" ]; then
+  echo "خطأ: ملف $ENV_FILE غير موجود." >&2
+  exit 1
+fi
+
+CURRENT_JWT_SECRET="$(sed -n 's/^JWT_SECRET=//p' "$ENV_FILE" | tail -1 | tr -d '\r" ' || true)"
+if [ -z "$CURRENT_JWT_SECRET" ]; then
+  echo "==> JWT_SECRET غير موجود؛ سيتم إنشاء مفتاح آمن وحفظه في .env..."
+  GENERATED_JWT_SECRET="$(php -r 'echo bin2hex(random_bytes(32));')"
+  if grep -q '^JWT_SECRET=' "$ENV_FILE"; then
+    sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$GENERATED_JWT_SECRET|" "$ENV_FILE"
+  else
+    printf '\nJWT_SECRET=%s\n' "$GENERATED_JWT_SECRET" >> "$ENV_FILE"
+  fi
+fi
+
 # 2) ترقية قاعدة البيانات (آمنة وقابلة للتكرار — IF NOT EXISTS)
 echo "==> (2/4) ترقية قاعدة البيانات..."
 cd "$API"

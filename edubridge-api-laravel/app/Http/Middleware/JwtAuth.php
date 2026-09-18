@@ -22,10 +22,17 @@ class JwtAuth
         }
 
         try {
-            $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+            $secret = config('services.jwt.secret') ?: env('JWT_SECRET') ?: getenv('JWT_SECRET') ?: ($_ENV['JWT_SECRET'] ?? null);
+            $secret = is_string($secret) ? trim($secret) : null;
+
+            if (!$secret) {
+                return response()->json(['error' => 'إعداد المصادقة على السيرفر غير مكتمل'], 500);
+            }
+
+            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
             // نمرر حمولة التوكن للمسارات التالية — { id, role }
             $request->attributes->set('jwt_user', $decoded);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => 'توكن غير صالح'], 403);
         }
 
