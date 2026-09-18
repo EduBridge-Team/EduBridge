@@ -1403,3 +1403,257 @@
     opacity: 1;
   }
 }
+
+
+/* ============================================================
+   Keep surrounding hero copy static; only the main title types.
+   Add decorative accents across the rest of the landing page.
+   ============================================================ */
+.reference-home .home-hero-copy .hero-kicker,
+.reference-home .home-hero-copy > p,
+.reference-home .home-hero-copy .hero-actions,
+.reference-home .home-hero-copy .hero-promises {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+  will-change: auto;
+}
+
+/* Audience panel accents */
+.reference-home .audience-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.reference-home .audience-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 185px;
+  height: 185px;
+  inset-inline-start: -86px;
+  top: -92px;
+  border-radius: 50%;
+  border: 24px solid rgba(37, 185, 218, .10);
+  box-shadow: 0 0 0 18px rgba(82, 210, 200, .055);
+}
+
+.reference-home .audience-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 118px;
+  height: 84px;
+  inset-inline-end: 14px;
+  bottom: 8px;
+  opacity: .28;
+  background-image: radial-gradient(circle, rgba(23, 105, 194, .42) 2px, transparent 2.4px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(135deg, #000 22%, transparent 95%);
+}
+
+/* Feature section accents */
+.reference-home .features-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .features-section::before {
+  content: "✦";
+  position: absolute;
+  z-index: -1;
+  inset-inline-start: -22px;
+  top: 40%;
+  color: rgba(37, 185, 218, .20);
+  font-size: 54px;
+  line-height: 1;
+  transform: rotate(-12deg);
+}
+
+.reference-home .features-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 150px;
+  height: 60px;
+  inset-inline-end: -66px;
+  top: 16px;
+  border-radius: 999px;
+  border: 18px solid rgba(82, 210, 200, .12);
+  transform: rotate(18deg);
+}
+
+/* Noor card: extra brand ribbon + spark */
+.reference-home .reference-noor {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.reference-home .reference-noor::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 260px;
+  height: 82px;
+  inset-inline-start: -92px;
+  bottom: -28px;
+  border-radius: 999px;
+  border: 24px solid rgba(37, 185, 218, .13);
+  transform: rotate(-10deg);
+}
+
+.reference-home .reference-noor::after {
+  content: "✦";
+  position: absolute;
+  z-index: 0;
+  inset-inline-end: 28px;
+  top: 20px;
+  color: rgba(23, 105, 194, .20);
+  font-size: 32px;
+  transform: rotate(12deg);
+}
+
+/* Stats strip: subtle dotted constellation */
+.reference-home .home-stats {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .home-stats::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 150px;
+  height: 58px;
+  inset-inline-start: -62px;
+  top: -18px;
+  opacity: .25;
+  background-image: radial-gradient(circle, rgba(37, 185, 218, .46) 2px, transparent 2.4px);
+  background-size: 13px 13px;
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+
+.reference-home .home-stats::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 48px;
+  height: 48px;
+  inset-inline-end: -18px;
+  bottom: -15px;
+  border-radius: 50%;
+  border: 2px solid rgba(82, 210, 200, .28);
+  box-shadow:
+    0 0 0 9px rgba(82, 210, 200, .055),
+    -34px -13px 0 -20px rgba(23, 105, 194, .25);
+}
+
+/* Impact area: corner ribbon + soft glow */
+.reference-home .impact-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .impact-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 240px;
+  height: 240px;
+  inset-inline-end: -160px;
+  top: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37,185,218,.10), rgba(82,210,200,.05) 48%, transparent 70%);
+}
+
+.reference-home .impact-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 118px;
+  height: 52px;
+  inset-inline-start: -46px;
+  bottom: 22px;
+  border-radius: 999px;
+  border: 15px solid rgba(23, 105, 194, .08);
+  transform: rotate(15deg);
+}
+
+/* Success stories: add a second decorative anchor */
+.reference-home .success-stories-section::before {
+  content: "";
+  position: absolute;
+  width: 92px;
+  height: 74px;
+  inset-inline-start: 8px;
+  top: 14px;
+  opacity: .22;
+  background-image: radial-gradient(circle, rgba(23, 105, 194, .44) 2px, transparent 2.4px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(135deg, #000 15%, transparent 92%);
+  pointer-events: none;
+}
+
+/* Small brand-colored side accents shared by cards */
+.reference-home .audience-card,
+.reference-home .home-feature,
+.reference-home .impact-card,
+.reference-home .success-story-card {
+  position: relative;
+}
+
+.reference-home .audience-card::after,
+.reference-home .impact-card::after,
+.reference-home .success-story-card::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  inset-inline-end: 13px;
+  top: 13px;
+  border-radius: 50%;
+  background: rgba(37, 185, 218, .34);
+  box-shadow: 10px 8px 0 rgba(82, 210, 200, .18);
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .reference-home .audience-section::before,
+:root[data-theme="dark"] .reference-home .features-section::after,
+:root[data-theme="dark"] .reference-home .reference-noor::before,
+:root[data-theme="dark"] .reference-home .impact-section::after {
+  opacity: .58;
+}
+
+@media (max-width: 780px) {
+  .reference-home .features-section::before {
+    inset-inline-start: -8px;
+    font-size: 38px;
+  }
+
+  .reference-home .features-section::after {
+    inset-inline-end: -82px;
+    opacity: .7;
+  }
+
+  .reference-home .audience-section::after,
+  .reference-home .home-stats::before,
+  .reference-home .impact-section::after {
+    opacity: .16;
+  }
+
+  .reference-home .reference-noor::after {
+    inset-inline-end: 14px;
+    top: 12px;
+    font-size: 24px;
+  }
+
+  .reference-home .success-stories-section::before {
+    width: 64px;
+    height: 54px;
+    opacity: .14;
+  }
+}
