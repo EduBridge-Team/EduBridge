@@ -4,7 +4,7 @@ import {
   BookOpen, Clock3, Grid2X2, Headphones, Palette, Search, Sparkles, Square,
   Volume2, X,
 } from 'lucide-react'
-import { fetchLessons } from '../api'
+import { fetchLessons, getUser } from '../api'
 import LessonRatings from '../components/LessonRatings'
 import NoorPet from '../components/NoorPet'
 
@@ -16,6 +16,7 @@ const VISUALS = [
 
 export default function LessonsPage() {
   const location = useLocation()
+  const isParent = getUser()?.role === 'parent'
   const [lessons, setLessons] = useState([])
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('الكل')
@@ -71,11 +72,11 @@ export default function LessonsPage() {
   }), [lessons, query, category])
 
   return (
-    <div className="lessons-redesign">
+    <div className={`lessons-redesign ${isParent ? 'parent-lessons-page' : ''}`}>
       <section className="lessons-hero">
-        <span className="hero-kicker">تعلّم واكتشف بطريقتك</span>
-        <h1>الدروس والمحتوى التعليمي</h1>
-        <p>محتوى تفاعلي آمن وممتع، صُمم ليناسب مستوى واحتياجات كل طفل.</p>
+        <span className="hero-kicker">{isParent ? 'رحلة أبنائك التعليمية' : 'تعلّم واكتشف بطريقتك'}</span>
+        <h1>{isParent ? 'الدروس' : 'الدروس والمحتوى التعليمي'}</h1>
+        <p>{isParent ? 'استعرض الدروس والمحتوى التعليمي المناسب لأبنائك وتابع ما يمكن مراجعته في المنزل.' : 'محتوى تفاعلي آمن وممتع، صُمم ليناسب مستوى واحتياجات كل طفل.'}</p>
         <div className="lesson-search">
           <Search size={22} />
           <input ref={searchRef} type="search" placeholder="ابحث عن درس أو مهارة..." value={query} onChange={(e) => setQuery(e.target.value)} />
