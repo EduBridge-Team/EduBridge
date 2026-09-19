@@ -6,8 +6,9 @@ import './index.css'
 import './identity.css'
 import './brand-wordmark.css'
 import App from './App.jsx'
+import { applyTheme, getTheme } from './theme'
 
-document.documentElement.dataset.theme = localStorage.getItem('edubridge_theme') === 'dark' ? 'dark' : 'light'
+applyTheme(getTheme(), { persist: false, notify: false })
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
