@@ -1536,3 +1536,15 @@ body.parent-portal-active {
     min-height: 188px;
   }
 }
+
+
+/* ============================================================
+   Lift Noor in the desktop parent sidebar
+   ============================================================ */
+@media (min-width: 901px) {
+  .pp-noor-card {
+    margin-top: 14px !important;
+    margin-bottom: auto !important;
+    align-self: stretch;
+  }
+}
