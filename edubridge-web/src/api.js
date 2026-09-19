@@ -20,6 +20,26 @@ export function logout() {
   localStorage.removeItem("user");
 }
 
+export async function fetchMyProfile() {
+  const data = await request("/me");
+  const user = data.user || data;
+  if (user?.id) {
+    const current = getUser() || {};
+    localStorage.setItem("user", JSON.stringify({ ...current, ...user }));
+  }
+  return user;
+}
+
+export function changeMyPassword(currentPassword, newPassword) {
+  return request("/me/password", {
+    method: "PUT",
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+}
+
 // طلب عام مع التوكن ومعالجة الأخطاء بشكل موحّد
 async function request(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...options.headers };
