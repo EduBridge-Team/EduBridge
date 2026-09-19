@@ -1188,3 +1188,32 @@ body.parent-portal-active {
     border-radius: 17px;
   }
 }
+
+
+.pcv-unread {
+  margin-inline-start: auto;
+  min-width: 24px;
+  height: 24px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--pp-blue);
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) small:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
