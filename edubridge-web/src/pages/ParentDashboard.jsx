@@ -347,7 +347,7 @@ export default function ParentDashboard() {
             {unread > 0 && <span>{Math.min(unread, 99)}</span>}
           </button>
 
-          <button className="pd-profile" onClick={() => navigate('/verify')} aria-label="الملف الشخصي">
+          <button className="pd-profile" onClick={() => navigate('/profile')} aria-label="الملف الشخصي">
             <span className="pd-user-avatar">{(user?.name || 'و').charAt(0)}</span>
             <span className="pd-profile-copy"><strong>أهلاً {user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></span>
             <ChevronDown size={16} className="pd-profile-chevron" aria-hidden="true" />
