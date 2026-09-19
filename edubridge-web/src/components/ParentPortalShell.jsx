@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  Accessibility, Bell, BookOpen, ChevronDown, Home, LifeBuoy, Menu,
-  MessageCircle, Search, Sparkles, Stethoscope, Users, X,
+  Accessibility, Bell, BookOpen, ChevronDown, Home, LifeBuoy,
+  MessageCircle, Search, Sparkles, Stethoscope, Users,
 } from 'lucide-react'
 import { fetchUnreadNotificationsCount, getUser } from '../api'
 
@@ -25,17 +25,12 @@ export default function ParentPortalShell({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
 
   useEffect(() => {
     fetchUnreadNotificationsCount()
       .then((data) => setUnread(Number(data?.count || 0)))
       .catch(() => setUnread(0))
-  }, [location.pathname])
-
-  useEffect(() => {
-    setDrawerOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -63,9 +58,7 @@ export default function ParentPortalShell({ children }) {
 
   return (
     <div className="pp-shell" dir="rtl">
-      {drawerOpen && <button className="pp-drawer-backdrop" aria-label="إغلاق القائمة" onClick={() => setDrawerOpen(false)} />}
-
-      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`}>
+      <aside className="pp-sidebar">
         <div className="pp-sidebar-head">
           <button className="pp-brand" onClick={() => navigate('/parent')} aria-label="EduBridge">
             <img src="/edubridge-icon.png" alt="" />
@@ -73,9 +66,6 @@ export default function ParentPortalShell({ children }) {
               <strong>EduBridge</strong>
               <small>معاً لمستقبل أفضل</small>
             </span>
-          </button>
-          <button className="pp-drawer-close" onClick={() => setDrawerOpen(false)} aria-label="إغلاق القائمة">
-            <X size={20} />
           </button>
         </div>
 
@@ -102,10 +92,6 @@ export default function ParentPortalShell({ children }) {
 
       <section className="pp-body">
         <header className="pp-toolbar">
-          <button className="pp-menu-button" onClick={() => setDrawerOpen(true)} aria-label="فتح القائمة">
-            <Menu size={21} />
-          </button>
-
           <form className="pp-global-search" onSubmit={submitSearch}>
             <Search size={19} />
             <button type="submit">ابحث في الدروس والمحتوى...</button>
@@ -129,18 +115,6 @@ export default function ParentPortalShell({ children }) {
         <main className="pp-content">{children}</main>
       </section>
 
-      <nav className="pp-mobile-nav" aria-label="تنقل ولي الأمر">
-        {NAV_ITEMS.slice(0, 4).map(({ to, label, Icon, exact }) => (
-          <button key={to} className={routeActive(location.pathname, { to, exact }) ? 'active' : ''} onClick={() => navigate(to)}>
-            <Icon size={20} />
-            <span>{label}</span>
-          </button>
-        ))}
-        <button onClick={() => setDrawerOpen(true)}>
-          <Menu size={20} />
-          <span>المزيد</span>
-        </button>
-      </nav>
     </div>
   )
 }
