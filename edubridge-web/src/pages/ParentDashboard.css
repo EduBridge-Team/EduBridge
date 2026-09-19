@@ -26,13 +26,15 @@
   grid-row: 1;
   position: sticky;
   top: 0;
-  height: 100vh;
+  align-self: start;
+  height: fit-content;
+  min-height: 0;
   padding: 26px 16px 18px;
   display: flex;
   flex-direction: column;
   gap: 22px;
   background: rgba(255,255,255,.98);
-  border-inline-start: 1px solid var(--pd-line);
+  border-left: 1px solid var(--pd-line);
   box-shadow: -12px 0 35px rgba(28, 101, 158, .05);
   z-index: 20;
 }
@@ -1192,7 +1194,7 @@
 
   .pd-sidebar {
     padding: 22px 16px 18px;
-    border-inline-start: 1px solid #e4eef5;
+    border-left: 1px solid #e4eef5;
     box-shadow: -8px 0 28px rgba(31, 105, 163, .035);
   }
 
