@@ -1462,3 +1462,74 @@ body.parent-portal-active {
     padding-bottom: 92px;
   }
 }
+
+
+/* ============================================================
+   Fix desktop parent sidebar overlap on narrow desktop viewports
+   ============================================================ */
+@media (min-width: 901px) {
+  .pp-shell {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0;
+    margin-inline: 0 !important;
+    padding-inline-end: 230px;
+    box-sizing: border-box;
+  }
+
+  .pp-body {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .pp-toolbar {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pp-content {
+    width: min(1180px, calc(100% - 32px));
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* The sidebar already contains Noor on desktop; avoid duplicate overlap. */
+  body.parent-portal-active .noor-launcher {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pp-shell {
+    padding-inline-end: 205px;
+  }
+
+  .pp-sidebar {
+    width: 205px !important;
+    padding-inline: 12px !important;
+  }
+
+  .pp-nav button {
+    min-height: 48px;
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -12px;
+  }
+
+  .pp-brand img {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .pp-brand > span {
+    font-size: 19px;
+  }
+
+  .pp-noor-card {
+    min-height: 188px;
+  }
+}
