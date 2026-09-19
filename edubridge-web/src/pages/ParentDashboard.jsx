@@ -498,6 +498,15 @@ export default function ParentDashboard() {
           </div>
         </main>
       </div>
+
+      <nav className="pd-mobile-nav" aria-label="تنقل ولي الأمر">
+        {navItems.slice(0, 5).map((item) => (
+          <button key={item.label} className={item.active ? 'active' : ''} onClick={item.onClick}>
+            {item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }
