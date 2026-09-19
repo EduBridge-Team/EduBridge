@@ -3324,3 +3324,205 @@ body.role-portal-admin .pp-content .admin-panel {
   background: #154257;
   color: #55cfe0;
 }
+
+
+/* ============================================================
+   Admin mobile parity — compact cards, readable type, drawer lock
+   ============================================================ */
+html.role-portal-drawer-open,
+body.role-portal-drawer-open {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+@media (max-width: 900px) {
+  .pp-sidebar.is-open {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+}
+
+.pp-role-admin .admin-users-head h3 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-users-head p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.pp-role-admin .admin-search-wrap .admin-search {
+  font-size: 14px;
+}
+
+.pp-role-admin .admin-role-heading {
+  min-height: 50px;
+  padding: 8px 12px;
+}
+
+.pp-role-admin .admin-role-heading h4 {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-role-heading-icon {
+  width: 36px;
+  height: 36px;
+  font-size: 19px;
+}
+
+.pp-role-admin .admin-role-count {
+  min-width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+.pp-role-admin .admin-role-users,
+.pp-role-admin .admin-children-grid {
+  padding: 8px;
+  gap: 8px;
+}
+
+.pp-role-admin .admin-user-row,
+.pp-role-admin .admin-child-card {
+  min-height: 82px;
+  padding: 9px 11px;
+  border-radius: 16px;
+  gap: 9px;
+}
+
+.pp-role-admin .admin-user-avatar,
+.pp-role-admin .admin-child-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+
+.pp-role-admin .admin-user-title strong,
+.pp-role-admin .admin-child-copy strong {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.pp-role-admin .admin-user-title .role-pill {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.pp-role-admin .admin-user-email,
+.pp-role-admin .admin-user-phone,
+.pp-role-admin .admin-child-copy small {
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.pp-role-admin .admin-user-main .user-verify {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.pp-role-admin .admin-linked-count {
+  min-width: 40px;
+  min-height: 28px;
+  padding-inline: 7px;
+  font-size: 11px;
+}
+
+.pp-role-admin .admin-icon-action {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 10px;
+}
+
+.pp-role-admin .admin-child-card {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "avatar childcopy childactions";
+}
+
+.pp-role-admin .admin-child-actions {
+  grid-area: childactions;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pp-role-admin .admin-child-teacher {
+  color: #169ca8 !important;
+  font-weight: 700;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-teacher .admin-role-heading {
+  background: #15462a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-specialist .admin-role-heading {
+  background: #4d351b;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-parent .admin-role-heading {
+  background: #173b59;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-children .admin-role-heading {
+  background: #493817;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-ministry .admin-role-heading {
+  background: #26395d;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-institution .admin-role-heading {
+  background: #18483e;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-admin .admin-role-heading {
+  background: #2f374a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-row,
+:root[data-theme="dark"] .pp-role-admin .admin-child-card {
+  border-color: #2b4f6c;
+  background: #102f50;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-avatar,
+:root[data-theme="dark"] .pp-role-admin .admin-child-avatar {
+  background: linear-gradient(145deg, #16465b, #143c59);
+  color: #62d7df;
+}
+
+@media (max-width: 760px) {
+  .pp-role-admin .admin-user-row,
+  .pp-role-admin .admin-child-card {
+    min-height: 86px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pp-role-admin .admin-user-row {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "avatar main count"
+      "avatar main actions";
+    min-height: 86px;
+    padding: 9px;
+  }
+
+  .pp-role-admin .admin-child-card {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    grid-template-areas: "avatar childcopy childactions";
+    min-height: 82px;
+    padding: 9px;
+  }
+
+  .pp-role-admin .admin-user-actions {
+    justify-self: end;
+  }
+
+  .pp-role-admin .admin-linked-count {
+    justify-self: end;
+  }
+}

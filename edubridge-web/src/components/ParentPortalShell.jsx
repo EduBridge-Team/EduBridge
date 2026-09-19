@@ -69,9 +69,15 @@ export default function RolePortalShell({ children }) {
   }, [location.pathname])
 
   useEffect(() => {
+    const root = document.documentElement
     const body = document.body
+    root.classList.toggle('role-portal-drawer-open', drawerOpen)
     body.classList.toggle('role-portal-drawer-open', drawerOpen)
-    return () => body.classList.remove('role-portal-drawer-open')
+
+    return () => {
+      root.classList.remove('role-portal-drawer-open')
+      body.classList.remove('role-portal-drawer-open')
+    }
   }, [drawerOpen])
 
   useEffect(() => {
@@ -204,9 +210,7 @@ export default function RolePortalShell({ children }) {
         item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         item('search', 'البحث', <Search size={21} />, '/search'),
-        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
         conversations,
-        item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
       ]
     }
 

@@ -1,7 +1,7 @@
 // لوحة التحكم الإدارية — أدمن فقط
 // تبويبان: المستخدمون المصنّفون · جميع الدروس
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import {
   getUser,
   fetchUsers,
@@ -9,6 +9,7 @@ import {
   fetchChildren,
   fetchLessons,
   deleteUser,
+  deleteChild,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
 import { Settings, Library, Phone, X, BookOpen, Pencil, Trash2 } from 'lucide-react'
@@ -81,6 +82,7 @@ export default function AdminPage() {
 
 /* ============ تبويب: المستخدمون المصنّفون ============ */
 function UsersTab() {
+  const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const [children, setChildren] = useState([])
   const [loading, setLoading] = useState(true)
@@ -120,6 +122,16 @@ function UsersTab() {
     try {
       await deleteUser(u.id)
       setUsers((list) => list.filter((x) => x.id !== u.id))
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const removeChild = async (child) => {
+    if (!window.confirm(`حذف الطفل "${child.name}" نهائياً؟`)) return
+    try {
+      await deleteChild(child.id)
+      setChildren((list) => list.filter((item) => item.id !== child.id))
     } catch (err) {
       setError(err.message)
     }
@@ -223,18 +235,39 @@ function UsersTab() {
               </div>
               <div className="admin-children-grid">
                 {filteredChildren.map((child) => (
-                  <div className="admin-child-card" key={child.id}>
+                  <article className="admin-child-card" key={child.id}>
                     <div className="admin-child-avatar">
                       {(child.name || '؟').trim().charAt(0)}
                     </div>
                     <div className="admin-child-copy">
                       <strong>{child.name || 'طفل'}</strong>
                       <small>
-                        {child.age ? `${child.age} سنوات` : 'العمر غير محدد'}
-                        {child.status ? ` • ${child.status}` : ''}
+                        {child.age ? `العمر: ${child.age} سنوات` : 'العمر غير محدد'}
+                        {child.disability_name ? ` • ${child.disability_name}` : child.status ? ` • ${child.status}` : ''}
                       </small>
+                      {child.assigned_teacher_name && (
+                        <small className="admin-child-teacher">👨‍🏫 {child.assigned_teacher_name}</small>
+                      )}
                     </div>
-                  </div>
+                    <div className="admin-child-actions">
+                      <button
+                        className="admin-icon-action edit"
+                        onClick={() => navigate(`/children/${child.id}/edit`)}
+                        aria-label={`تعديل ${child.name || 'الطفل'}`}
+                        title="تعديل الطفل"
+                      >
+                        <Pencil size={19} strokeWidth={2.35} />
+                      </button>
+                      <button
+                        className="admin-icon-action delete"
+                        onClick={() => removeChild(child)}
+                        aria-label={`حذف ${child.name || 'الطفل'}`}
+                        title="حذف الطفل"
+                      >
+                        <Trash2 size={19} strokeWidth={2.35} />
+                      </button>
+                    </div>
+                  </article>
                 ))}
               </div>
             </section>

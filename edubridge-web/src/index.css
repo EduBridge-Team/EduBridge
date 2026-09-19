@@ -2652,6 +2652,22 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     }
 }
 
+/* Noor launcher movement parity with the mobile app. */
+.noor-assistant {
+    will-change: transform;
+}
+
+.noor-launcher {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.noor-assistant.is-dragging .noor-launcher {
+    cursor: grabbing;
+    filter: brightness(1.06);
+}
+
 /* ===== المحادثات ===== */
 .chat-layout {
     display: grid; grid-template-columns: minmax(230px, 32%) 1fr; min-height: 590px;
@@ -2991,5 +3007,20 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
         inset-inline-end: 4%;
         top: 22%;
         font-size: 22px;
+    }
+}
+
+
+/* Noor mobile drag bounds */
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline-start: 10px;
+        inset-inline-end: auto;
+        width: auto;
+        align-items: flex-start;
+    }
+
+    .noor-panel {
+        width: min(390px, calc(100vw - 20px));
     }
 }

@@ -27,6 +27,22 @@ function loadHistory(user) {
   }
 }
 
+const POSITION_KEY = 'noor_assistant_position_v1'
+
+function loadPosition() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(POSITION_KEY) || 'null')
+    if (Number.isFinite(stored?.x) && Number.isFinite(stored?.y)) return stored
+  } catch {
+    // Keep the default position when storage is unavailable/corrupted.
+  }
+  return { x: 0, y: 0 }
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
 export default function AssistantWidget() {
   const location = useLocation()
   const user = getUser()
@@ -36,8 +52,12 @@ export default function AssistantWidget() {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [position, setPosition] = useState(loadPosition)
+  const [dragging, setDragging] = useState(false)
   const endRef = useRef(null)
   const inputRef = useRef(null)
+  const dragRef = useRef(null)
+  const suppressClickRef = useRef(false)
 
   useEffect(() => {
     setOpen(false)
@@ -103,11 +123,79 @@ export default function AssistantWidget() {
     }
   }
 
+  const startDrag = (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+
+    const assistant = event.currentTarget.closest('.noor-assistant')
+    const rect = assistant?.getBoundingClientRect()
+    if (!rect) return
+
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startPosition: position,
+      startRect: rect,
+      lastPosition: position,
+      moved: false,
+    }
+  }
+
+  const moveDrag = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    const dx = event.clientX - drag.startX
+    const dy = event.clientY - drag.startY
+    if (!drag.moved && Math.hypot(dx, dy) < 6) return
+
+    drag.moved = true
+    setDragging(true)
+    event.preventDefault()
+
+    const margin = 8
+    const minX = drag.startPosition.x + margin - drag.startRect.left
+    const maxX = drag.startPosition.x + window.innerWidth - margin - drag.startRect.right
+    const minY = drag.startPosition.y + margin - drag.startRect.top
+    const maxY = drag.startPosition.y + window.innerHeight - margin - drag.startRect.bottom
+    const next = {
+      x: clamp(drag.startPosition.x + dx, minX, maxX),
+      y: clamp(drag.startPosition.y + dy, minY, maxY),
+    }
+
+    drag.lastPosition = next
+    setPosition(next)
+  }
+
+  const endDrag = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    if (drag.moved) {
+      suppressClickRef.current = true
+      localStorage.setItem(POSITION_KEY, JSON.stringify(drag.lastPosition))
+      window.setTimeout(() => {
+        suppressClickRef.current = false
+      }, 180)
+    }
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId)
+    dragRef.current = null
+    setDragging(false)
+  }
+
+  const toggleAssistant = () => {
+    if (suppressClickRef.current) return
+    setOpen((value) => !value)
+  }
+
   const onParentDashboard = location.pathname === '/parent'
 
   return (
     <aside
-      className={`noor-assistant${onParentDashboard ? ' parent-dashboard-assistant' : ''}`}
+      className={`noor-assistant${onParentDashboard ? ' parent-dashboard-assistant' : ''}${dragging ? ' is-dragging' : ''}`}
+      style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
       aria-label="نور — المساعد الذكي"
     >
       {open && (
@@ -166,9 +254,14 @@ export default function AssistantWidget() {
       <button
         type="button"
         className="noor-launcher"
-        onClick={() => setOpen((value) => !value)}
+        onPointerDown={startDrag}
+        onPointerMove={moveDrag}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClick={toggleAssistant}
         aria-expanded={open}
         aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
+        title="نور — اسحب لتحريكها"
       >
         <NoorPet size={58} />
       </button>

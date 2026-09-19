@@ -144,6 +144,8 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/children', [ChildController::class, 'index']);
     Route::get('/children/{id}', [ChildController::class, 'show']);
     Route::put('/children/{id}', [ChildController::class, 'update']);
+    Route::delete('/children/{id}', [ChildController::class, 'destroy'])
+        ->middleware('role:admin');
     Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
         ->middleware('role:teacher,specialist,admin');
     Route::post('/children/{id}/assign-teacher', [ChildController::class, 'assignTeacher'])
