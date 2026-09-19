@@ -211,6 +211,7 @@ export default function RolePortalShell({ children }) {
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         item('search', 'البحث', <Search size={21} />, '/search'),
         conversations,
+        item('support', 'الدعم الفني', <LifeBuoy size={21} />, '/support'),
       ]
     }
 
