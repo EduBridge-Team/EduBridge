@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  Accessibility, Bell, BookOpen, ChevronDown, Home, LifeBuoy,
-  MessageCircle, Search, Sparkles, Stethoscope, Users,
+  Accessibility, Bell, BookOpen, ChevronDown, Home, LifeBuoy, Menu,
+  MessageCircle, Search, Stethoscope, Users, X,
 } from 'lucide-react'
 import { fetchUnreadNotificationsCount, getUser } from '../api'
+import NoorPet from './NoorPet'
 
 const NAV_ITEMS = [
   { to: '/parent', label: 'الرئيسية', Icon: Home, exact: true },
@@ -25,12 +26,17 @@ export default function ParentPortalShell({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
 
   useEffect(() => {
     fetchUnreadNotificationsCount()
       .then((data) => setUnread(Number(data?.count || 0)))
       .catch(() => setUnread(0))
+  }, [location.pathname])
+
+  useEffect(() => {
+    setDrawerOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -58,7 +64,15 @@ export default function ParentPortalShell({ children }) {
 
   return (
     <div className="pp-shell" dir="rtl">
-      <aside className="pp-sidebar">
+      {drawerOpen && (
+        <button
+          className="pp-drawer-backdrop"
+          aria-label="إغلاق القائمة"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
+      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`}>
         <div className="pp-sidebar-head">
           <button className="pp-brand" onClick={() => navigate('/parent')} aria-label="EduBridge">
             <img src="/edubridge-icon.png" alt="" />
@@ -67,13 +81,22 @@ export default function ParentPortalShell({ children }) {
               <small>معاً لمستقبل أفضل</small>
             </span>
           </button>
+          <button className="pp-drawer-close" onClick={() => setDrawerOpen(false)} aria-label="إغلاق القائمة">
+            <X size={20} />
+          </button>
         </div>
 
         <nav className="pp-nav" aria-label="قائمة ولي الأمر">
           {NAV_ITEMS.map(({ to, label, Icon, exact }) => {
             const active = routeActive(location.pathname, { to, exact })
             return (
-              <button key={to} className={active ? 'active' : ''} onClick={() => navigate(to)} title={label} aria-label={label}>
+              <button
+                key={to}
+                className={active ? 'active' : ''}
+                onClick={() => navigate(to)}
+                title={label}
+                aria-label={label}
+              >
                 <Icon size={20} />
                 <span>{label}</span>
               </button>
@@ -81,13 +104,12 @@ export default function ParentPortalShell({ children }) {
           })}
         </nav>
 
-        <button className="pp-noor-card" onClick={openNoor}>
-          <span className="pp-noor-icon"><Sparkles size={20} /></span>
-          <span>
-            <strong>نور معك دائماً</strong>
-            <small>اسأل المساعد التعليمي في أي وقت</small>
-          </span>
-        </button>
+        <div className="pp-noor-card">
+          <NoorPet size={112} />
+          <strong>نور</strong>
+          <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
+          <button onClick={openNoor}>ابدأ المحادثة الآن</button>
+        </div>
       </aside>
 
       <section className="pp-body">
@@ -115,6 +137,22 @@ export default function ParentPortalShell({ children }) {
         <main className="pp-content">{children}</main>
       </section>
 
+      <nav className="pp-mobile-nav" aria-label="تنقل ولي الأمر">
+        {NAV_ITEMS.slice(0, 4).map(({ to, label, Icon, exact }) => (
+          <button
+            key={to}
+            className={routeActive(location.pathname, { to, exact }) ? 'active' : ''}
+            onClick={() => navigate(to)}
+          >
+            <Icon size={20} />
+            <span>{label}</span>
+          </button>
+        ))}
+        <button onClick={() => setDrawerOpen(true)}>
+          <Menu size={20} />
+          <span>المزيد</span>
+        </button>
+      </nav>
     </div>
   )
 }

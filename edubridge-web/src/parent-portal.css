@@ -1218,35 +1218,20 @@ body.parent-portal-active {
   white-space: nowrap;
 }
 
-
 /* ============================================================
-   Mobile parent portal: persistent compact sidebar, no bottom bar
+   Parent portal sidebar parity with the main parent dashboard
    ============================================================ */
-@media (max-width: 980px) {
+@media (min-width: 981px) {
   .pp-shell {
-    display: block;
-    min-height: 100dvh;
-    padding-inline-end: 72px;
-    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr) 230px;
   }
 
   .pp-sidebar {
-    position: fixed !important;
-    top: 0;
-    right: 0;
-    left: auto;
-    width: 72px !important;
-    height: 100dvh !important;
-    padding: 12px 8px !important;
-    transform: none !important;
-    transition: none !important;
-    display: flex !important;
-    flex-direction: column;
-    gap: 12px;
-    border-left: 1px solid var(--pp-line);
-    background: rgba(255,255,255,.98);
-    box-shadow: -8px 0 24px rgba(20,89,145,.06);
-    z-index: 80;
+    width: auto;
+    padding: 22px 16px 18px;
+    gap: 18px;
+    border-left: 1px solid #e4eef5;
+    box-shadow: -8px 0 28px rgba(31, 105, 163, .035);
   }
 
   .pp-sidebar-head {
@@ -1254,127 +1239,87 @@ body.parent-portal-active {
   }
 
   .pp-brand {
-    flex: 0 0 auto;
-    justify-content: center;
+    display: grid;
+    justify-items: center;
+    gap: 0;
+    text-align: center;
   }
 
   .pp-brand img {
-    width: 44px;
-    height: 44px;
+    width: 62px;
+    height: 62px;
   }
 
-  .pp-brand > span,
-  .pp-drawer-close,
-  .pp-drawer-backdrop,
-  .pp-menu-button,
-  .pp-mobile-nav {
-    display: none !important;
+  .pp-brand strong {
+    font-size: 23px;
+    color: var(--pp-blue);
+  }
+
+  .pp-brand small {
+    margin-top: 2px;
+    font-size: 9px;
   }
 
   .pp-nav {
-    display: grid;
-    gap: 6px;
+    gap: 8px;
   }
 
   .pp-nav button {
-    width: 50px;
-    min-height: 50px;
-    margin-inline: auto;
-    padding: 0;
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -16px;
+  }
+
+  .pp-noor-card {
+    margin-top: auto;
+    min-height: 205px;
+    padding: 12px;
+    border: 1px solid #d5edf7;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: center;
     gap: 0;
-    border-radius: 14px;
+    text-align: center;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(91,217,207,.26), transparent 5rem),
+      linear-gradient(155deg, #f4fbff, #e8f8ff);
+    overflow: hidden;
   }
 
-  .pp-nav button > span {
-    display: none;
+  .pp-noor-card .noor-pet {
+    margin: -14px auto -8px;
+    transform: scale(.92);
   }
 
-  .pp-nav button.active::after {
-    inset-inline-end: -11px;
-    width: 3px;
-    height: 26px;
+  .pp-noor-card > strong {
+    display: block;
+    font-size: 17px;
+    color: var(--pp-blue-deep);
   }
 
-  .pp-noor-card {
-    width: 50px;
-    height: 50px;
-    min-height: 50px;
-    margin: auto auto 0;
-    padding: 0;
-    justify-content: center;
-    border-radius: 15px;
+  .pp-noor-card > p {
+    margin: 3px 0 8px;
+    color: var(--pp-text);
+    font-size: 10px;
+    line-height: 1.55;
   }
 
-  .pp-noor-card > span:last-child {
-    display: none;
-  }
-
-  .pp-noor-icon {
-    width: 36px;
-    height: 36px;
-    flex-basis: 36px;
-  }
-
-  .pp-body {
+  .pp-noor-card > button {
     width: 100%;
-  }
-
-  .pp-toolbar {
-    min-height: 70px;
-    padding: 10px 14px;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 9px;
-  }
-
-  .pp-content {
-    width: min(100% - 22px, 900px);
-    padding: 16px 0 38px;
-  }
-}
-
-@media (max-width: 680px) {
-  .pp-shell {
-    padding-inline-end: 66px;
-  }
-
-  .pp-sidebar {
-    width: 66px !important;
-    padding-inline: 6px !important;
-  }
-
-  .pp-brand img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .pp-nav button,
-  .pp-noor-card {
-    width: 46px;
-    min-height: 46px;
-    height: 46px;
-  }
-
-  .pp-nav button.active::after {
-    inset-inline-end: -10px;
-  }
-
-  .pp-toolbar {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    padding-inline: 10px;
-  }
-
-  .pp-notification {
-    display: none;
-  }
-
-  .pp-profile {
-    min-width: 42px;
-  }
-
-  .pp-content {
-    width: calc(100% - 14px);
-    padding-bottom: 30px;
+    min-height: 34px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--pp-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
   }
 }
