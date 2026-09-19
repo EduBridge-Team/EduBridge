@@ -1939,3 +1939,44 @@
     transform: none !important;
   }
 }
+
+
+/* ============================================================
+   Finish the upper/lower divider exactly at the sidebar edge
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-fullwidth-lower {
+    --pd-sidebar-width: 230px;
+  }
+
+  /*
+   * The progress card already supplies the divider on the main-content side.
+   * Continue that same 1px line only through the sidebar area, then stop.
+   */
+  .pd-fullwidth-lower::before {
+    content: "";
+    position: absolute;
+    top: -13px;
+    right: 0;
+    width: var(--pd-sidebar-width);
+    height: 1px;
+    background: #e2edf4;
+    pointer-events: none;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-fullwidth-lower {
+    --pd-sidebar-width: 205px;
+  }
+
+  .pd-fullwidth-lower::before {
+    top: -13px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pd-fullwidth-lower::before {
+    display: none;
+  }
+}
