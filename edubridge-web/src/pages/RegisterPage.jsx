@@ -1,5 +1,5 @@
 // صفحة إنشاء حساب جديد
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../api'
 
@@ -15,6 +15,17 @@ export default function RegisterPage() {
   })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const body = document.body
+    root.classList.add('auth-page-active')
+    body.classList.add('auth-page-active')
+    return () => {
+      root.classList.remove('auth-page-active')
+      body.classList.remove('auth-page-active')
+    }
+  }, [])
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 

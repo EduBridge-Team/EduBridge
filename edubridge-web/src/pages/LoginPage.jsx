@@ -17,6 +17,17 @@ export default function LoginPage() {
   const successMsg = location.state?.message
 
   useEffect(() => {
+    const root = document.documentElement
+    const body = document.body
+    root.classList.add('auth-page-active')
+    body.classList.add('auth-page-active')
+    return () => {
+      root.classList.remove('auth-page-active')
+      body.classList.remove('auth-page-active')
+    }
+  }, [])
+
+  useEffect(() => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
     if (!googleClientId) {
       return
