@@ -2652,6 +2652,22 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     }
 }
 
+/* Noor launcher movement parity with the mobile app. */
+.noor-assistant {
+    will-change: transform;
+}
+
+.noor-launcher {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.noor-assistant.is-dragging .noor-launcher {
+    cursor: grabbing;
+    filter: brightness(1.06);
+}
+
 /* ===== المحادثات ===== */
 .chat-layout {
     display: grid; grid-template-columns: minmax(230px, 32%) 1fr; min-height: 590px;
