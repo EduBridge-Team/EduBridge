@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { changeMyPassword, fetchMyProfile, getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
+import { useTheme } from '../theme'
 import './ProfilePage.css'
 
 function InfoRow({ Icon, label, value, tone = '' }) {
@@ -42,7 +43,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordBusy, setPasswordBusy] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState('')
-  const [dark, setDark] = useState(() => localStorage.getItem('edubridge_theme') === 'dark')
+  const { dark, toggleTheme } = useTheme()
 
   useEffect(() => {
     let active = true
@@ -59,13 +60,6 @@ export default function ProfilePage() {
 
     return () => { active = false }
   }, [])
-
-  const toggleTheme = () => {
-    const next = !dark
-    setDark(next)
-    document.documentElement.dataset.theme = next ? 'dark' : 'light'
-    localStorage.setItem('edubridge_theme', next ? 'dark' : 'light')
-  }
 
   const submitPassword = async (event) => {
     event.preventDefault()
