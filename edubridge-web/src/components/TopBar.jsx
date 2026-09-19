@@ -36,7 +36,17 @@ export default function TopBar() {
 
   const is = (...roles) => user && roles.includes(user.role)
   const dashboardPath = dashboardFor(user)
-  const isParentDashboard = user?.role === 'parent' && location.pathname === '/parent'
+  const isParentPortal = user?.role === 'parent' && (
+    location.pathname === '/parent'
+    || location.pathname.startsWith('/children')
+    || location.pathname === '/lessons'
+    || location.pathname === '/conversations'
+    || location.pathname === '/notifications'
+    || location.pathname === '/support'
+    || location.pathname === '/verify'
+    || location.pathname === '/consultations'
+    || location.pathname.startsWith('/accessibility')
+  )
 
   const stripLinks = [
     { to: '/admin', label: 'إدارة النظام', Icon: Settings, show: is('admin') },
@@ -55,7 +65,7 @@ export default function TopBar() {
   ].filter((link) => link.show)
 
   return (
-    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isParentDashboard ? ' parent-dashboard-global-topbar' : '')}>
+    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isParentPortal ? ' parent-portal-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
         <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
           <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
