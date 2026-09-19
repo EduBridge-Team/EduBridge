@@ -1046,3 +1046,35 @@
     font-weight: 900;
   }
 }
+
+
+/* Keep Noor directly below the sidebar navigation like the reference. */
+.pd-noor-side {
+  margin-top: 10px !important;
+  flex: 0 0 auto;
+}
+
+@media (min-width: 901px) {
+  .pd-sidebar {
+    justify-content: flex-start;
+  }
+
+  .pd-side-nav {
+    flex: 0 0 auto;
+  }
+
+  .pd-noor-side {
+    min-height: 218px;
+    max-height: 238px;
+    padding-top: 10px;
+  }
+
+  .pd-noor-side .noor-pet {
+    margin: -12px auto -7px;
+  }
+
+  /* The dashboard already has its own Noor card, so avoid the duplicate floating launcher. */
+  .noor-assistant.parent-dashboard-assistant > .noor-launcher {
+    display: none;
+  }
+}

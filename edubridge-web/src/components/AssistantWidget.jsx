@@ -103,8 +103,13 @@ export default function AssistantWidget() {
     }
   }
 
+  const onParentDashboard = location.pathname === '/parent'
+
   return (
-    <aside className="noor-assistant" aria-label="نور — المساعد الذكي">
+    <aside
+      className={`noor-assistant${onParentDashboard ? ' parent-dashboard-assistant' : ''}`}
+      aria-label="نور — المساعد الذكي"
+    >
       {open && (
         <section className="noor-panel" role="dialog" aria-label="محادثة نور">
           <header className="noor-header">
