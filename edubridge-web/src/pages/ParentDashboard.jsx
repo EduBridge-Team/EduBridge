@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft, BarChart3, Bell, BookOpen, Home, MessageCircle,
-  Plus, Search, Settings, Sparkles, Users,
+  ArrowLeft, BarChart3, Bell, BookOpen, CalendarDays, ChevronDown, Home, MessageCircle,
+  PlayCircle, Plus, Search, Settings, Sparkles, Target, Users,
 } from 'lucide-react'
 import {
   fetchChildLessons,
@@ -29,10 +29,24 @@ function clampPercent(value) {
   return Math.max(0, Math.min(100, Math.round(n)))
 }
 
-function RingMetric({ value, label, detail, icon }) {
+function lessonTimeLabel(lesson, index) {
+  const raw = lesson?.start_time || lesson?.scheduled_at || lesson?.due_at || lesson?.lesson_time
+  if (raw) {
+    const value = String(raw)
+    const date = new Date(value)
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleTimeString('ar', { hour: 'numeric', minute: '2-digit' })
+    }
+    return value
+  }
+
+  return ['متاح الآن', 'متاح الآن', 'متاح الآن'][index] || 'متاح الآن'
+}
+
+function RingMetric({ value, label, detail, icon, tone = 'cyan' }) {
   const pct = clampPercent(value)
   return (
-    <article className="pd-metric-card">
+    <article className={`pd-metric-card pd-metric-${tone}`}>
       <div className="pd-metric-head">
         <span>{label}</span>
         <span className="pd-metric-icon">{icon}</span>
@@ -220,7 +234,8 @@ export default function ParentDashboard() {
 
           <div className="pd-profile">
             <span className="pd-user-avatar">{(user?.name || 'و').charAt(0)}</span>
-            <div><strong>{user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></div>
+            <div><strong>أهلاً {user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></div>
+            <ChevronDown size={16} className="pd-profile-chevron" aria-hidden="true" />
           </div>
         </header>
 
@@ -234,9 +249,16 @@ export default function ParentDashboard() {
             </div>
             <div className="pd-hero-art" aria-hidden="true">
               <img src="/edubridge-hero-child.webp" alt="" />
+              <div className="pd-hero-note">كل طفل<br />يستطيع أن يتعلم<br />بطريقته ♡</div>
+              <div className="pd-hero-badge">
+                <span>🎓</span>
+                <b>مستقبل أكثر إشراقاً</b>
+                <small>لأطفالنا</small>
+              </div>
             </div>
             <span className="pd-deco pd-deco-a" aria-hidden="true">✦</span>
             <span className="pd-deco pd-deco-b" aria-hidden="true">✦</span>
+            <span className="pd-deco pd-deco-c" aria-hidden="true">+</span>
           </section>
 
           <section className="pd-section pd-children-section">
@@ -269,12 +291,22 @@ export default function ParentDashboard() {
 
                   return (
                     <article className={`pd-child-card pd-child-card-${index % 2 ? 'pink' : 'blue'}`} key={child.id}>
+                      <button
+                        className="pd-child-arrow"
+                        onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}
+                        aria-label={`عرض تفاصيل ${child.name}`}
+                      >
+                        <ArrowLeft size={18} />
+                      </button>
                       <div className="pd-kid-avatar" style={{ '--kid-color': KID_COLORS[index % KID_COLORS.length] }}>
-                        {(child.name || 'ط').charAt(0)}
+                        <span>{(child.name || 'ط').charAt(0)}</span>
                       </div>
                       <div className="pd-child-main">
                         <div className="pd-child-title">
                           <h3>{child.name}</h3>
+                          <span className="pd-gender-symbol" aria-hidden="true">
+                            {String(child.gender || '').toLowerCase() === 'female' ? '♀' : '♂'}
+                          </span>
                           <span className={`status-chip ${status.cls}`}>{status.label}</span>
                         </div>
                         <p>{typeof child.age === 'number' ? `${child.age} سنوات` : 'العمر غير محدد'}</p>
@@ -304,12 +336,14 @@ export default function ParentDashboard() {
                 label="الدروس المكتملة"
                 detail={dashboardStats.totalLessons ? `${dashboardStats.done} من ${dashboardStats.totalLessons} درساً` : 'لا توجد بيانات دروس بعد'}
                 icon={<BookOpen size={20} />}
+                tone="blue"
               />
               <RingMetric
                 value={dashboardStats.engagement}
                 label="المشاركة التعليمية"
                 detail="الدروس المكتملة أو قيد التنفيذ"
                 icon={<Users size={20} />}
+                tone="cyan"
               />
               <article className="pd-metric-card pd-bars-card">
                 <div className="pd-metric-head"><span>متوسط النتائج</span><span className="pd-metric-icon"><BarChart3 size={20} /></span></div>
@@ -321,9 +355,10 @@ export default function ParentDashboard() {
               </article>
               <RingMetric
                 value={dashboardStats.supportRate}
-                label="جاهزية المتابعة"
-                detail={children.length ? 'نسبة الملفات المقيّمة أو المعيّن لها معلّم' : 'أضف طفلاً للبدء'}
-                icon={<Sparkles size={20} />}
+                label="تحقيق الأهداف"
+                detail={children.length ? 'جاهزية ملفات الأطفال للمتابعة' : 'أضف طفلاً للبدء'}
+                icon={<Target size={20} />}
+                tone="mint"
               />
             </div>
           </section>
@@ -331,17 +366,29 @@ export default function ParentDashboard() {
           <div className="pd-lower-grid">
             <section className="pd-section pd-today">
               <div className="pd-section-head">
-                <div><h2>دروس مقترحة اليوم</h2><p>{children[0] ? `محتوى مناسب لـ ${children[0].name}` : 'أضف طفلاً لعرض الدروس المناسبة'}</p></div>
-                <BookOpen size={23} />
+                <div>
+                  <div className="pd-title-with-icon"><CalendarDays size={23} /><h2>دروس ومهام اليوم</h2></div>
+                  <p>{children[0] ? `المحتوى التعليمي المتاح لـ ${children[0].name}` : 'أضف طفلاً لعرض الدروس والمهام'}</p>
+                </div>
               </div>
-              <div className="pd-list">
+              <div className="pd-schedule-list">
                 {visibleLessons.slice(0, 3).length ? visibleLessons.slice(0, 3).map((lesson, index) => (
-                  <article key={lesson.id}>
-                    <span className="pd-list-icon">{index === 1 ? '🎨' : index === 2 ? '🏠' : '📘'}</span>
-                    <div><strong>{lesson.title}</strong><small>{children[0]?.name || 'الطفل'} · درس تعليمي</small></div>
-                    <button onClick={() => children[0] && navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } })}>عرض الدرس</button>
+                  <article key={lesson.id} className="pd-schedule-row">
+                    <div className="pd-schedule-time">
+                      <span>{lessonTimeLabel(lesson, index)}</span>
+                    </div>
+                    <span className={`pd-schedule-icon pd-schedule-icon-${index % 3}`}>
+                      {index === 1 ? '🎨' : index === 2 ? '🏠' : '📘'}
+                    </span>
+                    <div className="pd-schedule-copy">
+                      <strong>{lesson.title}</strong>
+                      <small>{children[0]?.name || 'الطفل'} · محتوى تعليمي</small>
+                    </div>
+                    <button onClick={() => children[0] && navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } })}>
+                      {index === 0 ? 'ابدأ الآن' : 'عرض الدرس'}
+                    </button>
                   </article>
-                )) : <div className="pd-mini-empty">لا توجد دروس مقترحة حالياً.</div>}
+                )) : <div className="pd-mini-empty">لا توجد دروس أو مهام متاحة حالياً.</div>}
               </div>
             </section>
 
@@ -364,7 +411,7 @@ export default function ParentDashboard() {
 
           <section className="pd-quick-actions">
             <h2>إجراءات سريعة</h2>
-            <button className="primary" onClick={() => children[0] ? navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } }) : navigate('/lessons')}><BookOpen size={19} /> بدء درس</button>
+            <button className="primary" onClick={() => children[0] ? navigate(`/children/${children[0].id}/lessons`, { state: { childName: children[0].name } }) : navigate('/lessons')}><PlayCircle size={20} /> بدء درس</button>
             <button onClick={() => children[0] ? navigate(`/children/${children[0].id}/progress`, { state: { childName: children[0].name } }) : navigate('/children')}><BarChart3 size={19} /> عرض التقرير</button>
             <button onClick={() => navigate('/conversations')}><MessageCircle size={19} /> التواصل مع المعلم</button>
             <button onClick={openNoor}><Sparkles size={19} /> التحدث مع نور</button>
