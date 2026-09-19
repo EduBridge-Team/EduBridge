@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  BarChart3, Bell, BookOpen, ChevronDown, Home, Menu,
-  MessageCircle, Search, Settings, Sparkles, Users, X,
+  Accessibility, BarChart3, Bell, BookOpen, Building2, ChevronDown, Home, Landmark,
+  LifeBuoy, Menu, MessageCircle, Search, Settings, ShieldCheck, Sparkles,
+  Stethoscope, Users, X,
 } from 'lucide-react'
 import {
   fetchChildren,
@@ -10,22 +11,33 @@ import {
   fetchUnreadNotificationsCount,
   getUser,
 } from '../api'
+import { ROLE_NAMES } from '../roles'
+import { dashboardFor } from '../roleRoutes'
 import NoorPet from './NoorPet'
 
-function activeSection(pathname) {
-  if (pathname === '/parent') return 'home'
-  if (pathname === '/lessons' || /\/children\/[^/]+\/lessons$/.test(pathname)) return 'lessons'
+function activeSection(pathname, role, homePath) {
+  if (pathname === homePath) return 'home'
   if (/\/children\/[^/]+\/progress$/.test(pathname)) return 'progress'
-  if (pathname === '/conversations') return 'conversations'
-  if (pathname === '/accessibility' || pathname.includes('/accessibility') || pathname === '/profile') return 'settings'
+  if (pathname === '/lessons' || /\/children\/[^/]+\/lessons$/.test(pathname)) return 'lessons'
   if (pathname.startsWith('/children')) return 'children'
+  if (pathname === '/conversations') return 'conversations'
+  if (pathname === '/search') return 'search'
+  if (pathname === '/consultations') return 'consultations'
+  if (pathname === '/admin/verifications') return 'verifications'
+  if (pathname === '/ministry' && role === 'admin') return 'curriculum'
+  if (pathname === '/support') return 'support'
+  if (pathname === '/verify') return 'verify'
+  if (pathname === '/profile' || pathname.startsWith('/accessibility')) return 'settings'
   return ''
 }
 
-export default function ParentPortalShell({ children }) {
+export default function RolePortalShell({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
+  const role = user?.role || 'parent'
+  const roleName = ROLE_NAMES[role] || role
+  const homePath = dashboardFor(user)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
@@ -33,29 +45,38 @@ export default function ParentPortalShell({ children }) {
   const [conversationCount, setConversationCount] = useState(0)
 
   useEffect(() => {
+    const childrenRequest = role === 'parent'
+      ? fetchChildren().catch(() => ({ children: [] }))
+      : Promise.resolve({ children: [] })
+
     Promise.all([
       fetchUnreadNotificationsCount().catch(() => ({ count: 0 })),
-      fetchChildren().catch(() => ({ children: [] })),
+      childrenRequest,
       fetchConversations().catch(() => ({ conversations: [] })),
     ]).then(([notificationData, childrenData, conversationData]) => {
       setUnread(Number(notificationData?.count || 0))
       setChildrenList(childrenData?.children || [])
       setConversationCount((conversationData?.conversations || []).length)
     })
-  }, [location.pathname])
+  }, [location.pathname, role])
 
   useEffect(() => {
     setDrawerOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
-    document.documentElement.classList.add('parent-portal-active')
-    document.body.classList.add('parent-portal-active')
+    const root = document.documentElement
+    const body = document.body
+    const roleClass = `role-portal-${role}`
+
+    root.classList.add('parent-portal-active', 'role-portal-active', roleClass)
+    body.classList.add('parent-portal-active', 'role-portal-active', roleClass)
+
     return () => {
-      document.documentElement.classList.remove('parent-portal-active')
-      document.body.classList.remove('parent-portal-active')
+      root.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
+      body.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
     }
-  }, [])
+  }, [role])
 
   const openNoor = () => {
     const launcher = document.querySelector('.noor-launcher')
@@ -77,25 +98,132 @@ export default function ParentPortalShell({ children }) {
 
   const submitSearch = (event) => {
     event.preventDefault()
-    navigate('/lessons', { state: { focusSearch: true } })
+    if (role === 'parent') {
+      navigate('/lessons', { state: { focusSearch: true } })
+      return
+    }
+    navigate('/search')
   }
 
-  const current = activeSection(location.pathname)
+  const current = activeSection(location.pathname, role, homePath)
 
-  const navItems = [
-    { key: 'home', label: 'الرئيسية', icon: <Home size={21} />, onClick: () => navigate('/parent') },
-    { key: 'children', label: 'أطفالي', icon: <Users size={21} />, onClick: () => navigate('/children') },
-    { key: 'lessons', label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
-    { key: 'progress', label: 'التقدم', icon: <BarChart3 size={21} />, onClick: goToProgress, disabled: !childrenList[0] },
-    { key: 'conversations', label: 'المحادثات', icon: <MessageCircle size={21} />, onClick: () => navigate('/conversations'), badge: conversationCount },
-    { key: 'noor', label: 'المساعد نور', icon: <Sparkles size={21} />, onClick: openNoor },
-    { key: 'settings', label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
-  ]
+  const navItems = useMemo(() => {
+    const item = (key, label, icon, to, extra = {}) => ({
+      key,
+      label,
+      icon,
+      onClick: () => navigate(to),
+      ...extra,
+    })
 
-  const mobileItems = navItems.filter((item) => ['home', 'children', 'lessons', 'conversations'].includes(item.key))
+    const home = item('home', 'الرئيسية', <Home size={21} />, homePath)
+    const conversations = item(
+      'conversations',
+      'المحادثات',
+      <MessageCircle size={21} />,
+      '/conversations',
+      { badge: conversationCount },
+    )
+    const noor = {
+      key: 'noor',
+      label: 'المساعد نور',
+      icon: <Sparkles size={21} />,
+      onClick: openNoor,
+    }
+
+    if (role === 'parent') {
+      return [
+        home,
+        item('children', 'أطفالي', <Users size={21} />, '/children'),
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        {
+          key: 'progress',
+          label: 'التقدم',
+          icon: <BarChart3 size={21} />,
+          onClick: goToProgress,
+          disabled: !childrenList[0],
+        },
+        conversations,
+        noor,
+        item('settings', 'الإعدادات', <Settings size={21} />, '/accessibility'),
+      ]
+    }
+
+    if (role === 'teacher') {
+      return [
+        home,
+        item('children', 'الطلاب', <Users size={21} />, '/children'),
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
+        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
+        conversations,
+        noor,
+        item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
+      ]
+    }
+
+    if (role === 'specialist') {
+      return [
+        home,
+        item('children', 'الأطفال', <Users size={21} />, '/children'),
+        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
+        item('search', 'البحث', <Search size={21} />, '/search'),
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        conversations,
+        noor,
+        item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
+      ]
+    }
+
+    if (role === 'institution') {
+      return [
+        home,
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
+        conversations,
+        item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
+        noor,
+      ]
+    }
+
+    if (role === 'ministry') {
+      return [
+        home,
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('search', 'البحث', <Search size={21} />, '/search'),
+        conversations,
+        item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
+        noor,
+      ]
+    }
+
+    if (role === 'admin') {
+      return [
+        home,
+        item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
+        item('curriculum', 'مراجعة المناهج', <Landmark size={21} />, '/ministry'),
+        item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
+        item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('search', 'البحث', <Search size={21} />, '/search'),
+        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
+        conversations,
+        item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
+      ]
+    }
+
+    return [home, conversations, noor]
+  }, [childrenList, conversationCount, homePath, navigate, role])
+
+  const mobileItems = navItems
+    .filter((navItem) => !['noor', 'settings', 'support'].includes(navItem.key))
+    .slice(0, 4)
+
+  const searchPlaceholder = role === 'parent'
+    ? 'ابحث في الدروس والمحتوى...'
+    : 'ابحث برقم الهوية أو افتح صفحة البحث...'
 
   return (
-    <div className="pp-shell" dir="rtl">
+    <div className={`pp-shell pp-role-${role}`} dir="rtl">
       {drawerOpen && (
         <button
           className="pp-drawer-backdrop"
@@ -104,11 +232,14 @@ export default function ParentPortalShell({ children }) {
         />
       )}
 
-      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label="قائمة ولي الأمر">
+      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label={`قائمة ${roleName}`}>
         <div className="pp-sidebar-head">
-          <button className="pp-brand" onClick={() => navigate('/parent')} aria-label="EduBridge">
+          <button className="pp-brand" onClick={() => navigate(homePath)} aria-label="EduBridge">
             <img src="/edubridge-icon.png" alt="" />
-            <span>EduBridge</span>
+            <span>
+              <strong>EduBridge</strong>
+              <small>{roleName}</small>
+            </span>
           </button>
 
           <button className="pp-drawer-close" onClick={() => setDrawerOpen(false)} aria-label="إغلاق القائمة">
@@ -117,18 +248,18 @@ export default function ParentPortalShell({ children }) {
         </div>
 
         <nav className="pp-nav">
-          {navItems.map((item) => (
+          {navItems.map((navItem) => (
             <button
-              key={item.key}
-              className={current === item.key ? 'active' : ''}
-              onClick={item.onClick}
-              title={item.label}
-              aria-label={item.label}
-              disabled={item.disabled}
+              key={navItem.key}
+              className={current === navItem.key ? 'active' : ''}
+              onClick={navItem.onClick}
+              title={navItem.label}
+              aria-label={navItem.label}
+              disabled={navItem.disabled}
             >
-              {item.icon}
-              <span>{item.label}</span>
-              {item.badge > 0 && <em>{Math.min(item.badge, 99)}</em>}
+              {navItem.icon}
+              <span>{navItem.label}</span>
+              {navItem.badge > 0 && <em>{Math.min(navItem.badge, 99)}</em>}
             </button>
           ))}
         </nav>
@@ -136,16 +267,20 @@ export default function ParentPortalShell({ children }) {
         <div className="pp-noor-card">
           <NoorPet size={118} />
           <strong>نور</strong>
-          <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
+          <p>مساعدك الذكي دائماً معك لدعم رحلتك داخل EduBridge.</p>
           <button onClick={openNoor}>ابدأ المحادثة الآن</button>
         </div>
       </aside>
 
       <section className="pp-body">
         <header className="pp-toolbar">
+          <button className="pp-menu-button" onClick={() => setDrawerOpen(true)} aria-label="فتح القائمة">
+            <Menu size={21} />
+          </button>
+
           <form className="pp-global-search" onSubmit={submitSearch}>
             <Search size={19} />
-            <button type="submit">ابحث في الدروس والمحتوى...</button>
+            <button type="submit">{searchPlaceholder}</button>
           </form>
 
           <button className="pp-notification" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
@@ -154,10 +289,10 @@ export default function ParentPortalShell({ children }) {
           </button>
 
           <button className="pp-profile" onClick={() => navigate('/profile')} aria-label="الملف الشخصي">
-            <span className="pp-profile-avatar">{(user?.name || 'و').charAt(0)}</span>
+            <span className="pp-profile-avatar">{(user?.name || roleName).charAt(0)}</span>
             <span className="pp-profile-copy">
-              <strong>أهلاً {user?.name || 'ولي الأمر'}</strong>
-              <small>ولي أمر</small>
+              <strong>أهلاً {user?.name || roleName}</strong>
+              <small>{roleName}</small>
             </span>
             <ChevronDown size={16} />
           </button>
@@ -166,15 +301,15 @@ export default function ParentPortalShell({ children }) {
         <main className="pp-content">{children}</main>
       </section>
 
-      <nav className="pp-mobile-nav" aria-label="تنقل ولي الأمر">
-        {mobileItems.map((item) => (
+      <nav className="pp-mobile-nav" aria-label={`تنقل ${roleName}`}>
+        {mobileItems.map((navItem) => (
           <button
-            key={item.key}
-            className={current === item.key ? 'active' : ''}
-            onClick={item.onClick}
+            key={navItem.key}
+            className={current === navItem.key ? 'active' : ''}
+            onClick={navItem.onClick}
           >
-            {item.icon}
-            <span>{item.label}</span>
+            {navItem.icon}
+            <span>{navItem.label}</span>
           </button>
         ))}
         <button onClick={() => setDrawerOpen(true)}>
