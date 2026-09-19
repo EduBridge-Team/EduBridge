@@ -12,7 +12,8 @@
   --pp-shadow: 0 16px 42px rgba(20, 89, 145, .08);
 }
 
-.topbar.parent-portal-global-topbar {
+.topbar.parent-portal-global-topbar,
+.topbar.role-portal-global-topbar {
   display: none !important;
 }
 
@@ -1781,5 +1782,180 @@ body.parent-portal-active.parent-dashboard-page {
   .parent-lessons-page .lesson-ratings > button {
     width: 100%;
     justify-content: center;
+  }
+}
+
+
+/* ============================================================
+   Unified role portal shell — teacher / specialist / institution
+   / ministry / admin. Permissions still come from route guards.
+   ============================================================ */
+.pp-shell:not(.pp-role-parent) .pp-brand small {
+  color: #6f8aa2;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-page {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content > .role-dashboard,
+.pp-shell:not(.pp-role-parent) .pp-content .role-page > .role-dashboard {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-page > .site-footer {
+  display: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero {
+  margin: 0 0 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--pp-line);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(37,191,212,.12), transparent 11rem),
+    linear-gradient(135deg, #fff, #f7fcff);
+  box-shadow: 0 10px 28px rgba(21,91,147,.045);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head h2,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero h1 {
+  color: var(--pp-blue-deep);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-sub,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero p {
+  color: var(--pp-text);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+.pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .user-card,
+.pp-shell:not(.pp-role-parent) .pp-content .lesson-card {
+  border-color: var(--pp-line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(21,91,147,.05);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .summary-grid {
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .summary-card {
+  min-height: 112px;
+  padding: 18px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .dashboard-grid {
+  gap: 16px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
+.pp-shell:not(.pp-role-parent) .pp-content .tabs {
+  padding: 5px;
+  border: 1px solid var(--pp-line);
+  border-radius: 15px;
+  background: rgba(255,255,255,.9);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tab,
+.pp-shell:not(.pp-role-parent) .pp-content .tab {
+  border-radius: 11px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tab.active,
+.pp-shell:not(.pp-role-parent) .pp-content .tab.on {
+  background: linear-gradient(135deg, var(--pp-blue), #1487dd);
+  color: #fff;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+  border-color: var(--pp-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(21,91,147,.04);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .btn.navy,
+.pp-shell:not(.pp-role-parent) .pp-content .btn.success {
+  background: var(--pp-blue);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .btn.navy:hover,
+.pp-shell:not(.pp-role-parent) .pp-content .btn.success:hover {
+  background: var(--pp-blue-deep);
+}
+
+@media (min-width: 901px) {
+  body.role-portal-active:not(.role-portal-parent) .pp-sidebar {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-bottom-left-radius: 0;
+    overflow: hidden !important;
+  }
+
+  body.role-portal-active:not(.role-portal-parent) .pp-noor-card {
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+  }
+
+  body.role-portal-admin .pp-sidebar {
+    gap: 10px;
+    padding-top: 16px;
+    padding-bottom: 14px !important;
+  }
+
+  body.role-portal-admin .pp-nav {
+    gap: 2px;
+  }
+
+  body.role-portal-admin .pp-nav button {
+    min-height: 40px;
+    padding-block: 7px;
+  }
+
+  body.role-portal-admin .pp-noor-card {
+    min-height: 150px;
+    padding-block: 10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-toolbar {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero {
+    padding: 17px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 680px) {
+  .pp-toolbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .progress-row {
+    align-items: flex-start;
   }
 }
