@@ -2935,16 +2935,142 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 @media (min-width: 781px) {
+    /* Keep desktop login/register inside the viewport with no page scrollbar. */
     .auth-page {
-        padding-block: clamp(34px, 5vh, 56px);
+        height: calc(100dvh - 78px);
+        min-height: 0;
+        padding: clamp(10px, 2vh, 22px) 24px;
+        overflow: hidden;
     }
 
     .auth-page-login .auth-card-branded {
         width: min(430px, calc(100% - 40px));
+        padding: 22px 30px 24px;
+    }
+
+    .auth-page-login .auth-brand-icon {
+        width: 78px;
+        height: 78px;
     }
 
     .auth-page-register .auth-card-branded {
         width: min(450px, calc(100% - 40px));
+        padding: 16px 26px 18px;
+    }
+
+    .auth-page-register .auth-brand-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 0;
+    }
+
+    .auth-page-register .auth-card-branded h1 {
+        margin-top: 0;
+        font-size: 28px;
+    }
+
+    .auth-page-register .auth-card-branded .subtitle {
+        margin-top: 3px;
+        margin-bottom: 0;
+        font-size: 15px;
+    }
+
+    .auth-page-register .auth-card-branded .tagline {
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+
+    .auth-page-register .auth-form-title {
+        margin: 1px auto 10px;
+        font-size: 20px;
+    }
+
+    .auth-page-register .auth-form-title::after {
+        bottom: -4px;
+        height: 2px;
+    }
+
+    .auth-page-register label {
+        margin: 5px 0 2px;
+        font-size: 12.5px;
+    }
+
+    .auth-page-register input,
+    .auth-page-register select {
+        min-height: 34px;
+        padding: 5px 10px;
+        font-size: 13.5px;
+    }
+
+    .auth-page-register .btn.full {
+        min-height: 40px;
+        margin-top: 10px;
+    }
+
+    .auth-page-register .link-btn {
+        margin-top: 8px;
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 781px) and (max-height: 760px) {
+    .auth-page {
+        padding-block: 6px;
+    }
+
+    .auth-page-login .auth-card-branded,
+    .auth-page-register .auth-card-branded {
+        padding-block: 10px 12px;
+    }
+
+    .auth-page-login .auth-brand-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .auth-page-register .auth-brand-icon {
+        width: 52px;
+        height: 52px;
+    }
+
+    .auth-page-register .auth-card-branded h1 {
+        font-size: 24px;
+    }
+
+    .auth-page-register .auth-card-branded .subtitle {
+        font-size: 13px;
+    }
+
+    .auth-page-register .auth-card-branded .tagline {
+        margin-bottom: 5px;
+        font-size: 11px;
+    }
+
+    .auth-page-register .auth-form-title {
+        margin-bottom: 7px;
+        font-size: 18px;
+    }
+
+    .auth-page-register label {
+        margin: 3px 0 1px;
+        font-size: 11.5px;
+    }
+
+    .auth-page-register input,
+    .auth-page-register select {
+        min-height: 31px;
+        padding-block: 3px;
+        font-size: 12.5px;
+    }
+
+    .auth-page-register .btn.full {
+        min-height: 36px;
+        margin-top: 7px;
+    }
+
+    .auth-page-register .link-btn {
+        margin-top: 5px;
+        font-size: 12px;
     }
 }
 
