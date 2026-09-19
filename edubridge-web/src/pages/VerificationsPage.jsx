@@ -12,6 +12,7 @@ import {
   reviewCertificate,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
+import AdminSectionTabs from '../components/AdminSectionTabs'
 
 const API_ORIGIN = (
   import.meta.env.VITE_API_URL || '/api'
@@ -100,6 +101,8 @@ export default function VerificationsPage() {
           <ShieldCheck size={20} /> مراجعة التوثيق
         </h2>
       </div>
+
+      <AdminSectionTabs />
 
       <div className="tabs">
         <button className={tab === 'users' ? 'tab on' : 'tab'} onClick={() => setTab('users')}>

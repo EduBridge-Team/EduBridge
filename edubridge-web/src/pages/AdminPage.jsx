@@ -1,5 +1,4 @@
 // لوحة التحكم الإدارية — أدمن فقط
-// تبويبان: المستخدمون المصنّفون · جميع الدروس
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import {
@@ -7,22 +6,13 @@ import {
   fetchUsers,
   updateUser,
   fetchChildren,
-  fetchLessons,
   deleteUser,
   deleteChild,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
-import { Settings, Library, Phone, X, BookOpen, Pencil, Trash2 } from 'lucide-react'
+import { Settings, Phone, X, Pencil, Trash2 } from 'lucide-react'
 import Footer from '../components/Footer'
-
-const ROLE_META = {
-  admin: { icon: '🛡️', cls: 'role-admin' },
-  teacher: { icon: '👨‍🏫', cls: 'role-teacher' },
-  specialist: { icon: '🧩', cls: 'role-specialist' },
-  parent: { icon: '👪', cls: 'role-parent' },
-  ministry: { icon: '🏛️', cls: 'role-ministry' },
-  institution: { icon: '🏢', cls: 'role-institution' },
-}
+import AdminSectionTabs from '../components/AdminSectionTabs'
 
 const ROLE_SECTIONS = [
   { role: 'teacher', label: 'المعلمون', icon: '👨‍🏫', tone: 'teacher' },
@@ -33,15 +23,8 @@ const ROLE_SECTIONS = [
   { role: 'admin', label: 'الإدارة', icon: '🛡️', tone: 'admin' },
 ]
 
-const TABS = [
-  { id: 'users', label: 'المستخدمون' },
-  { id: 'lessons', label: 'الدروس' },
-]
-
 export default function AdminPage() {
   const me = getUser()
-  const [tab, setTab] = useState('users')
-
   // الحماية: غير الأدمن يُحوّل للصفحة الرئيسية
   if (!me || me.role !== 'admin') {
     return <Navigate to="/" replace />
@@ -56,23 +39,8 @@ export default function AdminPage() {
           </h2>
         </div>
 
-        {/* شريط التبويبات */}
-        <div className="admin-tabs" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              className={`admin-tab ${tab === t.id ? 'active' : ''}`}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {tab === 'users' && <UsersTab />}
-        {tab === 'lessons' && <LessonsTab />}
+        <AdminSectionTabs />
+        <UsersTab />
       </main>
 
       <Footer />
@@ -192,7 +160,6 @@ function UsersTab() {
       <div className="admin-panel-head admin-users-head">
         <div>
           <h3>👥 إدارة المستخدمين</h3>
-          <p>مصنّفون حسب الدور مثل تطبيق EduBridge</p>
         </div>
         <label className="admin-search-wrap">
           <span aria-hidden="true">⌕</span>
@@ -299,7 +266,6 @@ function AdminRoleSection({ section, users, currentUserId, childrenForUser, onEd
 
       <div className="admin-role-users">
         {users.map((user) => {
-          const meta = ROLE_META[user.role] || { icon: '👤', cls: 'role-parent' }
           const linkedChildren = childrenForUser(user)
           return (
             <article key={user.id} className="admin-user-row">
@@ -310,9 +276,6 @@ function AdminRoleSection({ section, users, currentUserId, childrenForUser, onEd
               <div className="admin-user-main">
                 <div className="admin-user-title">
                   <strong>{user.name}</strong>
-                  <span className={`role-pill ${meta.cls}`}>
-                    {ROLE_NAMES[user.role] || user.role}
-                  </span>
                 </div>
                 <span className="admin-user-email">{user.email}</span>
                 {user.phone && (
@@ -438,72 +401,5 @@ function EditUserModal({ user, onClose, onSaved }) {
         </form>
       </div>
     </div>
-  )
-}
-
-/* ============ تبويب: جميع الدروس ============ */
-function LessonsTab() {
-  const [lessons, setLessons] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchLessons()
-      setLessons(data.lessons || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    load()
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="state">
-        <div className="spinner" />
-        جارِ تحميل الدروس...
-      </div>
-    )
-  }
-  if (error) {
-    return (
-      <div className="state">
-        <div className="error-box">{error}</div>
-        <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-          إعادة المحاولة
-        </button>
-      </div>
-    )
-  }
-  if (lessons.length === 0) {
-    return <div className="state">لا توجد دروس بعد</div>
-  }
-
-  return (
-    <section className="admin-panel">
-      <div className="admin-panel-head">
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Library size={20} /> جميع الدروس
-        </h3>
-      </div>
-      {lessons.map((l) => (
-        <div key={l.id} className="card">
-          <div className="card-row">
-            <div className="avatar"><BookOpen size={22} /></div>
-            <div>
-              <h3>{l.title}</h3>
-              {l.content && <div className="meta">{l.content}</div>}
-            </div>
-          </div>
-        </div>
-      ))}
-    </section>
   )
 }
