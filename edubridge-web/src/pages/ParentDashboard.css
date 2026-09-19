@@ -1177,3 +1177,276 @@
     padding-block: 22px;
   }
 }
+
+
+/* ============================================================
+   Parent dashboard final visual alignment with supplied mockup
+   ============================================================ */
+@media (min-width: 901px) {
+  .parent-dashboard-v2 {
+    grid-template-columns: minmax(0, 1fr) 230px;
+    background:
+      linear-gradient(90deg, rgba(232,247,255,.62), transparent 14%),
+      #f8fbfe;
+  }
+
+  .pd-sidebar {
+    padding: 22px 16px 18px;
+    border-inline-start: 1px solid #e4eef5;
+    box-shadow: -8px 0 28px rgba(31, 105, 163, .035);
+  }
+
+  .pd-brand {
+    gap: 0;
+  }
+
+  .pd-brand img {
+    width: 62px;
+    height: 62px;
+  }
+
+  .pd-brand span {
+    font-size: 23px;
+  }
+
+  .pd-side-nav {
+    gap: 8px;
+  }
+
+  .pd-side-nav button {
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pd-noor-side {
+    min-height: 224px;
+    max-height: none;
+    margin-top: 16px !important;
+    border-radius: 18px;
+  }
+
+  .pd-toolbar {
+    min-height: 82px;
+    padding: 13px 30px;
+    grid-template-columns: minmax(360px, 1fr) 44px 190px;
+    border-bottom-color: #e7f0f6;
+  }
+
+  .pd-search {
+    max-width: 660px;
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .pd-content {
+    width: min(1160px, calc(100% - 34px));
+    gap: 14px;
+    padding-top: 16px;
+  }
+
+  .pd-hero {
+    min-height: 235px;
+    padding: 24px 34px;
+    grid-template-columns: 1.03fr .97fr;
+    border-radius: 24px;
+    box-shadow: none;
+  }
+
+  .pd-hero-copy {
+    max-width: 560px;
+    padding-inline-start: 10px;
+  }
+
+  .pd-hero h1 {
+    font-size: clamp(34px, 3vw, 48px);
+  }
+
+  .pd-hero h2 {
+    font-size: clamp(23px, 2.25vw, 32px);
+  }
+
+  .pd-hero p {
+    font-size: 16px;
+  }
+
+  .pd-hero-art {
+    min-height: 205px;
+    align-self: stretch;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .pd-hero-art img {
+    width: min(500px, 120%);
+    max-height: 225px;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  .pd-children-section,
+  .pd-progress-section,
+  .pd-today,
+  .pd-conversations,
+  .pd-quick-actions {
+    box-shadow: none;
+  }
+
+  .pd-section {
+    border-radius: 20px;
+    border-color: #e0ebf3;
+  }
+
+  .pd-children-section {
+    padding: 18px 20px 20px;
+  }
+
+  .pd-children-grid {
+    gap: 18px;
+  }
+
+  .pd-child-card {
+    min-height: 190px;
+    padding: 16px 18px;
+  }
+
+  .pd-kid-avatar {
+    width: 94px;
+    height: 94px;
+    flex-basis: 94px;
+  }
+
+  .pd-child-title h3 {
+    font-size: 22px;
+  }
+
+  .pd-progress-section {
+    padding: 18px 20px 20px;
+  }
+
+  .pd-metrics-grid {
+    gap: 12px;
+  }
+
+  .pd-metric-card {
+    min-height: 194px !important;
+    padding: 14px;
+  }
+
+  .pd-ring {
+    width: 96px;
+    height: 96px;
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.55fr .78fr;
+    align-items: start;
+    gap: 14px;
+  }
+
+  .pd-today,
+  .pd-conversations {
+    min-height: 214px;
+    height: auto;
+  }
+
+  .pd-today .pd-mini-empty,
+  .pd-conversations .pd-mini-empty {
+    min-height: 92px;
+    padding: 22px 12px;
+  }
+
+  .pd-quick-actions {
+    min-height: 72px;
+    grid-template-columns: 150px repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: auto !important;
+    white-space: nowrap;
+  }
+
+  .pd-quick-actions button {
+    min-height: 46px;
+  }
+
+  .pd-noor-banner {
+    min-height: 184px;
+    padding: 22px 32px;
+    border-radius: 20px;
+    grid-template-columns: 1.18fr 175px .92fr;
+  }
+
+  .pd-noor-banner > .noor-pet {
+    transform: scale(1.12);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .parent-dashboard-v2 {
+    grid-template-columns: minmax(0, 1fr) 205px;
+  }
+
+  .pd-toolbar {
+    grid-template-columns: minmax(260px, 1fr) 42px 145px;
+    padding-inline: 16px;
+  }
+
+  .pd-content {
+    width: calc(100% - 18px);
+  }
+
+  .pd-hero {
+    min-height: 205px;
+    padding: 20px 24px;
+  }
+
+  .pd-hero-art {
+    min-height: 175px;
+  }
+
+  .pd-hero-art img {
+    width: min(430px, 118%);
+    max-height: 196px;
+  }
+
+  .pd-child-card {
+    min-height: 178px;
+    padding: 14px;
+  }
+
+  .pd-kid-avatar {
+    width: 78px;
+    height: 78px;
+    flex-basis: 78px;
+  }
+
+  .pd-metric-card {
+    min-height: 175px !important;
+  }
+
+  .pd-ring {
+    width: 82px;
+    height: 82px;
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.62fr .75fr;
+  }
+
+  .pd-today,
+  .pd-conversations {
+    min-height: 198px;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: 1 / -1 !important;
+    margin-bottom: 2px;
+  }
+}
