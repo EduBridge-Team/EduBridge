@@ -2081,3 +2081,45 @@ body.parent-dashboard-page::-webkit-scrollbar {
     justify-content: center;
   }
 }
+
+
+/* ============================================================
+   Clean transition below the sidebar
+   ============================================================ */
+@media (min-width: 901px) {
+  /* Remove the artificial horizontal divider that appeared under Noor. */
+  .pd-fullwidth-lower::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  /* Round the inner bottom edge where the sidebar ends above the lower content. */
+  .pd-sidebar {
+    border-bottom-left-radius: 24px;
+  }
+
+  .pd-noor-side {
+    border-radius: 22px !important;
+  }
+
+  /* Prevent Android/Chrome's document scrollbar from showing beside the sidebar.
+     The dashboard becomes the scroll container and its own scrollbar stays hidden. */
+  body.parent-dashboard-page {
+    overflow: hidden;
+  }
+
+  .parent-dashboard-v2 {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .parent-dashboard-v2::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
