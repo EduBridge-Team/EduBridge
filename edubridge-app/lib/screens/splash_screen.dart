@@ -45,6 +45,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
         statusBarIconBrightness: Brightness.light,
       ),
       child: Scaffold(
+        backgroundColor: const Color(0xFF3D66B8),
         body: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
@@ -60,8 +61,12 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                 // Start Flutter on the exact same solid color, then softly
                 // reveal the full branded gradient so no screen change is
                 // visible between the two splash layers.
+                // Keep the first Flutter frames identical to Android's
+                // mandatory native splash. The gradient becomes part of the
+                // animation only after the logo reveal has already started,
+                // so the native -> Flutter hand-off is visually invisible.
                 final gradientReveal =
-                    _stage(0.06, 0.28, curve: Curves.easeInOutCubic);
+                    _stage(0.22, 0.46, curve: Curves.easeInOutCubic);
 
                 return ColoredBox(
                   color: const Color(0xFF3D66B8),
