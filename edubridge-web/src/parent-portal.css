@@ -1473,7 +1473,9 @@ body.parent-portal-active {
     width: 100% !important;
     min-width: 0;
     margin-inline: 0 !important;
-    padding-inline-end: 230px;
+    /* Sidebar is physically on the right. In RTL, inline-end is LEFT, so use physical padding-right. */
+    padding-right: 230px;
+    padding-left: 0;
     box-sizing: border-box;
   }
 
@@ -1502,7 +1504,8 @@ body.parent-portal-active {
 
 @media (min-width: 901px) and (max-width: 1120px) {
   .pp-shell {
-    padding-inline-end: 205px;
+    padding-right: 205px;
+    padding-left: 0;
   }
 
   .pp-sidebar {
