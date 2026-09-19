@@ -38,7 +38,9 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: const Color(0xFF4CB4DA),
+        // Match Android's mandatory native splash color exactly during the
+        // hand-off. The Flutter gradient fades in only after the first frame.
+        systemNavigationBarColor: const Color(0xFF3D66B8),
         systemNavigationBarIconBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light,
       ),
@@ -54,23 +56,37 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                 final details = _stage(0.55, 0.78);
                 final progress = _stage(0.18, 0.94, curve: Curves.easeInOutCubic);
                 final background = _stage(0.03, 0.45);
+                // Android 12+ only supports a solid native splash background.
+                // Start Flutter on the exact same solid color, then softly
+                // reveal the full branded gradient so no screen change is
+                // visible between the two splash layers.
+                final gradientReveal =
+                    _stage(0.06, 0.28, curve: Curves.easeInOutCubic);
 
-                return DecoratedBox(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF3D66B8),
-                        Color(0xFF438BCB),
-                        Color(0xFF4DB5D9),
-                      ],
-                      stops: [0, 0.48, 1],
-                    ),
-                  ),
+                return ColoredBox(
+                  color: const Color(0xFF3D66B8),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: gradientReveal,
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color(0xFF3D66B8),
+                                  Color(0xFF438BCB),
+                                  Color(0xFF4DB5D9),
+                                ],
+                                stops: [0, 0.48, 1],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       _EducationBackdrop(
                         progress: background,
                         phase: _controller.value,
