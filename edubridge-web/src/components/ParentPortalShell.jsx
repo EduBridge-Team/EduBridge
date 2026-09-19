@@ -67,6 +67,12 @@ export default function RolePortalShell({ children }) {
   }, [location.pathname])
 
   useEffect(() => {
+    const body = document.body
+    body.classList.toggle('role-portal-drawer-open', drawerOpen)
+    return () => body.classList.remove('role-portal-drawer-open')
+  }, [drawerOpen])
+
+  useEffect(() => {
     const root = document.documentElement
     const body = document.body
     const roleClass = `role-portal-${role}`
@@ -81,6 +87,7 @@ export default function RolePortalShell({ children }) {
   }, [role])
 
   const openNoor = () => {
+    setDrawerOpen(false)
     const launcher = document.querySelector('.noor-launcher')
     if (launcher) {
       launcher.click()
@@ -204,10 +211,6 @@ export default function RolePortalShell({ children }) {
     return [home, conversations]
   }, [childrenList, conversationCount, homePath, navigate, role])
 
-  const mobileItems = navItems
-    .filter((navItem) => !['settings', 'support'].includes(navItem.key))
-    .slice(0, 4)
-
   const searchPlaceholder = role === 'parent'
     ? 'ابحث في الدروس والمحتوى...'
     : 'ابحث برقم الهوية أو افتح صفحة البحث...'
@@ -290,22 +293,6 @@ export default function RolePortalShell({ children }) {
         <main className="pp-content">{children}</main>
       </section>
 
-      <nav className="pp-mobile-nav" aria-label={`تنقل ${roleName}`}>
-        {mobileItems.map((navItem) => (
-          <button
-            key={navItem.key}
-            className={current === navItem.key ? 'active' : ''}
-            onClick={navItem.onClick}
-          >
-            {navItem.icon}
-            <span>{navItem.label}</span>
-          </button>
-        ))}
-        <button onClick={() => setDrawerOpen(true)}>
-          <Menu size={20} />
-          <span>المزيد</span>
-        </button>
-      </nav>
     </div>
   )
 }
