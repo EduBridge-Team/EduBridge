@@ -2015,7 +2015,7 @@ body.parent-portal-active.parent-dashboard-page {
 
 .pp-content .portal-lessons-page .lesson-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   align-items: stretch;
 }
@@ -2253,6 +2253,12 @@ body.parent-portal-active.parent-dashboard-page {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+
+@media (min-width: 681px) and (max-width: 1120px) {
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (max-width: 900px) {
