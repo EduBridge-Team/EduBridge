@@ -606,6 +606,14 @@
   align-items: center;
   gap: 9px;
 }
+
+.topbar-guest .guest-actions .theme-toggle {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 10px;
+}
 .topbar-guest .guest-actions .topbar-btn {
   min-height: 42px;
   padding: 8px 17px;
@@ -664,7 +672,7 @@
   .topbar-guest .guest-actions {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 44px 1fr 1fr;
     margin-top: 8px;
   }
   .topbar-guest .guest-actions .topbar-btn {
@@ -1656,4 +1664,23 @@
     height: 54px;
     opacity: .14;
   }
+}
+
+
+:root[data-theme="dark"] .topbar-guest .guest-actions .login-btn {
+  background: #102f4e;
+  color: #dff3ff;
+  border-color: #326584;
+}
+
+:root[data-theme="dark"] .topbar-guest .guest-actions .theme-toggle {
+  background: #102f4e;
+  color: #7fd2ff;
+  border-color: #326584;
+}
+
+:root[data-theme="dark"] .topbar-guest .guest-actions .theme-toggle:hover,
+:root[data-theme="dark"] .topbar-guest .guest-actions .login-btn:hover {
+  background: #143a5b;
+  border-color: #4b83a3;
 }

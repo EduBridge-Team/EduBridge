@@ -9,18 +9,14 @@ import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { isPortalPathForRole } from '../portalRoutes'
+import { useTheme } from '../theme'
 
 export default function TopBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
   const [open, setOpen] = useState(false)
-  const [dark, setDark] = useState(() => localStorage.getItem('edubridge_theme') === 'dark')
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
-    localStorage.setItem('edubridge_theme', dark ? 'dark' : 'light')
-  }, [dark])
+  const { dark, toggleTheme } = useTheme()
 
   useEffect(() => setOpen(false), [location.pathname])
 
@@ -93,7 +89,7 @@ export default function TopBar() {
             </div>
 
             <div className="topbar-actions">
-              <button className="icon-btn theme-toggle" onClick={() => setDark((value) => !value)} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+              <button className="icon-btn theme-toggle" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'} aria-label={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
                 {dark ? <Sun size={17} /> : <Moon size={17} />}
               </button>
               <span className="user-chip">
@@ -113,6 +109,9 @@ export default function TopBar() {
               <a href="/#contact">تواصل معنا</a>
             </nav>
             <div className="topbar-actions guest-actions">
+              <button className="icon-btn theme-toggle" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الليلي'} aria-label={dark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الليلي'}>
+                {dark ? <Sun size={17} /> : <Moon size={17} />}
+              </button>
               <button className="topbar-btn login-btn" onClick={() => { setOpen(false); navigate('/login') }}>تسجيل الدخول</button>
               <button className="topbar-btn signup-btn" onClick={() => navigate('/register')}>إنشاء حساب</button>
             </div>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Accessibility, BarChart3, Bell, BookOpen, ChevronDown, Home, Landmark,
-  LifeBuoy, Menu, MessageCircle, Search, Settings, ShieldCheck,
+  LifeBuoy, Menu, MessageCircle, Moon, Search, Settings, ShieldCheck, Sun,
   Stethoscope, Users, X,
 } from 'lucide-react'
 import {
@@ -14,6 +14,7 @@ import {
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import NoorPet from './NoorPet'
+import { useTheme } from '../theme'
 
 function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'
@@ -40,6 +41,7 @@ export default function RolePortalShell({ children }) {
   const role = user?.role || 'parent'
   const roleName = ROLE_NAMES[role] || role
   const homePath = dashboardFor(user)
+  const { dark, toggleTheme } = useTheme()
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
@@ -274,6 +276,15 @@ export default function RolePortalShell({ children }) {
             <Search size={19} />
             <button type="submit">{searchPlaceholder}</button>
           </form>
+
+          <button
+            className="pp-theme-toggle"
+            onClick={toggleTheme}
+            title={dark ? 'الوضع الفاتح' : 'الوضع الليلي'}
+            aria-label={dark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الليلي'}
+          >
+            {dark ? <Sun size={19} /> : <Moon size={19} />}
+          </button>
 
           <button className="pp-notification" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
             <Bell size={20} />
