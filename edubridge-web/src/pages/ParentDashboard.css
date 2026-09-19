@@ -2441,3 +2441,81 @@ body.parent-dashboard-page::-webkit-scrollbar {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Match parent dashboard topbar to the shared parent portal bar
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-toolbar {
+    min-height: 78px;
+    padding: 13px 28px;
+    grid-template-columns: minmax(280px, 1fr) auto auto;
+    gap: 14px;
+    border-bottom: 1px solid rgba(220,234,244,.9);
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(16px);
+    z-index: 45;
+  }
+
+  .pd-search {
+    width: min(610px, 100%);
+    min-height: 47px;
+    padding: 0 15px;
+    gap: 9px;
+    border: 1px solid #e2eef5;
+    border-radius: 14px;
+    background: #f1f8fc;
+  }
+
+  .pd-search input {
+    min-height: 45px;
+  }
+
+  .pd-notification {
+    width: 43px;
+    height: 43px;
+    border: 1px solid #e2edf4;
+    border-radius: 13px;
+    background: #f6fbfe;
+  }
+
+  .pd-profile {
+    min-width: 190px;
+    padding: 3px;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: transparent;
+    color: var(--pd-ink);
+    font: inherit;
+    text-align: right;
+    cursor: pointer;
+  }
+
+  .pd-profile-copy {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+  }
+
+  .pd-profile-copy strong {
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .pd-profile-copy small {
+    color: var(--pd-text);
+    font-size: 10px;
+  }
+
+  .pd-user-avatar {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+  }
+}
