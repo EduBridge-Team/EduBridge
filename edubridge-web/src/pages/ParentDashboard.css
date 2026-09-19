@@ -1450,3 +1450,113 @@
     margin-bottom: 2px;
   }
 }
+
+
+/* ============================================================
+   Parent dashboard: restore hero + balance progress/Noor + full-width lower area
+   ============================================================ */
+@media (min-width: 901px) {
+  /* Restore the original child artwork proportions. */
+  .pd-hero-art {
+    min-height: 205px;
+    overflow: hidden;
+  }
+
+  .pd-hero-art img {
+    width: min(505px, 122%);
+    max-height: 232px;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 12px 24px rgba(28, 106, 166, .08));
+  }
+
+  /* Keep the progress block and Noor side card visually balanced. */
+  .pd-progress-section {
+    min-height: 248px;
+  }
+
+  .pd-noor-side {
+    margin-top: 52px !important;
+    min-height: 248px;
+    height: 248px;
+    max-height: 248px;
+    padding: 14px 12px 13px;
+    justify-content: center;
+  }
+
+  .pd-noor-side .noor-pet {
+    margin: -10px auto -4px;
+  }
+
+  .pd-noor-side strong {
+    font-size: 19px;
+  }
+
+  .pd-noor-side p {
+    margin: 3px 0 10px;
+    line-height: 1.55;
+  }
+
+  /*
+   * Everything after "نظرة على التقدم" now expands beneath the sidebar.
+   * This uses the otherwise-empty right column once the Noor card finishes.
+   */
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 230px);
+    max-width: none;
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.55fr .78fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: 150px repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .pd-noor-banner {
+    grid-template-columns: 1.22fr 190px .96fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-progress-section {
+    min-height: 228px;
+  }
+
+  .pd-noor-side {
+    margin-top: 42px !important;
+    min-height: 228px;
+    height: 228px;
+    max-height: 228px;
+  }
+
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 205px);
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.58fr .76fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* Keep mobile/tablet layout unchanged and naturally full width. */
+@media (max-width: 900px) {
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: 100%;
+  }
+}

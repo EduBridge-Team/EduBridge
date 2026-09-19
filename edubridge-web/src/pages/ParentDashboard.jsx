@@ -248,7 +248,7 @@ export default function ParentDashboard() {
               <p>هنا نظرة سريعة على رحلة أبنائك التعليمية اليوم.</p>
             </div>
             <div className="pd-hero-art" aria-hidden="true">
-              <img src="/brand-parent.webp" alt="" />
+              <img src="/edubridge-hero-child.webp" alt="" />
             </div>
             <span className="pd-deco pd-deco-a" aria-hidden="true">✦</span>
             <span className="pd-deco pd-deco-b" aria-hidden="true">✦</span>
