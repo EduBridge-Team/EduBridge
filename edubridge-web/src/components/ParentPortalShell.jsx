@@ -17,7 +17,7 @@ function activeSection(pathname) {
   if (pathname === '/lessons' || /\/children\/[^/]+\/lessons$/.test(pathname)) return 'lessons'
   if (/\/children\/[^/]+\/progress$/.test(pathname)) return 'progress'
   if (pathname === '/conversations') return 'conversations'
-  if (pathname === '/accessibility' || pathname.includes('/accessibility')) return 'settings'
+  if (pathname === '/accessibility' || pathname.includes('/accessibility') || pathname === '/profile') return 'settings'
   if (pathname.startsWith('/children')) return 'children'
   return ''
 }
@@ -153,7 +153,7 @@ export default function ParentPortalShell({ children }) {
             {unread > 0 && <span>{Math.min(unread, 99)}</span>}
           </button>
 
-          <button className="pp-profile" onClick={() => navigate('/verify')} aria-label="الملف الشخصي">
+          <button className="pp-profile" onClick={() => navigate('/profile')} aria-label="الملف الشخصي">
             <span className="pp-profile-avatar">{(user?.name || 'و').charAt(0)}</span>
             <span className="pp-profile-copy">
               <strong>أهلاً {user?.name || 'ولي الأمر'}</strong>

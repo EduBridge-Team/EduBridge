@@ -1697,3 +1697,89 @@ body.parent-portal-active.parent-dashboard-page {
     overflow-x: hidden;
   }
 }
+
+
+/* ============================================================
+   Parent lessons: prevent cramped cards beside the Noor column
+   ============================================================ */
+.parent-lessons-page .lesson-card-actions {
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.parent-lessons-page .lesson-card-actions > button,
+.parent-lessons-page .lesson-card-actions > .lesson-ratings {
+  min-width: 0;
+}
+
+.parent-lessons-page .lesson-ratings {
+  margin-top: 0;
+  max-width: 100%;
+}
+
+.parent-lessons-page .lesson-ratings > button {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+@media (min-width: 901px) and (max-width: 1279px) {
+  .parent-lessons-page .lessons-layout {
+    grid-template-columns: 1fr !important;
+    gap: 18px;
+  }
+
+  .parent-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px;
+  }
+
+  .parent-lessons-page .lessons-side {
+    position: static !important;
+    top: auto !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .parent-lessons-page .noor-lessons-card,
+  .parent-lessons-page .daily-picks {
+    min-height: 100%;
+  }
+
+  .parent-lessons-page .lesson-visual {
+    height: 150px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .parent-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .parent-lessons-page .lessons-hero {
+    padding: 24px 14px 18px;
+    border-radius: 20px;
+  }
+
+  .parent-lessons-page .lessons-hero h1 {
+    font-size: 32px;
+  }
+
+  .parent-lessons-page .lesson-cards-grid,
+  .parent-lessons-page .lessons-side {
+    grid-template-columns: 1fr !important;
+  }
+
+  .parent-lessons-page .lesson-card-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .parent-lessons-page .lesson-card-actions > button,
+  .parent-lessons-page .lesson-ratings > button {
+    width: 100%;
+    justify-content: center;
+  }
+}
