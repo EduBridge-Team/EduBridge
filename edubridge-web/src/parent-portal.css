@@ -1897,15 +1897,18 @@ body.parent-portal-active.parent-dashboard-page {
 
 @media (min-width: 901px) {
   body.role-portal-active:not(.role-portal-parent) .pp-sidebar {
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-    max-height: 100dvh !important;
-    border-bottom-left-radius: 0;
-    overflow: hidden !important;
+    height: fit-content !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 18px) !important;
+    border-bottom-left-radius: 28px;
+    border-bottom-right-radius: 0;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
   }
 
   body.role-portal-active:not(.role-portal-parent) .pp-noor-card {
-    margin-top: auto !important;
+    margin-top: 14px !important;
     margin-bottom: 0 !important;
   }
 
