@@ -1548,3 +1548,53 @@ body.parent-portal-active {
     align-self: stretch;
   }
 }
+
+
+/* ============================================================
+   Parent dashboard inside the shared parent shell
+   ============================================================ */
+body.parent-portal-active.parent-dashboard-page {
+  overflow: auto !important;
+}
+
+.pp-content .parent-dashboard-v2 {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.pp-content .parent-dashboard-v2 > .pd-sidebar,
+.pp-content .parent-dashboard-v2 .pd-toolbar,
+.pp-content .parent-dashboard-v2 > .pd-mobile-nav {
+  display: none !important;
+}
+
+.pp-content .parent-dashboard-v2 .pd-main {
+  width: 100% !important;
+  min-width: 0;
+}
+
+.pp-content .parent-dashboard-v2 .pd-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.pp-content .parent-dashboard-v2 .pd-fullwidth-lower,
+.pp-content .parent-dashboard-v2 .pd-lower-grid,
+.pp-content .parent-dashboard-v2 .pd-quick-actions,
+.pp-content .parent-dashboard-v2 .pd-noor-banner {
+  width: 100% !important;
+  max-width: none !important;
+  transform: none !important;
+}
+
+.pp-content .parent-dashboard-v2 .pd-fullwidth-lower::before {
+  display: none !important;
+  content: none !important;
+}

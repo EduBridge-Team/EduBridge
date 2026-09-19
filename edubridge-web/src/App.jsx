@@ -79,7 +79,6 @@ function Page({ children }) {
   const user = getUser()
   const location = useLocation()
   const useParentShell = user?.role === 'parent'
-    && location.pathname !== '/parent'
     && isParentPortalPath(location.pathname)
 
   if (useParentShell) return <ParentPortalShell>{children}</ParentPortalShell>
