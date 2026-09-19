@@ -44,6 +44,7 @@ export default function TopBar() {
     || location.pathname === '/notifications'
     || location.pathname === '/support'
     || location.pathname === '/verify'
+    || location.pathname === '/profile'
     || location.pathname === '/consultations'
     || location.pathname.startsWith('/accessibility')
   )
