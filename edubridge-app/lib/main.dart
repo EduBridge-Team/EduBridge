@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
 import 'services/notification_listener_service.dart';
@@ -9,6 +10,7 @@ import 'services/overlay_visibility_service.dart';
 import 'services/user_settings_sync_service.dart';
 import 'services/websocket_service.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'theme.dart';
 import 'utils/home_router.dart';
@@ -18,32 +20,96 @@ import 'widgets/accessibility/voice_mic_overlay.dart';
 import 'widgets/notification_snackbar.dart';
 import 'widgets/pet_assistant_overlay.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(const _EduBridgeBootstrap());
+}
 
-  // Keep Android's native system splash visible while the local startup state
-  // is prepared. Flutter does not render a second splash screen anymore.
-  await Future.wait([
-    loadSavedThemeMode(),
-    ApiService.initializeAuthState(),
-    AccessibilityService.instance.load(),
-    OverlayVisibilityService.initialize(),
-  ]);
+/// Shows the branded animated splash immediately while all local startup state
+/// is prepared, then swaps atomically to the real application.
+class _EduBridgeBootstrap extends StatefulWidget {
+  const _EduBridgeBootstrap();
 
-  final token = await ApiService.getToken();
-  final Widget initialHome;
-  if (token == null) {
-    initialHome = const WelcomeScreen();
-  } else {
-    initialHome = await homeScreenForRole();
+  @override
+  State<_EduBridgeBootstrap> createState() => _EduBridgeBootstrapState();
+}
+
+class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
+  Widget? _initialHome;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_bootstrap());
   }
 
-  runApp(EduBridgeApp(initialHome: initialHome));
+  Future<void> _bootstrap() async {
+    // Give the reveal enough time to read naturally while startup work happens
+    // in parallel. The app never waits longer than necessary for slow startup.
+    final minimumSplash =
+        Future<void>.delayed(const Duration(milliseconds: 3600));
 
-  // Network-backed startup work runs after the first real app frame so the
-  // native splash transitions directly to the destination screen.
-  if (token != null) {
-    unawaited(_startAuthenticatedServices(token));
+    await Future.wait([
+      loadSavedThemeMode(),
+      ApiService.initializeAuthState(),
+      AccessibilityService.instance.load(),
+      OverlayVisibilityService.initialize(),
+    ]);
+
+    final token = await ApiService.getToken();
+    final Widget destination;
+    if (token == null) {
+      destination = const WelcomeScreen();
+    } else {
+      destination = await homeScreenForRole();
+    }
+
+    await minimumSplash;
+    if (!mounted) return;
+
+    _restoreApplicationSystemBars();
+    setState(() => _initialHome = destination);
+
+    // Network-backed services remain non-blocking after the first app frame.
+    if (token != null) {
+      unawaited(_startAuthenticatedServices(token));
+    }
+  }
+
+  void _restoreApplicationSystemBars() {
+    final dark = jisrThemeMode.value == ThemeMode.dark;
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor:
+            dark ? const Color(0xFF0B1E30) : AppColors.cream,
+        systemNavigationBarIconBrightness:
+            dark ? Brightness.light : Brightness.dark,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final destination = _initialHome;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 450),
+      reverseDuration: const Duration(milliseconds: 250),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: destination == null
+          ? const MaterialApp(
+              key: ValueKey('edubridge-splash'),
+              debugShowCheckedModeBanner: false,
+              home: EduBridgeSplashScreen(),
+            )
+          : EduBridgeApp(
+              key: const ValueKey('edubridge-app'),
+              initialHome: destination,
+            ),
+    );
   }
 }
 
