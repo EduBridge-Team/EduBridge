@@ -268,6 +268,8 @@ export default function ParentDashboard() {
               key={item.label}
               className={item.active ? 'active' : ''}
               onClick={item.onClick}
+              title={item.label}
+              aria-label={item.label}
               disabled={item.label === 'التقدم' && !children[0]}
             >
               {item.icon}
@@ -499,14 +501,6 @@ export default function ParentDashboard() {
         </main>
       </div>
 
-      <nav className="pd-mobile-nav" aria-label="تنقل ولي الأمر">
-        {navItems.slice(0, 5).map((item) => (
-          <button key={item.label} className={item.active ? 'active' : ''} onClick={item.onClick}>
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
     </div>
   )
 }
