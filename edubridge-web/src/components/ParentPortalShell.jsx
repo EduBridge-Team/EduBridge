@@ -1,38 +1,47 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  Accessibility, Bell, BookOpen, ChevronDown, Home, LifeBuoy, Menu,
-  MessageCircle, Search, Stethoscope, Users, X,
+  BarChart3, Bell, BookOpen, ChevronDown, Home, Menu,
+  MessageCircle, Search, Settings, Sparkles, Users, X,
 } from 'lucide-react'
-import { fetchUnreadNotificationsCount, getUser } from '../api'
+import {
+  fetchChildren,
+  fetchConversations,
+  fetchUnreadNotificationsCount,
+  getUser,
+} from '../api'
 import NoorPet from './NoorPet'
 
-const NAV_ITEMS = [
-  { to: '/parent', label: 'الرئيسية', Icon: Home, exact: true },
-  { to: '/children', label: 'أطفالي', Icon: Users },
-  { to: '/lessons', label: 'الدروس', Icon: BookOpen, exact: true },
-  { to: '/conversations', label: 'المحادثات', Icon: MessageCircle, exact: true },
-  { to: '/consultations', label: 'دراسة الحالة', Icon: Stethoscope, exact: true },
-  { to: '/accessibility', label: 'إعدادات الوصول', Icon: Accessibility },
-  { to: '/support', label: 'الدعم', Icon: LifeBuoy, exact: true },
-]
-
-function routeActive(pathname, item) {
-  if (item.exact) return pathname === item.to
-  return pathname === item.to || pathname.startsWith(`${item.to}/`)
+function activeSection(pathname) {
+  if (pathname === '/parent') return 'home'
+  if (pathname === '/lessons' || /\/children\/[^/]+\/lessons$/.test(pathname)) return 'lessons'
+  if (/\/children\/[^/]+\/progress$/.test(pathname)) return 'progress'
+  if (pathname === '/conversations') return 'conversations'
+  if (pathname === '/accessibility' || pathname.includes('/accessibility')) return 'settings'
+  if (pathname.startsWith('/children')) return 'children'
+  return ''
 }
 
 export default function ParentPortalShell({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
+
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
+  const [childrenList, setChildrenList] = useState([])
+  const [conversationCount, setConversationCount] = useState(0)
 
   useEffect(() => {
-    fetchUnreadNotificationsCount()
-      .then((data) => setUnread(Number(data?.count || 0)))
-      .catch(() => setUnread(0))
+    Promise.all([
+      fetchUnreadNotificationsCount().catch(() => ({ count: 0 })),
+      fetchChildren().catch(() => ({ children: [] })),
+      fetchConversations().catch(() => ({ conversations: [] })),
+    ]).then(([notificationData, childrenData, conversationData]) => {
+      setUnread(Number(notificationData?.count || 0))
+      setChildrenList(childrenData?.children || [])
+      setConversationCount((conversationData?.conversations || []).length)
+    })
   }, [location.pathname])
 
   useEffect(() => {
@@ -57,10 +66,33 @@ export default function ParentPortalShell({ children }) {
     navigate('/support')
   }
 
+  const goToProgress = () => {
+    const child = childrenList[0]
+    if (!child) {
+      navigate('/children')
+      return
+    }
+    navigate(`/children/${child.id}/progress`, { state: { childName: child.name } })
+  }
+
   const submitSearch = (event) => {
     event.preventDefault()
     navigate('/lessons', { state: { focusSearch: true } })
   }
+
+  const current = activeSection(location.pathname)
+
+  const navItems = [
+    { key: 'home', label: 'الرئيسية', icon: <Home size={21} />, onClick: () => navigate('/parent') },
+    { key: 'children', label: 'أطفالي', icon: <Users size={21} />, onClick: () => navigate('/children') },
+    { key: 'lessons', label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
+    { key: 'progress', label: 'التقدم', icon: <BarChart3 size={21} />, onClick: goToProgress, disabled: !childrenList[0] },
+    { key: 'conversations', label: 'المحادثات', icon: <MessageCircle size={21} />, onClick: () => navigate('/conversations'), badge: conversationCount },
+    { key: 'noor', label: 'المساعد نور', icon: <Sparkles size={21} />, onClick: openNoor },
+    { key: 'settings', label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
+  ]
+
+  const mobileItems = navItems.filter((item) => ['home', 'children', 'lessons', 'conversations'].includes(item.key))
 
   return (
     <div className="pp-shell" dir="rtl">
@@ -72,40 +104,37 @@ export default function ParentPortalShell({ children }) {
         />
       )}
 
-      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`}>
+      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label="قائمة ولي الأمر">
         <div className="pp-sidebar-head">
           <button className="pp-brand" onClick={() => navigate('/parent')} aria-label="EduBridge">
             <img src="/edubridge-icon.png" alt="" />
-            <span>
-              <strong>EduBridge</strong>
-              <small>معاً لمستقبل أفضل</small>
-            </span>
+            <span>EduBridge</span>
           </button>
+
           <button className="pp-drawer-close" onClick={() => setDrawerOpen(false)} aria-label="إغلاق القائمة">
             <X size={20} />
           </button>
         </div>
 
-        <nav className="pp-nav" aria-label="قائمة ولي الأمر">
-          {NAV_ITEMS.map(({ to, label, Icon, exact }) => {
-            const active = routeActive(location.pathname, { to, exact })
-            return (
-              <button
-                key={to}
-                className={active ? 'active' : ''}
-                onClick={() => navigate(to)}
-                title={label}
-                aria-label={label}
-              >
-                <Icon size={20} />
-                <span>{label}</span>
-              </button>
-            )
-          })}
+        <nav className="pp-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              className={current === item.key ? 'active' : ''}
+              onClick={item.onClick}
+              title={item.label}
+              aria-label={item.label}
+              disabled={item.disabled}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+              {item.badge > 0 && <em>{Math.min(item.badge, 99)}</em>}
+            </button>
+          ))}
         </nav>
 
         <div className="pp-noor-card">
-          <NoorPet size={112} />
+          <NoorPet size={118} />
           <strong>نور</strong>
           <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
           <button onClick={openNoor}>ابدأ المحادثة الآن</button>
@@ -138,14 +167,14 @@ export default function ParentPortalShell({ children }) {
       </section>
 
       <nav className="pp-mobile-nav" aria-label="تنقل ولي الأمر">
-        {NAV_ITEMS.slice(0, 4).map(({ to, label, Icon, exact }) => (
+        {mobileItems.map((item) => (
           <button
-            key={to}
-            className={routeActive(location.pathname, { to, exact }) ? 'active' : ''}
-            onClick={() => navigate(to)}
+            key={item.key}
+            className={current === item.key ? 'active' : ''}
+            onClick={item.onClick}
           >
-            <Icon size={20} />
-            <span>{label}</span>
+            {item.icon}
+            <span>{item.label}</span>
           </button>
         ))}
         <button onClick={() => setDrawerOpen(true)}>

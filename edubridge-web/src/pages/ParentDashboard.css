@@ -2433,3 +2433,11 @@ body.parent-dashboard-page::-webkit-scrollbar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Desktop never uses the mobile bottom navigation. */
+@media (min-width: 901px) {
+  .pd-mobile-nav {
+    display: none !important;
+  }
+}
