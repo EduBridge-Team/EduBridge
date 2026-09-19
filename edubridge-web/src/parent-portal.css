@@ -1016,55 +1016,7 @@ body.parent-portal-active {
 
   .pp-content {
     width: min(100% - 24px, 900px);
-    padding: 16px 0 92px;
-  }
-
-  .pp-mobile-nav {
-    position: fixed;
-    right: 10px;
-    bottom: max(10px, env(safe-area-inset-bottom));
-    left: 10px;
-    z-index: 80;
-    min-height: 67px;
-    padding: 7px;
-    border: 1px solid rgba(215,232,242,.94);
-    border-radius: 20px;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    background: rgba(255,255,255,.96);
-    box-shadow: 0 16px 40px rgba(12,70,115,.16);
-    backdrop-filter: blur(16px);
-    pointer-events: auto;
-    isolation: isolate;
-  }
-
-  .pp-mobile-nav button {
-    position: relative;
-    z-index: 1;
-    border: 0;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    gap: 2px;
-    background: transparent;
-    color: #70889d;
-    font: inherit;
-    font-size: 9px;
-    font-weight: 800;
-    cursor: pointer;
-    pointer-events: auto;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .pp-mobile-nav button.active {
-    color: var(--pp-blue);
-    background: #eaf6fd;
-  }
-
-  .pp-mobile-nav button:active {
-    transform: scale(.96);
-    background: #eef7fc;
+    padding: 16px 0 44px;
   }
 
   .pc-grid,
@@ -1470,11 +1422,11 @@ body.parent-portal-active {
   }
 
   .pp-mobile-nav {
-    display: grid !important;
+    display: none !important;
   }
 
   .pp-content {
-    padding-bottom: 92px;
+    padding-bottom: 44px;
   }
 }
 
@@ -1965,7 +1917,7 @@ body.parent-portal-active.parent-dashboard-page {
 
 @media (max-width: 680px) {
   .pp-toolbar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
   }
 
   .pp-shell:not(.pp-role-parent) .pp-content .summary-grid {
@@ -2321,5 +2273,182 @@ body.parent-portal-active.parent-dashboard-page {
   .pp-content .search-result-side,
   .pp-content .verify-actions {
     width: 100%;
+  }
+}
+
+
+/* ============================================================
+   Mobile portal: hamburger-only navigation and compact drawer
+   ============================================================ */
+@media (max-width: 900px) {
+  .pp-mobile-nav {
+    display: none !important;
+  }
+
+  .pp-sidebar {
+    width: min(340px, 82vw) !important;
+    padding: 16px 14px 18px !important;
+    gap: 12px !important;
+    border-radius: 0 0 0 24px;
+    background: rgba(255,255,255,.99);
+    box-shadow: -18px 0 46px rgba(10,56,94,.18);
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .pp-sidebar-head {
+    min-height: 54px;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .pp-brand {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 9px !important;
+    text-align: right;
+  }
+
+  .pp-brand img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .pp-brand > span {
+    display: block !important;
+  }
+
+  .pp-brand strong {
+    font-size: 20px !important;
+    line-height: 1.1;
+  }
+
+  .pp-drawer-close {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 13px;
+  }
+
+  .pp-nav {
+    gap: 5px;
+  }
+
+  .pp-nav button {
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -14px;
+    height: 26px;
+  }
+
+  .pp-noor-card {
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    display: grid !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "pet title"
+      "pet copy"
+      "button button";
+    align-items: center !important;
+    gap: 4px 10px !important;
+    text-align: right !important;
+    overflow: hidden;
+  }
+
+  .pp-noor-card .noor-pet {
+    grid-area: pet;
+    width: 72px !important;
+    height: 72px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .pp-noor-card > strong {
+    grid-area: title;
+    align-self: end;
+    font-size: 16px !important;
+    color: var(--pp-blue-deep);
+  }
+
+  .pp-noor-card > p {
+    grid-area: copy;
+    align-self: start;
+    margin: 0 !important;
+    color: var(--pp-text);
+    font-size: 10px !important;
+    line-height: 1.55;
+  }
+
+  .pp-noor-card > button {
+    grid-area: button;
+    width: 100%;
+    min-height: 38px;
+    margin-top: 7px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--pp-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  body.role-portal-drawer-open {
+    overflow: hidden;
+  }
+
+  body.role-portal-drawer-open .noor-launcher {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-sidebar {
+    width: min(326px, 86vw) !important;
+  }
+
+  .pp-toolbar {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+
+  .pp-menu-button,
+  .pp-notification,
+  .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pp-profile-avatar {
+    flex-basis: 40px;
+  }
+
+  .pp-global-search {
+    min-height: 42px;
+    padding-inline: 10px;
+  }
+
+  .pp-global-search button {
+    font-size: 11px;
   }
 }
