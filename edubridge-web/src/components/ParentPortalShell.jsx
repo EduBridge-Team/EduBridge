@@ -17,8 +17,9 @@ import NoorPet from './NoorPet'
 
 function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'
-  if (/\/children\/[^/]+\/progress$/.test(pathname)) return 'progress'
-  if (pathname === '/lessons' || /\/children\/[^/]+\/lessons$/.test(pathname)) return 'lessons'
+  if (/\/children\/[^/]+\/progress$/.test(pathname)) return role === 'parent' ? 'progress' : 'children'
+  if (/\/children\/[^/]+\/lessons$/.test(pathname)) return role === 'parent' ? 'lessons' : 'children'
+  if (pathname === '/lessons') return 'lessons'
   if (pathname.startsWith('/children')) return 'children'
   if (pathname === '/conversations') return 'conversations'
   if (pathname === '/search') return 'search'
