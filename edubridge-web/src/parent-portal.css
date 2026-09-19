@@ -19,13 +19,20 @@
 
 html.parent-portal-active,
 body.parent-portal-active {
+  min-height: 100dvh !important;
   background: #f7fbfe;
+  overflow-x: clip;
+}
+
+body.parent-portal-active #root {
+  min-height: 100dvh !important;
+  overflow-x: clip;
 }
 
 .pp-shell {
-  width: 100vw;
+  width: 100%;
   min-height: 100dvh;
-  margin-inline: calc(50% - 50vw);
+  margin-inline: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 236px;
   background:
@@ -314,7 +321,7 @@ body.parent-portal-active {
 .pp-content {
   width: min(1180px, calc(100% - 38px));
   margin: 0 auto;
-  padding: 24px 0 48px;
+  padding: 24px 0 24px;
 }
 
 .pp-mobile-nav,
@@ -1016,7 +1023,7 @@ body.parent-portal-active {
 
   .pp-content {
     width: min(100% - 24px, 900px);
-    padding: 16px 0 44px;
+    padding: 16px 0 20px;
   }
 
   .pc-grid,
@@ -1426,7 +1433,7 @@ body.parent-portal-active {
   }
 
   .pp-content {
-    padding-bottom: 44px;
+    padding-bottom: 20px;
   }
 }
 
@@ -1521,7 +1528,8 @@ body.parent-portal-active {
    Parent dashboard inside the shared parent shell
    ============================================================ */
 body.parent-portal-active.parent-dashboard-page {
-  overflow: auto !important;
+  overflow-x: clip !important;
+  overflow-y: auto !important;
 }
 
 .pp-content .parent-dashboard-v2 {
@@ -2450,5 +2458,28 @@ body.parent-portal-active.parent-dashboard-page {
 
   .pp-global-search button {
     font-size: 11px;
+  }
+}
+
+
+/* Prevent phantom page scroll caused by legacy 100vh root sizing. */
+@supports (height: 100dvh) {
+  html.parent-portal-active,
+  body.parent-portal-active,
+  body.parent-portal-active #root {
+    min-height: 100dvh !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.parent-portal-active,
+  body.parent-portal-active,
+  body.parent-portal-active #root,
+  .pp-shell {
+    min-height: 100dvh !important;
+  }
+
+  .pp-body {
+    min-height: 0;
   }
 }
