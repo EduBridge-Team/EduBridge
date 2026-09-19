@@ -1378,3 +1378,110 @@ body.parent-portal-active {
     padding-bottom: 30px;
   }
 }
+
+
+/* ============================================================
+   Parent portal sidebar parity with the main parent dashboard
+   ============================================================ */
+@media (min-width: 981px) {
+  .pp-shell {
+    grid-template-columns: minmax(0, 1fr) 230px;
+  }
+
+  .pp-sidebar {
+    width: auto;
+    padding: 22px 16px 18px;
+    gap: 18px;
+    border-left: 1px solid #e4eef5;
+    box-shadow: -8px 0 28px rgba(31, 105, 163, .035);
+  }
+
+  .pp-sidebar-head {
+    justify-content: center;
+  }
+
+  .pp-brand {
+    display: grid;
+    justify-items: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .pp-brand img {
+    width: 62px;
+    height: 62px;
+  }
+
+  .pp-brand strong {
+    font-size: 23px;
+    color: var(--pp-blue);
+  }
+
+  .pp-brand small {
+    margin-top: 2px;
+    font-size: 9px;
+  }
+
+  .pp-nav {
+    gap: 8px;
+  }
+
+  .pp-nav button {
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -16px;
+  }
+
+  .pp-noor-card {
+    margin-top: auto;
+    min-height: 205px;
+    padding: 12px;
+    border: 1px solid #d5edf7;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(91,217,207,.26), transparent 5rem),
+      linear-gradient(155deg, #f4fbff, #e8f8ff);
+    overflow: hidden;
+  }
+
+  .pp-noor-card .noor-pet {
+    margin: -14px auto -8px;
+    transform: scale(.92);
+  }
+
+  .pp-noor-card > strong {
+    display: block;
+    font-size: 17px;
+    color: var(--pp-blue-deep);
+  }
+
+  .pp-noor-card > p {
+    margin: 3px 0 8px;
+    color: var(--pp-text);
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .pp-noor-card > button {
+    width: 100%;
+    min-height: 34px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--pp-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
