@@ -1982,3 +1982,75 @@
     display: none;
   }
 }
+
+
+/* ============================================================
+   Sidebar cleanup + exact bottom alignment with progress section
+   ============================================================ */
+
+/* Keep the dashboard scrollable while hiding the browser scrollbar
+   that visually sits inside the right-hand sidebar in desktop RTL mode. */
+html.parent-dashboard-page,
+body.parent-dashboard-page {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html.parent-dashboard-page::-webkit-scrollbar,
+body.parent-dashboard-page::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .pd-sidebar {
+    align-self: start;
+    height: var(--pd-sidebar-target-height, auto) !important;
+    min-height: 0;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+  }
+
+  .pd-brand,
+  .pd-side-nav {
+    flex: 0 0 auto;
+  }
+
+  /* No nested scrolling/borders in the menu itself. */
+  .pd-side-nav {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    border: 0 !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pd-side-nav::-webkit-scrollbar,
+  .pd-sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  /* Use the remaining sidebar height for Noor so its bottom edge
+     lands on the same horizontal line as the progress section. */
+  .pd-noor-side {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 188px !important;
+    max-height: none !important;
+    margin-top: 16px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1121px) {
+  .pd-noor-side {
+    min-height: 205px !important;
+  }
+}
