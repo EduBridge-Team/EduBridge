@@ -3624,3 +3624,11 @@ body.role-portal-drawer-open {
     height: 19px;
   }
 }
+
+
+/* Hide duplicated admin section tabs on desktop; sidebar provides the same navigation. */
+@media (min-width: 901px) {
+  .pp-role-admin .admin-section-tabs {
+    display: none !important;
+  }
+}
