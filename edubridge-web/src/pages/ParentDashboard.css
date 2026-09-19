@@ -2054,3 +2054,30 @@ body.parent-dashboard-page::-webkit-scrollbar {
     min-height: 205px !important;
   }
 }
+
+
+/* ============================================================
+   Match Noor card exactly to the progress section
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-sidebar {
+    position: sticky;
+  }
+
+  .pd-noor-side {
+    position: absolute !important;
+    top: var(--pd-noor-top, auto) !important;
+    inset-inline: 16px;
+    box-sizing: border-box;
+    flex: none !important;
+    width: auto;
+    height: var(--pd-noor-height, 205px) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 14px 12px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
