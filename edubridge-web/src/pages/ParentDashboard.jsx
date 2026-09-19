@@ -123,6 +123,65 @@ export default function ParentDashboard() {
     load()
   }, [])
 
+  useEffect(() => {
+    const root = document.documentElement
+    const body = document.body
+
+    root.classList.add('parent-dashboard-page')
+    body.classList.add('parent-dashboard-page')
+
+    return () => {
+      root.classList.remove('parent-dashboard-page')
+      body.classList.remove('parent-dashboard-page')
+    }
+  }, [])
+
+  useEffect(() => {
+    const dashboard = document.querySelector('.parent-dashboard-v2')
+    const sidebar = dashboard?.querySelector('.pd-sidebar')
+    const progress = dashboard?.querySelector('.pd-progress-section')
+    const main = dashboard?.querySelector('.pd-main')
+
+    if (!dashboard || !sidebar || !progress) return undefined
+
+    let resizeFrame = 0
+
+    const syncSidebarHeight = () => {
+      cancelAnimationFrame(resizeFrame)
+      resizeFrame = requestAnimationFrame(() => {
+        if (window.innerWidth <= 900) {
+          sidebar.style.removeProperty('--pd-sidebar-target-height')
+          return
+        }
+
+        const dashboardTop = dashboard.getBoundingClientRect().top
+        const progressBottom = progress.getBoundingClientRect().bottom
+        const targetHeight = Math.max(0, Math.ceil(progressBottom - dashboardTop))
+
+        sidebar.style.setProperty('--pd-sidebar-target-height', `${targetHeight}px`)
+      })
+    }
+
+    syncSidebarHeight()
+    window.addEventListener('resize', syncSidebarHeight)
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(syncSidebarHeight)
+      : null
+
+    if (resizeObserver) {
+      resizeObserver.observe(progress)
+      if (main) resizeObserver.observe(main)
+    }
+
+    return () => {
+      cancelAnimationFrame(resizeFrame)
+      window.removeEventListener('resize', syncSidebarHeight)
+      resizeObserver?.disconnect()
+      sidebar.style.removeProperty('--pd-sidebar-target-height')
+    }
+  }, [loading, children.length, summaries])
+
   const dashboardStats = useMemo(() => {
     let done = 0
     let inProgress = 0
