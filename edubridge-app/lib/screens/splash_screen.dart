@@ -22,7 +22,8 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
   )..forward();
 
   double _stage(double start, double end, {Curve curve = Curves.easeOutCubic}) {
-    final value = ((_controller.value - start) / (end - start)).clamp(0.0, 1.0);
+    final raw = (_controller.value - start) / (end - start);
+    final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
     return curve.transform(value);
   }
 
@@ -81,18 +82,18 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                         child: IgnorePointer(
                           child: Center(
                             child: Opacity(
-                              opacity: (1 - logo).clamp(0.0, 1.0),
+                              opacity: 1 - logo,
                               child: Transform.scale(
                                 scale: 0.75 + (logo * 0.35),
                                 child: Container(
                                   width: 18,
                                   height: 18,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.92),
+                                    color: Colors.white.withOpacity(0.92),
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.white.withValues(alpha: 0.22),
+                                        color: Colors.white.withOpacity(0.22),
                                         blurRadius: 20,
                                         spreadRadius: 5,
                                       ),
@@ -135,8 +136,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                                           shape: BoxShape.circle,
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.white.withValues(
-                                                alpha: 0.17 * logo,
+                                              color: Colors.white.withOpacity(0.17 * logo,
                                               ),
                                               blurRadius: 38,
                                               spreadRadius: 2,
@@ -224,7 +224,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                       Positioned(
                         left: 0,
                         right: 0,
-                        bottom: math.max(26, size.height * 0.075),
+                        bottom: math.max(26.0, size.height * 0.075),
                         child: Opacity(
                           opacity: details,
                           child: Column(
@@ -232,7 +232,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                             children: [
                               Icon(
                                 Icons.star_border_rounded,
-                                color: Colors.white.withValues(alpha: 0.18),
+                                color: Colors.white.withOpacity(0.18),
                                 size: 27,
                               ),
                               const SizedBox(height: 6),
@@ -242,7 +242,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                                   width: 150,
                                   height: 5,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.22),
+                                    color: Colors.white.withOpacity(0.22),
                                     borderRadius: BorderRadius.circular(999),
                                   ),
                                   alignment: Alignment.centerLeft,
@@ -255,8 +255,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                                             BorderRadius.circular(999),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.24,
+                                            color: Colors.white.withOpacity(0.24,
                                             ),
                                             blurRadius: 8,
                                           ),
@@ -309,7 +308,7 @@ class _HaloRing extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white.withValues(alpha: opacity),
+          color: Colors.white.withOpacity(opacity),
           width: 1.4,
         ),
       ),
@@ -370,7 +369,7 @@ class _EducationBackdrop extends StatelessWidget {
         child: Icon(
           item.icon,
           size: item.size,
-          color: Colors.white.withValues(alpha: 0.28),
+          color: Colors.white.withOpacity(0.28),
         ),
       ),
     );
