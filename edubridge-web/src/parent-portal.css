@@ -939,7 +939,7 @@ body.parent-portal-active {
 }
 
 /* Mobile / tablet */
-@media (max-width: 980px) {
+@media (max-width: 900px) {
   .pp-shell {
     display: block;
     min-height: 100dvh;
@@ -1221,7 +1221,7 @@ body.parent-portal-active {
 /* ============================================================
    Parent portal sidebar parity with the main parent dashboard
    ============================================================ */
-@media (min-width: 981px) {
+@media (min-width: 901px) {
   .pp-shell {
     grid-template-columns: minmax(0, 1fr) 230px;
   }
@@ -1321,5 +1321,144 @@ body.parent-portal-active {
     font-size: 11px;
     font-weight: 800;
     cursor: pointer;
+  }
+}
+
+
+/* ============================================================
+   Parent navigation parity: desktop sidebar / mobile bottom bar
+   ============================================================ */
+.pp-nav button {
+  position: relative;
+}
+
+.pp-nav button > em {
+  margin-inline-start: auto;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ef5f6f;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.pp-nav button:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+@media (min-width: 901px) {
+  .pp-shell {
+    grid-template-columns: minmax(0, 1fr) 230px !important;
+  }
+
+  .pp-sidebar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: 230px !important;
+    height: 100dvh !important;
+    min-height: 100dvh;
+    padding: 22px 16px 18px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  .pp-sidebar-head {
+    justify-content: center;
+  }
+
+  .pp-brand {
+    display: grid !important;
+    justify-items: center;
+    gap: 1px !important;
+    text-align: center;
+  }
+
+  .pp-brand img {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .pp-brand > span {
+    display: block;
+    color: var(--pp-blue);
+    font-size: 23px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .pp-nav {
+    gap: 8px;
+  }
+
+  .pp-nav button {
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -16px;
+  }
+
+  .pp-noor-card {
+    min-height: 205px;
+  }
+
+  /* A bottom bar must never render in desktop layout. */
+  .pp-mobile-nav,
+  .pp-drawer-backdrop,
+  .pp-drawer-close {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-shell {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+
+  .pp-sidebar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: min(310px, 88vw) !important;
+    height: 100dvh !important;
+    transform: translateX(105%);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pp-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pp-mobile-nav {
+    display: grid !important;
+  }
+
+  .pp-content {
+    padding-bottom: 92px;
   }
 }
