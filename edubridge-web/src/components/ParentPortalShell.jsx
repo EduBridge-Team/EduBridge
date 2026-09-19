@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   BarChart3, Bell, BookOpen, ChevronDown, Home, Menu,
@@ -82,7 +82,7 @@ export default function ParentPortalShell({ children }) {
 
   const current = activeSection(location.pathname)
 
-  const navItems = useMemo(() => ([
+  const navItems = [
     { key: 'home', label: 'الرئيسية', icon: <Home size={21} />, onClick: () => navigate('/parent') },
     { key: 'children', label: 'أطفالي', icon: <Users size={21} />, onClick: () => navigate('/children') },
     { key: 'lessons', label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
@@ -90,7 +90,7 @@ export default function ParentPortalShell({ children }) {
     { key: 'conversations', label: 'المحادثات', icon: <MessageCircle size={21} />, onClick: () => navigate('/conversations'), badge: conversationCount },
     { key: 'noor', label: 'المساعد نور', icon: <Sparkles size={21} />, onClick: openNoor },
     { key: 'settings', label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
-  ]), [childrenList, conversationCount, navigate])
+  ]
 
   const mobileItems = navItems.filter((item) => ['home', 'children', 'lessons', 'conversations'].includes(item.key))
 
