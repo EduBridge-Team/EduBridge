@@ -146,27 +146,35 @@ export default function ParentDashboard() {
 
     let resizeFrame = 0
 
-    const syncSidebarHeight = () => {
+    const syncSidebarWithProgress = () => {
       cancelAnimationFrame(resizeFrame)
       resizeFrame = requestAnimationFrame(() => {
         if (window.innerWidth <= 900) {
           sidebar.style.removeProperty('--pd-sidebar-target-height')
+          sidebar.style.removeProperty('--pd-noor-top')
+          sidebar.style.removeProperty('--pd-noor-height')
           return
         }
 
-        const dashboardTop = dashboard.getBoundingClientRect().top
-        const progressBottom = progress.getBoundingClientRect().bottom
-        const targetHeight = Math.max(0, Math.ceil(progressBottom - dashboardTop))
+        const dashboardRect = dashboard.getBoundingClientRect()
+        const sidebarRect = sidebar.getBoundingClientRect()
+        const progressRect = progress.getBoundingClientRect()
+
+        const targetHeight = Math.max(0, Math.ceil(progressRect.bottom - dashboardRect.top))
+        const noorTop = Math.max(0, Math.round(progressRect.top - sidebarRect.top))
+        const noorHeight = Math.max(0, Math.round(progressRect.height))
 
         sidebar.style.setProperty('--pd-sidebar-target-height', `${targetHeight}px`)
+        sidebar.style.setProperty('--pd-noor-top', `${noorTop}px`)
+        sidebar.style.setProperty('--pd-noor-height', `${noorHeight}px`)
       })
     }
 
-    syncSidebarHeight()
-    window.addEventListener('resize', syncSidebarHeight)
+    syncSidebarWithProgress()
+    window.addEventListener('resize', syncSidebarWithProgress)
 
     const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(syncSidebarHeight)
+      ? new ResizeObserver(syncSidebarWithProgress)
       : null
 
     if (resizeObserver) {
@@ -176,9 +184,11 @@ export default function ParentDashboard() {
 
     return () => {
       cancelAnimationFrame(resizeFrame)
-      window.removeEventListener('resize', syncSidebarHeight)
+      window.removeEventListener('resize', syncSidebarWithProgress)
       resizeObserver?.disconnect()
       sidebar.style.removeProperty('--pd-sidebar-target-height')
+      sidebar.style.removeProperty('--pd-noor-top')
+      sidebar.style.removeProperty('--pd-noor-height')
     }
   }, [loading, children.length, summaries])
 
