@@ -1,5 +1,5 @@
 // لوحة التحكم الإدارية — أدمن فقط
-// ثلاثة تبويبات: جميع المستخدمين · ربط طفل بولي أمر · جميع الدروس
+// تبويبان: المستخدمون المصنّفون · جميع الدروس
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import {
@@ -8,27 +8,33 @@ import {
   updateUser,
   fetchChildren,
   fetchLessons,
-  linkParent,
   deleteUser,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
-import { Settings, Library, Phone, X, Link2, BookOpen } from 'lucide-react'
+import { Settings, Library, Phone, X, BookOpen } from 'lucide-react'
 import Footer from '../components/Footer'
 
-// أيقونة وصنف لون لكل دور — لتلوين الشارات كما في التصميم
 const ROLE_META = {
   admin: { icon: '🛡️', cls: 'role-admin' },
-  teacher: { icon: '📚', cls: 'role-teacher' },
+  teacher: { icon: '👨‍🏫', cls: 'role-teacher' },
   specialist: { icon: '🧩', cls: 'role-specialist' },
   parent: { icon: '👪', cls: 'role-parent' },
-  ministry: { icon: '🏛️', cls: 'role-admin' },
-  institution: { icon: '🏢', cls: 'role-specialist' },
+  ministry: { icon: '🏛️', cls: 'role-ministry' },
+  institution: { icon: '🏢', cls: 'role-institution' },
 }
 
+const ROLE_SECTIONS = [
+  { role: 'teacher', label: 'المعلمون', icon: '👨‍🏫', tone: 'teacher' },
+  { role: 'specialist', label: 'المختصون', icon: '🧩', tone: 'specialist' },
+  { role: 'parent', label: 'أولياء الأمور', icon: '👪', tone: 'parent' },
+  { role: 'ministry', label: 'الوزارة', icon: '🏛️', tone: 'ministry' },
+  { role: 'institution', label: 'المؤسسات', icon: '🏢', tone: 'institution' },
+  { role: 'admin', label: 'الإدارة', icon: '🛡️', tone: 'admin' },
+]
+
 const TABS = [
-  { id: 'users', label: 'جميع المستخدمين' },
-  { id: 'link', label: 'ربط طفل بولي أمر' },
-  { id: 'lessons', label: 'جميع الدروس' },
+  { id: 'users', label: 'المستخدمون' },
+  { id: 'lessons', label: 'الدروس' },
 ]
 
 export default function AdminPage() {
@@ -65,7 +71,6 @@ export default function AdminPage() {
         </div>
 
         {tab === 'users' && <UsersTab />}
-        {tab === 'link' && <LinkTab />}
         {tab === 'lessons' && <LessonsTab />}
       </main>
 
@@ -74,20 +79,25 @@ export default function AdminPage() {
   )
 }
 
-/* ============ تبويب: جميع المستخدمين ============ */
+/* ============ تبويب: المستخدمون المصنّفون ============ */
 function UsersTab() {
   const [users, setUsers] = useState([])
+  const [children, setChildren] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
-  const [editing, setEditing] = useState(null) // المستخدم قيد التعديل
+  const [editing, setEditing] = useState(null)
 
   const load = async () => {
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchUsers()
-      setUsers(data.users || [])
+      const [userData, childData] = await Promise.all([
+        fetchUsers(),
+        fetchChildren().catch(() => ({ children: [] })),
+      ])
+      setUsers(userData.users || [])
+      setChildren(childData.children || [])
     } catch (err) {
       setError(err.message)
     } finally {
@@ -99,13 +109,11 @@ function UsersTab() {
     load()
   }, [])
 
-  // بعد حفظ التعديل: نحدّث القائمة محلياً
   const onSaved = (updated) => {
     setUsers((list) => list.map((u) => (u.id === updated.id ? updated : u)))
     setEditing(null)
   }
 
-  // حذف مستخدم (البطاقة 11)
   const me = getUser()
   const remove = async (u) => {
     if (!window.confirm(`حذف المستخدم "${u.name}" نهائياً؟`)) return
@@ -118,13 +126,28 @@ function UsersTab() {
   }
 
   const term = search.trim().toLowerCase()
-  const filtered = term
-    ? users.filter(
-        (u) =>
-          (u.name || '').toLowerCase().includes(term) ||
-          (u.email || '').toLowerCase().includes(term)
-      )
+  const matches = (value) => (value || '').toString().toLowerCase().includes(term)
+  const filteredUsers = term
+    ? users.filter((u) => matches(u.name) || matches(u.email) || matches(u.phone))
     : users
+  const filteredChildren = term
+    ? children.filter((child) => matches(child.name))
+    : children
+
+  const childrenForUser = (user) => {
+    const role = user.role
+    const id = user.id
+    return children.filter((child) => {
+      if (role === 'teacher') return child.assigned_teacher_id === id
+      if (role === 'specialist') {
+        return child.assigned_specialist_id === id || child.specialist_id === id
+      }
+      if (role === 'parent') {
+        return child.parent_id === id || child.user_id === id
+      }
+      return false
+    }).length
+  }
 
   if (loading) {
     return (
@@ -145,62 +168,77 @@ function UsersTab() {
     )
   }
 
+  const grouped = ROLE_SECTIONS.map((section) => ({
+    ...section,
+    items: filteredUsers.filter((u) => u.role === section.role),
+  }))
+
+  const hasResults = grouped.some((section) => section.items.length > 0) || filteredChildren.length > 0
+
   return (
-    <section className="admin-panel">
-      <div className="admin-panel-head">
-        <h3>👥 إدارة المستخدمين</h3>
-        <input
-          className="admin-search"
-          type="search"
-          placeholder="ابحث عن مستخدم..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+    <section className="admin-panel admin-users-panel">
+      <div className="admin-panel-head admin-users-head">
+        <div>
+          <h3>👥 إدارة المستخدمين</h3>
+          <p>مصنّفون حسب الدور مثل تطبيق EduBridge</p>
+        </div>
+        <label className="admin-search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input
+            className="admin-search"
+            type="search"
+            placeholder="ابحث بالاسم أو البريد..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="state">لا يوجد مستخدمون مطابقون</div>
+      {!hasResults ? (
+        <div className="state">لا توجد نتائج مطابقة</div>
       ) : (
-        <div className="user-grid">
-          {filtered.map((u) => {
-            const meta = ROLE_META[u.role] || { icon: '👤', cls: 'role-parent' }
-            return (
-              <div key={u.id} className="user-card">
-                <div className="user-card-top">
-                  <span className={`role-pill ${meta.cls}`}>
-                    {ROLE_NAMES[u.role] || u.role}
-                  </span>
-                  <div className="user-avatar">{(u.name || '؟').trim().charAt(0)}</div>
-                </div>
-                <h4 className="user-name">{u.name}</h4>
-                <div className="user-email">{u.email}</div>
-                {u.phone && (
-                  <div className="user-phone" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <Phone size={13} /> {u.phone}
-                  </div>
-                )}
-                {u.verification_status && (
-                  <div className={`user-verify ${u.verification_status}`}>
-                    {u.verification_status === 'verified'
-                      ? 'موثّق ✓'
-                      : u.verification_status === 'rejected'
-                        ? 'توثيق مرفوض'
-                        : 'بانتظار التوثيق'}
-                  </div>
-                )}
-                <div className="user-card-actions">
-                  <button className="btn outline small" onClick={() => setEditing(u)}>
-                    تعديل
-                  </button>
-                  {me?.id !== u.id && (
-                    <button className="btn danger small" onClick={() => remove(u)}>
-                      حذف
-                    </button>
-                  )}
-                </div>
-              </div>
+        <div className="admin-group-list">
+          {grouped.map((section) => (
+            section.items.length > 0 && (
+              <AdminRoleSection
+                key={section.role}
+                section={section}
+                users={section.items}
+                currentUserId={me?.id}
+                childrenForUser={childrenForUser}
+                onEdit={setEditing}
+                onDelete={remove}
+              />
             )
-          })}
+          ))}
+
+          {filteredChildren.length > 0 && (
+            <section className="admin-role-section tone-children">
+              <div className="admin-role-heading">
+                <div className="admin-role-heading-title">
+                  <span className="admin-role-heading-icon">🧒</span>
+                  <h4>الأطفال</h4>
+                </div>
+                <span className="admin-role-count">{filteredChildren.length}</span>
+              </div>
+              <div className="admin-children-grid">
+                {filteredChildren.map((child) => (
+                  <div className="admin-child-card" key={child.id}>
+                    <div className="admin-child-avatar">
+                      {(child.name || '؟').trim().charAt(0)}
+                    </div>
+                    <div className="admin-child-copy">
+                      <strong>{child.name || 'طفل'}</strong>
+                      <small>
+                        {child.age ? `${child.age} سنوات` : 'العمر غير محدد'}
+                        {child.status ? ` • ${child.status}` : ''}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
 
@@ -211,6 +249,75 @@ function UsersTab() {
           onSaved={onSaved}
         />
       )}
+    </section>
+  )
+}
+
+function AdminRoleSection({ section, users, currentUserId, childrenForUser, onEdit, onDelete }) {
+  return (
+    <section className={`admin-role-section tone-${section.tone}`}>
+      <div className="admin-role-heading">
+        <div className="admin-role-heading-title">
+          <span className="admin-role-heading-icon">{section.icon}</span>
+          <h4>{section.label}</h4>
+        </div>
+        <span className="admin-role-count">{users.length}</span>
+      </div>
+
+      <div className="admin-role-users">
+        {users.map((user) => {
+          const meta = ROLE_META[user.role] || { icon: '👤', cls: 'role-parent' }
+          const linkedChildren = childrenForUser(user)
+          return (
+            <article key={user.id} className="admin-user-row">
+              <div className="admin-user-avatar">
+                {(user.name || '؟').trim().charAt(0)}
+              </div>
+
+              <div className="admin-user-main">
+                <div className="admin-user-title">
+                  <strong>{user.name}</strong>
+                  <span className={`role-pill ${meta.cls}`}>
+                    {ROLE_NAMES[user.role] || user.role}
+                  </span>
+                </div>
+                <span className="admin-user-email">{user.email}</span>
+                {user.phone && (
+                  <span className="admin-user-phone">
+                    <Phone size={13} /> {user.phone}
+                  </span>
+                )}
+                {user.verification_status && (
+                  <span className={`user-verify ${user.verification_status}`}>
+                    {user.verification_status === 'verified'
+                      ? 'موثّق ✓'
+                      : user.verification_status === 'rejected'
+                        ? 'توثيق مرفوض'
+                        : 'بانتظار التوثيق'}
+                  </span>
+                )}
+              </div>
+
+              {['teacher', 'specialist', 'parent'].includes(user.role) && (
+                <span className="admin-linked-count" title="عدد الأطفال المرتبطين">
+                  {linkedChildren} 👶
+                </span>
+              )}
+
+              <div className="admin-user-actions">
+                <button className="admin-icon-action edit" onClick={() => onEdit(user)} aria-label={`تعديل ${user.name}`}>
+                  تعديل
+                </button>
+                {currentUserId !== user.id && (
+                  <button className="admin-icon-action delete" onClick={() => onDelete(user)} aria-label={`حذف ${user.name}`}>
+                    حذف
+                  </button>
+                )}
+              </div>
+            </article>
+          )
+        })}
+      </div>
     </section>
   )
 }
@@ -288,127 +395,6 @@ function EditUserModal({ user, onClose, onSaved }) {
         </form>
       </div>
     </div>
-  )
-}
-
-/* ============ تبويب: ربط طفل بولي أمر ============ */
-function LinkTab() {
-  const [children, setChildren] = useState([])
-  const [parents, setParents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const [childId, setChildId] = useState('')
-  const [parentId, setParentId] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [result, setResult] = useState(null) // {ok, msg}
-
-  const load = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [c, p] = await Promise.all([fetchChildren(), fetchUsers('parent')])
-      setChildren(c.children || [])
-      setParents(p.users || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    load()
-  }, [])
-
-  const submit = async (e) => {
-    e.preventDefault()
-    setResult(null)
-    if (!childId || !parentId) {
-      setResult({ ok: false, msg: 'اختر الطفل وولي الأمر أولاً' })
-      return
-    }
-    setSubmitting(true)
-    try {
-      await linkParent(childId, parentId)
-      const childName = children.find((c) => String(c.id) === String(childId))?.name
-      const parentName = parents.find((p) => String(p.id) === String(parentId))?.name
-      setResult({ ok: true, msg: `تم ربط «${childName}» بولي الأمر «${parentName}»` })
-      setChildId('')
-      setParentId('')
-    } catch (err) {
-      setResult({ ok: false, msg: err.message })
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="state">
-        <div className="spinner" />
-        جارِ التحميل...
-      </div>
-    )
-  }
-  if (error) {
-    return (
-      <div className="state">
-        <div className="error-box">{error}</div>
-        <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-          إعادة المحاولة
-        </button>
-      </div>
-    )
-  }
-
-  return (
-    <section className="admin-panel">
-      <div className="admin-panel-head">
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Link2 size={20} /> ربط طفل بولي أمر
-        </h3>
-      </div>
-
-      <div className="card" style={{ maxWidth: 560 }}>
-        <form onSubmit={submit}>
-          <label>الطفل</label>
-          <select value={childId} onChange={(e) => setChildId(e.target.value)}>
-            <option value="">— اختر الطفل —</option>
-            {children.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-
-          <label>ولي الأمر</label>
-          <select value={parentId} onChange={(e) => setParentId(e.target.value)}>
-            <option value="">— اختر ولي الأمر —</option>
-            {parents.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.email})
-              </option>
-            ))}
-          </select>
-
-          {result && (
-            <div className={result.ok ? 'success-box' : 'error-box'}>{result.msg}</div>
-          )}
-
-          <button type="submit" className="btn full" disabled={submitting}>
-            {submitting ? 'جارِ الربط...' : (<><Link2 size={18} /> ربط</>)}
-          </button>
-        </form>
-      </div>
-
-      {children.length === 0 && (
-        <div className="state">لا يوجد أطفال بعد لربطهم.</div>
-      )}
-      {parents.length === 0 && (
-        <div className="state">لا يوجد أولياء أمور مسجّلون بعد.</div>
-      )}
-    </section>
   )
 }
 
