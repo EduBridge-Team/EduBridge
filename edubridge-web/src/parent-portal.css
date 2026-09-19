@@ -1598,3 +1598,23 @@ body.parent-portal-active.parent-dashboard-page {
   display: none !important;
   content: none !important;
 }
+
+
+/* ============================================================
+   Desktop parent sidebar: end after Noor instead of full viewport
+   ============================================================ */
+@media (min-width: 901px) {
+  .pp-sidebar {
+    height: fit-content !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 18px);
+    padding-bottom: 16px !important;
+    border-bottom-left-radius: 28px;
+    border-bottom-right-radius: 0;
+    overflow-y: auto;
+  }
+
+  .pp-noor-card {
+    margin-bottom: 0 !important;
+  }
+}
