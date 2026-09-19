@@ -1626,6 +1626,7 @@ body.parent-portal-active.parent-dashboard-page {
 @media (min-width: 901px) {
   body.parent-dashboard-page .pp-shell {
     --pp-sidebar-reserved: 230px;
+    --pp-sidebar-offset: -230px;
   }
 
   body.parent-dashboard-page .pp-sidebar {
@@ -1644,7 +1645,7 @@ body.parent-portal-active.parent-dashboard-page {
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower {
     width: calc(100% + var(--pp-sidebar-reserved)) !important;
     max-width: none !important;
-    margin-right: calc(var(--pp-sidebar-reserved) * -1) !important;
+    margin-right: var(--pp-sidebar-offset) !important;
     margin-left: 0 !important;
   }
 
@@ -1660,6 +1661,7 @@ body.parent-portal-active.parent-dashboard-page {
 @media (min-width: 901px) and (max-width: 1120px) {
   body.parent-dashboard-page .pp-shell {
     --pp-sidebar-reserved: 205px;
+    --pp-sidebar-offset: -205px;
   }
 }
 
