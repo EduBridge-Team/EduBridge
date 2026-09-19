@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  Accessibility, BarChart3, Bell, BookOpen, Building2, ChevronDown, Home, Landmark,
+  Accessibility, BarChart3, Bell, BookOpen, ChevronDown, Home, Landmark,
   LifeBuoy, Menu, MessageCircle, Search, Settings, ShieldCheck, Sparkles,
   Stethoscope, Users, X,
 } from 'lucide-react'
