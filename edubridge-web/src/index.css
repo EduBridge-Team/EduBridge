@@ -3150,3 +3150,44 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
         width: min(390px, calc(100vw - 20px));
     }
 }
+
+
+/* Auth viewport scroll lock */
+@media (min-width: 781px) {
+    html.auth-page-active,
+    body.auth-page-active {
+        width: 100%;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        overscroll-behavior: none;
+    }
+
+    body.auth-page-active #root {
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+    }
+
+    body.auth-page-active #root > div {
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    body.auth-page-active .topbar {
+        height: 78px;
+        min-height: 78px;
+        max-height: 78px;
+        flex: 0 0 78px;
+    }
+
+    body.auth-page-active .auth-page {
+        height: calc(100dvh - 78px) !important;
+        min-height: 0 !important;
+        max-height: calc(100dvh - 78px) !important;
+        overflow: hidden !important;
+    }
+}
