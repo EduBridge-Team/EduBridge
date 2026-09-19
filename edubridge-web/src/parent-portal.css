@@ -973,7 +973,7 @@ body.parent-portal-active {
   .pp-drawer-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 55;
+    z-index: 90;
     display: block;
     border: 0;
     background: rgba(9,38,62,.34);
@@ -1022,21 +1022,25 @@ body.parent-portal-active {
   .pp-mobile-nav {
     position: fixed;
     right: 10px;
-    bottom: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
     left: 10px;
-    z-index: 48;
+    z-index: 80;
     min-height: 67px;
     padding: 7px;
     border: 1px solid rgba(215,232,242,.94);
     border-radius: 20px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    background: rgba(255,255,255,.94);
+    background: rgba(255,255,255,.96);
     box-shadow: 0 16px 40px rgba(12,70,115,.16);
     backdrop-filter: blur(16px);
+    pointer-events: auto;
+    isolation: isolate;
   }
 
   .pp-mobile-nav button {
+    position: relative;
+    z-index: 1;
     border: 0;
     border-radius: 14px;
     display: grid;
@@ -1047,11 +1051,20 @@ body.parent-portal-active {
     font: inherit;
     font-size: 9px;
     font-weight: 800;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .pp-mobile-nav button.active {
     color: var(--pp-blue);
     background: #eaf6fd;
+  }
+
+  .pp-mobile-nav button:active {
+    transform: scale(.96);
+    background: #eef7fc;
   }
 
   .pc-grid,
@@ -1440,6 +1453,7 @@ body.parent-portal-active {
     top: 0;
     right: 0;
     left: auto;
+    z-index: 100 !important;
     width: min(310px, 88vw) !important;
     height: 100dvh !important;
     transform: translateX(105%);
