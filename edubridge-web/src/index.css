@@ -3009,3 +3009,18 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
         font-size: 22px;
     }
 }
+
+
+/* Noor mobile drag bounds */
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline-start: 10px;
+        inset-inline-end: auto;
+        width: auto;
+        align-items: flex-start;
+    }
+
+    .noor-panel {
+        width: min(390px, calc(100vw - 20px));
+    }
+}
