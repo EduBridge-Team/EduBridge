@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { LifeBuoy, TriangleAlert } from 'lucide-react'
 import { getUser, fetchTickets, createTicket, updateTicket } from '../api'
+import AdminSectionTabs from '../components/AdminSectionTabs'
 
 const STATUS_LABELS = {
   open: 'مفتوحة',
@@ -98,6 +99,8 @@ export default function SupportPage() {
           <LifeBuoy size={20} /> الدعم الفني والشكاوى
         </h2>
       </div>
+
+      {isAdmin && <AdminSectionTabs />}
 
       {!isAdmin && (
         <form onSubmit={submit} className="card">
