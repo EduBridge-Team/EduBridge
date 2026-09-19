@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Accessibility, BarChart3, Bell, BookOpen, ChevronDown, Home, Landmark,
-  LifeBuoy, Menu, MessageCircle, Search, Settings, ShieldCheck, Sparkles,
+  LifeBuoy, Menu, MessageCircle, Search, Settings, ShieldCheck,
   Stethoscope, Users, X,
 } from 'lucide-react'
 import {
@@ -28,7 +28,8 @@ function activeSection(pathname, role, homePath) {
   if (pathname === '/ministry' && role === 'admin') return 'curriculum'
   if (pathname === '/support') return 'support'
   if (pathname === '/verify') return 'verify'
-  if (pathname === '/profile' || pathname.startsWith('/accessibility')) return 'settings'
+  if (pathname.startsWith('/accessibility')) return 'settings'
+  if (pathname === '/profile') return 'profile'
   return ''
 }
 
@@ -125,13 +126,6 @@ export default function RolePortalShell({ children }) {
       '/conversations',
       { badge: conversationCount },
     )
-    const noor = {
-      key: 'noor',
-      label: 'المساعد نور',
-      icon: <Sparkles size={21} />,
-      onClick: openNoor,
-    }
-
     if (role === 'parent') {
       return [
         home,
@@ -145,7 +139,6 @@ export default function RolePortalShell({ children }) {
           disabled: !childrenList[0],
         },
         conversations,
-        noor,
         item('settings', 'الإعدادات', <Settings size={21} />, '/accessibility'),
       ]
     }
@@ -158,7 +151,6 @@ export default function RolePortalShell({ children }) {
         item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
         item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
         conversations,
-        noor,
         item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
       ]
     }
@@ -171,7 +163,6 @@ export default function RolePortalShell({ children }) {
         item('search', 'البحث', <Search size={21} />, '/search'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         conversations,
-        noor,
         item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
       ]
     }
@@ -183,7 +174,6 @@ export default function RolePortalShell({ children }) {
         item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
         conversations,
         item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
-        noor,
       ]
     }
 
@@ -194,7 +184,6 @@ export default function RolePortalShell({ children }) {
         item('search', 'البحث', <Search size={21} />, '/search'),
         conversations,
         item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
-        noor,
       ]
     }
 
@@ -212,11 +201,11 @@ export default function RolePortalShell({ children }) {
       ]
     }
 
-    return [home, conversations, noor]
+    return [home, conversations]
   }, [childrenList, conversationCount, homePath, navigate, role])
 
   const mobileItems = navItems
-    .filter((navItem) => !['noor', 'settings', 'support'].includes(navItem.key))
+    .filter((navItem) => !['settings', 'support'].includes(navItem.key))
     .slice(0, 4)
 
   const searchPlaceholder = role === 'parent'
