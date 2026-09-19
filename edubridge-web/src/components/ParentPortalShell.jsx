@@ -73,7 +73,7 @@ export default function ParentPortalShell({ children }) {
           {NAV_ITEMS.map(({ to, label, Icon, exact }) => {
             const active = routeActive(location.pathname, { to, exact })
             return (
-              <button key={to} className={active ? 'active' : ''} onClick={() => navigate(to)}>
+              <button key={to} className={active ? 'active' : ''} onClick={() => navigate(to)} title={label} aria-label={label}>
                 <Icon size={20} />
                 <span>{label}</span>
               </button>
