@@ -1,7 +1,8 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { getToken, getUser } from './api'
 import { dashboardFor } from './roleRoutes'
 import TopBar from './components/TopBar'
+import ParentPortalShell from './components/ParentPortalShell'
 import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -29,10 +30,23 @@ import AccessibilityPage from './pages/AccessibilityPage'
 import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
 import ConversationsPage from './pages/ConversationsPage'
 import InstitutionDashboard from './pages/InstitutionDashboard'
+import './parent-portal.css'
 
 const CHILD_ROLES = ['parent', 'teacher', 'specialist', 'admin']
 const STAFF_SEARCH_ROLES = ['teacher', 'specialist', 'admin', 'ministry', 'institution']
 const CONSULTATION_ROLES = ['parent', 'teacher', 'specialist', 'admin']
+
+function isParentPortalPath(pathname) {
+  return pathname === '/parent'
+    || pathname.startsWith('/children')
+    || pathname === '/lessons'
+    || pathname === '/conversations'
+    || pathname === '/notifications'
+    || pathname === '/support'
+    || pathname === '/verify'
+    || pathname === '/consultations'
+    || pathname.startsWith('/accessibility')
+}
 
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
@@ -62,6 +76,13 @@ function GuestOnly({ children }) {
 }
 
 function Page({ children }) {
+  const user = getUser()
+  const location = useLocation()
+  const useParentShell = user?.role === 'parent'
+    && location.pathname !== '/parent'
+    && isParentPortalPath(location.pathname)
+
+  if (useParentShell) return <ParentPortalShell>{children}</ParentPortalShell>
   return <main className="container">{children}</main>
 }
 
