@@ -715,8 +715,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand-blue); box
 :root[data-theme="dark"] .topbar-brand {
   padding: 3px 10px;
   border-radius: 14px;
-  background: #eef9ff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  background: #102f4e;
+  border: 1px solid #214663;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="dark"] .topbar-brand .brand-wordmark {
+  color: #dff3ff;
 }
 :root[data-theme="dark"] .hero-product-frame { border-color: #1b4c6a; background: #0b2945; }
 :root[data-theme="dark"] .hero-window-bar { background: #123552; color: #9dbbd0; }
