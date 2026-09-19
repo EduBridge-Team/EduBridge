@@ -1078,3 +1078,102 @@
     display: none;
   }
 }
+
+
+/* ============================================================
+   Parent dashboard screenshot cleanup
+   ============================================================ */
+@media (min-width: 901px) {
+  /* The hero WebP already includes the note + badges; show it cleanly without overlays. */
+  .pd-hero-art {
+    overflow: hidden;
+    min-height: 190px;
+    padding: 0;
+  }
+
+  .pd-hero-art img {
+    width: min(520px, 118%);
+    max-height: 232px;
+    object-fit: contain;
+    object-position: center bottom;
+    transform: none;
+  }
+
+  .pd-hero-note,
+  .pd-hero-badge {
+    display: none !important;
+  }
+
+  /* Keep section headings clean like the annotated reference. */
+  .pd-children-section .pd-section-head,
+  .pd-progress-section .pd-section-head {
+    margin-bottom: 12px;
+    min-height: 38px;
+  }
+
+  .pd-children-section .pd-section-head > div:first-child,
+  .pd-progress-section .pd-section-head > div:first-child {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Reduce the large vertical breaks marked in red. */
+  .pd-content {
+    gap: 12px;
+  }
+
+  .pd-section {
+    box-shadow: 0 10px 28px rgba(24, 99, 159, .055);
+  }
+
+  .pd-progress-section {
+    padding-bottom: 17px;
+  }
+
+  .pd-lower-grid {
+    gap: 12px;
+  }
+
+  .pd-today,
+  .pd-conversations {
+    min-height: 232px;
+  }
+
+  .pd-mini-empty {
+    min-height: 116px;
+    padding: 30px 18px;
+    display: grid;
+    place-items: center;
+  }
+
+  .pd-quick-actions {
+    min-height: 66px;
+    padding-block: 10px;
+  }
+
+  .pd-noor-banner {
+    margin-top: 0;
+    min-height: 174px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-hero-art {
+    min-height: 180px;
+  }
+
+  .pd-hero-art img {
+    width: min(455px, 116%);
+    max-height: 218px;
+  }
+
+  .pd-today,
+  .pd-conversations {
+    min-height: 215px;
+  }
+
+  .pd-mini-empty {
+    min-height: 96px;
+    padding-block: 22px;
+  }
+}

@@ -249,12 +249,6 @@ export default function ParentDashboard() {
             </div>
             <div className="pd-hero-art" aria-hidden="true">
               <img src="/edubridge-hero-child.webp" alt="" />
-              <div className="pd-hero-note">كل طفل<br />يستطيع أن يتعلم<br />بطريقته ♡</div>
-              <div className="pd-hero-badge">
-                <span>🎓</span>
-                <b>مستقبل أكثر إشراقاً</b>
-                <small>لأطفالنا</small>
-              </div>
             </div>
             <span className="pd-deco pd-deco-a" aria-hidden="true">✦</span>
             <span className="pd-deco pd-deco-b" aria-hidden="true">✦</span>
@@ -263,7 +257,7 @@ export default function ParentDashboard() {
 
           <section className="pd-section pd-children-section">
             <div className="pd-section-head">
-              <div><h2>أطفالي</h2><p>ملفات أبنائك المرتبطة بحسابك.</p></div>
+              <div><h2>أطفالي</h2></div>
               <div className="pd-head-actions">
                 <button className="pd-link-btn" onClick={() => navigate('/children')}>عرض الكل <ArrowLeft size={15} /></button>
                 <button className="pd-primary-mini" onClick={() => navigate('/children/new')}><Plus size={16} /> إضافة طفل</button>
@@ -326,7 +320,7 @@ export default function ParentDashboard() {
 
           <section className="pd-section pd-progress-section">
             <div className="pd-section-head">
-              <div><h2>نظرة على التقدم</h2><p>مؤشرات حقيقية محسوبة من سجلات الدروس والتقدّم.</p></div>
+              <div><h2>نظرة على التقدم</h2></div>
               <span className="pd-period">هذا الأسبوع</span>
             </div>
 
