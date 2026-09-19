@@ -303,11 +303,11 @@ export default function ParentDashboard() {
             {unread > 0 && <span>{Math.min(unread, 99)}</span>}
           </button>
 
-          <div className="pd-profile">
+          <button className="pd-profile" onClick={() => navigate('/verify')} aria-label="الملف الشخصي">
             <span className="pd-user-avatar">{(user?.name || 'و').charAt(0)}</span>
-            <div><strong>أهلاً {user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></div>
+            <span className="pd-profile-copy"><strong>أهلاً {user?.name || 'ولي الأمر'}</strong><small>ولي أمر</small></span>
             <ChevronDown size={16} className="pd-profile-chevron" aria-hidden="true" />
-          </div>
+          </button>
         </header>
 
         <main className="pd-content">
