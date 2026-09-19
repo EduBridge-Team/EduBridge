@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
-  BookOpen, Clock3, Grid2X2, Headphones, Palette, Search, Sparkles, Square,
-  Volume2, X,
+  Clock3, Grid2X2, Search, Square, Volume2, X,
 } from 'lucide-react'
 import { fetchLessons, getUser } from '../api'
 import LessonRatings from '../components/LessonRatings'
-import NoorPet from '../components/NoorPet'
 
 const CATEGORIES = ['الكل', 'القراءة', 'الرياضيات', 'مهارات الحياة', 'التواصل', 'الفنون']
 const VISUALS = [
@@ -72,7 +70,7 @@ export default function LessonsPage() {
   }), [lessons, query, category])
 
   return (
-    <div className={`lessons-redesign ${isParent ? 'parent-lessons-page' : ''}`}>
+    <div className={`lessons-redesign portal-lessons-page ${isParent ? 'parent-lessons-page' : ''}`}>
       <section className="lessons-hero">
         <span className="hero-kicker">{isParent ? 'رحلة أبنائك التعليمية' : 'تعلّم واكتشف بطريقتك'}</span>
         <h1>{isParent ? 'الدروس' : 'الدروس والمحتوى التعليمي'}</h1>
@@ -92,7 +90,7 @@ export default function LessonsPage() {
       </section>
 
       <div className="lessons-layout">
-        <main>
+        <main className="lessons-main">
           <div className="section-heading compact">
             <div><h2>الدروس المتاحة</h2><p>{filtered.length} درساً مناسباً لرحلة التعلّم</p></div>
           </div>
@@ -129,26 +127,26 @@ export default function LessonsPage() {
           )}
         </main>
 
-        <aside className="lessons-side">
-          <section className="noor-lessons-card">
-            <span className="hero-kicker">مساعدك الذكي</span>
-            <h2>اسأل <em>نور</em></h2>
-            <p>دائماً بجانبك في رحلة التعلّم</p>
-            <NoorPet size={150} />
-            <span className="noor-speech">مرحباً! كيف يمكنني مساعدتك اليوم؟ 👋</span>
-            <ul>
-              <li><Sparkles size={17} /> اقترح درساً مناسباً لمستواي</li>
-              <li><BookOpen size={17} /> ساعدني في فهم هذا الدرس</li>
-              <li><Headphones size={17} /> أريد أن أتدرّب على القراءة</li>
-              <li><Palette size={17} /> اقترح نشاطاً ممتعاً</li>
-            </ul>
-          </section>
+        <aside className="lessons-side" aria-label="مقترحات تعليمية">
           <section className="daily-picks">
-            <h3>موصى لك اليوم</h3>
-            <p>اختيارات تناسب تقدّمك واهتماماتك</p>
-            {VISUALS.slice(1, 4).map((item, index) => (
-              <div key={item.icon}><span className={item.cls}>{item.icon}</span><b>{['الأشكال الهندسية', 'مهن وأعمال', 'الألوان من حولنا'][index]}</b></div>
-            ))}
+            <div className="daily-picks-head">
+              <div>
+                <h3>موصى لك اليوم</h3>
+                <p>اختيارات سريعة تناسب رحلة التعلّم</p>
+              </div>
+              <span>{filtered.length > 0 ? 'استكشف المزيد من المحتوى' : 'جرّب تصنيفاً آخر'}</span>
+            </div>
+            <div className="daily-picks-grid">
+              {VISUALS.slice(1, 4).map((item, index) => (
+                <div className="daily-pick-item" key={item.icon}>
+                  <span className={item.cls}>{item.icon}</span>
+                  <div>
+                    <b>{['الأشكال الهندسية', 'مهن وأعمال', 'الألوان من حولنا'][index]}</b>
+                    <small>{['رياضيات مبسطة', 'مهارات الحياة', 'نشاط تفاعلي'][index]}</small>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         </aside>
       </div>
