@@ -3180,3 +3180,147 @@ body.role-portal-admin .pp-content .admin-panel {
     justify-self: end;
   }
 }
+
+
+/* ============================================================
+   Admin app-parity polish: icon actions + richer dark role colors
+   ============================================================ */
+.pp-role-admin .admin-icon-action {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: transparent !important;
+  transition: background .16s ease, transform .16s ease, color .16s ease;
+}
+
+.pp-role-admin .admin-icon-action.edit {
+  color: #1598e6;
+}
+
+.pp-role-admin .admin-icon-action.delete {
+  color: #ef4949;
+}
+
+.pp-role-admin .admin-icon-action:hover {
+  transform: translateY(-1px);
+}
+
+.pp-role-admin .admin-icon-action.edit:hover {
+  background: rgba(21, 152, 230, .12) !important;
+}
+
+.pp-role-admin .admin-icon-action.delete:hover {
+  background: rgba(239, 73, 73, .12) !important;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-users-head,
+:root[data-theme="dark"] .pp-role-admin .admin-role-section {
+  border-color: #224866;
+  background: #0a2844;
+  color: #eef8ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-row,
+:root[data-theme="dark"] .pp-role-admin .admin-child-card {
+  border-color: #234b69;
+  background: #0d2d4b;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-search-wrap {
+  border-color: #2c5571;
+  background: #0b2945;
+  color: #22c3d6;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-search-wrap .admin-search {
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-search-wrap .admin-search::placeholder {
+  color: #829fb4;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-tabs {
+  border: 1px solid #294e69 !important;
+  background: #102b47 !important;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-tab {
+  color: #9eb6c9 !important;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-tab.active {
+  background: linear-gradient(135deg, #20c3c9, #1299c5) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(18, 153, 197, .24);
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-role-heading {
+  border-bottom-color: rgba(108, 151, 181, .18);
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-teacher .admin-role-heading {
+  background: #12492a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-specialist .admin-role-heading {
+  background: #533719;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-parent .admin-role-heading {
+  background: #143c57;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-children .admin-role-heading {
+  background: #154b4e;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-ministry .admin-role-heading {
+  background: #26375a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-institution .admin-role-heading {
+  background: #16483e;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-admin .admin-role-heading {
+  background: #2a3446;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-role-heading h4,
+:root[data-theme="dark"] .pp-role-admin .admin-user-title strong,
+:root[data-theme="dark"] .pp-role-admin .admin-child-copy strong {
+  color: #f3f8fc;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-email,
+:root[data-theme="dark"] .pp-role-admin .admin-user-phone,
+:root[data-theme="dark"] .pp-role-admin .admin-child-copy small {
+  color: #9db6c8;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-linked-count {
+  border: 0;
+  background: #133a58;
+  color: #b8d2e5;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-role-heading-icon,
+:root[data-theme="dark"] .pp-role-admin .admin-role-count {
+  background: rgba(255, 255, 255, .07);
+  color: #e5f3fc;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-avatar,
+:root[data-theme="dark"] .pp-role-admin .admin-child-avatar {
+  background: #154257;
+  color: #55cfe0;
+}

@@ -170,8 +170,7 @@ export default function AssistantWidget() {
         aria-expanded={open}
         aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
       >
-        <NoorPet size={52} />
-        <span>اسأل نور</span>
+        <NoorPet size={58} />
       </button>
     </aside>
   )

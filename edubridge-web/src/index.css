@@ -2380,24 +2380,32 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 .noor-launcher {
-    min-height: 60px;
-    padding: 2px 16px 2px 5px;
-    border: 2px solid var(--yellow);
-    border-radius: 999px;
-    background: var(--navy);
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    min-height: 76px;
+    padding: 0;
+    border: 3px solid #e7ba4b;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #1cc8d0 0%, #168ebd 100%);
     color: #fff;
-    box-shadow: 0 10px 28px oklch(22% 0.06 250 / 0.28);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    box-shadow:
+        0 12px 30px oklch(22% 0.06 250 / 0.3),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
     font: inherit;
-    font-weight: 800;
     cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 }
 
 .noor-launcher:hover {
-    transform: translateY(-1px);
-    background: var(--teal-deep);
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow:
+        0 15px 34px oklch(22% 0.06 250 / 0.34),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.24);
 }
 
 .noor-launcher:focus-visible,

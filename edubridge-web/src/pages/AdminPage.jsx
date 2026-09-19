@@ -11,7 +11,7 @@ import {
   deleteUser,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
-import { Settings, Library, Phone, X, BookOpen } from 'lucide-react'
+import { Settings, Library, Phone, X, BookOpen, Pencil, Trash2 } from 'lucide-react'
 import Footer from '../components/Footer'
 
 const ROLE_META = {
@@ -305,12 +305,22 @@ function AdminRoleSection({ section, users, currentUserId, childrenForUser, onEd
               )}
 
               <div className="admin-user-actions">
-                <button className="admin-icon-action edit" onClick={() => onEdit(user)} aria-label={`تعديل ${user.name}`}>
-                  تعديل
+                <button
+                  className="admin-icon-action edit"
+                  onClick={() => onEdit(user)}
+                  aria-label={`تعديل ${user.name}`}
+                  title="تعديل"
+                >
+                  <Pencil size={19} strokeWidth={2.35} />
                 </button>
                 {currentUserId !== user.id && (
-                  <button className="admin-icon-action delete" onClick={() => onDelete(user)} aria-label={`حذف ${user.name}`}>
-                    حذف
+                  <button
+                    className="admin-icon-action delete"
+                    onClick={() => onDelete(user)}
+                    aria-label={`حذف ${user.name}`}
+                    title="حذف"
+                  >
+                    <Trash2 size={19} strokeWidth={2.35} />
                   </button>
                 )}
               </div>
