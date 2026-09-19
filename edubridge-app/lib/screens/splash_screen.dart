@@ -24,7 +24,7 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
   double _stage(double start, double end, {Curve curve = Curves.easeOutCubic}) {
     final raw = (_controller.value - start) / (end - start);
     final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
-    return curve.transform(value);
+    return curve.transform(value).clamp(0.0, 1.0).toDouble();
   }
 
   @override
@@ -328,7 +328,7 @@ class _AnimatedEduBridgeMark extends StatelessWidget {
   }) {
     final raw = (progress - start) / (end - start);
     final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
-    return curve.transform(value);
+    return curve.transform(value).clamp(0.0, 1.0).toDouble();
   }
 
   @override
