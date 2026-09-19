@@ -192,6 +192,50 @@ export default function ParentDashboard() {
     }
   }, [loading, children.length, summaries])
 
+  useEffect(() => {
+    const dashboard = document.querySelector('.parent-dashboard-v2')
+    const shell = dashboard?.closest('.pp-shell')
+    const sidebar = shell?.querySelector('.pp-sidebar')
+    const progress = dashboard?.querySelector('.pd-progress-section')
+
+    if (!dashboard || !shell || !sidebar || !progress) return undefined
+
+    let frame = 0
+
+    const syncSharedSidebarToProgress = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        if (window.innerWidth <= 900) {
+          sidebar.style.removeProperty('--pp-dashboard-sidebar-height')
+          return
+        }
+
+        const shellRect = shell.getBoundingClientRect()
+        const progressRect = progress.getBoundingClientRect()
+        const targetHeight = Math.max(0, Math.ceil(progressRect.bottom - shellRect.top))
+
+        sidebar.style.setProperty('--pp-dashboard-sidebar-height', `${targetHeight}px`)
+      })
+    }
+
+    syncSharedSidebarToProgress()
+    window.addEventListener('resize', syncSharedSidebarToProgress)
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(syncSharedSidebarToProgress)
+      : null
+
+    resizeObserver?.observe(progress)
+    resizeObserver?.observe(dashboard)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('resize', syncSharedSidebarToProgress)
+      resizeObserver?.disconnect()
+      sidebar.style.removeProperty('--pp-dashboard-sidebar-height')
+    }
+  }, [loading, children.length, summaries])
+
   const dashboardStats = useMemo(() => {
     let done = 0
     let inProgress = 0
