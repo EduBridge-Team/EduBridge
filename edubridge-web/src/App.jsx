@@ -1,8 +1,9 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { getToken, getUser } from './api'
 import { dashboardFor } from './roleRoutes'
+import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRole } from './portalRoutes'
 import TopBar from './components/TopBar'
-import ParentPortalShell from './components/ParentPortalShell'
+import RolePortalShell from './components/ParentPortalShell'
 import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -32,23 +33,6 @@ import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
 import ConversationsPage from './pages/ConversationsPage'
 import InstitutionDashboard from './pages/InstitutionDashboard'
 import './parent-portal.css'
-
-const CHILD_ROLES = ['parent', 'teacher', 'specialist', 'admin']
-const STAFF_SEARCH_ROLES = ['teacher', 'specialist', 'admin', 'ministry', 'institution']
-const CONSULTATION_ROLES = ['parent', 'teacher', 'specialist', 'admin']
-
-function isParentPortalPath(pathname) {
-  return pathname === '/parent'
-    || pathname.startsWith('/children')
-    || pathname === '/lessons'
-    || pathname === '/conversations'
-    || pathname === '/notifications'
-    || pathname === '/support'
-    || pathname === '/verify'
-    || pathname === '/profile'
-    || pathname === '/consultations'
-    || pathname.startsWith('/accessibility')
-}
 
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
@@ -80,10 +64,10 @@ function GuestOnly({ children }) {
 function Page({ children }) {
   const user = getUser()
   const location = useLocation()
-  const useParentShell = user?.role === 'parent'
-    && isParentPortalPath(location.pathname)
+  const useRoleShell = Boolean(user?.role)
+    && isPortalPathForRole(location.pathname, user.role)
 
-  if (useParentShell) return <ParentPortalShell>{children}</ParentPortalShell>
+  if (useRoleShell) return <RolePortalShell>{children}</RolePortalShell>
   return <main className="container">{children}</main>
 }
 
@@ -103,10 +87,10 @@ export default function App() {
         <Route path="/" element={<HomeRedirect />} />
 
         <Route path="/parent" element={<RolePage roles={['parent']}><ParentDashboard /></RolePage>} />
-        <Route path="/teacher" element={<RoleProtected roles={['teacher']}><TeacherDashboard /></RoleProtected>} />
-        <Route path="/specialist" element={<RoleProtected roles={['specialist']}><SpecialistDashboard /></RoleProtected>} />
-        <Route path="/admin" element={<RoleProtected roles={['admin']}><AdminPage /></RoleProtected>} />
-        <Route path="/institution" element={<RoleProtected roles={['institution']}><InstitutionDashboard /></RoleProtected>} />
+        <Route path="/teacher" element={<RolePage roles={['teacher']}><TeacherDashboard /></RolePage>} />
+        <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
+        <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
+        <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
         <Route path="/ministry" element={<RolePage roles={['ministry', 'admin']}><MinistryPage /></RolePage>} />
 
         <Route path="/notifications" element={<Protected><Page><NotificationsPage /></Page></Protected>} />
