@@ -268,6 +268,8 @@ export default function ParentDashboard() {
               key={item.label}
               className={item.active ? 'active' : ''}
               onClick={item.onClick}
+              title={item.label}
+              aria-label={item.label}
               disabled={item.label === 'التقدم' && !children[0]}
             >
               {item.icon}
