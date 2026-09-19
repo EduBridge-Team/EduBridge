@@ -166,12 +166,9 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
                                         ),
                                         child: Transform.scale(
                                           scale: 0.68 + (0.32 * logo),
-                                          child: Image.asset(
-                                            'assets/brand_icon.png',
-                                            fit: BoxFit.contain,
-                                            color: Colors.white,
-                                            colorBlendMode: BlendMode.srcIn,
-                                            filterQuality: FilterQuality.high,
+                                          child: _AnimatedEduBridgeMark(
+                                            progress: _controller.value,
+                                            size: 142,
                                           ),
                                         ),
                                       ),
@@ -312,6 +309,130 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
         ),
       ),
     );
+  }
+}
+
+class _AnimatedEduBridgeMark extends StatelessWidget {
+  final double progress;
+  final double size;
+
+  const _AnimatedEduBridgeMark({
+    required this.progress,
+    required this.size,
+  });
+
+  double _part(
+    double start,
+    double end, {
+    Curve curve = Curves.easeOutCubic,
+  }) {
+    final raw = (progress - start) / (end - start);
+    final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
+    return curve.transform(value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Match the supplied reference: the mark is assembled in visible pieces
+    // instead of fading in as one bitmap.
+    final cap = _part(0.10, 0.19, curve: Curves.easeOutBack);
+    final tassel = _part(0.16, 0.25);
+    final center = _part(0.21, 0.31, curve: Curves.easeOutBack);
+    final leftBridge = _part(0.27, 0.38);
+    final rightBridge = _part(0.33, 0.44);
+
+    return SizedBox.square(
+      dimension: size,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _LogoSlice(
+            progress: cap,
+            clip: const Rect.fromLTWH(0.08, 0.02, 0.80, 0.31),
+            offset: const Offset(0, -16),
+          ),
+          _LogoSlice(
+            progress: tassel,
+            clip: const Rect.fromLTWH(0.72, 0.10, 0.24, 0.39),
+            offset: const Offset(10, -5),
+          ),
+          _LogoSlice(
+            progress: center,
+            clip: const Rect.fromLTWH(0.25, 0.29, 0.50, 0.39),
+            offset: const Offset(0, 12),
+          ),
+          _LogoSlice(
+            progress: leftBridge,
+            clip: const Rect.fromLTWH(0.00, 0.53, 0.55, 0.43),
+            offset: const Offset(-14, 8),
+          ),
+          _LogoSlice(
+            progress: rightBridge,
+            clip: const Rect.fromLTWH(0.45, 0.53, 0.55, 0.43),
+            offset: const Offset(14, 8),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LogoSlice extends StatelessWidget {
+  final double progress;
+  final Rect clip;
+  final Offset offset;
+
+  const _LogoSlice({
+    required this.progress,
+    required this.clip,
+    required this.offset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: progress,
+      child: Transform.translate(
+        offset: Offset(
+          offset.dx * (1 - progress),
+          offset.dy * (1 - progress),
+        ),
+        child: ClipRect(
+          clipper: _NormalizedRectClipper(clip),
+          child: Transform.scale(
+            scale: 0.94 + (0.06 * progress),
+            child: Image.asset(
+              'assets/brand_icon.png',
+              fit: BoxFit.contain,
+              color: Colors.white,
+              colorBlendMode: BlendMode.srcIn,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NormalizedRectClipper extends CustomClipper<Rect> {
+  final Rect normalizedRect;
+
+  const _NormalizedRectClipper(this.normalizedRect);
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(
+      normalizedRect.left * size.width,
+      normalizedRect.top * size.height,
+      normalizedRect.width * size.width,
+      normalizedRect.height * size.height,
+    );
+  }
+
+  @override
+  bool shouldReclip(covariant _NormalizedRectClipper oldClipper) {
+    return oldClipper.normalizedRect != normalizedRect;
   }
 }
 
