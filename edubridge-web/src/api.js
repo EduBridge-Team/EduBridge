@@ -144,6 +144,10 @@ export function updateChild(childId, payload) {
   });
 }
 
+export function deleteChild(childId) {
+  return request(`/children/${childId}`, { method: "DELETE" });
+}
+
 // دروس طفل حسب نوع إعاقته
 export function fetchChildLessons(childId) {
   return request(`/children/${childId}/lessons`);
