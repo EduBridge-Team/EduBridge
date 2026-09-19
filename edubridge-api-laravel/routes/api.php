@@ -33,8 +33,9 @@ Route::post('/auth/google', [AuthController::class, 'google']);
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {
-    // مثال على مسار محمي — يعيد حمولة التوكن
+    // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/me/password', [AuthController::class, 'changePassword']);
 
     // تفضيلات العرض والمساعد — تتم مزامنتها بين أجهزة المستخدم
     Route::get('/settings', [UserSettingsController::class, 'show']);
