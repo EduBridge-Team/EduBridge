@@ -2629,3 +2629,33 @@ body.parent-dashboard-page::-webkit-scrollbar {
     flex: 0 0 43px;
   }
 }
+
+
+/* ============================================================
+   Dark mode: remove light seams from the full-width lower area
+   ============================================================ */
+:root[data-theme="dark"] .pd-fullwidth-lower {
+  background: #071d35 !important;
+}
+
+:root[data-theme="dark"] .pd-lower-grid {
+  background: transparent !important;
+}
+
+:root[data-theme="dark"] .pd-today,
+:root[data-theme="dark"] .pd-conversations,
+:root[data-theme="dark"] .pd-quick-actions,
+:root[data-theme="dark"] .pd-noor-banner {
+  border-color: #214566 !important;
+}
+
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-lower-grid,
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-quick-actions,
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-noor-banner {
+  background-clip: padding-box;
+}
+
+:root[data-theme="dark"] .pd-schedule-row,
+:root[data-theme="dark"] .pd-list article {
+  border-color: #214566 !important;
+}
