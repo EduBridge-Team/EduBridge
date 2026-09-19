@@ -3526,3 +3526,101 @@ body.role-portal-drawer-open {
     justify-self: end;
   }
 }
+
+
+/* ============================================================
+   Admin app-style primary tabs
+   ============================================================ */
+.admin-section-tabs {
+  width: min(720px, 100%);
+  margin: 0 auto 18px;
+  padding: 6px;
+  border: 1px solid var(--pp-line);
+  border-radius: 999px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  background: color-mix(in srgb, var(--pp-card) 94%, transparent);
+  box-shadow: 0 10px 28px rgba(21, 91, 147, .05);
+}
+
+.admin-section-tab {
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--pp-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.admin-section-tab:hover {
+  color: var(--pp-ink);
+  background: color-mix(in srgb, var(--pp-blue) 9%, transparent);
+}
+
+.admin-section-tab.active {
+  background: linear-gradient(135deg, #22c7cb, #169dc9);
+  color: #fff;
+  box-shadow: 0 9px 22px rgba(22, 157, 201, .25);
+}
+
+.admin-section-tab.active:hover {
+  color: #fff;
+}
+
+:root[data-theme="dark"] .admin-section-tabs {
+  border-color: #294e69;
+  background: #102b47;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .14);
+}
+
+:root[data-theme="dark"] .admin-section-tab {
+  color: #a9c0d4;
+}
+
+:root[data-theme="dark"] .admin-section-tab:hover {
+  color: #eef8ff;
+  background: #153754;
+}
+
+:root[data-theme="dark"] .admin-section-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, #20c3c9, #1299c5);
+}
+
+.pp-role-admin .admin-users-head {
+  align-items: center;
+}
+
+@media (max-width: 560px) {
+  .admin-section-tabs {
+    width: 100%;
+    padding: 5px;
+    gap: 2px;
+  }
+
+  .admin-section-tab {
+    min-height: 52px;
+    padding: 7px 5px;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .admin-section-tab svg {
+    width: 19px;
+    height: 19px;
+  }
+}
