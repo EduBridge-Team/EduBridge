@@ -1671,3 +1671,29 @@ body.parent-portal-active.parent-dashboard-page {
     margin-right: 0 !important;
   }
 }
+
+
+/* ============================================================
+   Prevent the desktop parent sidebar from becoming its own scroll area
+   ============================================================ */
+@media (min-width: 901px) {
+  body.parent-dashboard-page .pp-sidebar,
+  body.parent-portal-active .pp-sidebar {
+    overflow-y: hidden !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  body.parent-dashboard-page .pp-sidebar::-webkit-scrollbar,
+  body.parent-portal-active .pp-sidebar::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  html.parent-portal-active,
+  body.parent-portal-active {
+    overflow-x: hidden;
+  }
+}
