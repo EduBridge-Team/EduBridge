@@ -8,6 +8,7 @@ import {
 import { getUser, logout } from '../api'
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
+import { isPortalPathForRole } from '../portalRoutes'
 
 export default function TopBar() {
   const navigate = useNavigate()
@@ -36,18 +37,8 @@ export default function TopBar() {
 
   const is = (...roles) => user && roles.includes(user.role)
   const dashboardPath = dashboardFor(user)
-  const isParentPortal = user?.role === 'parent' && (
-    location.pathname === '/parent'
-    || location.pathname.startsWith('/children')
-    || location.pathname === '/lessons'
-    || location.pathname === '/conversations'
-    || location.pathname === '/notifications'
-    || location.pathname === '/support'
-    || location.pathname === '/verify'
-    || location.pathname === '/profile'
-    || location.pathname === '/consultations'
-    || location.pathname.startsWith('/accessibility')
-  )
+  const isRolePortal = Boolean(user?.role)
+    && isPortalPathForRole(location.pathname, user.role)
 
   const stripLinks = [
     { to: '/admin', label: 'إدارة النظام', Icon: Settings, show: is('admin') },
@@ -66,7 +57,7 @@ export default function TopBar() {
   ].filter((link) => link.show)
 
   return (
-    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isParentPortal ? ' parent-portal-global-topbar' : '')}>
+    <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
         <div className="brand-lockup brand-lockup--topbar" aria-label="EduBridge">
           <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
