@@ -239,7 +239,6 @@ export default function RolePortalShell({ children }) {
             <img src="/edubridge-icon.png" alt="" />
             <span>
               <strong>EduBridge</strong>
-              <small>{roleName}</small>
             </span>
           </button>
 
