@@ -1834,3 +1834,108 @@
     transform: none;
   }
 }
+
+
+/* ============================================================
+   Lower dashboard wrapper + clean separators
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-fullwidth-lower {
+    width: calc(100% + 230px);
+    max-width: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 30;
+    transform: translateX(230px);
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    background: #f8fbfe;
+  }
+
+  /* Children now fill the wrapper; avoid stacking transforms/overflow rules. */
+  .pd-fullwidth-lower > .pd-lower-grid,
+  .pd-fullwidth-lower > .pd-quick-actions,
+  .pd-fullwidth-lower > .pd-noor-banner {
+    width: 100% !important;
+    max-width: none;
+    transform: none !important;
+    margin: 0;
+  }
+
+  .pd-lower-grid {
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .pd-today,
+  .pd-conversations,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    border-color: #e2edf4;
+    box-shadow: none;
+  }
+
+  .pd-today,
+  .pd-conversations {
+    min-height: 205px;
+    height: 100%;
+  }
+
+  /* Consistent, subtle dividers inside cards. */
+  .pd-schedule-row,
+  .pd-list article {
+    border-top: 1px solid #e8f0f5;
+  }
+
+  .pd-schedule-row:first-child,
+  .pd-list article:first-child {
+    border-top: 0;
+  }
+
+  .pd-schedule-time {
+    border-inline-end: 1px solid #e8f0f5;
+  }
+
+  .pd-quick-actions {
+    border: 1px solid #e2edf4;
+    padding: 11px 14px;
+  }
+
+  .pd-quick-actions button {
+    border: 1px solid #dce8f0;
+    box-shadow: none;
+  }
+
+  .pd-quick-actions button + button {
+    margin-inline-start: 0;
+  }
+
+  .pd-noor-banner {
+    border: 1px solid #dcebf4;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-fullwidth-lower {
+    width: calc(100% + 205px);
+    transform: translateX(205px);
+  }
+}
+
+@media (max-width: 900px) {
+  .pd-fullwidth-lower {
+    width: 100%;
+    display: grid;
+    gap: 10px;
+    transform: none;
+    background: transparent;
+  }
+
+  .pd-fullwidth-lower > .pd-lower-grid,
+  .pd-fullwidth-lower > .pd-quick-actions,
+  .pd-fullwidth-lower > .pd-noor-banner {
+    width: 100% !important;
+    transform: none !important;
+  }
+}

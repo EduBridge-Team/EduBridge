@@ -357,6 +357,7 @@ export default function ParentDashboard() {
             </div>
           </section>
 
+          <div className="pd-fullwidth-lower">
           <div className="pd-lower-grid">
             <section className="pd-section pd-today">
               <div className="pd-section-head">
@@ -425,6 +426,7 @@ export default function ParentDashboard() {
               <span>أريد تقريراً عن تقدم عمر 📊</span>
             </div>
           </section>
+          </div>
         </main>
       </div>
     </div>
