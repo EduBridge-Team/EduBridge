@@ -321,11 +321,6 @@ class _SpecialistDashboardScreenState
 
     final child = row['child'];
 
-    await AccessibilityService.instance.setActiveChild(
-      child['id'],
-      disabilityTypeHint: child['disability_type']?.toString(),
-    );
-
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -346,9 +341,7 @@ class _SpecialistDashboardScreenState
           _load();
         },
       ),
-    ).whenComplete(() {
-      AccessibilityService.instance.setActiveChild(null);
-    });
+    );
   }
 
   Future<void> _viewEvaluation(int childId) async {
@@ -357,11 +350,6 @@ class _SpecialistDashboardScreenState
       orElse: () => {},
     );
     final child = row['child'] as Map?;
-
-    await AccessibilityService.instance.setActiveChild(
-      childId,
-      disabilityTypeHint: child?['disability_type']?.toString(),
-    );
 
     if (!mounted) return;
 
@@ -408,9 +396,7 @@ class _SpecialistDashboardScreenState
           return _buildEvaluationViewModal(evaluation);
         },
       ),
-    ).whenComplete(() {
-      AccessibilityService.instance.setActiveChild(null);
-    });
+    );
   }
 
   Widget _buildEvaluationViewModal(Map evaluation) {

@@ -133,7 +133,7 @@ class EduBridgeApp extends StatelessWidget {
       valueListenable: jisrThemeMode,
       builder: (context, mode, _) =>
           ValueListenableBuilder<AccessibilityProfile>(
-        valueListenable: AccessibilityService.instance.profile,
+        valueListenable: AccessibilityService.instance.applicationProfile,
         builder: (context, accProfile, __) => MaterialApp(
           navigatorKey: appNavigatorKey,
           navigatorObservers: [jisrModalRouteObserver],

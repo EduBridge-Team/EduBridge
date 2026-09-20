@@ -19,14 +19,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   @override
   void initState() {
     super.initState();
-    AccessibilityService.instance.profile.addListener(_onProfileChanged);
-    _lastCalmMode = AccessibilityService.instance.profile.value.sensoryCalmMode;
+    AccessibilityService.instance.applicationProfile.addListener(_onProfileChanged);
+    _lastCalmMode = AccessibilityService.instance.applicationProfile.value.sensoryCalmMode;
     _applySystemUi();
   }
 
   @override
   void dispose() {
-    AccessibilityService.instance.profile.removeListener(_onProfileChanged);
+    AccessibilityService.instance.applicationProfile.removeListener(_onProfileChanged);
     super.dispose();
   }
 
@@ -36,7 +36,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   }
 
   void _applySystemUi() {
-    final p = AccessibilityService.instance.profile.value;
+    final p = AccessibilityService.instance.applicationProfile.value;
     if (p.sensoryCalmMode == _lastCalmMode) return;
 
     _lastCalmMode = p.sensoryCalmMode;
@@ -54,7 +54,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    final profile = AccessibilityService.instance.profile.value;
+    final profile = AccessibilityService.instance.applicationProfile.value;
 
     Widget wrapped = BrainBreakScheduler(child: widget.child);
 

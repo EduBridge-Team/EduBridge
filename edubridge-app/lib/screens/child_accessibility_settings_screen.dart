@@ -4,17 +4,20 @@ import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../theme.dart';
 import '../widgets/disability_catalog.dart';
+import '../widgets/accessibility/adaptive_wrapper.dart';
 
 class ChildAccessibilitySettingsScreen extends StatefulWidget {
   final int childId;
   final String childName;
   final String? disabilityTypeHint;
+  final bool deactivateOnExit;
 
   const ChildAccessibilitySettingsScreen({
     super.key,
     required this.childId,
     required this.childName,
     this.disabilityTypeHint,
+    this.deactivateOnExit = true,
   });
 
   @override
@@ -33,6 +36,7 @@ class _ChildAccessibilitySettingsScreenState
     AccessibilityService.instance.setActiveChild(
       widget.childId,
       disabilityTypeHint: widget.disabilityTypeHint,
+      forceReload: true,
     );
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
@@ -41,8 +45,9 @@ class _ChildAccessibilitySettingsScreenState
   @override
   void dispose() {
     _customNameCtrl.dispose();
-    // ✅ إلغاء تفعيل الطفل عند مغادرة الشاشة
-    AccessibilityService.instance.setActiveChild(null);
+    if (widget.deactivateOnExit) {
+      AccessibilityService.instance.setActiveChild(null);
+    }
     super.dispose();
   }
 
@@ -117,8 +122,10 @@ class _ChildAccessibilitySettingsScreenState
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Scaffold(
-      appBar: JisrAppBar(title: 'إعدادات ${widget.childName}'),
+    return AdaptiveWrapper(
+      screenTitle: 'إعدادات ${widget.childName}',
+      child: Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات ${widget.childName}'),
       body: ValueListenableBuilder<AccessibilityProfile>(
         valueListenable: AccessibilityService.instance.profile,
         builder: (context, _, __) {
@@ -436,6 +443,7 @@ class _ChildAccessibilitySettingsScreenState
             ],
           );
         },
+        ),
       ),
     );
   }

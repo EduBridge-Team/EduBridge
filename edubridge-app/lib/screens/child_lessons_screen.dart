@@ -72,6 +72,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     AccessibilityService.instance.setActiveChild(
       widget.childId,
       disabilityTypeHint: widget.disabilityType,
+      forceReload: true,
     );
   }
 
@@ -226,15 +227,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   backgroundColor: AppColors.orange,
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EducationalGamesScreen(
-                          childName: widget.childName,
-                          age: widget.age,
-                        ),
-                      ),
-                    );
+                    _openGames();
                   },
                 ),
               ),
@@ -283,9 +276,23 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     if (mounted) setState(() => _speakingLessonId = null);
   }
 
-  void _openGames() {
-    Navigator.push(
-      context,
+  Future<T?> _openOutsideChildScope<T>(Route<T> route) async {
+    await AccessibilityService.instance.setActiveChild(null);
+    if (!mounted) return null;
+
+    final result = await Navigator.push<T>(context, route);
+
+    if (mounted) {
+      await AccessibilityService.instance.setActiveChild(
+        widget.childId,
+        disabilityTypeHint: widget.disabilityType,
+      );
+    }
+    return result;
+  }
+
+  Future<void> _openGames() async {
+    await _openOutsideChildScope(
       MaterialPageRoute(
         builder: (_) => EducationalGamesScreen(
           childName: widget.childName,
@@ -296,7 +303,10 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   }
 
   void _openSettings() async {
-    await AccessibilityService.instance.setActiveChild(widget.childId);
+    await AccessibilityService.instance.setActiveChild(
+      widget.childId,
+      disabilityTypeHint: widget.disabilityType,
+    );
     if (!mounted) return;
     await Navigator.push(
       context,
@@ -305,6 +315,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           childId: widget.childId,
           childName: widget.childName,
           disabilityTypeHint: widget.disabilityType,
+          deactivateOnExit: false,
         ),
       ),
     );
@@ -312,8 +323,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   }
 
   void _openProgress() async {
-    await Navigator.push(
-      context,
+    await _openOutsideChildScope(
       MaterialPageRoute(
         builder: (_) => ChildProgressScreen(
           childId: widget.childId,
@@ -505,8 +515,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                 style: AdaptiveButtonStyle.outlined,
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
+                  _openOutsideChildScope(
                     MaterialPageRoute(
                       builder: (_) => AssistantScreen(
                         lessonContext: 'عنوان: $title\n$content',
@@ -527,9 +536,11 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    return AdaptiveWrapper(
-      screenTitle: 'دروس ${widget.childName}',
-      child: Scaffold(
+    return BrainBreakScheduler(
+      profileListenable: AccessibilityService.instance.profile,
+      child: AdaptiveWrapper(
+        screenTitle: 'دروس ${widget.childName}',
+        child: Scaffold(
         appBar: AppBar(
           flexibleSpace: Container(
             decoration: const BoxDecoration(
@@ -593,9 +604,10 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             const SizedBox(width: 4),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: _loadLessons,
-          child: _buildBody(),
+          body: RefreshIndicator(
+            onRefresh: _loadLessons,
+            child: _buildBody(),
+          ),
         ),
       ),
     );

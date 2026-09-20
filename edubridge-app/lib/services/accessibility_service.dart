@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart';
 
 /// أنواع الإعاقات المدعومة
 enum DisabilityType {
@@ -758,7 +759,14 @@ class AccessibilityService {
   AccessibilityService._();
   static final AccessibilityService instance = AccessibilityService._();
 
+  /// البروفايل المستخدم داخل شاشات الطفل المسموح لها بالتكييف
+  /// (إعدادات الطفل + صفحة دروس الطفل فقط).
   final ValueNotifier<AccessibilityProfile> profile =
+      ValueNotifier(const AccessibilityProfile(type: DisabilityType.none));
+
+  /// بروفايل التطبيق العام. لا يتغيّر عند فتح طفل، حتى لا تنتقل
+  /// إعدادات طفل إلى لوحة ولي الأمر أو التقييمات أو الألعاب أو باقي التطبيق.
+  final ValueNotifier<AccessibilityProfile> applicationProfile =
       ValueNotifier(const AccessibilityProfile(type: DisabilityType.none));
 
   final ValueNotifier<int?> activeChildId = ValueNotifier(null);
@@ -818,6 +826,7 @@ class AccessibilityService {
     }
 
     profile.value = _parentProfile;
+    applicationProfile.value = _parentProfile;
   }
 
   Future<void> _persistParent(AccessibilityProfile p) async {
@@ -833,6 +842,51 @@ class AccessibilityService {
     );
   }
 
+  /// يجهّز بروفايل طفل بدون تفعيله على أي شاشة.
+  /// يفضّل نسخة السيرفر إن وُجدت، وإلا يستخدم النسخة المحلية أو الإعداد الموصى به.
+  Future<AccessibilityProfile> ensureChildProfile(
+    int childId, {
+    String? disabilityTypeHint,
+    bool forceReload = false,
+  }) async {
+    if (!forceReload && _childProfiles.containsKey(childId)) {
+      return _childProfiles[childId]!;
+    }
+
+    try {
+      final res =
+          await ApiService.authGet('/children/$childId/accessibility-profile');
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final raw = body is Map ? body['profile'] : null;
+        if (raw is Map) {
+          final remote = AccessibilityProfile.fromJson(
+            Map<String, dynamic>.from(raw),
+          );
+          _childProfiles[childId] = remote;
+          await _persistChild(childId, remote);
+          return remote;
+        }
+      }
+    } catch (_) {
+      // العمل دون اتصال: نستخدم النسخة المحلية/الموصى بها.
+    }
+
+    final existing = _childProfiles[childId];
+    if (existing != null) return existing;
+
+    final type = disabilityTypeFromString(disabilityTypeHint);
+    final customName =
+        type == DisabilityType.other ? disabilityTypeHint : null;
+    final created = AccessibilityProfile.recommendedFor(
+      type,
+      customName: customName,
+    );
+    _childProfiles[childId] = created;
+    await _persistChild(childId, created);
+    return created;
+  }
+
   Future<void> setActiveChild(
     int? childId, {
     String? disabilityTypeHint,
@@ -845,28 +899,24 @@ class AccessibilityService {
       return;
     }
 
-    if (forceReload || !_childProfiles.containsKey(childId)) {
-      final type = disabilityTypeFromString(disabilityTypeHint);
-      final customName =
-          type == DisabilityType.other ? disabilityTypeHint : null;
+    final childProfile = await ensureChildProfile(
+      childId,
+      disabilityTypeHint: disabilityTypeHint,
+      forceReload: forceReload,
+    );
 
-      final created = AccessibilityProfile.recommendedFor(
-        type,
-        customName: customName,
-      );
-
-      _childProfiles[childId] = created;
-      await _persistChild(childId, created);
+    // قد تُغلق الصفحة أثناء جلب الملف من الشبكة؛ لا تعِد تفعيل طفل قديم.
+    if (activeChildId.value == childId) {
+      profile.value = childProfile;
     }
-
-    profile.value = _childProfiles[childId]!;
   }
 
   Future<void> updateActive(AccessibilityProfile next) async {
     if (activeChildId.value == null) {
       _parentProfile = next;
-      await _persistParent(next);
       profile.value = next;
+      applicationProfile.value = next;
+      await _persistParent(next);
     } else {
       final id = activeChildId.value!;
       _childProfiles[id] = next;
@@ -880,10 +930,22 @@ class AccessibilityService {
     AccessibilityProfile next,
   ) async {
     _childProfiles[childId] = next;
-    await _persistChild(childId, next);
+
+    // التغيير يظهر فوراً في صفحة إعدادات/دروس الطفل قبل انتظار الشبكة.
     if (activeChildId.value == childId) {
       profile.value = next;
     }
+
+    await _persistChild(childId, next);
+
+    // مزامنة كل طفل بمفتاحه الخاص على السيرفر. فشل الشبكة لا يلغي
+    // التغيير المحلي ولا يخلط إعدادات الأطفال ببعضها.
+    try {
+      await ApiService.authPut(
+        '/children/$childId/accessibility-profile',
+        {'profile': next.toJson()},
+      );
+    } catch (_) {}
   }
 
   Future<void> applyRecommendedForChild(

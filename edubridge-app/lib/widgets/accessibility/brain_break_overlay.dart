@@ -2,6 +2,7 @@
 // - تعمل تلقائياً حسب brainBreakIntervalMinutes
 // - يمكن استدعاؤها يدوياً عبر BrainBreakDialog.show(context)
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
@@ -9,7 +10,13 @@ import '../../theme.dart';
 
 class BrainBreakScheduler extends StatefulWidget {
   final Widget child;
-  const BrainBreakScheduler({super.key, required this.child});
+  final ValueListenable<AccessibilityProfile>? profileListenable;
+
+  const BrainBreakScheduler({
+    super.key,
+    required this.child,
+    this.profileListenable,
+  });
 
   @override
   State<BrainBreakScheduler> createState() => _BrainBreakSchedulerState();
@@ -25,14 +32,18 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    AccessibilityService.instance.profile.addListener(_reschedule);
+    (widget.profileListenable ??
+            AccessibilityService.instance.applicationProfile)
+        .addListener(_reschedule);
     _reschedule();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    AccessibilityService.instance.profile.removeListener(_reschedule);
+    (widget.profileListenable ??
+            AccessibilityService.instance.applicationProfile)
+        .removeListener(_reschedule);
     _timer?.cancel();
     super.dispose();
   }
@@ -49,7 +60,9 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
 
   void _reschedule() {
     _timer?.cancel();
-    final p = AccessibilityService.instance.profile.value;
+    final p = (widget.profileListenable ??
+            AccessibilityService.instance.applicationProfile)
+        .value;
     if (!p.brainBreaksEnabled || _lifecycle != AppLifecycleState.resumed) {
       return;
     }
