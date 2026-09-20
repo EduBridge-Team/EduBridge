@@ -1,30 +1,298 @@
+// lib/screens/splash_screen.dart
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Branded Flutter splash shown immediately after the native Android splash.
-///
-/// The sequence intentionally mirrors the supplied motion reference:
-/// dot -> logo reveal -> EduBridge wordmark -> tagline -> progress completion.
-class EduBridgeSplashScreen extends StatefulWidget {
+// ═══════════════════════════════════════════════════════════
+//  الألوان
+// ═══════════════════════════════════════════════════════════
+const _bgTop = Color(0xFF3878C4);
+const _bgMid = Color(0xFF4596D2);
+const _bgBottom = Color(0xFF52A8DC);
+
+/// ✅ لون الشعار أبيض (ليظهر على الخلفية الزرقاء)
+const _logoColor = Colors.white;
+const _glowColor = Color(0xFFB8DCFF);
+
+const _canvasW = 1080.0;
+const _canvasH = 1920.0;
+const _assetScale = 0.571;
+const _totalSeconds = 5.2;
+
+// Timeline
+const _fallEnd = 0.533;
+const _bounceEnd = 0.767;
+const _holeStart = 0.867;
+const _holeEnd = 1.167;
+const _drawStart = 1.008;
+const _drawEnd = 1.583;
+const _capStart = 1.4;
+const _capLand = 1.8;
+const _capSettle = 1.93;
+const _exitStart = 2.117;
+const _firstLanding = 2.6;
+const _hop = 1 / 6;
+const _rollOffDuration = 0.37;
+const _glowStart = 4.467;
+const _glowEnd = 5.083;
+
+// Layout
+const _ringOrigin = Offset(482, 821);
+const _infinityOrigin = Offset(418, 873);
+const _capOrigin = Offset(464, 743.5);
+const _ringHole = Rect.fromLTWH(20, 20, 92, 89);
+const _lift = 300.0;
+
+const _letters = <_LetterSpec>[
+  _LetterSpec('letter_1_E', Offset(87, 1032), 138),
+  _LetterSpec('letter_2_d', Offset(189, 1025), 243),
+  _LetterSpec('letter_3_u', Offset(304, 1058), 358),
+  _LetterSpec('letter_4_B', Offset(458, 1032), 514),
+  _LetterSpec('letter_5_r', Offset(574, 1056), 606),
+  _LetterSpec('letter_6_i', Offset(643, 1018), 664),
+  _LetterSpec('letter_7_d', Offset(688, 1025), 742),
+  _LetterSpec('letter_8_g', Offset(798, 1057), 852),
+  _LetterSpec('letter_9_e', Offset(904, 1057), 950),
+];
+
+const _ballDiameter = 26.0;
+const _groundY = 994.0;
+const _hopHeight = 14.0;
+const _rollOffX = 992.0;
+
+const _exitArc = <Offset>[
+  Offset(503, 933), Offset(481, 916), Offset(451, 903),
+  Offset(414, 895), Offset(375, 894), Offset(332, 900),
+  Offset(286, 912), Offset(241, 931), Offset(198, 954),
+  Offset(159, 978), Offset(137, 994),
+];
+
+const _infinityCenterline = <double>[
+  173.8, 112.8, 167.3, 106.6, 160.6, 100.5, 154.6, 93.8, 148.6, 87.0,
+  142.6, 80.2, 136.6, 73.5, 130.7, 66.7, 124.7, 59.9, 118.7, 53.2,
+  112.7, 46.4, 106.7, 39.7, 100.1, 33.4, 93.2, 27.6, 86.1, 22.1,
+  78.4, 17.3, 70.4, 13.2, 61.7, 10.9, 52.7, 10.0, 43.7, 10.4,
+  35.0, 12.7, 27.3, 17.4, 21.0, 23.8, 16.1, 31.4, 12.7, 39.7,
+  11.1, 48.6, 10.0, 57.6, 10.5, 66.6, 11.5, 75.6, 13.7, 84.3,
+  16.5, 92.9, 20.6, 100.9, 25.4, 108.6, 31.0, 115.7, 37.2, 122.2,
+  44.1, 128.0, 51.5, 133.2, 59.5, 137.5, 67.7, 141.2, 76.2, 144.3,
+  85.0, 146.1, 94.0, 147.3, 103.0, 147.7, 111.9, 146.9, 120.8, 145.4,
+  129.6, 143.1, 138.0, 140.0, 146.2, 136.1, 154.2, 131.9, 161.8, 127.0,
+  168.1, 120.6, 174.6, 114.5, 182.5, 110.3, 189.0, 104.1, 195.7, 97.9,
+  201.5, 91.1, 207.6, 84.3, 213.6, 77.6, 219.8, 71.1, 225.9, 64.4,
+  232.1, 57.9, 238.5, 51.5, 245.1, 45.3, 252.2, 39.7, 259.8, 34.8,
+  267.8, 30.7, 276.4, 27.8, 285.4, 27.0, 294.3, 27.8, 302.8, 30.8,
+  310.0, 36.2, 315.7, 43.2, 319.2, 51.5, 320.9, 60.4, 321.1, 69.4,
+  320.6, 78.4, 319.3, 87.3, 316.3, 95.8, 312.5, 104.0, 307.2, 111.4,
+  301.3, 118.2, 294.6, 124.2, 287.4, 129.6, 279.5, 134.0, 271.2, 137.6,
+  262.6, 140.4, 253.7, 141.7, 244.8, 142.9, 235.8, 142.4, 226.8, 141.0,
+  218.0, 139.0, 209.6, 135.8, 201.6, 131.7, 194.0, 126.8, 186.7, 121.4,
+  180.2, 115.2,
+];
+
+const _revealWidth = 24.0;
+const _drawCurve = Cubic(0.354, 0.028, 0.782, 0.942);
+
+final Path _infinityPath = () {
+  final path = Path()..moveTo(_infinityCenterline[0], _infinityCenterline[1]);
+  for (var i = 2; i < _infinityCenterline.length; i += 2) {
+    path.lineTo(_infinityCenterline[i], _infinityCenterline[i + 1]);
+  }
+  return path;
+}();
+
+final double _infinityLength = _infinityPath.computeMetrics().first.length;
+
+// ═══════════════════════════════════════════════════════════
+//  Classes
+// ═══════════════════════════════════════════════════════════
+class _LetterSpec {
+  const _LetterSpec(this.asset, this.origin, this.landingX);
+  final String asset;
+  final Offset origin;
+  final double landingX;
+}
+
+class _Sprite {
+  _Sprite(this.image, this.origin);
+  final ui.Image image;
+  final Offset origin;
+
+  Rect get rect =>
+      origin & Size(image.width * _assetScale, image.height * _assetScale);
+}
+
+class _Sprites {
+  _Sprites({
+    required this.cap,
+    required this.ring,
+    required this.infinity,
+    required this.letters,
+  });
+
+  final _Sprite cap;
+  final _Sprite ring;
+  final _Sprite infinity;
+  final List<_Sprite> letters;
+
+  static Future<_Sprites> load() async {
+    final cap = _load('shape_cap');
+    final ring = _load('shape_circle');
+    final infinity = _load('shape_infinity');
+    final letters = [for (final l in _letters) _load(l.asset)];
+
+    return _Sprites(
+      cap: _Sprite(await cap, _capOrigin),
+      ring: _Sprite(await ring, _ringOrigin),
+      infinity: _Sprite(await infinity, _infinityOrigin),
+      letters: [
+        for (var i = 0; i < _letters.length; i++)
+          _Sprite(await letters[i], _letters[i].origin),
+      ],
+    );
+  }
+
+  static Future<ui.Image> _load(String name) async {
+    // ✅ المسار الصحيح — الصور في assets/ مباشرة
+    final path = 'assets/$name.png';
+
+    try {
+      final data = await rootBundle.load(path);
+
+      // ✅ التصحيح الحاسم: استخدام offsetInBytes و lengthInBytes
+      final bytes = data.buffer.asUint8List(
+        data.offsetInBytes,
+        data.lengthInBytes,
+      );
+
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      return frame.image;
+    } catch (e) {
+      debugPrint('❌ فشل تحميل $path: $e');
+      rethrow;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  خلفية الأيقونات
+// ═══════════════════════════════════════════════════════════
+class _IntroBackground extends StatelessWidget {
+  const _IntroBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [_bgTop, _bgMid, _bgBottom],
+          stops: [0.0, 0.5, 1.0],
+        ),
+      ),
+      child: const Stack(
+        children: [
+          _BgIcon(Icons.menu_book, Alignment(-0.80, -0.78), 48),
+          _BgIcon(Icons.edit_outlined, Alignment(0.82, -0.88), 48,
+              rotation: 0.5),
+          _BgIcon(Icons.star_border, Alignment(-0.85, -0.45), 38),
+          _BgIcon(Icons.star_border, Alignment(0.75, -0.60), 46),
+          _BgIcon(Icons.view_in_ar, Alignment(-0.78, -0.25), 42),
+          _BgIcon(Icons.view_in_ar, Alignment(0.82, -0.30), 42),
+          _BgIcon(Icons.settings_outlined, Alignment(-0.85, 0.05), 44),
+          _BgIcon(Icons.settings_outlined, Alignment(0.80, 0.05), 44,
+              rotation: -0.3),
+          _BgIcon(Icons.menu_book, Alignment(0.88, 0.20), 42),
+          _BgIcon(Icons.diamond_outlined, Alignment(-0.80, 0.38), 46,
+              rotation: 0.3),
+          _BgIcon(Icons.diamond_outlined, Alignment(0.82, 0.40), 46,
+              rotation: -0.3),
+          _BgIcon(Icons.description_outlined, Alignment(-0.82, 0.70), 38),
+          _BgIcon(Icons.lightbulb_outline, Alignment(0.82, 0.72), 42),
+        ],
+      ),
+    );
+  }
+}
+
+class _BgIcon extends StatelessWidget {
+  final IconData icon;
+  final Alignment alignment;
+  final double size;
+  final double rotation;
+
+  const _BgIcon(this.icon, this.alignment, this.size, {this.rotation = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: alignment,
+      child: Transform.rotate(
+        angle: rotation,
+        child: Icon(
+          icon,
+          size: size,
+          color: Colors.white.withValues(alpha: 0.13),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Wrapper
+// ═══════════════════════════════════════════════════════════
+class EduBridgeSplashScreen extends StatelessWidget {
   const EduBridgeSplashScreen({super.key});
 
   @override
-  State<EduBridgeSplashScreen> createState() => _EduBridgeSplashScreenState();
+  Widget build(BuildContext context) => const LogoIntro();
 }
 
-class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
+// ═══════════════════════════════════════════════════════════
+//  LogoIntro
+// ═══════════════════════════════════════════════════════════
+class LogoIntro extends StatefulWidget {
+  const LogoIntro({super.key});
+
+  @override
+  State<LogoIntro> createState() => _LogoIntroState();
+}
+
+class _LogoIntroState extends State<LogoIntro>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 3600),
-  )..forward();
+    duration: Duration(milliseconds: (_totalSeconds * 1000).round()),
+  );
+  _Sprites? _sprites;
+  String? _error;
 
-  double _stage(double start, double end, {Curve curve = Curves.easeOutCubic}) {
-    final raw = (_controller.value - start) / (end - start);
-    final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
-    return curve.transform(value).clamp(0.0, 1.0).toDouble();
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final sprites = await _Sprites.load();
+      if (!mounted) return;
+      setState(() => _sprites = sprites);
+      _controller.forward();
+    } catch (e, st) {
+      debugPrint('══════════════════════════════════════');
+      debugPrint('❌ فشل تحميل شعار البداية');
+      debugPrint('السبب: $e');
+      debugPrint('$st');
+      debugPrint('══════════════════════════════════════');
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
   }
 
   @override
@@ -35,495 +303,338 @@ class _EduBridgeSplashScreenState extends State<EduBridgeSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        // Match Android's mandatory native splash color exactly during the
-        // hand-off. The Flutter gradient fades in only after the first frame.
-        systemNavigationBarColor: const Color(0xFF3D66B8),
-        systemNavigationBarIconBrightness: Brightness.light,
-        statusBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-        backgroundColor: const Color(0xFF3D66B8),
-        body: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                final size = constraints.biggest;
-                final logo = _stage(0.10, 0.34, curve: Curves.easeOutBack);
-                final wordmark = _stage(0.31, 0.62);
-                final details = _stage(0.55, 0.78);
-                final progress = _stage(0.18, 0.94, curve: Curves.easeInOutCubic);
-                final background = _stage(0.03, 0.45);
-                // Android 12+ only supports a solid native splash background.
-                // Start Flutter on the exact same solid color, then softly
-                // reveal the full branded gradient so no screen change is
-                // visible between the two splash layers.
-                // Keep the first Flutter frames identical to Android's
-                // mandatory native splash. The gradient becomes part of the
-                // animation only after the logo reveal has already started,
-                // so the native -> Flutter hand-off is visually invisible.
-                final gradientReveal =
-                    _stage(0.22, 0.46, curve: Curves.easeInOutCubic);
-
-                return ColoredBox(
-                  color: const Color(0xFF3D66B8),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: gradientReveal,
-                          child: const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Color(0xFF3D66B8),
-                                  Color(0xFF438BCB),
-                                  Color(0xFF4DB5D9),
-                                ],
-                                stops: [0, 0.48, 1],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      _EducationBackdrop(
-                        progress: background,
-                        phase: _controller.value,
-                        size: size,
-                      ),
-
-                      // Small seed dot, matching the opening beat of the video.
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: Center(
-                            child: Opacity(
-                              opacity: 1 - logo,
-                              child: Transform.scale(
-                                scale: 0.75 + (logo * 0.35),
-                                child: Container(
-                                  width: 18,
-                                  height: 18,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.92),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.white.withOpacity(0.22),
-                                        blurRadius: 20,
-                                        spreadRadius: 5,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Align(
-                        alignment: const Alignment(0, -0.03),
-                        child: Transform.translate(
-                          offset: Offset(0, 18 * (1 - logo)),
-                          child: Opacity(
-                            opacity: logo,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 224,
-                                  height: 224,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      _HaloRing(
-                                        size: 222,
-                                        opacity: 0.07 * logo,
-                                      ),
-                                      _HaloRing(
-                                        size: 174,
-                                        opacity: 0.09 * logo,
-                                      ),
-                                      Container(
-                                        width: 142,
-                                        height: 142,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.white.withOpacity(0.17 * logo,
-                                              ),
-                                              blurRadius: 38,
-                                              spreadRadius: 2,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Transform.scale(
-                                          scale: 0.68 + (0.32 * logo),
-                                          child: _AnimatedEduBridgeMark(
-                                            progress: _controller.value,
-                                            size: 142,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: ClipRect(
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      widthFactor: wordmark,
-                                      child: const Text(
-                                        'EduBridge',
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 46,
-                                          height: 1,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: -1.1,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Opacity(
-                                  opacity: details,
-                                  child: Transform.translate(
-                                    offset: Offset(0, 8 * (1 - details)),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width: 42,
-                                          height: 4,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF72E0C5),
-                                            borderRadius:
-                                                BorderRadius.circular(999),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 28,
-                                          ),
-                                          child: Text(
-                                            'قدرات مختلفة وإمكانات متساوية',
-                                            textAlign: TextAlign.center,
-                                            textDirection: TextDirection.rtl,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20,
-                                              height: 1.45,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: math.max(26.0, size.height * 0.075),
-                        child: Opacity(
-                          opacity: details,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.star_border_rounded,
-                                color: Colors.white.withOpacity(0.18),
-                                size: 27,
-                              ),
-                              const SizedBox(height: 6),
-                              Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: Container(
-                                  width: 150,
-                                  height: 5,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.22),
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  alignment: Alignment.centerLeft,
-                                  child: FractionallySizedBox(
-                                    widthFactor: progress,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(999),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.white.withOpacity(0.24,
-                                            ),
-                                            blurRadius: 8,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              const Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: Text(
-                                  'EduBridge',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.15,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _AnimatedEduBridgeMark extends StatelessWidget {
-  final double progress;
-  final double size;
-
-  const _AnimatedEduBridgeMark({
-    required this.progress,
-    required this.size,
-  });
-
-  double _part(
-    double start,
-    double end, {
-    Curve curve = Curves.easeOutCubic,
-  }) {
-    final raw = (progress - start) / (end - start);
-    final value = raw < 0 ? 0.0 : (raw > 1 ? 1.0 : raw);
-    return curve.transform(value).clamp(0.0, 1.0).toDouble();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Match the supplied reference: the mark is assembled in visible pieces
-    // instead of fading in as one bitmap.
-    final cap = _part(0.10, 0.19, curve: Curves.easeOutBack);
-    final tassel = _part(0.16, 0.25);
-    final center = _part(0.21, 0.31, curve: Curves.easeOutBack);
-    final leftBridge = _part(0.27, 0.38);
-    final rightBridge = _part(0.33, 0.44);
-
-    return SizedBox.square(
-      dimension: size,
-      child: Stack(
+    return Scaffold(
+      backgroundColor: _bgMid,
+      body: Stack(
         fit: StackFit.expand,
         children: [
-          _LogoSlice(
-            progress: cap,
-            clip: const Rect.fromLTWH(0.08, 0.02, 0.80, 0.31),
-            offset: const Offset(0, -16),
-          ),
-          _LogoSlice(
-            progress: tassel,
-            clip: const Rect.fromLTWH(0.72, 0.10, 0.24, 0.39),
-            offset: const Offset(10, -5),
-          ),
-          _LogoSlice(
-            progress: center,
-            clip: const Rect.fromLTWH(0.25, 0.29, 0.50, 0.39),
-            offset: const Offset(0, 12),
-          ),
-          _LogoSlice(
-            progress: leftBridge,
-            clip: const Rect.fromLTWH(0.00, 0.53, 0.55, 0.43),
-            offset: const Offset(-14, 8),
-          ),
-          _LogoSlice(
-            progress: rightBridge,
-            clip: const Rect.fromLTWH(0.45, 0.53, 0.55, 0.43),
-            offset: const Offset(14, 8),
-          ),
+          // ═══ 1. الخلفية الأزرق + الأيقونات ═══
+          const _IntroBackground(),
+
+          // ═══ 2. الأنيميشن ═══
+          if (_sprites != null)
+            RepaintBoundary(
+              child: CustomPaint(
+                painter: _LogoPainter(_controller, _sprites!),
+                size: Size.infinite,
+              ),
+            ),
+
+          // ═══ 3. Fallback — لو فشل التحميل ═══
+          if (_error != null)
+            const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.school, color: Colors.white, size: 110),
+                  SizedBox(height: 24),
+                  Text(
+                    'Edu Bridge',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  SizedBox(
+                    width: 56,
+                    height: 3,
+                    child: ColoredBox(color: Color(0xFF7BE49A)),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'قدرات مختلفة وإمكانات متساوية',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // ═══ 4. مؤشر التحميل ═══
+          if (_sprites == null && _error == null)
+            const Center(
+              child: SizedBox(
+                width: 34,
+                height: 34,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-class _LogoSlice extends StatelessWidget {
-  final double progress;
-  final Rect clip;
-  final Offset offset;
+// ═══════════════════════════════════════════════════════════
+//  Painter — نفس الحركة الأصلية + لون أبيض
+// ═══════════════════════════════════════════════════════════
+class _LogoPainter extends CustomPainter {
+  _LogoPainter(this.controller, this.sprites) : super(repaint: controller);
 
-  const _LogoSlice({
-    required this.progress,
-    required this.clip,
-    required this.offset,
-  });
+  final AnimationController controller;
+  final _Sprites sprites;
 
   @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: progress,
-      child: Transform.translate(
-        offset: Offset(
-          offset.dx * (1 - progress),
-          offset.dy * (1 - progress),
-        ),
-        child: ClipRect(
-          clipper: _NormalizedRectClipper(clip),
-          child: Transform.scale(
-            scale: 0.94 + (0.06 * progress),
-            child: Image.asset(
-              'assets/brand_icon.png',
-              fit: BoxFit.contain,
-              color: Colors.white,
-              colorBlendMode: BlendMode.srcIn,
-              filterQuality: FilterQuality.high,
-            ),
-          ),
-        ),
+  void paint(Canvas canvas, Size size) {
+    final t = controller.value * _totalSeconds;
+
+    final scale = math.min(size.width / _canvasW, size.height / 1000);
+    canvas.translate(size.width / 2, size.height / 2);
+    canvas.scale(scale);
+    canvas.translate(-_canvasW / 2, -_canvasH / 2);
+    final screenTop = _canvasH / 2 - size.height / (2 * scale);
+
+    final glow = math.sin(math.pi * _seg(t, _glowStart, _glowEnd));
+    if (glow > 0) _paintGlow(canvas, glow);
+
+    _paintInfinity(canvas, t);
+    _paintHead(canvas, t, screenTop);
+    _paintCap(canvas, t);
+    _paintLetters(canvas, t);
+    _paintBall(canvas, t);
+  }
+
+  void _paintGlow(Canvas canvas, double amount) {
+    final bounds = const Rect.fromLTRB(87, 744, 993, 1178).inflate(80);
+    canvas.saveLayer(
+      bounds,
+      Paint()..imageFilter = ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+    );
+    final paint = _tint(_glowColor.withValues(alpha: amount * 0.55));
+    _drawSprite(canvas, sprites.infinity, paint);
+    _drawSprite(canvas, sprites.ring, paint);
+    _drawSprite(canvas, sprites.cap, paint);
+    for (final letter in sprites.letters) {
+      _drawSprite(canvas, letter, paint);
+    }
+    canvas.restore();
+  }
+
+  void _paintInfinity(Canvas canvas, double t) {
+    final progress = _seg(t, _drawStart, _drawEnd, _drawCurve);
+    if (progress <= 0) return;
+    final sprite = sprites.infinity;
+    if (progress >= 1) {
+      _drawSprite(canvas, sprite, _tint(_logoColor));
+      return;
+    }
+
+    canvas.save();
+    canvas.translate(sprite.origin.dx, sprite.origin.dy);
+    canvas.scale(_assetScale);
+    final bounds =
+        Offset.zero &
+        Size(sprite.image.width.toDouble(), sprite.image.height.toDouble());
+    canvas.saveLayer(bounds.inflate(_revealWidth), Paint());
+    canvas.drawImage(sprite.image, Offset.zero, _tint(_logoColor));
+    canvas.saveLayer(
+      bounds.inflate(_revealWidth),
+      Paint()..blendMode = BlendMode.dstIn,
+    );
+    canvas.drawPath(
+      _infinityPath.computeMetrics().first.extractPath(
+        0,
+        math.max(_infinityLength * progress, 0.5),
       ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = _revealWidth
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..color = Colors.white,
+    );
+    canvas.restore();
+    canvas.restore();
+    canvas.restore();
+  }
+
+  void _paintHead(Canvas canvas, double t, double screenTop) {
+    final ring = sprites.ring;
+    final restRect = ring.rect;
+
+    double bottom;
+    double sx;
+    double sy;
+    if (t < _fallEnd) {
+      final e = Curves.easeInQuad.transform(t / _fallEnd);
+      bottom = ui.lerpDouble(screenTop - 12, restRect.bottom, e)!;
+      sx = 1 - 0.04 * e;
+      sy = 1 + 0.05 * e;
+    } else {
+      final u = _seg(t, _fallEnd, _bounceEnd);
+      bottom = restRect.bottom - 30 * 4 * u * (1 - u);
+      final q = t - _fallEnd;
+      if (q < 0.035) {
+        final a = q / 0.035;
+        sx = ui.lerpDouble(0.96, 1.06, a)!;
+        sy = ui.lerpDouble(1.05, 0.93, a)!;
+      } else {
+        final a = Curves.easeOut.transform(((q - 0.035) / 0.085).clamp(0, 1));
+        sx = ui.lerpDouble(1.06, 1, a)!;
+        sy = ui.lerpDouble(0.93, 1, a)!;
+      }
+    }
+
+    final width = restRect.width * sx;
+    final height = restRect.height * sy;
+    final rect = Rect.fromLTWH(
+      restRect.center.dx - width / 2,
+      bottom - height,
+      width,
+      height,
+    );
+
+    final holeOpen = _seg(t, _holeStart, _holeEnd, Curves.easeOutCubic);
+    if (holeOpen >= 1) {
+      canvas.drawImageRect(
+        ring.image,
+        Offset.zero &
+            Size(ring.image.width.toDouble(), ring.image.height.toDouble()),
+        rect,
+        _tint(_logoColor),
+      );
+      return;
+    }
+
+    final imageW = ring.image.width.toDouble();
+    final imageH = ring.image.height.toDouble();
+    final holeCentre = Offset(
+      rect.left + _ringHole.center.dx / imageW * rect.width,
+      rect.top + _ringHole.center.dy / imageH * rect.height,
+    );
+    final disc = Path()..addOval(rect);
+    final hole = Path()
+      ..addOval(
+        Rect.fromCenter(
+          center: holeCentre,
+          width: _ringHole.width / imageW * rect.width * holeOpen,
+          height: _ringHole.height / imageH * rect.height * holeOpen,
+        ),
+      );
+    canvas.drawPath(
+      Path.combine(PathOperation.difference, disc, hole),
+      Paint()..color = _logoColor,
     );
   }
+
+  void _paintCap(Canvas canvas, double t) {
+    if (t < _capStart) return;
+    final sprite = sprites.cap;
+    double lift;
+    if (t < _capLand) {
+      final e = Curves.easeInQuad.transform(_seg(t, _capStart, _capLand));
+      lift = _lift * (1 - e);
+    } else {
+      lift = -9 * math.sin(math.pi * _seg(t, _capLand, _capSettle));
+    }
+    final opacity = _seg(t, _capStart, _capStart + 0.15);
+    canvas.save();
+    canvas.translate(0, -lift);
+    _drawSprite(canvas, sprite, _tint(_logoColor.withValues(alpha: opacity)));
+    canvas.restore();
+  }
+
+  void _paintLetters(Canvas canvas, double t) {
+    for (var i = 0; i < sprites.letters.length; i++) {
+      final landed = _firstLanding + i * _hop;
+      final opacity = _seg(t, landed - 0.01, landed + 0.07);
+      if (opacity <= 0) continue;
+      _drawSprite(
+        canvas,
+        sprites.letters[i],
+        _tint(_logoColor.withValues(alpha: opacity)),
+      );
+    }
+  }
+
+  void _paintBall(Canvas canvas, double t) {
+    if (t < _exitStart) return;
+
+    var centre = Offset.zero;
+    var diameter = _ballDiameter;
+    var sx = 1.0;
+    var sy = 1.0;
+
+    if (t < _firstLanding) {
+      centre = _sampleArc(_seg(t, _exitStart, _firstLanding));
+      diameter *= _seg(t, _exitStart, _exitStart + 0.12, Curves.easeOut);
+    } else {
+      final elapsed = t - _firstLanding;
+      final hop = math.min(elapsed ~/ _hop, _letters.length - 1);
+      final u = (elapsed - hop * _hop) / _hop;
+      if (hop < _letters.length - 1) {
+        final from = _letters[hop].landingX;
+        final to = _letters[hop + 1].landingX;
+        centre = Offset(
+          ui.lerpDouble(from, to, u)!,
+          _groundY - _hopHeight * 4 * u * (1 - u),
+        );
+      } else {
+        final v = _seg(
+          t,
+          _firstLanding + hop * _hop,
+          _firstLanding + hop * _hop + _rollOffDuration,
+        );
+        if (v >= 1) return;
+        centre = Offset(
+          ui.lerpDouble(_letters.last.landingX, _rollOffX, v)!,
+          _groundY - _hopHeight * 4 * v * (1 - v),
+        );
+        diameter *= 1 - math.pow(v, 2.2);
+      }
+      final sinceLanding = elapsed - hop * _hop;
+      if (sinceLanding < 0.06) {
+        final bump = math.sin(math.pi * sinceLanding / 0.06);
+        sx = 1 + 0.08 * bump;
+        sy = 1 - 0.12 * bump;
+      }
+    }
+
+    final bottom = centre.dy + diameter / 2;
+    canvas.drawOval(
+      Rect.fromLTRB(
+        centre.dx - diameter * sx / 2,
+        bottom - diameter * sy,
+        centre.dx + diameter * sx / 2,
+        bottom,
+      ),
+      Paint()..color = _logoColor,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_LogoPainter oldDelegate) =>
+      oldDelegate.sprites != sprites;
 }
 
-class _NormalizedRectClipper extends CustomClipper<Rect> {
-  final Rect normalizedRect;
+double _seg(double t, double from, double to, [Curve curve = Curves.linear]) =>
+    curve.transform(((t - from) / (to - from)).clamp(0.0, 1.0));
 
-  const _NormalizedRectClipper(this.normalizedRect);
-
-  @override
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(
-      normalizedRect.left * size.width,
-      normalizedRect.top * size.height,
-      normalizedRect.width * size.width,
-      normalizedRect.height * size.height,
-    );
-  }
-
-  @override
-  bool shouldReclip(covariant _NormalizedRectClipper oldClipper) {
-    return oldClipper.normalizedRect != normalizedRect;
-  }
+Offset _sampleArc(double u) {
+  final x = u * (_exitArc.length - 1);
+  final i = math.min(x.floor(), _exitArc.length - 2);
+  return Offset.lerp(_exitArc[i], _exitArc[i + 1], x - i)!;
 }
 
-class _HaloRing extends StatelessWidget {
-  final double size;
-  final double opacity;
+Paint _tint(Color color) => Paint()
+  ..colorFilter = ColorFilter.mode(color, BlendMode.srcIn)
+  ..filterQuality = FilterQuality.medium;
 
-  const _HaloRing({required this.size, required this.opacity});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.white.withOpacity(opacity),
-          width: 1.4,
-        ),
-      ),
-    );
-  }
-}
-
-class _EducationBackdrop extends StatelessWidget {
-  final double progress;
-  final double phase;
-  final Size size;
-
-  const _EducationBackdrop({
-    required this.progress,
-    required this.phase,
-    required this.size,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final items = <_BackdropItem>[
-      const _BackdropItem(Icons.menu_book_outlined, 0.08, 0.12, 48, -0.2),
-      const _BackdropItem(Icons.edit_outlined, 0.82, 0.08, 54, 0.5),
-      const _BackdropItem(Icons.star_border_rounded, 0.14, 0.22, 32, 0.1),
-      const _BackdropItem(Icons.star_border_rounded, 0.73, 0.18, 42, -0.5),
-      const _BackdropItem(Icons.view_in_ar_outlined, 0.07, 0.34, 42, 0.6),
-      const _BackdropItem(Icons.view_in_ar_outlined, 0.83, 0.37, 46, -0.3),
-      const _BackdropItem(Icons.auto_awesome_outlined, 0.10, 0.50, 39, 0.2),
-      const _BackdropItem(Icons.auto_awesome_outlined, 0.82, 0.48, 42, -0.7),
-      const _BackdropItem(Icons.menu_book_outlined, 0.81, 0.62, 44, 0.4),
-      const _BackdropItem(Icons.change_history_outlined, 0.14, 0.69, 42, -0.4),
-      const _BackdropItem(Icons.change_history_outlined, 0.78, 0.73, 38, 0.8),
-      const _BackdropItem(Icons.edit_note_outlined, 0.08, 0.82, 46, 0.0),
-      const _BackdropItem(Icons.school_outlined, 0.80, 0.83, 42, 0.5),
-      const _BackdropItem(Icons.star_border_rounded, 0.44, 0.86, 30, -0.2),
-    ];
-
-    return IgnorePointer(
-      child: Opacity(
-        opacity: 0.42 * progress,
-        child: Stack(
-          children: [
-            for (var i = 0; i < items.length; i++)
-              _buildItem(items[i], i),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItem(_BackdropItem item, int index) {
-    final drift = math.sin((phase * math.pi * 2) + item.phase + index) * 5;
-    return Positioned(
-      left: size.width * item.x,
-      top: size.height * item.y + drift,
-      child: Transform.rotate(
-        angle: item.phase * 0.12,
-        child: Icon(
-          item.icon,
-          size: item.size,
-          color: Colors.white.withOpacity(0.28),
-        ),
-      ),
-    );
-  }
-}
-
-class _BackdropItem {
-  final IconData icon;
-  final double x;
-  final double y;
-  final double size;
-  final double phase;
-
-  const _BackdropItem(this.icon, this.x, this.y, this.size, this.phase);
+void _drawSprite(Canvas canvas, _Sprite sprite, Paint paint) {
+  canvas.drawImageRect(
+    sprite.image,
+    Offset.zero &
+        Size(sprite.image.width.toDouble(), sprite.image.height.toDouble()),
+    sprite.rect,
+    paint,
+  );
 }

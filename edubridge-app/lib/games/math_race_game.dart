@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
-import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class MathRaceGame extends StatefulWidget {

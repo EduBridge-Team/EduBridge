@@ -1,8 +1,7 @@
-// screens/child/care_team_screen.dart
+// lib/screens/care_team_screen.dart — النسخة الموسّعة
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
-import '../model/care_team_model.dart';
+import '../services/api_service.dart';
+import '../theme.dart';
 
 class CareTeamScreen extends StatefulWidget {
   final int childId;
@@ -19,8 +18,10 @@ class CareTeamScreen extends StatefulWidget {
 }
 
 class _CareTeamScreenState extends State<CareTeamScreen> {
-  CareTeam? _team;
+  List<Map<String, dynamic>> _teachers = [];
+  Map<String, dynamic>? _specialists; // {psychological: ..., educational: ...}
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -29,15 +30,31 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
     try {
-      final data = await ApiService.getCareTeam(widget.childId);
-      if (data != null) {
-        _team = CareTeam.fromJson(data);
-      }
-      setState(() => _loading = false);
+      // 1. جلب المعلمين
+      final teachers = await ApiService.getChildTeachers(widget.childId);
+
+      // 2. جلب المختصين
+      final specialistsMap =
+          await ApiService.getChildSpecialists(widget.childId);
+
+      if (!mounted) return;
+      setState(() {
+        _teachers = teachers.cast<Map<String, dynamic>>();
+        _specialists = specialistsMap;
+        _loading = false;
+      });
     } catch (_) {
-      setState(() => _loading = false);
+      if (!mounted) return;
+      setState(() {
+        _error = 'تعذّر تحميل الفريق';
+        _loading = false;
+      });
     }
   }
 
@@ -49,20 +66,39 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         onRefresh: _load,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
-            : _team == null
-                ? const Center(child: Text('لا يوجد فريق'))
+            : _error != null
+                ? _buildError()
                 : _buildBody(),
       ),
     );
   }
 
+  Widget _buildError() => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(_error!,
+                style: const TextStyle(color: Colors.red, fontSize: 16)),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.refresh),
+              label: const Text('إعادة المحاولة'),
+              onPressed: _load,
+            ),
+          ],
+        ),
+      );
+
   Widget _buildBody() {
-    final t = _team!;
     final c = JisrColors.of(context);
+    final totalSpecialists = _countSpecialists();
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // ─── ملخص الفريق ───
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -74,7 +110,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               const Icon(Icons.groups, color: Colors.white, size: 48),
               const SizedBox(height: 8),
               Text(
-                '${t.members.length} أعضاء في الفريق',
+                '${_teachers.length + totalSpecialists} أعضاء في الفريق',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -83,43 +119,107 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${t.teacherCount} معلم • ${t.specialists.length} مختص',
+                '${_teachers.length} معلم • $totalSpecialists مختص',
                 style: const TextStyle(color: Colors.white70),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        if (t.specialists.isNotEmpty) ...[
-          const Text(
-            '🧠 المختصون',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          ...t.specialists.map((s) => _memberCard(s, c)),
-          const SizedBox(height: 16),
+        const SizedBox(height: 20),
+
+        // ═══════════════════════════════════════════
+        //  المختصون (نفسي + تعليمي + إضافيون)
+        // ═══════════════════════════════════════════
+        if (totalSpecialists > 0) ...[
+          _sectionTitle('🧠 المختصون', c),
+          const SizedBox(height: 10),
+
+          if (_specialists?['psychological'] != null)
+            _specialistCard(
+              _specialists!['psychological'],
+              'مختص نفسي',
+              Icons.psychology,
+              AppColors.purple,
+            ),
+
+          if (_specialists?['educational'] != null)
+            _specialistCard(
+              _specialists!['educational'],
+              'مختص تعليمي',
+              Icons.menu_book,
+              AppColors.navy,
+            ),
+
+          // مختصون إضافيون (إن وُجدوا)
+          if (_specialists?['others'] is List)
+            ...(_specialists!['others'] as List).map((s) =>
+                _specialistCard(s, 'مختص', Icons.person, AppColors.pink)),
+
+          const SizedBox(height: 20),
         ],
-        if (t.teachers.isNotEmpty) ...[
-          const Text(
-            '👨‍🏫 المعلمون',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+        // ═══════════════════════════════════════════
+        //  المعلمون (متعددون)
+        // ═══════════════════════════════════════════
+        if (_teachers.isNotEmpty) ...[
+          _sectionTitle('👨‍🏫 المعلمون (${_teachers.length})', c),
+          const SizedBox(height: 10),
+          ..._teachers.map((t) => _teacherCard(t)),
+        ],
+
+        if (_teachers.isEmpty && totalSpecialists == 0) ...[
+          const SizedBox(height: 40),
+          Center(
+            child: Column(
+              children: [
+                Icon(Icons.people_outline, size: 72, color: c.muted),
+                const SizedBox(height: 12),
+                Text(
+                  'لم يتم تعيين فريق بعد',
+                  style: TextStyle(fontSize: 16, color: c.muted),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          ...t.teachers.map((t) => _memberCard(t, c)),
         ],
       ],
     );
   }
 
-  Widget _memberCard(CareTeamMember m, JisrColors c) {
+  int _countSpecialists() {
+    if (_specialists == null) return 0;
+    int count = 0;
+    if (_specialists!['psychological'] != null) count++;
+    if (_specialists!['educational'] != null) count++;
+    if (_specialists!['others'] is List) {
+      count += (_specialists!['others'] as List).length;
+    }
+    return count;
+  }
+
+  Widget _sectionTitle(String title, JisrColors c) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: c.heading,
+      ),
+    );
+  }
+
+  Widget _teacherCard(Map t) {
+    final c = JisrColors.of(context);
+    final name = (t['name'] ?? '').toString();
+    final subject = t['subject']?.toString();
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor:
-              m.role == 'teacher' ? AppColors.green : AppColors.pink,
+          backgroundColor: AppColors.green,
           child: Text(
-            m.name.isNotEmpty ? m.name.characters.first : '؟',
+            name.isNotEmpty ? name.characters.first : '؟',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -127,17 +227,64 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
         ),
         title: Text(
-          m.name,
+          name,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          m.role == 'teacher'
-              ? 'معلم${m.subject != null ? ' — ${m.subject}' : ''}'
-              : 'مختص${m.specialty != null ? ' — ${m.specialty!.label}' : ''}',
+          subject != null && subject.isNotEmpty
+              ? 'معلّم — $subject'
+              : 'معلّم',
+          style: TextStyle(color: c.muted),
         ),
-        trailing: m.specialty != null
-            ? Text(m.specialty!.emoji, style: const TextStyle(fontSize: 24))
-            : null,
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: AppColors.green.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            '👨‍🏫',
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _specialistCard(
+    dynamic data,
+    String roleLabel,
+    IconData icon,
+    Color color,
+  ) {
+    final c = JisrColors.of(context);
+    if (data is! Map) return const SizedBox.shrink();
+
+    final name = (data['name'] ?? '').toString();
+    final specialty = data['specialty']?.toString();
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color,
+          child: Text(
+            name.isNotEmpty ? name.characters.first : '؟',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        title: Text(
+          name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          roleLabel + (specialty != null ? ' — $specialty' : ''),
+          style: TextStyle(color: c.muted),
+        ),
+        trailing: Icon(icon, color: color, size: 26),
       ),
     );
   }

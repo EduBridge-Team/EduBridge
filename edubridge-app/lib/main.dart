@@ -47,7 +47,7 @@ class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
     // Give the reveal enough time to read naturally while startup work happens
     // in parallel. The app never waits longer than necessary for slow startup.
     final minimumSplash =
-        Future<void>.delayed(const Duration(milliseconds: 3600));
+        Future<void>.delayed(const Duration(milliseconds: 5500));
 
     await Future.wait([
       loadSavedThemeMode(),
@@ -103,7 +103,7 @@ class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
           ? const MaterialApp(
               key: ValueKey('edubridge-splash'),
               debugShowCheckedModeBanner: false,
-              home: EduBridgeSplashScreen(),
+              home: LogoIntro(),
             )
           : EduBridgeApp(
               key: const ValueKey('edubridge-app'),

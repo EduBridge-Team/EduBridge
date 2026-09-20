@@ -1,4 +1,4 @@
-// شاشة المختص — التقييم + العلاج النفسي + تقييم الخطة + قراءة تقرير المعلم
+// شاشة المختص — التقييم + العلاج النفسي + دراسة الحالة + دروس لأولياء الأمور
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,6 +12,7 @@ import '../widgets/dashboard_menu.dart';
 import '../utils/navigation.dart';
 import 'add_certificate_sheet.dart';
 import 'add_lesson_sheet.dart';
+import 'case_discussion_screen.dart';
 import 'plan_evaluation_screen.dart';
 import 'therapy_requests_screen.dart';
 import 'therapy_sessions_screen.dart';
@@ -41,18 +42,29 @@ class _SpecialistDashboardScreenState
   List _lessons = [];
   List _types = [];
   List _teachers = [];
+  List _specialists = [];
   bool _loading = true;
   String? _error;
   int? _approvingId;
   bool _adding = false;
   String _searchQuery = '';
 
+  // ✅ Switch "أطفالي فقط"
+  bool _showOnlyMine = true;
+  int? _currentUserId;
+
   bool _verificationDialogShown = false;
 
   @override
   void initState() {
     super.initState();
-    _load().then((_) => _checkAndShowVerificationDialog());
+    _loadUserAndData();
+  }
+
+  Future<void> _loadUserAndData() async {
+    _currentUserId = await ApiService.getUserId();
+    await _load();
+    _checkAndShowVerificationDialog();
   }
 
   @override
@@ -110,12 +122,14 @@ class _SpecialistDashboardScreenState
         ApiService.authGet('/lessons'),
         ApiService.authGet('/disability-types'),
         ApiService.authGet('/users?role=teacher'),
+        ApiService.authGet('/users?role=specialist'),
       ]);
 
       final childrenData = jsonDecode(responses[0].body);
       final lessonsData = jsonDecode(responses[1].body);
       final typesData = jsonDecode(responses[2].body);
       final teachersData = jsonDecode(responses[3].body);
+      final specialistsData = jsonDecode(responses[4].body);
 
       if (responses[0].statusCode != 200) {
         if (!mounted) return;
@@ -148,6 +162,7 @@ class _SpecialistDashboardScreenState
         _lessons = lessonsData['lessons'] ?? [];
         _types = typesData['disability_types'] ?? [];
         _teachers = teachersData['users'] ?? [];
+        _specialists = specialistsData['users'] ?? [];
         _loading = false;
       });
     } catch (_) {
@@ -186,11 +201,8 @@ class _SpecialistDashboardScreenState
                   color: AppColors.orange.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.verified_user,
-                  size: 48,
-                  color: AppColors.orange,
-                ),
+                child: const Icon(Icons.verified_user,
+                    size: 48, color: AppColors.orange),
               ),
               const SizedBox(height: 20),
               Text(
@@ -204,8 +216,8 @@ class _SpecialistDashboardScreenState
               ),
               const SizedBox(height: 12),
               Text(
-                'عزيزي المختص، يجب توثيق هويتك للاستفادة من كامل صلاحيات التطبيق.\n\n'
-                'يمكنك تصفح الأقسام الآن، لكن لن تتمكن من تقييم الأطفال أو تعيين معلمين إلا بعد التوثيق.',
+                'عزيزي المختص، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.\n\n'
+                'يمكنك تصفح الأقسام الآن، لكن لن تتمكن من تقييم الأطفال أو تعيين معلمين أو إضافة دروس إلا بعد التوثيق.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -227,9 +239,9 @@ class _SpecialistDashboardScreenState
                   ),
                   icon: const Icon(Icons.verified_user, size: 22),
                   label: const Text(
-                    'توثيق الهوية الآن',
-                    style:
-                        TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    'توثيق الهوية والشهادة',
+                    style: TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -318,9 +330,7 @@ class _SpecialistDashboardScreenState
 
   void _openEvaluation(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
-
     final child = row['child'];
-
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -379,10 +389,9 @@ class _SpecialistDashboardScreenState
                   const Icon(Icons.assessment,
                       size: 48, color: Colors.grey),
                   const SizedBox(height: 12),
-                  Text(
-                    'لا يوجد تقييم مسجل',
-                    style: TextStyle(color: JisrColors.of(context).muted),
-                  ),
+                  Text('لا يوجد تقييم مسجل',
+                      style:
+                          TextStyle(color: JisrColors.of(context).muted)),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
@@ -443,33 +452,32 @@ class _SpecialistDashboardScreenState
                 style: TextStyle(color: c.muted),
               ),
             const SizedBox(height: 12),
-            _detailRow(
-                '🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
-            _detailRow(
-                '🏃 التقييم الحركي', evaluation['motor_assessment']),
-            _detailRow(
-                '💚 التقييم العاطفي', evaluation['emotional_assessment']),
-            _detailRow(
-                '🤝 التقييم الاجتماعي', evaluation['social_assessment']),
+            _detailRow('🧠 التقييم المعرفي',
+                evaluation['cognitive_assessment']),
+            _detailRow('🏃 التقييم الحركي',
+                evaluation['motor_assessment']),
+            _detailRow('💚 التقييم العاطفي',
+                evaluation['emotional_assessment']),
+            _detailRow('🤝 التقييم الاجتماعي',
+                evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
-            _detailRow(
-                '📚 الخطة التعليمية', evaluation['educational_plan']),
+            _detailRow('📚 الخطة التعليمية',
+                evaluation['educational_plan']),
             if (evaluation['teaching_methods'] != null) ...[
               const SizedBox(height: 8),
-              const Text(
-                'طرق التدريس المقترحة',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              const Text('طرق التدريس المقترحة',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: (evaluation['teaching_methods'] as List? ?? [])
-                    .map((method) => Chip(
-                          label: Text(method),
-                          backgroundColor: c.tintGreen,
-                        ))
-                    .toList(),
+                children:
+                    (evaluation['teaching_methods'] as List? ?? [])
+                        .map((method) => Chip(
+                              label: Text(method),
+                              backgroundColor: c.tintGreen,
+                            ))
+                        .toList(),
               ),
             ],
             const SizedBox(height: 16),
@@ -488,16 +496,13 @@ class _SpecialistDashboardScreenState
 
   Widget _detailRow(String label, String? value) {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+          Text(label,
+              style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
           Text(value),
         ],
@@ -524,8 +529,15 @@ class _SpecialistDashboardScreenState
   void _openTherapy() {
     Navigator.push(
       context,
+      MaterialPageRoute(builder: (_) => const TherapySessionsScreen()),
+    );
+  }
+
+  void _openCaseDiscussion({int? childId}) {
+    Navigator.push(
+      context,
       MaterialPageRoute(
-        builder: (_) => const TherapySessionsScreen(),
+        builder: (_) => CaseDiscussionScreen(filterChildId: childId),
       ),
     );
   }
@@ -576,19 +588,52 @@ class _SpecialistDashboardScreenState
     if (result == true) _load();
   }
 
+  // ✅ اقتراح دعم نفسي لولي الأمر
+  Future<void> _recommendTherapy(Map<String, dynamic> row) async {
+    if (!await _checkVerification()) return;
+    if (!mounted) return;
+
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _RecommendTherapySheet(child: row['child']),
+    );
+    if (result == true) _load();
+  }
+
+  // ✅ الفلترة حسب "أطفالي فقط"
+  List get _filteredChildren {
+    final query = _searchQuery.trim().toLowerCase();
+
+    var base = _rows;
+    if (_showOnlyMine && _currentUserId != null) {
+      base = _rows.where((r) {
+        final child = r['child'];
+        final specIds = child['specialist_ids'] as List?;
+        final singleSpec = child['specialist_id'];
+        if (specIds != null && specIds.contains(_currentUserId)) return true;
+        if (singleSpec == _currentUserId) return true;
+        return false;
+      }).toList();
+
+      // إذا لم يجد فلترة صارمة (بيانات قديمة)، اعرض كل الأطفال
+      if (base.isEmpty && _rows.isNotEmpty) {
+        base = _rows;
+      }
+    }
+
+    if (query.isEmpty) return base;
+    return base.where((row) {
+      final name = (row['child']['name'] ?? '').toString().toLowerCase();
+      return name.contains(query);
+    }).toList();
+  }
+
   List get _pendingChildren {
     return _rows.where((row) {
       final status = row['child']['status'] ?? '';
       return status != 'evaluated' && status != 'assigned';
-    }).toList();
-  }
-
-  List get _filteredChildren {
-    final query = _searchQuery.trim().toLowerCase();
-    if (query.isEmpty) return _rows;
-    return _rows.where((row) {
-      final name = (row['child']['name'] ?? '').toString().toLowerCase();
-      return name.contains(query);
     }).toList();
   }
 
@@ -704,8 +749,7 @@ class _SpecialistDashboardScreenState
                 child: RefreshIndicator(
                   onRefresh: _load,
                   child: _loading
-                      ? const Center(
-                          child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : _error != null
                           ? _buildError()
                           : _buildBody(c),
@@ -720,8 +764,7 @@ class _SpecialistDashboardScreenState
           ? null
           : NavigationBar(
               selectedIndex: _tabIndex,
-              onDestinationSelected: (i) =>
-                  setState(() => _tabIndex = i),
+              onDestinationSelected: (i) => setState(() => _tabIndex = i),
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.insights_outlined),
@@ -738,9 +781,7 @@ class _SpecialistDashboardScreenState
       floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
               onPressed: () async {
-                if (await _checkVerification()) {
-                  _setAdding(true);
-                }
+                if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(Icons.add),
               label: const Text('إضافة درس'),
@@ -771,11 +812,8 @@ class _SpecialistDashboardScreenState
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(
-                        'assets/brand_icon.png',
-                        width: 40,
-                        height: 40,
-                      ),
+                      Image.asset('assets/brand_icon.png',
+                          width: 40, height: 40),
                       const SizedBox(width: 6),
                       const Text(
                         'EduBridge',
@@ -790,13 +828,20 @@ class _SpecialistDashboardScreenState
                   DashboardMenu(
                     actions: [
                       DashboardMenuAction(
+                        id: 'case_discussion',
+                        label: 'دراسات الحالة',
+                        icon: Icons.forum,
+                        onSelected: () => _openCaseDiscussion(),
+                      ),
+                      DashboardMenuAction(
                         id: 'therapy_requests',
                         label: 'طلبات الدعم النفسي',
                         icon: Icons.psychology_alt,
                         onSelected: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const TherapyRequestsScreen(),
+                            builder: (_) =>
+                                const TherapyRequestsScreen(),
                           ),
                         ),
                       ),
@@ -828,8 +873,9 @@ class _SpecialistDashboardScreenState
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) =>
-                                  AddCertificateSheet(onSaved: _load),
+                              builder: (_) => AddCertificateSheet(
+                                onSaved: _load,
+                              ),
                             );
                           }
                         },
@@ -881,8 +927,8 @@ class _SpecialistDashboardScreenState
                       ),
                       Text(
                         _tabIndex == 0
-                            ? 'إليك نظرة عامة على تقدّم الأطفال والخطط العلاجية'
-                            : 'أضف دروساً جديدة أو صفّح الدروس الموجودة',
+                            ? 'نظرة عامة على تقدّم الأطفال والخطط'
+                            : 'أضف دروساً لأولياء الأمور وللأطفال',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.white.withValues(alpha: 0.85),
@@ -892,6 +938,49 @@ class _SpecialistDashboardScreenState
                   );
                 },
               ),
+
+              // ✅ Switch "أطفالي فقط"
+              if (_tabIndex == 0) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.filter_alt,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'أطفالي فقط',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Transform.scale(
+                        scale: 0.85,
+                        child: Switch(
+                          value: _showOnlyMine,
+                          activeThumbColor: Colors.white,
+                          activeTrackColor: AppColors.green,
+                          inactiveThumbColor: Colors.white70,
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.3),
+                          onChanged: (v) =>
+                              setState(() => _showOnlyMine = v),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -940,20 +1029,24 @@ class _SpecialistDashboardScreenState
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _rows.isEmpty
-                  ? 'لا يوجد أطفال مسجلون بعد'
-                  : 'لا نتائج مطابقة للبحث',
+              _showOnlyMine
+                  ? 'لا يوجد أطفال موزّعون عليك حالياً'
+                  : (_rows.isEmpty
+                      ? 'لا يوجد أطفال مسجّلون بعد'
+                      : 'لا نتائج مطابقة للبحث'),
               style: TextStyle(fontSize: 18, color: c.muted),
+              textAlign: TextAlign.center,
             ),
           ),
-          if (_rows.isEmpty) const SizedBox(height: 8),
-          if (_rows.isEmpty)
+          if (_showOnlyMine) ...[
+            const SizedBox(height: 8),
             Center(
-              child: Text(
-                'سيظهر الأطفال هنا بعد أن يضيفهم أولياء الأمور',
-                style: TextStyle(fontSize: 14, color: c.muted),
+              child: TextButton(
+                onPressed: () => setState(() => _showOnlyMine = false),
+                child: const Text('عرض كل الأطفال'),
               ),
             ),
+          ],
         ],
       );
     }
@@ -1079,6 +1172,7 @@ class _SpecialistDashboardScreenState
               ],
             ),
 
+            // طلب دعم نفسي من ولي الأمر
             if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
@@ -1137,6 +1231,7 @@ class _SpecialistDashboardScreenState
                 ),
               ),
             ],
+
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -1158,7 +1253,7 @@ class _SpecialistDashboardScreenState
                 if ((stats['inProgress'] as int) > 0)
                   _CountBadge(
                     '${stats['inProgress']} قيد التنفيذ',
-                    color: const Color.fromARGB(255, 43, 93, 242),
+                    color: AppColors.blue,
                   ),
                 if ((stats['done'] as int) > 0)
                   _CountBadge(
@@ -1169,6 +1264,7 @@ class _SpecialistDashboardScreenState
             ),
             const SizedBox(height: 12),
 
+            // زر أساسي: تقييم/عرض
             Row(
               children: [
                 Expanded(
@@ -1188,17 +1284,7 @@ class _SpecialistDashboardScreenState
                           onPressed: () => _viewEvaluation(childId),
                         ),
                 ),
-                if (!isPending && child['assigned_teacher_id'] == null) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.person_add),
-                      label: const Text('تعيين معلم'),
-                      onPressed: () => _openAssignTeacher(row),
-                    ),
-                  ),
-                ],
-                if (current != null && !isPending) ...[
+                if (!isPending && current != null) ...[
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton.icon(
@@ -1230,6 +1316,8 @@ class _SpecialistDashboardScreenState
 
             if (!isPending) ...[
               const SizedBox(height: 8),
+
+              // صف: تقرير المعلم + كتابة تقدّم
               Row(
                 children: [
                   Expanded(
@@ -1243,10 +1331,8 @@ class _SpecialistDashboardScreenState
                             color: AppColors.tealDeep, width: 1.5),
                       ),
                       icon: const Icon(Icons.article, size: 18),
-                      label: const Text(
-                        'تقرير المعلم',
-                        style: TextStyle(fontSize: 13),
-                      ),
+                      label: const Text('تقرير المعلم',
+                          style: TextStyle(fontSize: 13)),
                       onPressed: () => _openTeacherReport(row),
                     ),
                   ),
@@ -1261,12 +1347,111 @@ class _SpecialistDashboardScreenState
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.edit_note, size: 18),
-                      label: const Text(
-                        'اكتب تقدّم',
-                        style: TextStyle(fontSize: 13),
-                      ),
+                      label: const Text('اكتب تقدّم',
+                          style: TextStyle(fontSize: 13)),
                       onPressed: () =>
                           _writeProgressBasedOnReport(row),
+                    ),
+                  ),
+                ],
+              ),
+
+              // صف: دراسة الحالة + اقتراح جلسة نفسية
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 42),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        foregroundColor: AppColors.teal,
+                        side: const BorderSide(
+                            color: AppColors.teal, width: 1.5),
+                      ),
+                      icon: const Icon(Icons.forum, size: 18),
+                      label: const Text('دراسة الحالة',
+                          style: TextStyle(fontSize: 13)),
+                      onPressed: () =>
+                          _openCaseDiscussion(childId: childId),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 42),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        backgroundColor: AppColors.purple,
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.psychology, size: 18),
+                      label: const Text('اقترح دعم نفسي',
+                          style: TextStyle(fontSize: 12)),
+                      onPressed: () => _recommendTherapy(row),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // أزرار التعيين (فقط للأطفال غير المقيّمين)
+            if (!isPending) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 40),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 6),
+                        foregroundColor: AppColors.greenDeep,
+                        side: const BorderSide(
+                            color: AppColors.greenDeep, width: 1.5),
+                      ),
+                      icon: const Icon(Icons.person_add, size: 16),
+                      label: const Text('تعيين معلمين',
+                          style: TextStyle(fontSize: 12)),
+                      onPressed: () => _openAssignTeacher(row),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 40),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 6),
+                        foregroundColor: AppColors.purple,
+                        side: const BorderSide(
+                            color: AppColors.purple, width: 1.5),
+                      ),
+                      icon: const Icon(Icons.psychology, size: 16),
+                      label: const Text('مختص نفسي',
+                          style: TextStyle(fontSize: 12)),
+                      onPressed: () =>
+                          _openAssignSpecialist(row, 'psychological'),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 40),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 6),
+                        foregroundColor: AppColors.navy,
+                        side: const BorderSide(
+                            color: AppColors.navy, width: 1.5),
+                      ),
+                      icon: const Icon(Icons.menu_book, size: 16),
+                      label: const Text('مختص تعليمي',
+                          style: TextStyle(fontSize: 12)),
+                      onPressed: () =>
+                          _openAssignSpecialist(row, 'educational'),
                     ),
                   ),
                 ],
@@ -1303,9 +1488,12 @@ class _SpecialistDashboardScreenState
                     const Icon(Icons.person,
                         size: 16, color: AppColors.tealDeep),
                     const SizedBox(width: 6),
-                    Text(
-                      'المعلم: ${child['assigned_teacher_name']}',
-                      style: TextStyle(fontSize: 13, color: c.onTint),
+                    Expanded(
+                      child: Text(
+                        'المعلمون: ${child['assigned_teacher_name']}',
+                        style: TextStyle(fontSize: 13, color: c.onTint),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -1319,6 +1507,7 @@ class _SpecialistDashboardScreenState
 
   void _openAssignTeacher(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
+    if (!mounted) return;
     final child = row['child'];
     showModalBottomSheet(
       context: context,
@@ -1327,16 +1516,24 @@ class _SpecialistDashboardScreenState
       builder: (_) => _AssignTeacherSheet(
         child: child,
         teachers: _teachers,
-        onAssigned: (updatedChild) {
-          setState(() {
-            final index = _rows.indexWhere(
-                (r) => r['child']['id'] == updatedChild['id']);
-            if (index != -1) {
-              _rows[index]['child'] = updatedChild;
-            }
-          });
-          _load();
-        },
+        onAssigned: (_) => _load(),
+      ),
+    );
+  }
+
+  void _openAssignSpecialist(Map<String, dynamic> row, String specialty) async {
+    if (!await _checkVerification()) return;
+    if (!mounted) return;
+    final child = row['child'];
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AssignSpecialistSheet(
+        child: child,
+        specialists: _specialists,
+        specialty: specialty,
+        onAssigned: () => _load(),
       ),
     );
   }
@@ -1349,10 +1546,8 @@ class _SpecialistDashboardScreenState
           Icon(Icons.menu_book, size: 72, color: c.muted),
           const SizedBox(height: 16),
           Center(
-            child: Text(
-              'لا توجد دروس بعد',
-              style: TextStyle(fontSize: 18, color: c.muted),
-            ),
+            child: Text('لا توجد دروس بعد',
+                style: TextStyle(fontSize: 18, color: c.muted)),
           ),
           const SizedBox(height: 8),
           Center(
@@ -1375,11 +1570,31 @@ class _SpecialistDashboardScreenState
   Widget _buildLessonCard(Map lesson, JisrColors c) {
     final title = (lesson['title'] ?? '').toString();
     final tag = _typeName(lesson['disability_type_id']);
+    final targetType = lesson['target_type']?.toString() ?? 'everyone';
 
-    final hasVideo =
-        (lesson['video_url']?.toString().isNotEmpty ?? false);
-    final hasAudio =
-        (lesson['audio_url']?.toString().isNotEmpty ?? false);
+    String targetBadge;
+    Color targetColor;
+    switch (targetType) {
+      case 'parents':
+        targetBadge = '👪 لأولياء الأمور';
+        targetColor = AppColors.purple;
+        break;
+      case 'byDisability':
+        targetBadge = '🎯 حسب الإعاقة';
+        targetColor = AppColors.teal;
+        break;
+      case 'specificChildren':
+        final count = (lesson['target_child_ids'] as List?)?.length ?? 0;
+        targetBadge = '👥 $count طلاب';
+        targetColor = AppColors.teal;
+        break;
+      default:
+        targetBadge = '🌍 للجميع';
+        targetColor = AppColors.blue;
+    }
+
+    final hasVideo = (lesson['video_url']?.toString().isNotEmpty ?? false);
+    final hasAudio = (lesson['audio_url']?.toString().isNotEmpty ?? false);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -1390,7 +1605,7 @@ class _SpecialistDashboardScreenState
           width: 46,
           height: 46,
           decoration: BoxDecoration(
-            color: c.tintGreen,
+            color: targetColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
@@ -1400,7 +1615,7 @@ class _SpecialistDashboardScreenState
                     ? Icons.volume_up
                     : Icons.menu_book,
             size: 28,
-            color: c.success,
+            color: targetColor,
           ),
         ),
         title: Text(
@@ -1411,9 +1626,30 @@ class _SpecialistDashboardScreenState
             color: c.heading,
           ),
         ),
-        subtitle: tag != null
-            ? Text(tag, style: const TextStyle(fontSize: 13))
-            : null,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (tag != null)
+              Text(tag, style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 4),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: targetColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                targetBadge,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: targetColor,
+                ),
+              ),
+            ),
+          ],
+        ),
         trailing: const Icon(Icons.chevron_left),
         onTap: () => _viewLessonDetail(lesson),
       ),
@@ -1460,7 +1696,9 @@ class _SpecialistDashboardScreenState
   }
 }
 
-// ===== مكوّنات مساعدة =====
+// ═══════════════════════════════════════════════════════════
+//  مكوّنات مساعدة
+// ═══════════════════════════════════════════════════════════
 class _StatsCard extends StatelessWidget {
   final String icon;
   final String value;
@@ -1495,11 +1733,9 @@ class _StatsCard extends StatelessWidget {
                 color: color,
               ),
             ),
-            Text(
-              label,
-              style: TextStyle(fontSize: 10, color: c.muted),
-              textAlign: TextAlign.center,
-            ),
+            Text(label,
+                style: TextStyle(fontSize: 10, color: c.muted),
+                textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -1533,11 +1769,13 @@ class _CountBadge extends StatelessWidget {
   }
 }
 
-// ===== شاشة تعيين معلم =====
+// ═══════════════════════════════════════════════════════════
+//  تعيين معلمين متعددين (Checkbox)
+// ═══════════════════════════════════════════════════════════
 class _AssignTeacherSheet extends StatefulWidget {
   final Map child;
   final List teachers;
-  final void Function(Map) onAssigned;
+  final Function(Map) onAssigned;
 
   const _AssignTeacherSheet({
     required this.child,
@@ -1550,43 +1788,84 @@ class _AssignTeacherSheet extends StatefulWidget {
 }
 
 class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
-  int? _selectedTeacherId;
-  bool _loading = false;
+  final Set<int> _selectedTeacherIds = {};
+  List<Map<String, dynamic>> _alreadyAssigned = [];
+  bool _loading = true;
+  bool _saving = false;
   String? _error;
 
-  Future<void> _assign() async {
-    if (_selectedTeacherId == null) {
-      setState(() => _error = 'يرجى اختيار معلم');
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentTeachers();
+  }
+
+  Future<void> _loadCurrentTeachers() async {
+    try {
+      final list = await ApiService.getChildTeachers(widget.child['id']);
+      if (!mounted) return;
+      setState(() {
+        _alreadyAssigned =
+            list.cast<Map<String, dynamic>>();
+        _selectedTeacherIds
+            .addAll(_alreadyAssigned.map((t) => t['id'] as int));
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _save() async {
+    if (_selectedTeacherIds.isEmpty) {
+      setState(() => _error = 'اختر معلماً واحداً على الأقل');
       return;
     }
 
     setState(() {
-      _loading = true;
+      _saving = true;
       _error = null;
     });
 
     try {
-      final result = await ApiService.assignTeacherToChild(
-        widget.child['id'],
-        _selectedTeacherId!,
-      );
+      final existingIds =
+          _alreadyAssigned.map((t) => t['id'] as int).toSet();
+
+      // إضافة المعلمين الجدد
+      for (final id in _selectedTeacherIds) {
+        if (!existingIds.contains(id)) {
+          await ApiService.addTeacherToChild(
+            childId: widget.child['id'],
+            teacherId: id,
+          );
+        }
+      }
+
+      // إزالة المعلمين الملغيّين
+      for (final id in existingIds) {
+        if (!_selectedTeacherIds.contains(id)) {
+          await ApiService.removeTeacherFromChild(
+            childId: widget.child['id'],
+            teacherId: id,
+          );
+        }
+      }
 
       if (!mounted) return;
-      if (result != null) {
-        widget.onAssigned(result);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ تم تعيين المعلم بنجاح'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context);
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              '✅ تم تحديث المعلمين (${_selectedTeacherIds.length})'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      widget.onAssigned({});
+      Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
-        _loading = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+        _saving = false;
       });
     }
   }
@@ -1598,61 +1877,100 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
       decoration: BoxDecoration(
         color: c.card,
         borderRadius: BorderRadius.circular(24),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.person_add, color: AppColors.teal),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'تعيين معلم - ${widget.child['name'] ?? ''}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: c.heading,
+      child: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.person_add,
+                        color: AppColors.teal, size: 26),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'تعيين معلمين — ${widget.child['name'] ?? ''}',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: c.tintTeal,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline,
+                          color: AppColors.tealDeep, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'يمكن تعيين أكثر من معلم لنفس الطفل',
+                          style: TextStyle(
+                              fontSize: 12, color: c.onTint),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (widget.teachers.isEmpty)
-            Center(
-              child: Text(
-                'لا يوجد معلمون مسجلون حالياً',
-                style: TextStyle(color: c.muted),
-              ),
-            )
-          else
-            Column(
-              children: [
-                ...widget.teachers.map((teacher) => RadioListTile<int>(
-                      title: Text(teacher['name'] ?? 'معلم'),
-                      subtitle: Text(teacher['email'] ?? ''),
-                      value: teacher['id'],
-                      groupValue: _selectedTeacherId,
-                      onChanged: (val) =>
-                          setState(() => _selectedTeacherId = val),
-                    )),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.red),
+                const SizedBox(height: 14),
+                if (widget.teachers.isEmpty)
+                  Center(
+                    child: Text('لا يوجد معلمون مسجلون',
+                        style: TextStyle(color: c.muted)),
+                  )
+                else
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: widget.teachers.map<Widget>((teacher) {
+                        final id = teacher['id'] as int;
+                        final selected = _selectedTeacherIds.contains(id);
+                        return CheckboxListTile(
+                          value: selected,
+                          title: Text(teacher['name'] ?? 'معلم'),
+                          subtitle: Text(
+                            teacher['email'] ?? '',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          onChanged: (v) {
+                            setState(() {
+                              if (v == true) {
+                                _selectedTeacherIds.add(id);
+                              } else {
+                                _selectedTeacherIds.remove(id);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
+                if (_error != null) ...[
+                  const SizedBox(height: 8),
+                  Text(_error!,
+                      style: const TextStyle(color: Colors.red)),
+                ],
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -1668,24 +1986,532 @@ class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.teal,
                         ),
-                        onPressed: _loading ? null : _assign,
-                        child: _loading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : const Text('تعيين'),
+                        onPressed: _saving ? null : _save,
+                        child: Text(
+                          _saving
+                              ? '...'
+                              : 'حفظ (${_selectedTeacherIds.length})',
+                        ),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  تعيين مختص نفسي أو تعليمي
+// ═══════════════════════════════════════════════════════════
+class _AssignSpecialistSheet extends StatefulWidget {
+  final Map child;
+  final List specialists;
+  final String specialty; // psychological | educational
+  final VoidCallback onAssigned;
+
+  const _AssignSpecialistSheet({
+    required this.child,
+    required this.specialists,
+    required this.specialty,
+    required this.onAssigned,
+  });
+
+  @override
+  State<_AssignSpecialistSheet> createState() =>
+      _AssignSpecialistSheetState();
+}
+
+class _AssignSpecialistSheetState extends State<_AssignSpecialistSheet> {
+  int? _selectedId;
+  bool _saving = false;
+  String? _error;
+
+  String get _label =>
+      widget.specialty == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي';
+
+  IconData get _icon => widget.specialty == 'psychological'
+      ? Icons.psychology
+      : Icons.menu_book;
+
+  Color get _color => widget.specialty == 'psychological'
+      ? AppColors.purple
+      : AppColors.navy;
+
+  @override
+  void initState() {
+    super.initState();
+    // اختيار المختص الحالي إن وُجد
+    final currentId = widget.child['specialist_id_${widget.specialty}'];
+    if (currentId is int) _selectedId = currentId;
+  }
+
+  Future<void> _save() async {
+    if (_selectedId == null) {
+      setState(() => _error = 'اختر مختصاً');
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+
+    final err = await ApiService.assignSpecialist(
+      childId: widget.child['id'],
+      specialistId: _selectedId!,
+      specialty: widget.specialty,
+    );
+
+    if (!mounted) return;
+
+    if (err != null) {
+      setState(() {
+        _error = err;
+        _saving = false;
+      });
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('✅ تم تعيين $_label'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    widget.onAssigned();
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    // فلترة المختصين حسب التخصص
+    final filtered = widget.specialists.where((s) {
+      final spec = (s['specialty'] ?? '').toString().toLowerCase();
+      if (spec.isEmpty) return true;
+      return spec == widget.specialty ||
+          spec.contains(widget.specialty == 'psychological'
+              ? 'نفس'
+              : 'تعليم');
+    }).toList();
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(_icon, color: _color, size: 26),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'تعيين $_label',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: _color, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'الطفل يمكن أن يتابع مع مختص نفسي واحد ومختص تعليمي واحد فقط',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: c.onTint,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          if (filtered.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  'لا يوجد مختصون متاحون لهذا التخصص',
+                  style: TextStyle(color: c.muted),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: filtered.map<Widget>((s) {
+                  final id = s['id'] as int;
+                  return RadioListTile<int>(
+                    title: Text(s['name'] ?? ''),
+                    subtitle: Text(s['email'] ?? ''),
+                    value: id,
+                    groupValue: _selectedId,
+                    activeColor: _color,
+                    onChanged: (v) => setState(() => _selectedId = v),
+                  );
+                }).toList(),
+              ),
+            ),
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(_error!,
+                style: const TextStyle(color: Colors.red)),
+          ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('إلغاء'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: _color),
+                  onPressed: _saving ? null : _save,
+                  child: Text(_saving ? '...' : 'تعيين'),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-// ===== شاشة تفاصيل الدرس =====
+// ═══════════════════════════════════════════════════════════
+//  اقتراح جلسة نفسية لولي الأمر
+// ═══════════════════════════════════════════════════════════
+class _RecommendTherapySheet extends StatefulWidget {
+  final Map child;
+
+  const _RecommendTherapySheet({required this.child});
+
+  @override
+  State<_RecommendTherapySheet> createState() =>
+      _RecommendTherapySheetState();
+}
+
+class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
+  final _descCtrl = TextEditingController();
+  String? _reason;
+  String _urgency = 'medium';
+  bool _saving = false;
+  String? _error;
+
+  static const _reasons = [
+    'يحتاج دعم نفسي متخصص',
+    'ظهور علامات قلق مستمر',
+    'تدهور في المزاج',
+    'مشاكل في النوم',
+    'سلوك انسحابي',
+    'نوبات غضب متكررة',
+    'يحتاج تقييم نفسي شامل',
+    'يحتاج متابعة تأهيلية',
+    'أخرى',
+  ];
+
+  @override
+  void dispose() {
+    _descCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_reason == null) {
+      setState(() => _error = 'اختر سبب التوصية');
+      return;
+    }
+    if (_descCtrl.text.trim().length < 15) {
+      setState(() => _error = 'اكتب شرحاً (15 حرفاً على الأقل)');
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+
+    try {
+      await ApiService.authPost('/therapy/recommendations', {
+        'child_id': widget.child['id'],
+        'reason': _reason,
+        'description': _descCtrl.text.trim(),
+        'urgency': _urgency,
+      });
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ تم إرسال التوصية لولي الأمر'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString().replaceFirst('Exception: ', '');
+        _saving = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final childName = widget.child['name'] ?? '';
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.psychology,
+                      color: AppColors.purple, size: 30),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'اقتراح دعم نفسي — $childName',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: c.heading,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.purple.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline,
+                        color: AppColors.purple, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'سيصل هذا الاقتراح لولي الأمر كإشعار، وسيظهر له في صفحة طلبات الدعم النفسي.',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: c.onTint,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // السبب
+              DropdownButtonFormField<String>(
+                initialValue: _reason,
+                decoration: const InputDecoration(
+                  labelText: 'سبب التوصية *',
+                  prefixIcon: Icon(Icons.report_problem),
+                ),
+                items: _reasons
+                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
+                onChanged: (v) => setState(() => _reason = v),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: _descCtrl,
+                maxLines: 5,
+                maxLength: 500,
+                decoration: const InputDecoration(
+                  labelText: 'شرح مفصّل *',
+                  alignLabelWithHint: true,
+                  hintText:
+                      'اشرح لولي الأمر: لماذا تقترح جلسة نفسية؟ ما العلامات التي لاحظتها؟',
+                  prefixIcon: Icon(Icons.description),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // درجة الأهمية
+              Text(
+                'درجة الأهمية',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _urgencyChip('🟢 منخفضة', 'low',
+                        AppColors.green),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _urgencyChip('🟡 متوسطة', 'medium',
+                        AppColors.orange),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _urgencyChip('🔴 عاجلة', 'high',
+                        AppColors.red),
+                  ),
+                ],
+              ),
+
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.red)),
+                ),
+              ],
+
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('إلغاء'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purple,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: _saving ? null : _save,
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.send),
+                      label: Text(
+                        _saving ? '...' : 'إرسال لولي الأمر',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _urgencyChip(String label, String value, Color color) {
+    final selected = _urgency == value;
+    return GestureDetector(
+      onTap: () => setState(() => _urgency = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected
+              ? color.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? color : Colors.grey.shade300,
+            width: selected ? 2 : 1.2,
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: selected ? color : Colors.grey.shade600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  تفاصيل الدرس
+// ═══════════════════════════════════════════════════════════
 class _LessonDetailSheet extends StatelessWidget {
   final Map lesson;
 
@@ -1701,6 +2527,7 @@ class _LessonDetailSheet extends StatelessWidget {
     final captionUrl = lesson['caption_url'];
     final signUrl = lesson['sign_language_url'];
     final audioDesc = lesson['audio_description'];
+    final targetType = lesson['target_type']?.toString() ?? 'everyone';
     final createdAt = lesson['created_at'] != null
         ? DateTime.parse(lesson['created_at'])
         : null;
@@ -1735,6 +2562,32 @@ class _LessonDetailSheet extends StatelessWidget {
                 ),
               ],
             ),
+            if (targetType == 'parents')
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.purple.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.family_restroom,
+                        color: AppColors.purple, size: 16),
+                    SizedBox(width: 4),
+                    Text(
+                      'درس موجّه لأولياء الأمور',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.purple,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             if (createdAt != null)
               Text(
                 'تاريخ الإضافة: ${createdAt.day}/${createdAt.month}/${createdAt.year}',
@@ -1749,32 +2602,21 @@ class _LessonDetailSheet extends StatelessWidget {
               ),
             if (videoUrl != null) ...[
               const SizedBox(height: 12),
-              _mediaChip(
-                Icons.video_library,
-                '📹 فيديو مرفق',
-                AppColors.tealDeep,
-                c.tintTeal,
-              ),
+              _mediaChip(Icons.video_library, '📹 فيديو مرفق',
+                  AppColors.tealDeep, c.tintTeal),
             ],
             if (captionUrl != null) ...[
               const SizedBox(height: 6),
-              _mediaChip(
-                Icons.closed_caption,
-                '📝 ترجمات مرفقة',
-                AppColors.pink,
-                AppColors.pink.withValues(alpha: 0.1),
-              ),
+              _mediaChip(Icons.closed_caption, '📝 ترجمات مرفقة',
+                  AppColors.pink, AppColors.pink.withValues(alpha: 0.1)),
             ],
             if (signUrl != null) ...[
               const SizedBox(height: 6),
-              _mediaChip(
-                Icons.sign_language,
-                '🤟 لغة إشارة مرفقة',
-                AppColors.purple,
-                AppColors.purple.withValues(alpha: 0.1),
-              ),
+              _mediaChip(Icons.sign_language, '🤟 لغة إشارة مرفقة',
+                  AppColors.purple, AppColors.purple.withValues(alpha: 0.1)),
             ],
-            if (audioDesc != null && audioDesc.toString().isNotEmpty) ...[
+            if (audioDesc != null &&
+                audioDesc.toString().isNotEmpty) ...[
               const SizedBox(height: 6),
               Container(
                 padding: const EdgeInsets.all(10),
@@ -1800,12 +2642,8 @@ class _LessonDetailSheet extends StatelessWidget {
             ],
             if (audioUrl != null) ...[
               const SizedBox(height: 6),
-              _mediaChip(
-                Icons.audio_file,
-                '🎵 تسجيل صوتي مرفق',
-                AppColors.greenDeep,
-                c.tintGreen,
-              ),
+              _mediaChip(Icons.audio_file, '🎵 تسجيل صوتي مرفق',
+                  AppColors.greenDeep, c.tintGreen),
             ],
           ],
         ),

@@ -1,6 +1,6 @@
 // lib/widgets/shared/add_lesson_sheet.dart
 // نموذج إضافة درس — مُوحَّد للمعلم والمختص
-// ✅ يدعم الفيديو + الترجمة + لغة الإشارة + الوصف الصوتي
+// ✅ يدعم الفيديو + الترجمة + لغة الإشارة + الوصف الصوتي + دروس لأولياء الأمور
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -47,6 +47,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   final Set<int> _selectedChildIds = {};
   List _allChildren = [];
   bool _loadingChildren = false;
+
+  // ✅ جديد: هل هذا الدرس موجّه لأولياء الأمور؟
+  bool _forParents = false;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -118,7 +121,6 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     }
   }
 
-  // ✅ جديد: اختيار فيديو لغة إشارة
   Future<void> _pickSignLanguage() async {
     final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
     if (video != null && mounted) {
@@ -142,6 +144,10 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     });
 
     try {
+      // ✅ إذا كان لأولياء الأمور، نرسل target_type = parents
+      // وإلا نرسل القيمة العادية
+      final targetType = _forParents ? 'parents' : _target.name;
+
       final result = await ApiService.createLessonWithMedia(
         title: _titleCtrl.text.trim(),
         content: _contentCtrl.text.trim().isEmpty
@@ -156,7 +162,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
         audioDescription: _audioDescriptionCtrl.text.trim().isEmpty
             ? null
             : _audioDescriptionCtrl.text.trim(),
-        targetType: _target.name,
+        targetType: targetType,
         targetChildIds: _target == LessonTarget.specificChildren
             ? _selectedChildIds.toList()
             : null,
@@ -242,9 +248,61 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                   ),
                   const SizedBox(height: 16),
 
-                  // ═══ من سيستفيد ═══
-                  _targetSelector(c),
+                  // ═══════════════════════════════════════════
+                  //  ✅ جديد: Switch دروس لأولياء الأمور
+                  // ═══════════════════════════════════════════
+                  Container(
+                    decoration: BoxDecoration(
+                      color: _forParents
+                          ? AppColors.purple.withValues(alpha: 0.1)
+                          : c.tintTeal,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: _forParents ? AppColors.purple : c.line,
+                        width: _forParents ? 2 : 1.5,
+                      ),
+                    ),
+                    child: SwitchListTile(
+                      value: _forParents,
+                      activeThumbColor: AppColors.purple,
+                      onChanged: (v) => setState(() => _forParents = v),
+                      title: Row(
+                        children: [
+                          const Icon(Icons.family_restroom,
+                              color: AppColors.purple, size: 22),
+                          const SizedBox(width: 8),
+                          Text(
+                            'درس مخصص لأولياء الأمور',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: c.heading,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4, right: 30),
+                        child: Text(
+                          _forParents
+                              ? '✅ سيظهر في شاشة "دروس لولي الأمر" فقط'
+                              : 'فعّل هذا إذا كان الدرس موجّهاً للأسرة (كيفية التعامل مع الطفل)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: c.muted,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16),
+
+                  // ═══ من سيستفيد (يظهر فقط إذا ليس لأولياء الأمور) ═══
+                  if (!_forParents) ...[
+                    _targetSelector(c),
+                    const SizedBox(height: 16),
+                  ],
 
                   // ═══ صور الدرس ═══
                   _imagesPicker(c),
@@ -343,7 +401,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.green,
+                            backgroundColor: _forParents
+                                ? AppColors.purple
+                                : AppColors.green,
                           ),
                           onPressed: _saving ? null : _save,
                           child: Text(
@@ -363,7 +423,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     );
   }
 
-  // ═══ اختيار الجمهور ═══
+  // ═══ اختيار الجمهور (يظهر فقط إذا لم يكن لأولياء الأمور) ═══
   Widget _targetSelector(JisrColors c) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -491,7 +551,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
         children: [
           Row(
             children: [
-              const Icon(Icons.photo_library, color: AppColors.orange, size: 20),
+              const Icon(Icons.photo_library,
+                  color: AppColors.orange, size: 20),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -535,14 +596,16 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                         top: 3,
                         right: 3,
                         child: InkWell(
-                          onTap: () => setState(() => _imageFiles.removeAt(index)),
+                          onTap: () =>
+                              setState(() => _imageFiles.removeAt(index)),
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: const BoxDecoration(
                               color: Colors.black54,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.close, color: Colors.white, size: 15),
+                            child: const Icon(Icons.close,
+                                color: Colors.white, size: 15),
                           ),
                         ),
                       ),
@@ -562,7 +625,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.add_photo_alternate, size: 18),
-              label: Text(_imageFiles.isEmpty ? 'اختر صوراً' : 'تغيير الصور'),
+              label: Text(
+                  _imageFiles.isEmpty ? 'اختر صوراً' : 'تغيير الصور'),
               onPressed: _pickImages,
             ),
           ),
@@ -571,7 +635,6 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     );
   }
 
-  // ═══ اختيار ملف (مُعمَّم) ═══
   Widget _filePicker({
     required JisrColors c,
     required IconData icon,
@@ -609,10 +672,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            sublabel,
-            style: TextStyle(fontSize: 11, color: c.muted),
-          ),
+          Text(sublabel, style: TextStyle(fontSize: 11, color: c.muted)),
           const SizedBox(height: 8),
           if (file == null)
             SizedBox(

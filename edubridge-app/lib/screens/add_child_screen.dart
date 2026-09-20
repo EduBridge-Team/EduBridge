@@ -113,7 +113,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
       setState(() => _error = 'صورة شهادة الميلاد مطلوبة');
       return;
     }
-
+     if (_medicalReportImages.isEmpty) {
+      setState(() => _error = 'صور التقرير الطبي مطلوبة');
+       return;
+}
     setState(() {
       _loading = true;
       _error = null;
@@ -224,7 +227,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 child: Row(
                   children: [
                     const Icon(Icons.info_outline,
-                        color: AppColors.orangeDeep),
+                        color: Color.fromARGB(255, 23, 178, 217)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -380,9 +383,11 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _disabilityDescCtrl,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'وصف الإعاقة (اختياري)',
+                  labelText: '*وصف الإعاقة ',
                   prefixIcon: Icon(Icons.description),
                 ),
+                  validator: (v) =>
+                   (v == null || v.trim().isEmpty) ? 'وصف الإعاقة مطلوب' : null,
               ),
               const SizedBox(height: 16),
 
@@ -391,10 +396,104 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _medicalHistoryCtrl,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'التاريخ الطبي (اختياري)',
+                  labelText: '*التاريخ الطبي',
                   prefixIcon: Icon(Icons.history),
                 ),
+                validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'التاريخ الطبي مطلوب' : null,
               ),
+              // ─── صور التقرير الطبي ───
+const SizedBox(height: 16),
+Container(
+  padding: const EdgeInsets.all(14),
+  decoration: BoxDecoration(
+    color: c.tintOrange.withValues(alpha: 0.4),
+    borderRadius: BorderRadius.circular(14),
+    border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
+  ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          const Icon(Icons.medical_information,
+              color: AppColors.orangeDeep, size: 22),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'صور التقرير الطبي * (يمكن اختيار أكثر من صورة)',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: c.heading,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 10),
+      if (_medicalReportImages.isNotEmpty) ...[
+        SizedBox(
+          height: 90,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _medicalReportImages.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (_, i) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      _medicalReportImages[i],
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: GestureDetector(
+                      onTap: () => _removeMedicalImage(i),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close,
+                            color: Colors.white, size: 14),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+      SizedBox(
+        width: double.infinity,
+        height: 44,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 43, 169, 242),
+            foregroundColor: Colors.white,
+          ),
+          icon: const Icon(Icons.add_photo_alternate, size: 20),
+          label: Text(
+            _medicalReportImages.isEmpty
+                ? 'اختر صور التقرير'
+                : 'إضافة المزيد',
+          ),
+          onPressed: _pickMedicalReportImages,
+        ),
+      ),
+    ],
+  ),
+),
               const SizedBox(height: 16),
 
               // ملاحظات المختص
@@ -402,9 +501,11 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _psychologistNotesCtrl,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'ملاحظات المختص النفسي (اختياري)',
+                  labelText: '*ملاحظات المختص النفسي',
                   prefixIcon: Icon(Icons.psychology),
                 ),
+                 validator: (v) =>
+                   (v == null || v.trim().isEmpty) ? 'ملاحظات المختص مطلوبة' : null,
               ),
               const SizedBox(height: 16),
 
@@ -423,10 +524,12 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _learningStyleCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'أسلوب التعلم المفضل (اختياري)',
+                  labelText: '*أسلوب التعلم المفضل',
                   prefixIcon: Icon(Icons.school),
                   hintText: 'مثال: بصري، سمعي، حركي',
                 ),
+                validator: (v) =>
+                 (v == null || v.trim().isEmpty) ? 'أسلوب التعلم مطلوب' : null,
               ),
               const SizedBox(height: 16),
 
@@ -434,10 +537,12 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _strengthsCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'نقاط القوة (اختياري)',
+                  labelText: '*نقاط القوة',
                   prefixIcon: Icon(Icons.star),
                   hintText: 'مفصولة بفواصل: قراءة، رسم،...',
                 ),
+                validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'نقاط القوة مطلوبة' : null,
               ),
               const SizedBox(height: 16),
 
@@ -445,10 +550,12 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _challengesCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'التحديات (اختياري)',
+                  labelText: '*التحديات ',
                   prefixIcon: Icon(Icons.warning),
                   hintText: 'مفصولة بفواصل',
                 ),
+                validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'التحديات مطلوبة' : null,
               ),
               const SizedBox(height: 16),
 
@@ -570,7 +677,21 @@ class _AddChildScreenState extends State<AddChildScreen> {
       ),
     );
   }
+// في _AddChildScreenState
+final List<File> _medicalReportImages = [];
 
+Future<void> _pickMedicalReportImages() async {
+  final images = await _picker.pickMultiImage(imageQuality: 85);
+  if (images.isNotEmpty) {
+    setState(() {
+      _medicalReportImages.addAll(images.map((x) => File(x.path)));
+    });
+  }
+}
+
+void _removeMedicalImage(int index) {
+  setState(() => _medicalReportImages.removeAt(index));
+}
   Widget _buildFilePicker({
     required BuildContext context,
     required String label,

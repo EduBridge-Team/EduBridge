@@ -1,5 +1,5 @@
 // screens/parent_screen.dart
-// لوحة ولي الأمر — مع كل ميزات التكييف
+// لوحة ولي الأمر — مع كل ميزات التكييف + دروس لولي الأمر
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
@@ -26,6 +26,7 @@ import 'care_team_screen.dart';
 import 'create_therapy_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
+import 'parent_lessons_screen.dart'; // ✅ جديد
 
 class ParentScreen extends StatefulWidget {
   const ParentScreen({super.key});
@@ -43,9 +44,7 @@ class _ParentScreenState extends State<ParentScreen> {
   void initState() {
     super.initState();
     _loadData();
-
   }
-
 
   Future<void> _loadData() async {
     setState(() {
@@ -182,6 +181,14 @@ class _ParentScreenState extends State<ParentScreen> {
     if (result == true) _loadData();
   }
 
+  // ✅ جديد: فتح شاشة دروس ولي الأمر
+  void _openParentLessons() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ParentLessonsScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
@@ -248,6 +255,12 @@ class _ParentScreenState extends State<ParentScreen> {
                   builder: (_) => const NotificationsScreen(),
                 ),
               ),
+            ),
+            DashboardMenuAction(
+              id: 'parent_lessons',
+              label: 'دروس لولي الأمر',
+              icon: Icons.family_restroom,
+              onSelected: _openParentLessons,
             ),
             DashboardMenuAction(
               id: 'accessibility',
@@ -447,6 +460,7 @@ class _ParentScreenState extends State<ParentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ═══ الرأس: الأفاتار + المعلومات + الحالة ═══
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -485,6 +499,7 @@ class _ParentScreenState extends State<ParentScreen> {
 
             SizedBox(height: AdaptiveHelper.spacing),
 
+            // ═══ الصف 1: الواجبات + التقرير + الفريق ═══
             Row(
               children: [
                 Expanded(
@@ -494,7 +509,7 @@ class _ParentScreenState extends State<ParentScreen> {
                     style: AdaptiveButtonStyle.outlined,
                     backgroundColor: AppColors.orange,
                     fullWidth: true,
-                    fontSize:10,
+                    fontSize: 10,
                     onPressed: () => _openHomework(child),
                   ),
                 ),
@@ -506,7 +521,7 @@ class _ParentScreenState extends State<ParentScreen> {
                     style: AdaptiveButtonStyle.outlined,
                     backgroundColor: AppColors.teal,
                     fullWidth: true,
-                    fontSize:10,
+                    fontSize: 10,
                     onPressed: () => _openWeeklyReport(child),
                   ),
                 ),
@@ -526,6 +541,7 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
+            // ═══ الصف 2: التقدّم + تعديل ═══
             Row(
               children: [
                 Expanded(
@@ -553,6 +569,16 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
+            // ═══ الصف 3: دروس لولي الأمر (جديد) ═══
+            AdaptiveButton(
+              label: 'دروس لولي الأمر',
+              icon: Icons.family_restroom,
+              backgroundColor: AppColors.purple,
+              onPressed: _openParentLessons,
+            ),
+            SizedBox(height: AdaptiveHelper.spacing / 2),
+
+            // ═══ الصف 4: طلب جلسة نفسية ═══
             AdaptiveButton(
               label: 'طلب جلسة نفسية',
               icon: Icons.psychology,

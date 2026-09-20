@@ -1,9 +1,10 @@
-// شاشة المعلم — الخطة + الواجبات + التقارير الأسبوعية
+// شاشة المعلم — الخطة + الواجبات + التقارير الأسبوعية + دراسة الحالة
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';
 import 'add_certificate_sheet.dart';
 import 'add_lesson_sheet.dart';
+import 'case_discussion_screen.dart';
 import 'create_homework_screen.dart';
 import 'create_weekly_report_screen.dart';
 import 'notifications_screen.dart';
@@ -45,6 +46,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
   bool _verificationDialogShown = false;
   int? _currentUserId;
+
+  // ✅ Switch "أطفالي فقط"
+  bool _showOnlyMine = true;
 
   @override
   void initState() {
@@ -93,10 +97,26 @@ class _TeacherScreenState extends State<TeacherScreen> {
           responses[1].statusCode == 200 &&
           responses[2].statusCode == 200) {
         final allChildren = childrenData['children'] ?? [];
+        final myId = _currentUserId?.toString();
 
+        // ✅ فلترة الأطفال: يظهر إذا كان المعلم مضمّناً
         final myChildren = allChildren.where((child) {
-          return child['assigned_teacher_id']?.toString() ==
-              _currentUserId?.toString();
+          // assigned_teacher_id (قديم)
+          if (child['assigned_teacher_id']?.toString() == myId) return true;
+
+          // assigned_teacher_ids (متعدد - جديد)
+          final ids = child['assigned_teacher_ids'] as List?;
+          if (ids != null && ids.map((e) => e.toString()).contains(myId)) {
+            return true;
+          }
+
+          // teacher_ids (احتياط)
+          final tIds = child['teacher_ids'] as List?;
+          if (tIds != null && tIds.map((e) => e.toString()).contains(myId)) {
+            return true;
+          }
+
+          return false;
         }).toList();
 
         if (!mounted) return;
@@ -154,11 +174,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   color: AppColors.teal.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.verified_user,
-                  size: 48,
-                  color: AppColors.teal,
-                ),
+                child: const Icon(Icons.verified_user,
+                    size: 48, color: AppColors.teal),
               ),
               const SizedBox(height: 20),
               Text(
@@ -172,7 +189,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'عزيزي المعلم، يجب توثيق هويتك للاستفادة من كامل صلاحيات التطبيق.',
+                'عزيزي المعلم، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -194,8 +211,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   ),
                   icon: const Icon(Icons.verified_user, size: 22),
                   label: const Text(
-                    'توثيق الهوية الآن',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    'توثيق الهوية والشهادة',
+                    style: TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -303,6 +321,17 @@ class _TeacherScreenState extends State<TeacherScreen> {
     );
   }
 
+  void _openCaseDiscussion(Map child) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CaseDiscussionScreen(
+          filterChildId: child['id'] as int,
+        ),
+      ),
+    );
+  }
+
   void _openCreateHomework() async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
@@ -369,11 +398,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
   Color _getStatusColor(String? status) {
     switch (status) {
       case 'evaluated':
-        return const Color.fromARGB(255, 87, 137, 178);
+        return AppColors.blue;
       case 'assigned':
         return AppColors.teal;
       default:
-        return const Color.fromARGB(255, 19, 14, 175);
+        return AppColors.orange;
     }
   }
 
@@ -416,7 +445,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                         return Stack(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.notifications_outlined),
+                              icon: const Icon(
+                                  Icons.notifications_outlined),
                               onPressed: _openNotifications,
                               tooltip: 'الإشعارات',
                             ),
@@ -489,9 +519,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
       floatingActionButton: _tabIndex == 1 && !inlineModalVisible
           ? FloatingActionButton.extended(
               onPressed: () async {
-                if (await _checkVerification()) {
-                  _setAdding(true);
-                }
+                if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(Icons.add),
               label: const Text('إضافة درس'),
@@ -522,11 +550,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(
-                        'assets/brand_icon.png',
-                        width: 40,
-                        height: 40,
-                      ),
+                      Image.asset('assets/brand_icon.png',
+                          width: 40, height: 40),
                       const SizedBox(width: 6),
                       const Text(
                         'EduBridge',
@@ -540,6 +565,17 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   ),
                   DashboardMenu(
                     actions: [
+                      DashboardMenuAction(
+                        id: 'case_discussion',
+                        label: 'دراسات الحالة',
+                        icon: Icons.forum,
+                        onSelected: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CaseDiscussionScreen(),
+                          ),
+                        ),
+                      ),
                       DashboardMenuAction(
                         id: 'create_homework',
                         label: 'إضافة واجب',
@@ -635,6 +671,49 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   );
                 },
               ),
+
+              // ✅ Switch "أطفالي فقط" (في تبويب الأطفال)
+              if (_tabIndex == 0) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.filter_alt,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'أطفالي فقط',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Transform.scale(
+                        scale: 0.85,
+                        child: Switch(
+                          value: _showOnlyMine,
+                          activeThumbColor: Colors.white,
+                          activeTrackColor: AppColors.green,
+                          inactiveThumbColor: Colors.white70,
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.3),
+                          onChanged: (v) =>
+                              setState(() => _showOnlyMine = v),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -651,7 +730,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
             children: [
               Text(_error!,
                   style:
-                      const TextStyle(fontSize: 16, color: Colors.blueAccent)),
+                      const TextStyle(fontSize: 16, color: Colors.red)),
               const SizedBox(height: 16),
               SizedBox(
                 height: 56,
@@ -674,6 +753,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 
   Widget _buildChildrenTab(JisrColors c) {
+    // في _loadData نفلتر بالفعل، لكن نعرض رسالة عندما لا يوجد
     final displayChildren = _children;
 
     if (displayChildren.isEmpty) {
@@ -684,8 +764,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              'لا يوجد أطفال موزعين عليك حالياً',
+              'لا يوجد أطفال موزّعين عليك حالياً',
               style: TextStyle(fontSize: 18, color: c.muted),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -745,7 +826,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(status).withValues(alpha: 0.15),
+                        color: _getStatusColor(status)
+                            .withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -766,6 +848,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Column(
                   children: [
+                    // صف 1: الخطة + التقدّم
                     Row(
                       children: [
                         Expanded(
@@ -796,6 +879,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ],
                     ),
                     const SizedBox(height: 6),
+
+                    // صف 2: اكتب تقرير + التقارير
                     Row(
                       children: [
                         Expanded(
@@ -819,8 +904,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                               minimumSize: const Size(0, 38),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
-                              foregroundColor:
-                                  const Color.fromARGB(255, 43, 242, 222),
+                              foregroundColor: AppColors.tealDeep,
                             ),
                             icon: const Icon(Icons.visibility, size: 16),
                             label: const Text('التقارير'),
@@ -828,6 +912,26 @@ class _TeacherScreenState extends State<TeacherScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 6),
+
+                    // ✅ صف 3: دراسة الحالة
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 40),
+                          foregroundColor: AppColors.purple,
+                          side: const BorderSide(
+                              color: AppColors.purple, width: 1.5),
+                        ),
+                        icon: const Icon(Icons.forum, size: 18),
+                        label: const Text(
+                          'دراسة الحالة مع المختص',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () => _openCaseDiscussion(child),
+                      ),
                     ),
                   ],
                 ),
@@ -961,6 +1065,10 @@ class _TeacherScreenState extends State<TeacherScreen> {
     String targetBadge;
     Color targetColor;
     switch (targetType) {
+      case 'parents':
+        targetBadge = '👪 لأولياء الأمور';
+        targetColor = AppColors.purple;
+        break;
       case 'byDisability':
         targetBadge = '🎯 حسب الإعاقة';
         targetColor = AppColors.teal;
@@ -989,7 +1097,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
           width: 46,
           height: 46,
           decoration: BoxDecoration(
-            color: c.tintGreen,
+            color: targetColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
@@ -999,7 +1107,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ? Icons.volume_up
                     : Icons.menu_book,
             size: 28,
-            color: c.success,
+            color: targetColor,
           ),
         ),
         title: Text(
@@ -1013,10 +1121,12 @@ class _TeacherScreenState extends State<TeacherScreen> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (tag != null) Text(tag, style: const TextStyle(fontSize: 12)),
+            if (tag != null)
+              Text(tag, style: const TextStyle(fontSize: 12)),
             const SizedBox(height: 4),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 color: targetColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -1117,30 +1227,21 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ),
                     if (videoUrl != null) ...[
                       const SizedBox(height: 8),
-                      _mediaChip(
-                        Icons.video_library,
-                        '📹 فيديو مرفق',
-                        AppColors.tealDeep,
-                        c.tintTeal,
-                      ),
+                      _mediaChip(Icons.video_library, '📹 فيديو مرفق',
+                          AppColors.tealDeep, c.tintTeal),
                     ],
                     if (captionUrl != null) ...[
                       const SizedBox(height: 6),
-                      _mediaChip(
-                        Icons.closed_caption,
-                        '📝 ملف ترجمات مرفق',
-                        AppColors.pink,
-                        AppColors.pink.withValues(alpha: 0.1),
-                      ),
+                      _mediaChip(Icons.closed_caption, '📝 ملف ترجمات مرفق',
+                          AppColors.pink,
+                          AppColors.pink.withValues(alpha: 0.1)),
                     ],
                     if (signUrl != null) ...[
                       const SizedBox(height: 6),
-                      _mediaChip(
-                        Icons.sign_language,
-                        '🤟 فيديو لغة إشارة مرفق',
-                        AppColors.purple,
-                        AppColors.purple.withValues(alpha: 0.1),
-                      ),
+                      _mediaChip(Icons.sign_language,
+                          '🤟 فيديو لغة إشارة مرفق',
+                          AppColors.purple,
+                          AppColors.purple.withValues(alpha: 0.1)),
                     ],
                     if (audioDesc != null &&
                         audioDesc.toString().isNotEmpty) ...[
@@ -1169,12 +1270,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ],
                     if (audioUrl != null) ...[
                       const SizedBox(height: 6),
-                      _mediaChip(
-                        Icons.audiotrack,
-                        '🎵 تسجيل صوتي مرفق',
-                        AppColors.greenDeep,
-                        c.tintGreen,
-                      ),
+                      _mediaChip(Icons.audiotrack, '🎵 تسجيل صوتي مرفق',
+                          AppColors.greenDeep, c.tintGreen),
                     ],
                   ],
                 ),
@@ -1231,9 +1328,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 //  شاشة عرض الخطة المعتمدة
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 class _ApprovedPlanSheet extends StatelessWidget {
   final Map plan;
 
@@ -1298,10 +1395,13 @@ class _ApprovedPlanSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _section('📚 الخطة التعليمية', plan['educational_plan'], c),
-            _section('🧠 التقييم المعرفي', plan['cognitive_assessment'], c),
+            _section(
+                '🧠 التقييم المعرفي', plan['cognitive_assessment'], c),
             _section('🏃 التقييم الحركي', plan['motor_assessment'], c),
-            _section('💚 التقييم العاطفي', plan['emotional_assessment'], c),
-            _section('🤝 التقييم الاجتماعي', plan['social_assessment'], c),
+            _section(
+                '💚 التقييم العاطفي', plan['emotional_assessment'], c),
+            _section(
+                '🤝 التقييم الاجتماعي', plan['social_assessment'], c),
             _section('📝 التوصيات', plan['recommendations'], c),
             if (plan['teaching_methods'] != null) ...[
               const SizedBox(height: 12),

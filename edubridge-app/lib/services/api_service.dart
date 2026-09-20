@@ -135,7 +135,7 @@ class ApiService {
 
   static Future<String?> register(
       String name, String email, String password, String role,
-      {String? phone}) async {
+      {String? phone,String? specialty}) async {
     try {
       final res = await http.post(
         Uri.parse('${Config.baseUrl}/auth/register'),
@@ -146,6 +146,7 @@ class ApiService {
           'password': password,
           'role': role,
           'phone': phone,
+        'specialty': specialty,
         }),
       );
 
@@ -1662,6 +1663,189 @@ class ApiService {
       await prefs.setString('avatar_url', url);
     }
   }
+  // ═══════════════════════════════════════════════════════════
+//  دراسات الحالة (Case Discussions)
+// ═══════════════════════════════════════════════════════════
+
+static Future<List<dynamic>> getCaseDiscussions({int? childId}) async {
+  try {
+    final path = childId != null
+        ? '/case-discussions?child_id=$childId'
+        : '/case-discussions';
+    final res = await authGet(path);
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['discussions'] ?? [];
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+static Future<Map<String, dynamic>?> createCaseDiscussion({
+  required int childId,
+  required String topic,
+  String? description,
+  required List<int> participantIds,
+}) async {
+  try {
+    final res = await authPost('/case-discussions', {
+      'child_id': childId,
+      'topic': topic,
+      'description': description,
+      'participant_ids': participantIds,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 201) return data['discussion'];
+    throw Exception(data['error'] ?? 'فشل إنشاء دراسة الحالة');
+  } catch (e) {
+    _handleError(e);
+  }
+}
+
+static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
+    int discussionId) async {
+  try {
+    final res = await authGet('/case-discussions/$discussionId');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['discussion'];
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+static Future<Map<String, dynamic>?> addCaseMessage({
+  required int discussionId,
+  required String content,
+  String type = 'text',
+  List<String>? attachments,
+}) async {
+  try {
+    final res = await authPost('/case-discussions/$discussionId/messages', {
+      'content': content,
+      'type': type,
+      'attachments': attachments,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 201) return data['message'];
+    throw Exception(data['error'] ?? 'فشل إرسال الرسالة');
+  } catch (e) {
+    _handleError(e);
+  }
+}
+
+static Future<bool> resolveCaseDiscussion(int discussionId) async {
+  try {
+    final res = await authPut('/case-discussions/$discussionId/resolve', {});
+    return res.statusCode == 200;
+  } catch (e) {
+    return false;
+  }
+}
+
+static Future<bool> addCaseParticipant({
+  required int discussionId,
+  required int userId,
+}) async {
+  try {
+    final res = await authPost(
+      '/case-discussions/$discussionId/participants',
+      {'user_id': userId},
+    );
+    return res.statusCode == 200 || res.statusCode == 201;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  تعيين متعدد
+// ═══════════════════════════════════════════════════════════
+
+/// المختص يعيّن معلماً إضافياً لطفل (يسمح بأكثر من معلم)
+static Future<bool> addTeacherToChild({
+  required int childId,
+  required int teacherId,
+}) async {
+  try {
+    final res = await authPost('/children/$childId/teachers', {
+      'teacher_id': teacherId,
+    });
+    return res.statusCode == 200 || res.statusCode == 201;
+  } catch (e) {
+    return false;
+  }
+}
+
+static Future<bool> removeTeacherFromChild({
+  required int childId,
+  required int teacherId,
+}) async {
+  try {
+    final res = await authDelete('/children/$childId/teachers/$teacherId');
+    return res.statusCode == 200 || res.statusCode == 204;
+  } catch (e) {
+    return false;
+  }
+}
+
+static Future<List<dynamic>> getChildTeachers(int childId) async {
+  try {
+    final res = await authGet('/children/$childId/teachers');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['teachers'] ?? [];
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  تعيين المختصين (نفسي + تعليمي)
+// ═══════════════════════════════════════════════════════════
+
+static Future<Map<String, dynamic>?> getChildSpecialists(int childId) async {
+  try {
+    final res = await authGet('/children/$childId/specialists');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+static Future<String?> assignSpecialist({
+  required int childId,
+  required int specialistId,
+  required String specialty, // psychological | educational | speech | behavioral
+}) async {
+  try {
+    final res = await authPost('/children/$childId/specialists', {
+      'specialist_id': specialistId,
+      'specialty': specialty,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 200 || res.statusCode == 201) return null;
+    return data['error'] ?? 'فشل التعيين';
+  } catch (e) {
+    return 'تعذّر الاتصال بالسيرفر';
+  }
+}
+
+static Future<bool> removeSpecialist({
+  required int childId,
+  required int specialistId,
+}) async {
+  try {
+    final res =
+        await authDelete('/children/$childId/specialists/$specialistId');
+    return res.statusCode == 200 || res.statusCode == 204;
+  } catch (e) {
+    return false;
+  }
+}
+
 
   // ===== حذف الحساب =====
   static Future<void> deleteAccount() async {

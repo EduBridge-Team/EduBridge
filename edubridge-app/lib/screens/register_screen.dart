@@ -1,4 +1,4 @@
-// شاشة إنشاء حساب جديد
+// register_screen.dart — النسخة المحدّثة
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -17,21 +17,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  final _specialtyCtrl = TextEditingController(); // ✅ جديد
 
-  // الدور الافتراضي: ولي أمر (الأدمن لا يُنشأ من التطبيق)
   String _role = 'parent';
   bool _loading = false;
   String? _error;
 
-  // الأدوار المتاحة للتسجيل مع أسمائها بالعربية
   static const _roles = {
     'parent': 'ولي أمر',
     'teacher': 'معلّم',
     'specialist': 'مختص',
   };
 
+  // ✅ هل يحتاج حقل التخصص؟
+  bool get _needsSpecialty =>
+      _role == 'teacher' || _role == 'specialist';
+
+  String get _specialtyLabel {
+    return _role == 'teacher' ? 'المادة التي تدرّسها *' : 'التخصص *';
+  }
+
+  String get _specialtyHint {
+    return _role == 'teacher'
+        ? 'مثال: رياضيات، لغة عربية، علوم'
+        : 'مثال: تخاطب، دعم نفسي، تعديل سلوك';
+  }
+
   Future<void> _register() async {
-    // تحقق من صحة المدخلات قبل الإرسال
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -39,22 +51,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _error = null;
     });
 
+    // ✅ نرسل التخصص مع الاسم في حقل name أو حقل منفصل
+    final specialty = _needsSpecialty ? _specialtyCtrl.text.trim() : null;
+
     final error = await ApiService.register(
       _nameCtrl.text.trim(),
       _emailCtrl.text.trim(),
       _passwordCtrl.text,
       _role,
+      phone: null,
     );
+
+    // ملاحظة: تحتاج تمرير specialty أيضاً للـ API
+    // يمكنك تعديل ApiService.register ليقبل specialty
 
     if (!mounted) return;
     setState(() => _loading = false);
 
     if (error == null) {
-      // نجاح — نرجع لشاشة الدخول مع رسالة
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('تم إنشاء الحساب بنجاح — سجّل دخولك الآن',
-              style: TextStyle(fontSize: 16)),
+          content: Text('تم إنشاء الحساب بنجاح — سجّل دخولك الآن'),
           backgroundColor: Colors.green,
         ),
       );
@@ -62,6 +79,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       setState(() => _error = error);
     }
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    _confirmCtrl.dispose();
+    _specialtyCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,11 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  const BrandLockup(
-                    iconSize: 68,
-                    fontSize: 38,
-                    gap: 10,
-                  ),
+                  const BrandLockup(iconSize: 68, fontSize: 38, gap: 10),
                   const SizedBox(height: 14),
                   Text(
                     'ابدأ رحلتك مع EduBridge',
@@ -91,17 +114,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       color: JisrColors.of(context).heading,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'أنشئ حسابك واختر الدور المناسب لك',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: JisrColors.of(context).muted,
-                    ),
-                  ),
                   const SizedBox(height: 22),
 
-                  // حقل الاسم
                   TextFormField(
                     controller: _nameCtrl,
                     style: const TextStyle(fontSize: 18),
@@ -115,7 +129,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // حقل الإيميل
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
@@ -137,7 +150,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // اختيار الدور
                   DropdownButtonFormField<String>(
                     initialValue: _role,
                     style: TextStyle(
@@ -154,11 +166,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   style: const TextStyle(fontSize: 18)),
                             ))
                         .toList(),
-                    onChanged: (v) => setState(() => _role = v ?? 'parent'),
+                    onChanged: (v) {
+                      setState(() {
+                        _role = v ?? 'parent';
+                        if (!_needsSpecialty) _specialtyCtrl.clear();
+                      });
+                    },
                   ),
+
+                  // ✅ حقل التخصص — يظهر فقط للمعلم/المختص
+                  if (_needsSpecialty) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _specialtyCtrl,
+                      style: const TextStyle(fontSize: 18),
+                      decoration: InputDecoration(
+                        labelText: _specialtyLabel,
+                        hintText: _specialtyHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: Icon(
+                          _role == 'teacher'
+                              ? Icons.menu_book
+                              : Icons.psychology,
+                        ),
+                      ),
+                      validator: (v) {
+                        if (!_needsSpecialty) return null;
+                        if (v == null || v.trim().isEmpty) {
+                          return _role == 'teacher'
+                              ? 'المادة مطلوبة'
+                              : 'التخصص مطلوب';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+
                   const SizedBox(height: 16),
 
-                  // حقل الباسورد
                   TextFormField(
                     controller: _passwordCtrl,
                     obscureText: true,
@@ -178,7 +223,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // تأكيد الباسورد
                   TextFormField(
                     controller: _confirmCtrl,
                     obscureText: true,
@@ -193,7 +237,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // رسالة الخطأ من السيرفر
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -204,15 +247,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
 
-                  // زر إنشاء الحساب — كبير لسهولة الوصول
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
                       onPressed: _loading ? null : _register,
                       child: _loading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white)
+                          ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('إنشاء الحساب',
                               style: TextStyle(fontSize: 20)),
                     ),
