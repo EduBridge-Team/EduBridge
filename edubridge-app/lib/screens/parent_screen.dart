@@ -104,12 +104,6 @@ class _ParentScreenState extends State<ParentScreen> {
   // ═══════════════════════════════════════════════════════════
 
   Future<void> _openChildDetails(Map child) async {
-    // ✅ تفعيل الطفل مؤقتاً (للدروس والألعاب)
-    await AccessibilityService.instance.setActiveChild(
-      child['id'],
-      disabilityTypeHint: child['disability_type']?.toString(),
-    );
-
     if (!mounted) return;
 
     await Navigator.push(
@@ -124,9 +118,6 @@ class _ParentScreenState extends State<ParentScreen> {
         ),
       ),
     );
-
-    // ✅ إلغاء تفعيل الطفل عند العودة
-    await AccessibilityService.instance.setActiveChild(null);
   }
 
   void _openHomework(Map child) {
