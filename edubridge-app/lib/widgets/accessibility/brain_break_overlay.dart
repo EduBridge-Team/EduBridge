@@ -2,6 +2,7 @@
 // - تعمل تلقائياً حسب brainBreakIntervalMinutes
 // - يمكن استدعاؤها يدوياً عبر BrainBreakDialog.show(context)
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
