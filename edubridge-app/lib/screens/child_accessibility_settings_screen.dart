@@ -35,6 +35,7 @@ class _ChildAccessibilitySettingsScreenState
     AccessibilityService.instance.setActiveChild(
       widget.childId,
       disabilityTypeHint: widget.disabilityTypeHint,
+      forceReload: true,
     );
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
