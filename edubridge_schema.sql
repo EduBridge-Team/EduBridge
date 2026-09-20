@@ -93,6 +93,10 @@ CREATE TABLE lessons (
     content            TEXT,
     disability_type_id INT REFERENCES disability_types(id) ON DELETE SET NULL,
     teacher_id         INT REFERENCES users(id)            ON DELETE SET NULL,
+    target_type        VARCHAR(32) NOT NULL DEFAULT 'everyone'
+                       CHECK (target_type IN ('everyone', 'byDisability', 'specificChildren')),
+    target_child_ids   JSONB,
+    audio_description  TEXT,
     created_at         TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -113,12 +117,13 @@ CREATE TABLE progress (
 -- 2) الإضافات  
 -- ============================================================
 
--- الوسائط المرتبطة بالدروس (صورة / فيديو / صوت)
+-- الوسائط المرتبطة بالدروس (صور / فيديو / صوت / ترجمة / لغة إشارة)
 CREATE TABLE media (
     id        SERIAL PRIMARY KEY,
     lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
-    type      VARCHAR(10) NOT NULL CHECK (type IN ('image', 'video', 'audio')),
-    url       VARCHAR(255) NOT NULL
+    type      VARCHAR(20) NOT NULL
+              CHECK (type IN ('image', 'video', 'audio', 'caption', 'sign_language')),
+    url       VARCHAR(2048) NOT NULL
 );
 
 -- جلسات المختص مع الطفل
