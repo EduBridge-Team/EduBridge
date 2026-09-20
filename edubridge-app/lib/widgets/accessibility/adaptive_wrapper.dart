@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_helper.dart';
+import '../../theme.dart';
 
 /// غلاف شامل يطبّق كل ميزات التكييف على أي شاشة
 class AdaptiveWrapper extends StatefulWidget {
@@ -34,6 +35,14 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
       valueListenable: AccessibilityService.instance.profile,
       builder: (context, profile, child) {
         Widget result = widget.child;
+
+        // التباين العالي يُطبّق محلياً على الشاشة الحالية فقط، لا على التطبيق كله.
+        if (profile.highContrast) {
+          result = Theme(
+            data: buildHighContrastTheme(),
+            child: result,
+          );
+        }
 
         // ═══════════════════════════════════════════════
         //  1. وضع الأيقونات فقط (iconOnlyMode)
