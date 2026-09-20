@@ -2,7 +2,6 @@
 // لوحة ولي الأمر — مع كل ميزات التكييف
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/adaptive_helper.dart';
@@ -45,28 +44,8 @@ class _ParentScreenState extends State<ParentScreen> {
     super.initState();
     _loadData();
 
-    // ✅ حماية: أي محاولة لتفعيل طفل في شاشة ولي الأمر → إلغاء فوري
-    AccessibilityService.instance.activeChildId
-        .addListener(_enforceParentMode);
-    _enforceParentMode();
   }
 
-  @override
-  void dispose() {
-    AccessibilityService.instance.activeChildId
-        .removeListener(_enforceParentMode);
-    // ✅ إلغاء أي طفل نشط عند مغادرة الشاشة
-    AccessibilityService.instance.setActiveChild(null);
-    super.dispose();
-  }
-
-  /// ✅ يُستدعى كل مرة يُغيَّر فيها الطفل النشط.
-  ///    إذا كانت الشاشة هي شاشة ولي الأمر، نُلغي فوراً.
-  void _enforceParentMode() {
-    if (AccessibilityService.instance.activeChildId.value != null) {
-      AccessibilityService.instance.setActiveChild(null);
-    }
-  }
 
   Future<void> _loadData() async {
     setState(() {
