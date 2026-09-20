@@ -1,6 +1,7 @@
 // screens/child_lessons_screen.dart
 // دروس الطفل — مع كل ميزات التكييف + دعم الفيديو والصوت
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
@@ -58,6 +59,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   int _stars = 0;
 
   int? _speakingLessonId;
+  final AudioPlayer _lessonAudioPlayer = AudioPlayer();
+  String? _activeAudioUrl;
 
   @override
   void initState() {
@@ -75,6 +78,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   @override
   void dispose() {
     TtsService.instance.stop();
+    _lessonAudioPlayer.dispose();
     AccessibilityService.instance.setActiveChild(null);
     super.dispose();
   }
@@ -321,57 +325,15 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  عرض الدرس — فيديو إذا وُجد، وإلا نص
+  //  عرض الدرس — النص والصور والفيديو والصوت في مكان واحد
   // ═══════════════════════════════════════════════════════════
   void _openLesson(Map lesson) {
-    final videoUrl = lesson['video_url']?.toString();
-    final captionUrl = lesson['caption_url']?.toString();
-    final signLanguageUrl = lesson['sign_language_url']?.toString();
-    final audioDescription = lesson['audio_description']?.toString();
-    final title = (lesson['title'] ?? '').toString();
-
-    // ✅ إذا وُجد فيديو → افتح مشغّل الفيديو المتكيّف
-    if (videoUrl != null && videoUrl.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => AdaptiveVideoPlayer(
-            videoUrl: videoUrl,
-            captionUrl:
-                captionUrl != null && captionUrl.isNotEmpty ? captionUrl : null,
-            signLanguageUrl:
-                signLanguageUrl != null && signLanguageUrl.isNotEmpty
-                    ? signLanguageUrl
-                    : null,
-            audioDescription:
-                audioDescription != null && audioDescription.isNotEmpty
-                    ? audioDescription
-                    : null,
-            title: title,
-          ),
-        ),
-      );
-      return;
-    }
-
-    // ⚠️ إذا وُجد صوت فقط
-    final audioUrl = lesson['audio_url']?.toString();
-    if (audioUrl != null && audioUrl.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🔊 يحتوي هذا الدرس على تسجيل صوتي'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-
-    // ─── عرض النص ───
     final profile = AccessibilityService.instance.profile.value;
-    var simpleTitle = title;
+    var title = (lesson['title'] ?? '').toString();
     var content = (lesson['content'] ?? '').toString();
 
     if (profile.verySimpleLanguage) {
-      simpleTitle = SimpleLanguageService.instance.simplify(simpleTitle);
+      title = SimpleLanguageService.instance.simplify(title);
       content = SimpleLanguageService.instance.simplify(content);
     }
 
@@ -379,58 +341,182 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _buildDetailModal(simpleTitle, content, lesson),
+      builder: (_) => _buildDetailModal(title, content, lesson),
     );
   }
 
+  Future<void> _toggleLessonAudio(String url) async {
+    if (_activeAudioUrl == url) {
+      await _lessonAudioPlayer.stop();
+      if (mounted) setState(() => _activeAudioUrl = null);
+      return;
+    }
+
+    await _lessonAudioPlayer.stop();
+    await _lessonAudioPlayer.play(UrlSource(url));
+    if (mounted) setState(() => _activeAudioUrl = url);
+  }
+
   Widget _buildDetailModal(String title, String content, Map lesson) {
-    return Container(
-      margin: EdgeInsets.all(AdaptiveHelper.spacing),
-      padding: EdgeInsets.all(AdaptiveHelper.spacing),
-      decoration: BoxDecoration(
-        color: AdaptiveHelper.cardColor(context),
-        borderRadius: BorderRadius.circular(AdaptiveHelper.cardRadius),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: AdaptiveText(
-                    title,
-                    type: AdaptiveTextType.title,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            SizedBox(height: AdaptiveHelper.spacing),
-            if (content.isNotEmpty)
-              AdaptiveText(content, type: AdaptiveTextType.body),
-            SizedBox(height: AdaptiveHelper.spacing),
-            AdaptiveButton(
-              label: 'اسأل نور',
-              icon: Icons.auto_awesome,
-              style: AdaptiveButtonStyle.outlined,
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AssistantScreen(
-                      lessonContext: 'عنوان: $title\n$content',
+    final videoUrl = lesson['video_url']?.toString();
+    final audioUrl = lesson['audio_url']?.toString();
+    final captionUrl = lesson['caption_url']?.toString();
+    final signLanguageUrl = lesson['sign_language_url']?.toString();
+    final audioDescription = lesson['audio_description']?.toString();
+
+    final rawImages = lesson['images'] ?? lesson['image_urls'] ?? const [];
+    final images = rawImages is List
+        ? rawImages.map((e) => e.toString()).where((e) => e.isNotEmpty).toList()
+        : <String>[];
+
+    final hasVideo = videoUrl != null && videoUrl.isNotEmpty;
+    final hasAudio = audioUrl != null && audioUrl.isNotEmpty;
+
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.all(AdaptiveHelper.spacing),
+        padding: EdgeInsets.all(AdaptiveHelper.spacing),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
+        ),
+        decoration: BoxDecoration(
+          color: AdaptiveHelper.cardColor(context),
+          borderRadius: BorderRadius.circular(AdaptiveHelper.cardRadius),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: AdaptiveText(
+                      title,
+                      type: AdaptiveTextType.title,
                     ),
                   ),
-                );
-              },
-            ),
-          ],
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+
+              if (images.isNotEmpty) ...[
+                SizedBox(height: AdaptiveHelper.spacing),
+                SizedBox(
+                  height: 190,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: images.length,
+                    separatorBuilder: (_, __) =>
+                        SizedBox(width: AdaptiveHelper.spacing / 2),
+                    itemBuilder: (_, index) => ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.network(
+                        images[index],
+                        width: 250,
+                        height: 190,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 250,
+                          height: 190,
+                          color: Colors.black12,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image_outlined, size: 42),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
+              if (content.isNotEmpty) ...[
+                SizedBox(height: AdaptiveHelper.spacing),
+                AdaptiveText(content, type: AdaptiveTextType.body),
+              ],
+
+              if (audioDescription != null && audioDescription.isNotEmpty) ...[
+                SizedBox(height: AdaptiveHelper.spacing),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(AdaptiveHelper.spacing / 1.5),
+                  decoration: BoxDecoration(
+                    color: AppColors.teal.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: AdaptiveText(
+                    '🔊 الوصف الصوتي: $audioDescription',
+                    type: AdaptiveTextType.caption,
+                  ),
+                ),
+              ],
+
+              if (hasVideo) ...[
+                SizedBox(height: AdaptiveHelper.spacing),
+                AdaptiveButton(
+                  label: 'تشغيل فيديو الدرس',
+                  icon: Icons.play_circle_fill,
+                  fullWidth: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AdaptiveVideoPlayer(
+                          videoUrl: videoUrl!,
+                          captionUrl: captionUrl != null && captionUrl.isNotEmpty
+                              ? captionUrl
+                              : null,
+                          signLanguageUrl:
+                              signLanguageUrl != null && signLanguageUrl.isNotEmpty
+                                  ? signLanguageUrl
+                                  : null,
+                          audioDescription:
+                              audioDescription != null && audioDescription.isNotEmpty
+                                  ? audioDescription
+                                  : null,
+                          title: title,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+
+              if (hasAudio) ...[
+                SizedBox(height: AdaptiveHelper.spacing / 2),
+                AdaptiveButton(
+                  label: _activeAudioUrl == audioUrl
+                      ? 'إيقاف التسجيل الصوتي'
+                      : 'تشغيل التسجيل الصوتي',
+                  icon: _activeAudioUrl == audioUrl ? Icons.stop : Icons.headphones,
+                  style: AdaptiveButtonStyle.outlined,
+                  fullWidth: true,
+                  onPressed: () => _toggleLessonAudio(audioUrl!),
+                ),
+              ],
+
+              SizedBox(height: AdaptiveHelper.spacing),
+              AdaptiveButton(
+                label: 'اسأل نور',
+                icon: Icons.auto_awesome,
+                style: AdaptiveButtonStyle.outlined,
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssistantScreen(
+                        lessonContext: 'عنوان: $title\n$content',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

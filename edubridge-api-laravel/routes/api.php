@@ -167,7 +167,7 @@ Route::middleware('auth.jwt')->group(function () {
 
     // الدروس
     Route::post('/lessons', [LessonController::class, 'store'])
-        ->middleware('role:teacher,admin');
+        ->middleware('role:teacher,specialist,admin');
     Route::get('/lessons', [LessonController::class, 'index']);
     Route::get('/lessons/{id}', [LessonController::class, 'show']);
 
@@ -179,9 +179,9 @@ Route::middleware('auth.jwt')->group(function () {
     // وسائط الدروس (صور / فيديو / صوت)
     Route::get('/lessons/{id}/media', [MediaController::class, 'index']);
     Route::post('/lessons/{id}/media', [MediaController::class, 'store'])
-        ->middleware('role:teacher,admin');
+        ->middleware('role:teacher,specialist,admin');
     Route::delete('/media/{id}', [MediaController::class, 'destroy'])
-        ->middleware('role:teacher,admin');
+        ->middleware('role:teacher,specialist,admin');
 
     // التقدّم (ولي الأمر يعرض فقط — لا يعدّل)
     Route::post('/progress', [ProgressController::class, 'store'])

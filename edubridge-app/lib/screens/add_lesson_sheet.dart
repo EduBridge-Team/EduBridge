@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
@@ -33,6 +34,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   final _audioDescriptionCtrl = TextEditingController();
 
   String? _typeId;
+  final List<File> _imageFiles = [];
   File? _videoFile;
   File? _audioFile;
   File? _captionFile;
@@ -76,6 +78,17 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     }
   }
 
+  Future<void> _pickImages() async {
+    final images = await _picker.pickMultiImage(imageQuality: 90);
+    if (images.isNotEmpty && mounted) {
+      setState(() {
+        _imageFiles
+          ..clear()
+          ..addAll(images.map((image) => File(image.path)));
+      });
+    }
+  }
+
   Future<void> _pickVideo() async {
     final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
     if (video != null && mounted) {
@@ -84,17 +97,24 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   }
 
   Future<void> _pickAudio() async {
-    final XFile? audio = await _picker.pickMedia();
-    if (audio != null && mounted) {
-      setState(() => _audioFile = File(audio.path));
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['mp3', 'm4a', 'aac', 'wav', 'ogg'],
+    );
+    final path = result?.files.single.path;
+    if (path != null && mounted) {
+      setState(() => _audioFile = File(path));
     }
   }
 
-  // ✅ جديد: اختيار ملف ترجمات
   Future<void> _pickCaption() async {
-    final XFile? file = await _picker.pickMedia();
-    if (file != null && mounted) {
-      setState(() => _captionFile = File(file.path));
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['vtt', 'srt'],
+    );
+    final path = result?.files.single.path;
+    if (path != null && mounted) {
+      setState(() => _captionFile = File(path));
     }
   }
 
@@ -128,6 +148,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? null
             : _contentCtrl.text.trim(),
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
+        imageFiles: _imageFiles,
         videoFile: _videoFile,
         audioFile: _audioFile,
         captionFile: _captionFile,
@@ -224,6 +245,10 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                   // ═══ من سيستفيد ═══
                   _targetSelector(c),
                   const SizedBox(height: 16),
+
+                  // ═══ صور الدرس ═══
+                  _imagesPicker(c),
+                  const SizedBox(height: 12),
 
                   // ═══ فيديو الدرس ═══
                   _filePicker(
@@ -448,6 +473,99 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                 ),
               ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _imagesPicker(JisrColors c) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.orange.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.photo_library, color: AppColors.orange, size: 20),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '🖼️ صور الدرس (اختياري)',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: c.onTint,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'يمكن اختيار عدة صور ودمجها مع الفيديو أو الصوت',
+            style: TextStyle(fontSize: 11, color: c.muted),
+          ),
+          const SizedBox(height: 8),
+          if (_imageFiles.isNotEmpty) ...[
+            SizedBox(
+              height: 86,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _imageFiles.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (_, index) {
+                  final file = _imageFiles[index];
+                  return Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          file,
+                          width: 86,
+                          height: 86,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        top: 3,
+                        right: 3,
+                        child: InkWell(
+                          onTap: () => setState(() => _imageFiles.removeAt(index)),
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.close, color: Colors.white, size: 15),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          SizedBox(
+            width: double.infinity,
+            height: 38,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.orange,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.add_photo_alternate, size: 18),
+              label: Text(_imageFiles.isEmpty ? 'اختر صوراً' : 'تغيير الصور'),
+              onPressed: _pickImages,
+            ),
+          ),
         ],
       ),
     );

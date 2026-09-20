@@ -453,6 +453,7 @@ class ApiService {
     required String title,
     String? content,
     int? disabilityTypeId,
+    List<File>? imageFiles,
     File? videoFile,
     File? audioFile,
     File? captionFile,
@@ -483,6 +484,17 @@ class ApiService {
       }
       if (audioDescription != null && audioDescription.trim().isNotEmpty) {
         request.fields['audio_description'] = audioDescription.trim();
+      }
+
+      // ✅ صور الدرس (يمكن رفع أكثر من صورة)
+      if (imageFiles != null) {
+        for (final image in imageFiles) {
+          if (await image.exists()) {
+            request.files.add(
+              await http.MultipartFile.fromPath('images[]', image.path),
+            );
+          }
+        }
       }
 
       // ✅ الملفات الأساسية
