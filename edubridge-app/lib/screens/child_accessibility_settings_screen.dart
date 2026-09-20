@@ -9,12 +9,14 @@ class ChildAccessibilitySettingsScreen extends StatefulWidget {
   final int childId;
   final String childName;
   final String? disabilityTypeHint;
+  final bool deactivateOnExit;
 
   const ChildAccessibilitySettingsScreen({
     super.key,
     required this.childId,
     required this.childName,
     this.disabilityTypeHint,
+    this.deactivateOnExit = true,
   });
 
   @override
@@ -41,8 +43,9 @@ class _ChildAccessibilitySettingsScreenState
   @override
   void dispose() {
     _customNameCtrl.dispose();
-    // ✅ إلغاء تفعيل الطفل عند مغادرة الشاشة
-    AccessibilityService.instance.setActiveChild(null);
+    if (widget.deactivateOnExit) {
+      AccessibilityService.instance.setActiveChild(null);
+    }
     super.dispose();
   }
 
