@@ -72,6 +72,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     AccessibilityService.instance.setActiveChild(
       widget.childId,
       disabilityTypeHint: widget.disabilityType,
+      forceReload: true,
     );
   }
 
