@@ -904,7 +904,11 @@ class AccessibilityService {
       disabilityTypeHint: disabilityTypeHint,
       forceReload: forceReload,
     );
-    profile.value = childProfile;
+
+    // قد تُغلق الصفحة أثناء جلب الملف من الشبكة؛ لا تعِد تفعيل طفل قديم.
+    if (activeChildId.value == childId) {
+      profile.value = childProfile;
+    }
   }
 
   Future<void> updateActive(AccessibilityProfile next) async {
