@@ -465,7 +465,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => AdaptiveVideoPlayer(
-                          videoUrl: videoUrl,
+                          videoUrl: videoUrl!,
                           captionUrl: captionUrl != null && captionUrl.isNotEmpty
                               ? captionUrl
                               : null,
@@ -494,7 +494,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   icon: _activeAudioUrl == audioUrl ? Icons.stop : Icons.headphones,
                   style: AdaptiveButtonStyle.outlined,
                   fullWidth: true,
-                  onPressed: () => _toggleLessonAudio(audioUrl),
+                  onPressed: () => _toggleLessonAudio(audioUrl!),
                 ),
               ],
 
