@@ -1278,7 +1278,6 @@ body.parent-portal-active #root {
 
   .pp-noor-card .noor-pet {
     margin: -14px auto -8px;
-    transform: scale(.92);
   }
 
   .pp-noor-card > strong {
@@ -1844,6 +1843,10 @@ body.parent-portal-active.parent-dashboard-page {
   gap: 16px;
 }
 
+body.role-portal-teacher .pp-content {
+  width: min(1500px, calc(100% - 32px)) !important;
+}
+
 .pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
 .pp-shell:not(.pp-role-parent) .pp-content .tabs {
   padding: 5px;
@@ -1931,6 +1934,27 @@ body.parent-portal-active.parent-dashboard-page {
   .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero {
     padding: 17px;
     border-radius: 18px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .pp-role-teacher .teacher-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pp-role-teacher .teacher-children-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pp-role-teacher .teacher-children-column > .page-title,
+  .pp-role-teacher .teacher-children-column > .state {
+    grid-column: 1 / -1;
+  }
+
+  .pp-role-teacher .teacher-children-column .card {
+    margin-bottom: 0;
   }
 }
 
@@ -2383,7 +2407,6 @@ body.parent-portal-active.parent-dashboard-page {
     grid-template-columns: 72px minmax(0, 1fr) !important;
     grid-template-areas:
       "pet title"
-      "pet copy"
       "button button";
     align-items: center !important;
     gap: 4px 10px !important;
@@ -2404,15 +2427,6 @@ body.parent-portal-active.parent-dashboard-page {
     align-self: end;
     font-size: 16px !important;
     color: var(--pp-blue-deep);
-  }
-
-  .pp-noor-card > p {
-    grid-area: copy;
-    align-self: start;
-    margin: 0 !important;
-    color: var(--pp-text);
-    font-size: 10px !important;
-    line-height: 1.55;
   }
 
   .pp-noor-card > button {
@@ -3773,18 +3787,11 @@ body.role-portal-drawer-open {
 
   body.parent-portal-active .pp-noor-card .noor-pet {
     margin: -24px auto -16px !important;
-    transform: scale(.72) !important;
     transform-origin: center !important;
   }
 
   body.parent-portal-active .pp-noor-card > strong {
     font-size: 15px !important;
-  }
-
-  body.parent-portal-active .pp-noor-card > p {
-    margin: 2px 0 6px !important;
-    font-size: 9px !important;
-    line-height: 1.4 !important;
   }
 
   body.parent-portal-active .pp-noor-card > button {

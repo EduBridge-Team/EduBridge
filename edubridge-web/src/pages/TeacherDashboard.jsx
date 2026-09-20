@@ -141,8 +141,8 @@ export default function TeacherDashboard() {
             </button>
           </div>
         ) : (
-          <div className="dashboard-grid">
-            <section>
+          <div className="dashboard-grid teacher-dashboard-grid">
+            <section className="teacher-lessons-column">
               <div className="page-title">
                 <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <BookOpen size={20} /> البحث في الدروس
@@ -161,7 +161,7 @@ export default function TeacherDashboard() {
                   {lessons.length === 0 ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة'}
                 </div>
               ) : (
-                <div className="lesson-grid">
+                <div className="lesson-grid teacher-lesson-grid">
                   {filtered.map((lesson) => {
                     const tn = typeName(lesson.disability_type_id)
                     const mine = ownsLesson(lesson)
@@ -176,7 +176,7 @@ export default function TeacherDashboard() {
                         </div>
                         <h3>{lesson.title}</h3>
                         {lesson.content && <p className="content">{lesson.content}</p>}
-                        <div style={{ display: 'grid', gridTemplateColumns: mine ? '1fr 1fr 1fr' : '1fr', gap: 8 }}>
+                        <div className={`teacher-lesson-actions${mine ? ' is-owner' : ''}`}>
                           <button
                             className="btn small navy"
                             onClick={() => setViewing(lesson)}
@@ -210,7 +210,7 @@ export default function TeacherDashboard() {
               )}
             </section>
 
-            <aside>
+            <aside className="teacher-children-column">
               <div className="page-title">
                 <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Users size={20} /> جميع الأطفال
