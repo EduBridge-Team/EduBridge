@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
+import EduBridgeAnimatedBackground from '../components/EduBridgeAnimatedBackground'
 import NoorPet from '../components/NoorPet'
 import { dashboardFor } from '../roleRoutes'
 import '../homepage-reference.css'
@@ -139,16 +140,7 @@ export default function HomePage() {
   return (
     <div className="landing new-landing reference-home">
       <section className="home-hero reference-hero">
-        <div className="hero-decorations" aria-hidden="true">
-          <span className="hero-deco hero-deco-dots" />
-          <span className="hero-deco hero-deco-ring hero-deco-ring-a" />
-          <span className="hero-deco hero-deco-ring hero-deco-ring-b" />
-          <span className="hero-deco hero-deco-spark hero-deco-spark-a">✦</span>
-          <span className="hero-deco hero-deco-spark hero-deco-spark-b">✦</span>
-          <span className="hero-deco hero-deco-plus">+</span>
-          <span className="hero-deco hero-deco-bubble hero-deco-bubble-a" />
-          <span className="hero-deco hero-deco-bubble hero-deco-bubble-b" />
-        </div>
+        <EduBridgeAnimatedBackground />
 
         <div className="home-hero-copy">
           <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
