@@ -2380,14 +2380,14 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 .noor-launcher {
-    width: 76px;
-    height: 76px;
-    min-width: 76px;
-    min-height: 76px;
+    width: 86px;
+    height: 86px;
+    min-width: 86px;
+    min-height: 86px;
     padding: 0;
-    border: 3px solid #e7ba4b;
+    border: 2px solid color-mix(in srgb, var(--teal) 55%, #ffffff);
     border-radius: 50%;
-    background: linear-gradient(145deg, #1cc8d0 0%, #168ebd 100%);
+    background: color-mix(in srgb, var(--surface) 92%, var(--teal));
     color: #fff;
     box-shadow:
         0 12px 30px oklch(22% 0.06 250 / 0.3),
@@ -2467,34 +2467,82 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     display: block;
     flex: 0 0 auto;
     overflow: visible;
-    animation: noor-pet-bob 2.6s ease-in-out infinite;
+    animation: noor-pet-bob 2.8s ease-in-out infinite;
 }
 
-.noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.22); }
-.noor-pet-glow { fill: oklch(80% 0.13 85 / 0.28); }
-.noor-pet-body { fill: var(--teal); }
+.noor-pet-head {
+    transform-origin: 58px 53px;
+    transition: transform .14s ease-out;
+}
+
+.noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.18); }
+.noor-pet-glow { fill: color-mix(in srgb, var(--teal) 24%, transparent); }
+.noor-pet-body,
 .noor-pet-ear,
+.noor-pet-arm { fill: var(--teal); }
+.noor-pet-ear-inner,
+.noor-pet-eyes,
+.noor-pet-mouth,
 .noor-pet-badge { fill: var(--navy); }
-.noor-pet-face { fill: #fff; }
-.noor-pet-eyes { fill: var(--navy-deep); animation: noor-pet-eyes 5.2s infinite; }
+.noor-pet-face,
+.noor-pet-mitten { fill: #fff; }
+.noor-pet-mitten {
+    stroke: #bfd2e5;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+}
+.noor-pet-eye-shine { fill: #fff; }
+.noor-pet-cheek,
+.noor-pet-mouth-inner,
+.noor-pet-headset-cup,
+.noor-pet-attention { fill: #bfd2e5; }
+
 .noor-pet-blink {
     fill: none;
     stroke: var(--navy-deep);
-    stroke-width: 2.5;
+    stroke-width: 2.8;
     stroke-linecap: round;
     opacity: 0;
-    animation: noor-pet-blink 5.2s infinite;
+    animation: noor-pet-blink 5.4s infinite;
 }
-.noor-pet-beak { fill: var(--coral); }
-.noor-pet-bridge {
+
+.noor-pet-eyes {
+    animation: noor-pet-eyes 5.4s infinite;
+}
+
+.noor-pet-headset-band,
+.noor-pet-headset-mic {
     fill: none;
-    stroke: var(--yellow);
-    stroke-width: 1.7;
+    stroke: var(--navy);
+    stroke-width: 5;
     stroke-linecap: round;
+    stroke-linejoin: round;
 }
-.noor-pet-sparkle {
-    fill: var(--yellow);
-    animation: noor-pet-sparkle 1.3s ease-in-out infinite alternate;
+
+.noor-pet-headset-thin {
+    stroke-width: 3.2;
+}
+
+.noor-pet-headset-cup {
+    stroke: var(--navy);
+    stroke-width: 2.2;
+}
+
+.noor-pet-brain {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.noor-pet-brain circle {
+    fill: #fff;
+    stroke: none;
+}
+
+.noor-pet-attention {
+    animation: noor-pet-attention 1.25s ease-in-out infinite alternate;
 }
 
 @keyframes noor-pet-bob {
@@ -2512,16 +2560,16 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     89%, 93% { opacity: 1; }
 }
 
-@keyframes noor-pet-sparkle {
-    from { transform: translateY(-2px); opacity: 0.65; }
-    to { transform: translateY(2px); opacity: 1; }
+@keyframes noor-pet-attention {
+    from { opacity: .5; transform: translateY(1px); }
+    to { opacity: 1; transform: translateY(-1px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .noor-pet,
     .noor-pet-eyes,
     .noor-pet-blink,
-    .noor-pet-sparkle {
+    .noor-pet-attention {
         animation: none;
     }
 }
