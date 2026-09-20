@@ -264,9 +264,8 @@ export default function RolePortalShell({ children }) {
         </nav>
 
         <div className="pp-noor-card">
-          <NoorPet size={118} />
+          <NoorPet size={96} trackMouse />
           <strong>نور</strong>
-          <p>مساعدك الذكي دائماً معك لدعم رحلتك داخل EduBridge.</p>
           <button onClick={openNoor}>ابدأ المحادثة الآن</button>
         </div>
       </aside>

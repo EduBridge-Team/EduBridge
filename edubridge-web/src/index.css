@@ -1872,6 +1872,53 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     align-items: start;
 }
 
+/* Keep the teacher columns and every nested grid item inside their tracks. */
+.teacher-dashboard-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, .85fr);
+}
+
+.teacher-dashboard-grid > *,
+.teacher-lesson-grid > *,
+.teacher-children-column .card-row > div:last-child {
+    min-width: 0;
+}
+
+.lesson-grid.teacher-lesson-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(245px, 100%), 1fr));
+}
+
+.teacher-lesson-grid .lesson-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.teacher-lesson-grid .lesson-card h3,
+.teacher-lesson-grid .lesson-card .content,
+.teacher-children-column h3,
+.teacher-children-column .meta {
+    overflow-wrap: anywhere;
+}
+
+.teacher-lesson-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin-top: auto;
+}
+
+.teacher-lesson-actions.is-owner {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.teacher-lesson-actions .btn {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 8px;
+    gap: 5px;
+    white-space: normal;
+    line-height: 1.25;
+}
+
 .lesson-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -2470,20 +2517,21 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     animation: noor-pet-bob 2.8s ease-in-out infinite;
 }
 
-.noor-pet-head {
+.noor-pet-character {
     transform-origin: 58px 53px;
-    transition: transform .14s ease-out;
+    transition: transform .16s cubic-bezier(.2, .75, .3, 1);
+    will-change: transform;
 }
 
 .noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.18); }
 .noor-pet-glow { fill: color-mix(in srgb, var(--teal) 24%, transparent); }
 .noor-pet-body,
 .noor-pet-ear,
-.noor-pet-arm { fill: var(--teal); }
+.noor-pet-arm { fill: #31c8c4; }
 .noor-pet-ear-inner,
 .noor-pet-eyes,
 .noor-pet-mouth,
-.noor-pet-badge { fill: var(--navy); }
+.noor-pet-badge { fill: #1154ad; }
 .noor-pet-face,
 .noor-pet-mitten { fill: #fff; }
 .noor-pet-mitten {
@@ -2513,7 +2561,7 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 .noor-pet-headset-band,
 .noor-pet-headset-mic {
     fill: none;
-    stroke: var(--navy);
+    stroke: #1154ad;
     stroke-width: 5;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -2524,7 +2572,7 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 .noor-pet-headset-cup {
-    stroke: var(--navy);
+    stroke: #1154ad;
     stroke-width: 2.2;
 }
 
@@ -2571,6 +2619,10 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     .noor-pet-blink,
     .noor-pet-attention {
         animation: none;
+    }
+
+    .noor-pet-character {
+        transition: none;
     }
 }
 
