@@ -23,6 +23,13 @@ return new class extends Migration
             });
         }
 
+        if (Schema::hasTable('lessons') && Schema::hasColumn('lessons', 'target_type')) {
+            DB::table('lessons')
+                ->whereNotNull('disability_type_id')
+                ->where('target_type', 'everyone')
+                ->update(['target_type' => 'byDisability']);
+        }
+
         if (Schema::hasTable('media') && DB::getDriverName() === 'pgsql') {
             DB::statement('ALTER TABLE media DROP CONSTRAINT IF EXISTS media_type_check');
             DB::statement('ALTER TABLE media ALTER COLUMN type TYPE VARCHAR(20)');
