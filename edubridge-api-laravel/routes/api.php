@@ -168,6 +168,10 @@ Route::middleware('auth.jwt')->group(function () {
     // الدروس
     Route::post('/lessons', [LessonController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
+    Route::match(['put', 'post'], '/lessons/{id}', [LessonController::class, 'update'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::delete('/lessons/{id}', [LessonController::class, 'destroy'])
+        ->middleware('role:teacher,specialist,admin');
     Route::get('/lessons', [LessonController::class, 'index']);
     Route::get('/lessons/{id}', [LessonController::class, 'show']);
 
