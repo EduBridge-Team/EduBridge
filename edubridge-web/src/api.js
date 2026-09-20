@@ -163,12 +163,43 @@ export function fetchDisabilityTypes() {
   return request("/disability-types");
 }
 
-// إضافة درس جديد (معلّم/أدمن)
-export function createLesson(payload) {
-  return request("/lessons", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+// إضافة درس جديد (معلّم/أدمن).
+// يقبل JSON للدروس النصية أو FormData للدروس التي تحتوي وسائط.
+export async function createLesson(payload) {
+  if (!(payload instanceof FormData)) {
+    return request("/lessons", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  const token = getToken();
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}/lessons`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: payload,
+    });
+  } catch {
+    throw new Error("تعذّر الاتصال بالسيرفر");
+  }
+
+  const raw = await res.text();
+  let data = {};
+  if (raw) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = {};
+    }
+  }
+
+  if (!res.ok) {
+    throw new Error(data.error || data.message || `تعذّر حفظ الدرس (HTTP ${res.status})`);
+  }
+
+  return data;
 }
 
 // تقدّم الطفل: التفاصيل والملخّص
