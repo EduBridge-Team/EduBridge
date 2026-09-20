@@ -202,12 +202,19 @@ class LessonController extends Controller
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
+        $disabilityTypeId = $request->has('disability_type_id')
+            ? $request->input('disability_type_id')
+            : $lesson->disability_type_id;
+        if ($disabilityTypeId === '' || $disabilityTypeId === null) {
+            $disabilityTypeId = null;
+        }
+
         DB::beginTransaction();
         try {
             DB::table('lessons')->where('id', $lesson->id)->update([
                 'title' => $title,
                 'content' => $request->input('content', $lesson->content),
-                'disability_type_id' => $request->input('disability_type_id', $lesson->disability_type_id),
+                'disability_type_id' => $disabilityTypeId,
                 'education_level' => $request->input('education_level', $lesson->education_level ?? null),
                 'target_type' => $targetType,
                 'target_child_ids' => empty($targetChildIds) ? null : json_encode(array_values($targetChildIds)),
