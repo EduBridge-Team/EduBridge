@@ -2553,7 +2553,7 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 .noor-pet-eye-shine { fill: #fff; }
 .noor-pet-cheek,
 .noor-pet-mouth-inner,
-.noor-pet-headset-cup,
+.noor-pet-headset-cup-pad,
 .noor-pet-attention { fill: #bfd2e5; }
 
 .noor-pet-blink {
@@ -2578,11 +2578,8 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     stroke-linejoin: round;
 }
 
-.noor-pet-headset-cup {
-    fill: #d8e6f1;
-    stroke: #1154ad;
-    stroke-width: 2.2;
-}
+.noor-pet-headset-cup-back { fill: #1154ad; }
+.noor-pet-headset-cup-pad { fill: #d8e6f1; }
 
 .noor-pet-brain {
     fill: none;

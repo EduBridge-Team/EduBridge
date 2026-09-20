@@ -266,17 +266,9 @@ class _NoorPainter extends CustomPainter {
       ..moveTo(103, 39)
       ..cubicTo(112, 42, 118, 49, 118, 57);
     canvas.drawPath(headset, headsetPaint);
-    canvas.drawOval(const Rect.fromLTWH(108.5, 55.2, 13, 17.6), softBluePaint);
-    canvas.drawOval(
-      const Rect.fromLTWH(108.5, 55.2, 13, 17.6),
-      Paint()
-        ..color = _midBlue
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.2,
-    );
     final mic = Path()
-      ..moveTo(113, 72)
-      ..cubicTo(112, 78, 108, 82, 102, 84);
+      ..moveTo(115, 70)
+      ..cubicTo(114, 79, 107, 86, 99, 89);
     canvas.drawPath(
       mic,
       Paint()
@@ -285,6 +277,11 @@ class _NoorPainter extends CustomPainter {
         ..strokeWidth = 5.5
         ..strokeCap = StrokeCap.round,
     );
+    canvas.drawOval(
+      const Rect.fromLTWH(106.5, 54.5, 15, 19),
+      Paint()..color = _midBlue,
+    );
+    canvas.drawOval(const Rect.fromLTWH(111.4, 57.2, 9.2, 13.6), softBluePaint);
 
     canvas.drawCircle(const Offset(91, 88), 13, bluePaint);
     final brain = Paint()
