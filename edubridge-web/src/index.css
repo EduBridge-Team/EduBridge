@@ -2573,13 +2573,9 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 .noor-pet-headset-mic {
     fill: none;
     stroke: #1154ad;
-    stroke-width: 5;
+    stroke-width: 5.5;
     stroke-linecap: round;
     stroke-linejoin: round;
-}
-
-.noor-pet-headset-thin {
-    stroke-width: 3.2;
 }
 
 .noor-pet-headset-cup {
