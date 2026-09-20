@@ -76,5 +76,5 @@ jobs:
           # main may have advanced while Vite was building (for example an API-only commit).
           # Rebase the generated deploy commit onto the latest branch before pushing.
           git fetch origin "${GITHUB_REF_NAME}"
-          git rebase "origin/${GITHUB_REF_NAME}"
+          git rebase --autostash "origin/${GITHUB_REF_NAME}"
           git push origin HEAD:${GITHUB_REF_NAME}
