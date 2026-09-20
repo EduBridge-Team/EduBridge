@@ -2659,3 +2659,79 @@ body.parent-dashboard-page::-webkit-scrollbar {
 :root[data-theme="dark"] .pd-list article {
   border-color: #214566 !important;
 }
+
+
+/* ============================================================
+   Parent dashboard inside the shared portal shell
+   ============================================================ */
+/*
+ * /parent is already rendered by RolePortalShell. Keep the dashboard
+ * constrained to the shell's main column so it can never slide underneath
+ * the shared right sidebar. The dashboard's old standalone sidebar/topbar
+ * stay available outside the shell, but are suppressed here to avoid
+ * duplicate navigation chrome.
+ */
+.pp-shell .pp-content > .parent-dashboard-v2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.pp-shell .parent-dashboard-v2 > .pd-sidebar,
+.pp-shell .parent-dashboard-v2 > .pd-main > .pd-toolbar,
+.pp-shell .parent-dashboard-v2 .pd-mobile-nav {
+  display: none !important;
+}
+
+.pp-shell .parent-dashboard-v2 > .pd-main,
+.pp-shell .parent-dashboard-v2 .pd-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.pp-shell .parent-dashboard-v2 .pd-content {
+  padding: 0 0 24px !important;
+}
+
+/* Older dashboard rules deliberately expanded the lower cards into the
+ * dashboard's own sidebar column. Inside RolePortalShell that space belongs
+ * to the shared sidebar, so keep every section inside the main column. */
+.pp-shell .parent-dashboard-v2 .pd-fullwidth-lower,
+.pp-shell .parent-dashboard-v2 .pd-lower-grid,
+.pp-shell .parent-dashboard-v2 .pd-quick-actions,
+.pp-shell .parent-dashboard-v2 .pd-noor-banner {
+  width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+  inset: auto !important;
+}
+
+@media (min-width: 901px) {
+  html.parent-dashboard-page.parent-portal-active,
+  body.parent-dashboard-page.parent-portal-active {
+    overflow-y: auto !important;
+    overflow-x: clip !important;
+  }
+
+  .pp-shell .parent-dashboard-v2 {
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-shell .parent-dashboard-v2 > .pd-main {
+    width: 100% !important;
+  }
+
+  .pp-shell .parent-dashboard-v2 .pd-content {
+    width: 100% !important;
+    padding-bottom: 24px !important;
+  }
+}
