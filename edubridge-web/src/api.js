@@ -202,6 +202,48 @@ export async function createLesson(payload) {
   return data;
 }
 
+
+export async function updateLesson(id, payload) {
+  if (!(payload instanceof FormData)) {
+    return request(`/lessons/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  const token = getToken();
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}/lessons/${id}`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: payload,
+    });
+  } catch {
+    throw new Error("تعذّر الاتصال بالسيرفر");
+  }
+
+  const raw = await res.text();
+  let data = {};
+  if (raw) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = {};
+    }
+  }
+
+  if (!res.ok) {
+    throw new Error(data.error || data.message || `تعذّر تعديل الدرس (HTTP ${res.status})`);
+  }
+
+  return data;
+}
+
+export function deleteLesson(id) {
+  return request(`/lessons/${id}`, { method: "DELETE" });
+}
+
 // تقدّم الطفل: التفاصيل والملخّص
 export function fetchChildProgress(childId) {
   return request(`/progress/child/${childId}`);
