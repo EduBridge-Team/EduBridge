@@ -324,7 +324,7 @@ export default function ParentDashboard() {
         </nav>
 
         <div className="pd-noor-side">
-          <NoorPet size={118} />
+          <NoorPet size={118} trackMouse />
           <strong>نور</strong>
           <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
           <button onClick={openNoor}>ابدأ المحادثة الآن</button>
@@ -534,7 +534,7 @@ export default function ParentDashboard() {
               <p>اسأل عن تقدم طفلك، أو احصل على نصائح تعليمية مخصصة لدعم تعلمه.</p>
               <button onClick={openNoor}>ابدأ المحادثة الآن <ArrowLeft size={16} /></button>
             </div>
-            <NoorPet size={150} />
+            <NoorPet size={150} trackMouse />
             <div className="pd-noor-bubbles" aria-hidden="true">
               <span>ما هي أنشطة اليوم؟ 💡</span>
               <span>كيف يمكنني دعم طفلي في المنزل؟ 💬</span>

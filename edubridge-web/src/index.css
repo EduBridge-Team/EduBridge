@@ -2518,7 +2518,7 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 .noor-pet-character {
-    transform-origin: 58px 53px;
+    transform-origin: 70px 61px;
     transition: transform .16s cubic-bezier(.2, .75, .3, 1);
     will-change: transform;
 }
@@ -2534,10 +2534,21 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 .noor-pet-badge { fill: #1154ad; }
 .noor-pet-face,
 .noor-pet-mitten { fill: #fff; }
+.noor-pet-face-rim { fill: rgba(185, 223, 237, .42); }
+.noor-pet-body-highlight {
+    fill: rgba(255, 255, 255, .12);
+    pointer-events: none;
+}
 .noor-pet-mitten {
     stroke: #bfd2e5;
     stroke-width: 1.2;
     stroke-linejoin: round;
+}
+.noor-pet-arm-shade {
+    fill: none;
+    stroke: rgba(17, 84, 173, .22);
+    stroke-width: 1.2;
+    stroke-linecap: round;
 }
 .noor-pet-eye-shine { fill: #fff; }
 .noor-pet-cheek,
@@ -2572,6 +2583,7 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 .noor-pet-headset-cup {
+    fill: #d8e6f1;
     stroke: #1154ad;
     stroke-width: 2.2;
 }
