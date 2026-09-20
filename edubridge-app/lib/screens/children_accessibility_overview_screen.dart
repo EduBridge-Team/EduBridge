@@ -49,11 +49,10 @@ class _ChildrenAccessibilityOverviewScreenState
         for (final c in list) {
           final id = c['id'] as int;
           if (AccessibilityService.instance.profileForChild(id) == null) {
-            await AccessibilityService.instance.setActiveChild(
+            await AccessibilityService.instance.ensureChildProfile(
               id,
               disabilityTypeHint: c['disability_type']?.toString(),
             );
-            await AccessibilityService.instance.setActiveChild(null);
           }
         }
 
@@ -85,12 +84,6 @@ class _ChildrenAccessibilityOverviewScreenState
     final id = child['id'] as int;
     final name = (child['name'] ?? '').toString();
 
-    // ✅ تفعيل الطفل مؤقتاً
-    await AccessibilityService.instance.setActiveChild(
-      id,
-      disabilityTypeHint: child['disability_type']?.toString(),
-    );
-
     if (!mounted) return;
 
     await Navigator.push(
@@ -103,10 +96,6 @@ class _ChildrenAccessibilityOverviewScreenState
         ),
       ),
     );
-
-    // ✅ إصلاح: إلغاء تفعيل الطفل بعد الرجوع
-    //    حتى لا يُطبَّق التكييف على شاشات ولي الأمر
-    await AccessibilityService.instance.setActiveChild(null);
 
     if (mounted) setState(() {});
   }
