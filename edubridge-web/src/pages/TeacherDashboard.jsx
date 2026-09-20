@@ -237,6 +237,63 @@ export default function TeacherDashboard() {
             <p className="content" style={{ marginTop: 12 }}>
               {viewing.content || 'لا يوجد محتوى لهذا الدرس.'}
             </p>
+
+            {(viewing.images || viewing.image_urls || []).length > 0 && (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                  gap: 10,
+                  marginTop: 12,
+                }}
+              >
+                {(viewing.images || viewing.image_urls || []).map((url) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt={viewing.title}
+                    style={{
+                      width: '100%',
+                      height: 150,
+                      objectFit: 'cover',
+                      borderRadius: 14,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {viewing.video_url && (
+              <video
+                controls
+                preload="metadata"
+                style={{ width: '100%', borderRadius: 14, marginTop: 12 }}
+              >
+                <source src={viewing.video_url} />
+                {viewing.caption_url && (
+                  <track
+                    kind="captions"
+                    src={viewing.caption_url}
+                    srcLang="ar"
+                    label="العربية"
+                    default
+                  />
+                )}
+              </video>
+            )}
+
+            {viewing.audio_url && (
+              <audio controls preload="metadata" style={{ width: '100%', marginTop: 12 }}>
+                <source src={viewing.audio_url} />
+              </audio>
+            )}
+
+            {viewing.audio_description && (
+              <p className="content" style={{ marginTop: 10 }}>
+                🔊 {viewing.audio_description}
+              </p>
+            )}
+
             <div className="modal-actions">
               <button className="btn outline" onClick={() => toggleSpeak(viewing)}>
                 {speaking ? (
@@ -258,6 +315,12 @@ function AddLessonModal({ types, onClose, onCreated }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [typeId, setTypeId] = useState('')
+  const [images, setImages] = useState([])
+  const [video, setVideo] = useState(null)
+  const [audio, setAudio] = useState(null)
+  const [caption, setCaption] = useState(null)
+  const [signLanguage, setSignLanguage] = useState(null)
+  const [audioDescription, setAudioDescription] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
@@ -266,11 +329,19 @@ function AddLessonModal({ types, onClose, onCreated }) {
     setSaving(true)
     setError(null)
     try {
-      const data = await createLesson({
-        title: title.trim(),
-        content: content.trim() || null,
-        disability_type_id: typeId ? Number(typeId) : null,
-      })
+      const fd = new FormData()
+      fd.append('title', title.trim())
+      if (content.trim()) fd.append('content', content.trim())
+      if (typeId) fd.append('disability_type_id', typeId)
+      fd.append('target_type', typeId ? 'byDisability' : 'everyone')
+      if (audioDescription.trim()) fd.append('audio_description', audioDescription.trim())
+      images.forEach((file) => fd.append('images[]', file))
+      if (video) fd.append('video', video)
+      if (audio) fd.append('audio', audio)
+      if (caption) fd.append('caption', caption)
+      if (signLanguage) fd.append('sign_language', signLanguage)
+
+      const data = await createLesson(fd)
       onCreated(data.lesson)
     } catch (err) {
       setError(err.message)
@@ -311,6 +382,54 @@ function AddLessonModal({ types, onClose, onCreated }) {
               </option>
             ))}
           </select>
+
+          <label>صور الدرس (يمكن اختيار عدة صور)</label>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            onChange={(e) => setImages(Array.from(e.target.files || []))}
+          />
+
+          <label>فيديو الدرس</label>
+          <input
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            onChange={(e) => setVideo(e.target.files?.[0] || null)}
+          />
+
+          <label>تسجيل صوتي</label>
+          <input
+            type="file"
+            accept="audio/mpeg,audio/mp4,audio/aac,audio/wav,audio/ogg"
+            onChange={(e) => setAudio(e.target.files?.[0] || null)}
+          />
+
+          <label>ملف الترجمة (.vtt أو .srt)</label>
+          <input
+            type="file"
+            accept=".vtt,.srt,text/vtt"
+            onChange={(e) => setCaption(e.target.files?.[0] || null)}
+          />
+
+          <label>فيديو لغة الإشارة</label>
+          <input
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            onChange={(e) => setSignLanguage(e.target.files?.[0] || null)}
+          />
+
+          <label>الوصف الصوتي</label>
+          <textarea
+            value={audioDescription}
+            onChange={(e) => setAudioDescription(e.target.value)}
+            rows={3}
+            placeholder="صف ما يحدث في الفيديو ليستفيد المستخدم الكفيف..."
+          />
+
+          <small style={{ display: 'block', marginTop: 8, opacity: 0.7 }}>
+            الصور حتى 10MB للصورة، الصوت حتى 50MB، والفيديو حتى 150MB.
+          </small>
 
           {error && <div className="error-box">{error}</div>}
 
