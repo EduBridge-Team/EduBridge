@@ -19,7 +19,7 @@ class PetAssistantOverlay extends StatefulWidget {
 }
 
 class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
-  static const double _launcherSize = 78;
+  static const double _launcherSize = 88;
   static const double _screenMargin = 14;
   static const String _xPreferenceKey = 'pet_assistant_x_fraction';
   static const String _yPreferenceKey = 'pet_assistant_y_fraction';
@@ -233,22 +233,23 @@ class _PetAssistantOverlayState extends State<PetAssistantOverlay> {
                                         shape: BoxShape.circle,
                                         border: Border.all(
                                           color: _dragging
-                                              ? AppColors.orange
-                                              : AppColors.yellow,
+                                              ? AppColors.navy
+                                              : AppColors.teal.withValues(alpha: 0.75),
                                           width: _dragging ? 3 : 2,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: _dragging
-                                                ? AppColors.orange
-                                                    .withValues(alpha: 0.5)
-                                                : const Color(0x33153A5B),
+                                                ? AppColors.navy
+                                                    .withValues(alpha: 0.34)
+                                                : AppColors.teal
+                                                    .withValues(alpha: 0.22),
                                             blurRadius: _dragging ? 20 : 14,
                                             offset: const Offset(0, 5),
                                           ),
                                         ],
                                       ),
-                                      child: const PetAvatar(size: 68),
+                                      child: const PetAvatar(size: 76),
                                     ),
                                   ),
                                 ),

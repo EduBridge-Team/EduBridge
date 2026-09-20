@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from 'react'
 
-const MAX_ROTATE = 9
-const MAX_SHIFT = 3.5
+const MAX_ROTATE = 7
+const MAX_SHIFT = 3
 const TRACK_RADIUS = 420
 
 export default function NoorPet({ size = 76, className = '', trackMouse = false }) {
@@ -48,48 +48,82 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
       className={`noor-pet ${className}`.trim()}
       width={size}
       height={size}
-      viewBox="0 0 76 76"
+      viewBox="0 0 120 104"
       role="img"
       aria-label="نور، المساعد الذكي"
     >
       <defs>
         <filter id={glowId} x="-35%" y="-35%" width="170%" height="170%">
-          <feGaussianBlur stdDeviation="4" />
+          <feGaussianBlur stdDeviation="6" />
         </filter>
         <filter id={shadowId} x="-30%" y="-80%" width="160%" height="260%">
-          <feGaussianBlur stdDeviation="2.5" />
+          <feGaussianBlur stdDeviation="3" />
         </filter>
       </defs>
 
-      <ellipse className="noor-pet-shadow" cx="38" cy="68" rx="24" ry="4" filter={`url(#${shadowId})`} />
-      <circle className="noor-pet-glow" cx="38" cy="35" r="31" filter={`url(#${glowId})`} />
+      <ellipse className="noor-pet-shadow" cx="59" cy="96" rx="35" ry="5" filter={`url(#${shadowId})`} />
+      <circle className="noor-pet-glow" cx="59" cy="51" r="43" filter={`url(#${glowId})`} />
+
+      <g className="noor-pet-ears">
+        <path className="noor-pet-ear" d="M31 29 C18 27 13 18 17 10 C22 2 34 8 43 18 Z" />
+        <path className="noor-pet-ear-inner" d="M29 24 C23 22 20 16 22 12 C25 8 31 12 37 18 Z" />
+        <path className="noor-pet-ear" d="M82 22 C92 12 103 9 108 17 C112 24 107 33 95 36 Z" />
+        <path className="noor-pet-ear-inner" d="M89 23 C95 17 101 16 103 20 C105 24 101 29 95 31 Z" />
+      </g>
 
       <path
         className="noor-pet-body"
-        d="M13 30 Q8 13 25 16 Q38 4 51 16 Q68 13 63 30 Q70 54 54 64 Q38 72 22 64 Q6 54 13 30 Z"
+        d="M31 19 C41 10 53 7 66 8 C80 8 91 15 97 26 C104 39 104 64 94 79 C85 93 71 99 57 99 C42 99 27 93 20 80 C12 66 13 42 20 30 C23 25 26 22 31 19 Z"
       />
+
+      <g className="noor-pet-arm-group">
+        <ellipse className="noor-pet-arm" cx="18" cy="69" rx="10" ry="15" transform="rotate(-26 18 69)" />
+        <path className="noor-pet-mitten" d="M12 66 C7 65 3 61 4 56 C5 52 9 53 12 56 C10 49 12 45 16 45 C20 45 21 51 21 55 C23 51 27 50 30 53 C34 58 29 64 25 68 C21 72 17 73 12 66 Z" />
+        <ellipse className="noor-pet-arm" cx="101" cy="70" rx="10" ry="15" transform="rotate(24 101 70)" />
+        <path className="noor-pet-mitten" d="M97 67 C93 63 90 58 93 54 C96 50 100 52 102 56 C102 51 104 47 108 47 C112 47 113 52 111 57 C114 54 118 54 120 58 C122 63 117 68 112 70 C106 73 101 72 97 67 Z" />
+      </g>
+
       <g className="noor-pet-head" ref={headRef}>
-        <path className="noor-pet-ear" d="M16 28 L13 10 L28 20 Z" />
-        <path className="noor-pet-ear" d="M60 28 L63 10 L48 20 Z" />
-        <ellipse className="noor-pet-face" cx="38" cy="39.5" rx="18" ry="15.5" />
+        <ellipse className="noor-pet-face" cx="58" cy="53" rx="33" ry="27" />
 
         <g className="noor-pet-eyes">
-          <circle cx="30" cy="36" r="2.8" />
-          <circle cx="46" cy="36" r="2.8" />
+          <circle cx="46" cy="50" r="5" />
+          <circle cx="70" cy="50" r="5" />
+          <circle className="noor-pet-eye-shine" cx="48" cy="47.5" r="1.6" />
+          <circle className="noor-pet-eye-shine" cx="72" cy="47.5" r="1.6" />
         </g>
         <g className="noor-pet-blink">
-          <path d="M27 37 H33" />
-          <path d="M43 37 H49" />
+          <path d="M41 51 H51" />
+          <path d="M65 51 H75" />
         </g>
 
-        <path className="noor-pet-beak" d="M34 42 L42 42 L38 47 Z" />
+        <circle className="noor-pet-cheek" cx="38.5" cy="61" r="4.2" />
+        <circle className="noor-pet-cheek" cx="77.5" cy="61" r="4.2" />
+
+        <path className="noor-pet-mouth" d="M50 63 C53 67 56 68 59 68 C62 68 65 67 68 63 C67 72 64 76 59 76 C54 76 51 72 50 63 Z" />
+        <path className="noor-pet-mouth-inner" d="M54 70 C57 68 61 68 64 70 C63 73 61 74 59 74 C57 74 55 73 54 70 Z" />
       </g>
-      <circle className="noor-pet-badge" cx="38" cy="58" r="7" />
-      <g className="noor-pet-bridge">
-        <path d="M33 57.5 A5 3.5 0 0 1 43 57.5" />
-        <path d="M32 59 H44" />
+
+      <g className="noor-pet-headset">
+        <path className="noor-pet-headset-band" d="M89 39 C101 44 105 55 102 66 C100 71 97 75 93 78" />
+        <path className="noor-pet-headset-band noor-pet-headset-thin" d="M93 62 C97 67 94 72 89 76" />
+        <circle className="noor-pet-headset-cup" cx="97" cy="57" r="6.2" />
+        <path className="noor-pet-headset-mic" d="M97 68 C93 72 88 75 84 77" />
+        <circle className="noor-pet-badge" cx="80" cy="78" r="11.5" />
+        <g className="noor-pet-brain">
+          <path d="M75 80 C71 80 70 76 72 74 C70 71 73 68 76 69 C78 66 82 67 83 70 C86 69 89 71 88 74 C90 77 87 80 84 80" />
+          <path d="M77 73 V83 M83 72 V83 M77 76 H83 M77 81 H82" />
+          <circle cx="75" cy="76" r="1.1" />
+          <circle cx="84" cy="74" r="1.1" />
+          <circle cx="84" cy="81" r="1.1" />
+        </g>
       </g>
-      <circle className="noor-pet-sparkle" cx="68" cy="13" r="2.2" />
+
+      <g className="noor-pet-attention">
+        <rect x="102" y="8" width="5" height="12" rx="2.5" transform="rotate(26 104.5 14)" />
+        <rect x="109" y="18" width="5" height="11" rx="2.5" transform="rotate(55 111.5 23.5)" />
+        <rect x="109" y="31" width="5" height="11" rx="2.5" transform="rotate(77 111.5 36.5)" />
+      </g>
     </svg>
   )
 }
