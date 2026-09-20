@@ -107,12 +107,30 @@ export default function LessonsPage() {
                 const visual = VISUALS[index % VISUALS.length]
                 return (
                   <article key={lesson.id} className="lesson-card-new">
-                    <div className={`lesson-visual ${visual.cls}`}><span>{visual.icon}</span></div>
+                    <div className={`lesson-visual ${visual.cls}`}>
+                      {(lesson.images || lesson.image_urls || []).length > 0 ? (
+                        <img
+                          src={(lesson.images || lesson.image_urls)[0]}
+                          alt={lesson.title}
+                          loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <span>{visual.icon}</span>
+                      )}
+                    </div>
                     <div className="lesson-body">
                       <span className="lesson-tag">{lesson.category || CATEGORIES[(index % (CATEGORIES.length - 1)) + 1]}</span>
                       <h3>{lesson.title}</h3>
                       {lesson.content && <p>{lesson.content}</p>}
                       <div className="lesson-meta"><Clock3 size={15} /> {lesson.duration || 15} دقيقة</div>
+                      {(lesson.video_url || lesson.audio_url) && (
+                        <div className="lesson-meta" style={{ gap: 10, flexWrap: 'wrap' }}>
+                          {lesson.video_url && <span>🎬 فيديو</span>}
+                          {lesson.audio_url && <span>🎧 صوت</span>}
+                          {(lesson.images || lesson.image_urls || []).length > 0 && <span>🖼️ صور</span>}
+                        </div>
+                      )}
                       <div className="lesson-card-actions">
                         <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
                           {speakingId === lesson.id ? <><Square size={15} /> إيقاف</> : <><Volume2 size={15} /> استمع</>}
