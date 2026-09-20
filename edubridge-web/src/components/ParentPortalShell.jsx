@@ -264,7 +264,7 @@ export default function RolePortalShell({ children }) {
         </nav>
 
         <div className="pp-noor-card">
-          <NoorPet size={96} trackMouse />
+          <NoorPet size={108} trackMouse />
           <strong>نور</strong>
           <button onClick={openNoor}>ابدأ المحادثة الآن</button>
         </div>

@@ -228,7 +228,7 @@ export default function HomePage() {
           <span>أريد أن أتعلم بطريقة أسهل</span>
           <span>يمكنني اقتراح أنشطة مناسبة لك</span>
         </div>
-        <div className="noor-figure"><NoorPet size={190} trackMouse /></div>
+        <div className="noor-figure"><NoorPet size={224} trackMouse /></div>
         <div className="noor-copy">
           <span className="hero-kicker">دعم ذكي.. في كل خطوة</span>
           <h2>مساعدك الذكي <em>نور</em></h2>

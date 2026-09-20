@@ -2,10 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
-
 /// Noor is drawn with Flutter primitives so the assistant stays crisp,
-/// offline-friendly, and consistent across light/dark themes.
+/// offline-friendly, and visually identical to the website mascot.
 class PetAvatar extends StatefulWidget {
   final double size;
 
@@ -36,21 +34,21 @@ class _PetAvatarState extends State<PetAvatar>
 
   @override
   Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
     return Semantics(
       label: 'نور، المساعد الذكي',
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
-          final t = _controller.value;
-          final bob = math.sin(t * math.pi * 2) * 2.8;
+          final phase = reduceMotion ? 0.0 : _controller.value;
+          final bob =
+              reduceMotion ? 0.0 : math.sin(phase * math.pi * 2) * 2.8;
           return Transform.translate(
             offset: Offset(0, bob),
             child: CustomPaint(
               size: Size.square(widget.size),
-              painter: _NoorPainter(
-                phase: t,
-                dark: Theme.of(context).brightness == Brightness.dark,
-              ),
+              painter: _NoorPainter(phase: phase),
             ),
           );
         },
@@ -61,277 +59,322 @@ class _PetAvatarState extends State<PetAvatar>
 
 class _NoorPainter extends CustomPainter {
   final double phase;
-  final bool dark;
 
-  const _NoorPainter({required this.phase, required this.dark});
+  const _NoorPainter({required this.phase});
+
+  static const _softBlue = Color(0xFFC5D9E9);
+  static const _deepBlue = Color(0xFF0B3F96);
+  static const _midBlue = Color(0xFF176DCC);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / 120;
-    canvas.save();
-    canvas.scale(scale);
+    final scale = size.width / 140;
+    canvas
+      ..save()
+      ..scale(scale)
+      ..translate(0, 12);
 
-    final teal = AppColors.teal;
-    final navy = AppColors.navy;
-    final navyDeep = AppColors.navyDeep;
-    const softBlue = Color(0xFFBFD2E5);
-    final faceColor = dark ? const Color(0xFFF4FBFF) : Colors.white;
+    final bodyPaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF58DDD2), Color(0xFF20B7C9)],
+      ).createShader(const Rect.fromLTWH(20, 8, 104, 104));
+    final bluePaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [_midBlue, _deepBlue],
+      ).createShader(const Rect.fromLTWH(28, 12, 104, 96));
+    final facePaint = Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(-.2, -.3),
+        radius: .95,
+        colors: [Colors.white, Color(0xFFF2F9FD)],
+      ).createShader(const Rect.fromLTWH(32, 30, 76, 62));
+    final whitePaint = Paint()..color = Colors.white;
+    final softBluePaint = Paint()..color = _softBlue;
 
-    final shadow = Paint()
-      ..color = Colors.black.withValues(alpha: dark ? .26 : .13)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
-    canvas.drawOval(const Rect.fromLTWH(24, 91, 70, 9), shadow);
-
-    final glow = Paint()
-      ..color = teal.withValues(alpha: dark ? .22 : .16)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9);
-    canvas.drawCircle(const Offset(59, 51), 43, glow);
-
-    final tealPaint = Paint()..color = teal;
-    final navyPaint = Paint()..color = navy;
-    final softBluePaint = Paint()..color = softBlue;
-    final whitePaint = Paint()..color = faceColor;
+    canvas.drawOval(
+      const Rect.fromLTWH(31, 103, 78, 10),
+      Paint()
+        ..color = Colors.black.withValues(alpha: .14)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+    );
+    canvas.drawCircle(
+      const Offset(70, 58),
+      48,
+      Paint()
+        ..color = const Color(0xFF32C9C4).withValues(alpha: .16)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9),
+    );
 
     final leftEar = Path()
-      ..moveTo(31, 29)
-      ..cubicTo(18, 27, 13, 18, 17, 10)
-      ..cubicTo(22, 2, 34, 8, 43, 18)
+      ..moveTo(43, 35)
+      ..cubicTo(28, 34, 20, 24, 23, 13)
+      ..cubicTo(26, 3, 42, 8, 53, 22)
       ..close();
-    canvas.drawPath(leftEar, tealPaint);
-
+    canvas.drawPath(leftEar, bodyPaint);
     final leftEarInner = Path()
-      ..moveTo(29, 24)
-      ..cubicTo(23, 22, 20, 16, 22, 12)
-      ..cubicTo(25, 8, 31, 12, 37, 18)
+      ..moveTo(39, 29)
+      ..cubicTo(32, 27, 29, 21, 31, 16)
+      ..cubicTo(34, 12, 42, 17, 47, 23)
       ..close();
-    canvas.drawPath(leftEarInner, navyPaint);
+    canvas.drawPath(leftEarInner, bluePaint);
 
     final rightEar = Path()
-      ..moveTo(82, 22)
-      ..cubicTo(92, 12, 103, 9, 108, 17)
-      ..cubicTo(112, 24, 107, 33, 95, 36)
+      ..moveTo(92, 25)
+      ..cubicTo(104, 12, 119, 11, 123, 21)
+      ..cubicTo(127, 31, 119, 40, 106, 42)
       ..close();
-    canvas.drawPath(rightEar, tealPaint);
-
+    canvas.drawPath(rightEar, bodyPaint);
     final rightEarInner = Path()
-      ..moveTo(89, 23)
-      ..cubicTo(95, 17, 101, 16, 103, 20)
-      ..cubicTo(105, 24, 101, 29, 95, 31)
+      ..moveTo(101, 26)
+      ..cubicTo(108, 19, 116, 18, 118, 23)
+      ..cubicTo(120, 28, 115, 34, 108, 36)
       ..close();
-    canvas.drawPath(rightEarInner, navyPaint);
+    canvas.drawPath(rightEarInner, bluePaint);
 
-    final bodyPath = Path()
-      ..moveTo(31, 19)
-      ..cubicTo(41, 10, 53, 7, 66, 8)
-      ..cubicTo(80, 8, 91, 15, 97, 26)
-      ..cubicTo(104, 39, 104, 64, 94, 79)
-      ..cubicTo(85, 93, 71, 99, 57, 99)
-      ..cubicTo(42, 99, 27, 93, 20, 80)
-      ..cubicTo(12, 66, 13, 42, 20, 30)
-      ..cubicTo(23, 25, 26, 22, 31, 19)
+    final body = Path()
+      ..moveTo(40, 24)
+      ..cubicTo(50, 14, 61, 10, 74, 10)
+      ..cubicTo(91, 10, 105, 18, 113, 32)
+      ..cubicTo(121, 47, 120, 73, 111, 90)
+      ..cubicTo(103, 104, 88, 111, 70, 111)
+      ..cubicTo(51, 111, 35, 104, 27, 89)
+      ..cubicTo(18, 73, 19, 47, 27, 34)
+      ..cubicTo(30, 29, 35, 26, 40, 24)
       ..close();
-    canvas.drawPath(bodyPath, tealPaint);
+    canvas.drawPath(body, bodyPaint);
+    final bodyHighlight = Path()
+      ..moveTo(35, 35)
+      ..cubicTo(45, 21, 61, 15, 77, 16)
+      ..cubicTo(61, 19, 48, 26, 40, 38)
+      ..cubicTo(31, 52, 30, 71, 35, 86)
+      ..cubicTo(25, 70, 26, 49, 35, 35)
+      ..close();
+    canvas.drawPath(
+      bodyHighlight,
+      Paint()..color = Colors.white.withValues(alpha: .12),
+    );
 
     canvas.save();
-    canvas.translate(18, 69);
-    canvas.rotate(-26 * math.pi / 180);
-    canvas.drawOval(const Rect.fromLTWH(-10, -15, 20, 30), tealPaint);
+    canvas.translate(25, 80);
+    canvas.rotate(-28 * math.pi / 180);
+    canvas.drawOval(const Rect.fromLTWH(-11, -17, 22, 34), bodyPaint);
     canvas.restore();
+    canvas.save();
+    canvas.translate(116, 80);
+    canvas.rotate(28 * math.pi / 180);
+    canvas.drawOval(const Rect.fromLTWH(-11, -17, 22, 34), bodyPaint);
+    canvas.restore();
+
+    final armShade = Paint()
+      ..color = _midBlue.withValues(alpha: .22)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPath(
+      Path()
+        ..moveTo(27, 66)
+        ..cubicTo(23, 75, 25, 86, 32, 93),
+      armShade,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(113, 66)
+        ..cubicTo(117, 75, 115, 86, 108, 93),
+      armShade,
+    );
 
     final leftMitten = Path()
-      ..moveTo(12, 66)
-      ..cubicTo(7, 65, 3, 61, 4, 56)
-      ..cubicTo(5, 52, 9, 53, 12, 56)
-      ..cubicTo(10, 49, 12, 45, 16, 45)
-      ..cubicTo(20, 45, 21, 51, 21, 55)
-      ..cubicTo(23, 51, 27, 50, 30, 53)
-      ..cubicTo(34, 58, 29, 64, 25, 68)
-      ..cubicTo(21, 72, 17, 73, 12, 66)
+      ..moveTo(17, 79)
+      ..cubicTo(10, 79, 4, 75, 4, 69)
+      ..cubicTo(4, 64, 9, 64, 13, 68)
+      ..cubicTo(10, 60, 13, 55, 18, 56)
+      ..cubicTo(22, 57, 23, 63, 23, 67)
+      ..cubicTo(27, 62, 32, 63, 34, 67)
+      ..cubicTo(37, 73, 31, 79, 26, 82)
+      ..cubicTo(23, 84, 20, 83, 17, 79)
       ..close();
-    canvas.drawPath(leftMitten, whitePaint);
-    canvas.drawPath(
-      leftMitten,
-      Paint()
-        ..color = softBlue
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2,
-    );
-
-    canvas.save();
-    canvas.translate(101, 70);
-    canvas.rotate(24 * math.pi / 180);
-    canvas.drawOval(const Rect.fromLTWH(-10, -15, 20, 30), tealPaint);
-    canvas.restore();
-
     final rightMitten = Path()
-      ..moveTo(97, 67)
-      ..cubicTo(93, 63, 90, 58, 93, 54)
-      ..cubicTo(96, 50, 100, 52, 102, 56)
-      ..cubicTo(102, 51, 104, 47, 108, 47)
-      ..cubicTo(112, 47, 113, 52, 111, 57)
-      ..cubicTo(114, 54, 118, 54, 120, 58)
-      ..cubicTo(122, 63, 117, 68, 112, 70)
-      ..cubicTo(106, 73, 101, 72, 97, 67)
+      ..moveTo(113, 79)
+      ..cubicTo(108, 74, 106, 68, 110, 64)
+      ..cubicTo(114, 61, 118, 64, 120, 68)
+      ..cubicTo(120, 62, 123, 58, 127, 59)
+      ..cubicTo(132, 60, 132, 66, 129, 71)
+      ..cubicTo(134, 67, 139, 69, 140, 74)
+      ..cubicTo(141, 80, 134, 84, 128, 85)
+      ..cubicTo(122, 87, 117, 84, 113, 79)
       ..close();
-    canvas.drawPath(rightMitten, whitePaint);
-    canvas.drawPath(
-      rightMitten,
-      Paint()
-        ..color = softBlue
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2,
-    );
+    final mittenOutline = Paint()
+      ..color = _softBlue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.25
+      ..strokeJoin = StrokeJoin.round;
+    canvas
+      ..drawPath(leftMitten, whitePaint)
+      ..drawPath(leftMitten, mittenOutline)
+      ..drawPath(rightMitten, whitePaint)
+      ..drawPath(rightMitten, mittenOutline);
 
-    canvas.drawOval(const Rect.fromLTWH(25, 26, 66, 54), whitePaint);
+    canvas.drawOval(
+      const Rect.fromLTWH(31, 29, 78, 64),
+      Paint()..color = _softBlue.withValues(alpha: .42),
+    );
+    canvas.drawOval(const Rect.fromLTWH(34, 32, 72, 58), facePaint);
 
     final blink = phase > .90 && phase < .95;
     final eyePaint = Paint()
-      ..color = navyDeep
+      ..shader = bluePaint.shader
       ..strokeWidth = 2.8
       ..strokeCap = StrokeCap.round;
-
     if (blink) {
-      canvas.drawLine(const Offset(41, 51), const Offset(51, 51), eyePaint);
-      canvas.drawLine(const Offset(65, 51), const Offset(75, 51), eyePaint);
+      canvas.drawLine(const Offset(50, 58), const Offset(62, 58), eyePaint);
+      canvas.drawLine(const Offset(78, 58), const Offset(90, 58), eyePaint);
     } else {
-      canvas.drawCircle(const Offset(46, 50), 5, eyePaint);
-      canvas.drawCircle(const Offset(70, 50), 5, eyePaint);
-      canvas.drawCircle(const Offset(48, 47.5), 1.6, Paint()..color = Colors.white);
-      canvas.drawCircle(const Offset(72, 47.5), 1.6, Paint()..color = Colors.white);
+      canvas.drawOval(const Rect.fromLTWH(50.2, 50, 11.6, 14), eyePaint);
+      canvas.drawOval(const Rect.fromLTWH(78.2, 50, 11.6, 14), eyePaint);
+      canvas.drawCircle(const Offset(58, 53.8), 1.8, whitePaint);
+      canvas.drawCircle(const Offset(86, 53.8), 1.8, whitePaint);
     }
-
-    canvas.drawCircle(const Offset(38.5, 61), 4.2, softBluePaint);
-    canvas.drawCircle(const Offset(77.5, 61), 4.2, softBluePaint);
+    canvas.drawCircle(const Offset(46, 70), 4.8, softBluePaint);
+    canvas.drawCircle(const Offset(94, 70), 4.8, softBluePaint);
 
     final mouth = Path()
-      ..moveTo(50, 63)
-      ..cubicTo(53, 67, 56, 68, 59, 68)
-      ..cubicTo(62, 68, 65, 67, 68, 63)
-      ..cubicTo(67, 72, 64, 76, 59, 76)
-      ..cubicTo(54, 76, 51, 72, 50, 63)
+      ..moveTo(61, 70)
+      ..cubicTo(67, 72, 74, 72, 80, 70)
+      ..cubicTo(79, 80, 76, 85, 70, 85)
+      ..cubicTo(64, 85, 61, 80, 61, 70)
       ..close();
-    canvas.drawPath(mouth, navyPaint);
-
+    canvas.drawPath(mouth, bluePaint);
     final mouthInner = Path()
-      ..moveTo(54, 70)
-      ..cubicTo(57, 68, 61, 68, 64, 70)
-      ..cubicTo(63, 73, 61, 74, 59, 74)
-      ..cubicTo(57, 74, 55, 73, 54, 70)
+      ..moveTo(65, 79)
+      ..cubicTo(68, 76, 73, 76, 76, 79)
+      ..cubicTo(75, 82, 73, 83, 70, 83)
+      ..cubicTo(68, 83, 66, 82, 65, 79)
       ..close();
     canvas.drawPath(mouthInner, softBluePaint);
 
-    final headset = Paint()
-      ..color = navy
+    final headsetPaint = Paint()
+      ..color = _midBlue
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
+      ..strokeWidth = 5.5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-    final bandPath = Path()
-      ..moveTo(89, 39)
-      ..cubicTo(101, 44, 105, 55, 102, 66)
-      ..cubicTo(100, 71, 97, 75, 93, 78);
-    canvas.drawPath(bandPath, headset);
-
-    final thinHeadset = Paint()
-      ..color = navy
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.2
-      ..strokeCap = StrokeCap.round;
-    final sidePath = Path()
-      ..moveTo(93, 62)
-      ..cubicTo(97, 67, 94, 72, 89, 76);
-    canvas.drawPath(sidePath, thinHeadset);
-
-    canvas.drawCircle(const Offset(97, 57), 6.2, softBluePaint);
-    canvas.drawCircle(
-      const Offset(97, 57),
-      6.2,
+    final headset = Path()
+      ..moveTo(103, 38)
+      ..cubicTo(117, 44, 123, 57, 119, 72)
+      ..cubicTo(116, 82, 108, 88, 101, 91);
+    canvas.drawPath(headset, headsetPaint);
+    final headsetSide = Path()
+      ..moveTo(110, 67)
+      ..cubicTo(114, 73, 110, 82, 103, 87);
+    canvas.drawPath(
+      headsetSide,
       Paint()
-        ..color = navy
+        ..color = _midBlue
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.2
+        ..strokeCap = StrokeCap.round,
+    );
+    canvas.drawOval(const Rect.fromLTWH(106, 55, 14, 16), softBluePaint);
+    canvas.drawOval(
+      const Rect.fromLTWH(106, 55, 14, 16),
+      Paint()
+        ..color = _midBlue
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.2,
     );
+    final mic = Path()
+      ..moveTo(112, 76)
+      ..cubicTo(108, 82, 103, 86, 98, 88);
+    canvas.drawPath(
+      mic,
+      Paint()
+        ..color = _midBlue
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4
+        ..strokeCap = StrokeCap.round,
+    );
 
-    final mic = Paint()
-      ..color = navy
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round;
-    final micPath = Path()
-      ..moveTo(97, 68)
-      ..cubicTo(93, 72, 88, 75, 84, 77);
-    canvas.drawPath(micPath, mic);
-
-    canvas.drawCircle(const Offset(80, 78), 11.5, navyPaint);
-
+    canvas.drawCircle(const Offset(91, 88), 13, bluePaint);
     final brain = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.9
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-    final brainPath = Path()
-      ..moveTo(75, 80)
-      ..cubicTo(71, 80, 70, 76, 72, 74)
-      ..cubicTo(70, 71, 73, 68, 76, 69)
-      ..cubicTo(78, 66, 82, 67, 83, 70)
-      ..cubicTo(86, 69, 89, 71, 88, 74)
-      ..cubicTo(90, 77, 87, 80, 84, 80);
-    canvas.drawPath(brainPath, brain);
-    canvas.drawLine(const Offset(77, 73), const Offset(77, 83), brain);
-    canvas.drawLine(const Offset(83, 72), const Offset(83, 83), brain);
-    canvas.drawLine(const Offset(77, 76), const Offset(83, 76), brain);
-    canvas.drawLine(const Offset(77, 81), const Offset(82, 81), brain);
+    final brainOutline = Path()
+      ..moveTo(85, 91)
+      ..cubicTo(80, 91, 79, 86, 82, 83)
+      ..cubicTo(80, 79, 84, 76, 88, 78)
+      ..cubicTo(90, 74, 95, 75, 96, 79)
+      ..cubicTo(100, 78, 103, 82, 101, 85)
+      ..cubicTo(104, 89, 100, 93, 96, 92);
+    canvas.drawPath(brainOutline, brain);
+    canvas.drawLine(const Offset(88, 82), const Offset(88, 96), brain);
+    canvas.drawLine(const Offset(95, 80), const Offset(95, 96), brain);
+    canvas.drawLine(const Offset(88, 86), const Offset(95, 86), brain);
+    canvas.drawLine(const Offset(88, 92), const Offset(94, 92), brain);
     final brainDot = Paint()..color = Colors.white;
-    canvas.drawCircle(const Offset(75, 76), 1.1, brainDot);
-    canvas.drawCircle(const Offset(84, 74), 1.1, brainDot);
-    canvas.drawCircle(const Offset(84, 81), 1.1, brainDot);
+    canvas.drawCircle(const Offset(85, 86), 1.2, brainDot);
+    canvas.drawCircle(const Offset(97, 83), 1.2, brainDot);
+    canvas.drawCircle(const Offset(97, 91), 1.2, brainDot);
 
-    final attentionOpacity =
-        .55 + ((math.sin(phase * math.pi * 2) + 1) / 2) * .45;
-    final attention = Paint()
-      ..color = softBlue.withValues(alpha: attentionOpacity);
+    final pulse = .55 + ((math.sin(phase * math.pi * 2) + 1) / 2) * .45;
+    final attentionPaint =
+        Paint()..color = _softBlue.withValues(alpha: pulse);
+    _drawAttention(
+      canvas,
+      const Offset(121.75, 17),
+      5.5,
+      14,
+      27,
+      attentionPaint,
+    );
+    _drawAttention(
+      canvas,
+      const Offset(129.75, 28.5),
+      5.5,
+      13,
+      56,
+      attentionPaint,
+    );
+    _drawAttention(
+      canvas,
+      const Offset(130.75, 43.5),
+      5.5,
+      13,
+      77,
+      attentionPaint,
+    );
 
+    canvas.restore();
+  }
+
+  void _drawAttention(
+    Canvas canvas,
+    Offset center,
+    double width,
+    double height,
+    double angle,
+    Paint paint,
+  ) {
     canvas.save();
-    canvas.translate(104.5, 14);
-    canvas.rotate(26 * math.pi / 180);
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(angle * math.pi / 180);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-2.5, -6, 5, 12),
-        const Radius.circular(2.5),
+        Rect.fromCenter(center: Offset.zero, width: width, height: height),
+        Radius.circular(width / 2),
       ),
-      attention,
+      paint,
     );
-    canvas.restore();
-
-    canvas.save();
-    canvas.translate(111.5, 23.5);
-    canvas.rotate(55 * math.pi / 180);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-2.5, -5.5, 5, 11),
-        const Radius.circular(2.5),
-      ),
-      attention,
-    );
-    canvas.restore();
-
-    canvas.save();
-    canvas.translate(111.5, 36.5);
-    canvas.rotate(77 * math.pi / 180);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-2.5, -5.5, 5, 11),
-        const Radius.circular(2.5),
-      ),
-      attention,
-    );
-    canvas.restore();
-
     canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant _NoorPainter oldDelegate) =>
-      oldDelegate.phase != phase || oldDelegate.dark != dark;
+      oldDelegate.phase != phase;
 }
