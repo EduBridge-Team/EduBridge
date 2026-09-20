@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../theme.dart';
 import '../widgets/disability_catalog.dart';
+import '../widgets/accessibility/adaptive_wrapper.dart';
 
 class ChildAccessibilitySettingsScreen extends StatefulWidget {
   final int childId;
@@ -121,8 +122,10 @@ class _ChildAccessibilitySettingsScreenState
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Scaffold(
-      appBar: JisrAppBar(title: 'إعدادات ${widget.childName}'),
+    return AdaptiveWrapper(
+      screenTitle: 'إعدادات ${widget.childName}',
+      child: Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات ${widget.childName}'),
       body: ValueListenableBuilder<AccessibilityProfile>(
         valueListenable: AccessibilityService.instance.profile,
         builder: (context, _, __) {
@@ -440,6 +443,7 @@ class _ChildAccessibilitySettingsScreenState
             ],
           );
         },
+        ),
       ),
     );
   }
