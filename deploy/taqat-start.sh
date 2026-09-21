@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Redeploy trigger for Taqat custom-domain refresh.
 set -Eeuo pipefail
 
 TARGET="${DEPLOY_TARGET:-api}"
