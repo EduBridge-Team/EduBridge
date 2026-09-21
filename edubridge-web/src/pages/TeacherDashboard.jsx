@@ -366,6 +366,7 @@ function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
   const [title, setTitle] = useState(lesson?.title || '')
   const [content, setContent] = useState(lesson?.content || '')
   const [typeId, setTypeId] = useState(lesson?.disability_type_id ? String(lesson.disability_type_id) : '')
+  const [audience, setAudience] = useState(lesson?.target_type === 'parents' ? 'parents' : 'children')
   const [images, setImages] = useState([])
   const [video, setVideo] = useState(null)
   const [audio, setAudio] = useState(null)
@@ -383,8 +384,8 @@ function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
       const fd = new FormData()
       fd.append('title', title.trim())
       fd.append('content', content.trim())
-      fd.append('disability_type_id', typeId)
-      fd.append('target_type', typeId ? 'byDisability' : 'everyone')
+      fd.append('disability_type_id', audience === 'parents' ? '' : typeId)
+      fd.append('target_type', audience === 'parents' ? 'parents' : (typeId ? 'byDisability' : 'everyone'))
       fd.append('audio_description', audioDescription.trim())
       images.forEach((file) => fd.append('images[]', file))
       if (video) fd.append('video', video)
@@ -434,11 +435,21 @@ function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
           <label>المحتوى</label>
           <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} placeholder="اكتب محتوى الدرس..." />
 
-          <label>نوع الإعاقة المستهدَف</label>
-          <select value={typeId} onChange={(e) => setTypeId(e.target.value)}>
-            <option value="">— عام (كل الأنواع) —</option>
-            {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          <label>الفئة المستهدفة</label>
+          <select value={audience} onChange={(e) => setAudience(e.target.value)}>
+            <option value="children">الأطفال</option>
+            <option value="parents">أولياء الأمور</option>
           </select>
+
+          {audience === 'children' && (
+            <>
+              <label>نوع الإعاقة المستهدَف</label>
+              <select value={typeId} onChange={(e) => setTypeId(e.target.value)}>
+                <option value="">— عام (كل الأنواع) —</option>
+                {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </>
+          )}
 
           {isEditing && existingMedia.length > 0 && (
             <div className="meta" style={{ margin: '10px 0' }}>
