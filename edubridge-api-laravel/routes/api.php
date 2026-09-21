@@ -26,6 +26,8 @@ use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
 use App\Http\Controllers\TherapyRequestController;
 use App\Http\Controllers\SpecialistSuggestionController;
+use App\Http\Controllers\HomeworkController;
+use App\Http\Controllers\WeeklyReportController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -165,6 +167,24 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:specialist,admin');
     Route::put('/specialist-suggestions/{id}/reject', [SpecialistSuggestionController::class, 'reject'])
         ->middleware('role:specialist,admin');
+
+    // الواجبات
+    Route::get('/homeworks', [HomeworkController::class, 'index'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/homeworks', [HomeworkController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::post('/homeworks/{id}/submit', [HomeworkController::class, 'submit'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::put('/homeworks/submissions/{submissionId}/grade', [HomeworkController::class, 'grade'])
+        ->middleware('role:teacher,specialist,admin');
+
+    // التقارير الأسبوعية
+    Route::get('/reports/weekly', [WeeklyReportController::class, 'show'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::get('/reports/weekly/child/{childId}', [WeeklyReportController::class, 'byChild'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/reports/weekly', [WeeklyReportController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
 
     // إعدادات التكييف الخاصة بكل طفل — متزامنة بين الأجهزة
     Route::get('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'show']);
