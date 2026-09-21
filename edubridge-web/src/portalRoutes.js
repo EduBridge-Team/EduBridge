@@ -36,8 +36,12 @@ export function isPortalPathForRole(pathname, role) {
     return CONSULTATION_ROLES.includes(role)
   }
 
-  if (pathname === '/homeworks' || pathname === '/weekly-reports' || pathname === '/care-team') {
+  if (pathname === '/homeworks' || pathname === '/weekly-reports' || pathname === '/care-team' || pathname === '/aac') {
     return CHILD_ROLES.includes(role)
+  }
+
+  if (pathname === '/parent-lessons') {
+    return role === 'parent'
   }
 
   if (pathname === '/therapy') {
