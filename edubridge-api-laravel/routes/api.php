@@ -25,6 +25,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
 use App\Http\Controllers\TherapyRequestController;
+use App\Http\Controllers\SpecialistSuggestionController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -205,7 +206,14 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/progress/child/{childId}', [ProgressController::class, 'byChild']);
     Route::get('/progress/child/{childId}/summary', [ProgressController::class, 'summary']);
 
-    // الجلسات العلاجية (مختص / أدمن)
+    // الجلسات العلاجية — مسارات Flutter + المسارات القديمة للتوافق
+    Route::get('/therapy/sessions', [SessionController::class, 'index'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/therapy/sessions', [SessionController::class, 'store'])
+        ->middleware('role:specialist,admin');
+    Route::put('/therapy/sessions/{id}/complete', [SessionController::class, 'complete'])
+        ->middleware('role:specialist,admin');
+
     Route::get('/sessions', [SessionController::class, 'index'])
         ->middleware('role:specialist,admin');
     Route::post('/sessions', [SessionController::class, 'store'])

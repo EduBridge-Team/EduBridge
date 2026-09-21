@@ -176,6 +176,31 @@ class TherapyRequestController extends Controller
         return response()->json(['has_pending' => $query->exists()]);
     }
 
+    private function upsertSessionForRequest($therapyRequest, int $specialistId, $scheduledAt, string $meetingLink, ?string $notes): void
+    {
+        $payload = [
+            'specialist_id' => $specialistId,
+            'child_id' => $therapyRequest->child_id,
+            'therapy_request_id' => $therapyRequest->id,
+            'type' => 'initial',
+            'scheduled_at' => $scheduledAt,
+            'duration_minutes' => 45,
+            'meeting_link' => $meetingLink,
+            'notes' => $notes,
+            'status' => 'scheduled',
+        ];
+
+        $existingId = DB::table('sessions')
+            ->where('therapy_request_id', $therapyRequest->id)
+            ->value('id');
+
+        if ($existingId) {
+            DB::table('sessions')->where('id', $existingId)->update($payload);
+        } else {
+            DB::table('sessions')->insert($payload);
+        }
+    }
+
     // المختص يحدد الموعد ورابط الجلسة، ويصبح هو المختص المسؤول عن الطلب.
     public function schedule(Request $request, $id)
     {
@@ -217,15 +242,34 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'هذا الطلب يتابعه مختص آخر'], 409);
         }
 
+        $assignedSpecialistId = $user->role === 'specialist'
+            ? (int) $user->id
+            : (int) ($request->input('specialist_id') ?: ($therapyRequest->specialist_id ?: 0));
+
+        if ($assignedSpecialistId <= 0
+            || !DB::table('users')->where('id', $assignedSpecialistId)->where('role', 'specialist')->exists()) {
+            return response()->json(['error' => 'يجب تحديد مختص صالح للجلسة'], 422);
+        }
+
         try {
-            DB::table('therapy_requests')->where('id', $id)->update([
-                'specialist_id' => $user->id,
-                'scheduled_at' => $scheduledAt,
-                'meeting_link' => $meetingLink,
-                'specialist_notes' => $notes !== '' ? $notes : null,
-                'status' => 'scheduled',
-                'updated_at' => now(),
-            ]);
+            DB::transaction(function () use ($id, $therapyRequest, $assignedSpecialistId, $scheduledAt, $meetingLink, $notes) {
+                DB::table('therapy_requests')->where('id', $id)->update([
+                    'specialist_id' => $assignedSpecialistId,
+                    'scheduled_at' => $scheduledAt,
+                    'meeting_link' => $meetingLink,
+                    'specialist_notes' => $notes !== '' ? $notes : null,
+                    'status' => 'scheduled',
+                    'updated_at' => now(),
+                ]);
+
+                $this->upsertSessionForRequest(
+                    $therapyRequest,
+                    $assignedSpecialistId,
+                    $scheduledAt,
+                    $meetingLink,
+                    $notes !== '' ? $notes : null
+                );
+            });
 
             $childName = (string) (DB::table('children')->where('id', $therapyRequest->child_id)->value('name') ?? '');
             Notify::toChildParents(
@@ -264,11 +308,18 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        DB::table('therapy_requests')->where('id', $id)->update([
-            'status' => 'completed',
-            'completed_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::transaction(function () use ($id) {
+            DB::table('therapy_requests')->where('id', $id)->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table('sessions')->where('therapy_request_id', $id)->update([
+                'status' => 'done',
+                'completed_at' => now(),
+            ]);
+        });
 
         Notify::toChildParents(
             $therapyRequest->child_id,
@@ -303,11 +354,17 @@ class TherapyRequestController extends Controller
             }
         }
 
-        DB::table('therapy_requests')->where('id', $id)->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::transaction(function () use ($id) {
+            DB::table('therapy_requests')->where('id', $id)->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table('sessions')->where('therapy_request_id', $id)->update([
+                'status' => 'cancelled',
+            ]);
+        });
 
         if ($user->role !== 'parent') {
             Notify::toChildParents(
