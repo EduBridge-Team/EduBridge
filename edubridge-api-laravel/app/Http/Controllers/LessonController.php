@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 class LessonController extends Controller
 {
-    private const TARGET_TYPES = ['everyone', 'byDisability', 'specificChildren'];
+    private const TARGET_TYPES = ['everyone', 'byDisability', 'specificChildren', 'parents'];
 
     private const MEDIA_RULES = [
         'image' => [
@@ -129,6 +129,13 @@ class LessonController extends Controller
             }
             if ($request->query('curriculum_status')) {
                 $query->where('l.curriculum_status', $request->query('curriculum_status'));
+            }
+            if ($request->query('target_type')) {
+                $targetType = (string) $request->query('target_type');
+                if (!in_array($targetType, self::TARGET_TYPES, true)) {
+                    return response()->json(['error' => 'نوع استهداف الدرس غير صالح'], 422);
+                }
+                $query->where('l.target_type', $targetType);
             }
 
             $lessons = $query->get()->map(
