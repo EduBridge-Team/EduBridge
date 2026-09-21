@@ -30,6 +30,10 @@ use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\CareTeamController;
 use App\Http\Controllers\CaseDiscussionController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\LegacyMobileController;
+use App\Http\Controllers\MinistryApprovalController;
+use App\Http\Controllers\PlanEvaluationController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -41,6 +45,9 @@ Route::middleware('auth.jwt')->group(function () {
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/password', [AuthController::class, 'changePassword']);
+    Route::post('/me/avatar', [AccountController::class, 'uploadAvatar']);
+    Route::delete('/me/avatar', [AccountController::class, 'removeAvatar']);
+    Route::delete('/me', [AccountController::class, 'destroy']);
     Route::put('/me/specialty', [SpecialistSuggestionController::class, 'updateSpecialty'])
         ->middleware('role:specialist');
 
@@ -70,6 +77,9 @@ Route::middleware('auth.jwt')->group(function () {
     // حذف مستخدم (أدمن) — البطاقة 11
     Route::delete('/users/{id}', [UserController::class, 'destroy'])
         ->middleware('role:admin');
+    Route::get('/users/{parentId}/children', [LegacyMobileController::class, 'childrenOfParent'])
+        ->middleware('role:teacher,specialist,admin,ministry,institution');
+    Route::get('/dashboard/stats', [LegacyMobileController::class, 'dashboardStats']);
 
     // رفع الملفات (صور الهوية/الشهادات/مستندات القرابة)
     Route::post('/uploads', [UploadController::class, 'store']);
@@ -84,6 +94,16 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/verifications/children', [VerificationController::class, 'children'])
         ->middleware('role:admin');
     Route::put('/verifications/children/{id}', [VerificationController::class, 'reviewChild'])
+        ->middleware('role:admin');
+
+    // توافق التطبيق القديم مع شاشة الأدمن
+    Route::get('/admin/verifications', [LegacyMobileController::class, 'adminVerifications'])
+        ->middleware('role:admin');
+    Route::post('/admin/verifications/{id}/approve', [LegacyMobileController::class, 'approveVerification'])
+        ->middleware('role:admin');
+    Route::post('/admin/verifications/{id}/reject', [LegacyMobileController::class, 'rejectVerification'])
+        ->middleware('role:admin');
+    Route::get('/admin/search', [SearchController::class, 'byNationalId'])
         ->middleware('role:admin');
 
     // الشهادات (البطاقة 9)
@@ -115,6 +135,29 @@ Route::middleware('auth.jwt')->group(function () {
     // إحصائيات لوحة الوزارة (نظرة عامة)
     Route::get('/ministry/stats', [MinistryController::class, 'stats'])
         ->middleware('role:ministry,admin');
+    Route::get('/ministry/statistics', [MinistryController::class, 'statistics'])
+        ->middleware('role:ministry,admin');
+    Route::get('/ministry/statistics/progress', [MinistryController::class, 'progressStatistics'])
+        ->middleware('role:ministry,admin');
+
+    // الموافقات الوزارية على الخطط التعليمية
+    Route::post('/ministry/approvals', [MinistryApprovalController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::get('/ministry/approvals/pending', [MinistryApprovalController::class, 'pending'])
+        ->middleware('role:teacher,specialist,ministry,admin');
+    Route::get('/ministry/approvals/notifications', [MinistryApprovalController::class, 'notifications'])
+        ->middleware('role:teacher,specialist,ministry,admin');
+    Route::get('/ministry/approvals/child/{childId}/status', [MinistryApprovalController::class, 'childStatus'])
+        ->middleware('role:parent,teacher,specialist,ministry,admin');
+    Route::get('/ministry/approvals', [MinistryApprovalController::class, 'index'])
+        ->middleware('role:teacher,specialist,ministry,admin');
+    Route::post('/ministry/approvals/{id}/approve', [MinistryApprovalController::class, 'approve'])
+        ->middleware('role:ministry,admin');
+    Route::post('/ministry/approvals/{id}/reject', [MinistryApprovalController::class, 'reject'])
+        ->middleware('role:ministry,admin');
+
+    Route::post('/plans/{planId}/evaluate', [PlanEvaluationController::class, 'store'])
+        ->middleware('role:specialist,admin');
 
     // الدعم الفني والشكاوى (البطاقة 11)
     Route::get('/support', [SupportController::class, 'index']);
@@ -242,6 +285,7 @@ Route::middleware('auth.jwt')->group(function () {
     Route::delete('/lessons/{id}', [LessonController::class, 'destroy'])
         ->middleware('role:teacher,specialist,admin');
     Route::get('/lessons', [LessonController::class, 'index']);
+    Route::get('/lessons/search', [LessonController::class, 'search']);
     Route::get('/lessons/{id}', [LessonController::class, 'show']);
 
     // تقييمات المادة التعليمية (البطاقة 8)
