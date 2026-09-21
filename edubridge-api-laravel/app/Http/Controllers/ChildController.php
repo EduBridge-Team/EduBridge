@@ -46,6 +46,45 @@ class ChildController extends Controller
         return $child;
     }
 
+    private function attachSpecialists($child)
+    {
+        if (!$child) {
+            return $child;
+        }
+
+        try {
+            $specialists = DB::table('child_specialist as cs')
+                ->join('users as u', 'u.id', '=', 'cs.specialist_id')
+                ->where('cs.child_id', $child->id)
+                ->orderBy('cs.assigned_at')
+                ->select(
+                    'u.id',
+                    'u.name',
+                    'cs.specialty',
+                    'cs.assigned_at'
+                )
+                ->get();
+
+            $child->specialists = $specialists;
+            $child->specialist_ids = $specialists->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+            $child->assigned_specialist_ids = $child->specialist_ids;
+
+            if ($specialists->isNotEmpty()) {
+                $first = $specialists->first();
+                $child->specialist_id = (int) $first->id;
+                $child->assigned_specialist_id = (int) $first->id;
+                $child->specialist_name = $first->name;
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            $child->specialists = [];
+            $child->specialist_ids = [];
+            $child->assigned_specialist_ids = [];
+        }
+
+        return $child;
+    }
+
     // إضافة طفل (ولي أمر / معلّم / مختص / أدمن)
     // POST /api/children
     public function store(Request $request)
@@ -129,7 +168,7 @@ class ChildController extends Controller
                 $children = $base->get();
             }
 
-            $children = $children->map(fn ($c) => $this->decodeChild($c));
+            $children = $children->map(fn ($c) => $this->attachSpecialists($this->decodeChild($c)));
 
             return response()->json(['children' => $children]);
         } catch (\Exception $e) {
@@ -154,7 +193,7 @@ class ChildController extends Controller
             if (!$child) {
                 return response()->json(['error' => 'الطفل غير موجود'], 404);
             }
-            return response()->json(['child' => $this->decodeChild($child)]);
+            return response()->json(['child' => $this->attachSpecialists($this->decodeChild($child))]);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
