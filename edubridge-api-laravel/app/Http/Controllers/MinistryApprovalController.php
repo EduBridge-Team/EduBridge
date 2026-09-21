@@ -95,7 +95,14 @@ class MinistryApprovalController extends Controller
         $query = $this->query();
 
         if (!in_array($me->role, ['ministry','admin'], true)) {
-            $query->where('a.submitted_by', $me->id);
+            if ($me->role === 'teacher') {
+                $query->where(function ($q) use ($me) {
+                    $q->where('a.submitted_by', $me->id)
+                      ->orWhere('a.teacher_id', $me->id);
+                });
+            } else {
+                $query->where('a.submitted_by', $me->id);
+            }
         }
 
         $status = trim((string) $request->query('status', ''));
