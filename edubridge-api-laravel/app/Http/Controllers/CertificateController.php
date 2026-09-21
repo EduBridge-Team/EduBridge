@@ -50,9 +50,36 @@ class CertificateController extends Controller
         $me = $request->attributes->get('jwt_user');
 
         $title = trim((string) $request->input('title'));
-        $url = trim((string) $request->input('url'));
-        if ($title === '' || $url === '') {
-            return response()->json(['error' => 'عنوان الشهادة ورابط الملف مطلوبان'], 400);
+        $url = trim((string) $request->input('url', ''));
+        $file = $request->file('file');
+
+        if ($title === '') {
+            return response()->json(['error' => 'عنوان الشهادة مطلوب'], 400);
+        }
+
+        if ($file) {
+            if (!$file->isValid()) {
+                return response()->json(['error' => 'تعذّر قراءة ملف الشهادة'], 422);
+            }
+            $ext = strtolower((string) $file->getClientOriginalExtension());
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'pdf'], true)) {
+                return response()->json(['error' => 'صيغة الشهادة غير مدعومة'], 422);
+            }
+            if ((int) $file->getSize() > 10 * 1024 * 1024) {
+                return response()->json(['error' => 'حجم الشهادة يتجاوز 10MB'], 422);
+            }
+
+            $dir = public_path('uploads/certificates');
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+            $name = 'certificate_' . $me->id . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+            $file->move($dir, $name);
+            $url = rtrim($request->getSchemeAndHttpHost(), '/') . '/uploads/certificates/' . $name;
+        }
+
+        if ($url === '') {
+            return response()->json(['error' => 'ملف الشهادة مطلوب'], 400);
         }
 
         try {
