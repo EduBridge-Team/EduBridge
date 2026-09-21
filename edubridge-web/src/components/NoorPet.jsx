@@ -136,8 +136,9 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
 
         <g className="noor-pet-headset">
           <path className="noor-pet-headset-band" d="M103 39 C112 42 118 49 118 57" />
-          <ellipse className="noor-pet-headset-cup" cx="115" cy="64" rx="6.5" ry="8.8" />
-          <path className="noor-pet-headset-mic" d="M113 72 C112 78 108 82 102 84" />
+          <path className="noor-pet-headset-mic" d="M115 70 C114 79 107 86 99 89" />
+          <ellipse className="noor-pet-headset-cup-back" cx="114" cy="64" rx="7.5" ry="9.5" />
+          <ellipse className="noor-pet-headset-cup-pad" cx="116" cy="64" rx="4.6" ry="6.8" />
           <circle className="noor-pet-badge" style={{ fill: `url(#${blueGradientId})` }} cx="91" cy="88" r="13" />
           <g className="noor-pet-brain">
             <path d="M85 91 C80 91 79 86 82 83 C80 79 84 76 88 78 C90 74 95 75 96 79 C100 78 103 82 101 85 C104 89 100 93 96 92" />
