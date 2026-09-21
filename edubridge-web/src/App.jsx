@@ -38,6 +38,9 @@ import TherapyPage from './pages/TherapyPage'
 import CareTeamPage from './pages/CareTeamPage'
 import CaseDiscussionsPage from './pages/CaseDiscussionsPage'
 import SpecialistWorkflowPage from './pages/SpecialistWorkflowPage'
+import ParentLessonsPage from './pages/ParentLessonsPage'
+import AACPage from './pages/AACPage'
+import VoiceCommandWidget from './components/VoiceCommandWidget'
 import './parent-portal.css'
 
 function Protected({ children }) {
@@ -124,11 +127,14 @@ export default function App() {
         <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
         <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
         <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
+        <Route path="/parent-lessons" element={<RolePage roles={['parent']}><ParentLessonsPage /></RolePage>} />
+        <Route path="/aac" element={<RolePage roles={CHILD_ROLES}><AACPage /></RolePage>} />
         <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <AssistantWidget />
+      <VoiceCommandWidget />
     </div>
   )
 }
