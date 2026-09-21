@@ -1,22 +1,16 @@
-# Taqat Academy / Nixpacks deployment for the EduBridge Laravel API.
-# The repository is a monorepo, so all build/start commands explicitly enter
-# edubridge-api-laravel instead of relying on a platform root-directory setting.
+# Taqat Academy / Nixpacks deployment for the EduBridge monorepo.
+# DEPLOY_TARGET selects which app this Taqat service builds:
+#   api (default) -> Laravel API
+#   web           -> React/Vite frontend
 
 [phases.setup]
-nixPkgs = ["php84", "php84Packages.composer", "libpq"]
+nixPkgs = ["php84", "php84Packages.composer", "libpq", "nodejs_22"]
 
 [phases.install]
-cmds = [
-  "cd edubridge-api-laravel && composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction"
-]
+cmds = ["bash deploy/taqat-install.sh"]
 
 [phases.build]
-cmds = [
-  "cd edubridge-api-laravel && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache",
-  "cd edubridge-api-laravel && php artisan config:clear",
-  "cd edubridge-api-laravel && php artisan route:clear",
-  "cd edubridge-api-laravel && php artisan view:clear"
-]
+cmds = ["bash deploy/taqat-build.sh"]
 
 [start]
-cmd = "bash deploy/taqat-api-start.sh"
+cmd = "bash deploy/taqat-start.sh"

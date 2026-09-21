@@ -1,1 +1,1 @@
-web: bash deploy/taqat-api-start.sh
+web: bash deploy/taqat-start.sh
