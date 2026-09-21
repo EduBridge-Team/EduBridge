@@ -11,6 +11,12 @@ CREATE TABLE IF NOT EXISTS child_teacher (
     UNIQUE (child_id, teacher_id)
 );
 
+INSERT INTO child_teacher (child_id, teacher_id, assigned_at, created_at)
+SELECT id, assigned_teacher_id, NOW(), NOW()
+FROM children
+WHERE assigned_teacher_id IS NOT NULL
+ON CONFLICT (child_id, teacher_id) DO NOTHING;
+
 CREATE INDEX IF NOT EXISTS idx_child_teacher_child ON child_teacher(child_id);
 CREATE INDEX IF NOT EXISTS idx_child_teacher_teacher ON child_teacher(teacher_id);
 
