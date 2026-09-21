@@ -36,11 +36,11 @@ class AccountController extends Controller
             $name = 'user_' . $user->id . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $file->move($dir, $name);
             $relative = '/uploads/avatars/' . $name;
+            $absolute = rtrim($request->getSchemeAndHttpHost(), '/') . $relative;
 
-            DB::table('users')->where('id', $user->id)->update(['avatar_url' => $relative]);
+            DB::table('users')->where('id', $user->id)->update(['avatar_url' => $absolute]);
             $this->deleteStoredAvatar($current, $relative);
 
-            $absolute = rtrim($request->getSchemeAndHttpHost(), '/') . $relative;
             return response()->json(['avatar_url' => $absolute]);
         } catch (\Throwable $e) {
             report($e);
