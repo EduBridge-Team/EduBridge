@@ -657,3 +657,8 @@ export function rejectSpecialistSuggestion(id, reason = '') {
     body: JSON.stringify({ reason }),
   });
 }
+
+
+export function fetchParentLessons() {
+  return request('/lessons?target_type=parents');
+}

@@ -31,6 +31,8 @@ function activeSection(pathname, role, homePath) {
   if (pathname === '/care-team') return 'care-team'
   if (pathname === '/case-discussions') return 'case-discussions'
   if (pathname === '/specialist-workflow') return 'specialist-workflow'
+  if (pathname === '/parent-lessons') return 'parent-lessons'
+  if (pathname === '/aac') return 'aac'
   if (pathname === '/admin/verifications') return 'verifications'
   if (pathname === '/ministry' && role === 'admin') return 'curriculum'
   if (pathname === '/support') return 'support'
@@ -152,6 +154,8 @@ export default function RolePortalShell({ children }) {
         home,
         item('children', 'أطفالي', <Users size={21} />, '/children'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons'),
+        item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
         {
           key: 'progress',
           label: 'التقدم',
@@ -173,6 +177,7 @@ export default function RolePortalShell({ children }) {
         home,
         item('children', 'الطلاب', <Users size={21} />, '/children'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+        item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
         item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
         item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
         item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
@@ -187,6 +192,7 @@ export default function RolePortalShell({ children }) {
       return [
         home,
         item('children', 'الأطفال', <Users size={21} />, '/children'),
+        item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
         item('specialist-workflow', 'اقتراحات المتابعة', <Users size={21} />, '/specialist-workflow'),
         item('therapy', 'الجلسات النفسية', <Stethoscope size={21} />, '/therapy'),
         item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
