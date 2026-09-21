@@ -136,6 +136,11 @@ class LessonController extends Controller
                     return response()->json(['error' => 'نوع استهداف الدرس غير صالح'], 422);
                 }
                 $query->where('l.target_type', $targetType);
+            } else {
+                $user = $request->attributes->get('jwt_user');
+                if (($user->role ?? null) === 'parent') {
+                    $query->where('l.target_type', '!=', 'parents');
+                }
             }
 
             $lessons = $query->get()->map(
