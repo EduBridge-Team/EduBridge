@@ -154,6 +154,12 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
         return '📅';
       case 'therapy_request_cancelled':
         return '❌';
+      case 'specialist_suggestion':
+         return '🤝';
+      case 'suggestion_accepted':
+        return '✅';
+      case 'suggestion_rejected':
+         return '❌';  
       default:
         return '🔔';
     }

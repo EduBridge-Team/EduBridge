@@ -1663,100 +1663,7 @@ class ApiService {
       await prefs.setString('avatar_url', url);
     }
   }
-  // ═══════════════════════════════════════════════════════════
-//  دراسات الحالة (Case Discussions)
-// ═══════════════════════════════════════════════════════════
-
-static Future<List<dynamic>> getCaseDiscussions({int? childId}) async {
-  try {
-    final path = childId != null
-        ? '/case-discussions?child_id=$childId'
-        : '/case-discussions';
-    final res = await authGet(path);
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['discussions'] ?? [];
-    return [];
-  } catch (e) {
-    return [];
-  }
-}
-
-static Future<Map<String, dynamic>?> createCaseDiscussion({
-  required int childId,
-  required String topic,
-  String? description,
-  required List<int> participantIds,
-}) async {
-  try {
-    final res = await authPost('/case-discussions', {
-      'child_id': childId,
-      'topic': topic,
-      'description': description,
-      'participant_ids': participantIds,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 201) return data['discussion'];
-    throw Exception(data['error'] ?? 'فشل إنشاء دراسة الحالة');
-  } catch (e) {
-    _handleError(e);
-  }
-}
-
-static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
-    int discussionId) async {
-  try {
-    final res = await authGet('/case-discussions/$discussionId');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['discussion'];
-    return null;
-  } catch (e) {
-    return null;
-  }
-}
-
-static Future<Map<String, dynamic>?> addCaseMessage({
-  required int discussionId,
-  required String content,
-  String type = 'text',
-  List<String>? attachments,
-}) async {
-  try {
-    final res = await authPost('/case-discussions/$discussionId/messages', {
-      'content': content,
-      'type': type,
-      'attachments': attachments,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 201) return data['message'];
-    throw Exception(data['error'] ?? 'فشل إرسال الرسالة');
-  } catch (e) {
-    _handleError(e);
-  }
-}
-
-static Future<bool> resolveCaseDiscussion(int discussionId) async {
-  try {
-    final res = await authPut('/case-discussions/$discussionId/resolve', {});
-    return res.statusCode == 200;
-  } catch (e) {
-    return false;
-  }
-}
-
-static Future<bool> addCaseParticipant({
-  required int discussionId,
-  required int userId,
-}) async {
-  try {
-    final res = await authPost(
-      '/case-discussions/$discussionId/participants',
-      {'user_id': userId},
-    );
-    return res.statusCode == 200 || res.statusCode == 201;
-  } catch (e) {
-    return false;
-  }
-}
+ 
 
 // ═══════════════════════════════════════════════════════════
 //  تعيين متعدد
@@ -1847,6 +1754,159 @@ static Future<bool> removeSpecialist({
 }
 
 
+// ═══════════════════════════════════════════════════════════
+//  دراسات الحالة
+// ═══════════════════════════════════════════════════════════
+
+static Future<List<dynamic>> getCaseDiscussions({int? childId}) async {
+  try {
+    final path = childId != null
+        ? '/case-discussions?child_id=$childId'
+        : '/case-discussions';
+    final res = await authGet(path);
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['discussions'] ?? [];
+    return [];
+  } catch (_) {
+    return [];
+  }
+}
+
+static Future<Map<String, dynamic>?> createCaseDiscussion({
+  required int childId,
+  required String topic,
+  String? description,
+  required List<int> participantIds,
+}) async {
+  try {
+    final res = await authPost('/case-discussions', {
+      'child_id': childId,
+      'topic': topic,
+      'description': description,
+      'participant_ids': participantIds,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 201) return data['discussion'];
+    throw Exception(data['error'] ?? 'فشل إنشاء الدراسة');
+  } catch (e) {
+    _handleError(e);
+  }
+}
+
+static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
+    int discussionId) async {
+  try {
+    final res = await authGet('/case-discussions/$discussionId');
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['discussion'];
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+static Future<Map<String, dynamic>?> addCaseMessage({
+  required int discussionId,
+  required String content,
+  String type = 'text',
+}) async {
+  try {
+    final res = await authPost('/case-discussions/$discussionId/messages', {
+      'content': content,
+      'type': type,
+    });
+    final data = _decodeBody(res);
+    if (res.statusCode == 201) return data['message'];
+    throw Exception(data['error'] ?? 'فشل إرسال الرسالة');
+  } catch (e) {
+    _handleError(e);
+  }
+}
+
+static Future<bool> resolveCaseDiscussion(int discussionId) async {
+  try {
+    final res = await authPut('/case-discussions/$discussionId/resolve', {});
+    return res.statusCode == 200;
+  } catch (_) {
+    return false;
+  }
+}
+// ═══════════════════════════════════════════════════════════
+//  اقتراحات المختصين
+// ═══════════════════════════════════════════════════════════
+
+/// اقتراح مختص لطفل (يُرسل إشعار للمختص المقترح)
+static Future<String?> suggestSpecialistToChild({
+  required int childId,
+  required int specialistId,
+  required String specialty,
+  required String reason,
+}) async {
+  try {
+    final res = await authPost(
+      '/children/$childId/specialist-suggestions',
+      {
+        'specialist_id': specialistId,
+        'specialty': specialty,
+        'reason': reason,
+      },
+    );
+    if (res.statusCode == 200 || res.statusCode == 201) return null;
+    final data = _decodeBody(res);
+    return data['error'] ?? 'فشل إرسال التوصية';
+  } catch (e) {
+    return 'تعذّر الاتصال بالسيرفر';
+  }
+}
+
+/// اقتراحاتي (التي وصلتني كمختص)
+static Future<List<dynamic>> getMySpecialistSuggestions({
+  String? status,
+}) async {
+  try {
+    final path = status != null
+        ? '/specialist-suggestions?status=$status'
+        : '/specialist-suggestions';
+    final res = await authGet(path);
+    final data = _decodeBody(res);
+    if (res.statusCode == 200) return data['suggestions'] ?? [];
+    return [];
+  } catch (_) {
+    return [];
+  }
+}
+
+/// قبول اقتراح
+static Future<String?> acceptSuggestion(int suggestionId) async {
+  try {
+    final res = await authPut(
+      '/specialist-suggestions/$suggestionId/accept', {},
+    );
+    if (res.statusCode == 200) return null;
+    final data = _decodeBody(res);
+    return data['error'] ?? 'فشل القبول';
+  } catch (e) {
+    return 'تعذّر الاتصال بالسيرفر';
+  }
+}
+
+/// رفض اقتراح
+static Future<String?> rejectSuggestion(
+  int suggestionId, {
+  String? reason,
+}) async {
+  try {
+    final res = await authPut(
+      '/specialist-suggestions/$suggestionId/reject',
+      {'reason': reason ?? ''},
+    );
+    if (res.statusCode == 200) return null;
+    final data = _decodeBody(res);
+    return data['error'] ?? 'فشل الرفض';
+  } catch (e) {
+    return 'تعذّر الاتصال بالسيرفر';
+  }
+}
   // ===== حذف الحساب =====
   static Future<void> deleteAccount() async {
     try {

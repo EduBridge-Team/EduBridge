@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
+import 'specialist_suggestions_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -126,6 +127,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return '📅';
       case 'therapy_request_cancelled':
         return '❌';
+      case 'specialist_suggestion':
+       return '🤝';
+     case 'suggestion_accepted':
+       return '✅';
+     case 'suggestion_rejected':
+       return '❌';  
       default:
         return '🔔';
     }
@@ -277,8 +284,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     shape: BoxShape.circle,
                   ),
                 ),
-          onTap: () => _markRead(n['id']),
-        ),
+            onTap: () {
+          _markRead(n['id']);
+          final type = n['type']?.toString();
+          if (type == 'specialist_suggestion' ||
+              type == 'suggestion_accepted' ||
+              type == 'suggestion_rejected') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SpecialistSuggestionsScreen(),
+              ),
+
+            );
+              }
+            }
+        )
+        
       ),
     );
   }

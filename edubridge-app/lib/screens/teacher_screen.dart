@@ -47,9 +47,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
   bool _verificationDialogShown = false;
   int? _currentUserId;
 
-  // ✅ Switch "أطفالي فقط"
-  bool _showOnlyMine = true;
-
   @override
   void initState() {
     super.initState();
@@ -422,21 +419,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
-                    if (_tabIndex == 0)
-                      Row(
-                        children: [
-                          Icon(Icons.people, size: 20, color: c.heading),
-                          const SizedBox(width: 6),
-                          Text(
-                            'أطفالي فقط',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: c.heading,
-                            ),
-                          ),
-                        ],
-                      ),
                     const Spacer(),
                     ValueListenableBuilder<int>(
                       valueListenable:
@@ -671,49 +653,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   );
                 },
               ),
-
-              // ✅ Switch "أطفالي فقط" (في تبويب الأطفال)
-              if (_tabIndex == 0) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.filter_alt,
-                          color: Colors.white, size: 18),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'أطفالي فقط',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Transform.scale(
-                        scale: 0.85,
-                        child: Switch(
-                          value: _showOnlyMine,
-                          activeThumbColor: Colors.white,
-                          activeTrackColor: AppColors.green,
-                          inactiveThumbColor: Colors.white70,
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.3),
-                          onChanged: (v) =>
-                              setState(() => _showOnlyMine = v),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ),
@@ -753,7 +692,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
   }
 
   Widget _buildChildrenTab(JisrColors c) {
-    // في _loadData نفلتر بالفعل، لكن نعرض رسالة عندما لا يوجد
     final displayChildren = _children;
 
     if (displayChildren.isEmpty) {
@@ -915,7 +853,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     ),
                     const SizedBox(height: 6),
 
-                    // ✅ صف 3: دراسة الحالة
+                    // صف 3: دراسة الحالة
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(

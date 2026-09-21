@@ -1,4 +1,9 @@
-// شاشة المختص — التقييم + العلاج النفسي + دراسة الحالة + دروس لأولياء الأمور
+// شاشة المختص — كاملة مع:
+// - Switch "أطفالي / قائمة الانتظار"
+// - استخراج التخصص تلقائياً من /me
+// - فتح شاشة تحديد التخصص عند عدم وجوده
+// - اقتراح مختص نفسي/تعليمي
+// - دراسة الحالة
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,9 +18,11 @@ import '../utils/navigation.dart';
 import 'add_certificate_sheet.dart';
 import 'add_lesson_sheet.dart';
 import 'case_discussion_screen.dart';
+import 'choose_specialty_screen.dart';
 import 'plan_evaluation_screen.dart';
 import 'therapy_requests_screen.dart';
 import 'therapy_sessions_screen.dart';
+import 'specialist_suggestions_screen.dart';
 import 'welcome_screen.dart';
 import 'evaluation_sheet.dart';
 import 'support_sheet.dart';
@@ -49,11 +56,13 @@ class _SpecialistDashboardScreenState
   bool _adding = false;
   String _searchQuery = '';
 
-  // ✅ Switch "أطفالي فقط"
+  // ✅ Switch: أطفالي فقط / قائمة الانتظار
   bool _showOnlyMine = true;
   int? _currentUserId;
+  String? _mySpecialty; // 'psychological' | 'educational' | null
 
   bool _verificationDialogShown = false;
+  bool _specialtyDialogShown = false;
 
   @override
   void initState() {
@@ -64,6 +73,7 @@ class _SpecialistDashboardScreenState
   Future<void> _loadUserAndData() async {
     _currentUserId = await ApiService.getUserId();
     await _load();
+    await _checkSpecialty();
     _checkAndShowVerificationDialog();
   }
 
@@ -76,6 +86,35 @@ class _SpecialistDashboardScreenState
   void _setAdding(bool value) {
     inlineModalOpen.value = value;
     setState(() => _adding = value);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  التحقق من التخصص — يفتح شاشة الاختيار لو غير محدد
+  // ═══════════════════════════════════════════════════════════
+  Future<void> _checkSpecialty() async {
+    if (_specialtyDialogShown) return;
+    if (_mySpecialty != null) return;
+    if (!mounted) return;
+
+    _specialtyDialogShown = true;
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ChooseSpecialtyScreen(),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (result != null) {
+      setState(() => _mySpecialty = result);
+      await _load(); // أعد التحميل ليعكس التخصص الجديد
+    } else {
+      _specialtyDialogShown = false; // اسمح بإعادة المحاولة
+    }
   }
 
   bool _isToday(String? ts) {
@@ -156,6 +195,46 @@ class _SpecialistDashboardScreenState
         });
       }
 
+      // ═══════════════════════════════════════════════════════
+      //  ✅ استخراج التخصص (3 طرق متتالية)
+      // ═══════════════════════════════════════════════════════
+      String? specialty;
+
+      // 1) من /me (الأدق)
+      try {
+        final meRes = await ApiService.authGet('/me');
+        if (meRes.statusCode == 200) {
+          final meData = jsonDecode(meRes.body);
+          final me = meData['user'] ?? meData;
+          final spec =
+              (me['specialty'] ?? '').toString().toLowerCase().trim();
+          if (spec.isNotEmpty) {
+            if (spec == 'psychological' || spec.contains('نفس')) {
+              specialty = 'psychological';
+            } else if (spec == 'educational' || spec.contains('تعليم')) {
+              specialty = 'educational';
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('⚠️ فشل /me: $e');
+      }
+
+      // 2) من قائمة المختصين
+      if (specialty == null) {
+        final meUser = (specialistsData['users'] as List? ?? []).firstWhere(
+          (u) => u['id'] == _currentUserId,
+          orElse: () => <String, dynamic>{},
+        );
+        final spec =
+            (meUser['specialty'] ?? '').toString().toLowerCase().trim();
+        if (spec == 'psychological' || spec.contains('نفس')) {
+          specialty = 'psychological';
+        } else if (spec == 'educational' || spec.contains('تعليم')) {
+          specialty = 'educational';
+        }
+      }
+
       if (!mounted) return;
       setState(() {
         _rows = rows;
@@ -163,8 +242,12 @@ class _SpecialistDashboardScreenState
         _types = typesData['disability_types'] ?? [];
         _teachers = teachersData['users'] ?? [];
         _specialists = specialistsData['users'] ?? [];
+        _mySpecialty = specialty;
         _loading = false;
       });
+
+      debugPrint(
+          '🔍 _currentUserId=$_currentUserId, _mySpecialty=$_mySpecialty');
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -216,8 +299,7 @@ class _SpecialistDashboardScreenState
               ),
               const SizedBox(height: 12),
               Text(
-                'عزيزي المختص، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.\n\n'
-                'يمكنك تصفح الأقسام الآن، لكن لن تتمكن من تقييم الأطفال أو تعيين معلمين أو إضافة دروس إلا بعد التوثيق.',
+                'عزيزي المختص، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -275,7 +357,7 @@ class _SpecialistDashboardScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('⚠️ يرجى توثيق الهوية أولاً لتفعيل هذه الصلاحية'),
+            content: Text('⚠️ يرجى توثيق الهوية أولاً'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -309,13 +391,6 @@ class _SpecialistDashboardScreenState
             backgroundColor: Colors.green,
           ),
         );
-      } else {
-        final data = jsonDecode(res.body);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data['error'] ?? 'فشل الاعتماد')),
-          );
-        }
       }
     } catch (_) {
       if (mounted) {
@@ -360,7 +435,6 @@ class _SpecialistDashboardScreenState
       orElse: () => {},
     );
     final child = row['child'] as Map?;
-
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -386,12 +460,10 @@ class _SpecialistDashboardScreenState
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.assessment,
-                      size: 48, color: Colors.grey),
+                  const Icon(Icons.assessment, size: 48, color: Colors.grey),
                   const SizedBox(height: 12),
                   Text('لا يوجد تقييم مسجل',
-                      style:
-                          TextStyle(color: JisrColors.of(context).muted)),
+                      style: TextStyle(color: JisrColors.of(context).muted)),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
@@ -431,14 +503,12 @@ class _SpecialistDashboardScreenState
                 const Icon(Icons.assessment, color: AppColors.orange),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    'تفاصيل التقييم',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: c.heading,
-                    ),
-                  ),
+                  child: Text('تفاصيل التقييم',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: c.heading,
+                      )),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -447,39 +517,15 @@ class _SpecialistDashboardScreenState
               ],
             ),
             if (date != null)
-              Text(
-                'التاريخ: ${date.day}/${date.month}/${date.year}',
-                style: TextStyle(color: c.muted),
-              ),
+              Text('التاريخ: ${date.day}/${date.month}/${date.year}',
+                  style: TextStyle(color: c.muted)),
             const SizedBox(height: 12),
-            _detailRow('🧠 التقييم المعرفي',
-                evaluation['cognitive_assessment']),
-            _detailRow('🏃 التقييم الحركي',
-                evaluation['motor_assessment']),
-            _detailRow('💚 التقييم العاطفي',
-                evaluation['emotional_assessment']),
-            _detailRow('🤝 التقييم الاجتماعي',
-                evaluation['social_assessment']),
+            _detailRow('🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
+            _detailRow('🏃 التقييم الحركي', evaluation['motor_assessment']),
+            _detailRow('💚 التقييم العاطفي', evaluation['emotional_assessment']),
+            _detailRow('🤝 التقييم الاجتماعي', evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
-            _detailRow('📚 الخطة التعليمية',
-                evaluation['educational_plan']),
-            if (evaluation['teaching_methods'] != null) ...[
-              const SizedBox(height: 8),
-              const Text('طرق التدريس المقترحة',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    (evaluation['teaching_methods'] as List? ?? [])
-                        .map((method) => Chip(
-                              label: Text(method),
-                              backgroundColor: c.tintGreen,
-                            ))
-                        .toList(),
-              ),
-            ],
+            _detailRow('📚 الخطة التعليمية', evaluation['educational_plan']),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -501,8 +547,7 @@ class _SpecialistDashboardScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
           Text(value),
         ],
@@ -520,17 +565,13 @@ class _SpecialistDashboardScreenState
   }
 
   void _openNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => const NotificationsScreen()));
   }
 
   void _openTherapy() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const TherapySessionsScreen()),
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => const TherapySessionsScreen()));
   }
 
   void _openCaseDiscussion({int? childId}) {
@@ -538,6 +579,15 @@ class _SpecialistDashboardScreenState
       context,
       MaterialPageRoute(
         builder: (_) => CaseDiscussionScreen(filterChildId: childId),
+      ),
+    );
+  }
+
+  void _openSuggestions() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SpecialistSuggestionsScreen(),
       ),
     );
   }
@@ -574,7 +624,6 @@ class _SpecialistDashboardScreenState
       Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
-
     final child = row['child'];
     final result = await Navigator.push(
       context,
@@ -588,11 +637,9 @@ class _SpecialistDashboardScreenState
     if (result == true) _load();
   }
 
-  // ✅ اقتراح دعم نفسي لولي الأمر
   Future<void> _recommendTherapy(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
-
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -602,27 +649,113 @@ class _SpecialistDashboardScreenState
     if (result == true) _load();
   }
 
-  // ✅ الفلترة حسب "أطفالي فقط"
-  List get _filteredChildren {
-    final query = _searchQuery.trim().toLowerCase();
+  // ═══════════════════════════════════════════════════════════
+  //  منطق الفلترة
+  // ═══════════════════════════════════════════════════════════
 
-    var base = _rows;
-    if (_showOnlyMine && _currentUserId != null) {
-      base = _rows.where((r) {
-        final child = r['child'];
-        final specIds = child['specialist_ids'] as List?;
-        final singleSpec = child['specialist_id'];
-        if (specIds != null && specIds.contains(_currentUserId)) return true;
-        if (singleSpec == _currentUserId) return true;
-        return false;
-      }).toList();
-
-      // إذا لم يجد فلترة صارمة (بيانات قديمة)، اعرض كل الأطفال
-      if (base.isEmpty && _rows.isNotEmpty) {
-        base = _rows;
+  Set<int> _childSpecialistIds(Map<String, dynamic> child) {
+    final ids = <int>{};
+    final single = child['specialist_id'];
+    if (single is int) ids.add(single);
+    if (single is String) {
+      final v = int.tryParse(single);
+      if (v != null) ids.add(v);
+    }
+    for (final key in [
+      'specialist_ids',
+      'assigned_specialist_ids',
+      'specialists'
+    ]) {
+      final list = child[key];
+      if (list is List) {
+        for (final item in list) {
+          if (item is int) ids.add(item);
+          if (item is String) {
+            final v = int.tryParse(item);
+            if (v != null) ids.add(v);
+          }
+          if (item is Map && item['id'] != null) {
+            final v = item['id'] is int
+                ? item['id'] as int
+                : int.tryParse(item['id'].toString());
+            if (v != null) ids.add(v);
+          }
+        }
       }
     }
+    return ids;
+  }
 
+  bool _isMyChild(Map<String, dynamic> child) {
+    if (_currentUserId == null) return false;
+    return _childSpecialistIds(child).contains(_currentUserId);
+  }
+
+  bool _hasBothSpecialists(Map<String, dynamic> child) {
+    final specIds = _childSpecialistIds(child);
+    if (specIds.length < 2) return false;
+
+    int psychCount = 0;
+    int eduCount = 0;
+    int unknownCount = 0;
+
+    for (final id in specIds) {
+      final s = _specialists.firstWhere(
+        (u) => u['id'] == id,
+        orElse: () => <String, dynamic>{},
+      );
+      final spec = (s['specialty'] ?? '').toString().toLowerCase();
+      if (spec == 'psychological' || spec.contains('نفس')) {
+        psychCount++;
+      } else if (spec == 'educational' || spec.contains('تعليم')) {
+        eduCount++;
+      } else {
+        unknownCount++;
+      }
+    }
+    if (psychCount >= 1 && eduCount >= 1) return true;
+    if (psychCount + eduCount == 0 && unknownCount >= 2) return true;
+    return false;
+  }
+
+  bool _hasSpecialistOfType(Map<String, dynamic> child, String type) {
+    final specIds = _childSpecialistIds(child);
+    for (final id in specIds) {
+      final s = _specialists.firstWhere(
+        (u) => u['id'] == id,
+        orElse: () => <String, dynamic>{},
+      );
+      final spec = (s['specialty'] ?? '').toString().toLowerCase();
+      if (spec == type) return true;
+      if (type == 'psychological' && spec.contains('نفس')) return true;
+      if (type == 'educational' && spec.contains('تعليم')) return true;
+    }
+    return false;
+  }
+
+  bool _isInWaitingList(Map<String, dynamic> child) {
+    if (_isMyChild(child)) return false;
+    if (_hasBothSpecialists(child)) return false;
+    if (_mySpecialty == null || _mySpecialty!.isEmpty) {
+      return _childSpecialistIds(child).isEmpty;
+    }
+    if (_mySpecialty == 'psychological') {
+      return !_hasSpecialistOfType(child, 'psychological');
+    }
+    if (_mySpecialty == 'educational') {
+      return !_hasSpecialistOfType(child, 'educational');
+    }
+    return false;
+  }
+
+  List get _filteredChildren {
+    final query = _searchQuery.trim().toLowerCase();
+    List<Map<String, dynamic>> base;
+    if (_showOnlyMine) {
+      base = _rows.where((r) => _isMyChild(r['child'])).toList();
+    } else {
+      base = _rows.where((r) => _isInWaitingList(r['child'])).toList();
+    }
     if (query.isEmpty) return base;
     return base.where((row) {
       final name = (row['child']['name'] ?? '').toString().toLowerCase();
@@ -630,12 +763,10 @@ class _SpecialistDashboardScreenState
     }).toList();
   }
 
-  List get _pendingChildren {
-    return _rows.where((row) {
-      final status = row['child']['status'] ?? '';
-      return status != 'evaluated' && status != 'assigned';
-    }).toList();
-  }
+  List get _pendingChildren => _rows.where((row) {
+        final s = row['child']['status'] ?? '';
+        return s != 'evaluated' && s != 'assigned';
+      }).toList();
 
   int get _totalChildren => _rows.length;
   int get _pendingCount => _pendingChildren.length;
@@ -654,6 +785,7 @@ class _SpecialistDashboardScreenState
           Column(
             children: [
               _buildHeader(c),
+              // ─── البحث + الجرس ───
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -671,8 +803,9 @@ class _SpecialistDashboardScreenState
                           onChanged: (v) =>
                               setState(() => _searchQuery = v),
                         ),
-                      ),
-                    const Spacer(),
+                      )
+                    else
+                      const Spacer(),
                     ValueListenableBuilder<int>(
                       valueListenable:
                           NotificationListenerService.instance.unreadCount,
@@ -680,8 +813,7 @@ class _SpecialistDashboardScreenState
                         return Stack(
                           children: [
                             IconButton(
-                              icon: const Icon(
-                                  Icons.notifications_outlined),
+                              icon: const Icon(Icons.notifications_outlined),
                               onPressed: _openNotifications,
                               tooltip: 'الإشعارات',
                             ),
@@ -696,18 +828,14 @@ class _SpecialistDashboardScreenState
                                     shape: BoxShape.circle,
                                   ),
                                   constraints: const BoxConstraints(
-                                    minWidth: 16,
-                                    minHeight: 16,
-                                  ),
-                                  child: Text(
-                                    '$count',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                      minWidth: 16, minHeight: 16),
+                                  child: Text('$count',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center),
                                 ),
                               ),
                           ],
@@ -717,7 +845,10 @@ class _SpecialistDashboardScreenState
                   ],
                 ),
               ),
-              if (_tabIndex == 0 && !_loading)
+              // ─── Switch + الإحصائيات ───
+              if (_tabIndex == 0 && !_loading) ...[
+                _buildFilterCard(c),
+                const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -745,6 +876,7 @@ class _SpecialistDashboardScreenState
                     ],
                   ),
                 ),
+              ],
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _load,
@@ -791,6 +923,103 @@ class _SpecialistDashboardScreenState
     );
   }
 
+  // ─── بطاقة الفلترة (Switch) ───
+  Widget _buildFilterCard(JisrColors c) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: _showOnlyMine
+              ? AppColors.tealDeep.withValues(alpha: 0.1)
+              : AppColors.orange.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: _showOnlyMine ? AppColors.tealDeep : AppColors.orangeDeep,
+            width: 1.8,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _showOnlyMine
+                    ? AppColors.tealDeep
+                    : AppColors.orangeDeep,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                _showOnlyMine ? Icons.person : Icons.hourglass_top,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        _showOnlyMine ? 'أطفالي فقط' : 'قائمة الانتظار',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: _showOnlyMine
+                              ? AppColors.tealDeep
+                              : AppColors.orangeDeep,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: _showOnlyMine
+                              ? AppColors.tealDeep
+                              : AppColors.orangeDeep,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '${_filteredChildren.length}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _showOnlyMine
+                        ? 'الأطفال المعيّنون لك'
+                        : 'أطفال يحتاجون مختص',
+                    style: TextStyle(fontSize: 11, color: c.muted),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: _showOnlyMine,
+              activeThumbColor: AppColors.tealDeep,
+              inactiveThumbColor: AppColors.orangeDeep,
+              inactiveTrackColor:
+                  AppColors.orange.withValues(alpha: 0.35),
+              onChanged: (v) => setState(() => _showOnlyMine = v),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader(JisrColors c) {
     return Container(
       width: double.infinity,
@@ -815,14 +1044,12 @@ class _SpecialistDashboardScreenState
                       Image.asset('assets/brand_icon.png',
                           width: 40, height: 40),
                       const SizedBox(width: 6),
-                      const Text(
-                        'EduBridge',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      const Text('EduBridge',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
                     ],
                   ),
                   DashboardMenu(
@@ -834,14 +1061,19 @@ class _SpecialistDashboardScreenState
                         onSelected: () => _openCaseDiscussion(),
                       ),
                       DashboardMenuAction(
+                        id: 'suggestions',
+                        label: 'اقتراحات المتابعة',
+                        icon: Icons.handshake,
+                        onSelected: _openSuggestions,
+                      ),
+                      DashboardMenuAction(
                         id: 'therapy_requests',
                         label: 'طلبات الدعم النفسي',
                         icon: Icons.psychology_alt,
                         onSelected: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                const TherapyRequestsScreen(),
+                            builder: (_) => const TherapyRequestsScreen(),
                           ),
                         ),
                       ),
@@ -873,9 +1105,8 @@ class _SpecialistDashboardScreenState
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) => AddCertificateSheet(
-                                onSaved: _load,
-                              ),
+                              builder: (_) =>
+                                  AddCertificateSheet(onSaved: _load),
                             );
                           }
                         },
@@ -887,8 +1118,7 @@ class _SpecialistDashboardScreenState
                         onSelected: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ChatsScreen(),
-                          ),
+                              builder: (_) => const ChatsScreen()),
                         ),
                       ),
                       DashboardMenuAction(
@@ -917,17 +1147,15 @@ class _SpecialistDashboardScreenState
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'مرحباً $name 👋',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      Text('مرحباً $name 👋',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
                       Text(
                         _tabIndex == 0
-                            ? 'نظرة عامة على تقدّم الأطفال والخطط'
+                            ? 'نظرة عامة على الأطفال'
                             : 'أضف دروساً لأولياء الأمور وللأطفال',
                         style: TextStyle(
                           fontSize: 13,
@@ -938,49 +1166,6 @@ class _SpecialistDashboardScreenState
                   );
                 },
               ),
-
-              // ✅ Switch "أطفالي فقط"
-              if (_tabIndex == 0) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.filter_alt,
-                          color: Colors.white, size: 18),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'أطفالي فقط',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Transform.scale(
-                        scale: 0.85,
-                        child: Switch(
-                          value: _showOnlyMine,
-                          activeThumbColor: Colors.white,
-                          activeTrackColor: AppColors.green,
-                          inactiveThumbColor: Colors.white70,
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.3),
-                          onChanged: (v) =>
-                              setState(() => _showOnlyMine = v),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ),
@@ -1025,28 +1210,21 @@ class _SpecialistDashboardScreenState
       return ListView(
         children: [
           const SizedBox(height: 80),
-          Icon(Icons.people_outline, size: 72, color: c.muted),
+          Icon(
+            _showOnlyMine ? Icons.person_off : Icons.hourglass_empty,
+            size: 72,
+            color: c.muted,
+          ),
           const SizedBox(height: 16),
           Center(
             child: Text(
               _showOnlyMine
-                  ? 'لا يوجد أطفال موزّعون عليك حالياً'
-                  : (_rows.isEmpty
-                      ? 'لا يوجد أطفال مسجّلون بعد'
-                      : 'لا نتائج مطابقة للبحث'),
+                  ? 'لا يوجد أطفال معيّنون لك حالياً'
+                  : 'لا يوجد أطفال في قائمة الانتظار',
               style: TextStyle(fontSize: 18, color: c.muted),
               textAlign: TextAlign.center,
             ),
           ),
-          if (_showOnlyMine) ...[
-            const SizedBox(height: 8),
-            Center(
-              child: TextButton(
-                onPressed: () => setState(() => _showOnlyMine = false),
-                child: const Text('عرض كل الأطفال'),
-              ),
-            ),
-          ],
         ],
       );
     }
@@ -1054,12 +1232,350 @@ class _SpecialistDashboardScreenState
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: displayChildren.length,
-      itemBuilder: (context, i) =>
-          _buildProgressRow(displayChildren[i] as Map<String, dynamic>, c),
+      itemBuilder: (context, i) => _buildProgressRow(
+          displayChildren[i] as Map<String, dynamic>, c),
     );
   }
 
   Widget _buildProgressRow(Map<String, dynamic> row, JisrColors c) {
+    if (!_showOnlyMine) return _buildAvailableChildCard(row, c);
+    return _buildMyChildCard(row, c);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  بطاقة الطفل المتاح (قائمة الانتظار)
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildAvailableChildCard(
+      Map<String, dynamic> row, JisrColors c) {
+    final child = row['child'];
+    final name = (child['name'] ?? '').toString();
+    final age = child['age'] ?? '?';
+    final disability = (child['disability_type'] ?? '').toString();
+    final description = (child['disability_description'] ?? '').toString();
+    final medicalHistory = (child['medical_history'] ?? '').toString();
+    final strengths = (child['strengths'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    final challenges = (child['challenges'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    final preferredStyle =
+        (child['preferred_learning_style'] ?? '').toString();
+    final specialNeeds = (child['special_needs'] ?? '').toString();
+
+    final color = AppColors
+        .kidPalette[_rows.indexOf(row) % AppColors.kidPalette.length];
+    final isAdding = _approvingId == child['id'];
+    final hasSpecialty = _mySpecialty != null;
+
+    // ✅ احسب التسمية والألوان حسب التخصص
+    final specType = _mySpecialty == 'psychological'
+        ? 'مختص نفسي'
+        : _mySpecialty == 'educational'
+            ? 'مختص تعليمي'
+            : 'مختص (تخصصك غير محدد)';
+
+    final specIcon = _mySpecialty == 'psychological'
+        ? Icons.psychology
+        : Icons.school;
+
+    final specColor = _mySpecialty == 'psychological'
+        ? AppColors.purple
+        : AppColors.navy;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: color,
+                  child: Text(
+                    name.isNotEmpty ? name.characters.first : '🧒',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: c.heading,
+                          )),
+                      Text(
+                        'العمر: $age سنة'
+                        '${disability.isNotEmpty ? ' • $disability' : ''}',
+                        style: TextStyle(fontSize: 13, color: c.muted),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text('متاح',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.orangeDeep,
+                      )),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (description.isNotEmpty)
+              _infoRow('وصف الإعاقة', description, c),
+            if (medicalHistory.isNotEmpty)
+              _infoRow('التاريخ الطبي', medicalHistory, c),
+            if (specialNeeds.isNotEmpty)
+              _infoRow('احتياجات خاصة', specialNeeds, c),
+            if (preferredStyle.isNotEmpty)
+              _infoRow('أسلوب التعلم', preferredStyle, c),
+            if (strengths.isNotEmpty)
+              _chipsRow('نقاط القوة', strengths, c,
+                  AppColors.greenDeep, c.tintGreen),
+            if (challenges.isNotEmpty)
+              _chipsRow('التحديات', challenges, c,
+                  AppColors.orangeDeep, c.tintOrange),
+            const SizedBox(height: 12),
+
+            // ═══ زر الإضافة ═══
+            if (!hasSpecialty)
+              // ✅ لو التخصص غير محدد → زر يفتح الشاشة
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orangeDeep,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.info_outline, size: 20),
+                  label: const Text(
+                    '⚠️ حدد تخصصك أولاً',
+                    style: TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () async {
+                    final result = await Navigator.push<String>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ChooseSpecialtyScreen(),
+                      ),
+                    );
+                    if (result != null && mounted) {
+                      setState(() => _mySpecialty = result);
+                    }
+                  },
+                ),
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: specColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: isAdding
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
+                      : Icon(specIcon, size: 20),
+                  label: Text(
+                    isAdding ? 'جارٍ الإضافة...' : 'أضفني كـ$specType',
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed:
+                      isAdding ? null : () => _addMyselfToChild(child),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoRow(String label, String value, JisrColors c) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: c.muted,
+                )),
+          ),
+          Expanded(
+            child: Text(value,
+                style:
+                    TextStyle(fontSize: 13, color: c.body, height: 1.4)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chipsRow(String label, List<String> items, JisrColors c,
+      Color color, Color bg) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: c.muted,
+                )),
+          ),
+          Expanded(
+            child: Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: items
+                  .map((s) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: bg,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(s,
+                            style:
+                                TextStyle(fontSize: 11, color: color)),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addMyselfToChild(Map<String, dynamic> child) async {
+    if (!await _checkVerification()) return;
+    if (_mySpecialty == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('لم يتم تحديد تخصصك — راجع الدعم'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(
+              _mySpecialty == 'psychological'
+                  ? Icons.psychology
+                  : Icons.school,
+              color: _mySpecialty == 'psychological'
+                  ? AppColors.purple
+                  : AppColors.navy,
+              size: 28,
+            ),
+            const SizedBox(width: 8),
+            const Text('تأكيد الإضافة'),
+          ],
+        ),
+        content: Text(
+          'هل تريد إضافة "${child['name']}" لمتابعتك كـ'
+          '${_mySpecialty == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي'}؟',
+          style: const TextStyle(fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _mySpecialty == 'psychological'
+                  ? AppColors.purple
+                  : AppColors.navy,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('إضافة'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+    if (!mounted) return;
+    setState(() => _approvingId = child['id']);
+
+    try {
+      final err = await ApiService.assignSpecialist(
+        childId: child['id'],
+        specialistId: _currentUserId!,
+        specialty: _mySpecialty!,
+      );
+      if (!mounted) return;
+      if (err != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ $err'), backgroundColor: Colors.red),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ تمت إضافة ${child['name']} لمتابعتك'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        await _load();
+      }
+    } finally {
+      if (mounted) setState(() => _approvingId = null);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  بطاقة الطفل المتابَع
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildMyChildCard(Map<String, dynamic> row, JisrColors c) {
     final child = row['child'];
     final stats = row['stats'] as Map<String, dynamic>;
     final current = stats['current'];
@@ -1102,9 +1618,7 @@ class _SpecialistDashboardScreenState
                         disabilityTypeHint:
                             child['disability_type']?.toString(),
                       );
-
                       if (!context.mounted) return;
-
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -1114,27 +1628,22 @@ class _SpecialistDashboardScreenState
                           ),
                         ),
                       );
-
                       await AccessibilityService.instance
                           .setActiveChild(null);
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: c.heading,
-                          ),
-                        ),
+                        Text(name,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: c.heading,
+                            )),
                         if (need.isNotEmpty)
-                          Text(
-                            'الإعاقة: $need',
-                            style:
-                                TextStyle(fontSize: 13, color: c.muted),
-                          ),
+                          Text('الإعاقة: $need',
+                              style: TextStyle(
+                                  fontSize: 13, color: c.muted)),
                       ],
                     ),
                   ),
@@ -1142,14 +1651,12 @@ class _SpecialistDashboardScreenState
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      '${stats['pct']}% ⭐',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.tealDeep,
-                      ),
-                    ),
+                    Text('${stats['pct']}% ⭐',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.tealDeep,
+                        )),
                     if (isPending)
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -1158,21 +1665,17 @@ class _SpecialistDashboardScreenState
                           color: AppColors.orange.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'بانتظار التقييم',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.orangeDeep,
-                          ),
-                        ),
+                        child: const Text('بانتظار التقييم',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.orangeDeep,
+                            )),
                       ),
                   ],
                 ),
               ],
             ),
-
-            // طلب دعم نفسي من ولي الأمر
             if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
@@ -1191,19 +1694,15 @@ class _SpecialistDashboardScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '🧠 طلب دعم نفسي',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: AppColors.purple,
-                            ),
-                          ),
-                          Text(
-                            'ولي الأمر يطلب جلسة نفسية لهذا الطفل',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black54),
-                          ),
+                          Text('🧠 طلب دعم نفسي',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: AppColors.purple,
+                              )),
+                          Text('ولي الأمر يطلب جلسة نفسية',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black54)),
                         ],
                       ),
                     ),
@@ -1218,8 +1717,7 @@ class _SpecialistDashboardScreenState
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              const TherapyRequestsScreen(),
+                          builder: (_) => const TherapyRequestsScreen(),
                         ),
                       ),
                       child: const Text('اعرض',
@@ -1231,7 +1729,6 @@ class _SpecialistDashboardScreenState
                 ),
               ),
             ],
-
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -1245,26 +1742,19 @@ class _SpecialistDashboardScreenState
                       color: c.tintOrange,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      '🕒 ${current['lesson_title'] ?? ''}',
-                      style: TextStyle(fontSize: 13, color: c.onTint),
-                    ),
+                    child: Text('🕒 ${current['lesson_title'] ?? ''}',
+                        style:
+                            TextStyle(fontSize: 13, color: c.onTint)),
                   ),
                 if ((stats['inProgress'] as int) > 0)
-                  _CountBadge(
-                    '${stats['inProgress']} قيد التنفيذ',
-                    color: AppColors.blue,
-                  ),
+                  _CountBadge('${stats['inProgress']} قيد التنفيذ',
+                      color: AppColors.blue),
                 if ((stats['done'] as int) > 0)
-                  _CountBadge(
-                    '${stats['done']} ✅ مكتمل',
-                    color: AppColors.lightTeal,
-                  ),
+                  _CountBadge('${stats['done']} ✅ مكتمل',
+                      color: AppColors.lightTeal),
               ],
             ),
             const SizedBox(height: 12),
-
-            // زر أساسي: تقييم/عرض
             Row(
               children: [
                 Expanded(
@@ -1296,28 +1786,20 @@ class _SpecialistDashboardScreenState
                               width: 18,
                               height: 18,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.check,
-                              color: Colors.white),
+                                  strokeWidth: 2, color: Colors.white))
+                          : const Icon(Icons.check, color: Colors.white),
                       label: Text(
                         approving ? 'جارٍ...' : 'اعتماد',
                         style: const TextStyle(fontSize: 14),
                       ),
-                      onPressed:
-                          approving ? null : () => _approve(row),
+                      onPressed: approving ? null : () => _approve(row),
                     ),
                   ),
                 ],
               ],
             ),
-
             if (!isPending) ...[
               const SizedBox(height: 8),
-
-              // صف: تقرير المعلم + كتابة تقدّم
               Row(
                 children: [
                   Expanded(
@@ -1349,14 +1831,11 @@ class _SpecialistDashboardScreenState
                       icon: const Icon(Icons.edit_note, size: 18),
                       label: const Text('اكتب تقدّم',
                           style: TextStyle(fontSize: 13)),
-                      onPressed: () =>
-                          _writeProgressBasedOnReport(row),
+                      onPressed: () => _writeProgressBasedOnReport(row),
                     ),
                   ),
                 ],
               ),
-
-              // صف: دراسة الحالة + اقتراح جلسة نفسية
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -1388,37 +1867,16 @@ class _SpecialistDashboardScreenState
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.psychology, size: 18),
-                      label: const Text('اقترح دعم نفسي',
+                      label: const Text('اقترح دعم',
                           style: TextStyle(fontSize: 12)),
                       onPressed: () => _recommendTherapy(row),
                     ),
                   ),
                 ],
               ),
-            ],
-
-            // أزرار التعيين (فقط للأطفال غير المقيّمين)
-            if (!isPending) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 40),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 6),
-                        foregroundColor: AppColors.greenDeep,
-                        side: const BorderSide(
-                            color: AppColors.greenDeep, width: 1.5),
-                      ),
-                      icon: const Icon(Icons.person_add, size: 16),
-                      label: const Text('تعيين معلمين',
-                          style: TextStyle(fontSize: 12)),
-                      onPressed: () => _openAssignTeacher(row),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
                   Expanded(
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
@@ -1429,11 +1887,13 @@ class _SpecialistDashboardScreenState
                         side: const BorderSide(
                             color: AppColors.purple, width: 1.5),
                       ),
-                      icon: const Icon(Icons.psychology, size: 16),
-                      label: const Text('مختص نفسي',
-                          style: TextStyle(fontSize: 12)),
+                      icon: const Icon(Icons.recommend, size: 16),
+                      label: const Text('اقترح مختص نفسي',
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
                       onPressed: () =>
-                          _openAssignSpecialist(row, 'psychological'),
+                          _openSuggestSpecialist(row, 'psychological'),
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -1447,17 +1907,18 @@ class _SpecialistDashboardScreenState
                         side: const BorderSide(
                             color: AppColors.navy, width: 1.5),
                       ),
-                      icon: const Icon(Icons.menu_book, size: 16),
-                      label: const Text('مختص تعليمي',
-                          style: TextStyle(fontSize: 12)),
+                      icon: const Icon(Icons.school, size: 16),
+                      label: const Text('اقترح مختص تعليمي',
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
                       onPressed: () =>
-                          _openAssignSpecialist(row, 'educational'),
+                          _openSuggestSpecialist(row, 'educational'),
                     ),
                   ),
                 ],
               ),
             ],
-
             if (!isPending && child['current_plan_id'] != null) ...[
               const SizedBox(height: 8),
               SizedBox(
@@ -1473,71 +1934,33 @@ class _SpecialistDashboardScreenState
                 ),
               ),
             ],
-
-            if (child['assigned_teacher_name'] != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: c.tintTeal,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.person,
-                        size: 16, color: AppColors.tealDeep),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'المعلمون: ${child['assigned_teacher_name']}',
-                        style: TextStyle(fontSize: 13, color: c.onTint),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ],
         ),
       ),
     );
   }
 
-  void _openAssignTeacher(Map<String, dynamic> row) async {
+  void _openSuggestSpecialist(
+      Map<String, dynamic> row, String specialty) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
     final child = row['child'];
-    showModalBottomSheet(
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _AssignTeacherSheet(
-        child: child,
-        teachers: _teachers,
-        onAssigned: (_) => _load(),
-      ),
-    );
-  }
-
-  void _openAssignSpecialist(Map<String, dynamic> row, String specialty) async {
-    if (!await _checkVerification()) return;
-    if (!mounted) return;
-    final child = row['child'];
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _AssignSpecialistSheet(
+      builder: (_) => _SuggestSpecialistSheet(
         child: child,
         specialists: _specialists,
         specialty: specialty,
-        onAssigned: () => _load(),
       ),
     );
+    if (result == true) _load();
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  تبويب الدروس
+  // ═══════════════════════════════════════════════════════════
   Widget _buildLessonsTab(JisrColors c) {
     if (_lessons.isEmpty) {
       return ListView(
@@ -1551,15 +1974,12 @@ class _SpecialistDashboardScreenState
           ),
           const SizedBox(height: 8),
           Center(
-            child: Text(
-              'أضف درساً جديداً باستخدام زر +',
-              style: TextStyle(fontSize: 14, color: c.muted),
-            ),
+            child: Text('أضف درساً جديداً باستخدام زر +',
+                style: TextStyle(fontSize: 14, color: c.muted)),
           ),
         ],
       );
     }
-
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: _lessons.length,
@@ -1593,8 +2013,10 @@ class _SpecialistDashboardScreenState
         targetColor = AppColors.blue;
     }
 
-    final hasVideo = (lesson['video_url']?.toString().isNotEmpty ?? false);
-    final hasAudio = (lesson['audio_url']?.toString().isNotEmpty ?? false);
+    final hasVideo =
+        (lesson['video_url']?.toString().isNotEmpty ?? false);
+    final hasAudio =
+        (lesson['audio_url']?.toString().isNotEmpty ?? false);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -1618,14 +2040,12 @@ class _SpecialistDashboardScreenState
             color: targetColor,
           ),
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: c.heading,
-          ),
-        ),
+        title: Text(title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: c.heading,
+            )),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1639,14 +2059,12 @@ class _SpecialistDashboardScreenState
                 color: targetColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                targetBadge,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: targetColor,
-                ),
-              ),
+              child: Text(targetBadge,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: targetColor,
+                  )),
             ),
           ],
         ),
@@ -1725,14 +2143,12 @@ class _StatsCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(
-              '$icon $value',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
+            Text('$icon $value',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                )),
             Text(label,
                 style: TextStyle(fontSize: 10, color: c.muted),
                 textAlign: TextAlign.center),
@@ -1746,7 +2162,6 @@ class _StatsCard extends StatelessWidget {
 class _CountBadge extends StatelessWidget {
   final String text;
   final Color color;
-
   const _CountBadge(this.text, {required this.color});
 
   @override
@@ -1757,294 +2172,52 @@ class _CountBadge extends StatelessWidget {
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
-      ),
+      child: Text(text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: color,
+          )),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  تعيين معلمين متعددين (Checkbox)
+//  _SuggestSpecialistSheet
 // ═══════════════════════════════════════════════════════════
-class _AssignTeacherSheet extends StatefulWidget {
-  final Map child;
-  final List teachers;
-  final Function(Map) onAssigned;
-
-  const _AssignTeacherSheet({
-    required this.child,
-    required this.teachers,
-    required this.onAssigned,
-  });
-
-  @override
-  State<_AssignTeacherSheet> createState() => _AssignTeacherSheetState();
-}
-
-class _AssignTeacherSheetState extends State<_AssignTeacherSheet> {
-  final Set<int> _selectedTeacherIds = {};
-  List<Map<String, dynamic>> _alreadyAssigned = [];
-  bool _loading = true;
-  bool _saving = false;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCurrentTeachers();
-  }
-
-  Future<void> _loadCurrentTeachers() async {
-    try {
-      final list = await ApiService.getChildTeachers(widget.child['id']);
-      if (!mounted) return;
-      setState(() {
-        _alreadyAssigned =
-            list.cast<Map<String, dynamic>>();
-        _selectedTeacherIds
-            .addAll(_alreadyAssigned.map((t) => t['id'] as int));
-        _loading = false;
-      });
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  Future<void> _save() async {
-    if (_selectedTeacherIds.isEmpty) {
-      setState(() => _error = 'اختر معلماً واحداً على الأقل');
-      return;
-    }
-
-    setState(() {
-      _saving = true;
-      _error = null;
-    });
-
-    try {
-      final existingIds =
-          _alreadyAssigned.map((t) => t['id'] as int).toSet();
-
-      // إضافة المعلمين الجدد
-      for (final id in _selectedTeacherIds) {
-        if (!existingIds.contains(id)) {
-          await ApiService.addTeacherToChild(
-            childId: widget.child['id'],
-            teacherId: id,
-          );
-        }
-      }
-
-      // إزالة المعلمين الملغيّين
-      for (final id in existingIds) {
-        if (!_selectedTeacherIds.contains(id)) {
-          await ApiService.removeTeacherFromChild(
-            childId: widget.child['id'],
-            teacherId: id,
-          );
-        }
-      }
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              '✅ تم تحديث المعلمين (${_selectedTeacherIds.length})'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      widget.onAssigned({});
-      Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
-        _saving = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.person_add,
-                        color: AppColors.teal, size: 26),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'تعيين معلمين — ${widget.child['name'] ?? ''}',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: c.heading,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: c.tintTeal,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outline,
-                          color: AppColors.tealDeep, size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'يمكن تعيين أكثر من معلم لنفس الطفل',
-                          style: TextStyle(
-                              fontSize: 12, color: c.onTint),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-                if (widget.teachers.isEmpty)
-                  Center(
-                    child: Text('لا يوجد معلمون مسجلون',
-                        style: TextStyle(color: c.muted)),
-                  )
-                else
-                  Flexible(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: widget.teachers.map<Widget>((teacher) {
-                        final id = teacher['id'] as int;
-                        final selected = _selectedTeacherIds.contains(id);
-                        return CheckboxListTile(
-                          value: selected,
-                          title: Text(teacher['name'] ?? 'معلم'),
-                          subtitle: Text(
-                            teacher['email'] ?? '',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          onChanged: (v) {
-                            setState(() {
-                              if (v == true) {
-                                _selectedTeacherIds.add(id);
-                              } else {
-                                _selectedTeacherIds.remove(id);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                if (_error != null) ...[
-                  const SizedBox(height: 8),
-                  Text(_error!,
-                      style: const TextStyle(color: Colors.red)),
-                ],
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('إلغاء'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.teal,
-                        ),
-                        onPressed: _saving ? null : _save,
-                        child: Text(
-                          _saving
-                              ? '...'
-                              : 'حفظ (${_selectedTeacherIds.length})',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  تعيين مختص نفسي أو تعليمي
-// ═══════════════════════════════════════════════════════════
-class _AssignSpecialistSheet extends StatefulWidget {
+class _SuggestSpecialistSheet extends StatefulWidget {
   final Map child;
   final List specialists;
-  final String specialty; // psychological | educational
-  final VoidCallback onAssigned;
+  final String specialty;
 
-  const _AssignSpecialistSheet({
+  const _SuggestSpecialistSheet({
     required this.child,
     required this.specialists,
     required this.specialty,
-    required this.onAssigned,
   });
 
   @override
-  State<_AssignSpecialistSheet> createState() =>
-      _AssignSpecialistSheetState();
+  State<_SuggestSpecialistSheet> createState() =>
+      _SuggestSpecialistSheetState();
 }
 
-class _AssignSpecialistSheetState extends State<_AssignSpecialistSheet> {
+class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
   int? _selectedId;
+  final _reasonCtrl = TextEditingController();
   bool _saving = false;
   String? _error;
 
   String get _label =>
       widget.specialty == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي';
 
-  IconData get _icon => widget.specialty == 'psychological'
-      ? Icons.psychology
-      : Icons.menu_book;
-
   Color get _color => widget.specialty == 'psychological'
       ? AppColors.purple
       : AppColors.navy;
 
   @override
-  void initState() {
-    super.initState();
-    // اختيار المختص الحالي إن وُجد
-    final currentId = widget.child['specialist_id_${widget.specialty}'];
-    if (currentId is int) _selectedId = currentId;
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _save() async {
@@ -2052,20 +2225,24 @@ class _AssignSpecialistSheetState extends State<_AssignSpecialistSheet> {
       setState(() => _error = 'اختر مختصاً');
       return;
     }
+    if (_reasonCtrl.text.trim().length < 10) {
+      setState(() => _error = 'اكتب سبب التوصية (10 أحرف على الأقل)');
+      return;
+    }
 
     setState(() {
       _saving = true;
       _error = null;
     });
 
-    final err = await ApiService.assignSpecialist(
+    final err = await ApiService.suggestSpecialistToChild(
       childId: widget.child['id'],
       specialistId: _selectedId!,
       specialty: widget.specialty,
+      reason: _reasonCtrl.text.trim(),
     );
 
     if (!mounted) return;
-
     if (err != null) {
       setState(() {
         _error = err;
@@ -2076,19 +2253,16 @@ class _AssignSpecialistSheetState extends State<_AssignSpecialistSheet> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('✅ تم تعيين $_label'),
+        content: Text('✅ تم إرسال التوصية لـ$_label'),
         backgroundColor: Colors.green,
       ),
     );
-    widget.onAssigned();
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-
-    // فلترة المختصين حسب التخصص
     final filtered = widget.specialists.where((s) {
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
       if (spec.isEmpty) return true;
@@ -2098,129 +2272,161 @@ class _AssignSpecialistSheetState extends State<_AssignSpecialistSheet> {
               : 'تعليم');
     }).toList();
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(_icon, color: _color, size: 26),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'تعيين $_label',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: c.heading,
+              Row(
+                children: [
+                  Icon(Icons.recommend, color: _color, size: 28),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('اقتراح $_label',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        )),
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _color.withValues(alpha: 0.3)),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: _color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline, color: _color, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'الطفل يمكن أن يتابع مع مختص نفسي واحد ومختص تعليمي واحد فقط',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: c.onTint,
-                      height: 1.5,
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: _color, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'سيُرسَل إشعار للمختص المقترح لمتابعة ${widget.child['name']}.',
+                        style: TextStyle(
+                            fontSize: 12, color: c.onTint, height: 1.5),
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          if (filtered.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text(
-                  'لا يوجد مختصون متاحون لهذا التخصص',
-                  style: TextStyle(color: c.muted),
-                  textAlign: TextAlign.center,
+                  ],
                 ),
               ),
-            )
-          else
-            Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                children: filtered.map<Widget>((s) {
+              const SizedBox(height: 16),
+              if (filtered.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  alignment: Alignment.center,
+                  child: Text('لا يوجد مختصون متاحون',
+                      style: TextStyle(color: c.muted),
+                      textAlign: TextAlign.center),
+                )
+              else
+                ...filtered.map<Widget>((s) {
                   final id = s['id'] as int;
                   return RadioListTile<int>(
-                    title: Text(s['name'] ?? ''),
-                    subtitle: Text(s['email'] ?? ''),
                     value: id,
                     groupValue: _selectedId,
                     activeColor: _color,
+                    title: Text(s['name']?.toString() ?? ''),
+                    subtitle: Text(
+                      s['email']?.toString() ?? '',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                     onChanged: (v) => setState(() => _selectedId = v),
                   );
-                }).toList(),
-              ),
-            ),
-          if (_error != null) ...[
-            const SizedBox(height: 8),
-            Text(_error!,
-                style: const TextStyle(color: Colors.red)),
-          ],
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('إلغاء'),
+                }),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _reasonCtrl,
+                maxLines: 3,
+                maxLength: 300,
+                decoration: InputDecoration(
+                  labelText: 'سبب التوصية *',
+                  alignLabelWithHint: true,
+                  hintText: 'لماذا ترشح هذا المختص؟',
+                  prefixIcon: const Icon(Icons.description),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: _color),
-                  onPressed: _saving ? null : _save,
-                  child: Text(_saving ? '...' : 'تعيين'),
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.red)),
                 ),
+              ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('إلغاء'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _color,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: _saving ? null : _save,
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white))
+                          : const Icon(Icons.send),
+                      label: Text(_saving ? '...' : 'إرسال التوصية',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  اقتراح جلسة نفسية لولي الأمر
+//  _RecommendTherapySheet
 // ═══════════════════════════════════════════════════════════
 class _RecommendTherapySheet extends StatefulWidget {
   final Map child;
-
   const _RecommendTherapySheet({required this.child});
 
   @override
@@ -2243,7 +2449,6 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
     'سلوك انسحابي',
     'نوبات غضب متكررة',
     'يحتاج تقييم نفسي شامل',
-    'يحتاج متابعة تأهيلية',
     'أخرى',
   ];
 
@@ -2262,12 +2467,10 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
       setState(() => _error = 'اكتب شرحاً (15 حرفاً على الأقل)');
       return;
     }
-
     setState(() {
       _saving = true;
       _error = null;
     });
-
     try {
       await ApiService.authPost('/therapy/recommendations', {
         'child_id': widget.child['id'],
@@ -2275,7 +2478,6 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
         'description': _descCtrl.text.trim(),
         'urgency': _urgency,
       });
-
       if (!mounted) return;
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2296,18 +2498,14 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final childName = widget.child['name'] ?? '';
-
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+          bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
-        ),
+            maxHeight: MediaQuery.of(context).size.height * 0.9),
         decoration: BoxDecoration(
           color: c.card,
           borderRadius: BorderRadius.circular(24),
@@ -2324,7 +2522,7 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'اقتراح دعم نفسي — $childName',
+                      'اقتراح دعم نفسي — ${widget.child['name']}',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -2338,34 +2536,7 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.purple.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.info_outline,
-                        color: AppColors.purple, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'سيصل هذا الاقتراح لولي الأمر كإشعار، وسيظهر له في صفحة طلبات الدعم النفسي.',
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: c.onTint,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 16),
-
-              // السبب
               DropdownButtonFormField<String>(
                 initialValue: _reason,
                 decoration: const InputDecoration(
@@ -2378,7 +2549,6 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
                 onChanged: (v) => setState(() => _reason = v),
               ),
               const SizedBox(height: 12),
-
               TextField(
                 controller: _descCtrl,
                 maxLines: 5,
@@ -2386,56 +2556,34 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
                 decoration: const InputDecoration(
                   labelText: 'شرح مفصّل *',
                   alignLabelWithHint: true,
-                  hintText:
-                      'اشرح لولي الأمر: لماذا تقترح جلسة نفسية؟ ما العلامات التي لاحظتها؟',
                   prefixIcon: Icon(Icons.description),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // درجة الأهمية
-              Text(
-                'درجة الأهمية',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: c.heading,
                 ),
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
-                    child: _urgencyChip('🟢 منخفضة', 'low',
-                        AppColors.green),
+                    child: _urgencyChip(
+                        '🟢 منخفضة', 'low', AppColors.green),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _urgencyChip('🟡 متوسطة', 'medium',
-                        AppColors.orange),
+                    child: _urgencyChip(
+                        '🟡 متوسطة', 'medium', AppColors.orange),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _urgencyChip('🔴 عاجلة', 'high',
-                        AppColors.red),
+                    child:
+                        _urgencyChip('🔴 عاجلة', 'high', AppColors.red),
                   ),
                 ],
               ),
-
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(_error!,
-                      style: const TextStyle(color: Colors.red)),
-                ),
+                Text(_error!,
+                    style: const TextStyle(color: Colors.red)),
               ],
-
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -2458,16 +2606,11 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
                               width: 18,
                               height: 18,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
+                                  strokeWidth: 2, color: Colors.white))
                           : const Icon(Icons.send),
-                      label: Text(
-                        _saving ? '...' : 'إرسال لولي الأمر',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold),
-                      ),
+                      label: Text(_saving ? '...' : 'إرسال لولي الأمر',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -2486,9 +2629,8 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected
-              ? color.withValues(alpha: 0.15)
-              : Colors.transparent,
+          color:
+              selected ? color.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: selected ? color : Colors.grey.shade300,
@@ -2496,25 +2638,22 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
           ),
         ),
         alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: selected ? color : Colors.grey.shade600,
-          ),
-        ),
+        child: Text(label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: selected ? color : Colors.grey.shade600,
+            )),
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  تفاصيل الدرس
+//  _LessonDetailSheet
 // ═══════════════════════════════════════════════════════════
 class _LessonDetailSheet extends StatelessWidget {
   final Map lesson;
-
   const _LessonDetailSheet({required this.lesson});
 
   @override
@@ -2522,11 +2661,6 @@ class _LessonDetailSheet extends StatelessWidget {
     final c = JisrColors.of(context);
     final title = (lesson['title'] ?? '').toString();
     final content = (lesson['content'] ?? '').toString();
-    final videoUrl = lesson['video_url'];
-    final audioUrl = lesson['audio_url'];
-    final captionUrl = lesson['caption_url'];
-    final signUrl = lesson['sign_language_url'];
-    final audioDesc = lesson['audio_description'];
     final targetType = lesson['target_type']?.toString() ?? 'everyone';
     final createdAt = lesson['created_at'] != null
         ? DateTime.parse(lesson['created_at'])
@@ -2547,14 +2681,12 @@ class _LessonDetailSheet extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: c.heading,
-                    ),
-                  ),
+                  child: Text(title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: c.heading,
+                      )),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
@@ -2565,8 +2697,8 @@ class _LessonDetailSheet extends StatelessWidget {
             if (targetType == 'parents')
               Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.purple.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
@@ -2577,14 +2709,12 @@ class _LessonDetailSheet extends StatelessWidget {
                     Icon(Icons.family_restroom,
                         color: AppColors.purple, size: 16),
                     SizedBox(width: 4),
-                    Text(
-                      'درس موجّه لأولياء الأمور',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.purple,
-                      ),
-                    ),
+                    Text('درس موجّه لأولياء الأمور',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.purple,
+                        )),
                   ],
                 ),
               ),
@@ -2595,75 +2725,11 @@ class _LessonDetailSheet extends StatelessWidget {
               ),
             const SizedBox(height: 12),
             if (content.isNotEmpty)
-              Text(
-                content,
-                style:
-                    TextStyle(fontSize: 16, height: 1.5, color: c.body),
-              ),
-            if (videoUrl != null) ...[
-              const SizedBox(height: 12),
-              _mediaChip(Icons.video_library, '📹 فيديو مرفق',
-                  AppColors.tealDeep, c.tintTeal),
-            ],
-            if (captionUrl != null) ...[
-              const SizedBox(height: 6),
-              _mediaChip(Icons.closed_caption, '📝 ترجمات مرفقة',
-                  AppColors.pink, AppColors.pink.withValues(alpha: 0.1)),
-            ],
-            if (signUrl != null) ...[
-              const SizedBox(height: 6),
-              _mediaChip(Icons.sign_language, '🤟 لغة إشارة مرفقة',
-                  AppColors.purple, AppColors.purple.withValues(alpha: 0.1)),
-            ],
-            if (audioDesc != null &&
-                audioDesc.toString().isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.record_voice_over,
-                        color: AppColors.orangeDeep, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '🔊 وصف صوتي: $audioDesc',
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (audioUrl != null) ...[
-              const SizedBox(height: 6),
-              _mediaChip(Icons.audio_file, '🎵 تسجيل صوتي مرفق',
-                  AppColors.greenDeep, c.tintGreen),
-            ],
+              Text(content,
+                  style: TextStyle(
+                      fontSize: 16, height: 1.5, color: c.body)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _mediaChip(IconData icon, String label, Color color, Color bg) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 13))),
-        ],
       ),
     );
   }
