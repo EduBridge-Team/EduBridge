@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 // إدارة المستخدمين — الأدمن يدير الكل؛ المعلّم/المختص يستعرض قائمة المعلّمين فقط
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class UserController extends Controller
 {
@@ -46,6 +47,10 @@ class UserController extends Controller
                     ->whereIn('role', ['teacher', 'specialist', 'admin', 'ministry', 'institution'])
                     ->where('id', '!=', $user->id)
                     ->orderBy('name');
+            }
+
+            if (Schema::hasColumn('users', 'specialty')) {
+                $query->addSelect('specialty');
             }
 
             return response()->json(['users' => $query->get()]);
@@ -115,6 +120,10 @@ class UserController extends Controller
                 ->select('id', 'name', 'email', 'role', 'phone', 'national_id',
                     'verification_status', 'verified_at', 'created_at')
                 ->find($id);
+
+            if ($fresh && Schema::hasColumn('users', 'specialty')) {
+                $fresh->specialty = DB::table('users')->where('id', $id)->value('specialty');
+            }
 
             return response()->json(['user' => $fresh]);
         } catch (\Exception $e) {
