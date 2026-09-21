@@ -8,6 +8,8 @@ on:
     paths:
       - "edubridge-web/**"
       - "edubridge-api-laravel/**"
+      - "edubridge-app/lib/services/api_service.dart"
+      - "scripts/check_mobile_api_parity.py"
       - ".github/workflows/web-api-quality.yml"
   workflow_dispatch:
 
@@ -15,6 +17,17 @@ permissions:
   contents: read
 
 jobs:
+  mobile-api-contract:
+    name: Flutter ↔ Laravel API contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify Flutter API calls have Laravel routes
+        run: python scripts/check_mobile_api_parity.py
+
   php-syntax:
     name: PHP syntax
     runs-on: ubuntu-latest
