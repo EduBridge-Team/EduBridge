@@ -108,7 +108,7 @@ class MinistryController extends Controller
             $byDisability = DB::table('children as c')
                 ->leftJoin('disability_types as dt', 'dt.id', '=', 'c.disability_type_id')
                 ->selectRaw("COALESCE(dt.name, 'غير محدد') as label, COUNT(*) as total")
-                ->groupBy('label')
+                ->groupByRaw("COALESCE(dt.name, 'غير محدد')")
                 ->pluck('total', 'label');
 
             $byAge = [
