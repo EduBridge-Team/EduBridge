@@ -3,7 +3,7 @@
 # edubridge-api-laravel instead of relying on a platform root-directory setting.
 
 [phases.setup]
-nixPkgs = ["php83", "php83Packages.composer", "libpq"]
+nixPkgs = ["php84", "php84Packages.composer", "libpq"]
 
 [phases.install]
 cmds = [
