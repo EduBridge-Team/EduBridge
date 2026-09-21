@@ -36,6 +36,18 @@ export function isPortalPathForRole(pathname, role) {
     return CONSULTATION_ROLES.includes(role)
   }
 
+  if (pathname === '/homeworks' || pathname === '/weekly-reports' || pathname === '/care-team') {
+    return CHILD_ROLES.includes(role)
+  }
+
+  if (pathname === '/therapy') {
+    return ['parent', 'specialist', 'admin'].includes(role)
+  }
+
+  if (pathname === '/case-discussions' || pathname === '/specialist-workflow') {
+    return ['teacher', 'specialist', 'admin'].includes(role)
+  }
+
   if (pathname === '/admin/verifications') {
     return role === 'admin'
   }
