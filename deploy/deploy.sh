@@ -66,6 +66,7 @@ php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_lesson_media.sql')); echo 'db-lesson-media-ok';"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_specialist_workflow.sql')); echo 'db-specialist-workflow-ok';"
 php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_therapy_sessions.sql')); echo 'db-therapy-sessions-ok';"
+php artisan tinker --execute="DB::unprepared(file_get_contents('database/upgrade_homework_reports.sql')); echo 'db-homework-reports-ok';"
 
 # 3) مسح إعدادات Laravel المؤقتة (config + routes + cache) حتى تُحمَّل المسارات الجديدة
 echo "==> (3/4) مسح إعدادات Laravel والمسارات..."

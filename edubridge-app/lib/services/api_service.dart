@@ -1188,7 +1188,7 @@ class ApiService {
           if (await file.exists()) {
             request.files.add(
               await http.MultipartFile.fromPath(
-                  'attachments', file.path),
+                  'attachments[]', file.path),
             );
           }
         }
@@ -1236,7 +1236,7 @@ class ApiService {
       for (final f in allFiles) {
         if (await f.exists()) {
           request.files.add(
-            await http.MultipartFile.fromPath('files', f.path),
+            await http.MultipartFile.fromPath('files[]', f.path),
           );
         }
       }
