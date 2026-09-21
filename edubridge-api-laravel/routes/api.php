@@ -28,6 +28,8 @@ use App\Http\Controllers\TherapyRequestController;
 use App\Http\Controllers\SpecialistSuggestionController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
+use App\Http\Controllers\CareTeamController;
+use App\Http\Controllers\CaseDiscussionController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -184,6 +186,40 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/reports/weekly/child/{childId}', [WeeklyReportController::class, 'byChild'])
         ->middleware('role:parent,teacher,specialist,admin');
     Route::post('/reports/weekly', [WeeklyReportController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
+
+    // فريق الرعاية — واجهات موحّدة + توافق مع شاشات Flutter الحالية
+    Route::get('/children/{childId}/care-team', [CareTeamController::class, 'careTeam'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/children/{childId}/care-team', [CareTeamController::class, 'addCareTeamMember'])
+        ->middleware('role:specialist,admin');
+    Route::delete('/children/{childId}/care-team/{userId}', [CareTeamController::class, 'removeCareTeamMember'])
+        ->middleware('role:specialist,admin');
+
+    Route::get('/children/{childId}/teachers', [CareTeamController::class, 'listTeachers'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/children/{childId}/teachers', [CareTeamController::class, 'addTeacher'])
+        ->middleware('role:specialist,admin');
+    Route::delete('/children/{childId}/teachers/{teacherId}', [CareTeamController::class, 'removeTeacher'])
+        ->middleware('role:specialist,admin');
+
+    Route::get('/children/{childId}/specialists', [CareTeamController::class, 'listSpecialists'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/children/{childId}/specialists', [CareTeamController::class, 'addSpecialist'])
+        ->middleware('role:specialist,admin');
+    Route::delete('/children/{childId}/specialists/{specialistId}', [CareTeamController::class, 'removeSpecialist'])
+        ->middleware('role:specialist,admin');
+
+    // دراسات الحالة التعاونية
+    Route::get('/case-discussions', [CaseDiscussionController::class, 'index'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::post('/case-discussions', [CaseDiscussionController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::get('/case-discussions/{id}', [CaseDiscussionController::class, 'show'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::post('/case-discussions/{id}/messages', [CaseDiscussionController::class, 'addMessage'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::put('/case-discussions/{id}/resolve', [CaseDiscussionController::class, 'resolve'])
         ->middleware('role:teacher,specialist,admin');
 
     // إعدادات التكييف الخاصة بكل طفل — متزامنة بين الأجهزة

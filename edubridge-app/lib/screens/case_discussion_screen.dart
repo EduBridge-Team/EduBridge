@@ -1,6 +1,7 @@
 // lib/screens/case_discussion_screen.dart
 // دراسة الحالة — نقاش بين المعلم والمختص بخصوص طفل
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../model/case_discussion_model.dart';
 import '../services/api_service.dart';
@@ -846,37 +847,21 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
   Future<void> _load() async {
     try {
-      final childrenRes = await ApiService.authGet('/children');
-      final usersRes = await ApiService.authGet('/users');
-      final childrenData = childrenRes.statusCode == 200
-          ? (childrenRes.body.isNotEmpty
-              ? (childrenRes.body.contains('{')
-                  ? Map<String, dynamic>.from(
-                      (childrenRes.body.isEmpty)
-                          ? {}
-                          : const {})
-                  : const {})
-              : const {})
-          : const {};
+      final responses = await Future.wait([
+        ApiService.authGet('/children'),
+        ApiService.authGet('/users'),
+      ]);
 
-      // استخدام ApiService للحصول على القوائم
-      final children = await ApiService.authGet('/children');
-      final users = await ApiService.authGet('/users');
+      final childrenRes = responses[0];
+      final usersRes = responses[1];
 
       if (!mounted) return;
 
-      final childrenBody = children.body.isNotEmpty
-          ? Map<String, dynamic>.from(
-              childrenRes.statusCode == 200
-                  ? (children.body.contains('{')
-                      ? _parseJson(children.body)
-                      : {})
-                  : {},
-            )
+      final childrenBody = childrenRes.statusCode == 200 && childrenRes.body.isNotEmpty
+          ? jsonDecode(childrenRes.body) as Map<String, dynamic>
           : <String, dynamic>{};
-
-      final usersBody = users.body.isNotEmpty
-          ? _parseJson(users.body)
+      final usersBody = usersRes.statusCode == 200 && usersRes.body.isNotEmpty
+          ? jsonDecode(usersRes.body) as Map<String, dynamic>
           : <String, dynamic>{};
 
       setState(() {
@@ -894,18 +879,6 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         _error = 'تعذّر تحميل البيانات';
         _loading = false;
       });
-    }
-  }
-
-  Map<String, dynamic> _parseJson(String body) {
-    try {
-      final decoded = body;
-      // Simple JSON parse — نستخدم dart:convert
-      return Map<String, dynamic>.from(
-        (const {}), // placeholder — سيُستبدل بالتحليل الحقيقي
-      );
-    } catch (_) {
-      return {};
     }
   }
 
