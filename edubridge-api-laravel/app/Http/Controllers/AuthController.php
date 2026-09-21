@@ -68,6 +68,7 @@ class AuthController extends Controller
         $password = $request->input('password');
         $role = $request->input('role');
         $phone = $request->input('phone');
+        $specialty = $request->input('specialty');
 
         // تحقق أساسي من المدخلات
         if (!$name || !$email || !$password || !$role) {
@@ -75,6 +76,9 @@ class AuthController extends Controller
         }
         if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'])) {
             return response()->json(['error' => 'الدور غير صالح'], 400);
+        }
+        if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['psychological', 'educational'], true)) {
+            return response()->json(['error' => 'التخصص غير صالح'], 422);
         }
 
         // الإيميل فريد — نفحص مسبقاً لنعيد 409 كما في النسخة القديمة
@@ -101,6 +105,9 @@ class AuthController extends Controller
 
             if (Schema::hasColumn('users', 'phone')) {
                 $insert['phone'] = $phone;
+            }
+            if ($role === 'specialist' && $specialty && Schema::hasColumn('users', 'specialty')) {
+                $insert['specialty'] = $specialty;
             }
             // رقم الهوية اختياري عند التسجيل (يُستكمل التوثيق لاحقاً)
             if ($request->filled('national_id') && Schema::hasColumn('users', 'national_id')) {
@@ -177,6 +184,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'specialty' => Schema::hasColumn('users', 'specialty') ? ($user->specialty ?? null) : null,
                     'verification_status' => $user->verification_status ?? 'pending',
                 ],
             ]);
@@ -297,6 +305,7 @@ class AuthController extends Controller
             'email' => $user->email ?? null,
             'role' => $user->role ?? ($jwtUser->role ?? null),
             'phone' => Schema::hasColumn('users', 'phone') ? ($user->phone ?? null) : null,
+            'specialty' => Schema::hasColumn('users', 'specialty') ? ($user->specialty ?? null) : null,
             'verification_status' => Schema::hasColumn('users', 'verification_status')
                 ? ($user->verification_status ?? 'pending')
                 : 'pending',

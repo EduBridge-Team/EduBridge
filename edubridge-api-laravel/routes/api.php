@@ -36,6 +36,8 @@ Route::middleware('auth.jwt')->group(function () {
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/password', [AuthController::class, 'changePassword']);
+    Route::put('/me/specialty', [SpecialistSuggestionController::class, 'updateSpecialty'])
+        ->middleware('role:specialist');
 
     // تفضيلات العرض والمساعد — تتم مزامنتها بين أجهزة المستخدم
     Route::get('/settings', [UserSettingsController::class, 'show']);
@@ -152,6 +154,16 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:teacher,specialist,admin');
     Route::get('/children/{id}/lessons', [ChildController::class, 'lessons']);
     Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild']);
+
+    // اقتراحات متابعة المختصين
+    Route::post('/children/{childId}/specialist-suggestions', [SpecialistSuggestionController::class, 'store'])
+        ->middleware('role:teacher,specialist,admin');
+    Route::get('/specialist-suggestions', [SpecialistSuggestionController::class, 'index'])
+        ->middleware('role:specialist,admin');
+    Route::put('/specialist-suggestions/{id}/accept', [SpecialistSuggestionController::class, 'accept'])
+        ->middleware('role:specialist,admin');
+    Route::put('/specialist-suggestions/{id}/reject', [SpecialistSuggestionController::class, 'reject'])
+        ->middleware('role:specialist,admin');
 
     // إعدادات التكييف الخاصة بكل طفل — متزامنة بين الأجهزة
     Route::get('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'show']);
