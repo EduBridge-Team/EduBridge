@@ -154,6 +154,35 @@ class LessonController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json(['lessons' => []]);
+        }
+
+        try {
+            $query = DB::table('lessons')
+                ->where(function ($sub) use ($q) {
+                    $sub->where('title', 'ILIKE', '%' . $q . '%')
+                        ->orWhere('content', 'ILIKE', '%' . $q . '%');
+                })
+                ->orderByDesc('created_at')
+                ->limit(50);
+
+            $user = $request->attributes->get('jwt_user');
+            if (($user->role ?? null) === 'parent') {
+                $query->where('target_type', '!=', 'parents');
+            }
+
+            $lessons = $query->get()->map(fn ($lesson) => $this->serializeLesson($request, $lesson));
+            return response()->json(['lessons' => $lessons]);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['error' => 'تعذّر البحث في الدروس'], 500);
+        }
+    }
+
     // عرض درس واحد مع وسائطه
     // GET /api/lessons/:id
     public function show(Request $request, $id)
