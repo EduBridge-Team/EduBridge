@@ -25,6 +25,12 @@ function activeSection(pathname, role, homePath) {
   if (pathname === '/conversations') return 'conversations'
   if (pathname === '/search') return 'search'
   if (pathname === '/consultations') return 'consultations'
+  if (pathname === '/homeworks') return 'homeworks'
+  if (pathname === '/weekly-reports') return 'weekly-reports'
+  if (pathname === '/therapy') return 'therapy'
+  if (pathname === '/care-team') return 'care-team'
+  if (pathname === '/case-discussions') return 'case-discussions'
+  if (pathname === '/specialist-workflow') return 'specialist-workflow'
   if (pathname === '/admin/verifications') return 'verifications'
   if (pathname === '/ministry' && role === 'admin') return 'curriculum'
   if (pathname === '/support') return 'support'
@@ -153,6 +159,10 @@ export default function RolePortalShell({ children }) {
           onClick: goToProgress,
           disabled: !childrenList[0],
         },
+        item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
+        item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+        item('therapy', 'الدعم النفسي', <Stethoscope size={21} />, '/therapy'),
+        item('care-team', 'فريق الرعاية', <Users size={21} />, '/care-team'),
         conversations,
         item('settings', 'الإعدادات', <Settings size={21} />, '/accessibility'),
       ]
@@ -164,7 +174,10 @@ export default function RolePortalShell({ children }) {
         item('children', 'الطلاب', <Users size={21} />, '/children'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
-        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
+        item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
+        item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+        item('case-discussions', 'دراسات الحالة', <Stethoscope size={21} />, '/case-discussions'),
+        item('specialist-workflow', 'اقتراح المختصين', <Users size={21} />, '/specialist-workflow'),
         conversations,
         item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
       ]
@@ -174,7 +187,11 @@ export default function RolePortalShell({ children }) {
       return [
         home,
         item('children', 'الأطفال', <Users size={21} />, '/children'),
-        item('consultations', 'دراسة الحالة', <Stethoscope size={21} />, '/consultations'),
+        item('specialist-workflow', 'اقتراحات المتابعة', <Users size={21} />, '/specialist-workflow'),
+        item('therapy', 'الجلسات النفسية', <Stethoscope size={21} />, '/therapy'),
+        item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+        item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
+        item('care-team', 'فريق الرعاية', <Users size={21} />, '/care-team'),
         item('search', 'البحث', <Search size={21} />, '/search'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         conversations,
@@ -208,6 +225,9 @@ export default function RolePortalShell({ children }) {
         item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
         item('curriculum', 'مراجعة المناهج', <Landmark size={21} />, '/ministry'),
         item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
+        item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
+        item('specialist-workflow', 'متابعة المختصين', <Users size={21} />, '/specialist-workflow'),
+        item('therapy', 'الجلسات النفسية', <Stethoscope size={21} />, '/therapy'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         item('search', 'البحث', <Search size={21} />, '/search'),
         conversations,
