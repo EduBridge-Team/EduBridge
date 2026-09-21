@@ -32,6 +32,12 @@ import AccessibilityPage from './pages/AccessibilityPage'
 import AccessibilityOverviewPage from './pages/AccessibilityOverviewPage'
 import ConversationsPage from './pages/ConversationsPage'
 import InstitutionDashboard from './pages/InstitutionDashboard'
+import HomeworkPage from './pages/HomeworkPage'
+import WeeklyReportsPage from './pages/WeeklyReportsPage'
+import TherapyPage from './pages/TherapyPage'
+import CareTeamPage from './pages/CareTeamPage'
+import CaseDiscussionsPage from './pages/CaseDiscussionsPage'
+import SpecialistWorkflowPage from './pages/SpecialistWorkflowPage'
 import './parent-portal.css'
 
 function Protected({ children }) {
@@ -112,6 +118,12 @@ export default function App() {
 
         <Route path="/search" element={<RolePage roles={STAFF_SEARCH_ROLES}><SearchPage /></RolePage>} />
         <Route path="/consultations" element={<RolePage roles={CONSULTATION_ROLES}><ConsultationsPage /></RolePage>} />
+        <Route path="/homeworks" element={<RolePage roles={['parent','teacher','specialist','admin']}><HomeworkPage /></RolePage>} />
+        <Route path="/weekly-reports" element={<RolePage roles={['parent','teacher','specialist','admin']}><WeeklyReportsPage /></RolePage>} />
+        <Route path="/therapy" element={<RolePage roles={['parent','specialist','admin']}><TherapyPage /></RolePage>} />
+        <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
+        <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
+        <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
         <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
