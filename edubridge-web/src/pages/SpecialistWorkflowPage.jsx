@@ -8,7 +8,8 @@ export default function SpecialistWorkflowPage(){
   const [filter,setFilter]=useState('pending');const [specialty,setSpecialty]=useState('psychological');const [draft,setDraft]=useState({child_id:'',specialist_id:'',specialty:'psychological',reason:''});const [error,setError]=useState('');const [busy,setBusy]=useState(false)
 
   const load=async()=>{try{
-    const jobs=[fetchSpecialistSuggestions(filter==='all'?undefined:filter)]
+    const canListSuggestions=['specialist','admin'].includes(me?.role)
+    const jobs=[canListSuggestions ? fetchSpecialistSuggestions(filter==='all'?undefined:filter) : Promise.resolve({suggestions:[]})]
     if(isSpecialist)jobs.push(fetchMyProfile())
     else jobs.push(Promise.resolve(null))
     jobs.push(fetchChildren());jobs.push(fetchUsers('specialist'))
