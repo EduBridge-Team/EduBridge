@@ -82,7 +82,7 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/dashboard/stats', [LegacyMobileController::class, 'dashboardStats']);
 
     // رفع الملفات (صور الهوية/الشهادات/مستندات القرابة)
-    Route::post('/uploads', [UploadController::class, 'store']);
+    Route::post('/uploads', [UploadController::class, 'store'])->middleware('throttle:20,1');
 
     // توثيق الهوية — المستخدم نفسه + الأدمن (البطاقات 1، 4، 9)
     Route::post('/me/identity', [VerificationController::class, 'submitMine']);
