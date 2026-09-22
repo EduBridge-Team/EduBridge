@@ -180,7 +180,7 @@ class MigrateSensitiveUploads extends Command
                 $newUrl = '/api/private-files/user/' . (int) $row->user_id . '/' . $name;
                 if ($apply) {
                     DB::table('certificates')->where('id', $row->id)->update(['url' => $newUrl]);
-                    $this->queueDelete($source, (string) $row->id_document_url, $deletePublic);
+                    $this->queueDelete($source, (string) $row->url, $deletePublic);
                 }
             });
     }
@@ -207,7 +207,7 @@ class MigrateSensitiveUploads extends Command
                     $newUrl = '/api/private-files/child/' . (int) $row->id . '/' . $name;
                     if ($apply) {
                         DB::table('children')->where('id', $row->id)->update([$field => $newUrl]);
-                        $this->queueDelete($source, (string) $row->id_document_url, $deletePublic);
+                        $this->queueDelete($source, (string) $url, $deletePublic);
                     }
                 }
             });
