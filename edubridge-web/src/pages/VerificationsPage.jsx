@@ -15,11 +15,6 @@ import {
 import { ROLE_NAMES } from '../roles'
 import AdminSectionTabs from '../components/AdminSectionTabs'
 
-const API_ORIGIN = (
-  import.meta.env.VITE_API_URL || '/api'
-).replace(/\/api\/?$/, '')
-const fileUrl = (u) => (!u ? '#' : u.startsWith('http') ? u : `${API_ORIGIN}${u}`)
-
 function Badge({ status }) {
   const map = {
     verified: { t: 'موثّق ✓', c: 'green' },
@@ -189,7 +184,7 @@ export default function VerificationsPage() {
               <div>
                 <h3>{c.title} <Badge status={c.status} /></h3>
                 {c.user_name && <div className="meta">مقدّم من: {c.user_name} ({ROLE_NAMES[c.user_role] || c.user_role})</div>}
-                <a href={fileUrl(c.url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> عرض الشهادة</a>
+                <button type="button" className="file-link" onClick={() => viewFile(c.url)}><Paperclip size={14} /> عرض الشهادة</button>
               </div>
               <div className="verify-actions">
                 <button className="btn small success" onClick={() => decideCert(c.id, 'verified')}>اعتماد</button>
