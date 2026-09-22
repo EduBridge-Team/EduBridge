@@ -10,6 +10,7 @@ import {
   reviewChildVerification,
   fetchCertificates,
   reviewCertificate,
+  openProtectedFile,
 } from '../api'
 import { ROLE_NAMES } from '../roles'
 import AdminSectionTabs from '../components/AdminSectionTabs'
@@ -30,6 +31,14 @@ function Badge({ status }) {
 }
 
 export default function VerificationsPage() {
+  const viewFile = async (url) => {
+    try {
+      await openProtectedFile(url)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
   const me = getUser()
   const [tab, setTab] = useState('users') // users | children | certs
   const [users, setUsers] = useState([])
@@ -130,9 +139,9 @@ export default function VerificationsPage() {
                 <h3>{u.name} <span className="role-badge">{ROLE_NAMES[u.role] || u.role}</span></h3>
                 <div className="meta">{u.email} · هوية: {u.national_id || '—'}</div>
                 {u.id_document_url && (
-                  <a href={fileUrl(u.id_document_url)} target="_blank" rel="noreferrer" className="file-link">
+                  <button type="button" className="file-link" onClick={() => viewFile(u.id_document_url)}>
                     <Paperclip size={14} /> صورة الهوية
-                  </a>
+                  </button>
                 )}
               </div>
               <div className="verify-actions">
@@ -157,10 +166,10 @@ export default function VerificationsPage() {
                 </div>
                 <div className="file-links">
                   {c.guardian_id_document_url && (
-                    <a href={fileUrl(c.guardian_id_document_url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> هوية ولي الأمر</a>
+                    <button type="button" className="file-link" onClick={() => viewFile(c.guardian_id_document_url)}><Paperclip size={14} /> هوية ولي الأمر</button>
                   )}
                   {c.kinship_document_url && (
-                    <a href={fileUrl(c.kinship_document_url)} target="_blank" rel="noreferrer" className="file-link"><Paperclip size={14} /> مستند القرابة</a>
+                    <button type="button" className="file-link" onClick={() => viewFile(c.kinship_document_url)}><Paperclip size={14} /> مستند القرابة</button>
                   )}
                 </div>
               </div>
