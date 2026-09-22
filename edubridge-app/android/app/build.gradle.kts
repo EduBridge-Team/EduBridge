@@ -20,7 +20,10 @@ val hasReleaseSigning =
 
 android {
     namespace = "com.edubridge.app"
-    compileSdk = flutter.compileSdkVersion
+
+    // Google Play requires Android 16 / API 36 targeting for current releases.
+    // Keep these explicit so a Flutter toolchain change cannot silently lower them.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -35,7 +38,7 @@ android {
     defaultConfig {
         applicationId = "com.edubridge.app"
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
