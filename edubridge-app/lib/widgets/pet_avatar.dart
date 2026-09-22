@@ -198,37 +198,6 @@ class _NoorPainter extends CustomPainter {
       armShade,
     );
 
-    final leftMitten = Path()
-      ..moveTo(17, 79)
-      ..cubicTo(10, 79, 4, 75, 4, 69)
-      ..cubicTo(4, 64, 9, 64, 13, 68)
-      ..cubicTo(10, 60, 13, 55, 18, 56)
-      ..cubicTo(22, 57, 23, 63, 23, 67)
-      ..cubicTo(27, 62, 32, 63, 34, 67)
-      ..cubicTo(37, 73, 31, 79, 26, 82)
-      ..cubicTo(23, 84, 20, 83, 17, 79)
-      ..close();
-    final rightMitten = Path()
-      ..moveTo(113, 79)
-      ..cubicTo(108, 74, 106, 68, 110, 64)
-      ..cubicTo(114, 61, 118, 64, 120, 68)
-      ..cubicTo(120, 62, 123, 58, 127, 59)
-      ..cubicTo(132, 60, 132, 66, 129, 71)
-      ..cubicTo(134, 67, 139, 69, 140, 74)
-      ..cubicTo(141, 80, 134, 84, 128, 85)
-      ..cubicTo(122, 87, 117, 84, 113, 79)
-      ..close();
-    final mittenOutline = Paint()
-      ..color = _softBlue
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.25
-      ..strokeJoin = StrokeJoin.round;
-    canvas
-      ..drawPath(leftMitten, whitePaint)
-      ..drawPath(leftMitten, mittenOutline)
-      ..drawPath(rightMitten, whitePaint)
-      ..drawPath(rightMitten, mittenOutline);
-
     canvas.drawOval(
       const Rect.fromLTWH(31, 29, 78, 64),
       Paint()..color = _softBlue.withValues(alpha: .42),
@@ -266,6 +235,41 @@ class _NoorPainter extends CustomPainter {
       ..cubicTo(68, 83, 66, 82, 65, 79)
       ..close();
     canvas.drawPath(mouthInner, softBluePaint);
+
+    final leftMitten = Path()
+      ..moveTo(17, 79)
+      ..cubicTo(10, 79, 4, 75, 4, 69)
+      ..cubicTo(4, 64, 9, 64, 13, 68)
+      ..cubicTo(10, 60, 13, 55, 18, 56)
+      ..cubicTo(22, 57, 23, 63, 23, 67)
+      ..cubicTo(27, 62, 32, 63, 34, 67)
+      ..cubicTo(37, 73, 31, 79, 26, 82)
+      ..cubicTo(23, 84, 20, 83, 17, 79)
+      ..close();
+    final rightMitten = Path()
+      ..moveTo(113, 79)
+      ..cubicTo(108, 74, 106, 68, 110, 64)
+      ..cubicTo(114, 61, 118, 64, 120, 68)
+      ..cubicTo(120, 62, 123, 58, 127, 59)
+      ..cubicTo(132, 60, 132, 66, 129, 71)
+      ..cubicTo(134, 67, 139, 69, 140, 74)
+      ..cubicTo(141, 80, 134, 84, 128, 85)
+      ..cubicTo(122, 87, 117, 84, 113, 79)
+      ..close();
+    final mittenOutline = Paint()
+      ..color = _softBlue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.25
+      ..strokeJoin = StrokeJoin.round;
+    canvas.save();
+    canvas.translate(-3, -1);
+    canvas
+      ..drawPath(leftMitten, whitePaint)
+      ..drawPath(leftMitten, mittenOutline);
+    canvas.restore();
+    canvas
+      ..drawPath(rightMitten, whitePaint)
+      ..drawPath(rightMitten, mittenOutline);
 
     final mic = Path()
       ..moveTo(115, 70)

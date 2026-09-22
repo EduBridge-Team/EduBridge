@@ -108,10 +108,8 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
         <g className="noor-pet-arm-group">
           <ellipse className="noor-pet-arm" style={{ fill: `url(#${bodyGradientId})` }} cx="25" cy="80" rx="11" ry="17" transform="rotate(-28 25 80)" />
           <path className="noor-pet-arm-shade" d="M27 66 C23 75 25 86 32 93" />
-          <path className="noor-pet-mitten" d="M17 79 C10 79 4 75 4 69 C4 64 9 64 13 68 C10 60 13 55 18 56 C22 57 23 63 23 67 C27 62 32 63 34 67 C37 73 31 79 26 82 C23 84 20 83 17 79 Z" />
           <ellipse className="noor-pet-arm" style={{ fill: `url(#${bodyGradientId})` }} cx="116" cy="80" rx="11" ry="17" transform="rotate(28 116 80)" />
           <path className="noor-pet-arm-shade" d="M113 66 C117 75 115 86 108 93" />
-          <path className="noor-pet-mitten" d="M113 79 C108 74 106 68 110 64 C114 61 118 64 120 68 C120 62 123 58 127 59 C132 60 132 66 129 71 C134 67 139 69 140 74 C141 80 134 84 128 85 C122 87 117 84 113 79 Z" />
         </g>
 
         <g className="noor-pet-head">
@@ -134,6 +132,11 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
 
           <path className="noor-pet-mouth" style={{ fill: `url(#${blueGradientId})` }} d="M61 70 C67 72 74 72 80 70 C79 80 76 85 70 85 C64 85 61 80 61 70 Z" />
           <path className="noor-pet-mouth-inner" d="M65 79 C68 76 73 76 76 79 C75 82 73 83 70 83 C68 83 66 82 65 79 Z" />
+        </g>
+
+        <g className="noor-pet-mitten-group">
+          <path className="noor-pet-mitten" transform="translate(-3 -1)" d="M17 79 C10 79 4 75 4 69 C4 64 9 64 13 68 C10 60 13 55 18 56 C22 57 23 63 23 67 C27 62 32 63 34 67 C37 73 31 79 26 82 C23 84 20 83 17 79 Z" />
+          <path className="noor-pet-mitten" d="M113 79 C108 74 106 68 110 64 C114 61 118 64 120 68 C120 62 123 58 127 59 C132 60 132 66 129 71 C134 67 139 69 140 74 C141 80 134 84 128 85 C122 87 117 84 113 79 Z" />
         </g>
 
         <g className="noor-pet-headset">
