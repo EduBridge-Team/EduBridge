@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-TARGET="${DEPLOY_TARGET:-api}"
+# Taqat/Nixpacks may not expose DEPLOY_TARGET/VITE_API_URL during image build.
+# Always prepare both applications, then let deploy/taqat-start.sh select the
+# runtime target using DEPLOY_TARGET.
 
-case "$TARGET" in
-  web)
-    echo "==> Building EduBridge Web..."
-    cd edubridge-web
-    : "${VITE_API_URL:?VITE_API_URL must be set for the web deployment}"
-    npm run build
-    ;;
-  api)
-    echo "==> Preparing EduBridge API..."
-    cd edubridge-api-laravel
-    mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
-    php artisan config:clear
-    php artisan route:clear
-    php artisan view:clear
-    ;;
-  *)
-    echo "Unsupported DEPLOY_TARGET: $TARGET" >&2
-    exit 2
-    ;;
-esac
+WEB_API_URL="${VITE_API_URL:-https://api.edubridge.win}"
+
+echo "==> Building EduBridge Web..."
+(
+  cd edubridge-web
+
+  # Be self-contained even if a platform skips the custom install phase.
+  if [[ ! -d node_modules ]]; then
+    npm ci --include=dev
+  fi
+
+  VITE_API_URL="$WEB_API_URL" npm run build
+)
+
+echo "==> Preparing EduBridge API..."
+(
+  cd edubridge-api-laravel
+  mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
+  php artisan config:clear
+  php artisan route:clear
+  php artisan view:clear
+)
