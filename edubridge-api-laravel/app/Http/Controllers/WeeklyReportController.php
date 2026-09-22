@@ -12,7 +12,17 @@ class WeeklyReportController extends Controller
     private function canViewChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['teacher','specialist','admin'], true)) return true;
+        if (in_array($user->role, ['specialist','admin'], true)) return true;
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
 
         return $user->role === 'parent'
             && DB::table('child_parent')
@@ -161,6 +171,9 @@ class WeeklyReportController extends Controller
         $childId = (int) $request->input('child_id');
         if ($childId <= 0 || !DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
+        }
+        if (!$this->canViewChild($user, $childId)) {
+            return response()->json(['error' => 'لا تملك صلاحية تعديل تقرير هذا الطفل'], 403);
         }
 
         try {
