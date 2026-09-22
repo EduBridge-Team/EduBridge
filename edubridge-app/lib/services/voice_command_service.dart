@@ -395,14 +395,14 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══ 6.6 جلسة نفسية للطفل ═══
+    // ═══ 6.6 طلب دعم تعليمي للطفل ═══
     if (_matches(text, [
-      'طلب جلسه', 'جلسه نفسيه', 'طلب جلسه نفسيه',
-      'افتح جلسه نفسيه',
+      'طلب دعم', 'دعم تعليمي', 'طلب دعم تعليمي',
+      'افتح دعم تعليمي',
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح طلب جلسة نفسية لـ ${child['name']}');
+        await _reply('سأفتح طلب دعم تعليمي لـ ${child['name']}');
         nav.push(MaterialPageRoute(
           builder: (_) => CreateLearningSupportRequestScreen(
             childId: child['id'],
