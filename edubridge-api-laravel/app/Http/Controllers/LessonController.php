@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Support\Notify;
+use App\Support\R2Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use InvalidArgumentException;
 
 class LessonController extends Controller
@@ -336,10 +336,14 @@ class LessonController extends Controller
             ->get(['id', 'url']);
 
         foreach ($items as $item) {
-            $relative = ltrim((string) $item->url, '/');
-            $path = public_path($relative);
-            if (is_file($path)) {
-                @unlink($path);
+            $path = parse_url((string) $item->url, PHP_URL_PATH) ?: '';
+            $key = ltrim($path, '/');
+            if (str_starts_with($key, 'lessons/')) {
+                try {
+                    R2Storage::delete(R2Storage::mediaBucket(), $key);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
             }
         }
 
@@ -423,19 +427,20 @@ class LessonController extends Controller
     private function persistUploadedMedia($file, int $lessonId, string $type): void
     {
         $extension = strtolower((string) $file->getClientOriginalExtension());
-        $directory = public_path('uploads/lessons/' . $lessonId);
-
-        if (!is_dir($directory)) {
-            @mkdir($directory, 0755, true);
-        }
-
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
-        $file->move($directory, $filename);
+        $key = 'lessons/' . $lessonId . '/' . $filename;
+
+        R2Storage::putUploadedFile(
+            R2Storage::mediaBucket(),
+            $key,
+            $file,
+            (string) $file->getMimeType()
+        );
 
         DB::table('media')->insert([
             'lesson_id' => $lessonId,
             'type' => $type,
-            'url' => '/uploads/lessons/' . $lessonId . '/' . $filename,
+            'url' => R2Storage::mediaPublicUrl($key),
         ]);
     }
 
@@ -508,9 +513,17 @@ class LessonController extends Controller
 
     private function removeLessonUploadDirectory(int $lessonId): void
     {
-        $directory = public_path('uploads/lessons/' . $lessonId);
-        if (is_dir($directory)) {
-            File::deleteDirectory($directory);
+        $items = DB::table('media')->where('lesson_id', $lessonId)->get(['url']);
+        foreach ($items as $item) {
+            $path = parse_url((string) $item->url, PHP_URL_PATH) ?: '';
+            $key = ltrim($path, '/');
+            if (str_starts_with($key, 'lessons/')) {
+                try {
+                    R2Storage::delete(R2Storage::mediaBucket(), $key);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
         }
     }
 }
