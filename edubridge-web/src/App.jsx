@@ -42,6 +42,7 @@ import ParentLessonsPage from './pages/ParentLessonsPage'
 import AACPage from './pages/AACPage'
 import VoiceCommandWidget from './components/VoiceCommandWidget'
 import './parent-portal.css'
+import './sidebar-viewport-fix.css'
 
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
