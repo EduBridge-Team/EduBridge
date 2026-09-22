@@ -118,14 +118,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return '🧠';
       case 'plan_evaluation_created':
         return '📋';
-      case 'therapy_session_scheduled':
+      case 'learning_support_meeting_scheduled':
         return '🗓️';
       // ✅ جديد
-      case 'therapy_request_created':
+      case 'learning_support_request_created':
         return '🧠';
-      case 'therapy_scheduled':
+      case 'learning_support_scheduled':
         return '📅';
-      case 'therapy_request_cancelled':
+      case 'learning_support_request_cancelled':
         return '❌';
       case 'specialist_suggestion':
        return '🤝';

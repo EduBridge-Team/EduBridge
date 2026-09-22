@@ -542,37 +542,37 @@ export function saveWeeklyReport(payload) {
   });
 }
 
-// ===== Therapy requests & sessions =====
-export function fetchTherapyRequests(params = {}) {
+// ===== Learning support requests & meetings =====
+export function fetchLearningSupportRequests(params = {}) {
   const q = new URLSearchParams(params).toString();
-  return request(`/therapy/requests${q ? `?${q}` : ''}`);
+  return request(`/learning-support/requests${q ? `?${q}` : ''}`);
 }
 
-export function createTherapyRequestWeb(payload) {
-  return request('/therapy/requests', {
+export function createLearningSupportRequestWeb(payload) {
+  return request('/learning-support/requests', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
 
-export function scheduleTherapyRequestWeb(id, payload) {
-  return request(`/therapy/requests/${id}/schedule`, {
+export function scheduleLearningSupportRequestWeb(id, payload) {
+  return request(`/learning-support/requests/${id}/schedule`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   });
 }
 
-export function cancelTherapyRequestWeb(id) {
-  return request(`/therapy/requests/${id}/cancel`, { method: 'PUT', body: '{}' });
+export function cancelLearningSupportRequestWeb(id) {
+  return request(`/learning-support/requests/${id}/cancel`, { method: 'PUT', body: '{}' });
 }
 
-export function fetchTherapySessions(childId) {
+export function fetchLearningSupportMeetings(childId) {
   const q = childId ? `?child_id=${encodeURIComponent(childId)}` : '';
-  return request(`/therapy/sessions${q}`);
+  return request(`/learning-support/meetings${q}`);
 }
 
-export function completeTherapySessionWeb(id, payload) {
-  return request(`/therapy/sessions/${id}/complete`, {
+export function completeLearningSupportMeetingWeb(id, payload) {
+  return request(`/learning-support/meetings/${id}/complete`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   });

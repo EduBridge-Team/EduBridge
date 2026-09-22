@@ -9,8 +9,8 @@ class WeeklyReport {
   final int lessonsTotal;
   final int homeworkSubmitted;
   final int homeworkAssigned;
-  final int therapySessionsAttended;
-  final int therapySessionsScheduled;
+  final int learningSupportMeetingsAttended;
+  final int learningSupportMeetingsScheduled;
   final double progressPercentage;
   final String? teacherNotes;
   final String? specialistNotes;
@@ -29,8 +29,8 @@ class WeeklyReport {
     required this.lessonsTotal,
     required this.homeworkSubmitted,
     required this.homeworkAssigned,
-    required this.therapySessionsAttended,
-    required this.therapySessionsScheduled,
+    required this.learningSupportMeetingsAttended,
+    required this.learningSupportMeetingsScheduled,
     required this.progressPercentage,
     this.teacherNotes,
     this.specialistNotes,
@@ -44,9 +44,9 @@ class WeeklyReport {
       ? 0
       : homeworkSubmitted / homeworkAssigned;
 
-  double get therapyRate => therapySessionsScheduled == 0
+  double get learningSupportMeetingRate => learningSupportMeetingsScheduled == 0
       ? 0
-      : therapySessionsAttended / therapySessionsScheduled;
+      : learningSupportMeetingsAttended / learningSupportMeetingsScheduled;
 
   factory WeeklyReport.fromJson(Map<String, dynamic> json) => WeeklyReport(
         id: json['id'],
@@ -58,8 +58,8 @@ class WeeklyReport {
         lessonsTotal: json['lessons_total'] ?? 0,
         homeworkSubmitted: json['homework_submitted'] ?? 0,
         homeworkAssigned: json['homework_assigned'] ?? 0,
-        therapySessionsAttended: json['therapy_sessions_attended'] ?? 0,
-        therapySessionsScheduled: json['therapy_sessions_scheduled'] ?? 0,
+        learningSupportMeetingsAttended: json['learning_support_meetings_attended'] ?? 0,
+        learningSupportMeetingsScheduled: json['learning_support_meetings_scheduled'] ?? 0,
         progressPercentage:
             (json['progress_percentage'] ?? 0).toDouble(),
         teacherNotes: json['teacher_notes'],

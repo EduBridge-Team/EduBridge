@@ -35,14 +35,14 @@ import '../screens/child_lessons_screen.dart';
 import '../screens/child_progress_screen.dart';
 import '../screens/children_accessibility_overview_screen.dart';
 import '../screens/children_screen.dart';
-import '../screens/create_therapy_request_screen.dart';
+import '../screens/create_learning_support_request_screen.dart';
 import '../screens/educational_games_screen.dart';
 import '../screens/lessons_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/parent_lessons_screen.dart';
 import '../screens/profile_screen.dart';
-import '../screens/therapy_requests_screen.dart';
-import '../screens/therapy_sessions_screen.dart';
+import '../screens/learning_support_requests_screen.dart';
+import '../screens/learning_support_meetings_screen.dart';
 import '../screens/verify_identity_screen.dart';
 import '../screens/weekly_report_screen.dart';
 
@@ -404,7 +404,7 @@ class VoiceCommandService {
       if (child != null) {
         await _reply('سأفتح طلب جلسة نفسية لـ ${child['name']}');
         nav.push(MaterialPageRoute(
-          builder: (_) => CreateTherapyRequestScreen(
+          builder: (_) => CreateLearningSupportRequestScreen(
             childId: child['id'],
             childName: (child['name'] ?? '').toString(),
           ),
@@ -575,7 +575,7 @@ class VoiceCommandService {
     ])) {
       await _reply('سأفتح الجلسات');
       nav.push(MaterialPageRoute(
-        builder: (_) => const TherapySessionsScreen(),
+        builder: (_) => const LearningSupportMeetingsScreen(),
       ));
       return;
     }
@@ -585,7 +585,7 @@ class VoiceCommandService {
     ])) {
       await _reply('سأفتح طلبات الدعم');
       nav.push(MaterialPageRoute(
-        builder: (_) => const TherapyRequestsScreen(),
+        builder: (_) => const LearningSupportRequestsScreen(),
       ));
       return;
     }

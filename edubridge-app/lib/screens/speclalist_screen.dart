@@ -20,8 +20,8 @@ import 'add_lesson_sheet.dart';
 import 'case_discussion_screen.dart';
 import 'choose_specialty_screen.dart';
 import 'plan_evaluation_screen.dart';
-import 'therapy_requests_screen.dart';
-import 'therapy_sessions_screen.dart';
+import 'learning_support_requests_screen.dart';
+import 'learning_support_meetings_screen.dart';
 import 'specialist_suggestions_screen.dart';
 import 'welcome_screen.dart';
 import 'evaluation_sheet.dart';
@@ -569,9 +569,9 @@ class _SpecialistDashboardScreenState
         MaterialPageRoute(builder: (_) => const NotificationsScreen()));
   }
 
-  void _openTherapy() {
+  void _openLearningSupport() {
     Navigator.push(context,
-        MaterialPageRoute(builder: (_) => const TherapySessionsScreen()));
+        MaterialPageRoute(builder: (_) => const LearningSupportMeetingsScreen()));
   }
 
   void _openCaseDiscussion({int? childId}) {
@@ -637,14 +637,14 @@ class _SpecialistDashboardScreenState
     if (result == true) _load();
   }
 
-  Future<void> _recommendTherapy(Map<String, dynamic> row) async {
+  Future<void> _recommendLearningSupport(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _RecommendTherapySheet(child: row['child']),
+      builder: (_) => _RecommendLearningSupportSheet(child: row['child']),
     );
     if (result == true) _load();
   }
@@ -1067,21 +1067,21 @@ class _SpecialistDashboardScreenState
                         onSelected: _openSuggestions,
                       ),
                       DashboardMenuAction(
-                        id: 'therapy_requests',
+                        id: 'learning_support_requests',
                         label: 'طلبات الدعم التعليمي',
                         icon: Icons.psychology_alt,
                         onSelected: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const TherapyRequestsScreen(),
+                            builder: (_) => const LearningSupportRequestsScreen(),
                           ),
                         ),
                       ),
                       DashboardMenuAction(
-                        id: 'therapy',
+                        id: 'learning_support',
                         label: 'الجلسات المجدولة',
                         icon: Icons.event_available,
-                        onSelected: _openTherapy,
+                        onSelected: _openLearningSupport,
                       ),
                       DashboardMenuAction(
                         id: 'support',
@@ -1676,7 +1676,7 @@ class _SpecialistDashboardScreenState
                 ),
               ],
             ),
-            if (child['has_pending_therapy_request'] == true) ...[
+            if (child['has_pending_learning_support_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -1717,7 +1717,7 @@ class _SpecialistDashboardScreenState
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const TherapyRequestsScreen(),
+                          builder: (_) => const LearningSupportRequestsScreen(),
                         ),
                       ),
                       child: const Text('اعرض',
@@ -1869,7 +1869,7 @@ class _SpecialistDashboardScreenState
                       icon: const Icon(Icons.psychology, size: 18),
                       label: const Text('اقترح دعم',
                           style: TextStyle(fontSize: 12)),
-                      onPressed: () => _recommendTherapy(row),
+                      onPressed: () => _recommendLearningSupport(row),
                     ),
                   ),
                 ],
@@ -2423,18 +2423,18 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  _RecommendTherapySheet
+//  _RecommendLearningSupportSheet
 // ═══════════════════════════════════════════════════════════
-class _RecommendTherapySheet extends StatefulWidget {
+class _RecommendLearningSupportSheet extends StatefulWidget {
   final Map child;
-  const _RecommendTherapySheet({required this.child});
+  const _RecommendLearningSupportSheet({required this.child});
 
   @override
-  State<_RecommendTherapySheet> createState() =>
-      _RecommendTherapySheetState();
+  State<_RecommendLearningSupportSheet> createState() =>
+      _RecommendLearningSupportSheetState();
 }
 
-class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
+class _RecommendLearningSupportSheetState extends State<_RecommendLearningSupportSheet> {
   final _descCtrl = TextEditingController();
   String? _reason;
   String _urgency = 'medium';
@@ -2472,7 +2472,7 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
       _error = null;
     });
     try {
-      await ApiService.authPost('/therapy/recommendations', {
+      await ApiService.authPost('/learning-support/recommendations', {
         'child_id': widget.child['id'],
         'reason': _reason,
         'description': _descCtrl.text.trim(),

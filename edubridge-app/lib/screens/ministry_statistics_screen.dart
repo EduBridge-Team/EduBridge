@@ -85,7 +85,7 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
             ),
             const SizedBox(width: 8),
             _bigStat(
-              '${s['therapy_sessions_count'] ?? 0}',
+              '${s['learning_support_meetings_count'] ?? 0}',
               'جلسات العلاج',
               Icons.psychology,
               AppColors.pink,

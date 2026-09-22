@@ -1274,13 +1274,13 @@ class ApiService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  الدعم التعليمي (legacy Therapy API identifiers)
+  //  الدعم التعليمي (legacy Learning Support API identifiers)
   // ═══════════════════════════════════════════════════════════
-  static Future<List<dynamic>> getTherapySessions({int? childId}) async {
+  static Future<List<dynamic>> getLearningSupportMeetings({int? childId}) async {
     try {
       final path = childId != null
-          ? '/therapy/sessions?child_id=$childId'
-          : '/therapy/sessions';
+          ? '/learning-support/meetings?child_id=$childId'
+          : '/learning-support/meetings';
       final res = await authGet(path);
       final data = _decodeBody(res);
       if (res.statusCode == 200) return data['sessions'] ?? [];
@@ -1290,7 +1290,7 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> createTherapySession({
+  static Future<Map<String, dynamic>?> createLearningSupportMeeting({
     required int childId,
     required String type,
     required DateTime scheduledAt,
@@ -1298,7 +1298,7 @@ class ApiService {
     String? goals,
   }) async {
     try {
-      final res = await authPost('/therapy/sessions', {
+      final res = await authPost('/learning-support/meetings', {
         'child_id': childId,
         'type': type,
         'scheduled_at': scheduledAt.toIso8601String(),
@@ -1313,7 +1313,7 @@ class ApiService {
     }
   }
 
-  static Future<bool> completeTherapySession({
+  static Future<bool> completeLearningSupportMeeting({
     required int sessionId,
     required String notes,
     required String recommendations,
@@ -1322,7 +1322,7 @@ class ApiService {
   }) async {
     try {
       final res = await authPut(
-          '/therapy/sessions/$sessionId/complete', {
+          '/learning-support/meetings/$sessionId/complete', {
         'notes': notes,
         'recommendations': recommendations,
         'mood_rating': moodRating,
@@ -1466,17 +1466,17 @@ class ApiService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  طلبات الجلسات النفسية (Therapy Requests)
+  //  طلبات الجلسات النفسية (Learning Support Requests)
   // ═══════════════════════════════════════════════════════════
 
-  static Future<Map<String, dynamic>?> createTherapyRequest({
+  static Future<Map<String, dynamic>?> createLearningSupportRequest({
     required int childId,
     required String reason,
     String? description,
     String urgency = 'medium',
   }) async {
     try {
-      final res = await authPost('/therapy/requests', {
+      final res = await authPost('/learning-support/requests', {
         'child_id': childId,
         'reason': reason,
         'description': description,
@@ -1492,7 +1492,7 @@ class ApiService {
     }
   }
 
-  static Future<List<dynamic>> getTherapyRequests({
+  static Future<List<dynamic>> getLearningSupportRequests({
     int? childId,
     String? status,
   }) async {
@@ -1501,8 +1501,8 @@ class ApiService {
       if (childId != null) params.add('child_id=$childId');
       if (status != null) params.add('status=$status');
       final path = params.isEmpty
-          ? '/therapy/requests'
-          : '/therapy/requests?${params.join('&')}';
+          ? '/learning-support/requests'
+          : '/learning-support/requests?${params.join('&')}';
 
       final res = await authGet(path);
       final data = _decodeBody(res);
@@ -1515,10 +1515,10 @@ class ApiService {
     }
   }
 
-  static Future<bool> hasPendingTherapyRequest(int childId) async {
+  static Future<bool> hasPendingLearningSupportRequest(int childId) async {
     try {
       final res =
-          await authGet('/therapy/requests/child/$childId/pending');
+          await authGet('/learning-support/requests/child/$childId/pending');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['has_pending'] == true;
@@ -1529,14 +1529,14 @@ class ApiService {
     }
   }
 
-  static Future<bool> scheduleTherapyRequest({
+  static Future<bool> scheduleLearningSupportRequest({
     required int requestId,
     required DateTime scheduledAt,
     required String meetingLink,
     String? notes,
   }) async {
     try {
-      final res = await authPut('/therapy/requests/$requestId/schedule', {
+      final res = await authPut('/learning-support/requests/$requestId/schedule', {
         'scheduled_at': scheduledAt.toIso8601String(),
         'meeting_link': meetingLink,
         'specialist_notes': notes,
@@ -1547,10 +1547,10 @@ class ApiService {
     }
   }
 
-  static Future<bool> cancelTherapyRequest(int requestId) async {
+  static Future<bool> cancelLearningSupportRequest(int requestId) async {
     try {
       final res =
-          await authPut('/therapy/requests/$requestId/cancel', {});
+          await authPut('/learning-support/requests/$requestId/cancel', {});
       return res.statusCode == 200;
     } catch (e) {
       return false;

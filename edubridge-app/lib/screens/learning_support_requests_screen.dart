@@ -1,19 +1,19 @@
-// lib/screens/therapy_requests_screen.dart
+// lib/screens/learning_support_requests_screen.dart
 import 'package:flutter/material.dart';
-import '../model/therapy_request_model.dart';
+import '../model/learning_support_request_model.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
-class TherapyRequestsScreen extends StatefulWidget {
-  const TherapyRequestsScreen({super.key});
+class LearningSupportRequestsScreen extends StatefulWidget {
+  const LearningSupportRequestsScreen({super.key});
 
   @override
-  State<TherapyRequestsScreen> createState() =>
-      _TherapyRequestsScreenState();
+  State<LearningSupportRequestsScreen> createState() =>
+      _LearningSupportRequestsScreenState();
 }
 
-class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
-  List<TherapyRequest> _requests = [];
+class _LearningSupportRequestsScreenState extends State<LearningSupportRequestsScreen> {
+  List<LearningSupportRequest> _requests = [];
   bool _loading = true;
   String? _error;
 
@@ -29,11 +29,11 @@ class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
       _error = null;
     });
     try {
-      final raw = await ApiService.getTherapyRequests();
+      final raw = await ApiService.getLearningSupportRequests();
       if (!mounted) return;
       setState(() {
         _requests = raw
-            .map((e) => TherapyRequest.fromJson(e as Map<String, dynamic>))
+            .map((e) => LearningSupportRequest.fromJson(e as Map<String, dynamic>))
             .toList();
         _loading = false;
       });
@@ -111,8 +111,8 @@ class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
         _requests.where((r) => r.isScheduled).toList();
     final done = _requests
         .where((r) =>
-            r.status == TherapyRequestStatus.completed ||
-            r.status == TherapyRequestStatus.cancelled)
+            r.status == LearningSupportRequestStatus.completed ||
+            r.status == LearningSupportRequestStatus.cancelled)
         .toList();
 
     return ListView(
@@ -179,12 +179,12 @@ class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
   }
 
   // ✅ BottomSheet لتحديد الموعد
-  Future<void> _openScheduleSheet(TherapyRequest request) async {
+  Future<void> _openScheduleSheet(LearningSupportRequest request) async {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _ScheduleTherapySheet(request: request),
+      builder: (_) => _ScheduleLearningSupportSheet(request: request),
     );
     if (result == true) _load();
   }
@@ -194,7 +194,7 @@ class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
 //  بطاقة طلب
 // ═══════════════════════════════════════════════════════════
 class _RequestCard extends StatelessWidget {
-  final TherapyRequest request;
+  final LearningSupportRequest request;
   final VoidCallback? onTap;
 
   const _RequestCard({required this.request, this.onTap});
@@ -205,16 +205,16 @@ class _RequestCard extends StatelessWidget {
 
     Color statusColor;
     switch (request.status) {
-      case TherapyRequestStatus.pending:
+      case LearningSupportRequestStatus.pending:
         statusColor = AppColors.orange;
         break;
-      case TherapyRequestStatus.scheduled:
+      case LearningSupportRequestStatus.scheduled:
         statusColor = AppColors.teal;
         break;
-      case TherapyRequestStatus.completed:
+      case LearningSupportRequestStatus.completed:
         statusColor = AppColors.green;
         break;
-      case TherapyRequestStatus.cancelled:
+      case LearningSupportRequestStatus.cancelled:
         statusColor = AppColors.red;
         break;
     }
@@ -336,17 +336,17 @@ class _RequestCard extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  BottomSheet: تحديد الموعد + الرابط
 // ═══════════════════════════════════════════════════════════
-class _ScheduleTherapySheet extends StatefulWidget {
-  final TherapyRequest request;
+class _ScheduleLearningSupportSheet extends StatefulWidget {
+  final LearningSupportRequest request;
 
-  const _ScheduleTherapySheet({required this.request});
+  const _ScheduleLearningSupportSheet({required this.request});
 
   @override
-  State<_ScheduleTherapySheet> createState() =>
-      _ScheduleTherapySheetState();
+  State<_ScheduleLearningSupportSheet> createState() =>
+      _ScheduleLearningSupportSheetState();
 }
 
-class _ScheduleTherapySheetState extends State<_ScheduleTherapySheet> {
+class _ScheduleLearningSupportSheetState extends State<_ScheduleLearningSupportSheet> {
   DateTime? _scheduledAt;
   TimeOfDay? _time;
   final _meetingLinkCtrl = TextEditingController();
@@ -403,7 +403,7 @@ class _ScheduleTherapySheetState extends State<_ScheduleTherapySheet> {
         _time!.minute,
       );
 
-      final ok = await ApiService.scheduleTherapyRequest(
+      final ok = await ApiService.scheduleLearningSupportRequest(
         requestId: widget.request.id,
         scheduledAt: scheduled,
         meetingLink: _meetingLinkCtrl.text.trim(),

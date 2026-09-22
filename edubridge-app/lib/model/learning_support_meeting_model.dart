@@ -1,5 +1,5 @@
-// models/therapy_model.dart
-enum TherapySessionType {
+// models/learning_support_meeting_model.dart
+enum LearningSupportMeetingType {
   learningPlanning,
   followUp,
   parentReview,
@@ -7,16 +7,16 @@ enum TherapySessionType {
   groupSupport,
 }
 
-enum TherapySessionStatus { scheduled, completed, cancelled, noShow }
+enum LearningSupportMeetingStatus { scheduled, completed, cancelled, noShow }
 
-class TherapySession {
+class LearningSupportMeeting {
   final int id;
   final int childId;
   final String childName;
   final int specialistId;
   final String specialistName;
-  final TherapySessionType type;
-  final TherapySessionStatus status;
+  final LearningSupportMeetingType type;
+  final LearningSupportMeetingStatus status;
   final DateTime scheduledAt;
   final DateTime? completedAt;
   final int durationMinutes;
@@ -26,7 +26,7 @@ class TherapySession {
   final int? moodRating;
   final List<String> tags;
 
-  TherapySession({
+  LearningSupportMeeting({
     required this.id,
     required this.childId,
     required this.childName,
@@ -44,17 +44,17 @@ class TherapySession {
     this.tags = const [],
   });
 
-  factory TherapySession.fromJson(Map<String, dynamic> json) =>
-      TherapySession(
+  factory LearningSupportMeeting.fromJson(Map<String, dynamic> json) =>
+      LearningSupportMeeting(
         id: json['id'],
         childId: json['child_id'],
         childName: json['child_name'] ?? '',
         specialistId: json['specialist_id'],
         specialistName: json['specialist_name'] ?? '',
         type: _typeFromJson(json['type']?.toString()),
-        status: TherapySessionStatus.values.firstWhere(
+        status: LearningSupportMeetingStatus.values.firstWhere(
           (e) => e.name == json['status'],
-          orElse: () => TherapySessionStatus.scheduled,
+          orElse: () => LearningSupportMeetingStatus.scheduled,
         ),
         scheduledAt: DateTime.parse(json['scheduled_at']),
         completedAt: json['completed_at'] != null
@@ -81,22 +81,22 @@ class TherapySession {
       };
 }
 
-TherapySessionType _typeFromJson(String? value) {
+LearningSupportMeetingType _typeFromJson(String? value) {
   switch (value) {
     case 'learningPlanning':
     case 'initial':
-      return TherapySessionType.learningPlanning;
+      return LearningSupportMeetingType.learningPlanning;
     case 'parentReview':
     case 'family':
-      return TherapySessionType.parentReview;
+      return LearningSupportMeetingType.parentReview;
     case 'teamReview':
     case 'crisis':
-      return TherapySessionType.teamReview;
+      return LearningSupportMeetingType.teamReview;
     case 'groupSupport':
     case 'group':
-      return TherapySessionType.groupSupport;
+      return LearningSupportMeetingType.groupSupport;
     case 'followUp':
     default:
-      return TherapySessionType.followUp;
+      return LearningSupportMeetingType.followUp;
   }
 }

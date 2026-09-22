@@ -23,7 +23,7 @@ import 'children_accessibility_overview_screen.dart';
 import 'child_homework_screen.dart';
 import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
-import 'create_therapy_request_screen.dart';
+import 'create_learning_support_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart'; // ✅ جديد
@@ -146,11 +146,11 @@ class _ParentScreenState extends State<ParentScreen> {
     );
   }
 
-  Future<void> _openTherapyRequest(Map child) async {
+  Future<void> _openLearningSupportRequest(Map child) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateTherapyRequestScreen(
+        builder: (_) => CreateLearningSupportRequestScreen(
           childId: child['id'],
           childName: (child['name'] ?? '').toString(),
         ),
@@ -583,7 +583,7 @@ class _ParentScreenState extends State<ParentScreen> {
               label: 'طلب جلسة دعم تعليمي',
               icon: Icons.psychology,
               backgroundColor: AppColors.purple,
-              onPressed: () => _openTherapyRequest(child),
+              onPressed: () => _openLearningSupportRequest(child),
             ),
           ],
         ),
