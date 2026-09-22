@@ -199,7 +199,7 @@ export default function ChildFormPage() {
             onChange={set('medical_history')}
           />
 
-          <label htmlFor="psychologist_notes">ملاحظات المختص النفسي (اختياري)</label>
+          <label htmlFor="psychologist_notes">ملاحظات مختص الدعم التعليمي (اختياري)</label>
           <textarea
             id="psychologist_notes"
             rows={3}
