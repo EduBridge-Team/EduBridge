@@ -26,7 +26,7 @@ function activeSection(pathname, role, homePath) {
   if (pathname === '/consultations') return 'consultations'
   if (pathname === '/homeworks') return 'homeworks'
   if (pathname === '/weekly-reports') return 'weekly-reports'
-  if (pathname === '/learning-support') return 'therapy'
+  if (pathname === '/learning-support') return 'learning-support'
   if (pathname === '/care-team') return 'care-team'
   if (pathname === '/case-discussions') return 'case-discussions'
   if (pathname === '/specialist-workflow') return 'specialist-workflow'
