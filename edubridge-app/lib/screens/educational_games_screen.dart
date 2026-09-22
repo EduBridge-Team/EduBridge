@@ -1,7 +1,9 @@
 // شاشة الألعاب التعليمية — تتكيّف حسب البروفايل والعمر
 import 'package:flutter/material.dart';
+import '../games/advanced_reading_game.dart';
 import '../games/audio_matching_game.dart';
 import '../games/colors_game.dart';
+import '../games/logic_puzzle_game.dart';
 import '../games/matching_game.dart';
 import '../games/math_race_game.dart';
 import '../games/numbers_game.dart';
@@ -166,6 +168,9 @@ class EducationalGamesScreen extends StatelessWidget {
       case 'story_sequencer':
         screen = StorySequencerGame(childName: childName, age: age);
         break;
+      case 'logic_puzzle':
+        screen = LogicPuzzleGame(childName: childName);
+        break;
       case 'sign_language':
         screen = SignLanguageGame(childName: childName);
         break;
@@ -175,7 +180,9 @@ class EducationalGamesScreen extends StatelessWidget {
       case 'rhythm':
         screen = RhythmGame(childName: childName);
         break;
-      // 'logic_puzzle' — يمكن إضافتها لاحقاً
+      case 'advanced_reading':
+        screen = AdvancedReadingGame(childName: childName);
+        break;
     }
 
     if (screen != null) {
