@@ -10,17 +10,8 @@ import {
   fetchCertificates,
   addCertificate,
   deleteCertificate,
+  openProtectedFile,
 } from '../api'
-
-const API_ORIGIN = (
-  import.meta.env.VITE_API_URL || '/api'
-).replace(/\/api\/?$/, '')
-
-// يحوّل مسار مخزّن (/uploads/..) إلى رابط كامل قابل للفتح
-function fileUrl(u) {
-  if (!u) return '#'
-  return u.startsWith('http') ? u : `${API_ORIGIN}${u}`
-}
 
 function StatusBadge({ status }) {
   const map = {
@@ -130,6 +121,14 @@ export default function VerifyIdentityPage() {
     }
   }
 
+  const viewFile = async (url) => {
+    try {
+      await openProtectedFile(url)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   if (loading) {
     return (
       <div className="state">
@@ -169,9 +168,9 @@ export default function VerifyIdentityPage() {
           onChange={(e) => upload(e.target.files[0], setIdUrl)}
         />
         {idUrl && (
-          <a href={fileUrl(idUrl)} target="_blank" rel="noreferrer" className="file-link">
+          <button type="button" className="file-link" onClick={() => viewFile(idUrl)}>
             <Paperclip size={14} /> عرض الملف المرفوع
-          </a>
+          </button>
         )}
 
         {msg && <div className="success-box">{msg}</div>}
@@ -200,9 +199,9 @@ export default function VerifyIdentityPage() {
                   <div>
                     <strong>{c.title}</strong> <StatusBadge status={c.status} />
                     {c.note && <div className="meta">ملاحظة: {c.note}</div>}
-                    <a href={fileUrl(c.url)} target="_blank" rel="noreferrer" className="file-link">
+                    <button type="button" className="file-link" onClick={() => viewFile(c.url)}>
                       <Paperclip size={14} /> عرض الشهادة
-                    </a>
+                    </button>
                   </div>
                   <button className="btn small danger" onClick={() => removeCert(c.id)}>
                     حذف
