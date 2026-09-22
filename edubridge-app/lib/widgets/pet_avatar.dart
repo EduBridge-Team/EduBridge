@@ -68,11 +68,11 @@ class _NoorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / 140;
+    final scale = size.width / 148;
     canvas
       ..save()
       ..scale(scale)
-      ..translate(0, 12);
+      ..translate(4, 16);
 
     final bodyPaint = Paint()
       ..shader = const LinearGradient(

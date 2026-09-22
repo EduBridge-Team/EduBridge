@@ -59,7 +59,7 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
       className={`noor-pet ${className}`.trim()}
       width={size}
       height={size}
-      viewBox="0 0 140 116"
+      viewBox="-4 0 148 116"
       role="img"
       aria-label="نور، المساعد الذكي"
     >
