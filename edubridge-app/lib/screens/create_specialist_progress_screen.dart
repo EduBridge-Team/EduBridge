@@ -212,7 +212,7 @@ class _CreateSpecialistProgressScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── مزاج الطفل ───
+            // ─── المشاركة التعليمية ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -223,7 +223,7 @@ class _CreateSpecialistProgressScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'حالة الطفل النفسية هذا الأسبوع:',
+                    'مشاركة الطفل التعليمية هذا الأسبوع:',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
