@@ -60,7 +60,13 @@ class HomeworkController extends Controller
     private function canViewChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['teacher','specialist','admin'], true)) return true;
+        if (in_array($user->role, ['specialist','admin'], true)) return true;
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists();
+        }
 
         return $user->role === 'parent'
             && DB::table('child_parent')
@@ -171,6 +177,16 @@ class HomeworkController extends Controller
         $validChildCount = DB::table('children')->whereIn('id', $assigned)->count();
         if ($validChildCount !== count($assigned)) {
             return response()->json(['error' => 'بعض الأطفال المحددين غير موجودين'], 422);
+        }
+
+        if ($user->role === 'teacher') {
+            $authorizedCount = DB::table('children')
+                ->whereIn('id', $assigned)
+                ->where('assigned_teacher_id', $user->id)
+                ->count();
+            if ($authorizedCount !== count($assigned)) {
+                return response()->json(['error' => 'يمكنك إسناد الواجبات فقط للأطفال المسندين إليك'], 403);
+            }
         }
 
         try {
