@@ -28,24 +28,41 @@ export async function openProtectedFile(url) {
     return;
   }
 
-  const token = getToken();
-  const res = await fetch(url, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
-
-  if (!res.ok) {
-    let message = `تعذّر فتح الملف (HTTP ${res.status})`;
-    try {
-      const data = await res.json();
-      message = data.error || data.message || message;
-    } catch {}
-    throw new Error(message);
+  // Open the tab synchronously from the user's click. Opening it only after
+  // awaiting fetch() is treated as an unsolicited popup by mobile browsers.
+  const popup = window.open("about:blank", "_blank");
+  if (!popup) {
+    throw new Error("المتصفح منع فتح الملف. اسمح بالنوافذ المنبثقة لهذا الموقع ثم حاول مرة أخرى.");
   }
 
-  const blob = await res.blob();
-  const objectUrl = URL.createObjectURL(blob);
-  window.open(objectUrl, "_blank", "noopener,noreferrer");
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+  try {
+    popup.document.title = "EduBridge";
+    popup.document.body.innerHTML =
+      '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
+
+    const token = getToken();
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    if (!res.ok) {
+      let message = `تعذّر فتح الملف (HTTP ${res.status})`;
+      try {
+        const data = await res.json();
+        message = data.error || data.message || message;
+      } catch {}
+      throw new Error(message);
+    }
+
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    popup.location.replace(objectUrl);
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 5 * 60 * 1000);
+  } catch (err) {
+    popup.close();
+    throw err;
+  }
 }
 
 export async function fetchMyProfile() {
