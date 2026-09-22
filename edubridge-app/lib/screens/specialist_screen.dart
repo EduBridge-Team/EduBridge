@@ -246,8 +246,6 @@ class _SpecialistDashboardScreenState
         _loading = false;
       });
 
-      debugPrint(
-          '🔍 _currentUserId=$_currentUserId, _mySpecialty=$_mySpecialty');
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -2442,13 +2440,13 @@ class _RecommendLearningSupportSheetState extends State<_RecommendLearningSuppor
   String? _error;
 
   static const _reasons = [
-    'يحتاج دعم نفسي متخصص',
-    'ظهور علامات قلق مستمر',
-    'تدهور في المزاج',
-    'مشاكل في النوم',
-    'سلوك انسحابي',
-    'نوبات غضب متكررة',
-    'يحتاج تقييم نفسي شامل',
+    'صعوبة في فهم الدروس',
+    'الحاجة إلى تكييف أسلوب التعلم',
+    'صعوبة في التركيز أثناء الأنشطة التعليمية',
+    'الحاجة إلى متابعة الواجبات',
+    'صعوبة في التواصل داخل البيئة التعليمية',
+    'الحاجة إلى خطة تعلم فردية',
+    'الحاجة إلى متابعة تقدم أكاديمي',
     'أخرى',
   ];
 
@@ -2517,12 +2515,12 @@ class _RecommendLearningSupportSheetState extends State<_RecommendLearningSuppor
             children: [
               Row(
                 children: [
-                  const Icon(Icons.psychology,
+                  const Icon(Icons.school_outlined,
                       color: AppColors.purple, size: 30),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'اقتراح دعم نفسي — ${widget.child['name']}',
+                      'اقتراح دعم تعليمي — ${widget.child['name']}',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
