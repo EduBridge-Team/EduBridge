@@ -62,6 +62,39 @@ class UploadController extends Controller
         }
     }
 
+    // GET /api/private-files/child/{childId}/{filename}
+    // مستندات هوية/قرابة الطفل: الأدمن أو ولي أمر مرتبط بالطفل فقط.
+    public function showChild(Request $request, int $childId, string $filename): BinaryFileResponse|\Illuminate\Http\JsonResponse
+    {
+        $user = $request->attributes->get('jwt_user');
+        $allowed = $user && (
+            $user->role === 'admin'
+            || ($user->role === 'parent'
+                && \Illuminate\Support\Facades\DB::table('child_parent')
+                    ->where('child_id', $childId)
+                    ->where('parent_id', $user->id)
+                    ->exists())
+        );
+
+        if (!$allowed) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+
+        if (!preg_match('/^[A-Za-z0-9._-]+$/', $filename) || str_contains($filename, '..')) {
+            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
+        }
+
+        $path = storage_path('app/private/child-files/' . $childId . '/' . $filename);
+        if (!is_file($path)) {
+            return response()->json(['error' => 'الملف غير موجود'], 404);
+        }
+
+        return response()->file($path, [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ]);
+    }
+
     // GET /api/private-files/user/{userId}/{filename}
     // صاحب الملف أو الأدمن فقط.
     public function show(Request $request, int $userId, string $filename): BinaryFileResponse|\Illuminate\Http\JsonResponse
