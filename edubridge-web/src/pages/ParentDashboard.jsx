@@ -294,7 +294,6 @@ export default function ParentDashboard() {
     { label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
     { label: 'التقدم', icon: <BarChart3 size={21} />, onClick: () => children[0] && navigate(`/children/${children[0].id}/progress`, { state: { childName: children[0].name } }) },
     { label: 'المحادثات', icon: <MessageCircle size={21} />, onClick: () => navigate('/conversations'), badge: conversations.length },
-    { label: 'المساعد نور', icon: <Sparkles size={21} />, onClick: openNoor },
     { label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
   ]
 
@@ -323,12 +322,6 @@ export default function ParentDashboard() {
           ))}
         </nav>
 
-        <div className="pd-noor-side">
-          <NoorPet size={118} trackMouse />
-          <strong>نور</strong>
-          <p>مساعدك الذكي دائماً معك لدعم رحلة التعلّم.</p>
-          <button onClick={openNoor}>ابدأ المحادثة الآن</button>
-        </div>
       </aside>
 
       <div className="pd-main">

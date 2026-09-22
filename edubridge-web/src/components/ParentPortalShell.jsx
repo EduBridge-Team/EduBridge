@@ -13,7 +13,6 @@ import {
 } from '../api'
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
-import NoorPet from './NoorPet'
 import { useTheme } from '../theme'
 
 function activeSection(pathname, role, homePath) {
@@ -101,16 +100,6 @@ export default function RolePortalShell({ children }) {
       body.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
     }
   }, [role])
-
-  const openNoor = () => {
-    setDrawerOpen(false)
-    const launcher = document.querySelector('.noor-launcher')
-    if (launcher) {
-      launcher.click()
-      return
-    }
-    navigate('/support')
-  }
 
   const goToProgress = () => {
     const child = childrenList[0]
@@ -289,14 +278,6 @@ export default function RolePortalShell({ children }) {
           ))}
         </nav>
 
-        <button
-          className="pp-noor-card"
-          onClick={openNoor}
-          aria-label="فتح نور"
-          title="نور"
-        >
-          <NoorPet size={108} trackMouse />
-        </button>
       </aside>
 
       <section className="pp-body">

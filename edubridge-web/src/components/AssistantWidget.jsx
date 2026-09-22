@@ -72,6 +72,56 @@ export default function AssistantWidget() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [open, messages, sending])
 
+  useEffect(() => {
+    if (open || dragging || typeof window === 'undefined') return undefined
+    if (!window.matchMedia('(pointer: fine)').matches) return undefined
+
+    let frame = 0
+    let latest = null
+
+    const followPointer = (event) => {
+      if (event.pointerType && event.pointerType !== 'mouse') return
+      latest = { x: event.clientX, y: event.clientY }
+      if (frame) return
+
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        if (!latest) return
+
+        const assistantElement = document.querySelector('.noor-assistant')
+        const launcher = assistantElement?.querySelector('.noor-launcher')
+        const rect = launcher?.getBoundingClientRect()
+        if (!rect) return
+
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        const dx = latest.x - centerX
+        const dy = latest.y - centerY
+
+        setPosition((current) => {
+          const margin = 10
+          const nextX = current.x + dx * 0.22
+          const nextY = current.y + dy * 0.22
+          const assistantRect = assistantElement.getBoundingClientRect()
+          const minX = current.x + margin - assistantRect.left
+          const maxX = current.x + window.innerWidth - margin - assistantRect.right
+          const minY = current.y + margin - assistantRect.top
+          const maxY = current.y + window.innerHeight - margin - assistantRect.bottom
+          return {
+            x: clamp(nextX, minX, maxX),
+            y: clamp(nextY, minY, maxY),
+          }
+        })
+      })
+    }
+
+    window.addEventListener('pointermove', followPointer, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', followPointer)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [open, dragging])
+
   if (!signedIn) return null
 
   const saveHistory = (next) => {
@@ -261,7 +311,7 @@ export default function AssistantWidget() {
         onClick={toggleAssistant}
         aria-expanded={open}
         aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
-        title="نور — اسحب لتحريكها"
+        title="نور — تتحرك مع الماوس ويمكن سحبها"
       >
         <NoorPet size={76} trackMouse />
       </button>
