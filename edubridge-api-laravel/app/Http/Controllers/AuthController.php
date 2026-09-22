@@ -77,7 +77,7 @@ class AuthController extends Controller
         if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'])) {
             return response()->json(['error' => 'الدور غير صالح'], 400);
         }
-        if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['psychological', 'educational'], true)) {
+        if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['learning_support', 'educational', 'communication_support', 'learning_behavior', 'psychological'], true)) {
             return response()->json(['error' => 'التخصص غير صالح'], 422);
         }
 

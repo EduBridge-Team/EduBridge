@@ -2,7 +2,7 @@
 // - Switch "أطفالي / قائمة الانتظار"
 // - استخراج التخصص تلقائياً من /me
 // - فتح شاشة تحديد التخصص عند عدم وجوده
-// - اقتراح مختص نفسي/تعليمي
+// - اقتراح مختص دعم تعليمي
 // - دراسة الحالة
 import 'dart:convert';
 
@@ -59,7 +59,7 @@ class _SpecialistDashboardScreenState
   // ✅ Switch: أطفالي فقط / قائمة الانتظار
   bool _showOnlyMine = true;
   int? _currentUserId;
-  String? _mySpecialty; // 'psychological' | 'educational' | null
+  String? _mySpecialty; // 'learning_support' | 'educational' | null
 
   bool _verificationDialogShown = false;
   bool _specialtyDialogShown = false;
@@ -209,8 +209,8 @@ class _SpecialistDashboardScreenState
           final spec =
               (me['specialty'] ?? '').toString().toLowerCase().trim();
           if (spec.isNotEmpty) {
-            if (spec == 'psychological' || spec.contains('نفس')) {
-              specialty = 'psychological';
+            if (spec == 'learning_support' || spec.contains('نفس')) {
+              specialty = 'learning_support';
             } else if (spec == 'educational' || spec.contains('تعليم')) {
               specialty = 'educational';
             }
@@ -228,8 +228,8 @@ class _SpecialistDashboardScreenState
         );
         final spec =
             (meUser['specialty'] ?? '').toString().toLowerCase().trim();
-        if (spec == 'psychological' || spec.contains('نفس')) {
-          specialty = 'psychological';
+        if (spec == 'learning_support' || spec.contains('نفس')) {
+          specialty = 'learning_support';
         } else if (spec == 'educational' || spec.contains('تعليم')) {
           specialty = 'educational';
         }
@@ -705,7 +705,7 @@ class _SpecialistDashboardScreenState
         orElse: () => <String, dynamic>{},
       );
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
-      if (spec == 'psychological' || spec.contains('نفس')) {
+      if (spec == 'learning_support' || spec.contains('نفس')) {
         psychCount++;
       } else if (spec == 'educational' || spec.contains('تعليم')) {
         eduCount++;
@@ -727,7 +727,7 @@ class _SpecialistDashboardScreenState
       );
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
       if (spec == type) return true;
-      if (type == 'psychological' && spec.contains('نفس')) return true;
+      if (type == 'learning_support' && spec.contains('نفس')) return true;
       if (type == 'educational' && spec.contains('تعليم')) return true;
     }
     return false;
@@ -739,8 +739,8 @@ class _SpecialistDashboardScreenState
     if (_mySpecialty == null || _mySpecialty!.isEmpty) {
       return _childSpecialistIds(child).isEmpty;
     }
-    if (_mySpecialty == 'psychological') {
-      return !_hasSpecialistOfType(child, 'psychological');
+    if (_mySpecialty == 'learning_support') {
+      return !_hasSpecialistOfType(child, 'learning_support');
     }
     if (_mySpecialty == 'educational') {
       return !_hasSpecialistOfType(child, 'educational');
@@ -1068,7 +1068,7 @@ class _SpecialistDashboardScreenState
                       ),
                       DashboardMenuAction(
                         id: 'therapy_requests',
-                        label: 'طلبات الدعم النفسي',
+                        label: 'طلبات الدعم التعليمي',
                         icon: Icons.psychology_alt,
                         onSelected: () => Navigator.push(
                           context,
@@ -1269,17 +1269,17 @@ class _SpecialistDashboardScreenState
     final hasSpecialty = _mySpecialty != null;
 
     // ✅ احسب التسمية والألوان حسب التخصص
-    final specType = _mySpecialty == 'psychological'
-        ? 'مختص نفسي'
+    final specType = _mySpecialty == 'learning_support'
+        ? 'مختص دعم تعليمي'
         : _mySpecialty == 'educational'
             ? 'مختص تعليمي'
             : 'مختص (تخصصك غير محدد)';
 
-    final specIcon = _mySpecialty == 'psychological'
+    final specIcon = _mySpecialty == 'learning_support'
         ? Icons.psychology
         : Icons.school;
 
-    final specColor = _mySpecialty == 'psychological'
+    final specColor = _mySpecialty == 'learning_support'
         ? AppColors.purple
         : AppColors.navy;
 
@@ -1508,10 +1508,10 @@ class _SpecialistDashboardScreenState
         title: Row(
           children: [
             Icon(
-              _mySpecialty == 'psychological'
+              _mySpecialty == 'learning_support'
                   ? Icons.psychology
                   : Icons.school,
-              color: _mySpecialty == 'psychological'
+              color: _mySpecialty == 'learning_support'
                   ? AppColors.purple
                   : AppColors.navy,
               size: 28,
@@ -1522,7 +1522,7 @@ class _SpecialistDashboardScreenState
         ),
         content: Text(
           'هل تريد إضافة "${child['name']}" لمتابعتك كـ'
-          '${_mySpecialty == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي'}؟',
+          '${_mySpecialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي'}؟',
           style: const TextStyle(fontSize: 14, height: 1.5),
         ),
         actions: [
@@ -1532,7 +1532,7 @@ class _SpecialistDashboardScreenState
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _mySpecialty == 'psychological'
+              backgroundColor: _mySpecialty == 'learning_support'
                   ? AppColors.purple
                   : AppColors.navy,
             ),
@@ -1888,12 +1888,12 @@ class _SpecialistDashboardScreenState
                             color: AppColors.purple, width: 1.5),
                       ),
                       icon: const Icon(Icons.recommend, size: 16),
-                      label: const Text('اقترح مختص نفسي',
+                      label: const Text('اقترح مختص دعم تعليمي',
                           style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold)),
                       onPressed: () =>
-                          _openSuggestSpecialist(row, 'psychological'),
+                          _openSuggestSpecialist(row, 'learning_support'),
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -2208,9 +2208,9 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
   String? _error;
 
   String get _label =>
-      widget.specialty == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي';
+      widget.specialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي';
 
-  Color get _color => widget.specialty == 'psychological'
+  Color get _color => widget.specialty == 'learning_support'
       ? AppColors.purple
       : AppColors.navy;
 
@@ -2267,7 +2267,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
       if (spec.isEmpty) return true;
       return spec == widget.specialty ||
-          spec.contains(widget.specialty == 'psychological'
+          spec.contains(widget.specialty == 'learning_support'
               ? 'نفس'
               : 'تعليم');
     }).toList();

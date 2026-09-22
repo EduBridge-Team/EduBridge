@@ -1274,7 +1274,7 @@ class ApiService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  العلاج النفسي (Therapy)
+  //  الدعم التعليمي (legacy Therapy API identifiers)
   // ═══════════════════════════════════════════════════════════
   static Future<List<dynamic>> getTherapySessions({int? childId}) async {
     try {
@@ -1725,7 +1725,7 @@ static Future<Map<String, dynamic>?> getChildSpecialists(int childId) async {
 static Future<String?> assignSpecialist({
   required int childId,
   required int specialistId,
-  required String specialty, // psychological | educational | speech | behavioral
+  required String specialty, // learning_support | educational | communication_support | learning_behavior
 }) async {
   try {
     final res = await authPost('/children/$childId/specialists', {

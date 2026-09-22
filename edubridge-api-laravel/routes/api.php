@@ -174,7 +174,7 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/consultations/{id}/notes', [ConsultationController::class, 'addNote'])
         ->middleware('role:specialist,admin');
 
-    // طلبات الدعم النفسي — ولي الأمر يرسل، والمختص يراجع ويحدد الموعد والرابط
+    // طلبات الدعم التعليمي — ولي الأمر يرسل، ومختص الدعم يراجع ويحدد موعد المتابعة والرابط
     Route::post('/therapy/requests', [TherapyRequestController::class, 'store'])
         ->middleware(['role:parent', 'throttle:10,1']);
     Route::get('/therapy/requests', [TherapyRequestController::class, 'index'])
@@ -306,7 +306,7 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/progress/child/{childId}', [ProgressController::class, 'byChild']);
     Route::get('/progress/child/{childId}/summary', [ProgressController::class, 'summary']);
 
-    // الجلسات العلاجية — مسارات Flutter + المسارات القديمة للتوافق
+    // اجتماعات الدعم التعليمي — مع إبقاء المسارات القديمة للتوافق التقني
     Route::get('/therapy/sessions', [SessionController::class, 'index'])
         ->middleware('role:parent,teacher,specialist,admin');
     Route::post('/therapy/sessions', [SessionController::class, 'store'])

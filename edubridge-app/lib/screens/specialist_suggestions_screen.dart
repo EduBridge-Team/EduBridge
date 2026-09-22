@@ -63,7 +63,7 @@ class _SpecialistSuggestionsScreenState
         ),
         content: Text(
           'هل تريد متابعة "${s['child_name']}" كـ'
-          '${s['specialty'] == 'psychological' ? 'مختص نفسي' : 'مختص تعليمي'}؟',
+          '${s['specialty'] == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي'}؟',
           style: const TextStyle(fontSize: 15, height: 1.5),
         ),
         actions: [
@@ -295,7 +295,7 @@ class _SpecialistSuggestionsScreenState
 
   Widget _buildSuggestionCard(Map s, JisrColors c) {
     final status = s['status'] ?? 'pending';
-    final isPsych = s['specialty'] == 'psychological';
+    final isLearningSupport = s['specialty'] == 'learning_support';
 
     Color statusColor;
     String statusLabel;
@@ -326,7 +326,7 @@ class _SpecialistSuggestionsScreenState
                 CircleAvatar(
                   radius: 24,
                   backgroundColor:
-                      isPsych ? AppColors.purple : AppColors.navy,
+                      isLearningSupport ? AppColors.purple : AppColors.navy,
                   child: Text(
                     (s['child_name'] ?? '؟').toString().characters.first,
                     style: const TextStyle(
@@ -380,24 +380,24 @@ class _SpecialistSuggestionsScreenState
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: (isPsych ? AppColors.purple : AppColors.navy)
+                color: (isLearningSupport ? AppColors.purple : AppColors.navy)
                     .withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
                   Icon(
-                    isPsych ? Icons.psychology : Icons.school,
-                    color: isPsych ? AppColors.purple : AppColors.navy,
+                    isLearningSupport ? Icons.psychology : Icons.school,
+                    color: isLearningSupport ? AppColors.purple : AppColors.navy,
                     size: 20,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    isPsych ? 'مختص نفسي' : 'مختص تعليمي',
+                    isLearningSupport ? 'مختص دعم تعليمي' : 'مختص تعليمي',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: isPsych ? AppColors.purple : AppColors.navy,
+                      color: isLearningSupport ? AppColors.purple : AppColors.navy,
                     ),
                   ),
                 ],
