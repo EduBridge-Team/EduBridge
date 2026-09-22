@@ -151,17 +151,15 @@ GET  /api/users                            (admin: الكل، teacher/specialist
 
 ## النشر
 
-الموقع منشور على: <https://edubridge.alwaysdata.net>
+الإنتاج الأساسي يعمل على Taqat Academy:
 
-للتحديث من الجوال (عبر SSH/Termius) بأمر واحد بعد الدمج إلى `main`:
+- الموقع: <https://edubridge.win>
+- API: <https://api.edubridge.win>
+- المستودع: `EduBridge-Team/EduBridge`، الفرع `main`
+- الويب يعمل عبر `deploy/taqat-web-server.mjs` مع proxy داخلي من `/api` إلى API.
+- قاعدة PostgreSQL الإنتاجية هي قاعدة Taqat المرتبطة بتطبيق EduBridge API.
 
-```bash
-cd ~/EduBridge && git pull && bash deploy/deploy.sh
-```
-
-السكربت يرقّي قاعدة البيانات (`database/upgrade_parent_features.sql` — آمن وقابل للتكرار)،
-ويمسح إعدادات Laravel، وينشر نسخة الموقع المبنية من `deploy/web`. التفاصيل في
-`deploy/README.md` و`دليل التحديث والنشر.docx`.
+ملفات `deploy/deploy.sh` و`deploy/web` باقية كمسار نشر قديم/احتياطي لـ Alwaysdata، وليست مسار الإنتاج الأساسي.
 
 ### ترحيل الملفات الحساسة القديمة
 
