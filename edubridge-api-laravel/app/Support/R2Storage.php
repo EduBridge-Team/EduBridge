@@ -18,6 +18,13 @@ final class R2Storage
         return self::requiredEnv('R2_MEDIA_BUCKET');
     }
 
+    public static function mediaPublicUrl(string $key): string
+    {
+        $base = rtrim(self::requiredEnv('R2_MEDIA_PUBLIC_URL'), '/');
+        $encoded = implode('/', array_map('rawurlencode', explode('/', ltrim($key, '/'))));
+        return $base . '/' . $encoded;
+    }
+
     public static function putUploadedFile(string $bucket, string $key, $file, ?string $contentType = null): void
     {
         $path = $file->getRealPath();
