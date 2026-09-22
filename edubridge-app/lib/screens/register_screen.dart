@@ -40,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String get _specialtyHint {
     return _role == 'teacher'
         ? 'مثال: رياضيات، لغة عربية، علوم'
-        : 'مثال: تخاطب، دعم نفسي، تعديل سلوك';
+        : 'مثال: دعم تعليمي، تواصل، صعوبات تعلم';
   }
 
   Future<void> _register() async {
@@ -60,10 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _passwordCtrl.text,
       _role,
       phone: null,
+      specialty: specialty,
     );
-
-    // ملاحظة: تحتاج تمرير specialty أيضاً للـ API
-    // يمكنك تعديل ApiService.register ليقبل specialty
 
     if (!mounted) return;
     setState(() => _loading = false);
