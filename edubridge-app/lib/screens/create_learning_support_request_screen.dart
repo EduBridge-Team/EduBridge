@@ -118,7 +118,7 @@ class _CreateLearningSupportRequestScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'طلب دعم نفسي',
+                          'طلب دعم تعليمي',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -126,7 +126,7 @@ class _CreateLearningSupportRequestScreenState
                           ),
                         ),
                         Text(
-                          'سيصل طلبك للمختص النفسي المتابع لـ ${widget.childName}',
+                          'سيصل طلبك لمختص الدعم التعليمي المتابع لـ ${widget.childName}',
                           style: TextStyle(fontSize: 13, color: c.muted),
                         ),
                       ],
