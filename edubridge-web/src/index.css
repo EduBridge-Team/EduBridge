@@ -3317,17 +3317,47 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 }
 
 
-/* Noor cursor-evasion widget */
-@media (hover: hover) and (pointer: fine) {
-    .noor-assistant:not(.is-dragging) {
-        transition: transform 42ms linear;
-    }
 
-    .noor-assistant:not(.is-dragging) .noor-launcher {
-        cursor: grab;
-    }
+/* Independent Noor runner widget — separate from the assistant launcher. */
+.noor-runner-widget {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 94px;
+    height: 94px;
+    min-width: 94px;
+    min-height: 94px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    z-index: 118;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    will-change: transform;
+    transition: filter .14s ease;
+}
 
-    .noor-assistant:not(.is-dragging) .noor-launcher:hover {
-        transform: none;
+.noor-runner-widget:hover,
+.noor-runner-widget:focus-visible {
+    filter: drop-shadow(0 8px 14px rgba(17, 84, 173, .18));
+}
+
+.noor-runner-widget:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 3px;
+}
+
+@media (hover: none), (pointer: coarse) {
+    .noor-runner-widget {
+        display: none !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noor-runner-widget {
+        display: none !important;
     }
 }

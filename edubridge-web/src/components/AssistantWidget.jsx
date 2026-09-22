@@ -58,9 +58,6 @@ export default function AssistantWidget() {
   const inputRef = useRef(null)
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
-  const cursorRef = useRef(null)
-  const evadeFrameRef = useRef(0)
-  const launcherPressedRef = useRef(false)
 
   useEffect(() => {
     setOpen(false)
@@ -74,76 +71,6 @@ export default function AssistantWidget() {
     inputRef.current?.focus()
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [open, messages, sending])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined
-    if (!window.matchMedia('(pointer: fine)').matches) return undefined
-
-    const trackCursor = (event) => {
-      if (event.pointerType && event.pointerType !== 'mouse') return
-      cursorRef.current = { x: event.clientX, y: event.clientY }
-    }
-
-    const clearCursor = () => {
-      cursorRef.current = null
-    }
-
-    const evadeCursor = () => {
-      evadeFrameRef.current = window.requestAnimationFrame(evadeCursor)
-
-      if (open || dragging || launcherPressedRef.current || !cursorRef.current) return
-
-      const assistantElement = document.querySelector('.noor-assistant')
-      const launcher = assistantElement?.querySelector('.noor-launcher')
-      const rect = launcher?.getBoundingClientRect()
-      if (!assistantElement || !rect) return
-
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-      const awayX = centerX - cursorRef.current.x
-      const awayY = centerY - cursorRef.current.y
-      const distance = Math.hypot(awayX, awayY)
-      const dangerRadius = 230
-
-      if (distance >= dangerRadius) return
-
-      const safeDistance = Math.max(distance, 1)
-      const strength = Math.max(2.5, (dangerRadius - distance) * 0.085)
-      const stepX = (awayX / safeDistance) * strength
-      const stepY = (awayY / safeDistance) * strength
-
-      setPosition((current) => {
-        const assistantRect = assistantElement.getBoundingClientRect()
-        const margin = 12
-        const minX = current.x + margin - assistantRect.left
-        const maxX = current.x + window.innerWidth - margin - assistantRect.right
-        const minY = current.y + margin - assistantRect.top
-        const maxY = current.y + window.innerHeight - margin - assistantRect.bottom
-        const next = {
-          x: clamp(current.x + stepX, minX, maxX),
-          y: clamp(current.y + stepY, minY, maxY),
-        }
-
-        localStorage.setItem(POSITION_KEY, JSON.stringify(next))
-        return next
-      })
-    }
-
-    window.addEventListener('pointermove', trackCursor, { passive: true })
-    window.addEventListener('blur', clearCursor)
-    document.addEventListener('mouseleave', clearCursor)
-    evadeFrameRef.current = window.requestAnimationFrame(evadeCursor)
-
-    return () => {
-      window.removeEventListener('pointermove', trackCursor)
-      window.removeEventListener('blur', clearCursor)
-      document.removeEventListener('mouseleave', clearCursor)
-      if (evadeFrameRef.current) {
-        window.cancelAnimationFrame(evadeFrameRef.current)
-        evadeFrameRef.current = 0
-      }
-    }
-  }, [open, dragging])
 
   if (!signedIn) return null
 
@@ -199,7 +126,6 @@ export default function AssistantWidget() {
   const startDrag = (event) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
 
-    launcherPressedRef.current = true
     const assistant = event.currentTarget.closest('.noor-assistant')
     const rect = assistant?.getBoundingClientRect()
     if (!rect) return
@@ -243,7 +169,6 @@ export default function AssistantWidget() {
   }
 
   const endDrag = (event) => {
-    launcherPressedRef.current = false
     const drag = dragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
 
@@ -336,7 +261,7 @@ export default function AssistantWidget() {
         onClick={toggleAssistant}
         aria-expanded={open}
         aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
-        title="نور — تحاول الهروب من مؤشر الماوس ويمكن سحبها"
+        title="نور — اسحب لتحريكها"
       >
         <NoorPet size={76} trackMouse />
       </button>

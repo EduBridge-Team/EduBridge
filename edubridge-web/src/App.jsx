@@ -5,6 +5,7 @@ import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRol
 import TopBar from './components/TopBar'
 import RolePortalShell from './components/ParentPortalShell'
 import AssistantWidget from './components/AssistantWidget'
+import NoorRunnerWidget from './components/NoorRunnerWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -135,6 +136,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <AssistantWidget />
+      <NoorRunnerWidget />
       <VoiceCommandWidget />
     </div>
   )
