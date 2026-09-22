@@ -65,7 +65,11 @@ class HomeworkController extends Controller
             return DB::table('children')
                 ->where('id', $childId)
                 ->where('assigned_teacher_id', $user->id)
-                ->exists();
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
         }
 
         return $user->role === 'parent'
@@ -180,10 +184,19 @@ class HomeworkController extends Controller
         }
 
         if ($user->role === 'teacher') {
-            $authorizedCount = DB::table('children')
+            $authorizedIds = DB::table('children')
                 ->whereIn('id', $assigned)
                 ->where('assigned_teacher_id', $user->id)
-                ->count();
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $teamIds = DB::table('child_teacher')
+                ->whereIn('child_id', $assigned)
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $authorizedCount = count(array_unique(array_merge($authorizedIds, $teamIds)));
             if ($authorizedCount !== count($assigned)) {
                 return response()->json(['error' => 'يمكنك إسناد الواجبات فقط للأطفال المسندين إليك'], 403);
             }
