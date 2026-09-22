@@ -3319,9 +3319,16 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
 
 
 /* Independent Noor runner widget — separate from the assistant launcher. */
-.noor-runner-widget {
+.noor-runner-wrap {
     position: fixed;
     inset: 0 auto auto 0;
+    width: 94px;
+    height: 94px;
+    z-index: 118;
+    will-change: transform;
+}
+
+.noor-runner-widget {
     width: 94px;
     height: 94px;
     min-width: 94px;
@@ -3330,14 +3337,41 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     border: 0;
     border-radius: 50%;
     background: transparent;
-    z-index: 118;
     display: grid;
     place-items: center;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    will-change: transform;
-    transition: filter .14s ease;
+    transition: filter .14s ease, opacity .14s ease;
+}
+
+.noor-runner-toggle {
+    position: absolute;
+    right: -4px;
+    bottom: -2px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--teal) 46%, var(--line));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--surface) 94%, var(--teal));
+    color: var(--teal-deep);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 7px 18px rgba(17, 84, 173, .16);
+    transition: transform .14s ease, background .14s ease;
+}
+
+.noor-runner-toggle:hover {
+    transform: scale(1.06);
+    background: var(--surface);
+}
+
+.noor-runner-wrap.is-paused .noor-runner-widget {
+    opacity: .92;
 }
 
 .noor-runner-widget:hover,
@@ -3345,19 +3379,20 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     filter: drop-shadow(0 8px 14px rgba(17, 84, 173, .18));
 }
 
-.noor-runner-widget:focus-visible {
+.noor-runner-widget:focus-visible,
+.noor-runner-toggle:focus-visible {
     outline: 3px solid var(--yellow);
     outline-offset: 3px;
 }
 
 @media (hover: none), (pointer: coarse) {
-    .noor-runner-widget {
+    .noor-runner-wrap {
         display: none !important;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .noor-runner-widget {
+    .noor-runner-wrap {
         display: none !important;
     }
 }

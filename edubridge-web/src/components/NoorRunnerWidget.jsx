@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { Pause, Play } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import NoorPet from './NoorPet'
 
 const SIZE = 94
 const MARGIN = 14
 const DANGER_RADIUS = 250
-const CRUISE_SPEED = 0.42
+const CRUISE_SPEED = 0.14
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
@@ -15,16 +16,22 @@ export default function NoorRunnerWidget() {
   const signedIn = Boolean(getToken() && getUser())
   const [enabled, setEnabled] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [paused, setPaused] = useState(false)
   const positionRef = useRef(position)
   const cursorRef = useRef(null)
-  const velocityRef = useRef({ x: 0.36, y: -0.28 })
+  const velocityRef = useRef({ x: 0.12, y: -0.09 })
   const frameRef = useRef(0)
   const lastTimeRef = useRef(0)
   const focusedRef = useRef(false)
+  const pausedRef = useRef(false)
 
   useEffect(() => {
     positionRef.current = position
   }, [position])
+
+  useEffect(() => {
+    pausedRef.current = paused
+  }, [paused])
 
   useEffect(() => {
     if (!signedIn || typeof window === 'undefined') return undefined
@@ -72,7 +79,7 @@ export default function NoorRunnerWidget() {
 
     const animate = (time) => {
       frameRef.current = window.requestAnimationFrame(animate)
-      if (focusedRef.current) {
+      if (focusedRef.current || pausedRef.current) {
         lastTimeRef.current = time
         return
       }
@@ -95,15 +102,15 @@ export default function NoorRunnerWidget() {
         if (distance < DANGER_RADIUS) {
           const safeDistance = Math.max(distance, 1)
           const pressure = (DANGER_RADIUS - distance) / DANGER_RADIUS
-          const fleeSpeed = 0.7 + pressure * 2.8
+          const fleeSpeed = 0.24 + pressure * 1.05
           velocity = {
-            x: velocity.x * 0.72 + (awayX / safeDistance) * fleeSpeed,
-            y: velocity.y * 0.72 + (awayY / safeDistance) * fleeSpeed,
+            x: velocity.x * 0.9 + (awayX / safeDistance) * fleeSpeed,
+            y: velocity.y * 0.9 + (awayY / safeDistance) * fleeSpeed,
           }
         } else {
           velocity = {
-            x: velocity.x * 0.985,
-            y: velocity.y * 0.985,
+            x: velocity.x * 0.993,
+            y: velocity.y * 0.993,
           }
         }
       }
@@ -111,12 +118,12 @@ export default function NoorRunnerWidget() {
       const speed = Math.hypot(velocity.x, velocity.y)
       if (speed < CRUISE_SPEED) {
         velocity = {
-          x: velocity.x + 0.035,
-          y: velocity.y - 0.018,
+          x: velocity.x + 0.01,
+          y: velocity.y - 0.006,
         }
       }
 
-      const maxSpeed = 3.8
+      const maxSpeed = 1.35
       const normalizedSpeed = Math.hypot(velocity.x, velocity.y)
       if (normalizedSpeed > maxSpeed) {
         velocity = {
@@ -168,17 +175,36 @@ export default function NoorRunnerWidget() {
   }
 
   return (
-    <button
-      type="button"
-      className="noor-runner-widget"
+    <div
+      className={`noor-runner-wrap${paused ? ' is-paused' : ''}`}
       style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
-      onClick={openAssistant}
-      onFocus={() => { focusedRef.current = true }}
-      onBlur={() => { focusedRef.current = false }}
-      aria-label="نور المتحركة — افتح المساعد"
-      title="نور — تحاول الابتعاد عن مؤشر الماوس"
+      onFocusCapture={() => { focusedRef.current = true }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) focusedRef.current = false
+      }}
     >
-      <NoorPet size={SIZE} trackMouse />
-    </button>
+      <button
+        type="button"
+        className="noor-runner-widget"
+        onClick={openAssistant}
+        aria-label="نور المتحركة — افتح المساعد"
+        title={paused ? 'نور متوقفة — اضغط لفتح المساعد' : 'نور — تحاول الابتعاد عن مؤشر الماوس'}
+      >
+        <NoorPet size={SIZE} trackMouse />
+      </button>
+
+      <button
+        type="button"
+        className="noor-runner-toggle"
+        onClick={(event) => {
+          event.stopPropagation()
+          setPaused((value) => !value)
+        }}
+        aria-label={paused ? 'استئناف حركة نور' : 'إيقاف حركة نور'}
+        title={paused ? 'استئناف حركة نور' : 'إيقاف حركة نور'}
+      >
+        {paused ? <Play size={16} /> : <Pause size={16} />}
+      </button>
+    </div>
   )
 }
