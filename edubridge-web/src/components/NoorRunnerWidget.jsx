@@ -137,13 +137,15 @@ export default function NoorRunnerWidget() {
       const maxX = Math.max(MARGIN, window.innerWidth - SIZE - MARGIN)
       const maxY = Math.max(MARGIN, window.innerHeight - SIZE - MARGIN)
 
-      if (nextX <= MARGIN || nextX >= maxX) {
-        velocity.x *= -0.92
+      const hitEdge = nextX <= MARGIN || nextX >= maxX || nextY <= MARGIN || nextY >= maxY
+
+      if (hitEdge) {
         nextX = clamp(nextX, MARGIN, maxX)
-      }
-      if (nextY <= MARGIN || nextY >= maxY) {
-        velocity.y *= -0.92
         nextY = clamp(nextY, MARGIN, maxY)
+        velocity = { x: 0, y: 0 }
+        velocityRef.current = velocity
+        pausedRef.current = true
+        setPaused(true)
       }
 
       velocityRef.current = velocity
@@ -198,7 +200,27 @@ export default function NoorRunnerWidget() {
         className="noor-runner-toggle"
         onClick={(event) => {
           event.stopPropagation()
-          setPaused((value) => !value)
+          setPaused((value) => {
+            const nextPaused = !value
+            pausedRef.current = nextPaused
+
+            if (!nextPaused) {
+              const current = positionRef.current
+              const maxX = Math.max(MARGIN, window.innerWidth - SIZE - MARGIN)
+              const maxY = Math.max(MARGIN, window.innerHeight - SIZE - MARGIN)
+              let x = 0.12
+              let y = -0.09
+
+              if (current.x <= MARGIN + 1) x = Math.abs(x)
+              if (current.x >= maxX - 1) x = -Math.abs(x)
+              if (current.y <= MARGIN + 1) y = Math.abs(y)
+              if (current.y >= maxY - 1) y = -Math.abs(y)
+
+              velocityRef.current = { x, y }
+            }
+
+            return nextPaused
+          })
         }}
         aria-label={paused ? 'استئناف حركة نور' : 'إيقاف حركة نور'}
         title={paused ? 'استئناف حركة نور' : 'إيقاف حركة نور'}
