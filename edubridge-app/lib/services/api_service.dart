@@ -1466,7 +1466,7 @@ class ApiService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  طلبات الجلسات النفسية (Learning Support Requests)
+  //  طلبات الدعم التعليمي (Learning Support Requests)
   // ═══════════════════════════════════════════════════════════
 
   static Future<Map<String, dynamic>?> createLearningSupportRequest({
@@ -1708,7 +1708,7 @@ static Future<List<dynamic>> getChildTeachers(int childId) async {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  تعيين المختصين (نفسي + تعليمي)
+//  تعيين مختصي الدعم التعليمي
 // ═══════════════════════════════════════════════════════════
 
 static Future<Map<String, dynamic>?> getChildSpecialists(int childId) async {
