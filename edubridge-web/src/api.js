@@ -20,6 +20,34 @@ export function logout() {
   localStorage.removeItem("user");
 }
 
+export async function openProtectedFile(url) {
+  if (!url) throw new Error("رابط الملف غير متاح");
+
+  if (!url.startsWith("/api/private-files/")) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  const token = getToken();
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    let message = `تعذّر فتح الملف (HTTP ${res.status})`;
+    try {
+      const data = await res.json();
+      message = data.error || data.message || message;
+    } catch {}
+    throw new Error(message);
+  }
+
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  window.open(objectUrl, "_blank", "noopener,noreferrer");
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+}
+
 export async function fetchMyProfile() {
   const data = await request("/me");
   const user = data.user || data;
