@@ -473,7 +473,7 @@ class _SessionCard extends StatelessWidget {
               _section('💡 التوصيات', session.recommendations!, c),
             ],
 
-            // ─── الحالة النفسية ───
+            // ─── المشاركة التعليمية ───
             if (session.moodRating != null) ...[
               const SizedBox(height: 10),
               Row(
@@ -481,7 +481,7 @@ class _SessionCard extends StatelessWidget {
                   Icon(Icons.mood, size: 18, color: c.muted),
                   const SizedBox(width: 6),
                   Text(
-                    'الحالة النفسية: ',
+                    'المشاركة التعليمية: ',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.bold,
