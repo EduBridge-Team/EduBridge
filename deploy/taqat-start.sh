@@ -6,10 +6,9 @@ TARGET="${DEPLOY_TARGET:-api}"
 
 case "$TARGET" in
   web)
-    cd edubridge-web
     : "${PORT:=8080}"
     echo "==> Starting EduBridge Web on 0.0.0.0:$PORT ..."
-    exec npm run preview -- --host 0.0.0.0 --port "$PORT"
+    exec node deploy/taqat-web-server.mjs
     ;;
   api)
     exec bash deploy/taqat-api-start.sh
