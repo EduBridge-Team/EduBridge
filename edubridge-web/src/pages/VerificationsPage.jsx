@@ -36,6 +36,7 @@ export default function VerificationsPage() {
 
   const me = getUser()
   const [tab, setTab] = useState('users') // users | children | certs
+  const [statusFilter, setStatusFilter] = useState('pending') // pending | verified | rejected | all
   const [users, setUsers] = useState([])
   const [children, setChildren] = useState([])
   const [certs, setCerts] = useState([])
@@ -46,10 +47,11 @@ export default function VerificationsPage() {
     setLoading(true)
     setError(null)
     try {
+      const status = statusFilter === 'all' ? undefined : statusFilter
       const [u, c, ce] = await Promise.all([
-        fetchVerificationUsers('pending'),
-        fetchVerificationChildren('pending'),
-        fetchCertificates({ status: 'pending' }), // الأدمن يرى كل الشهادات المعلّقة
+        fetchVerificationUsers(status),
+        fetchVerificationChildren(status),
+        fetchCertificates({ status }),
       ])
       setUsers(u.users || [])
       setChildren(c.children || [])
@@ -64,7 +66,7 @@ export default function VerificationsPage() {
   useEffect(() => {
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [statusFilter])
 
   if (!me || me.role !== 'admin') return <Navigate to="/" replace />
 
@@ -72,7 +74,7 @@ export default function VerificationsPage() {
     const note = status === 'rejected' ? prompt('سبب الرفض (اختياري):') || '' : ''
     try {
       await reviewUserVerification(id, status, note)
-      setUsers(users.filter((u) => u.id !== id))
+      await load()
     } catch (err) {
       setError(err.message)
     }
@@ -82,7 +84,7 @@ export default function VerificationsPage() {
     const note = status === 'rejected' ? prompt('سبب الرفض (اختياري):') || '' : ''
     try {
       await reviewChildVerification(id, status, note)
-      setChildren(children.filter((c) => c.id !== id))
+      await load()
     } catch (err) {
       setError(err.message)
     }
@@ -92,7 +94,7 @@ export default function VerificationsPage() {
     const note = status === 'rejected' ? prompt('سبب الرفض (اختياري):') || '' : ''
     try {
       await reviewCertificate(id, status, note)
-      setCerts(certs.filter((c) => c.id !== id))
+      await load()
     } catch (err) {
       setError(err.message)
     }
@@ -120,13 +122,30 @@ export default function VerificationsPage() {
         </button>
       </div>
 
+      <div className="tabs" style={{ marginTop: 10 }}>
+        {[
+          ['pending', 'المعلّقة'],
+          ['verified', 'المعتمدة'],
+          ['rejected', 'المرفوضة'],
+          ['all', 'الكل'],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            className={statusFilter === value ? 'tab on' : 'tab'}
+            onClick={() => setStatusFilter(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {error && <div className="error-box">{error}</div>}
 
       {loading ? (
         <div className="state"><div className="spinner" />جارِ التحميل...</div>
       ) : tab === 'users' ? (
         users.length === 0 ? (
-          <div className="state">لا توجد طلبات توثيق معلّقة</div>
+          <div className="state">لا توجد طلبات توثيق ضمن هذا الفلتر</div>
         ) : (
           users.map((u) => (
             <div key={u.id} className="card verify-row">
@@ -140,15 +159,20 @@ export default function VerificationsPage() {
                 )}
               </div>
               <div className="verify-actions">
-                <button className="btn small success" onClick={() => decideUser(u.id, 'verified')}>اعتماد</button>
-                <button className="btn small danger" onClick={() => decideUser(u.id, 'rejected')}>رفض</button>
+                {u.verification_status !== 'verified' && (
+                  <button className="btn small success" onClick={() => decideUser(u.id, 'verified')}>اعتماد</button>
+                )}
+                {u.verification_status !== 'rejected' && (
+                  <button className="btn small danger" onClick={() => decideUser(u.id, 'rejected')}>رفض</button>
+                )}
+                <Badge status={u.verification_status} />
               </div>
             </div>
           ))
         )
       ) : tab === 'children' ? (
         children.length === 0 ? (
-          <div className="state">لا توجد بيانات أطفال معلّقة</div>
+          <div className="state">لا توجد بيانات أطفال ضمن هذا الفلتر</div>
         ) : (
           children.map((c) => (
             <div key={c.id} className="card verify-row">
@@ -169,8 +193,13 @@ export default function VerificationsPage() {
                 </div>
               </div>
               <div className="verify-actions">
-                <button className="btn small success" onClick={() => decideChild(c.id, 'verified')}>اعتماد</button>
-                <button className="btn small danger" onClick={() => decideChild(c.id, 'rejected')}>رفض</button>
+                {c.doc_verification_status !== 'verified' && (
+                  <button className="btn small success" onClick={() => decideChild(c.id, 'verified')}>اعتماد</button>
+                )}
+                {c.doc_verification_status !== 'rejected' && (
+                  <button className="btn small danger" onClick={() => decideChild(c.id, 'rejected')}>رفض</button>
+                )}
+                <Badge status={c.doc_verification_status} />
               </div>
             </div>
           ))
@@ -187,8 +216,12 @@ export default function VerificationsPage() {
                 <button type="button" className="file-link" onClick={() => viewFile(c.url)}><Paperclip size={14} /> عرض الشهادة</button>
               </div>
               <div className="verify-actions">
-                <button className="btn small success" onClick={() => decideCert(c.id, 'verified')}>اعتماد</button>
-                <button className="btn small danger" onClick={() => decideCert(c.id, 'rejected')}>رفض</button>
+                {c.status !== 'verified' && (
+                  <button className="btn small success" onClick={() => decideCert(c.id, 'verified')}>اعتماد</button>
+                )}
+                {c.status !== 'rejected' && (
+                  <button className="btn small danger" onClick={() => decideCert(c.id, 'rejected')}>رفض</button>
+                )}
               </div>
             </div>
           ))
