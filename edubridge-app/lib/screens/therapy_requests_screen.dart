@@ -49,7 +49,7 @@ class _TherapyRequestsScreenState extends State<TherapyRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: '🧠 طلبات الدعم النفسي'),
+      appBar: JisrAppBar(title: '🧠 طلبات الدعم التعليمي'),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -385,7 +385,7 @@ class _ScheduleTherapySheetState extends State<_ScheduleTherapySheet> {
       return;
     }
     if (_meetingLinkCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'رابط الجلسة مطلوب');
+      setState(() => _error = 'رابط الاجتماع مطلوب');
       return;
     }
 
@@ -593,7 +593,7 @@ class _ScheduleTherapySheetState extends State<_ScheduleTherapySheet> {
               TextField(
                 controller: _meetingLinkCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'رابط الجلسة (Zoom / Google Meet) *',
+                  labelText: 'رابط الاجتماع (Zoom / Google Meet) *',
                   prefixIcon: Icon(Icons.link),
                   hintText: 'https://meet.google.com/...',
                 ),

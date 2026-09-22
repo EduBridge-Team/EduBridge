@@ -1,4 +1,4 @@
-// لوحة المختص — متابعة وتقييم الخطط العلاجية
+// لوحة المختص — متابعة وتقييم خطط الدعم التعليمية
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import {
@@ -7,7 +7,7 @@ import {
   fetchChildProgress,
   markLessonDone,
 } from '../api'
-import { Stethoscope } from 'lucide-react'
+import { GraduationCap } from 'lucide-react'
 import Footer from '../components/Footer'
 
 // هل اكتمل الدرس اليوم؟ (مقارنة تاريخ الإتمام باليوم الحالي)
@@ -94,9 +94,9 @@ export default function SpecialistDashboard() {
       <main className="container container-wide role-dashboard">
         <div className="dash-head">
           <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Stethoscope size={22} /> لوحة المختص — متابعة وتقييم الخطط العلاجية
+            <GraduationCap size={22} /> لوحة المختص — متابعة وتقييم خطط الدعم التعليمية
           </h2>
-          <p className="dash-sub">مرحباً {me.name}، إليك نظرة عامة على تقدّم الأطفال وخططهم العلاجية اليوم.</p>
+          <p className="dash-sub">مرحباً {me.name}، إليك نظرة عامة على تقدّم الأطفال وخططهم التعليمية اليوم.</p>
         </div>
 
         {/* المؤشّرات */}

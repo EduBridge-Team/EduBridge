@@ -1,34 +1,34 @@
 // models/care_team_model.dart
 enum SpecialistSpecialty {
-  psychological,
+  learning_support,
   educational,
-  speech,
-  behavioral,
+  communication_support,
+  learning_behavior,
 }
 
 extension SpecialistSpecialtyX on SpecialistSpecialty {
   String get label {
     switch (this) {
-      case SpecialistSpecialty.psychological:
-        return 'دعم نفسي';
+      case SpecialistSpecialty.learning_support:
+        return 'دعم دعم تعليمي';
       case SpecialistSpecialty.educational:
         return 'خطط تعلم';
-      case SpecialistSpecialty.speech:
-        return 'تخاطب ونطق';
-      case SpecialistSpecialty.behavioral:
+      case SpecialistSpecialty.communication_support:
+        return 'تخاطب وتواصل تعليمي';
+      case SpecialistSpecialty.learning_behavior:
         return 'تعديل سلوك';
     }
   }
 
   String get emoji {
     switch (this) {
-      case SpecialistSpecialty.psychological:
+      case SpecialistSpecialty.learning_support:
         return '🧠';
       case SpecialistSpecialty.educational:
         return '📚';
-      case SpecialistSpecialty.speech:
+      case SpecialistSpecialty.communication_support:
         return '🗣️';
-      case SpecialistSpecialty.behavioral:
+      case SpecialistSpecialty.learning_behavior:
         return '🎯';
     }
   }
@@ -59,7 +59,7 @@ class CareTeamMember {
         specialty: json['specialty'] != null
             ? SpecialistSpecialty.values.firstWhere(
                 (e) => e.name == json['specialty'],
-                orElse: () => SpecialistSpecialty.psychological,
+                orElse: () => SpecialistSpecialty.learning_support,
               )
             : null,
         subject: json['subject'],

@@ -72,11 +72,11 @@ class TherapyRequest {
   String get urgencyLabel {
     switch (urgency) {
       case 'high':
-        return '🔴 عاجل';
+        return '🟠 أولوية مرتفعة';
       case 'low':
-        return '🟢 منخفض';
+        return '🟢 أولوية مرنة';
       default:
-        return '🟡 متوسط';
+        return '🟡 أولوية عادية';
     }
   }
 

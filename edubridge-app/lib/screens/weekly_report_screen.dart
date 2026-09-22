@@ -185,7 +185,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               icon: Icons.psychology,
               label: 'الجلسات',
               value:
-                  '${r.therapySessionsAttended}/${r.therapySessionsScheduled}',
+                  '${r.learning supportSessionsAttended}/${r.learning supportSessionsScheduled}',
               color: AppColors.pink,
             ),
             const SizedBox(width: 8),

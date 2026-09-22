@@ -19,7 +19,7 @@ class CareTeamScreen extends StatefulWidget {
 
 class _CareTeamScreenState extends State<CareTeamScreen> {
   List<Map<String, dynamic>> _teachers = [];
-  Map<String, dynamic>? _specialists; // {psychological: ..., educational: ...}
+  Map<String, dynamic>? _specialists; // {learning_support: ..., educational: ...}
   bool _loading = true;
   String? _error;
 
@@ -128,16 +128,16 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         const SizedBox(height: 20),
 
         // ═══════════════════════════════════════════
-        //  المختصون (نفسي + تعليمي + إضافيون)
+        //  المختصون (دعم تعليمي + تعليمي + إضافيون)
         // ═══════════════════════════════════════════
         if (totalSpecialists > 0) ...[
           _sectionTitle('🧠 المختصون', c),
           const SizedBox(height: 10),
 
-          if (_specialists?['psychological'] != null)
+          if (_specialists?['learning_support'] != null)
             _specialistCard(
-              _specialists!['psychological'],
-              'مختص نفسي',
+              _specialists!['learning_support'],
+              'مختص دعم تعليمي',
               Icons.psychology,
               AppColors.purple,
             ),
@@ -189,7 +189,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
   int _countSpecialists() {
     if (_specialists == null) return 0;
     int count = 0;
-    if (_specialists!['psychological'] != null) count++;
+    if (_specialists!['learning_support'] != null) count++;
     if (_specialists!['educational'] != null) count++;
     if (_specialists!['others'] is List) {
       count += (_specialists!['others'] as List).length;

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class CareTeamController extends Controller
 {
-    private const SPECIALTIES = ['psychological','educational','speech','behavioral'];
+    private const SPECIALTIES = ['educational','learning_support','communication_support','learning_behavior'];
 
     private function canView($user, int $childId): bool
     {
@@ -161,8 +161,8 @@ class CareTeamController extends Controller
             'created_at' => now(),
         ]);
 
-        Notify::toUser($teacherId, 'تمت إضافتك لفريق رعاية',
-            'تم تعيينك ضمن فريق رعاية طفل.', 'care_team_assigned');
+        Notify::toUser($teacherId, 'تمت إضافتك لفريق دعم تعليمي',
+            'تم تعيينك ضمن فريق دعم تعليمي طفل.', 'care_team_assigned');
 
         return response()->json(['teachers' => $this->teachers((int) $childId)], 201);
     }
@@ -189,14 +189,14 @@ class CareTeamController extends Controller
         }
 
         $all = $this->specialists($childId);
-        $psychological = $all->firstWhere('specialty', 'psychological');
+        $learningSupport = $all->first(fn ($s) => in_array($s->specialty, ['learning_support', 'psychological'], true));
         $educational = $all->firstWhere('specialty', 'educational');
         $others = $all->filter(fn ($s) =>
-            !in_array($s->specialty, ['psychological','educational'], true)
+            !in_array($s->specialty, ['learning_support','psychological','educational'], true)
         )->values();
 
         return response()->json([
-            'psychological' => $psychological,
+            'learning_support' => $learningSupport,
             'educational' => $educational,
             'others' => $others,
             'specialists' => $all,
@@ -228,8 +228,8 @@ class CareTeamController extends Controller
             'created_at' => now(),
         ]);
 
-        Notify::toUser($specialistId, 'تمت إضافتك لفريق رعاية',
-            'تم تعيينك ضمن فريق رعاية طفل.', 'care_team_assigned');
+        Notify::toUser($specialistId, 'تمت إضافتك لفريق دعم تعليمي',
+            'تم تعيينك ضمن فريق دعم تعليمي طفل.', 'care_team_assigned');
 
         return $this->listSpecialists($request, $childId);
     }

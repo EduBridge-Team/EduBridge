@@ -30,7 +30,7 @@ export default function WeeklyReportsPage(){
     </form></section>}
     <section className="fp-grid">{reports.length===0?<div className="fp-empty">لا توجد تقارير لهذا الطفل</div>:reports.map(r=><article className="fp-card" key={r.id}>
       <div className="fp-head"><h3>{new Date(r.week_start).toLocaleDateString('ar')} — {new Date(r.week_end).toLocaleDateString('ar')}</h3><span className="fp-badge">{Math.round(r.progress_percentage||0)}%</span></div>
-      <div className="fp-grid"><div><div className="fp-stat">{r.lessons_completed}/{r.lessons_total}</div><small>الدروس</small></div><div><div className="fp-stat">{r.homework_submitted}/{r.homework_assigned}</div><small>الواجبات</small></div><div><div className="fp-stat">{r.therapy_sessions_attended}/{r.therapy_sessions_scheduled}</div><small>الجلسات</small></div></div>
+      <div className="fp-grid"><div><div className="fp-stat">{r.lessons_completed}/{r.lessons_total}</div><small>الدروس</small></div><div><div className="fp-stat">{r.homework_submitted}/{r.homework_assigned}</div><small>الواجبات</small></div><div><div className="fp-stat">{r.learning support_sessions_attended}/{r.learning support_sessions_scheduled}</div><small>الجلسات</small></div></div>
       {r.teacher_notes&&<p>{r.teacher_notes}</p>}
       {(r.achievements||[]).length>0&&<div><b>الإنجازات:</b> {(r.achievements||[]).join('، ')}</div>}
       {(r.concerns||[]).length>0&&<div><b>نقاط للانتباه:</b> {(r.concerns||[]).join('، ')}</div>}

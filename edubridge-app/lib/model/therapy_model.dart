@@ -1,10 +1,10 @@
 // models/therapy_model.dart
 enum TherapySessionType {
-  initial,
+  learningPlanning,
   followUp,
-  crisis,
-  family,
-  group,
+  parentReview,
+  teamReview,
+  groupSupport,
 }
 
 enum TherapySessionStatus { scheduled, completed, cancelled, noShow }
@@ -51,10 +51,7 @@ class TherapySession {
         childName: json['child_name'] ?? '',
         specialistId: json['specialist_id'],
         specialistName: json['specialist_name'] ?? '',
-        type: TherapySessionType.values.firstWhere(
-          (e) => e.name == json['type'],
-          orElse: () => TherapySessionType.followUp,
-        ),
+        type: _typeFromJson(json['type']?.toString()),
         status: TherapySessionStatus.values.firstWhere(
           (e) => e.name == json['status'],
           orElse: () => TherapySessionStatus.scheduled,
@@ -82,4 +79,24 @@ class TherapySession {
         'mood_rating': moodRating,
         'tags': tags,
       };
+}
+
+TherapySessionType _typeFromJson(String? value) {
+  switch (value) {
+    case 'learningPlanning':
+    case 'initial':
+      return TherapySessionType.learningPlanning;
+    case 'parentReview':
+    case 'family':
+      return TherapySessionType.parentReview;
+    case 'teamReview':
+    case 'crisis':
+      return TherapySessionType.teamReview;
+    case 'groupSupport':
+    case 'group':
+      return TherapySessionType.groupSupport;
+    case 'followUp':
+    default:
+      return TherapySessionType.followUp;
+  }
 }

@@ -9,7 +9,7 @@ export default function CareTeamPage(){
   const [childId,setChildId]=useState('')
   const [team,setTeam]=useState({members:[]})
   const [users,setUsers]=useState([])
-  const [draft,setDraft]=useState({user_id:'',role:'teacher',specialty:'psychological',subject:''})
+  const [draft,setDraft]=useState({user_id:'',role:'teacher',specialty:'learning_support',subject:''})
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
 
@@ -33,11 +33,11 @@ export default function CareTeamPage(){
   const available=users.filter(u=>u.role===draft.role)
 
   return <div className="fp-page">
-    <div className="fp-head"><div><h2>👥 فريق الرعاية</h2><div className="meta">المعلمون والمختصون المرتبطون بالطفل</div></div><select value={childId} onChange={e=>setChildId(e.target.value)}>{children.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+    <div className="fp-head"><div><h2>👥 فريق الدعم التعليمي</h2><div className="meta">المعلمون والمختصون المرتبطون بالطفل</div></div><select value={childId} onChange={e=>setChildId(e.target.value)}>{children.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
     {error&&<div className="fp-error">{error}</div>}
     {canManage&&childId&&<section className="fp-card"><h3>إضافة عضو</h3><form className="fp-form" onSubmit={add}>
       <div className="fp-row"><select value={draft.role} onChange={e=>setDraft({...draft,role:e.target.value,user_id:''})}><option value="teacher">معلم</option><option value="specialist">مختص</option></select><select value={draft.user_id} onChange={e=>setDraft({...draft,user_id:e.target.value})} required><option value="">اختر المستخدم</option>{available.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select></div>
-      {draft.role==='teacher'?<input placeholder="المادة/التخصص التعليمي" value={draft.subject} onChange={e=>setDraft({...draft,subject:e.target.value})}/>:<select value={draft.specialty} onChange={e=>setDraft({...draft,specialty:e.target.value})}><option value="psychological">نفسي</option><option value="educational">تعليمي</option><option value="speech">تخاطب</option><option value="behavioral">سلوكي</option></select>}
+      {draft.role==='teacher'?<input placeholder="المادة/التخصص التعليمي" value={draft.subject} onChange={e=>setDraft({...draft,subject:e.target.value})}/>:<select value={draft.specialty} onChange={e=>setDraft({...draft,specialty:e.target.value})}><option value="learning_support">دعم تعليمي</option><option value="educational">تعليمي</option><option value="communication_support">تخاطب</option><option value="learning_behavior">دعم سلوك التعلم</option></select>}
       <button className="btn success" disabled={busy}>إضافة للفريق</button>
     </form></section>}
     <section className="fp-grid">{(team.members||[]).length===0?<div className="fp-empty">لم يتم تعيين فريق بعد</div>:(team.members||[]).map(m=><article className="fp-card" key={m.user_id}>

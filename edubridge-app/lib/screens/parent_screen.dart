@@ -23,7 +23,7 @@ import 'children_accessibility_overview_screen.dart';
 import 'child_homework_screen.dart';
 import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
-import 'create_therapy_request_screen.dart';
+import 'create_learning support_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart'; // ✅ جديد
@@ -578,9 +578,9 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
-            // ═══ الصف 4: طلب جلسة نفسية ═══
+            // ═══ الصف 4: طلب جلسة دعم تعليمي ═══
             AdaptiveButton(
-              label: 'طلب جلسة نفسية',
+              label: 'طلب جلسة دعم تعليمي',
               icon: Icons.psychology,
               backgroundColor: AppColors.purple,
               onPressed: () => _openTherapyRequest(child),

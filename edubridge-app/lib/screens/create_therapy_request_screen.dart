@@ -30,15 +30,15 @@ class _CreateTherapyRequestScreenState
 
   // ✅ الأسباب الجاهزة
   static const _reasons = [
-    'قلق وتوتر مستمر',
-    'خوف مفرط',
-    'انطواء وانسحاب اجتماعي',
-    'سلوك عدواني',
-    'نوبات غضب متكررة',
-    'صعوبات في النوم',
-    'تدهور في المزاج',
-    'تأخر ملاحظ في التعلم',
-    'صعوبات في التركيز',
+    'صعوبة في فهم الدروس',
+    'تراجع في التقدم الدراسي',
+    'صعوبة في التركيز أثناء التعلم',
+    'الحاجة إلى تكييف طريقة عرض المحتوى',
+    'صعوبة في التواصل داخل البيئة التعليمية',
+    'الحاجة إلى خطة متابعة فردية',
+    'صعوبة في إنجاز الواجبات',
+    'الحاجة إلى دعم في مهارات الدراسة',
+    'التنسيق بين الأسرة والفريق التعليمي',
     'أخرى',
   ];
 
@@ -95,7 +95,7 @@ class _CreateTherapyRequestScreenState
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '🧠 طلب جلسة نفسية'),
+      appBar: JisrAppBar(title: '📘 طلب دعم تعليمي'),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -110,7 +110,7 @@ class _CreateTherapyRequestScreenState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.psychology,
+                  const Icon(Icons.school_outlined,
                       color: AppColors.tealDeep, size: 40),
                   const SizedBox(width: 12),
                   Expanded(
@@ -171,7 +171,7 @@ class _CreateTherapyRequestScreenState
 
             // ─── الشرح ───
             Text(
-              'اشرح ليش بدك جلسة لابنك',
+              'اشرح نوع الدعم التعليمي المطلوب',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -185,7 +185,7 @@ class _CreateTherapyRequestScreenState
               maxLength: 500,
               decoration: const InputDecoration(
                 hintText:
-                    'اشرح بالتفصيل: منذ متى؟ ما هي الأعراض؟ متى تزيد؟ ...',
+                    'اشرح الصعوبة التعليمية، متى تظهر، وما الذي يساعد الطفل أثناء التعلم...',
                 alignLabelWithHint: true,
                 prefixIcon: Icon(Icons.description),
               ),
@@ -203,7 +203,7 @@ class _CreateTherapyRequestScreenState
 
             // ─── درجة الأهمية ───
             Text(
-              'درجة الأهمية',
+              'أولوية المتابعة',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -215,7 +215,7 @@ class _CreateTherapyRequestScreenState
               children: [
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🟢 منخفضة',
+                    label: '🟢 مرنة',
                     selected: _urgency == 'low',
                     color: AppColors.green,
                     onTap: () => setState(() => _urgency = 'low'),
@@ -224,7 +224,7 @@ class _CreateTherapyRequestScreenState
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🟡 متوسطة',
+                    label: '🟡 عادية',
                     selected: _urgency == 'medium',
                     color: AppColors.orange,
                     onTap: () => setState(() => _urgency = 'medium'),
@@ -233,7 +233,7 @@ class _CreateTherapyRequestScreenState
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🔴 عاجلة',
+                    label: '🟠 مرتفعة',
                     selected: _urgency == 'high',
                     color: AppColors.red,
                     onTap: () => setState(() => _urgency = 'high'),
@@ -257,7 +257,7 @@ class _CreateTherapyRequestScreenState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'سيقوم المختص بمراجعة الطلب وتحديد الموعد المناسب، ثم سيصلك إشعار برابط الجلسة.',
+                      'سيقوم المختص بمراجعة الطلب وتحديد الموعد المناسب، ثم سيصلك إشعار برابط الاجتماع.',
                       style: TextStyle(fontSize: 13, color: c.onTint),
                     ),
                   ),
@@ -292,7 +292,7 @@ class _CreateTherapyRequestScreenState
                       )
                     : const Icon(Icons.send),
                 label: Text(
-                  _saving ? 'جارِ الإرسال...' : 'إرسال الطلب للمختص',
+                  _saving ? 'جارِ الإرسال...' : 'إرسال طلب الدعم',
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),

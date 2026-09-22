@@ -130,15 +130,15 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
             ),
             const SizedBox(height: 16),
 
-            // ─── مختص نفسي ───
+            // ─── مختص دعم تعليمي ───
             _SpecialtyCard(
               icon: Icons.psychology,
-              title: 'مختص نفسي',
+              title: 'مختص دعم تعليمي',
               description:
-                  'متابعة الجانب النفسي والعاطفي للأطفال، تشخيص الحالات، وتقديم الدعم النفسي',
+                  'متابعة الجانب الدعم تعليمي والعاطفي للأطفال، تشخيص الحالات، وتقديم الدعم التعليمي',
               color: AppColors.purple,
-              selected: _selected == 'psychological',
-              onTap: () => setState(() => _selected = 'psychological'),
+              selected: _selected == 'learning_support',
+              onTap: () => setState(() => _selected = 'learning_support'),
             ),
             const SizedBox(height: 12),
 
@@ -178,7 +178,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _selected == null
                       ? Colors.grey
-                      : (_selected == 'psychological'
+                      : (_selected == 'learning_support'
                           ? AppColors.purple
                           : AppColors.navy),
                 ),

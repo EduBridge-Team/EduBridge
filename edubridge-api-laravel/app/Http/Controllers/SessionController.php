@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class SessionController extends Controller
 {
     private const DB_STATUSES = ['scheduled', 'done', 'cancelled'];
-    private const TYPES = ['initial', 'followUp', 'crisis', 'family', 'group'];
+    private const TYPES = ['learningPlanning', 'followUp', 'parentReview', 'teamReview', 'groupSupport'];
 
     private function baseQuery()
     {
@@ -33,7 +33,14 @@ class SessionController extends Controller
             $tags = is_array($decoded) ? $decoded : [];
         }
         $data['tags'] = is_array($tags) ? array_values($tags) : [];
-        $data['type'] = $data['type'] ?? 'followUp';
+        $legacyTypes = [
+            'initial' => 'learningPlanning',
+            'crisis' => 'teamReview',
+            'family' => 'parentReview',
+            'group' => 'groupSupport',
+        ];
+        $rawType = $data['type'] ?? 'followUp';
+        $data['type'] = $legacyTypes[$rawType] ?? $rawType;
         $data['duration_minutes'] = (int) ($data['duration_minutes'] ?? 45);
 
         return $data;
@@ -217,8 +224,8 @@ class SessionController extends Controller
 
             Notify::toChildParents(
                 $session->child_id,
-                'اكتملت جلسة الدعم النفسي',
-                'تم تسجيل جلسة الدعم النفسي كمكتملة.',
+                'اكتملت جلسة الدعم التعليمي',
+                'تم تسجيل جلسة الدعم التعليمي كمكتملة.',
                 'therapy_session_completed'
             );
 

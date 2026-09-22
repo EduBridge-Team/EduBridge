@@ -1,5 +1,5 @@
 // lib/screens/therapy/therapy_sessions_screen.dart
-// عرض جلسات العلاج النفسي — للعرض فقط (الإنشاء يتم من طلبات الدعم)
+// عرض اجتماعات الدعم التعليمي — للعرض فقط (الإنشاء يتم من طلبات الدعم)
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
@@ -74,8 +74,8 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
     return Scaffold(
       appBar: JisrAppBar(
         title: widget.childName != null
-            ? '🧠 جلسات ${widget.childName}'
-            : '🧠 جلسات العلاج النفسي',
+            ? '📘 اجتماعات ${widget.childName}'
+            : '🧠 اجتماعات الدعم التعليمي',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -209,7 +209,7 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'ستظهر الجلسات هنا عند موافقة المختص على طلبات الدعم النفسي',
+                'ستظهر الجلسات هنا عند موافقة المختص على طلبات الدعم التعليمي',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: c.muted, height: 1.5),
               ),
@@ -304,30 +304,30 @@ class _SessionCard extends StatelessWidget {
 
   String get _typeLabel {
     switch (session.type) {
-      case TherapySessionType.initial:
-        return 'جلسة أولية';
+      case TherapySessionType.learningPlanning:
+        return 'اجتماع تخطيط تعليمي';
       case TherapySessionType.followUp:
         return 'متابعة';
-      case TherapySessionType.crisis:
-        return 'أزمة';
-      case TherapySessionType.family:
-        return 'عائلية';
-      case TherapySessionType.group:
-        return 'جماعية';
+      case TherapySessionType.teamReview:
+        return 'مراجعة فريق الدعم';
+      case TherapySessionType.parentReview:
+        return 'متابعة مع ولي الأمر';
+      case TherapySessionType.groupSupport:
+        return 'دعم تعليمي جماعي';
     }
   }
 
   IconData get _typeIcon {
     switch (session.type) {
-      case TherapySessionType.initial:
+      case TherapySessionType.learningPlanning:
         return Icons.play_circle_outline;
       case TherapySessionType.followUp:
         return Icons.autorenew;
-      case TherapySessionType.crisis:
+      case TherapySessionType.teamReview:
         return Icons.warning_amber;
-      case TherapySessionType.family:
+      case TherapySessionType.parentReview:
         return Icons.family_restroom;
-      case TherapySessionType.group:
+      case TherapySessionType.groupSupport:
         return Icons.groups;
     }
   }

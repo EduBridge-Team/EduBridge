@@ -26,7 +26,7 @@ function activeSection(pathname, role, homePath) {
   if (pathname === '/consultations') return 'consultations'
   if (pathname === '/homeworks') return 'homeworks'
   if (pathname === '/weekly-reports') return 'weekly-reports'
-  if (pathname === '/therapy') return 'therapy'
+  if (pathname === '/learning support') return 'learning support'
   if (pathname === '/care-team') return 'care-team'
   if (pathname === '/case-discussions') return 'case-discussions'
   if (pathname === '/specialist-workflow') return 'specialist-workflow'
@@ -154,7 +154,7 @@ export default function RolePortalShell({ children }) {
         },
         item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
         item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
-        item('therapy', 'الدعم النفسي', <Stethoscope size={21} />, '/therapy'),
+        item('learning support', 'الدعم التعليمي', <Stethoscope size={21} />, '/learning support'),
         item('care-team', 'فريق الرعاية', <Users size={21} />, '/care-team'),
         conversations,
         item('settings', 'الإعدادات', <Settings size={21} />, '/accessibility'),
@@ -183,7 +183,7 @@ export default function RolePortalShell({ children }) {
         item('children', 'الأطفال', <Users size={21} />, '/children'),
         item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
         item('specialist-workflow', 'اقتراحات المتابعة', <Users size={21} />, '/specialist-workflow'),
-        item('therapy', 'الجلسات النفسية', <Stethoscope size={21} />, '/therapy'),
+        item('learning support', 'الجلسات النفسية', <Stethoscope size={21} />, '/learning support'),
         item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
         item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
         item('care-team', 'فريق الرعاية', <Users size={21} />, '/care-team'),
@@ -222,7 +222,7 @@ export default function RolePortalShell({ children }) {
         item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
         item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
         item('specialist-workflow', 'متابعة المختصين', <Users size={21} />, '/specialist-workflow'),
-        item('therapy', 'الجلسات النفسية', <Stethoscope size={21} />, '/therapy'),
+        item('learning support', 'الجلسات النفسية', <Stethoscope size={21} />, '/learning support'),
         item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
         item('search', 'البحث', <Search size={21} />, '/search'),
         conversations,

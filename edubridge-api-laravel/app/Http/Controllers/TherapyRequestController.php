@@ -45,7 +45,7 @@ class TherapyRequestController extends Controller
             && $this->parentOwnsChild((int) $user->id, $childId);
     }
 
-    // ولي الأمر ينشئ طلب جلسة نفسية لطفل مرتبط بحسابه.
+    // ولي الأمر ينشئ طلب جلسة دعم تعليمي لطفل مرتبط بحسابه.
     public function store(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
@@ -106,8 +106,8 @@ class TherapyRequestController extends Controller
                 Notify::toUser(
                     $specialistId,
                     'طلب دعم نفسي جديد',
-                    "وصل طلب جلسة نفسية جديد للطفل {$childName}",
-                    'therapy_request_created'
+                    "وصل طلب جلسة دعم تعليمي جديد للطفل {$childName}",
+                    'learning_support_request_created'
                 );
             }
 
@@ -182,7 +182,7 @@ class TherapyRequestController extends Controller
             'specialist_id' => $specialistId,
             'child_id' => $therapyRequest->child_id,
             'therapy_request_id' => $therapyRequest->id,
-            'type' => 'initial',
+            'type' => 'learningPlanning',
             'scheduled_at' => $scheduledAt,
             'duration_minutes' => 45,
             'meeting_link' => $meetingLink,
@@ -201,7 +201,7 @@ class TherapyRequestController extends Controller
         }
     }
 
-    // المختص يحدد الموعد ورابط الجلسة، ويصبح هو المختص المسؤول عن الطلب.
+    // المختص يحدد الموعد ورابط الاجتماع، ويصبح هو المختص المسؤول عن الطلب.
     public function schedule(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
@@ -214,10 +214,10 @@ class TherapyRequestController extends Controller
         $notes = trim((string) $request->input('specialist_notes', ''));
 
         if ($scheduledRaw === '' || $meetingLink === '') {
-            return response()->json(['error' => 'التاريخ ورابط الجلسة مطلوبان'], 422);
+            return response()->json(['error' => 'التاريخ ورابط الاجتماع مطلوبان'], 422);
         }
         if (!filter_var($meetingLink, FILTER_VALIDATE_URL)) {
-            return response()->json(['error' => 'رابط الجلسة غير صالح'], 422);
+            return response()->json(['error' => 'رابط الاجتماع غير صالح'], 422);
         }
 
         try {
@@ -274,9 +274,9 @@ class TherapyRequestController extends Controller
             $childName = (string) (DB::table('children')->where('id', $therapyRequest->child_id)->value('name') ?? '');
             Notify::toChildParents(
                 $therapyRequest->child_id,
-                'تم تحديد موعد الجلسة النفسية',
-                "تم تحديد موعد جلسة الدعم النفسي للطفل {$childName}. افتح الطلب لعرض الموعد والرابط.",
-                'therapy_session_scheduled'
+                'تم تحديد موعد جلسة الدعم التعليمي',
+                "تم تحديد موعد جلسة الدعم التعليمي للطفل {$childName}. افتح الطلب لعرض الموعد والرابط.",
+                'learning_support_meeting_scheduled'
             );
 
             return response()->json([
@@ -323,9 +323,9 @@ class TherapyRequestController extends Controller
 
         Notify::toChildParents(
             $therapyRequest->child_id,
-            'اكتملت جلسة الدعم النفسي',
-            'تم تسجيل جلسة الدعم النفسي كمكتملة.',
-            'therapy_session_completed'
+            'اكتملت جلسة الدعم التعليمي',
+            'تم تسجيل جلسة الدعم التعليمي كمكتملة.',
+            'learning_support_meeting_completed'
         );
 
         return response()->json([
@@ -369,9 +369,9 @@ class TherapyRequestController extends Controller
         if ($user->role !== 'parent') {
             Notify::toChildParents(
                 $therapyRequest->child_id,
-                'تم إلغاء طلب الدعم النفسي',
-                'تم إلغاء طلب جلسة الدعم النفسي. يمكنك التواصل مع الدعم أو إرسال طلب جديد عند الحاجة.',
-                'therapy_request_cancelled'
+                'تم إلغاء طلب الدعم التعليمي',
+                'تم إلغاء طلب جلسة الدعم التعليمي. يمكنك التواصل مع الدعم أو إرسال طلب جديد عند الحاجة.',
+                'learning_support_request_cancelled'
             );
         }
 
