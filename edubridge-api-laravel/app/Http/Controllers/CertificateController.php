@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\Notify;
+use App\Support\R2Storage;
 
 class CertificateController extends Controller
 {
@@ -74,12 +75,14 @@ class CertificateController extends Controller
                 return response()->json(['error' => 'نوع ملف الشهادة غير مدعوم'], 422);
             }
 
-            $dir = storage_path('app/private/user-files/' . (int) $me->id);
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0750, true);
-            }
             $name = 'certificate_' . $me->id . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-            $file->move($dir, $name);
+            $key = 'user-files/' . (int) $me->id . '/' . $name;
+            R2Storage::putUploadedFile(
+                R2Storage::privateBucket(),
+                $key,
+                $file,
+                $mime
+            );
             $url = '/api/private-files/user/' . (int) $me->id . '/' . $name;
         }
 
@@ -161,9 +164,13 @@ class CertificateController extends Controller
             if (is_string($cert->url) && str_starts_with($cert->url, $prefix)) {
                 $filename = basename(parse_url($cert->url, PHP_URL_PATH) ?: $cert->url);
                 if (preg_match('/^[A-Za-z0-9._-]+$/', $filename)) {
-                    $path = storage_path('app/private/user-files/' . (int) $cert->user_id . '/' . $filename);
-                    if (is_file($path)) {
-                        @unlink($path);
+                    try {
+                        R2Storage::delete(
+                            R2Storage::privateBucket(),
+                            'user-files/' . (int) $cert->user_id . '/' . $filename
+                        );
+                    } catch (\Throwable $e) {
+                        report($e);
                     }
                 }
             }
