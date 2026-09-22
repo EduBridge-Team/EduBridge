@@ -44,6 +44,18 @@ final class R2Storage
         }
     }
 
+    public static function putString(string $bucket, string $key, string $contents, string $contentType = 'text/plain'): void
+    {
+        self::request(
+            'PUT',
+            $bucket,
+            $key,
+            $contents,
+            hash('sha256', $contents),
+            $contentType
+        );
+    }
+
     public static function get(string $bucket, string $key): ResponseInterface
     {
         return self::request('GET', $bucket, $key);
