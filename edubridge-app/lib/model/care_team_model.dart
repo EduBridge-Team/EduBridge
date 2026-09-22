@@ -10,20 +10,20 @@ extension SpecialistSpecialtyX on SpecialistSpecialty {
   String get label {
     switch (this) {
       case SpecialistSpecialty.learning_support:
-        return 'دعم دعم تعليمي';
+        return 'دعم تعليمي';
       case SpecialistSpecialty.educational:
         return 'خطط تعلم';
       case SpecialistSpecialty.communication_support:
-        return 'تخاطب وتواصل تعليمي';
+        return 'دعم التواصل التعليمي';
       case SpecialistSpecialty.learning_behavior:
-        return 'تعديل سلوك';
+        return 'دعم سلوك التعلم';
     }
   }
 
   String get emoji {
     switch (this) {
       case SpecialistSpecialty.learning_support:
-        return '🧠';
+        return '📘';
       case SpecialistSpecialty.educational:
         return '📚';
       case SpecialistSpecialty.communication_support:

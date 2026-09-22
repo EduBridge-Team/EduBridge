@@ -183,9 +183,9 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           children: [
             _statCard(
               icon: Icons.psychology,
-              label: 'الجلسات',
+              label: 'اجتماعات الدعم',
               value:
-                  '${r.learning supportSessionsAttended}/${r.learning supportSessionsScheduled}',
+                  '${r.therapySessionsAttended}/${r.therapySessionsScheduled}',
               color: AppColors.pink,
             ),
             const SizedBox(width: 8),

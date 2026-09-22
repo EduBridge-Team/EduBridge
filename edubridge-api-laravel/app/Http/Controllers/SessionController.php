@@ -103,7 +103,7 @@ class SessionController extends Controller
             return response()->json(['sessions' => $sessions]);
         } catch (\Throwable $e) {
             report($e);
-            return response()->json(['error' => 'تعذّر تحميل الجلسات'], 500);
+            return response()->json(['error' => 'تعذّر تحميل اجتماعات الدعم'], 500);
         }
     }
 
@@ -181,7 +181,7 @@ class SessionController extends Controller
         $session = DB::table('sessions')->where('id', $id)->first();
 
         if (!$session) {
-            return response()->json(['error' => 'الجلسة غير موجودة'], 404);
+            return response()->json(['error' => 'اجتماع الدعم غير موجود'], 404);
         }
         if (!$this->canAccess($user, $session) || !in_array($user->role, ['specialist', 'admin'], true)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
@@ -226,7 +226,7 @@ class SessionController extends Controller
                 $session->child_id,
                 'اكتملت جلسة الدعم التعليمي',
                 'تم تسجيل جلسة الدعم التعليمي كمكتملة.',
-                'therapy_session_completed'
+                'learning_support_meeting_completed'
             );
 
             $fresh = $this->baseQuery()->where('s.id', $id)->first();

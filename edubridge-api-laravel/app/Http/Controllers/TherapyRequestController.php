@@ -105,7 +105,7 @@ class TherapyRequestController extends Controller
             foreach ($specialistIds as $specialistId) {
                 Notify::toUser(
                     $specialistId,
-                    'طلب دعم نفسي جديد',
+                    'طلب دعم تعليمي جديد',
                     "وصل طلب جلسة دعم تعليمي جديد للطفل {$childName}",
                     'learning_support_request_created'
                 );
@@ -248,7 +248,7 @@ class TherapyRequestController extends Controller
 
         if ($assignedSpecialistId <= 0
             || !DB::table('users')->where('id', $assignedSpecialistId)->where('role', 'specialist')->exists()) {
-            return response()->json(['error' => 'يجب تحديد مختص صالح للجلسة'], 422);
+            return response()->json(['error' => 'يجب تحديد مختص دعم تعليمي صالح للاجتماع'], 422);
         }
 
         try {
@@ -300,7 +300,7 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'الطلب غير موجود'], 404);
         }
         if ($therapyRequest->status !== 'scheduled') {
-            return response()->json(['error' => 'يمكن إنهاء الجلسة بعد جدولتها فقط'], 409);
+            return response()->json(['error' => 'يمكن إنهاء اجتماع الدعم بعد جدولته فقط'], 409);
         }
         if ($therapyRequest->specialist_id
             && (int) $therapyRequest->specialist_id !== (int) $user->id
