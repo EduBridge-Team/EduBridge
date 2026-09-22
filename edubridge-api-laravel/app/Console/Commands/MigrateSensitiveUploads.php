@@ -16,6 +16,7 @@ class MigrateSensitiveUploads extends Command
     private int $migrated = 0;
     private int $missing = 0;
     private int $skipped = 0;
+    private array $deleteCandidates = [];
 
     public function handle(): int
     {
@@ -27,6 +28,10 @@ class MigrateSensitiveUploads extends Command
         $this->migrateUserIdentities($apply, $deletePublic);
         $this->migrateCertificates($apply, $deletePublic);
         $this->migrateChildDocuments($apply, $deletePublic);
+
+        if ($deletePublic) {
+            $this->purgeUnreferencedPublicFiles();
+        }
 
         $this->newLine();
         $this->info("Migrated: {$this->migrated}; missing: {$this->missing}; skipped: {$this->skipped}");
@@ -98,17 +103,34 @@ class MigrateSensitiveUploads extends Command
         return true;
     }
 
-    private function maybeDelete(string $source, bool $deletePublic): void
+    private function queueDelete(string $source, ?string $legacyUrl, bool $deletePublic): void
     {
-        if (!$deletePublic || !is_file($source)) return;
+        if (!$deletePublic || !is_file($source) || !$legacyUrl) return;
 
-        // Never remove known public media/avatar/homework areas from this migration.
         $normalized = str_replace('\\', '/', $source);
         foreach (['/uploads/avatars/', '/uploads/lessons/', '/uploads/homework/'] as $safePublic) {
             if (str_contains($normalized, $safePublic)) return;
         }
 
-        @unlink($source);
+        $this->deleteCandidates[$source] = $legacyUrl;
+    }
+
+    private function purgeUnreferencedPublicFiles(): void
+    {
+        foreach ($this->deleteCandidates as $source => $legacyUrl) {
+            $stillReferenced =
+                DB::table('users')->where('id_document_url', $legacyUrl)->exists()
+                || DB::table('certificates')->where('url', $legacyUrl)->exists()
+                || DB::table('children')->where('guardian_id_document_url', $legacyUrl)->exists()
+                || DB::table('children')->where('kinship_document_url', $legacyUrl)->exists();
+
+            if (!$stillReferenced && is_file($source)) {
+                @unlink($source);
+                $this->line("DELETED {$source}");
+            } elseif ($stillReferenced) {
+                $this->warn("Kept referenced public file: {$source}");
+            }
+        }
     }
 
     private function migrateUserIdentities(bool $apply, bool $deletePublic): void
@@ -132,7 +154,7 @@ class MigrateSensitiveUploads extends Command
                 $newUrl = '/api/private-files/user/' . (int) $row->id . '/' . $name;
                 if ($apply) {
                     DB::table('users')->where('id', $row->id)->update(['id_document_url' => $newUrl]);
-                    $this->maybeDelete($source, $deletePublic);
+                    $this->queueDelete($source, (string) $row->id_document_url, $deletePublic);
                 }
             });
     }
@@ -158,7 +180,7 @@ class MigrateSensitiveUploads extends Command
                 $newUrl = '/api/private-files/user/' . (int) $row->user_id . '/' . $name;
                 if ($apply) {
                     DB::table('certificates')->where('id', $row->id)->update(['url' => $newUrl]);
-                    $this->maybeDelete($source, $deletePublic);
+                    $this->queueDelete($source, (string) $row->id_document_url, $deletePublic);
                 }
             });
     }
@@ -185,7 +207,7 @@ class MigrateSensitiveUploads extends Command
                     $newUrl = '/api/private-files/child/' . (int) $row->id . '/' . $name;
                     if ($apply) {
                         DB::table('children')->where('id', $row->id)->update([$field => $newUrl]);
-                        $this->maybeDelete($source, $deletePublic);
+                        $this->queueDelete($source, (string) $row->id_document_url, $deletePublic);
                     }
                 }
             });
