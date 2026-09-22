@@ -69,7 +69,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
 
     setState(() => _verificationStatus = status);
 
-    if (status == 'approved') {
+    if (status == 'verified') {
       _timer?.cancel();
       final home = await homeScreenForRole();
       if (!mounted) return;
