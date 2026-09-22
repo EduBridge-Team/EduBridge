@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-// رفع الملفات (صور الهوية، الشهادات، مستندات القرابة)
-// يخزّن الملف في public/uploads ويعيد رابطاً عاماً يُخزَّن في قاعدة البيانات.
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class UploadController extends Controller
 {
-    // صيغ الصور/المستندات المسموحة والحد الأقصى للحجم (5 ميغابايت)
     private const ALLOWED = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
     private const ALLOWED_MIME = [
         'image/jpeg',
@@ -18,10 +16,16 @@ class UploadController extends Controller
     ];
     private const MAX_BYTES = 5 * 1024 * 1024;
 
-    // POST /api/uploads   (multipart form-data، الحقل: file)
+    // POST /api/uploads
+    // الملفات الحساسة تحفظ خارج public وتُعرض فقط عبر endpoint مصادق عليه.
     public function store(Request $request)
     {
+        $user = $request->attributes->get('jwt_user');
         $file = $request->file('file');
+
+        if (!$user) {
+            return response()->json(['error' => 'غير مصرّح'], 401);
+        }
         if (!$file || !$file->isValid()) {
             return response()->json(['error' => 'الملف مطلوب'], 400);
         }
@@ -41,19 +45,44 @@ class UploadController extends Controller
         }
 
         try {
-            $dir = public_path('uploads');
+            $dir = storage_path('app/private/user-files/' . (int) $user->id);
             if (!is_dir($dir)) {
-                @mkdir($dir, 0755, true);
+                @mkdir($dir, 0750, true);
             }
 
-            // اسم فريد يمنع الكتابة فوق الملفات
-            $name = date('Ymd_His') . '_' . bin2hex(random_bytes(6)) . '.' . $ext;
+            $name = date('Ymd_His') . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $file->move($dir, $name);
 
-            return response()->json(['url' => '/uploads/' . $name], 201);
-        } catch (\Exception $e) {
+            return response()->json([
+                'url' => '/api/private-files/user/' . (int) $user->id . '/' . $name,
+            ], 201);
+        } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'تعذّر رفع الملف'], 500);
         }
+    }
+
+    // GET /api/private-files/user/{userId}/{filename}
+    // صاحب الملف أو الأدمن فقط.
+    public function show(Request $request, int $userId, string $filename): BinaryFileResponse|\Illuminate\Http\JsonResponse
+    {
+        $user = $request->attributes->get('jwt_user');
+        if (!$user || ($user->role !== 'admin' && (int) $user->id !== $userId)) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+
+        if (!preg_match('/^[A-Za-z0-9._-]+$/', $filename) || str_contains($filename, '..')) {
+            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
+        }
+
+        $path = storage_path('app/private/user-files/' . $userId . '/' . $filename);
+        if (!is_file($path)) {
+            return response()->json(['error' => 'الملف غير موجود'], 404);
+        }
+
+        return response()->file($path, [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ]);
     }
 }
