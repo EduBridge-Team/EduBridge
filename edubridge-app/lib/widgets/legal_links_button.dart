@@ -9,9 +9,9 @@ class LegalLinksButton extends StatelessWidget {
   const LegalLinksButton({super.key});
 
   static final Uri _privacyUri =
-      Uri.parse('https://edubridge.alwaysdata.net/privacy.html');
+      Uri.parse('https://edubridge.win/privacy.html');
   static final Uri _deleteAccountUri =
-      Uri.parse('https://edubridge.alwaysdata.net/delete-account.html');
+      Uri.parse('https://edubridge.win/delete-account.html');
 
   Future<void> _open(BuildContext context, Uri uri) async {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
