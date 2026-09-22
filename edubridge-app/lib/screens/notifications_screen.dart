@@ -87,7 +87,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  // ✅ محدّثة — إضافة أيقونات الجلسات النفسية
+  // أيقونات إشعارات الدعم التعليمي
   String _getIcon(String type) {
     switch (type) {
       case 'child_added':
