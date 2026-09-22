@@ -16,7 +16,7 @@ export default function LearningSupportPage(){
   const finish=async(id)=>{const x=complete[id]||{};setBusy(true);try{await completeLearningSupportMeetingWeb(id,{notes:x.notes||'',recommendations:x.recommendations||'',mood_rating:x.mood?Number(x.mood):null,tags:[]});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
 
   return <div className="fp-page">
-    <div className="fp-head"><div><h2>🧠 الدعم والجلسات النفسية</h2><div className="meta">طلبات الدعم، المواعيد، وسجل الجلسات</div></div><button className="btn outline" onClick={load}>تحديث</button></div>
+    <div className="fp-head"><div><h2>📘 الدعم والاجتماعات التعليمية</h2><div className="meta">طلبات الدعم، المواعيد، وسجل الجلسات</div></div><button className="btn outline" onClick={load}>تحديث</button></div>
     {error&&<div className="fp-error">{error}</div>}
     {parent&&<section className="fp-card"><h3>طلب جلسة دعم</h3><form className="fp-form" onSubmit={create}>
       <select value={req.child_id} onChange={e=>setReq({...req,child_id:e.target.value})}>{children.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select>
@@ -34,7 +34,7 @@ export default function LearningSupportPage(){
       <div className="fp-head"><h3>{s.child_name}</h3><span className="fp-badge">{s.status}</span></div>
       <div className="fp-meta"><span>{s.type}</span><span>{new Date(s.scheduled_at).toLocaleString('ar')}</span><span>{s.duration_minutes} دقيقة</span></div>
       {s.goals&&<p>{s.goals}</p>}
-      {specialist&&s.status==='scheduled'&&<div className="fp-form"><textarea placeholder="ملاحظات الجلسة" value={complete[s.id]?.notes||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],notes:e.target.value}})}/><textarea placeholder="التوصيات" value={complete[s.id]?.recommendations||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],recommendations:e.target.value}})}/><input type="number" min="1" max="5" placeholder="الحالة النفسية 1-5" value={complete[s.id]?.mood||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],mood:e.target.value}})}/><button className="btn success" onClick={()=>finish(s.id)}>إنهاء الجلسة</button></div>}
+      {specialist&&s.status==='scheduled'&&<div className="fp-form"><textarea placeholder="ملاحظات الجلسة" value={complete[s.id]?.notes||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],notes:e.target.value}})}/><textarea placeholder="التوصيات" value={complete[s.id]?.recommendations||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],recommendations:e.target.value}})}/><input type="number" min="1" max="5" placeholder="المشاركة التعليمية 1-5" value={complete[s.id]?.mood||''} onChange={e=>setComplete({...complete,[s.id]:{...complete[s.id],mood:e.target.value}})}/><button className="btn success" onClick={()=>finish(s.id)}>إنهاء الجلسة</button></div>}
     </article>)}</div></section>
   </div>
 }
