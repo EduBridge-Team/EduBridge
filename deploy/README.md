@@ -28,3 +28,6 @@
 > نسخة الموقع في `deploy/web` مبنية بـ `VITE_API_URL=/api`. لإعادة بنائها لاحقاً:
 > `cd edubridge-web && VITE_API_URL=/api npm run build` ثم انسخ ناتج `dist`
 > إلى `deploy/web` (`index.html` تُسمّى `app.html`).
+
+
+<!-- Auto-deploy verification marker: 2026-09-23 -->
