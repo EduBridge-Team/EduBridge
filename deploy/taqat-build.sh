@@ -7,15 +7,24 @@ set -Eeuo pipefail
 
 WEB_API_URL="/api"
 
-# Persist the source revision inside the image so runtime logs can prove exactly
-# which Git commit Taqat deployed. Fall back to common CI variables when the
-# build context does not include .git.
-BUILD_COMMIT="$(git rev-parse --short=12 HEAD 2>/dev/null || true)"
-if [[ -z "$BUILD_COMMIT" ]]; then
-  BUILD_COMMIT="${SOURCE_VERSION:-${GIT_COMMIT:-${COMMIT_SHA:-unknown}}}"
-fi
-printf '%s\n' "$BUILD_COMMIT" > .edubridge-build-commit
-echo "==> EduBridge build commit: $BUILD_COMMIT"
+# Nixpacks builds from a Docker context without .git, so a Git SHA may be
+# unavailable. Generate a deterministic fingerprint from the deployable source
+# tree instead. This changes whenever relevant application/deploy files change.
+BUILD_FINGERPRINT="$(
+  find edubridge-web edubridge-api-laravel edubridge-app deploy \
+    -type f \
+    ! -path '*/node_modules/*' \
+    ! -path '*/vendor/*' \
+    ! -path '*/dist/*' \
+    ! -path '*/build/*' \
+    -print0 \
+  | sort -z \
+  | xargs -0 sha256sum \
+  | sha256sum \
+  | cut -c1-12
+)"
+printf '%s\n' "$BUILD_FINGERPRINT" > .edubridge-build-fingerprint
+echo "==> EduBridge build fingerprint: $BUILD_FINGERPRINT"
 
 echo "==> Building EduBridge Web..."
 (
