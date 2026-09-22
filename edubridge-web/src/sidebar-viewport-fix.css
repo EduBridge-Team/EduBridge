@@ -1,0 +1,164 @@
+/* Desktop role sidebar viewport-fit overrides.
+   Keep every navigation entry and the Noor card visible without an internal scrollbar. */
+
+@media (min-width: 901px) {
+  body.parent-portal-active .pp-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 0 !important;
+    padding: 10px 12px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+  }
+
+  body.parent-portal-active .pp-sidebar-head {
+    flex: 0 0 auto !important;
+    min-height: 60px !important;
+  }
+
+  body.parent-portal-active .pp-brand img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  body.parent-portal-active .pp-brand strong {
+    font-size: 18px !important;
+  }
+
+  body.parent-portal-active .pp-nav {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.parent-portal-active .pp-nav button {
+    flex: 0 1 42px !important;
+    min-height: 34px !important;
+    max-height: 42px !important;
+    padding: 5px 10px !important;
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+  }
+
+  body.parent-portal-active .pp-nav button svg {
+    width: 19px !important;
+    height: 19px !important;
+    flex: 0 0 19px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    flex: 0 0 auto !important;
+    min-height: 126px !important;
+    max-height: 138px !important;
+    margin: 2px 0 0 !important;
+    padding: 6px 9px 8px !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    margin: -30px auto -22px !important;
+    transform: scale(.82) !important;
+    transform-origin: center !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > strong {
+    font-size: 13px !important;
+    line-height: 1.1 !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > button {
+    min-height: 28px !important;
+    padding-block: 4px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 800px) {
+  body.parent-portal-active .pp-sidebar {
+    padding-block: 7px !important;
+    gap: 3px !important;
+  }
+
+  body.parent-portal-active .pp-sidebar-head {
+    min-height: 50px !important;
+  }
+
+  body.parent-portal-active .pp-brand img {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  body.parent-portal-active .pp-brand strong {
+    font-size: 16px !important;
+  }
+
+  body.parent-portal-active .pp-nav button {
+    flex-basis: 36px !important;
+    min-height: 30px !important;
+    max-height: 36px !important;
+    padding-block: 3px !important;
+    font-size: 12px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    min-height: 102px !important;
+    max-height: 110px !important;
+    padding: 4px 8px 6px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    margin: -38px auto -30px !important;
+    transform: scale(.68) !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > strong {
+    font-size: 12px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > button {
+    min-height: 24px !important;
+    font-size: 9px !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 680px) {
+  body.parent-portal-active .pp-sidebar-head {
+    min-height: 42px !important;
+  }
+
+  body.parent-portal-active .pp-brand img {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  body.parent-portal-active .pp-nav button {
+    flex-basis: 31px !important;
+    min-height: 27px !important;
+    max-height: 31px !important;
+    padding-block: 2px !important;
+    font-size: 11px !important;
+  }
+
+  body.parent-portal-active .pp-nav button svg {
+    width: 17px !important;
+    height: 17px !important;
+    flex-basis: 17px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    min-height: 78px !important;
+    max-height: 84px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    display: none !important;
+  }
+}
