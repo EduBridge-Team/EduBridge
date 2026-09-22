@@ -10,6 +10,12 @@ class UploadController extends Controller
 {
     // صيغ الصور/المستندات المسموحة والحد الأقصى للحجم (5 ميغابايت)
     private const ALLOWED = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+    private const ALLOWED_MIME = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'application/pdf',
+    ];
     private const MAX_BYTES = 5 * 1024 * 1024;
 
     // POST /api/uploads   (multipart form-data، الحقل: file)
@@ -23,6 +29,11 @@ class UploadController extends Controller
         $ext = strtolower($file->getClientOriginalExtension());
         if (!in_array($ext, self::ALLOWED, true)) {
             return response()->json(['error' => 'صيغة الملف غير مسموحة (jpg, png, webp, pdf)'], 422);
+        }
+
+        $mime = strtolower((string) $file->getMimeType());
+        if (!in_array($mime, self::ALLOWED_MIME, true)) {
+            return response()->json(['error' => 'نوع الملف الفعلي غير مسموح'], 422);
         }
 
         if ($file->getSize() > self::MAX_BYTES) {
