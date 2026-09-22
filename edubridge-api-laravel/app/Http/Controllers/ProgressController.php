@@ -16,7 +16,11 @@ class ProgressController extends Controller
             return DB::table('children')
                 ->where('id', $childId)
                 ->where('assigned_teacher_id', $user->id)
-                ->exists();
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
         }
         return $user->role === 'parent'
             && DB::table('child_parent')
