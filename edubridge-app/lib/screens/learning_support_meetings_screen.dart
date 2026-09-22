@@ -1,8 +1,8 @@
-// lib/screens/therapy/learning_support_meetings_screen.dart
+// lib/screens/learning_support_meetings_screen.dart
 // عرض اجتماعات الدعم التعليمي — للعرض فقط (الإنشاء يتم من طلبات الدعم)
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
+import '../services/api_service.dart';
+import '../theme.dart';
 import '../model/learning_support_meeting_model.dart';
 
 class LearningSupportMeetingsScreen extends StatefulWidget {
