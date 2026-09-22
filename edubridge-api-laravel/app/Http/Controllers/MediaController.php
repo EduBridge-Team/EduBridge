@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use App\Support\R2Storage;
 use InvalidArgumentException;
 
 class MediaController extends Controller
@@ -99,10 +99,15 @@ class MediaController extends Controller
 
             DB::table('media')->where('id', $id)->delete();
 
-            if (is_string($media->url) && str_starts_with($media->url, '/uploads/lessons/')) {
-                $path = public_path(ltrim($media->url, '/'));
-                if (is_file($path)) {
-                    File::delete($path);
+            if (is_string($media->url) && str_contains($media->url, '/lessons/')) {
+                $path = parse_url($media->url, PHP_URL_PATH) ?: '';
+                $key = ltrim($path, '/');
+                if (str_starts_with($key, 'lessons/')) {
+                    try {
+                        R2Storage::delete(R2Storage::mediaBucket(), $key);
+                    } catch (\Throwable $e) {
+                        report($e);
+                    }
                 }
             }
 
@@ -133,16 +138,17 @@ class MediaController extends Controller
     private function storeFile($file, int $lessonId, string $type): string
     {
         $extension = strtolower((string) $file->getClientOriginalExtension());
-        $directory = public_path('uploads/lessons/' . $lessonId);
-
-        if (!is_dir($directory)) {
-            @mkdir($directory, 0755, true);
-        }
-
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
-        $file->move($directory, $filename);
+        $key = 'lessons/' . $lessonId . '/' . $filename;
 
-        return '/uploads/lessons/' . $lessonId . '/' . $filename;
+        R2Storage::putUploadedFile(
+            R2Storage::mediaBucket(),
+            $key,
+            $file,
+            (string) $file->getMimeType()
+        );
+
+        return R2Storage::mediaPublicUrl($key);
     }
 
     private function absoluteUrl(Request $request, ?string $url): ?string
