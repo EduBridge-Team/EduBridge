@@ -43,7 +43,7 @@ class ChildAccessMiddleware
             $request->is('api/progress/child/*') ||
             $request->is('api/evaluations/child/*') ||
             $request->is('api/sessions/child/*') ||
-            $request->is('api/therapy/requests/child/*');
+            $request->is('api/learning-support/requests/child/*');
 
         if (!$childScoped) {
             return $next($request);

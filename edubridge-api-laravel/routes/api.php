@@ -24,7 +24,7 @@ use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
-use App\Http\Controllers\TherapyRequestController;
+use App\Http\Controllers\LearningSupportRequestController;
 use App\Http\Controllers\SpecialistSuggestionController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
@@ -175,17 +175,17 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:specialist,admin');
 
     // طلبات الدعم التعليمي — ولي الأمر يرسل، ومختص الدعم يراجع ويحدد موعد المتابعة والرابط
-    Route::post('/therapy/requests', [TherapyRequestController::class, 'store'])
+    Route::post('/learning-support/requests', [LearningSupportRequestController::class, 'store'])
         ->middleware(['role:parent', 'throttle:10,1']);
-    Route::get('/therapy/requests', [TherapyRequestController::class, 'index'])
+    Route::get('/learning-support/requests', [LearningSupportRequestController::class, 'index'])
         ->middleware('role:parent,specialist,admin');
-    Route::get('/therapy/requests/child/{childId}/pending', [TherapyRequestController::class, 'pendingForChild'])
+    Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
         ->middleware('role:parent,specialist,admin');
-    Route::put('/therapy/requests/{id}/schedule', [TherapyRequestController::class, 'schedule'])
+    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportRequestController::class, 'schedule'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/requests/{id}/complete', [TherapyRequestController::class, 'complete'])
+    Route::put('/learning-support/requests/{id}/complete', [LearningSupportRequestController::class, 'complete'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/requests/{id}/cancel', [TherapyRequestController::class, 'cancel'])
+    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportRequestController::class, 'cancel'])
         ->middleware('role:parent,specialist,admin');
 
     // الأطفال
@@ -307,11 +307,11 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/progress/child/{childId}/summary', [ProgressController::class, 'summary']);
 
     // اجتماعات الدعم التعليمي — مع إبقاء المسارات القديمة للتوافق التقني
-    Route::get('/therapy/sessions', [SessionController::class, 'index'])
+    Route::get('/learning-support/meetings', [SessionController::class, 'index'])
         ->middleware('role:parent,teacher,specialist,admin');
-    Route::post('/therapy/sessions', [SessionController::class, 'store'])
+    Route::post('/learning-support/meetings', [SessionController::class, 'store'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/sessions/{id}/complete', [SessionController::class, 'complete'])
+    Route::put('/learning-support/meetings/{id}/complete', [SessionController::class, 'complete'])
         ->middleware('role:specialist,admin');
 
     Route::get('/sessions', [SessionController::class, 'index'])

@@ -70,7 +70,7 @@ class SessionController extends Controller
         return false;
     }
 
-    // GET /api/sessions and /api/therapy/sessions
+    // GET /api/sessions and /api/learning-support/meetings
     public function index(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
@@ -113,7 +113,7 @@ class SessionController extends Controller
         return $this->index($request);
     }
 
-    // POST /api/sessions and /api/therapy/sessions
+    // POST /api/sessions and /api/learning-support/meetings
     public function store(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
@@ -174,7 +174,7 @@ class SessionController extends Controller
         }
     }
 
-    // PUT /api/therapy/sessions/{id}/complete
+    // PUT /api/learning-support/meetings/{id}/complete
     public function complete(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
@@ -211,9 +211,9 @@ class SessionController extends Controller
                     'tags' => json_encode($tags ?? [], JSON_UNESCAPED_UNICODE),
                 ]);
 
-                if (!empty($session->therapy_request_id)) {
+                if (!empty($session->learning_support_request_id)) {
                     DB::table('therapy_requests')
-                        ->where('id', $session->therapy_request_id)
+                        ->where('id', $session->learning_support_request_id)
                         ->update([
                             'status' => 'completed',
                             'completed_at' => now(),

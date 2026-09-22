@@ -72,12 +72,12 @@ class WeeklyReportController extends Controller
                 ->count()
             : 0;
 
-        $data['therapy_sessions_scheduled'] = (int) DB::table('sessions')
+        $data['learning_support_meetings_scheduled'] = (int) DB::table('sessions')
             ->where('child_id', $childId)
             ->whereBetween('scheduled_at', [$weekStart, $weekEnd])
             ->count();
 
-        $data['therapy_sessions_attended'] = (int) DB::table('sessions')
+        $data['learning_support_meetings_attended'] = (int) DB::table('sessions')
             ->where('child_id', $childId)
             ->whereBetween('scheduled_at', [$weekStart, $weekEnd])
             ->where('status', 'done')

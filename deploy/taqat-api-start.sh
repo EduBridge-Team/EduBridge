@@ -36,10 +36,10 @@ for sql in \
   database/upgrade_conversations.sql \
   database/upgrade_user_settings.sql \
   database/upgrade_child_accessibility_profiles.sql \
-  database/upgrade_therapy_requests.sql \
+  database/upgrade_learning_support_requests.sql \
   database/upgrade_lesson_media.sql \
   database/upgrade_specialist_workflow.sql \
-  database/upgrade_therapy_sessions.sql \
+  database/upgrade_learning_support_meetings.sql \
   database/upgrade_homework_reports.sql \
   database/upgrade_care_case_discussions.sql \
   database/upgrade_final_mobile_parity.sql

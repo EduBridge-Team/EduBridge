@@ -7,11 +7,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TherapyRequestController extends Controller
+class LearningSupportRequestController extends Controller
 {
     private function requestQuery()
     {
-        return DB::table('therapy_requests as tr')
+        return DB::table('learning_support_requests as tr')
             ->join('children as c', 'c.id', '=', 'tr.child_id')
             ->join('users as p', 'p.id', '=', 'tr.parent_id')
             ->leftJoin('users as s', 's.id', '=', 'tr.specialist_id')
@@ -74,7 +74,7 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'درجة الأهمية غير صالحة'], 422);
         }
 
-        $duplicate = DB::table('therapy_requests')
+        $duplicate = DB::table('learning_support_requests')
             ->where('child_id', $childId)
             ->where('parent_id', $user->id)
             ->whereIn('status', ['pending', 'scheduled'])
@@ -86,7 +86,7 @@ class TherapyRequestController extends Controller
         }
 
         try {
-            $id = DB::table('therapy_requests')->insertGetId([
+            $id = DB::table('learning_support_requests')->insertGetId([
                 'child_id' => $childId,
                 'parent_id' => $user->id,
                 'reason' => $reason,
@@ -165,7 +165,7 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        $query = DB::table('therapy_requests')
+        $query = DB::table('learning_support_requests')
             ->where('child_id', $childId)
             ->whereIn('status', ['pending', 'scheduled']);
 
@@ -176,12 +176,12 @@ class TherapyRequestController extends Controller
         return response()->json(['has_pending' => $query->exists()]);
     }
 
-    private function upsertSessionForRequest($therapyRequest, int $specialistId, $scheduledAt, string $meetingLink, ?string $notes): void
+    private function upsertSessionForRequest($learningSupportRequest, int $specialistId, $scheduledAt, string $meetingLink, ?string $notes): void
     {
         $payload = [
             'specialist_id' => $specialistId,
-            'child_id' => $therapyRequest->child_id,
-            'therapy_request_id' => $therapyRequest->id,
+            'child_id' => $learningSupportRequest->child_id,
+            'learning_support_request_id' => $learningSupportRequest->id,
             'type' => 'learningPlanning',
             'scheduled_at' => $scheduledAt,
             'duration_minutes' => 45,
@@ -191,7 +191,7 @@ class TherapyRequestController extends Controller
         ];
 
         $existingId = DB::table('sessions')
-            ->where('therapy_request_id', $therapyRequest->id)
+            ->where('learning_support_request_id', $learningSupportRequest->id)
             ->value('id');
 
         if ($existingId) {
@@ -229,22 +229,22 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'يجب اختيار موعد قادم'], 422);
         }
 
-        $therapyRequest = DB::table('therapy_requests')->where('id', $id)->first();
-        if (!$therapyRequest) {
+        $learningSupportRequest = DB::table('learning_support_requests')->where('id', $id)->first();
+        if (!$learningSupportRequest) {
             return response()->json(['error' => 'الطلب غير موجود'], 404);
         }
-        if (in_array($therapyRequest->status, ['completed', 'cancelled'], true)) {
+        if (in_array($learningSupportRequest->status, ['completed', 'cancelled'], true)) {
             return response()->json(['error' => 'لا يمكن جدولة طلب منتهٍ'], 409);
         }
-        if ($therapyRequest->specialist_id
-            && (int) $therapyRequest->specialist_id !== (int) $user->id
+        if ($learningSupportRequest->specialist_id
+            && (int) $learningSupportRequest->specialist_id !== (int) $user->id
             && $user->role !== 'admin') {
             return response()->json(['error' => 'هذا الطلب يتابعه مختص آخر'], 409);
         }
 
         $assignedSpecialistId = $user->role === 'specialist'
             ? (int) $user->id
-            : (int) ($request->input('specialist_id') ?: ($therapyRequest->specialist_id ?: 0));
+            : (int) ($request->input('specialist_id') ?: ($learningSupportRequest->specialist_id ?: 0));
 
         if ($assignedSpecialistId <= 0
             || !DB::table('users')->where('id', $assignedSpecialistId)->where('role', 'specialist')->exists()) {
@@ -252,8 +252,8 @@ class TherapyRequestController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($id, $therapyRequest, $assignedSpecialistId, $scheduledAt, $meetingLink, $notes) {
-                DB::table('therapy_requests')->where('id', $id)->update([
+            DB::transaction(function () use ($id, $learningSupportRequest, $assignedSpecialistId, $scheduledAt, $meetingLink, $notes) {
+                DB::table('learning_support_requests')->where('id', $id)->update([
                     'specialist_id' => $assignedSpecialistId,
                     'scheduled_at' => $scheduledAt,
                     'meeting_link' => $meetingLink,
@@ -263,7 +263,7 @@ class TherapyRequestController extends Controller
                 ]);
 
                 $this->upsertSessionForRequest(
-                    $therapyRequest,
+                    $learningSupportRequest,
                     $assignedSpecialistId,
                     $scheduledAt,
                     $meetingLink,
@@ -271,9 +271,9 @@ class TherapyRequestController extends Controller
                 );
             });
 
-            $childName = (string) (DB::table('children')->where('id', $therapyRequest->child_id)->value('name') ?? '');
+            $childName = (string) (DB::table('children')->where('id', $learningSupportRequest->child_id)->value('name') ?? '');
             Notify::toChildParents(
-                $therapyRequest->child_id,
+                $learningSupportRequest->child_id,
                 'تم تحديد موعد جلسة الدعم التعليمي',
                 "تم تحديد موعد جلسة الدعم التعليمي للطفل {$childName}. افتح الطلب لعرض الموعد والرابط.",
                 'learning_support_meeting_scheduled'
@@ -295,34 +295,34 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        $therapyRequest = DB::table('therapy_requests')->where('id', $id)->first();
-        if (!$therapyRequest) {
+        $learningSupportRequest = DB::table('learning_support_requests')->where('id', $id)->first();
+        if (!$learningSupportRequest) {
             return response()->json(['error' => 'الطلب غير موجود'], 404);
         }
-        if ($therapyRequest->status !== 'scheduled') {
+        if ($learningSupportRequest->status !== 'scheduled') {
             return response()->json(['error' => 'يمكن إنهاء اجتماع الدعم بعد جدولته فقط'], 409);
         }
-        if ($therapyRequest->specialist_id
-            && (int) $therapyRequest->specialist_id !== (int) $user->id
+        if ($learningSupportRequest->specialist_id
+            && (int) $learningSupportRequest->specialist_id !== (int) $user->id
             && $user->role !== 'admin') {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
         DB::transaction(function () use ($id) {
-            DB::table('therapy_requests')->where('id', $id)->update([
+            DB::table('learning_support_requests')->where('id', $id)->update([
                 'status' => 'completed',
                 'completed_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            DB::table('sessions')->where('therapy_request_id', $id)->update([
+            DB::table('sessions')->where('learning_support_request_id', $id)->update([
                 'status' => 'done',
                 'completed_at' => now(),
             ]);
         });
 
         Notify::toChildParents(
-            $therapyRequest->child_id,
+            $learningSupportRequest->child_id,
             'اكتملت جلسة الدعم التعليمي',
             'تم تسجيل جلسة الدعم التعليمي كمكتملة.',
             'learning_support_meeting_completed'
@@ -341,34 +341,34 @@ class TherapyRequestController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        $therapyRequest = DB::table('therapy_requests')->where('id', $id)->first();
-        if (!$therapyRequest) {
+        $learningSupportRequest = DB::table('learning_support_requests')->where('id', $id)->first();
+        if (!$learningSupportRequest) {
             return response()->json(['error' => 'الطلب غير موجود'], 404);
         }
-        if (in_array($therapyRequest->status, ['completed', 'cancelled'], true)) {
+        if (in_array($learningSupportRequest->status, ['completed', 'cancelled'], true)) {
             return response()->json(['error' => 'الطلب منتهٍ بالفعل'], 409);
         }
         if ($user->role === 'parent') {
-            if ((int) $therapyRequest->parent_id !== (int) $user->id || $therapyRequest->status !== 'pending') {
+            if ((int) $learningSupportRequest->parent_id !== (int) $user->id || $learningSupportRequest->status !== 'pending') {
                 return response()->json(['error' => 'لا يمكنك إلغاء هذا الطلب'], 403);
             }
         }
 
         DB::transaction(function () use ($id) {
-            DB::table('therapy_requests')->where('id', $id)->update([
+            DB::table('learning_support_requests')->where('id', $id)->update([
                 'status' => 'cancelled',
                 'cancelled_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            DB::table('sessions')->where('therapy_request_id', $id)->update([
+            DB::table('sessions')->where('learning_support_request_id', $id)->update([
                 'status' => 'cancelled',
             ]);
         });
 
         if ($user->role !== 'parent') {
             Notify::toChildParents(
-                $therapyRequest->child_id,
+                $learningSupportRequest->child_id,
                 'تم إلغاء طلب الدعم التعليمي',
                 'تم إلغاء طلب جلسة الدعم التعليمي. يمكنك التواصل مع الدعم أو إرسال طلب جديد عند الحاجة.',
                 'learning_support_request_cancelled'
