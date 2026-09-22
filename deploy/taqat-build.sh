@@ -5,7 +5,7 @@ set -Eeuo pipefail
 # Always prepare both applications, then let deploy/taqat-start.sh select the
 # runtime target using DEPLOY_TARGET.
 
-WEB_API_URL="${VITE_API_URL:-https://api.edubridge.win}"
+WEB_API_URL="/api"
 
 echo "==> Building EduBridge Web..."
 (
