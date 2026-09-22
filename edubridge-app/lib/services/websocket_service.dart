@@ -37,7 +37,7 @@ class WebSocketService {
         (data) {
           try {
             final json = jsonDecode(data);
-            print('📩 WebSocket message received: $json');
+            print('📩 WebSocket message received');
             _notifyListeners(json);
           } catch (e) {
             print('❌ Error parsing WebSocket message: $e');
@@ -80,7 +80,7 @@ class WebSocketService {
 
     try {
       _channel!.sink.add(jsonEncode(data));
-      print('📤 WebSocket message sent: $data');
+      print('📤 WebSocket message sent');
     } catch (e) {
       print('❌ Error sending WebSocket message: $e');
     }
