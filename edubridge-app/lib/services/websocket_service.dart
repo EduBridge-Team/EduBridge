@@ -28,7 +28,7 @@ class WebSocketService {
 
     try {
       final url = '${Config.wsUrl}?token=$token';
-      print('🔌 Connecting to WebSocket: $url');
+      print('🔌 Connecting to WebSocket');
       
       _channel = IOWebSocketChannel.connect(Uri.parse(url));
       _isConnected = true;
