@@ -85,6 +85,8 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/uploads', [UploadController::class, 'store'])->middleware('throttle:20,1');
     Route::get('/private-files/user/{userId}/{filename}', [UploadController::class, 'show'])
         ->where('filename', '[A-Za-z0-9._-]+');
+    Route::get('/private-files/child/{childId}/{filename}', [UploadController::class, 'showChild'])
+        ->where('filename', '[A-Za-z0-9._-]+');
 
     // توثيق الهوية — المستخدم نفسه + الأدمن (البطاقات 1، 4، 9)
     Route::post('/me/identity', [VerificationController::class, 'submitMine']);
