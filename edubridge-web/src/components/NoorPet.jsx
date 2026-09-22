@@ -59,7 +59,7 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
       className={`noor-pet ${className}`.trim()}
       width={size}
       height={size}
-      viewBox="-4 0 148 116"
+      viewBox="0 0 140 116"
       role="img"
       aria-label="نور، المساعد الذكي"
     >
@@ -134,11 +134,6 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
           <path className="noor-pet-mouth-inner" d="M65 79 C68 76 73 76 76 79 C75 82 73 83 70 83 C68 83 66 82 65 79 Z" />
         </g>
 
-        <g className="noor-pet-mitten-group">
-          <path className="noor-pet-mitten" transform="translate(-3 -1)" d="M17 79 C10 79 4 75 4 69 C4 64 9 64 13 68 C10 60 13 55 18 56 C22 57 23 63 23 67 C27 62 32 63 34 67 C37 73 31 79 26 82 C23 84 20 83 17 79 Z" />
-          <path className="noor-pet-mitten" d="M113 79 C108 74 106 68 110 64 C114 61 118 64 120 68 C120 62 123 58 127 59 C132 60 132 66 129 71 C134 67 139 69 140 74 C141 80 134 84 128 85 C122 87 117 84 113 79 Z" />
-        </g>
-
         <g className="noor-pet-headset">
           <path className="noor-pet-headset-mic" d="M115 70 C114 79 107 86 99 89" />
           <ellipse className="noor-pet-headset-cup-back" cx="114" cy="64" rx="7.5" ry="9.5" />
@@ -151,6 +146,11 @@ export default function NoorPet({ size = 76, className = '', trackMouse = false 
             <circle cx="97" cy="83" r="1.2" />
             <circle cx="97" cy="91" r="1.2" />
           </g>
+        </g>
+
+        <g className="noor-pet-mitten-group">
+          <path className="noor-pet-mitten" transform="translate(-3 -1)" d="M17 79 C10 79 4 75 4 69 C4 64 9 64 13 68 C10 60 13 55 18 56 C22 57 23 63 23 67 C27 62 32 63 34 67 C37 73 31 79 26 82 C23 84 20 83 17 79 Z" />
+          <path className="noor-pet-mitten" d="M113 79 C108 74 106 68 110 64 C114 61 118 64 120 68 C120 62 123 58 127 59 C132 60 132 66 129 71 C134 67 139 69 140 74 C141 80 134 84 128 85 C122 87 117 84 113 79 Z" />
         </g>
 
         <g className="noor-pet-attention">

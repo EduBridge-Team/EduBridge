@@ -68,11 +68,11 @@ class _NoorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.width / 148;
+    final scale = size.width / 140;
     canvas
       ..save()
       ..scale(scale)
-      ..translate(4, 16);
+      ..translate(0, 12);
 
     final bodyPaint = Paint()
       ..shader = const LinearGradient(
@@ -236,41 +236,6 @@ class _NoorPainter extends CustomPainter {
       ..close();
     canvas.drawPath(mouthInner, softBluePaint);
 
-    final leftMitten = Path()
-      ..moveTo(17, 79)
-      ..cubicTo(10, 79, 4, 75, 4, 69)
-      ..cubicTo(4, 64, 9, 64, 13, 68)
-      ..cubicTo(10, 60, 13, 55, 18, 56)
-      ..cubicTo(22, 57, 23, 63, 23, 67)
-      ..cubicTo(27, 62, 32, 63, 34, 67)
-      ..cubicTo(37, 73, 31, 79, 26, 82)
-      ..cubicTo(23, 84, 20, 83, 17, 79)
-      ..close();
-    final rightMitten = Path()
-      ..moveTo(113, 79)
-      ..cubicTo(108, 74, 106, 68, 110, 64)
-      ..cubicTo(114, 61, 118, 64, 120, 68)
-      ..cubicTo(120, 62, 123, 58, 127, 59)
-      ..cubicTo(132, 60, 132, 66, 129, 71)
-      ..cubicTo(134, 67, 139, 69, 140, 74)
-      ..cubicTo(141, 80, 134, 84, 128, 85)
-      ..cubicTo(122, 87, 117, 84, 113, 79)
-      ..close();
-    final mittenOutline = Paint()
-      ..color = _softBlue
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.25
-      ..strokeJoin = StrokeJoin.round;
-    canvas.save();
-    canvas.translate(-3, -1);
-    canvas
-      ..drawPath(leftMitten, whitePaint)
-      ..drawPath(leftMitten, mittenOutline);
-    canvas.restore();
-    canvas
-      ..drawPath(rightMitten, whitePaint)
-      ..drawPath(rightMitten, mittenOutline);
-
     final mic = Path()
       ..moveTo(115, 70)
       ..cubicTo(114, 79, 107, 86, 99, 89);
@@ -311,6 +276,41 @@ class _NoorPainter extends CustomPainter {
     canvas.drawCircle(const Offset(85, 86), 1.2, brainDot);
     canvas.drawCircle(const Offset(97, 83), 1.2, brainDot);
     canvas.drawCircle(const Offset(97, 91), 1.2, brainDot);
+
+    final leftMitten = Path()
+      ..moveTo(17, 79)
+      ..cubicTo(10, 79, 4, 75, 4, 69)
+      ..cubicTo(4, 64, 9, 64, 13, 68)
+      ..cubicTo(10, 60, 13, 55, 18, 56)
+      ..cubicTo(22, 57, 23, 63, 23, 67)
+      ..cubicTo(27, 62, 32, 63, 34, 67)
+      ..cubicTo(37, 73, 31, 79, 26, 82)
+      ..cubicTo(23, 84, 20, 83, 17, 79)
+      ..close();
+    final rightMitten = Path()
+      ..moveTo(113, 79)
+      ..cubicTo(108, 74, 106, 68, 110, 64)
+      ..cubicTo(114, 61, 118, 64, 120, 68)
+      ..cubicTo(120, 62, 123, 58, 127, 59)
+      ..cubicTo(132, 60, 132, 66, 129, 71)
+      ..cubicTo(134, 67, 139, 69, 140, 74)
+      ..cubicTo(141, 80, 134, 84, 128, 85)
+      ..cubicTo(122, 87, 117, 84, 113, 79)
+      ..close();
+    final mittenOutline = Paint()
+      ..color = _softBlue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.25
+      ..strokeJoin = StrokeJoin.round;
+    canvas.save();
+    canvas.translate(-3, -1);
+    canvas
+      ..drawPath(leftMitten, whitePaint)
+      ..drawPath(leftMitten, mittenOutline);
+    canvas.restore();
+    canvas
+      ..drawPath(rightMitten, whitePaint)
+      ..drawPath(rightMitten, mittenOutline);
 
     final pulse = .55 + ((math.sin(phase * math.pi * 2) + 1) / 2) * .45;
     final attentionPaint =
