@@ -28,6 +28,17 @@ class ChildController extends Controller
         'kinship_document_url',
     ];
 
+    private function validateDocumentUrl($user, ?string $url, ?string $current = null): bool
+    {
+        if ($url === null || $url === '') return true;
+        if ($user && $user->role === 'admin') return true;
+        if ($current !== null && $url === $current) return true;
+        if (!$user) return false;
+
+        $expectedPrefix = '/api/private-files/user/' . (int) $user->id . '/';
+        return str_starts_with($url, $expectedPrefix);
+    }
+
     // فكّ ترميز أعمدة JSON (نقاط القوة/التحديات) وإرجاعها كمصفوفات
     private function decodeChild($child)
     {
@@ -110,7 +121,12 @@ class ChildController extends Controller
         }
         foreach (self::IDENTITY_FIELDS as $f) {
             if ($request->has($f) && $request->input($f) !== null) {
-                $data[$f] = $request->input($f);
+                $value = $request->input($f);
+                if (in_array($f, ['guardian_id_document_url', 'kinship_document_url'], true)
+                    && !$this->validateDocumentUrl($user, is_string($value) ? $value : null)) {
+                    return response()->json(['error' => 'مستندات الطفل يجب رفعها من حسابك عبر التخزين الآمن'], 422);
+                }
+                $data[$f] = $value;
             }
         }
         foreach (['strengths', 'challenges'] as $f) {
@@ -241,7 +257,16 @@ class ChildController extends Controller
             }
             foreach (self::IDENTITY_FIELDS as $f) {
                 if ($request->has($f)) {
-                    $data[$f] = $request->input($f);
+                    $value = $request->input($f);
+                    if (in_array($f, ['guardian_id_document_url', 'kinship_document_url'], true)
+                        && !$this->validateDocumentUrl(
+                            $user,
+                            is_string($value) ? $value : null,
+                            isset($child->$f) ? (string) $child->$f : null
+                        )) {
+                        return response()->json(['error' => 'مستندات الطفل يجب رفعها من حسابك عبر التخزين الآمن'], 422);
+                    }
+                    $data[$f] = $value;
                 }
             }
             // إعادة رفع مستندات جديدة تعيد حالة التوثيق إلى "بانتظار المراجعة"
