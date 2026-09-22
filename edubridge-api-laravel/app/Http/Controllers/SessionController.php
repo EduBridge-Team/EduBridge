@@ -192,7 +192,7 @@ class SessionController extends Controller
 
         $mood = $request->input('mood_rating');
         if ($mood !== null && ((int) $mood < 1 || (int) $mood > 5)) {
-            return response()->json(['error' => 'التقييم النفسي يجب أن يكون بين 1 و5'], 422);
+            return response()->json(['error' => 'تقييم المشاركة التعليمية يجب أن يكون بين 1 و5'], 422);
         }
 
         $tags = $request->input('tags', []);
