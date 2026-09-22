@@ -163,6 +163,29 @@ cd ~/EduBridge && git pull && bash deploy/deploy.sh
 ويمسح إعدادات Laravel، وينشر نسخة الموقع المبنية من `deploy/web`. التفاصيل في
 `deploy/README.md` و`دليل التحديث والنشر.docx`.
 
+### ترحيل الملفات الحساسة القديمة
+
+ملفات الهوية والشهادات ومستندات القرابة الجديدة تُحفظ خارج `public/`. بعد تحديث الخادم، افحص الملفات القديمة أولاً بدون أي تغيير:
+
+```bash
+cd ~/EduBridge/edubridge-api-laravel
+php artisan edubridge:migrate-sensitive-uploads
+```
+
+إذا كانت نتيجة الـ dry run سليمة، نفّذ النقل وتحديث روابط قاعدة البيانات:
+
+```bash
+php artisan edubridge:migrate-sensitive-uploads --apply
+```
+
+بعد التحقق من أن الملفات الجديدة تفتح من لوحة التوثيق، يمكن حذف النسخ العامة القديمة التي لم يعد لها أي مرجع:
+
+```bash
+php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
+```
+
+> لا تستخدم `--delete-public` قبل أخذ نسخة احتياطية والتحقق من فتح الملفات بعد خطوة `--apply`.
+
 ## الحالة
 
 - [x] مسارات الأطفال والدروس والتقدّم (Laravel)
