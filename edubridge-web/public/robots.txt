@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://edubridge.alwaysdata.net/sitemap.xml
+Sitemap: https://edubridge.win/sitemap.xml
