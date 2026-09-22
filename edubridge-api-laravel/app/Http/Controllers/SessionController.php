@@ -162,9 +162,9 @@ class SessionController extends Controller
             $session = $this->baseQuery()->where('s.id', $id)->first();
             Notify::toChildParents(
                 $childId,
-                'تم تحديد جلسة علاجية',
-                'تمت إضافة جلسة علاجية جديدة. افتح الجلسات لعرض الموعد.',
-                'therapy_session_scheduled'
+                'تم تحديد اجتماع دعم تعليمي',
+                'تمت إضافة جلسة دعم تعليمي جديدة. افتح اجتماعات الدعم لعرض الموعد.',
+                'learning_support_meeting_scheduled'
             );
 
             return response()->json(['session' => $this->normalizeSession($session)], 201);
@@ -212,7 +212,7 @@ class SessionController extends Controller
                 ]);
 
                 if (!empty($session->learning_support_request_id)) {
-                    DB::table('therapy_requests')
+                    DB::table('learning_support_requests')
                         ->where('id', $session->learning_support_request_id)
                         ->update([
                             'status' => 'completed',
