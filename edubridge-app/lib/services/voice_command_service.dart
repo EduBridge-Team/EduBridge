@@ -27,6 +27,7 @@ import '../screens/aac_communication_screen.dart';
 import '../screens/add_child_screen.dart';
 import '../screens/assistant_screen.dart';
 import '../screens/case_discussion_screen.dart';
+import '../screens/care_team_screen.dart';
 import '../screens/change_password_screen.dart';
 import '../screens/chats_screen.dart';
 import '../screens/child_accessibility_settings_screen.dart';
@@ -378,16 +379,12 @@ class VoiceCommandService {
       final child = _findChild(text);
       if (child != null) {
         await _reply('سأفتح فريق ${child['name']}');
-        // نستخدم CareTeamScreen إذا موجود
-        // ملاحظة: تأكد من الاستيراد
-        // nav.push(MaterialPageRoute(
-        //   builder: (_) => CareTeamScreen(
-        //     childId: child['id'],
-        //     childName: (child['name'] ?? '').toString(),
-        //   ),
-        // ));
-        // fallback مؤقت:
-        nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
+        nav.push(MaterialPageRoute(
+          builder: (_) => CareTeamScreen(
+            childId: child['id'],
+            childName: (child['name'] ?? '').toString(),
+          ),
+        ));
         return;
       }
       await _reply('سأفتح قائمة الأطفال');
