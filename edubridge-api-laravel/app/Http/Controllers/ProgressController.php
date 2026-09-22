@@ -8,17 +8,39 @@ use Illuminate\Support\Facades\DB;
 
 class ProgressController extends Controller
 {
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) return false;
+        if (in_array($user->role, ['admin', 'specialist'], true)) return true;
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists();
+        }
+        return $user->role === 'parent'
+            && DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
+    }
+
     // تسجيل/تحديث تقدّم الطفل بدرس (upsert)
     // POST /api/progress   body: { child_id, lesson_id, status, score }
     public function store(Request $request)
     {
-        $childId = $request->input('child_id');
+        $user = $request->attributes->get('jwt_user');
+        $childId = (int) $request->input('child_id');
         $lessonId = $request->input('lesson_id');
         $status = $request->input('status');
         $score = $request->input('score');
 
         if (!$childId || !$lessonId) {
             return response()->json(['error' => 'child_id و lesson_id مطلوبان'], 400);
+        }
+
+        if (!$this->canAccessChild($user, $childId)) {
+            return response()->json(['error' => 'لا تملك صلاحية تعديل تقدّم هذا الطفل'], 403);
         }
 
         if ($status && !in_array($status, ['not_started', 'in_progress', 'done'])) {
