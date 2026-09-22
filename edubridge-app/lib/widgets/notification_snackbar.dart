@@ -114,7 +114,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
     );
   }
 
-  // ✅ محدّثة — إضافة أيقونات الجلسات النفسية
+  // أيقونات إشعارات الدعم التعليمي
   String _iconFor(String? type) {
     switch (type) {
       case 'homework_assigned':
