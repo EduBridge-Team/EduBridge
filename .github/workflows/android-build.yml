@@ -60,6 +60,12 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Analyze Flutter code
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
       - name: Prepare and verify upload keystore
         if: github.event_name != 'pull_request'
         env:
