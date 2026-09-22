@@ -40,7 +40,9 @@ final class R2Storage
                 $contentType ?: (string) $file->getMimeType()
             );
         } finally {
-            fclose($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
         }
     }
 
