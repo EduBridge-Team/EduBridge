@@ -61,7 +61,11 @@ class ChildAccessMiddleware
 
         $allowed = match ($user->role) {
             'admin', 'specialist' => true,
-            'teacher' => (int) ($child->assigned_teacher_id ?? 0) === (int) $user->id,
+            'teacher' => (int) ($child->assigned_teacher_id ?? 0) === (int) $user->id
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists(),
             'parent' => DB::table('child_parent')
                 ->where('child_id', $childId)
                 ->where('parent_id', $user->id)
