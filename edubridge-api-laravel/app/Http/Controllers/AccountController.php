@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 
 class AccountController extends Controller
 {
@@ -67,11 +66,30 @@ class AccountController extends Controller
     {
         $user = $request->attributes->get('jwt_user');
 
+        if (!$user || empty($user->id)) {
+            return response()->json(['error' => 'المستخدم غير موجود'], 404);
+        }
+
         try {
             $current = DB::table('users')->where('id', $user->id)->value('avatar_url');
-            DB::table('users')->where('id', $user->id)->delete();
+
+            // Delete the account atomically. Database foreign keys cascade or
+            // null dependent references so partial account deletion cannot occur.
+            DB::transaction(function () use ($user) {
+                $deleted = DB::table('users')->where('id', $user->id)->delete();
+
+                if ($deleted !== 1) {
+                    throw new \RuntimeException('Account row was not deleted');
+                }
+            });
+
+            // Filesystem cleanup happens only after the database transaction commits.
             $this->deleteStoredAvatar($current);
-            return response()->json(['message' => 'تم حذف الحساب']);
+
+            return response()->json([
+                'message' => 'تم حذف الحساب والبيانات المرتبطة به',
+                'deleted' => true,
+            ]);
         } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'تعذّر حذف الحساب'], 500);
