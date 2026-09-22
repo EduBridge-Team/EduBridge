@@ -3315,3 +3315,19 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
         overflow: hidden !important;
     }
 }
+
+
+/* Noor cursor-evasion widget */
+@media (hover: hover) and (pointer: fine) {
+    .noor-assistant:not(.is-dragging) {
+        transition: transform 42ms linear;
+    }
+
+    .noor-assistant:not(.is-dragging) .noor-launcher {
+        cursor: grab;
+    }
+
+    .noor-assistant:not(.is-dragging) .noor-launcher:hover {
+        transform: none;
+    }
+}
