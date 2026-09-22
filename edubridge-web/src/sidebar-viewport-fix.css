@@ -162,3 +162,47 @@
     display: none !important;
   }
 }
+
+
+/* Keep the mascot-only Noor launcher visible without reserving space for removed text. */
+@media (min-width: 901px) {
+  body.parent-portal-active .pp-noor-card {
+    min-height: 96px !important;
+    max-height: 104px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    gap: 0 !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    margin: -28px auto -24px !important;
+    transform: scale(.78) !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 800px) {
+  body.parent-portal-active .pp-noor-card {
+    min-height: 82px !important;
+    max-height: 88px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    margin: -34px auto -30px !important;
+    transform: scale(.66) !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 680px) {
+  body.parent-portal-active .pp-noor-card {
+    min-height: 66px !important;
+    max-height: 72px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    display: block !important;
+    margin: -42px auto -36px !important;
+    transform: scale(.54) !important;
+  }
+}

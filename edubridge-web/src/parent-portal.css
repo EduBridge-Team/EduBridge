@@ -3816,3 +3816,22 @@ body.role-portal-drawer-open {
     font-size: 12px !important;
   }
 }
+
+
+/* Noor sidebar launcher — mobile-app parity: mascot only, no card copy/CTA. */
+.pp-noor-card {
+  justify-content: center;
+  min-height: 112px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+.pp-noor-card:hover {
+  background: transparent;
+  transform: translateY(-2px);
+}
+.pp-noor-card .noor-pet {
+  margin-inline: auto;
+}
