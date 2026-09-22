@@ -81,7 +81,7 @@ class LearningSupportRequestController extends Controller
             ->exists();
         if ($duplicate) {
             return response()->json([
-                'error' => 'يوجد طلب دعم نفسي مفتوح لهذا الطفل بالفعل',
+                'error' => 'يوجد طلب دعم تعليمي مفتوح لهذا الطفل بالفعل',
             ], 409);
         }
 
