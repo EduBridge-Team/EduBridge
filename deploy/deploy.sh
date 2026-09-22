@@ -143,4 +143,4 @@ git -C "$ROOT" show HEAD:edubridge-api-laravel/public/.htaccess > "$PUBLIC/.htac
 [ ! -d "$ASSETS_OLD" ] || rm -rf -- "$ASSETS_OLD"
 trap - EXIT
 
-echo "==> ✅ تم النشر. افتح https://edubridge.alwaysdata.net واعمل Ctrl+Shift+R"
+echo "==> ✅ تم نشر نسخة Alwaysdata الاحتياطية. الإنتاج الأساسي: https://edubridge.win"
