@@ -571,7 +571,7 @@ class VoiceCommandService {
     }
 
     if (_matches(text, [
-      'جلسات', 'الجلسات', 'جلسات نفسيه',
+      'جلسات', 'الجلسات', 'اجتماعات دعم', 'اجتماعات الدعم',
     ])) {
       await _reply('سأفتح الجلسات');
       nav.push(MaterialPageRoute(
