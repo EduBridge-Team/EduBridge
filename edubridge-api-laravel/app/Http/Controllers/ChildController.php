@@ -251,8 +251,9 @@ class ChildController extends Controller
     }
 
     // تعديل بيانات طفل
-    // - ولي الأمر: أطفاله فقط
-    // - المعلّم/المختص/الأدمن: أي طفل
+    // - ولي الأمر: بيانات طفله ووثائقه فقط
+    // - المعلّم/المختص: البيانات التعليمية فقط للطفل المصرّح له
+    // - الأدمن: كامل الحقول
     // PUT /api/children/:id
     public function update(Request $request, $id)
     {
@@ -279,8 +280,16 @@ class ChildController extends Controller
             if ($request->has('name') && $request->input('name') !== null) {
                 $data['name'] = $request->input('name');
             }
-            foreach (['age', 'birth_date', 'gender', 'disability_type_id', 'organization_id', 'status', 'assigned_teacher_id'] as $f) {
+            foreach (['age', 'birth_date', 'gender', 'disability_type_id'] as $f) {
                 if ($request->has($f)) {
+                    $data[$f] = $request->input($f);
+                }
+            }
+            foreach (['organization_id', 'status', 'assigned_teacher_id'] as $f) {
+                if ($request->has($f)) {
+                    if ($user->role !== 'admin') {
+                        return response()->json(['error' => 'هذا الحقل إداري فقط'], 403);
+                    }
                     $data[$f] = $request->input($f);
                 }
             }
@@ -291,6 +300,9 @@ class ChildController extends Controller
             }
             foreach (self::IDENTITY_FIELDS as $f) {
                 if ($request->has($f)) {
+                    if (!in_array($user->role, ['parent', 'admin'], true)) {
+                        return response()->json(['error' => 'تعديل بيانات التوثيق متاح لولي الأمر والأدمن فقط'], 403);
+                    }
                     $value = $request->input($f);
                     if (in_array($f, ['guardian_id_document_url', 'kinship_document_url'], true)
                         && !$this->validateDocumentUrl(
@@ -328,7 +340,12 @@ class ChildController extends Controller
                 DB::table('children')->where('id', $id)->update($data);
             }
 
-            return response()->json(['child' => $this->decodeChild(DB::table('children')->find($id))]);
+            $updatedChild = $this->hideIdentityFieldsForStaff(
+                $this->decodeChild(DB::table('children')->find($id)),
+                $user
+            );
+
+            return response()->json(['child' => $updatedChild]);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
@@ -379,6 +396,13 @@ class ChildController extends Controller
         }
 
         try {
+            if (!DB::table('children')->where('id', $id)->exists()) {
+                return response()->json(['error' => 'الطفل غير موجود'], 404);
+            }
+            if (!DB::table('users')->where('id', $parentId)->where('role', 'parent')->exists()) {
+                return response()->json(['error' => 'ولي الأمر غير موجود'], 404);
+            }
+
             // إدراج مع تجاهل التكرار (ON CONFLICT DO NOTHING)
             DB::table('child_parent')->insertOrIgnore([
                 'child_id' => $id,
@@ -400,7 +424,7 @@ class ChildController extends Controller
         }
     }
 
-    // تعيين معلّم مسؤول عن الطفل (معلّم / مختص / أدمن)
+    // تعيين معلّم مسؤول عن الطفل (أدمن فقط)
     // POST /api/children/:id/assign-teacher   body: { teacher_id }
     public function assignTeacher(Request $request, $id)
     {
