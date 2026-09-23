@@ -22,14 +22,18 @@ class UserController extends Controller
 
         try {
             $query = DB::table('users')
-                // لا نُرجع password_hash أبداً
-                ->select('id', 'name', 'email', 'role', 'phone', 'national_id',
+                // لا نُرجع password_hash أبداً، ورقم الهوية الكامل للأدمن فقط.
+                ->select('id', 'name', 'email', 'role', 'phone',
                     'verification_status', 'verified_at', 'created_at')
                 ->orderBy('name');
 
-            if ($user->role === 'admin' || $user->role === 'ministry' || $user->role === 'institution') {
-                // الوزارة/المؤسسة: نفس رؤية الأدمن الكاملة لكل المستخدمين (عرض فقط — لا تعديل ولا حذف،
-                // فالمسارات الخاصة بذلك مقصورة على الأدمن في routes/api.php)
+            if ($user->role === 'admin') {
+                $query->addSelect('national_id');
+                $role = $request->query('role');
+                if ($role) {
+                    $query->where('role', $role);
+                }
+            } elseif (in_array($user->role, ['ministry', 'institution'], true)) {
                 $role = $request->query('role');
                 if ($role) {
                     $query->where('role', $role);
