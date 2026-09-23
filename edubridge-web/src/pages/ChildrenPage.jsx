@@ -1,5 +1,5 @@
 // صفحة قائمة الأطفال
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, BookOpen, CheckCircle2, GraduationCap, Plus, Search,
@@ -32,7 +32,7 @@ export default function ChildrenPage() {
   const [query, setQuery] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -56,12 +56,11 @@ export default function ChildrenPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isParent])
 
   useEffect(() => {
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [load])
 
   const visibleChildren = useMemo(() => {
     const q = query.trim().toLowerCase()
