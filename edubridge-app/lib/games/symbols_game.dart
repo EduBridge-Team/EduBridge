@@ -128,7 +128,6 @@ class _SymbolsGameState extends State<SymbolsGame> {
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
     final large = _profile.extraLargeTouchTargets;
 
     return Scaffold(
