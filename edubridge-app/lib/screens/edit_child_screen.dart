@@ -67,8 +67,11 @@ class _EditChildScreenState extends State<EditChildScreen> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         List list = [];
-        if (data is List) list = data;
-        else if (data is Map) list = data['users'] ?? data['data'] ?? [];
+        if (data is List) {
+          list = data;
+        } else if (data is Map) {
+          list = data['users'] ?? data['data'] ?? [];
+        }
         setState(() => _teachers = list.cast<Map<String, dynamic>>());
       }
     } catch (_) {} finally {
@@ -83,8 +86,11 @@ class _EditChildScreenState extends State<EditChildScreen> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         List list = [];
-        if (data is List) list = data;
-        else if (data is Map) list = data['users'] ?? data['data'] ?? [];
+        if (data is List) {
+          list = data;
+        } else if (data is Map) {
+          list = data['users'] ?? data['data'] ?? [];
+        }
         setState(() => _specialists = list.cast<Map<String, dynamic>>());
       }
     } catch (_) {} finally {
