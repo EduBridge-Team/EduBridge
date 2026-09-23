@@ -1,5 +1,5 @@
 // لوحة تحكم المعلّم — الدروس والأطفال وإضافة/تعديل/حذف الدروس
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import {
   getUser,
@@ -17,6 +17,7 @@ import Footer from '../components/Footer'
 
 export default function TeacherDashboard() {
   const me = getUser()
+  const role = me?.role
   const navigate = useNavigate()
   const [lessons, setLessons] = useState([])
   const [children, setChildren] = useState([])
@@ -30,7 +31,7 @@ export default function TeacherDashboard() {
   const [speaking, setSpeaking] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -47,13 +48,13 @@ export default function TeacherDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    if (!me || me.role !== 'teacher') return undefined
+    if (role !== 'teacher') return undefined
     load()
     return () => window.speechSynthesis?.cancel()
-  }, [me?.role])
+  }, [load, role])
 
   if (!me || me.role !== 'teacher') {
     return <Navigate to="/" replace />
