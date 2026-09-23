@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edubridge_app/main.dart' as app;
+import 'package:edubridge_app/screens/admin_screen.dart';
+import 'package:edubridge_app/services/api_service.dart';
+import 'package:edubridge_app/utils/home_router.dart';
 
 void main() {
   testWidgets('المستخدم الضيف يرى الشاشة الترحيبية',
@@ -17,8 +20,7 @@ void main() {
     expect(find.text('Skip'), findsOneWidget);
   });
 
-  testWidgets('الجلسة المحفوظة تتجاوز الشاشة الترحيبية',
-      (WidgetTester tester) async {
+  test('الجلسة المحفوظة تحل إلى واجهة الدور الصحيح', () async {
     SharedPreferences.setMockInitialValues({
       'token': 'saved-token',
       'role': 'admin',
@@ -26,11 +28,8 @@ void main() {
       'userId': 1,
     });
 
-    app.main();
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 6));
-    await tester.pump();
-
-    expect(find.text('معاً ندعم تقدُّمه'), findsNothing);
+    expect(await ApiService.getToken(), 'saved-token');
+    final destination = await homeScreenForRole();
+    expect(destination, isA<AdminScreen>());
   });
 }
