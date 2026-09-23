@@ -11,14 +11,40 @@ use App\Support\Notify;
 
 class ConsultationController extends Controller
 {
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) return false;
+        if ($user->role === 'admin') {
+            return DB::table('children')->where('id', $childId)->exists();
+        }
+        if ($user->role === 'parent') {
+            return DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
+        }
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+
+        return false;
+    }
+
     // هل يحق للمستخدم الاطلاع على هذه الاستشارة؟
     private function canAccess($user, $consultation): bool
     {
         if (in_array($user->role, ['admin', 'specialist'], true)) {
             // المختص: فقط المُسند إليه أو غير المُسندة (متاحة للاستلام)
             if ($user->role === 'specialist') {
-                return $consultation->specialist_id === null
-                    || (int) $consultation->specialist_id === (int) $user->id;
+                return (int) ($consultation->specialist_id ?? 0) === (int) $user->id
+                    || ($consultation->specialist_id === null && ($consultation->status ?? null) === 'open');
             }
             return true; // أدمن
         }
@@ -43,13 +69,22 @@ class ConsultationController extends Controller
         if (!$childId || $title === '') {
             return response()->json(['error' => 'معرّف الطفل وعنوان الحالة مطلوبان'], 400);
         }
+        if (!$user || !in_array($user->role, ['parent', 'teacher', 'admin'], true)) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
 
         try {
             if (!DB::table('children')->where('id', $childId)->exists()) {
                 return response()->json(['error' => 'الطفل غير موجود'], 404);
             }
+            if (!$this->canAccessChild($user, (int) $childId)) {
+                return response()->json(['error' => 'لا تملك صلاحية على هذا الطفل'], 403);
+            }
 
             $specialistId = $request->input('specialist_id');
+            if ($specialistId && $user->role !== 'admin') {
+                return response()->json(['error' => 'إسناد المختص مسبقاً متاح للأدمن فقط'], 403);
+            }
             if ($specialistId && !DB::table('users')->where('id', $specialistId)->where('role', 'specialist')->exists()) {
                 return response()->json(['error' => 'المختص غير موجود'], 404);
             }
@@ -96,7 +131,10 @@ class ConsultationController extends Controller
                 // المُسندة إليه + الطلبات المفتوحة غير المُسندة
                 $query->where(function ($q) use ($user) {
                     $q->where('k.specialist_id', $user->id)
-                      ->orWhereNull('k.specialist_id');
+                      ->orWhere(function ($open) {
+                          $open->whereNull('k.specialist_id')
+                              ->where('k.status', 'open');
+                      });
                 });
             } else {
                 // صاحب الطلب أو ولي أمر الطفل
@@ -168,10 +206,22 @@ class ConsultationController extends Controller
 
             $updates = [];
 
-            // استلام الحالة من قِبل المختص
-            if ($request->boolean('claim') && $user->role === 'specialist') {
-                $updates['specialist_id'] = $user->id;
-                $updates['status'] = 'in_progress';
+            if ($user->role === 'specialist') {
+                $assignedToMe = (int) ($consultation->specialist_id ?? 0) === (int) $user->id;
+
+                // استلام حالة مفتوحة وغير مسندة فقط.
+                if ($request->boolean('claim')) {
+                    if ($consultation->specialist_id !== null || $consultation->status !== 'open') {
+                        return response()->json(['error' => 'الحالة غير متاحة للاستلام'], 409);
+                    }
+                    $updates['specialist_id'] = $user->id;
+                    $updates['status'] = 'in_progress';
+                    $assignedToMe = true;
+                }
+
+                if ($request->has('status') && !$assignedToMe) {
+                    return response()->json(['error' => 'غير مصرّح بتعديل هذه الحالة'], 403);
+                }
             }
 
             if ($request->has('status')) {
@@ -208,6 +258,10 @@ class ConsultationController extends Controller
             $consultation = DB::table('consultations')->where('id', $id)->first();
             if (!$consultation) {
                 return response()->json(['error' => 'الاستشارة غير موجودة'], 404);
+            }
+            if ($user->role !== 'admin'
+                && (int) ($consultation->specialist_id ?? 0) !== (int) $user->id) {
+                return response()->json(['error' => 'غير مصرّح بإضافة ملاحظة لهذه الحالة'], 403);
             }
 
             DB::table('consultation_notes')->insert([
