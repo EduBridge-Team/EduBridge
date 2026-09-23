@@ -1,0 +1,397 @@
+  /* Restore the original child artwork proportions. */
+  .pd-hero-art {
+    min-height: 205px;
+    overflow: hidden;
+  }
+
+  .pd-hero-art img {
+    width: min(505px, 122%);
+    max-height: 232px;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 12px 24px rgba(28, 106, 166, .08));
+  }
+
+  /* Keep the progress block and Noor side card visually balanced. */
+  .pd-progress-section {
+    min-height: 248px;
+  }
+
+  .pd-noor-side {
+    margin-top: 52px !important;
+    min-height: 248px;
+    height: 248px;
+    max-height: 248px;
+    padding: 14px 12px 13px;
+    justify-content: center;
+  }
+
+  .pd-noor-side .noor-pet {
+    margin: -10px auto -4px;
+  }
+
+  .pd-noor-side strong {
+    font-size: 19px;
+  }
+
+  .pd-noor-side p {
+    margin: 3px 0 10px;
+    line-height: 1.55;
+  }
+
+  /*
+   * Everything after "نظرة على التقدم" now expands beneath the sidebar.
+   * This uses the otherwise-empty right column once the Noor card finishes.
+   */
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 230px);
+    max-width: none;
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.55fr .78fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: 150px repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .pd-noor-banner {
+    grid-template-columns: 1.22fr 190px .96fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-progress-section {
+    min-height: 228px;
+  }
+
+  .pd-noor-side {
+    margin-top: 42px !important;
+    min-height: 228px;
+    height: 228px;
+    max-height: 228px;
+  }
+
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 205px);
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.58fr .76fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* Keep mobile/tablet layout unchanged and naturally full width. */
+@media (max-width: 900px) {
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   Compact children + progress cards
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-children-section {
+    padding: 14px 16px 15px;
+  }
+
+  .pd-children-section .pd-section-head {
+    margin-bottom: 8px;
+    min-height: 32px;
+  }
+
+  .pd-children-grid {
+    gap: 12px;
+  }
+
+  .pd-child-card {
+    min-height: 150px;
+    padding: 12px 14px;
+    gap: 11px;
+    border-radius: 16px;
+  }
+
+  .pd-kid-avatar {
+    width: 70px;
+    height: 70px;
+    flex-basis: 70px;
+    border-width: 4px;
+  }
+
+  .pd-kid-avatar span {
+    font-size: 27px;
+  }
+
+  .pd-child-title {
+    gap: 5px;
+  }
+
+  .pd-child-title h3 {
+    font-size: 19px;
+  }
+
+  .pd-gender-symbol {
+    font-size: 19px;
+  }
+
+  .pd-child-main > p {
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+
+  .pd-child-meta {
+    gap: 5px;
+  }
+
+  .pd-child-meta span {
+    padding: 5px 7px;
+  }
+
+  .pd-child-meta small {
+    font-size: 9px;
+  }
+
+  .pd-child-meta b {
+    font-size: 10px;
+  }
+
+  .pd-child-progress {
+    margin: 7px 0 4px;
+    height: 5px;
+  }
+
+  .pd-child-main > button {
+    font-size: 11px;
+  }
+
+  .pd-child-arrow {
+    width: 29px;
+    height: 29px;
+    bottom: 10px;
+  }
+
+  .pd-progress-section {
+    min-height: 205px;
+    padding: 14px 16px 15px;
+  }
+
+  .pd-progress-section .pd-section-head {
+    margin-bottom: 8px;
+    min-height: 32px;
+  }
+
+  .pd-metrics-grid {
+    gap: 8px;
+  }
+
+  .pd-metric-card {
+    min-height: 150px !important;
+    padding: 10px 11px;
+    border-radius: 14px;
+  }
+
+  .pd-metric-head {
+    font-size: 11px;
+  }
+
+  .pd-metric-icon {
+    width: 31px;
+    height: 31px;
+    border-radius: 8px;
+  }
+
+  .pd-ring-wrap {
+    margin: 5px 0 3px;
+  }
+
+  .pd-ring {
+    width: 70px;
+    height: 70px;
+    padding: 7px;
+  }
+
+  .pd-ring-center b {
+    font-size: 14px;
+  }
+
+  .pd-metric-card > small {
+    font-size: 9px;
+  }
+
+  .pd-bars {
+    height: 63px;
+    margin: 7px 5px 3px;
+    gap: 6px;
+  }
+
+  .pd-bars i {
+    width: 13px;
+  }
+
+  .pd-bars-value {
+    top: 46px;
+    inset-inline-start: 13px;
+    font-size: 11px;
+  }
+
+  .pd-period {
+    padding: 5px 9px;
+    font-size: 10px;
+  }
+
+  /* Keep Noor balanced with the shorter progress block. */
+  .pd-noor-side {
+    margin-top: 34px !important;
+    min-height: 205px;
+    height: 205px;
+    max-height: 205px;
+  }
+
+  .pd-noor-side .noor-pet {
+    transform: scale(.9);
+    margin: -18px auto -13px;
+  }
+
+  .pd-noor-side strong {
+    font-size: 17px;
+  }
+
+  .pd-noor-side p {
+    font-size: 10px;
+    margin-bottom: 7px;
+  }
+
+  .pd-noor-side button {
+    min-height: 34px;
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-child-card {
+    min-height: 138px;
+    padding: 10px 12px;
+  }
+
+  .pd-kid-avatar {
+    width: 62px;
+    height: 62px;
+    flex-basis: 62px;
+  }
+
+  .pd-metric-card {
+    min-height: 138px !important;
+    padding: 8px;
+  }
+
+  .pd-ring {
+    width: 62px;
+    height: 62px;
+  }
+
+  .pd-progress-section {
+    min-height: 188px;
+  }
+
+  .pd-noor-side {
+    margin-top: 30px !important;
+    min-height: 188px;
+    height: 188px;
+    max-height: 188px;
+  }
+}
+
+
+/* ============================================================
+   Full-width lower dashboard: expand into the right sidebar area
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 230px);
+    max-width: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 30;
+    transform: translateX(230px);
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.55fr .78fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: 150px repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .pd-noor-banner {
+    grid-template-columns: 1.22fr 190px .96fr;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: calc(100% + 205px);
+    transform: translateX(205px);
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1.58fr .76fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: 100%;
+    transform: none;
+  }
+}
+
+
+/* ============================================================
+   Lower dashboard wrapper + clean separators
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-fullwidth-lower {
+    width: calc(100% + 230px);
+    max-width: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 30;
+    transform: translateX(230px);
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    background: #f8fbfe;
+  }
+
