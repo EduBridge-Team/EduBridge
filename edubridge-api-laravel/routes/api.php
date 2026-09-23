@@ -34,6 +34,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\LegacyMobileController;
 use App\Http\Controllers\MinistryApprovalController;
 use App\Http\Controllers\PlanEvaluationController;
+use App\Http\Controllers\DashboardController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register'])
@@ -45,6 +46,9 @@ Route::post('/auth/google', [AuthController::class, 'google'])
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {
+    // إحصائيات لوحة التحكم — النطاق محسوب حسب صلاحية المستخدم
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/password', [AuthController::class, 'changePassword'])
