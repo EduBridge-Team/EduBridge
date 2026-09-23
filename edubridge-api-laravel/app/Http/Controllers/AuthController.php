@@ -117,7 +117,19 @@ class AuthController extends Controller
 
             $user = DB::table('users')->find($id);
 
-            return response()->json(['user' => $user], 201);
+            return response()->json([
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'phone' => Schema::hasColumn('users', 'phone') ? ($user->phone ?? null) : null,
+                    'specialty' => Schema::hasColumn('users', 'specialty') ? ($user->specialty ?? null) : null,
+                    'verification_status' => Schema::hasColumn('users', 'verification_status')
+                        ? ($user->verification_status ?? 'pending')
+                        : 'pending',
+                ],
+            ], 201);
         } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
