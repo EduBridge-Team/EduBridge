@@ -1,3 +1,10 @@
+@media (min-width: 901px) {
+  /* Remove the artificial horizontal divider that appeared under Noor. */
+  .pd-fullwidth-lower::before {
+    content: none !important;
+    display: none !important;
+  }
+
   /* Round the inner bottom edge where the sidebar ends above the lower content. */
   .pd-sidebar {
     border-bottom-left-radius: 24px;
