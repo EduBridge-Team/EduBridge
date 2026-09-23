@@ -77,10 +77,6 @@ Route::middleware('auth.jwt')->group(function () {
     // حذف مستخدم (أدمن) — البطاقة 11
     Route::delete('/users/{id}', [UserController::class, 'destroy'])
         ->middleware('role:admin');
-    Route::get('/users/{parentId}/children', [LegacyMobileController::class, 'childrenOfParent'])
-        ->middleware('role:teacher,specialist,admin,ministry,institution');
-    Route::get('/dashboard/stats', [LegacyMobileController::class, 'dashboardStats']);
-
     // رفع الملفات (صور الهوية/الشهادات/مستندات القرابة)
     Route::post('/uploads', [UploadController::class, 'store'])->middleware('throttle:20,1');
     Route::get('/private-files/user/{userId}/{filename}', [UploadController::class, 'show'])
