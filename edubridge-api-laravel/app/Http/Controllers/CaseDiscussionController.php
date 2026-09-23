@@ -10,6 +10,61 @@ class CaseDiscussionController extends Controller
 {
     private const MESSAGE_TYPES = ['text','observation','decision','question'];
 
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) return false;
+        if ($user->role === 'admin') {
+            return DB::table('children')->where('id', $childId)->exists();
+        }
+
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+
+        return false;
+    }
+
+    private function careTeamUserIds(int $childId): array
+    {
+        $ids = DB::table('child_teacher')
+            ->where('child_id', $childId)
+            ->pluck('teacher_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $primaryTeacherId = DB::table('children')
+            ->where('id', $childId)
+            ->value('assigned_teacher_id');
+        if ($primaryTeacherId) {
+            $ids[] = (int) $primaryTeacherId;
+        }
+
+        $ids = array_merge(
+            $ids,
+            DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->pluck('specialist_id')
+                ->map(fn ($id) => (int) $id)
+                ->all()
+        );
+
+        return array_values(array_unique($ids));
+    }
+
     private function canAccess($user, $discussion): bool
     {
         if (!$user || !$discussion) return false;
@@ -124,20 +179,31 @@ class CaseDiscussionController extends Controller
         if ($childId <= 0 || $topic === '') {
             return response()->json(['error' => 'الطفل وموضوع الدراسة مطلوبان'], 422);
         }
+        if (!$this->canAccessChild($user, $childId)) {
+            return response()->json(['error' => 'لا تملك صلاحية إنشاء دراسة لهذا الطفل'], 403);
+        }
         if (!is_array($participants) || !$participants) {
             return response()->json(['error' => 'اختر مشاركاً واحداً على الأقل'], 422);
         }
 
-        $participants = array_values(array_unique(array_map('intval', $participants)));
-        $valid = DB::table('users')
+        $participants = array_values(array_unique(array_filter(array_map('intval', $participants))));
+        $validUsers = DB::table('users')
             ->whereIn('id', $participants)
             ->whereIn('role', ['teacher','specialist'])
             ->pluck('id')
             ->map(fn ($id) => (int) $id)
             ->all();
 
-        if (count($valid) !== count($participants)) {
+        if (count($validUsers) !== count($participants)) {
             return response()->json(['error' => 'أحد المشاركين غير صالح'], 422);
+        }
+
+        if ($user->role !== 'admin') {
+            $careTeamIds = $this->careTeamUserIds($childId);
+            $outsideTeam = array_diff($participants, $careTeamIds);
+            if ($outsideTeam) {
+                return response()->json(['error' => 'يمكن دعوة أعضاء فريق الطفل فقط'], 403);
+            }
         }
 
         try {
