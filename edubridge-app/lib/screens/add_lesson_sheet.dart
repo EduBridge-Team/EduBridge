@@ -8,7 +8,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
-import '../../utils/navigation.dart';
 
 enum LessonTarget { everyone, byDisability, specificChildren }
 
