@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { cancelLearningSupportRequestWeb, completeLearningSupportMeetingWeb, createLearningSupportRequestWeb, fetchChildren, fetchLearningSupportRequests, fetchLearningSupportMeetings, getUser, scheduleLearningSupportRequestWeb } from '../api'
 import '../feature-parity.css'
 
@@ -8,8 +8,8 @@ export default function LearningSupportPage(){
   const [req,setReq]=useState({child_id:'',reason:'',description:'',urgency:'medium'})
   const [schedule,setSchedule]=useState({}); const [complete,setComplete]=useState({})
 
-  const load=async()=>{try{const [c,r,s]=await Promise.all([fetchChildren(),fetchLearningSupportRequests(),fetchLearningSupportMeetings()]);const kids=c.children||[];setChildren(kids);setRequests(r.requests||[]);setSessions(s.sessions||[]);if(!req.child_id&&kids[0])setReq(x=>({...x,child_id:String(kids[0].id)}));setError('')}catch(e){setError(e.message)}}
-  useEffect(()=>{load()},[])
+  const load=useCallback(async()=>{try{const [c,r,s]=await Promise.all([fetchChildren(),fetchLearningSupportRequests(),fetchLearningSupportMeetings()]);const kids=c.children||[];setChildren(kids);setRequests(r.requests||[]);setSessions(s.sessions||[]);setReq(current=>current.child_id||!kids[0]?current:{...current,child_id:String(kids[0].id)});setError('')}catch(e){setError(e.message)}},[])
+  useEffect(()=>{load()},[load])
 
   const create=async(e)=>{e.preventDefault();setBusy(true);try{await createLearningSupportRequestWeb({...req,child_id:Number(req.child_id)});setReq({...req,reason:'',description:''});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
   const scheduleOne=async(id)=>{const x=schedule[id]||{};setBusy(true);try{await scheduleLearningSupportRequestWeb(id,{scheduled_at:x.scheduled_at,meeting_link:x.meeting_link,specialist_notes:x.notes});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
