@@ -1,5 +1,5 @@
 // توثيق هويتي + شهاداتي (البطاقات 4 و 9) — لكل مستخدم
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { IdCard, Paperclip, Award, Check } from 'lucide-react'
 import {
@@ -38,7 +38,7 @@ export default function VerifyIdentityPage() {
 
   const isProfessional = me && ['teacher', 'specialist'].includes(me.role)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     try {
       const v = await fetchMyVerification()
@@ -54,12 +54,11 @@ export default function VerifyIdentityPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isProfessional])
 
   useEffect(() => {
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [load])
 
   if (!me) return <Navigate to="/login" replace />
 
