@@ -241,8 +241,6 @@ class ApiService {
     required int age,
     String? disabilityType,
     String? disabilityDescription,
-    String? medicalHistory,
-    String? psychologistNotes,
     String? specialNeeds,
     String? preferredLearningStyle,
     List<String>? strengths,
@@ -264,12 +262,6 @@ class ApiService {
       }
       if (disabilityDescription != null) {
         request.fields['disability_description'] = disabilityDescription;
-      }
-      if (medicalHistory != null) {
-        request.fields['medical_history'] = medicalHistory;
-      }
-      if (psychologistNotes != null) {
-        request.fields['psychologist_notes'] = psychologistNotes;
       }
       if (specialNeeds != null) {
         request.fields['special_needs'] = specialNeeds;
