@@ -1,5 +1,5 @@
 // دراسة الحالة مع المختصين (البطاقة 7)
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Stethoscope, FileText } from 'lucide-react'
 import {
@@ -36,7 +36,7 @@ export default function ConsultationsPage() {
   const [detail, setDetail] = useState(null) // { consultation, notes }
   const [note, setNote] = useState('')
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -49,11 +49,11 @@ export default function ConsultationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
   if (!me) return <Navigate to="/login" replace />
 
