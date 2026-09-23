@@ -112,7 +112,7 @@ export default function App() {
         <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />
 
         <Route path="/children" element={<RolePage roles={CHILD_ROLES}><ChildrenPage /></RolePage>} />
-        <Route path="/children/new" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
+        <Route path="/children/new" element={<RolePage roles={['parent', 'admin']}><ChildFormPage /></RolePage>} />
         <Route path="/children/:childId" element={<RolePage roles={CHILD_ROLES}><ChildDetailsPage /></RolePage>} />
         <Route path="/children/:childId/edit" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
         <Route path="/children/:childId/lessons" element={<RolePage roles={CHILD_ROLES}><ChildLessonsPage /></RolePage>} />
