@@ -33,6 +33,9 @@ class VisualCelebration extends StatefulWidget {
     bool playSound = true,
     String? childName,
   }) async {
+    final overlay = Overlay.maybeOf(context, rootOverlay: true);
+    if (overlay == null) return;
+
     final profile = AccessibilityService.instance.profile.value;
 
     final isCalm = profile.sensoryCalmMode || profile.reducedAnimations;
@@ -76,9 +79,6 @@ class VisualCelebration extends StatefulWidget {
         : isDeaf || isBlind
             ? const Duration(seconds: 4)
             : duration;
-
-    final overlay = Overlay.maybeOf(context, rootOverlay: true);
-    if (overlay == null) return;
 
     late OverlayEntry entry;
     entry = OverlayEntry(
