@@ -94,13 +94,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  void _nextPage() {
-    _controller.nextPage(
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeInOutCubic,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
