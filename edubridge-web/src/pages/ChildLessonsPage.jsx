@@ -1,5 +1,5 @@
 // صفحة دروس الطفل (حسب نوع إعاقته) مع «تمّ» والقراءة الصوتية
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check, Gamepad2, Settings } from 'lucide-react'
 import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../api'
@@ -24,7 +24,7 @@ export default function ChildLessonsPage() {
   const role = getUser()?.role
   const canMarkDone = ['teacher', 'specialist', 'admin'].includes(role)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -46,14 +46,14 @@ export default function ChildLessonsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [childId])
 
   useEffect(() => {
     applyAccessibilityProfile(getAccessibilityProfile(childId))
     load()
     // إيقاف أي قراءة صوتية عند مغادرة الصفحة
     return () => window.speechSynthesis?.cancel()
-  }, [childId])
+  }, [childId, load])
 
   // تسجيل إتمام درس
   const handleDone = async (lessonId) => {
