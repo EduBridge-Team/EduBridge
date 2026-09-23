@@ -826,7 +826,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   final _descCtrl = TextEditingController();
   int? _selectedChildId;
   List _children = [];
-  Set<int> _selectedParticipants = {};
+  final Set<int> _selectedParticipants = {};
   List _availableParticipants = [];
   bool _loading = true;
   bool _saving = false;
