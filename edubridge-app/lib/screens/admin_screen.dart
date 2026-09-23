@@ -15,13 +15,6 @@ const _roleNames = {
   'admin': 'أدمن',
 };
 
-const _roleIcons = {
-  'admin': '🛡️',
-  'teacher': '📚',
-  'specialist': '🧩',
-  'parent': '👪',
-};
-
 class AdminScreen extends StatefulWidget {
   final Map admin;
 
