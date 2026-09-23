@@ -10,6 +10,50 @@ use InvalidArgumentException;
 
 class LessonController extends Controller
 {
+    private function canTargetChildren($user, array $childIds): bool
+    {
+        if (!$user || !$childIds) {
+            return false;
+        }
+
+        $childIds = array_values(array_unique(array_map('intval', $childIds)));
+        if (DB::table('children')->whereIn('id', $childIds)->count() !== count($childIds)) {
+            return false;
+        }
+
+        if (($user->role ?? null) === 'admin') {
+            return true;
+        }
+
+        if (($user->role ?? null) === 'teacher') {
+            $primary = DB::table('children')
+                ->whereIn('id', $childIds)
+                ->where('assigned_teacher_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            $team = DB::table('child_teacher')
+                ->whereIn('child_id', $childIds)
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            return count(array_unique(array_merge($primary, $team))) === count($childIds);
+        }
+
+        if (($user->role ?? null) === 'specialist') {
+            return DB::table('child_specialist')
+                ->whereIn('child_id', $childIds)
+                ->where('specialist_id', $user->id)
+                ->distinct()
+                ->count('child_id') === count($childIds);
+        }
+
+        return false;
+    }
+
     private const TARGET_TYPES = ['everyone', 'byDisability', 'specificChildren', 'parents'];
 
     private const MEDIA_RULES = [
@@ -54,13 +98,17 @@ class LessonController extends Controller
             return response()->json(['error' => 'اختر طالباً واحداً على الأقل'], 422);
         }
 
+        $user = $request->attributes->get('jwt_user');
+        if ($targetType === 'specificChildren' && !$this->canTargetChildren($user, $targetChildIds)) {
+            return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
+        }
+
         try {
             $this->validateUploadedMedia($request);
         } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
-        $user = $request->attributes->get('jwt_user');
         $lessonId = null;
 
         DB::beginTransaction();
@@ -236,6 +284,9 @@ class LessonController extends Controller
 
         if ($targetType === 'specificChildren' && empty($targetChildIds)) {
             return response()->json(['error' => 'اختر طالباً واحداً على الأقل'], 422);
+        }
+        if ($targetType === 'specificChildren' && !$this->canTargetChildren($user, $targetChildIds)) {
+            return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
         }
 
         try {
