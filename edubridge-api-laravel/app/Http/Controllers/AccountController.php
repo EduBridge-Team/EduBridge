@@ -202,5 +202,4 @@ class AccountController extends Controller
     
         return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح']);
     }
-    }
 }
