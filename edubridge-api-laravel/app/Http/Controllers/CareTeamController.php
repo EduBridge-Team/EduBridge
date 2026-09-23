@@ -13,14 +13,43 @@ class CareTeamController extends Controller
     private function canView($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['teacher','specialist','admin'], true)) return true;
+        if ($user->role === 'admin') return true;
+
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+
         return $user->role === 'parent'
-            && DB::table('child_parent')->where('child_id', $childId)->where('parent_id', $user->id)->exists();
+            && DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
     }
 
-    private function canManage($user): bool
+    private function canManage($user, int $childId): bool
     {
-        return $user && in_array($user->role, ['specialist','admin'], true);
+        if (!$user) return false;
+        if ($user->role === 'admin') return true;
+
+        return $user->role === 'specialist'
+            && DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
     }
 
     private function teachers(int $childId)
@@ -86,7 +115,7 @@ class CareTeamController extends Controller
     public function addCareTeamMember(Request $request, $childId)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$this->canManage($user)) {
+        if (!$this->canManage($user, (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -108,7 +137,7 @@ class CareTeamController extends Controller
     public function removeCareTeamMember(Request $request, $childId, $userId)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$this->canManage($user)) {
+        if (!$this->canManage($user, (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -140,7 +169,7 @@ class CareTeamController extends Controller
     public function addTeacher(Request $request, $childId)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$this->canManage($user)) {
+        if (!$this->canManage($user, (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -169,7 +198,7 @@ class CareTeamController extends Controller
 
     public function removeTeacher(Request $request, $childId, $teacherId)
     {
-        if (!$this->canManage($request->attributes->get('jwt_user'))) {
+        if (!$this->canManage($request->attributes->get('jwt_user'), (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -206,7 +235,7 @@ class CareTeamController extends Controller
     public function addSpecialist(Request $request, $childId)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$this->canManage($user)) {
+        if (!$this->canManage($user, (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -218,6 +247,9 @@ class CareTeamController extends Controller
         }
         if (!$specialistId || !DB::table('users')->where('id', $specialistId)->where('role', 'specialist')->exists()) {
             return response()->json(['error' => 'المختص غير موجود'], 404);
+        }
+        if (!DB::table('children')->where('id', $childId)->exists()) {
+            return response()->json(['error' => 'الطفل غير موجود'], 404);
         }
 
         DB::table('child_specialist')->insertOrIgnore([
@@ -236,7 +268,7 @@ class CareTeamController extends Controller
 
     public function removeSpecialist(Request $request, $childId, $specialistId)
     {
-        if (!$this->canManage($request->attributes->get('jwt_user'))) {
+        if (!$this->canManage($request->attributes->get('jwt_user'), (int) $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
