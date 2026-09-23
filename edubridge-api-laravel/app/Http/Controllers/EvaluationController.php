@@ -50,6 +50,16 @@ class EvaluationController extends Controller
                 return response()->json(['error' => 'الطفل غير موجود'], 404);
             }
 
+            $assignedTeacherId = $request->input('assigned_teacher_id');
+            if ($assignedTeacherId) {
+                if (!in_array($user->role, ['specialist', 'admin'], true)) {
+                    return response()->json(['error' => 'تعيين المعلّم من التقييم متاح للمختص والأدمن فقط'], 403);
+                }
+                if (!DB::table('users')->where('id', $assignedTeacherId)->where('role', 'teacher')->exists()) {
+                    return response()->json(['error' => 'المعلّم غير موجود'], 422);
+                }
+            }
+
             $data = [
                 'child_id' => $childId,
                 'evaluator_id' => $user->id ?? null,
@@ -60,7 +70,7 @@ class EvaluationController extends Controller
                 'social_assessment' => $request->input('social_assessment'),
                 'recommendations' => $request->input('recommendations'),
                 'educational_plan' => $request->input('educational_plan'),
-                'assigned_teacher_id' => $request->input('assigned_teacher_id'),
+                'assigned_teacher_id' => $assignedTeacherId,
             ];
             if ($request->has('teaching_methods') && $request->input('teaching_methods') !== null) {
                 $data['teaching_methods'] = json_encode($request->input('teaching_methods'), JSON_UNESCAPED_UNICODE);
@@ -70,9 +80,16 @@ class EvaluationController extends Controller
 
             // تحديث حالة الطفل: مُقيَّم، ومُعيَّن إن رافق التقييم تعيين معلّم
             $childUpdate = ['status' => 'evaluated'];
-            if ($request->input('assigned_teacher_id')) {
-                $childUpdate['assigned_teacher_id'] = $request->input('assigned_teacher_id');
+            if ($assignedTeacherId) {
+                $childUpdate['assigned_teacher_id'] = $assignedTeacherId;
                 $childUpdate['status'] = 'assigned';
+
+                DB::table('child_teacher')->insertOrIgnore([
+                    'child_id' => $childId,
+                    'teacher_id' => $assignedTeacherId,
+                    'assigned_at' => now(),
+                    'created_at' => now(),
+                ]);
             }
             DB::table('children')->where('id', $childId)->update($childUpdate);
 
