@@ -67,7 +67,7 @@ POST /api/auth/login           تسجيل دخول (يرجّع token)
 GET  /api/me                   حمولة التوكن (محمي)
 POST /api/assistant/chat       محادثة آمنة مع مساعد «نور» (محمي، 20 طلب/دقيقة)
 
-POST /api/children             (parent/teacher/specialist/admin)
+POST /api/children             (parent/admin فقط)
 GET  /api/children             (حسب الدور والصلاحية؛ المعلّم يرى الأطفال المسندين إليه)
 GET  /api/children/:id         (محمي بصلاحية الوصول للطفل)
 PUT  /api/children/:id         (محمي بصلاحية الوصول للطفل)
