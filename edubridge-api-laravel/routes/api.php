@@ -197,9 +197,9 @@ Route::middleware('auth.jwt')->group(function () {
     Route::delete('/children/{id}', [ChildController::class, 'destroy'])
         ->middleware('role:admin');
     Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
-        ->middleware(['role:teacher,specialist,admin', 'child.access']);
+        ->middleware('role:admin');
     Route::post('/children/{id}/assign-teacher', [ChildController::class, 'assignTeacher'])
-        ->middleware(['role:teacher,specialist,admin', 'child.access']);
+        ->middleware('role:admin');
     Route::get('/children/{id}/lessons', [ChildController::class, 'lessons'])->middleware('child.access');
     Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild'])->middleware('child.access');
 
