@@ -1231,6 +1231,8 @@ class _VerificationTabState extends State<_VerificationTab> {
       success = await ApiService.rejectVerification(id);
     }
 
+    if (!mounted) return;
+
     if (success) {
       setState(() {
         _requests.removeWhere((r) => r['id'] == id);
@@ -1569,6 +1571,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
       try {
         final res = await ApiService.authPut(
             '/support/tickets/${ticket['id']}/resolve', {});
+        if (!mounted) return;
         if (res.statusCode == 200 || res.statusCode == 204) {
           setState(() {
             _tickets.removeWhere((t) => t['id'] == ticket['id']);
@@ -1583,6 +1586,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
           });
         }
       } catch (_) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
         );
@@ -1714,6 +1718,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         'phone': _phone.text.trim(),
       });
       final data = jsonDecode(res.body);
+      if (!mounted) return;
       if (res.statusCode == 200) {
         widget.onSaved(data['user']);
         Navigator.pop(context);
@@ -1724,10 +1729,12 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         });
       }
     } catch (_) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _saving = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'تعذّر الاتصال بالسيرفر';
+          _saving = false;
+        });
+      }
     }
   }
 
