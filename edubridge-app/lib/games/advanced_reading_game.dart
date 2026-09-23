@@ -27,7 +27,7 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
     Future.delayed(const Duration(milliseconds: 900), () async {
       if (!mounted) return;
       if (_index == _items.length - 1) {
-        await VisualCelebration.show(context, message: 'فهم قرائي رائع! ' + _score.toString() + ' من ' + _items.length.toString(), emoji: '📚', childName: widget.childName, duration: const Duration(seconds: 3));
+        await VisualCelebration.show(context, message: 'فهم قرائي رائع! $_score من ${_items.length}', emoji: '📚', childName: widget.childName, duration: const Duration(seconds: 3));
         if (mounted) Navigator.pop(context);
       } else {
         setState(() { _index++; _locked = false; });
