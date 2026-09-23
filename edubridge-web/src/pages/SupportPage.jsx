@@ -1,6 +1,6 @@
 // الدعم الفني والشكاوى (البطاقة 11)
 // المستخدم ينشئ تذكرة ويتابعها؛ الأدمن يستعرض الكل ويرد ويغيّر الحالة.
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { LifeBuoy, TriangleAlert } from 'lucide-react'
 import { getUser, fetchTickets, createTicket, updateTicket } from '../api'
@@ -28,7 +28,7 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false)
   const [msg, setMsg] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -39,11 +39,11 @@ export default function SupportPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
   if (!me) return <Navigate to="/login" replace />
 
