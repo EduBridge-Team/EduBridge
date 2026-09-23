@@ -1,5 +1,5 @@
 // لوحة التحكم الإدارية — أدمن فقط
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import {
   getUser,
@@ -58,7 +58,7 @@ function UsersTab() {
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -73,11 +73,11 @@ function UsersTab() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
   const onSaved = (updated) => {
     setUsers((list) => list.map((u) => (u.id === updated.id ? updated : u)))
