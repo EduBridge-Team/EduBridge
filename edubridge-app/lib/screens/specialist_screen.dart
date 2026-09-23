@@ -428,11 +428,6 @@ class _SpecialistDashboardScreenState
   }
 
   Future<void> _viewEvaluation(int childId) async {
-    final row = _rows.firstWhere(
-      (r) => r['child']['id'] == childId,
-      orElse: () => {},
-    );
-    final child = row['child'] as Map?;
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -520,7 +515,7 @@ class _SpecialistDashboardScreenState
             const SizedBox(height: 12),
             _detailRow('🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
             _detailRow('🏃 التقييم الحركي', evaluation['motor_assessment']),
-            _detailRow('💚 التقييم العاطفي', evaluation['emotional_assessment']),
+            _detailRow('💚 التفاعل أثناء التعلم', evaluation['emotional_assessment']),
             _detailRow('🤝 التقييم الاجتماعي', evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
             _detailRow('📚 الخطة التعليمية', evaluation['educational_plan']),
@@ -693,7 +688,7 @@ class _SpecialistDashboardScreenState
     final specIds = _childSpecialistIds(child);
     if (specIds.length < 2) return false;
 
-    int psychCount = 0;
+    int supportCount = 0;
     int eduCount = 0;
     int unknownCount = 0;
 
@@ -704,15 +699,15 @@ class _SpecialistDashboardScreenState
       );
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
       if (spec == 'learning_support' || spec.contains('نفس')) {
-        psychCount++;
+        supportCount++;
       } else if (spec == 'educational' || spec.contains('تعليم')) {
         eduCount++;
       } else {
         unknownCount++;
       }
     }
-    if (psychCount >= 1 && eduCount >= 1) return true;
-    if (psychCount + eduCount == 0 && unknownCount >= 2) return true;
+    if (supportCount >= 1 && eduCount >= 1) return true;
+    if (supportCount + eduCount == 0 && unknownCount >= 2) return true;
     return false;
   }
 
@@ -766,7 +761,6 @@ class _SpecialistDashboardScreenState
         return s != 'evaluated' && s != 'assigned';
       }).toList();
 
-  int get _totalChildren => _rows.length;
   int get _pendingCount => _pendingChildren.length;
   int get _doneToday =>
       _rows.fold(0, (s, r) => s + (r['stats']['doneToday'] as int));
