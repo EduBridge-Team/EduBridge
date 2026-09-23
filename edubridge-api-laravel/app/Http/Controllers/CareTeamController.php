@@ -234,4 +234,3 @@ class CareTeamController extends Controller
         return response()->json(['ok' => true]);
     }
 }
-}
