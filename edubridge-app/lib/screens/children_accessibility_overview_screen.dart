@@ -209,7 +209,6 @@ class _ChildrenAccessibilityOverviewScreenState
   Widget _buildChildCard(Map child, int index) {
     final name = (child['name'] ?? '').toString();
     final id = child['id'] as int;
-    final age = child['age'] ?? '?';
     final disabilityType = child['disability_type']?.toString();
 
     final profile = AccessibilityService.instance.profileForChild(id) ??
