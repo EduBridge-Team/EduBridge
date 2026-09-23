@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft, BarChart3, Bell, BookOpen, CalendarDays, ChevronDown, Home, MessageCircle,
-  PlayCircle, Plus, Search, Settings, Sparkles, Target, Users,
+  ArrowLeft, BarChart3, Bell, CalendarDays, ChevronDown, Home, MessageCircle,
+  PlayCircle, Plus, Search, Settings, Sparkles, Users,
 } from 'lucide-react'
 import {
   fetchChildLessons,
@@ -13,53 +13,10 @@ import {
   getUser,
 } from '../api'
 import NoorPet from '../components/NoorPet'
+import ParentProgressSection from './parent-dashboard/ParentProgressSection'
+import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from './parent-dashboard/hooks'
+import { KID_COLORS, STATUS, clampPercent, lessonTimeLabel } from './parent-dashboard/utils'
 import './ParentDashboard.css'
-
-const STATUS = {
-  evaluated: { label: 'تم التقييم', cls: 'evaluated' },
-  assigned: { label: 'تم تعيين معلّم', cls: 'assigned' },
-  pending: { label: 'بانتظار المتابعة', cls: 'pending' },
-}
-
-const KID_COLORS = ['#1f78d1', '#c75bd4', '#1cb9be', '#7c6bea', '#32a46e']
-
-function clampPercent(value) {
-  const n = Number(value)
-  if (!Number.isFinite(n)) return 0
-  return Math.max(0, Math.min(100, Math.round(n)))
-}
-
-function lessonTimeLabel(lesson, index) {
-  const raw = lesson?.start_time || lesson?.scheduled_at || lesson?.due_at || lesson?.lesson_time
-  if (raw) {
-    const value = String(raw)
-    const date = new Date(value)
-    if (!Number.isNaN(date.getTime())) {
-      return date.toLocaleTimeString('ar', { hour: 'numeric', minute: '2-digit' })
-    }
-    return value
-  }
-
-  return ['متاح الآن', 'متاح الآن', 'متاح الآن'][index] || 'متاح الآن'
-}
-
-function RingMetric({ value, label, detail, icon, tone = 'cyan' }) {
-  const pct = clampPercent(value)
-  return (
-    <article className={`pd-metric-card pd-metric-${tone}`}>
-      <div className="pd-metric-head">
-        <span>{label}</span>
-        <span className="pd-metric-icon">{icon}</span>
-      </div>
-      <div className="pd-ring-wrap">
-        <div className="pd-ring" style={{ '--pd-progress': `${pct * 3.6}deg` }}>
-          <div className="pd-ring-center"><b>{pct}%</b></div>
-        </div>
-      </div>
-      <small>{detail}</small>
-    </article>
-  )
-}
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
@@ -123,118 +80,9 @@ export default function ParentDashboard() {
     load()
   }, [load])
 
-  useEffect(() => {
-    const root = document.documentElement
-    const body = document.body
-
-    root.classList.add('parent-dashboard-page')
-    body.classList.add('parent-dashboard-page')
-
-    return () => {
-      root.classList.remove('parent-dashboard-page')
-      body.classList.remove('parent-dashboard-page')
-    }
-  }, [])
-
-  useEffect(() => {
-    const dashboard = document.querySelector('.parent-dashboard-v2')
-    const sidebar = dashboard?.querySelector('.pd-sidebar')
-    const progress = dashboard?.querySelector('.pd-progress-section')
-    const main = dashboard?.querySelector('.pd-main')
-
-    if (!dashboard || !sidebar || !progress) return undefined
-
-    let resizeFrame = 0
-
-    const syncSidebarWithProgress = () => {
-      cancelAnimationFrame(resizeFrame)
-      resizeFrame = requestAnimationFrame(() => {
-        if (window.innerWidth <= 900) {
-          sidebar.style.removeProperty('--pd-sidebar-target-height')
-          sidebar.style.removeProperty('--pd-noor-top')
-          sidebar.style.removeProperty('--pd-noor-height')
-          return
-        }
-
-        const dashboardRect = dashboard.getBoundingClientRect()
-        const sidebarRect = sidebar.getBoundingClientRect()
-        const progressRect = progress.getBoundingClientRect()
-
-        const targetHeight = Math.max(0, Math.ceil(progressRect.bottom - dashboardRect.top))
-        const noorTop = Math.max(0, Math.round(progressRect.top - sidebarRect.top))
-        const noorHeight = Math.max(0, Math.round(progressRect.height))
-
-        sidebar.style.setProperty('--pd-sidebar-target-height', `${targetHeight}px`)
-        sidebar.style.setProperty('--pd-noor-top', `${noorTop}px`)
-        sidebar.style.setProperty('--pd-noor-height', `${noorHeight}px`)
-      })
-    }
-
-    syncSidebarWithProgress()
-    window.addEventListener('resize', syncSidebarWithProgress)
-
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(syncSidebarWithProgress)
-      : null
-
-    if (resizeObserver) {
-      resizeObserver.observe(progress)
-      if (main) resizeObserver.observe(main)
-    }
-
-    return () => {
-      cancelAnimationFrame(resizeFrame)
-      window.removeEventListener('resize', syncSidebarWithProgress)
-      resizeObserver?.disconnect()
-      sidebar.style.removeProperty('--pd-sidebar-target-height')
-      sidebar.style.removeProperty('--pd-noor-top')
-      sidebar.style.removeProperty('--pd-noor-height')
-    }
-  }, [loading, children.length, summaries])
-
-  useEffect(() => {
-    const dashboard = document.querySelector('.parent-dashboard-v2')
-    const shell = dashboard?.closest('.pp-shell')
-    const sidebar = shell?.querySelector('.pp-sidebar')
-    const progress = dashboard?.querySelector('.pd-progress-section')
-
-    if (!dashboard || !shell || !sidebar || !progress) return undefined
-
-    let frame = 0
-
-    const syncSharedSidebarToProgress = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        if (window.innerWidth <= 900) {
-          sidebar.style.removeProperty('--pp-dashboard-sidebar-height')
-          return
-        }
-
-        const shellRect = shell.getBoundingClientRect()
-        const progressRect = progress.getBoundingClientRect()
-        const targetHeight = Math.max(0, Math.ceil(progressRect.bottom - shellRect.top))
-
-        sidebar.style.setProperty('--pp-dashboard-sidebar-height', `${targetHeight}px`)
-      })
-    }
-
-    syncSharedSidebarToProgress()
-    window.addEventListener('resize', syncSharedSidebarToProgress)
-
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(syncSharedSidebarToProgress)
-      : null
-
-    resizeObserver?.observe(progress)
-    resizeObserver?.observe(dashboard)
-
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', syncSharedSidebarToProgress)
-      resizeObserver?.disconnect()
-      sidebar.style.removeProperty('--pp-dashboard-sidebar-height')
-    }
-  }, [loading, children.length, summaries])
+  useParentDashboardPageClass()
+  useDashboardSidebarSync({ loading, childrenCount: children.length, summaries })
+  useSharedSidebarSync({ loading, childrenCount: children.length, summaries })
 
   const dashboardStats = useMemo(() => {
     let done = 0
@@ -426,44 +274,7 @@ export default function ParentDashboard() {
             )}
           </section>
 
-          <section className="pd-section pd-progress-section">
-            <div className="pd-section-head">
-              <div><h2>نظرة على التقدم</h2></div>
-              <span className="pd-period">هذا الأسبوع</span>
-            </div>
-
-            <div className="pd-metrics-grid">
-              <RingMetric
-                value={dashboardStats.completion}
-                label="الدروس المكتملة"
-                detail={dashboardStats.totalLessons ? `${dashboardStats.done} من ${dashboardStats.totalLessons} درساً` : 'لا توجد بيانات دروس بعد'}
-                icon={<BookOpen size={20} />}
-                tone="blue"
-              />
-              <RingMetric
-                value={dashboardStats.engagement}
-                label="المشاركة التعليمية"
-                detail="الدروس المكتملة أو قيد التنفيذ"
-                icon={<Users size={20} />}
-                tone="cyan"
-              />
-              <article className="pd-metric-card pd-bars-card">
-                <div className="pd-metric-head"><span>متوسط النتائج</span><span className="pd-metric-icon"><BarChart3 size={20} /></span></div>
-                <div className="pd-bars" aria-hidden="true">
-                  {[34, 47, 58, 71, dashboardStats.avgScore || 20].map((height, index) => <i key={index} style={{ height: `${Math.max(18, height)}%` }} />)}
-                </div>
-                <b className="pd-bars-value">{dashboardStats.avgScore ? `${dashboardStats.avgScore}%` : '—'}</b>
-                <small>{dashboardStats.avgScore ? 'متوسط نتائج التقييمات' : 'لا توجد نتائج مسجلة بعد'}</small>
-              </article>
-              <RingMetric
-                value={dashboardStats.supportRate}
-                label="تحقيق الأهداف"
-                detail={children.length ? 'جاهزية ملفات الأطفال للمتابعة' : 'أضف طفلاً للبدء'}
-                icon={<Target size={20} />}
-                tone="mint"
-              />
-            </div>
-          </section>
+          <ParentProgressSection dashboardStats={dashboardStats} children={children} />
 
           <div className="pd-fullwidth-lower">
           <div className="pd-lower-grid">
