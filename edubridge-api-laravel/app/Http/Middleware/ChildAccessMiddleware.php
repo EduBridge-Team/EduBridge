@@ -30,9 +30,16 @@ class ChildAccessMiddleware
             }
 
             $payload = $response->getData(true);
+            $teamChildIds = DB::table('child_teacher')
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
             $payload['children'] = array_values(array_filter(
                 $payload['children'] ?? [],
                 fn ($child) => (int) ($child['assigned_teacher_id'] ?? 0) === (int) $user->id
+                    || in_array((int) ($child['id'] ?? 0), $teamChildIds, true)
             ));
             $response->setData($payload);
             return $response;
