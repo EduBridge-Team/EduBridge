@@ -27,6 +27,12 @@ class ChildSpecialistScopeTest extends TestCase
             $table->unsignedBigInteger('specialist_id');
         });
 
+        Schema::create('ministry_approvals', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('child_id');
+            $table->unsignedBigInteger('teacher_id')->nullable();
+        });
+
         DB::table('children')->insert([
             ['id' => 10, 'name' => 'طفل أ', 'assigned_teacher_id' => null],
             ['id' => 20, 'name' => 'طفل ب', 'assigned_teacher_id' => null],
@@ -36,10 +42,17 @@ class ChildSpecialistScopeTest extends TestCase
             'child_id' => 10,
             'specialist_id' => 3,
         ]);
+
+        DB::table('ministry_approvals')->insert([
+            'id' => 99,
+            'child_id' => 20,
+            'teacher_id' => null,
+        ]);
     }
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('ministry_approvals');
         Schema::dropIfExists('child_specialist');
         Schema::dropIfExists('children');
 
