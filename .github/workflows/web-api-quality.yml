@@ -1,6 +1,16 @@
 name: Web and API quality checks
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "edubridge-web/**"
+      - "edubridge-api-laravel/**"
+      - "edubridge-app/lib/services/api_service.dart"
+      - "scripts/check_mobile_api_parity.py"
+      - ".github/workflows/web-api-quality.yml"
   pull_request:
     branches:
       - main
