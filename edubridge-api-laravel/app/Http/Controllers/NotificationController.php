@@ -51,36 +51,6 @@ class NotificationController extends Controller
         }
     }
 
-    // إرسال إشعار لمستخدم (معلّم / مختص / أدمن)
-    // POST /api/notifications   body: { user_id, message }
-    public function store(Request $request)
-    {
-        $userId = $request->input('user_id');
-        $message = $request->input('message');
-
-        if (!$userId || !$message) {
-            return response()->json(['error' => 'user_id و message مطلوبان'], 400);
-        }
-
-        try {
-            if (!DB::table('users')->where('id', $userId)->exists()) {
-                return response()->json(['error' => 'المستخدم غير موجود'], 404);
-            }
-
-            $id = DB::table('notifications')->insertGetId([
-                'user_id' => $userId,
-                'title' => $request->input('title'),
-                'message' => $message,
-                'type' => $request->input('type'),
-            ]);
-
-            return response()->json(['notification' => DB::table('notifications')->find($id)], 201);
-        } catch (\Exception $e) {
-            report($e);
-            return response()->json(['error' => 'خطأ في السيرفر'], 500);
-        }
-    }
-
     // تعليم إشعار كمقروء (لصاحبه فقط)
     // PUT /api/notifications/:id/read
     public function markRead(Request $request, $id)
