@@ -8,7 +8,11 @@ use App\Support\R2Storage;
 
 class AccountController extends Controller
 {
-    private const EXTENSIONS = ['jpg','jpeg','png','webp'];
+    private const MIME_EXTENSIONS = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
     private const MAX_BYTES = 5 * 1024 * 1024;
 
     public function uploadAvatar(Request $request)
@@ -20,12 +24,14 @@ class AccountController extends Controller
             return response()->json(['error' => 'الصورة مطلوبة'], 422);
         }
 
-        $ext = strtolower((string) $file->getClientOriginalExtension());
-        if (!in_array($ext, self::EXTENSIONS, true)) {
-            return response()->json(['error' => 'صيغة الصورة غير مدعومة'], 422);
-        }
         if ((int) $file->getSize() > self::MAX_BYTES) {
             return response()->json(['error' => 'حجم الصورة يتجاوز 5MB'], 422);
+        }
+
+        $mime = strtolower((string) $file->getMimeType());
+        $ext = self::MIME_EXTENSIONS[$mime] ?? null;
+        if (!$ext) {
+            return response()->json(['error' => 'الملف المرفوع ليس صورة مدعومة'], 422);
         }
 
         try {
@@ -37,7 +43,7 @@ class AccountController extends Controller
                 R2Storage::mediaBucket(),
                 $key,
                 $file,
-                (string) $file->getMimeType()
+                $mime
             );
             $absolute = R2Storage::mediaPublicUrl($key);
 
