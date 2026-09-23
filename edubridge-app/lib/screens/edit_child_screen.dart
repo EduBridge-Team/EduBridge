@@ -134,6 +134,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
 
       final res = await ApiService.authPut('/children/${widget.child['id']}', body);
       final data = jsonDecode(res.body);
+      if (!mounted) return;
 
       if (res.statusCode == 200) {
         Navigator.pop(context, true);
@@ -146,13 +147,17 @@ class _EditChildScreenState extends State<EditChildScreen> {
         });
       }
     } catch (_) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'تعذّر الاتصال بالسيرفر';
+        });
+      }
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
