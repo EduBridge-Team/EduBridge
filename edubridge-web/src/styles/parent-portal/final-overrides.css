@@ -1,0 +1,196 @@
+/* Hide duplicated admin section tabs on desktop; sidebar provides the same navigation. */
+@media (min-width: 901px) {
+  .pp-role-admin .admin-section-tabs {
+    display: none !important;
+  }
+}
+
+
+/* FINAL parent dashboard/sidebar containment fix */
+@media (min-width: 901px) {
+  /* Reserve the sidebar physically; dashboard content must never reuse it. */
+  body.parent-dashboard-page .pp-shell,
+  body.parent-portal-active .pp-shell {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-right: 230px !important;
+    padding-left: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body.parent-dashboard-page .pp-body,
+  body.parent-portal-active .pp-body {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body.parent-dashboard-page .pp-content {
+    width: min(1180px, calc(100% - 32px)) !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  /* Kill the legacy "fill the freed sidebar space" behaviour. */
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-main,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-content,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-fullwidth-lower,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-lower-grid,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-quick-actions,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-noor-banner {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    transform: none !important;
+    right: auto !important;
+    left: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 > .pd-sidebar,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-toolbar,
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 > .pd-mobile-nav {
+    display: none !important;
+  }
+
+  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-fullwidth-lower::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Keep schedule rows inside their card at narrower desktop widths. */
+  body.parent-dashboard-page .pd-today,
+  body.parent-dashboard-page .pd-conversations,
+  body.parent-dashboard-page .pd-schedule-list,
+  body.parent-dashboard-page .pd-schedule-row,
+  body.parent-dashboard-page .pd-schedule-copy {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Sidebar: fixed reserved column, all entries reachable, no clipping. */
+  body.parent-portal-active .pp-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+    width: 230px !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    padding: 14px 14px 14px !important;
+    gap: 8px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  body.parent-portal-active .pp-sidebar::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  body.parent-portal-active .pp-sidebar-head {
+    flex: 0 0 auto !important;
+    min-height: 74px !important;
+  }
+
+  body.parent-portal-active .pp-brand img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  body.parent-portal-active .pp-brand strong {
+    font-size: 20px !important;
+  }
+
+  body.parent-portal-active .pp-nav {
+    flex: 0 0 auto !important;
+    gap: 3px !important;
+  }
+
+  body.parent-portal-active .pp-nav button {
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    flex: 0 0 auto !important;
+    min-height: 168px !important;
+    max-height: none !important;
+    margin-top: 6px !important;
+    margin-bottom: 0 !important;
+    padding: 8px 10px 10px !important;
+    overflow: hidden !important;
+  }
+
+  body.parent-portal-active .pp-noor-card .noor-pet {
+    margin: -24px auto -16px !important;
+    transform-origin: center !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > strong {
+    font-size: 15px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card > button {
+    min-height: 30px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  body.parent-dashboard-page .pp-shell,
+  body.parent-portal-active .pp-shell {
+    padding-right: 205px !important;
+  }
+
+  body.parent-portal-active .pp-sidebar {
+    width: 205px !important;
+    padding-inline: 10px !important;
+  }
+
+  body.parent-portal-active .pp-nav button {
+    min-height: 42px !important;
+    font-size: 12px !important;
+  }
+}
+
+
+/* Noor sidebar launcher — mobile-app parity: mascot only, no card copy/CTA. */
+.pp-noor-card {
+  justify-content: center;
+  min-height: 112px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+.pp-noor-card:hover {
+  background: transparent;
+  transform: translateY(-2px);
+}
+.pp-noor-card .noor-pet {
+  margin-inline: auto;
+}
+

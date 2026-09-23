@@ -1,0 +1,329 @@
+/* Animated landing headline imported from the reviewed web snapshot. */
+.hero-typewriter {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.home-hero h1 .hero-typewriter-highlight {
+  background: linear-gradient(90deg, var(--brand-blue) 8%, var(--brand-cyan) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-typewriter-cursor {
+  display: inline-block;
+  width: 4px;
+  height: .82em;
+  margin-inline-start: 4px;
+  vertical-align: -0.08em;
+  background: var(--brand-blue);
+  border-radius: 2px;
+  animation: hero-cursor-blink 1s step-end infinite;
+}
+@keyframes hero-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-typewriter-cursor {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+
+/* ============================================================
+   Header motion + polished EduBridge footer
+   ============================================================ */
+.topbar {
+  animation: edubridge-header-enter .58s cubic-bezier(.2,.72,.2,1) both;
+}
+
+.topbar .topbar-brand {
+  animation: edubridge-logo-enter .7s .06s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.topbar .topbar-nav > * {
+  animation: edubridge-nav-enter .48s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.topbar .topbar-nav > *:nth-child(1) { animation-delay: .10s; }
+.topbar .topbar-nav > *:nth-child(2) { animation-delay: .14s; }
+.topbar .topbar-nav > *:nth-child(3) { animation-delay: .18s; }
+.topbar .topbar-nav > *:nth-child(4) { animation-delay: .22s; }
+.topbar .topbar-nav > *:nth-child(5) { animation-delay: .26s; }
+
+.topbar .topbar-actions {
+  animation: edubridge-actions-enter .5s .22s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes edubridge-header-enter {
+  from { opacity: 0; transform: translateY(-14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes edubridge-logo-enter {
+  from { opacity: 0; transform: translateY(-8px) scale(.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes edubridge-nav-enter {
+  from { opacity: 0; transform: translateY(-7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes edubridge-actions-enter {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.site-footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: 22px;
+  padding: 48px 28px 22px;
+  border-top: 0;
+  background:
+    radial-gradient(circle at 88% 118%, rgba(87, 223, 219, .34), transparent 20rem),
+    linear-gradient(120deg, #0f5db9 0%, #1769c2 48%, #1ebbc6 100%);
+  color: #fff;
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, transparent, #000 35%, #000);
+}
+
+.footer-decor {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 999px;
+  border: 20px solid rgba(128, 238, 230, .2);
+}
+
+.footer-decor-a {
+  width: 190px;
+  height: 78px;
+  inset-inline-end: -55px;
+  bottom: -10px;
+  transform: rotate(25deg);
+}
+
+.footer-decor-b {
+  width: 150px;
+  height: 62px;
+  inset-inline-end: 55px;
+  bottom: -42px;
+  border-color: rgba(113, 191, 255, .22);
+  transform: rotate(-18deg);
+}
+
+.site-footer .footer-grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.45fr .85fr 1.1fr 1fr;
+  gap: 34px;
+  align-items: start;
+  direction: ltr;
+}
+
+.site-footer .footer-grid > * {
+  direction: rtl;
+}
+
+.site-footer .footer-identity {
+  text-align: right;
+}
+
+.site-footer .footer-identity .brand-lockup {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.site-footer .footer-identity .brand-lockup-icon {
+  width: 58px !important;
+  height: 58px !important;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.site-footer .footer-identity .brand-wordmark {
+  font-size: 37px;
+  background: none;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  letter-spacing: -1px;
+}
+
+.site-footer .footer-identity p {
+  max-width: 350px;
+  margin: 0;
+  color: rgba(255,255,255,.82);
+  line-height: 1.8;
+}
+
+.site-footer .footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.site-footer h4 {
+  margin: 0 0 13px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.site-footer .footer-column > a:not(.footer-download-btn),
+.site-footer .footer-contact {
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.site-footer .footer-column > a:not(.footer-download-btn):hover,
+.site-footer .footer-contact:hover {
+  color: #fff;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.site-footer .footer-socials a {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(255,255,255,.09);
+  backdrop-filter: blur(8px);
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.site-footer .footer-socials a:hover {
+  transform: translateY(-2px);
+  color: #fff;
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.5);
+}
+
+.site-footer .footer-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 0;
+  padding: 10px 13px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  font-size: 13px;
+  font-weight: 800;
+  transition: transform .18s ease, background .18s ease;
+}
+
+.site-footer .footer-download-btn:hover {
+  transform: translateY(-2px);
+  color: #fff;
+  background: rgba(255,255,255,.2);
+}
+
+.site-footer .footer-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 30px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.62);
+}
+
+.site-footer .footer-copy::before {
+  height: 5px;
+  max-width: 220px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+  .site-footer .footer-grid {
+    grid-template-columns: 1.35fr 1fr;
+    gap: 30px 24px;
+  }
+}
+
+@media (max-width: 580px) {
+  .site-footer {
+    padding: 38px 20px 20px;
+  }
+
+  .site-footer .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .site-footer .footer-identity,
+  .site-footer .footer-column {
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer .footer-identity p {
+    margin-inline: auto;
+  }
+
+  .site-footer .footer-contact {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .footer-socials {
+    justify-content: center;
+  }
+
+  .site-footer .footer-download-btn {
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar,
+  .topbar .topbar-brand,
+  .topbar .topbar-nav > *,
+  .topbar .topbar-actions {
+    animation: none !important;
+  }
+}
+
