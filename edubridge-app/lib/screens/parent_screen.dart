@@ -317,10 +317,9 @@ class _ParentScreenState extends State<ParentScreen> {
               icon: Icons.logout,
               destructive: true,
               onSelected: () async {
+                final navigator = Navigator.of(context);
                 await ApiService.logout();
-                if (context.mounted) {
-                  Navigator.pushReplacementNamed(context, '/home');
-                }
+                navigator.pushReplacementNamed('/home');
               },
             ),
           ],
