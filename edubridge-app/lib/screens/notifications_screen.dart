@@ -73,6 +73,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           current.map((n) => {...n as Map, 'is_read': true}).toList();
 
       await NotificationListenerService.instance.refresh();
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديد جميع الإشعارات كمقروءة')),
