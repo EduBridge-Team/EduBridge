@@ -25,12 +25,12 @@ jobs:
           fi
 
           if [[ "$BASE_REF" == "develop" ]]; then
-            if [[ "$HEAD_REF" == feature/* || "$HEAD_REF" == fix/* || "$HEAD_REF" == chore/* || "$HEAD_REF" == refactor/* || "$HEAD_REF" == docs/* ]]; then
+            if [[ "$HEAD_REF" == "main" || "$HEAD_REF" == feature/* || "$HEAD_REF" == fix/* || "$HEAD_REF" == chore/* || "$HEAD_REF" == refactor/* || "$HEAD_REF" == docs/* ]]; then
               echo "OK: '$HEAD_REF' is allowed to merge into develop."
               exit 0
             fi
 
-            echo "PRs into 'develop' must come from 'feature/*', 'fix/*', 'chore/*', 'refactor/*', or 'docs/*' branches, not '$HEAD_REF'."
+            echo "PRs into 'develop' must come from 'main', 'feature/*', 'fix/*', 'chore/*', 'refactor/*', or 'docs/*' branches, not '$HEAD_REF'."
             exit 1
           fi
 
