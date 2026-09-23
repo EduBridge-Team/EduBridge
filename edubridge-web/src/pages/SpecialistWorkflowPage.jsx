@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { acceptSpecialistSuggestion, createSpecialistSuggestion, fetchChildren, fetchMyProfile, fetchSpecialistSuggestions, fetchUsers, getUser, rejectSpecialistSuggestion, setMySpecialty } from '../api'
 import '../feature-parity.css'
 
 export default function SpecialistWorkflowPage(){
-  const me=getUser(); const isSpecialist=me?.role==='specialist'
+  const me=getUser(); const role=me?.role; const isSpecialist=role==='specialist'
   const [profile,setProfile]=useState(null);const [items,setItems]=useState([]);const [children,setChildren]=useState([]);const [specialists,setSpecialists]=useState([])
   const [filter,setFilter]=useState('pending');const [specialty,setSpecialty]=useState('learning_support');const [draft,setDraft]=useState({child_id:'',specialist_id:'',specialty:'learning_support',reason:''});const [error,setError]=useState('');const [busy,setBusy]=useState(false)
 
-  const load=async()=>{try{
-    const canListSuggestions=['specialist','admin'].includes(me?.role)
+  const load=useCallback(async()=>{try{
+    const canListSuggestions=['specialist','admin'].includes(role)
     const jobs=[canListSuggestions ? fetchSpecialistSuggestions(filter==='all'?undefined:filter) : Promise.resolve({suggestions:[]})]
     if(isSpecialist)jobs.push(fetchMyProfile())
     else jobs.push(Promise.resolve(null))
@@ -16,10 +16,10 @@ export default function SpecialistWorkflowPage(){
     const [s,p,c,u]=await Promise.all(jobs)
     setItems(s.suggestions||[]);setProfile(p);setChildren(c.children||[]);setSpecialists((u.users||[]).filter(x=>x.role==='specialist'))
     if(p?.specialty)setSpecialty(p.specialty)
-    if(!draft.child_id&&(c.children||[])[0])setDraft(x=>({...x,child_id:String(c.children[0].id)}))
+    if((c.children||[])[0])setDraft(x=>x.child_id?x:{...x,child_id:String(c.children[0].id)})
     setError('')
-  }catch(e){setError(e.message)}}
-  useEffect(()=>{load()},[filter])
+  }catch(e){setError(e.message)}},[filter,isSpecialist,role])
+  useEffect(()=>{load()},[load])
 
   const saveSpecialty=async()=>{setBusy(true);try{await setMySpecialty(specialty);await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
   const suggest=async(e)=>{e.preventDefault();setBusy(true);try{await createSpecialistSuggestion(draft.child_id,{specialist_id:Number(draft.specialist_id),specialty:draft.specialty,reason:draft.reason});setDraft({...draft,specialist_id:'',reason:''});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
