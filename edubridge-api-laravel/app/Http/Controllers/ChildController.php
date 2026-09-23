@@ -115,12 +115,29 @@ class ChildController extends Controller
     {
         $user = $request->attributes->get('jwt_user');
 
+        if (!$user || !in_array($user->role, ['parent', 'teacher', 'specialist', 'admin'], true)) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
         if (!$request->input('name')) {
             return response()->json(['error' => 'اسم الطفل مطلوب'], 400);
         }
 
+        $specialistSpecialty = null;
+        if ($user->role === 'specialist') {
+            $specialistSpecialty = DB::table('users')
+                ->where('id', $user->id)
+                ->value('specialty');
+
+            if (!in_array($specialistSpecialty, ['learning_support', 'educational', 'communication_support', 'learning_behavior'], true)) {
+                return response()->json(['error' => 'حدد تخصصك قبل إضافة طفل'], 422);
+            }
+        }
+
         // نبني الحمولة من الحقول المرسلة فقط (نتجاهل غير الموجود)
         $data = ['name' => $request->input('name')];
+        if ($user->role === 'teacher') {
+            $data['assigned_teacher_id'] = $user->id;
+        }
 
         foreach (['age', 'birth_date', 'gender', 'disability_type_id', 'organization_id'] as $f) {
             if ($request->has($f) && $request->input($f) !== null) {
@@ -149,14 +166,30 @@ class ChildController extends Controller
         }
 
         try {
-            $id = DB::table('children')->insertGetId($data);
+            $id = DB::transaction(function () use ($data, $user, $specialistSpecialty) {
+                $id = DB::table('children')->insertGetId($data);
 
-            // ولي الأمر يُربط تلقائياً بالطفل الذي أضافه
-            if ($user && $user->role === 'parent') {
-                DB::table('child_parent')->insertOrIgnore([
-                    'child_id' => $id,
-                    'parent_id' => $user->id,
-                ]);
+                if ($user->role === 'parent') {
+                    DB::table('child_parent')->insertOrIgnore([
+                        'child_id' => $id,
+                        'parent_id' => $user->id,
+                    ]);
+                }
+
+                if ($user->role === 'specialist') {
+                    DB::table('child_specialist')->insertOrIgnore([
+                        'child_id' => $id,
+                        'specialist_id' => $user->id,
+                        'specialty' => $specialistSpecialty,
+                        'assigned_at' => now(),
+                        'created_at' => now(),
+                    ]);
+                }
+
+                return $id;
+            });
+
+            if ($user->role === 'parent') {
                 Notify::toUser(
                     $user->id,
                     'تمت إضافة طفل',
