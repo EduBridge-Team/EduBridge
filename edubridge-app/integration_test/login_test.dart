@@ -58,8 +58,6 @@ void main() {
     // زر «الأطفال» موجود في الشاشة الرئيسية
     expect(find.text('الأطفال'), findsOneWidget);
     },
-    skip: _testEmail.isEmpty || _testPassword.isEmpty
-        ? 'مرّر EDUBRIDGE_TEST_EMAIL و EDUBRIDGE_TEST_PASSWORD لتشغيل اختبار التكامل'
-        : false,
+    skip: _testEmail.isEmpty || _testPassword.isEmpty,
   );
 }
