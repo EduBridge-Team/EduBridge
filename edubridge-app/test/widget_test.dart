@@ -13,8 +13,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
 
-    expect(find.text('جسر التعليمي'), findsOneWidget);
-    expect(find.text('🚀 ابدأ رحلتك التعليمية'), findsOneWidget);
+    expect(find.text('معاً ندعم تقدُّمه'), findsOneWidget);
+    expect(find.text('Skip'), findsOneWidget);
   });
 
   testWidgets('الجلسة المحفوظة تتجاوز الشاشة الترحيبية',
@@ -30,6 +30,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('🚀 ابدأ رحلتك التعليمية'), findsNothing);
+    expect(find.text('معاً ندعم تقدُّمه'), findsNothing);
   });
 }
