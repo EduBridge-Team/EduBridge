@@ -19,6 +19,13 @@ class PlanEvaluationController extends Controller
         if ($childId <= 0 || !DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
         }
+        if ($me->role === 'specialist'
+            && !DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $me->id)
+                ->exists()) {
+            return response()->json(['error' => 'يمكنك تقييم خطط الأطفال ضمن فريقك فقط'], 403);
+        }
 
         $appropriate = $request->input('is_plan_appropriate');
         if (!is_bool($appropriate) && !in_array($appropriate, [0,1,'0','1'], true)) {
