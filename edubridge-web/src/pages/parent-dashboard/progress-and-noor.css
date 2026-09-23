@@ -1,3 +1,4 @@
+@media (min-width: 901px) {
   /* Restore the original child artwork proportions. */
   .pd-hero-art {
     min-height: 205px;
@@ -377,21 +378,4 @@
   }
 }
 
-
-/* ============================================================
-   Lower dashboard wrapper + clean separators
-   ============================================================ */
-@media (min-width: 901px) {
-  .pd-fullwidth-lower {
-    width: calc(100% + 230px);
-    max-width: none;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 30;
-    transform: translateX(230px);
-    display: grid;
-    gap: 12px;
-    padding: 0;
-    background: #f8fbfe;
-  }
 
