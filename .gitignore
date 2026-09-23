@@ -34,3 +34,7 @@ CLAUDE.md
 
 # Local secrets
 secrets/
+
+# Office temporary lock files
+.~lock.*
+~$*
