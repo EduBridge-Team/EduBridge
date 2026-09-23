@@ -79,7 +79,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     _target = _options[_rnd.nextInt(_options.length)];
 
     // ✅ نطق الكلمة بصوت بطيء للداون
-    _speak('${_target.$2}');
+    _speak(_target.$2);
 
     setState(() {});
   }
