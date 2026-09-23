@@ -11,7 +11,13 @@ class ProgressController extends Controller
     private function canAccessChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['admin', 'specialist'], true)) return true;
+        if ($user->role === 'admin') return true;
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
         if ($user->role === 'teacher') {
             return DB::table('children')
                 ->where('id', $childId)
