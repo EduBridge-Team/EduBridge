@@ -166,9 +166,12 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:admin');
 
     // دراسة الحالة مع المختصين (البطاقة 7)
-    Route::get('/consultations', [ConsultationController::class, 'index']);
-    Route::post('/consultations', [ConsultationController::class, 'store']);
-    Route::get('/consultations/{id}', [ConsultationController::class, 'show']);
+    Route::get('/consultations', [ConsultationController::class, 'index'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/consultations', [ConsultationController::class, 'store'])
+        ->middleware('role:parent,teacher,admin');
+    Route::get('/consultations/{id}', [ConsultationController::class, 'show'])
+        ->middleware('role:parent,teacher,specialist,admin');
     Route::put('/consultations/{id}', [ConsultationController::class, 'update'])
         ->middleware('role:specialist,admin');
     Route::post('/consultations/{id}/notes', [ConsultationController::class, 'addNote'])
