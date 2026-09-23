@@ -23,6 +23,8 @@ export default function ChildrenPage() {
   const navigate = useNavigate()
   const me = getUser()
   const isParent = me?.role === 'parent'
+  const isAdmin = me?.role === 'admin'
+  const canAddChild = isParent || isAdmin
   const [children, setChildren] = useState([])
   const [summaries, setSummaries] = useState({})
   const [loading, setLoading] = useState(true)
@@ -100,10 +102,28 @@ export default function ChildrenPage() {
   }
 
   if (!isParent) {
-    if (children.length === 0) return <div className="state">لا يوجد أطفال بعد</div>
+    if (children.length === 0) {
+      return (
+        <div className="state">
+          لا يوجد أطفال بعد
+          {canAddChild && (
+            <button className="btn" style={{ marginTop: 16 }} onClick={() => navigate('/children/new')}>
+              <Plus size={18} /> إضافة طفل
+            </button>
+          )}
+        </div>
+      )
+    }
     return (
       <div>
-        <div className="page-title"><h2>الأطفال</h2></div>
+        <div className="page-title">
+          <h2>الأطفال</h2>
+          {canAddChild && (
+            <button className="btn" onClick={() => navigate('/children/new')}>
+              <Plus size={18} /> إضافة طفل
+            </button>
+          )}
+        </div>
         {children.map((child) => (
           <div
             key={child.id}
