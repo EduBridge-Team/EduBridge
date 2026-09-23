@@ -180,24 +180,8 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
   Future<void> _handleDirectToTeacherFlow(
     Map<String, dynamic> result,
   ) async {
-    // ─── إرسال إشعار للمعلم المعيّن ───
-    if (_selectedTeacherId != null) {
-      try {
-        await ApiService.authPost('/notifications/send', {
-          'user_id': _selectedTeacherId,
-          'child_id': widget.child['id'],
-          'evaluation_id': result['id'],
-          'title': '📋 تقييم جديد للطفل',
-          'body':
-              'رفع المختص تقييماً للطفل "${widget.child['name']}" — راجع الخطة وابدأ التنفيذ',
-          'type': 'evaluation_created',
-        });
-      } catch (_) {
-        // لا نوقف العملية لو فشل الإشعار — التقييم محفوظ
-        debugPrint('⚠️ فشل إرسال إشعار للمعلم');
-      }
-    }
-
+    // إشعار المعلم المعيّن يُنشأ الآن من Laravel ضمن إنشاء التقييم نفسه،
+    // حتى لا يعتمد التطبيق على مسار عام لإرسال الإشعارات.
     if (!mounted) return;
 
     _showSuccessDialog(
