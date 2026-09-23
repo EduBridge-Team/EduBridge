@@ -34,6 +34,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   late (String, String, String) _target;
   int _score = 0;
   int _round = 0;
+  int _streak = 0;
   static const _totalRounds = 8;
 
   @override
