@@ -10,6 +10,9 @@ on:
       - "edubridge-api-laravel/**"
       - "edubridge-app/lib/services/api_service.dart"
       - "scripts/check_mobile_api_parity.py"
+      - "deploy/**"
+      - "Procfile"
+      - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
   pull_request:
     branches:
@@ -20,6 +23,9 @@ on:
       - "edubridge-api-laravel/**"
       - "edubridge-app/lib/services/api_service.dart"
       - "scripts/check_mobile_api_parity.py"
+      - "deploy/**"
+      - "Procfile"
+      - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
   workflow_dispatch:
 
@@ -27,6 +33,19 @@ permissions:
   contents: read
 
 jobs:
+  deploy-config:
+    name: Deployment config syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Validate deployment scripts
+        run: |
+          bash -n deploy/*.sh
+          node --check deploy/taqat-web-server.mjs
+
   mobile-api-contract:
     name: Flutter ↔ Laravel API contract
     runs-on: ubuntu-latest
