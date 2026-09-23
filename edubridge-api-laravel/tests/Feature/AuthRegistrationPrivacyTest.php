@@ -71,6 +71,34 @@ class AuthRegistrationPrivacyTest extends TestCase
         }
     }
 
+    public function test_registration_rejects_invalid_email(): void
+    {
+        $request = Request::create('/api/auth/register', 'POST', [
+            'name' => 'مستخدم',
+            'email' => 'not-an-email',
+            'password' => 'safe-password-123',
+            'role' => 'parent',
+        ]);
+
+        $response = app(AuthController::class)->register($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+    }
+
+    public function test_registration_rejects_short_password(): void
+    {
+        $request = Request::create('/api/auth/register', 'POST', [
+            'name' => 'مستخدم',
+            'email' => 'short@example.com',
+            'password' => '1234567',
+            'role' => 'parent',
+        ]);
+
+        $response = app(AuthController::class)->register($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+    }
+
     public function test_specialist_can_register_with_supported_specialty(): void
     {
         $request = Request::create('/api/auth/register', 'POST', [
