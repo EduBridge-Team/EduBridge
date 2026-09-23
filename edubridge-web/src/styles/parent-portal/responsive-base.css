@@ -1,0 +1,491 @@
+/* Mobile / tablet */
+@media (max-width: 900px) {
+  .pp-shell {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .pp-sidebar {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(310px, 88vw);
+    height: 100dvh;
+    transform: translateX(105%);
+    transition: transform .22s ease;
+    border-left: 0;
+    box-shadow: -20px 0 50px rgba(10,56,94,.2);
+  }
+
+  .pp-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pp-drawer-close {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #f0f7fb;
+  }
+
+  .pp-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: block;
+    border: 0;
+    background: rgba(9,38,62,.34);
+    backdrop-filter: blur(2px);
+  }
+
+  .pp-body {
+    width: 100%;
+  }
+
+  .pp-toolbar {
+    min-height: 70px;
+    padding: 10px 16px;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  }
+
+  .pp-menu-button {
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--pp-line);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    color: var(--pp-blue);
+  }
+
+  .pp-profile {
+    min-width: auto;
+  }
+
+  .pp-profile-copy,
+  .pp-profile > svg {
+    display: none;
+  }
+
+  .pp-global-search {
+    min-width: 0;
+  }
+
+  .pp-content {
+    width: min(100% - 24px, 900px);
+    padding: 16px 0 20px;
+  }
+
+  .pc-grid,
+  .parent-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .parent-lessons-page .lessons-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-lessons-page .lessons-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pcv-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .pcv-tabs {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+}
+
+@media (max-width: 680px) {
+  .pp-toolbar {
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    gap: 8px;
+  }
+
+  .pp-global-search {
+    min-height: 43px;
+    padding-inline: 11px;
+  }
+
+  .pp-global-search button {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .pp-notification {
+    display: none;
+  }
+
+  .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .pp-content {
+    width: calc(100% - 18px);
+  }
+
+  .pc-heading,
+  .pcv-heading {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .pc-heading-copy,
+  .pcv-heading-copy {
+    align-items: flex-start;
+  }
+
+  .pc-heading h1,
+  .pcv-heading h1 {
+    font-size: 23px;
+  }
+
+  .pc-heading p,
+  .pcv-heading p {
+    font-size: 11px;
+  }
+
+  .pc-add-button,
+  .pcv-new {
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+
+  .pc-tools,
+  .pc-stats,
+  .pc-grid,
+  .parent-lessons-page .lesson-cards-grid,
+  .parent-lessons-page .lessons-side {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-stat {
+    min-height: 78px;
+  }
+
+  .pc-child-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .pc-avatar {
+    width: 68px;
+    height: 68px;
+    font-size: 25px;
+  }
+
+  .pc-child-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pcv-heading {
+    flex-wrap: wrap;
+  }
+
+  .pcv-new {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .parent-conversations-page .chat-layout {
+    min-height: 0;
+  }
+
+  .parent-conversations-page .conversation-list {
+    max-height: 260px;
+  }
+
+  .parent-conversations-page .chat-messages {
+    height: 380px;
+  }
+
+  .pp-content .page-title {
+    padding: 15px;
+    border-radius: 17px;
+  }
+}
+
+
+.pcv-unread {
+  margin-inline-start: auto;
+  min-width: 24px;
+  height: 24px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--pp-blue);
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) small:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Parent portal sidebar parity with the main parent dashboard
+   ============================================================ */
+@media (min-width: 901px) {
+  .pp-shell {
+    grid-template-columns: minmax(0, 1fr) 230px;
+  }
+
+  .pp-sidebar {
+    width: auto;
+    padding: 22px 16px 18px;
+    gap: 18px;
+    border-left: 1px solid #e4eef5;
+    box-shadow: -8px 0 28px rgba(31, 105, 163, .035);
+  }
+
+  .pp-sidebar-head {
+    justify-content: center;
+  }
+
+  .pp-brand {
+    display: grid;
+    justify-items: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .pp-brand img {
+    width: 62px;
+    height: 62px;
+  }
+
+  .pp-brand strong {
+    font-size: 23px;
+    color: var(--pp-blue);
+  }
+
+  .pp-brand small {
+    margin-top: 2px;
+    font-size: 9px;
+  }
+
+  .pp-nav {
+    gap: 8px;
+  }
+
+  .pp-nav button {
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -16px;
+  }
+
+  .pp-noor-card {
+    margin-top: auto;
+    min-height: 205px;
+    padding: 12px;
+    border: 1px solid #d5edf7;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(91,217,207,.26), transparent 5rem),
+      linear-gradient(155deg, #f4fbff, #e8f8ff);
+    overflow: hidden;
+  }
+
+  .pp-noor-card .noor-pet {
+    margin: -14px auto -8px;
+  }
+
+  .pp-noor-card > strong {
+    display: block;
+    font-size: 17px;
+    color: var(--pp-blue-deep);
+  }
+
+  .pp-noor-card > p {
+    margin: 3px 0 8px;
+    color: var(--pp-text);
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .pp-noor-card > button {
+    width: 100%;
+    min-height: 34px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--pp-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
+
+
+/* ============================================================
+   Parent navigation parity: desktop sidebar / mobile bottom bar
+   ============================================================ */
+.pp-nav button {
+  position: relative;
+}
+
+.pp-nav button > em {
+  margin-inline-start: auto;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ef5f6f;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.pp-nav button:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+@media (min-width: 901px) {
+  .pp-shell {
+    grid-template-columns: minmax(0, 1fr) 230px !important;
+  }
+
+  .pp-sidebar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: 230px !important;
+    height: 100dvh !important;
+    min-height: 100dvh;
+    padding: 22px 16px 18px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  .pp-sidebar-head {
+    justify-content: center;
+  }
+
+  .pp-brand {
+    display: grid !important;
+    justify-items: center;
+    gap: 1px !important;
+    text-align: center;
+  }
+
+  .pp-brand img {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .pp-brand > span {
+    display: block;
+    color: var(--pp-blue);
+    font-size: 23px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .pp-nav {
+    gap: 8px;
+  }
+
+  .pp-nav button {
+    min-height: 52px;
+    padding-inline: 15px;
+    font-size: 15px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -16px;
+  }
+
+  .pp-noor-card {
+    min-height: 205px;
+  }
+
+  /* A bottom bar must never render in desktop layout. */
+  .pp-mobile-nav,
+  .pp-drawer-backdrop,
+  .pp-drawer-close {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-shell {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+
+  .pp-sidebar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: auto;
+    z-index: 100 !important;
+    width: min(310px, 88vw) !important;
+    height: 100dvh !important;
+    transform: translateX(105%);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pp-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pp-mobile-nav {
+    display: none !important;
+  }
+
+  .pp-content {
+    padding-bottom: 20px;
+  }
+}
+
+
