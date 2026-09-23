@@ -46,6 +46,40 @@ class SessionController extends Controller
         return $data;
     }
 
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) {
+            return false;
+        }
+        if ($user->role === 'admin') {
+            return DB::table('children')->where('id', $childId)->exists();
+        }
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+        if ($user->role === 'parent') {
+            return DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
+        }
+
+        return false;
+    }
+
     private function canAccess($user, $session): bool
     {
         if (!$user || !$session) {
@@ -58,7 +92,7 @@ class SessionController extends Controller
             return (int) $session->specialist_id === (int) $user->id;
         }
         if ($user->role === 'teacher') {
-            return true;
+            return $this->canAccessChild($user, (int) $session->child_id);
         }
         if ($user->role === 'parent') {
             return DB::table('child_parent')
@@ -80,6 +114,18 @@ class SessionController extends Controller
 
             if ($user->role === 'specialist') {
                 $query->where('s.specialist_id', $user->id);
+            } elseif ($user->role === 'teacher') {
+                $query->where(function ($q) use ($user) {
+                    $q->whereIn('s.child_id', function ($sub) use ($user) {
+                        $sub->from('children')
+                            ->select('id')
+                            ->where('assigned_teacher_id', $user->id);
+                    })->orWhereIn('s.child_id', function ($sub) use ($user) {
+                        $sub->from('child_teacher')
+                            ->select('child_id')
+                            ->where('teacher_id', $user->id);
+                    });
+                });
             } elseif ($user->role === 'parent') {
                 $query->join('child_parent as cp', 'cp.child_id', '=', 's.child_id')
                     ->where('cp.parent_id', $user->id);
@@ -87,14 +133,8 @@ class SessionController extends Controller
 
             if ($request->filled('child_id')) {
                 $childId = (int) $request->query('child_id');
-                if ($user->role === 'parent') {
-                    $owns = DB::table('child_parent')
-                        ->where('child_id', $childId)
-                        ->where('parent_id', $user->id)
-                        ->exists();
-                    if (!$owns) {
-                        return response()->json(['error' => 'غير مصرّح'], 403);
-                    }
+                if (!$this->canAccessChild($user, $childId)) {
+                    return response()->json(['error' => 'غير مصرّح'], 403);
                 }
                 $query->where('s.child_id', $childId);
             }
@@ -142,6 +182,9 @@ class SessionController extends Controller
 
         if (!DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
+        }
+        if ($user->role === 'specialist' && !$this->canAccessChild($user, $childId)) {
+            return response()->json(['error' => 'يمكنك إنشاء جلسات فقط للأطفال ضمن فريقك'], 403);
         }
         if (!DB::table('users')->where('id', $specialistId)->where('role', 'specialist')->exists()) {
             return response()->json(['error' => 'المختص غير موجود'], 404);
