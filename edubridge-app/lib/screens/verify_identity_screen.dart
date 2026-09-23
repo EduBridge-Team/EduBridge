@@ -606,7 +606,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.file(
-                    file!,
+                    file,
                     width: 52,
                     height: 52,
                     fit: BoxFit.cover,
