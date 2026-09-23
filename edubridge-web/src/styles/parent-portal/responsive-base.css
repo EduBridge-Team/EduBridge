@@ -489,13 +489,3 @@
 }
 
 
-/* ============================================================
-   Fix desktop parent sidebar overlap on narrow desktop viewports
-   ============================================================ */
-@media (min-width: 901px) {
-  .pp-shell {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0;
-    margin-inline: 0 !important;
-    /* Sidebar is physically on the right. In RTL, inline-end is LEFT, so use physical padding-right. */
