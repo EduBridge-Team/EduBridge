@@ -403,25 +403,6 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> assignTeacherToChild(
-      int childId, int teacherId) async {
-    try {
-      final res = await authPost('/children/$childId/assign-teacher', {
-        'teacher_id': teacherId,
-      });
-
-      final data = _decodeBody(res);
-      if (res.statusCode == 200) {
-        return data['child'];
-      }
-      throw Exception(data['error'] ?? 'فشل تعيين المعلم');
-    } catch (e) {
-      _handleError(e);
-    }
-  }
-
-  // ===== دوال الدروس (Lessons) =====
-
   static Future<List<dynamic>> getLessons() async {
     try {
       final res = await authGet('/lessons');
