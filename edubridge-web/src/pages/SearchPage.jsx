@@ -32,8 +32,8 @@ export default function SearchPage() {
 
   const run = async (e) => {
     e?.preventDefault()
-    if (q.trim().length < 2) {
-      setError('أدخل حرفين على الأقل')
+    if (!/^\d{6,20}$/.test(q.trim())) {
+      setError('أدخل رقم الهوية الكامل بالأرقام فقط')
       return
     }
     setLoading(true)
@@ -57,13 +57,13 @@ export default function SearchPage() {
         </h2>
       </div>
       <p className="dash-sub">
-        ابحث عن طالب أو ولي أمر أو موظف برقم الهوية الكامل أو الجزئي.
+        ابحث عن طالب أو ولي أمر أو موظف باستخدام رقم الهوية الكامل.
       </p>
 
       <form onSubmit={run} className="search-row">
         <input
           type="search"
-          placeholder="أدخل رقم الهوية..."
+          placeholder="أدخل رقم الهوية الكامل..."
           value={q}
           inputMode="numeric"
           onChange={(e) => setQ(e.target.value)}
