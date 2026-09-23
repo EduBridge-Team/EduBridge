@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class JwtAuthMiddlewareTest extends TestCase
 {
-    private const SECRET = 'jwt-middleware-test-secret';
+    private const SECRET = 'jwt-middleware-test-secret-32-bytes-minimum-value';
 
     protected function setUp(): void
     {
