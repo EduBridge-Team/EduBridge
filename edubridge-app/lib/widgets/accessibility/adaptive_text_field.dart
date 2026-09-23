@@ -86,7 +86,7 @@ class _AdaptiveTextFieldState extends State<AdaptiveTextField> {
     AdaptiveHelper.hapticFeedback();
 
     await _speech.listen(
-      localeId: 'ar-SA',
+      listenOptions: stt.SpeechListenOptions(localeId: 'ar-SA'),
       onResult: (result) {
         if (result.finalResult) {
           final newText = widget.controller.text.isEmpty
