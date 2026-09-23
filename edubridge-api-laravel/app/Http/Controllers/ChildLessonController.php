@@ -93,5 +93,4 @@ class ChildLessonController extends Controller
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
     }
-    }
 }
