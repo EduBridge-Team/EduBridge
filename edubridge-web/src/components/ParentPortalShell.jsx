@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Accessibility, BarChart3, Bell, BookOpen, ChevronDown, Home, Landmark,
@@ -101,14 +101,14 @@ export default function RolePortalShell({ children }) {
     }
   }, [role])
 
-  const goToProgress = () => {
+  const goToProgress = useCallback(() => {
     const child = childrenList[0]
     if (!child) {
       navigate('/children')
       return
     }
     navigate(`/children/${child.id}/progress`, { state: { childName: child.name } })
-  }
+  }, [childrenList, navigate])
 
   const submitSearch = (event) => {
     event.preventDefault()
@@ -231,7 +231,7 @@ export default function RolePortalShell({ children }) {
     }
 
     return [home, conversations]
-  }, [childrenList, conversationCount, homePath, navigate, role])
+  }, [childrenList, conversationCount, goToProgress, homePath, navigate, role])
 
   const searchPlaceholder = role === 'parent'
     ? 'ابحث في الدروس والمحتوى...'
