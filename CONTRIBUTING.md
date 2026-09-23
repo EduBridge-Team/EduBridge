@@ -10,6 +10,7 @@ Thank you for contributing to EduBridge. This repository uses a protected two-br
 - `fix/*` — bug fixes. Open pull requests into `develop`.
 - `chore/*` — maintenance and repository work. Open pull requests into `develop`.
 - `refactor/*` — internal refactors. Open pull requests into `develop`.
+- `docs/*` — documentation-only changes. Open pull requests into `develop`.
 - `hotfix/*` — urgent production fixes. These may target `main` directly.
 
 Normal release flow:
@@ -18,7 +19,8 @@ Normal release flow:
 feature/*  ─┐
 fix/*      ─┤
 chore/*    ─┼──> develop ──> main
-refactor/* ─┘
+refactor/* ─┤
+docs/*     ─┘
 
 hotfix/* ────────────────> main
 ```
@@ -56,7 +58,7 @@ Normal changes are merged into `develop` first. When `develop` is ready for prod
 develop -> main
 ```
 
-The Branch Guard workflow rejects normal feature/fix/chore/refactor branches that target `main` directly.
+The Branch Guard workflow rejects normal feature/fix/chore/refactor/docs branches that target `main` directly.
 
 ## Hotfixes
 
