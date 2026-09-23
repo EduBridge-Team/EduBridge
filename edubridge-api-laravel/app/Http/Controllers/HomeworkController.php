@@ -308,4 +308,3 @@ class HomeworkController extends Controller
         ]);
     }
 }
-}
