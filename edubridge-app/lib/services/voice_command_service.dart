@@ -602,6 +602,11 @@ class VoiceCommandService {
     if (_matches(text, [
       'اضف طفل', 'اضافه طفل', 'ضيف طفل', 'طفل جديد',
     ])) {
+      final role = await ApiService.getRole();
+      if (role != 'parent' && role != 'admin') {
+        await _reply('إضافة طفل متاحة لولي الأمر والأدمن فقط');
+        return;
+      }
       await _reply('سأفتح إضافة طفل جديد');
       nav.push(MaterialPageRoute(
         builder: (_) => const AddChildScreen(),
@@ -626,7 +631,7 @@ class VoiceCommandService {
         'افتح دراسة حالة [اسم الطفل]. '
         'كمان: الألعاب، الأطفال، الإشعارات، المحادثات، المساعد، '
         'التواصل بالصور، دروس ولي الأمر، احتياجات الأبناء، '
-        'الملف الشخصي، توثيق الهوية، إضافة طفل. '
+        'الملف الشخصي، توثيق الهوية. '
         'وتقدر تقول: اقرأ، أوقف، ارجع، الرئيسية، الوضع الليلي',
       );
       return;
