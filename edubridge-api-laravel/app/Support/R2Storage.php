@@ -53,6 +53,33 @@ final class R2Storage
         }
     }
 
+    public static function putLocalFile(string $bucket, string $key, string $path, ?string $contentType = null): void
+    {
+        if (!is_file($path) || !is_readable($path)) {
+            throw new RuntimeException('Local file is not readable: ' . $path);
+        }
+
+        $stream = fopen($path, 'rb');
+        if ($stream === false) {
+            throw new RuntimeException('Unable to open local file: ' . $path);
+        }
+
+        try {
+            self::request(
+                'PUT',
+                $bucket,
+                $key,
+                $stream,
+                hash_file('sha256', $path),
+                $contentType ?: (string) (mime_content_type($path) ?: 'application/octet-stream')
+            );
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }
+    }
+
     public static function putString(string $bucket, string $key, string $contents, string $contentType = 'text/plain'): void
     {
         self::request(
