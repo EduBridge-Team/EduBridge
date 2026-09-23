@@ -57,6 +57,19 @@ class ChildController extends Controller
         return $child;
     }
 
+    private function hideIdentityFieldsForStaff($child, $user)
+    {
+        if (!$child || !$user || in_array($user->role, ['admin', 'parent'], true)) {
+            return $child;
+        }
+
+        foreach (self::IDENTITY_FIELDS as $field) {
+            unset($child->$field);
+        }
+
+        return $child;
+    }
+
     private function attachSpecialists($child)
     {
         if (!$child) {
@@ -184,7 +197,12 @@ class ChildController extends Controller
                 $children = $base->get();
             }
 
-            $children = $children->map(fn ($c) => $this->attachSpecialists($this->decodeChild($c)));
+            $children = $children->map(
+                fn ($c) => $this->hideIdentityFieldsForStaff(
+                    $this->attachSpecialists($this->decodeChild($c)),
+                    $user
+                )
+            );
 
             return response()->json(['children' => $children]);
         } catch (\Exception $e) {
@@ -195,8 +213,10 @@ class ChildController extends Controller
 
     // عرض طفل واحد بالتفصيل (مع اسم نوع الإعاقة والمعلّم المسؤول والمؤسسة)
     // GET /api/children/:id
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $user = $request->attributes->get('jwt_user');
+
         try {
             $child = DB::table('children as c')
                 ->leftJoin('disability_types as dt', 'dt.id', '=', 'c.disability_type_id')
@@ -209,7 +229,12 @@ class ChildController extends Controller
             if (!$child) {
                 return response()->json(['error' => 'الطفل غير موجود'], 404);
             }
-            return response()->json(['child' => $this->attachSpecialists($this->decodeChild($child))]);
+            $child = $this->hideIdentityFieldsForStaff(
+                $this->attachSpecialists($this->decodeChild($child)),
+                $user
+            );
+
+            return response()->json(['child' => $child]);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
