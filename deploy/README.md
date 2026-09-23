@@ -35,3 +35,11 @@
 
 
 <!-- Auto-deploy verification marker: 2026-09-23 -->
+
+## ملاحظة حول الحزمة الاحتياطية للموقع
+
+مسار الإنتاج الحالي على Taqat **لا يعتمد على** `deploy/web`; يتم بناء واجهة React مباشرة أثناء نشر Taqat عبر `deploy/taqat-build.sh`.
+
+إذا احتجت حزمة الويب القديمة/الاحتياطية (مثل نشر Alwaysdata)، شغّل GitHub Action باسم **Build deployable website** يدويًا من تبويب Actions. سيُنشئ Artifact باسم `EduBridge-Web-Deploy-<run_number>` يمكن تنزيله واستخدام محتوى مجلد `web` منه.
+
+لا يقوم هذا الـ workflow بالكتابة إلى `main` أو تجاوز حماية الفروع.

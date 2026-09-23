@@ -1,20 +1,10 @@
 name: Build deployable website
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'edubridge-web/**'
-      - '.github/workflows/web-deploy-build.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: web-deploy-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
   build:
@@ -52,49 +42,19 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          # Build the deployable snapshot outside the Git worktree. The branch may
-          # advance while Vite is building, so generated files must not participate
-          # in a merge/rebase.
-          rm -rf /tmp/edubridge-deploy-web
-          mkdir -p /tmp/edubridge-deploy-web
-          cp -R edubridge-web/dist/. /tmp/edubridge-deploy-web/
-          cp /tmp/edubridge-deploy-web/index.html /tmp/edubridge-deploy-web/app.html
-          rm -f /tmp/edubridge-deploy-web/index.html
-          # Laravel owns the document-root .htaccess. Never bundle the SPA
-          # FallbackResource file, otherwise /api requests fail at Apache level.
-          rm -f /tmp/edubridge-deploy-web/.htaccess
+          rm -rf deploy-artifact
+          mkdir -p deploy-artifact/web
+          cp -R edubridge-web/dist/. deploy-artifact/web/
+          cp deploy-artifact/web/index.html deploy-artifact/web/app.html
+          rm -f deploy-artifact/web/index.html
 
-      - name: Commit deploy bundle
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Laravel owns the document-root .htaccess in the legacy deployment.
+          rm -f deploy-artifact/web/.htaccess
 
-          # API-only commits can advance main while this job is building. Always
-          # apply the generated bundle on top of the newest main instead of
-          # rebasing generated assets, which can create content conflicts.
-          for attempt in 1 2 3; do
-            echo "Deploy push attempt ${attempt}/3"
-            git fetch origin "${GITHUB_REF_NAME}"
-            git reset --hard "origin/${GITHUB_REF_NAME}"
-
-            rm -rf deploy/web
-            mkdir -p deploy/web
-            cp -R /tmp/edubridge-deploy-web/. deploy/web/
-
-            git add deploy/web
-            if git diff --cached --quiet; then
-              echo 'Deploy bundle is already current.'
-              exit 0
-            fi
-
-            git commit -m 'build(web): refresh deploy bundle'
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
-              exit 0
-            fi
-
-            echo 'main advanced during push; retrying on the newest head...'
-          done
-
-          echo 'Unable to publish deploy bundle after 3 attempts.'
-          exit 1
+      - name: Upload legacy deploy bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: EduBridge-Web-Deploy-${{ github.run_number }}
+          path: deploy-artifact/web
+          if-no-files-found: error
+          retention-days: 30
