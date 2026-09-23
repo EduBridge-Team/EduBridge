@@ -2334,20 +2334,24 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                       textAlign: TextAlign.center),
                 )
               else
-                ...filtered.map<Widget>((s) {
-                  final id = s['id'] as int;
-                  return RadioListTile<int>(
-                    value: id,
-                    groupValue: _selectedId,
-                    activeColor: _color,
-                    title: Text(s['name']?.toString() ?? ''),
-                    subtitle: Text(
-                      s['email']?.toString() ?? '',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    onChanged: (v) => setState(() => _selectedId = v),
-                  );
-                }),
+                RadioGroup<int>(
+                  groupValue: _selectedId,
+                  onChanged: (v) => setState(() => _selectedId = v),
+                  child: Column(
+                    children: filtered.map<Widget>((s) {
+                      final id = s['id'] as int;
+                      return RadioListTile<int>(
+                        value: id,
+                        activeColor: _color,
+                        title: Text(s['name']?.toString() ?? ''),
+                        subtitle: Text(
+                          s['email']?.toString() ?? '',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               const SizedBox(height: 16),
               TextField(
                 controller: _reasonCtrl,
