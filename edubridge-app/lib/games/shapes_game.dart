@@ -1,6 +1,6 @@
 // لعبة الأشكال — للأعمار 4-8
+import 'dart:math';
 import 'package:flutter/material.dart';
-import '../theme.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
