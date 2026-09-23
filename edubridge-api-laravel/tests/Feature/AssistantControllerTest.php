@@ -13,17 +13,16 @@ class AssistantControllerTest extends TestCase
     public function test_it_returns_the_assistant_reply_without_storing_the_response(): void
     {
         config([
-            'services.gemini.key' => 'test-key',
-            'services.gemini.model' => 'test-model',
+            'services.groq.key' => 'test-key',
+            'services.groq.model' => 'test-model',
         ]);
 
         Http::fake(fn () => Http::response([
-            'steps' => [[
-                'type' => 'model_output',
-                'content' => [[
-                    'type' => 'text',
-                    'text' => 'لنشرح الفكرة بخطوات بسيطة.',
-                ]],
+            'choices' => [[
+                'message' => [
+                    'role' => 'assistant',
+                    'content' => 'لنشرح الفكرة بخطوات بسيطة.',
+                ],
             ]],
         ]));
 
@@ -49,19 +48,18 @@ class AssistantControllerTest extends TestCase
             json_decode($response->getContent(), true)['reply'],
         );
         Http::assertSent(fn (HttpRequest $sent) =>
-            $sent->url() === 'https://generativelanguage.googleapis.com/v1beta/interactions'
+            $sent->url() === 'https://api.groq.com/openai/v1/chat/completions'
             && $sent['model'] === 'test-model'
-            && $sent['store'] === false
-            && $sent->hasHeader('x-goog-api-key', 'test-key')
+            && $sent->hasHeader('Authorization', 'Bearer test-key')
             && ! str_contains(json_encode($sent->data()), 'test@example.com')
             && ! str_contains(json_encode($sent->data()), '0599123456')
-            && str_contains($sent['system_instruction'], 'معلّم')
+            && str_contains($sent['messages'][0]['content'], 'معلّم')
         );
     }
 
     public function test_it_reports_when_the_server_key_is_not_configured(): void
     {
-        config(['services.gemini.key' => null]);
+        config(['services.groq.key' => null]);
 
         $request = Request::create(
             '/api/assistant/chat',
