@@ -36,15 +36,19 @@ use App\Http\Controllers\MinistryApprovalController;
 use App\Http\Controllers\PlanEvaluationController;
 
 // المصادقة (بدون توكن)
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/google', [AuthController::class, 'google']);
+Route::post('/auth/register', [AuthController::class, 'register'])
+    ->middleware('throttle:5,1');
+Route::post('/auth/login', [AuthController::class, 'login'])
+    ->middleware('throttle:10,1');
+Route::post('/auth/google', [AuthController::class, 'google'])
+    ->middleware('throttle:10,1');
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/me/password', [AuthController::class, 'changePassword']);
+    Route::put('/me/password', [AuthController::class, 'changePassword'])
+        ->middleware('throttle:10,1');
     Route::post('/me/avatar', [AccountController::class, 'uploadAvatar']);
     Route::delete('/me/avatar', [AccountController::class, 'removeAvatar']);
     Route::delete('/me', [AccountController::class, 'destroy']);
