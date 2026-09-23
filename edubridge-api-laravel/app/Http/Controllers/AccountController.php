@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\R2Storage;
 
 class AccountController extends Controller
 {
@@ -29,16 +30,19 @@ class AccountController extends Controller
 
         try {
             $current = DB::table('users')->where('id', $user->id)->value('avatar_url');
-            $dir = public_path('uploads/avatars');
-            if (!is_dir($dir)) @mkdir($dir, 0755, true);
 
             $name = 'user_' . $user->id . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-            $file->move($dir, $name);
-            $relative = '/uploads/avatars/' . $name;
-            $absolute = rtrim($request->getSchemeAndHttpHost(), '/') . $relative;
+            $key = 'avatars/' . $name;
+            R2Storage::putUploadedFile(
+                R2Storage::mediaBucket(),
+                $key,
+                $file,
+                (string) $file->getMimeType()
+            );
+            $absolute = R2Storage::mediaPublicUrl($key);
 
             DB::table('users')->where('id', $user->id)->update(['avatar_url' => $absolute]);
-            $this->deleteStoredAvatar($current, $relative);
+            $this->deleteStoredAvatar($current, $absolute);
 
             return response()->json(['avatar_url' => $absolute]);
         } catch (\Throwable $e) {
@@ -100,10 +104,14 @@ class AccountController extends Controller
     {
         if (!$url || ($except && str_contains($url, $except))) return;
 
-        $path = parse_url($url, PHP_URL_PATH) ?: $url;
-        if (!str_starts_with($path, '/uploads/avatars/')) return;
+        $path = parse_url($url, PHP_URL_PATH) ?: '';
+        $key = ltrim($path, '/');
+        if (!str_starts_with($key, 'avatars/')) return;
 
-        $full = public_path(ltrim($path, '/'));
-        if (is_file($full)) @unlink($full);
+        try {
+            R2Storage::delete(R2Storage::mediaBucket(), $key);
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }
