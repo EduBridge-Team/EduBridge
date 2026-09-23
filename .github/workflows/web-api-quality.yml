@@ -15,6 +15,7 @@ on:
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
       - ".github/workflows/branch-guard.yml"
+      - "CONTRIBUTING.md"
   pull_request:
     branches:
       - main
@@ -29,6 +30,7 @@ on:
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
       - ".github/workflows/branch-guard.yml"
+      - "CONTRIBUTING.md"
   workflow_dispatch:
 
 permissions:
