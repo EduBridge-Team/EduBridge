@@ -75,7 +75,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     } else {
       // ❌ خطأ
       HapticFeedback.mediumImpact();
-      setState(() {});
     }
   }
 
