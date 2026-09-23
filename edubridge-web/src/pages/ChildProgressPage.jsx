@@ -1,5 +1,5 @@
 // صفحة تقدّم الطفل: ملخّص + تفاصيل كل درس
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { fetchChildProgress, fetchChildSummary } from '../api'
@@ -30,7 +30,7 @@ export default function ChildProgressPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -46,11 +46,11 @@ export default function ChildProgressPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [childId])
 
   useEffect(() => {
     load()
-  }, [childId])
+  }, [load])
 
   if (loading) {
     return (
