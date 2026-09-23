@@ -31,6 +31,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
     HapticFeedback.heavyImpact();
     await Future.delayed(const Duration(milliseconds: 150));
     HapticFeedback.heavyImpact();
+    if (!mounted) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
