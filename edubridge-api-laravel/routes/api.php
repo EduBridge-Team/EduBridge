@@ -172,6 +172,10 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/support', [SupportController::class, 'store']);
     Route::put('/support/{id}', [SupportController::class, 'update'])
         ->middleware('role:admin');
+    Route::get('/support/tickets', [SupportController::class, 'index'])
+        ->middleware('role:admin');
+    Route::put('/support/tickets/{id}/resolve', [SupportController::class, 'resolve'])
+        ->middleware('role:admin');
 
     // دراسة الحالة مع المختصين (البطاقة 7)
     Route::get('/consultations', [ConsultationController::class, 'index'])
@@ -188,6 +192,8 @@ Route::middleware('auth.jwt')->group(function () {
     // طلبات الدعم التعليمي — ولي الأمر يرسل، ومختص الدعم يراجع ويحدد موعد المتابعة والرابط
     Route::post('/learning-support/requests', [LearningSupportRequestController::class, 'store'])
         ->middleware(['role:parent', 'throttle:10,1']);
+    Route::post('/learning-support/recommendations', [LearningSupportRequestController::class, 'recommendToParent'])
+        ->middleware(['role:specialist,admin', 'throttle:20,1']);
     Route::get('/learning-support/requests', [LearningSupportRequestController::class, 'index'])
         ->middleware('role:parent,specialist,admin');
     Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
@@ -241,6 +247,8 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/reports/weekly', [WeeklyReportController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
+    Route::post('/reports/weekly/specialist', [WeeklyReportController::class, 'storeSpecialist'])
+        ->middleware('role:specialist,admin');
 
     // فريق الرعاية — واجهات موحّدة + توافق مع شاشات Flutter الحالية
     Route::get('/children/{childId}/care-team', [CareTeamController::class, 'careTeam'])
