@@ -28,9 +28,10 @@ class AccountController extends Controller
             return response()->json(['error' => 'حجم الصورة يتجاوز 5MB'], 422);
         }
 
-        $mime = strtolower((string) $file->getMimeType());
+        $imageInfo = @getimagesize($file->getRealPath());
+        $mime = strtolower((string) ($imageInfo['mime'] ?? ''));
         $ext = self::MIME_EXTENSIONS[$mime] ?? null;
-        if (!$ext) {
+        if (!$imageInfo || !$ext) {
             return response()->json(['error' => 'الملف المرفوع ليس صورة مدعومة'], 422);
         }
 
