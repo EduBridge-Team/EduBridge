@@ -265,5 +265,4 @@ trait LessonControllerHelpers
             }
         }
     }
-    }
 }
