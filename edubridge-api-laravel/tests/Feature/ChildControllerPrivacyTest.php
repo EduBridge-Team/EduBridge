@@ -32,6 +32,7 @@ class ChildControllerPrivacyTest extends TestCase
             $table->unsignedBigInteger('assigned_teacher_id')->nullable();
             $table->unsignedBigInteger('disability_type_id')->nullable();
             $table->unsignedBigInteger('organization_id')->nullable();
+            $table->string('status')->default('pending');
             $table->string('child_national_id')->nullable();
             $table->string('guardian_national_id')->nullable();
             $table->text('guardian_id_document_url')->nullable();
@@ -55,6 +56,7 @@ class ChildControllerPrivacyTest extends TestCase
         DB::table('users')->insert([
             ['id' => 1, 'name' => 'ولي الأمر', 'role' => 'parent'],
             ['id' => 2, 'name' => 'المعلم', 'role' => 'teacher'],
+            ['id' => 3, 'name' => 'الأدمن', 'role' => 'admin'],
         ]);
 
         DB::table('children')->insert([
@@ -117,9 +119,72 @@ class ChildControllerPrivacyTest extends TestCase
         $this->assertSame('/api/private-files/user/1/kinship.pdf', $child['kinship_document_url']);
     }
 
-    private function request(int $id, string $role): Request
+    public function test_teacher_update_response_does_not_leak_identity_fields(): void
     {
-        $request = Request::create('/api/children', 'GET');
+        $response = app(ChildController::class)->update(
+            $this->request(2, 'teacher', 'PUT', ['name' => 'اسم محدث']),
+            10
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $child = json_decode($response->getContent(), true)['child'];
+
+        $this->assertSame('اسم محدث', $child['name']);
+        $this->assertArrayNotHasKey('child_national_id', $child);
+        $this->assertArrayNotHasKey('guardian_national_id', $child);
+        $this->assertArrayNotHasKey('guardian_id_document_url', $child);
+        $this->assertArrayNotHasKey('kinship_document_url', $child);
+    }
+
+    public function test_teacher_cannot_modify_identity_fields(): void
+    {
+        $response = app(ChildController::class)->update(
+            $this->request(2, 'teacher', 'PUT', ['guardian_national_id' => '111111111']),
+            10
+        );
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseHas('children', [
+            'id' => 10,
+            'guardian_national_id' => '987654321',
+        ]);
+    }
+
+    public function test_parent_cannot_modify_admin_only_fields(): void
+    {
+        $response = app(ChildController::class)->update(
+            $this->request(1, 'parent', 'PUT', ['status' => 'assigned']),
+            10
+        );
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseHas('children', [
+            'id' => 10,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_admin_teacher_assignment_requires_teacher_account(): void
+    {
+        $response = app(ChildController::class)->update(
+            $this->request(3, 'admin', 'PUT', ['assigned_teacher_id' => 3]),
+            10
+        );
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertDatabaseHas('children', [
+            'id' => 10,
+            'assigned_teacher_id' => 2,
+        ]);
+    }
+
+    private function request(
+        int $id,
+        string $role,
+        string $method = 'GET',
+        array $payload = []
+    ): Request {
+        $request = Request::create('/api/children', $method, $payload);
         $request->headers->set('Accept', 'application/json');
         $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
 
