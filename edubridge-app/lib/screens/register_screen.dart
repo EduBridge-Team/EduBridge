@@ -192,6 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _passwordCtrl,
                     obscureText: true,
+                    maxLength: 128,
                     style: const TextStyle(fontSize: 18),
                     decoration: const InputDecoration(
                       labelText: 'كلمة المرور',
@@ -200,8 +201,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'كلمة المرور مطلوبة';
-                      if (v.length < 6) {
-                        return 'كلمة المرور 6 أحرف على الأقل';
+                      if (v.length < 8 || v.length > 128) {
+                        return 'كلمة المرور يجب أن تكون بين 8 و128 حرفاً';
                       }
                       return null;
                     },
