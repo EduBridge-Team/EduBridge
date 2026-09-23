@@ -62,7 +62,13 @@ class HomeworkController extends Controller
     private function canViewChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['specialist','admin'], true)) return true;
+        if ($user->role === 'admin') return true;
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
         if ($user->role === 'teacher') {
             return DB::table('children')
                 ->where('id', $childId)
@@ -136,7 +142,16 @@ class HomeworkController extends Controller
                     ->all();
             }
 
-            $homeworks = $rows->filter(function ($row) use ($user, $childId, $ownedChildIds) {
+            $specialistChildIds = null;
+            if ($user->role === 'specialist') {
+                $specialistChildIds = DB::table('child_specialist')
+                    ->where('specialist_id', $user->id)
+                    ->pluck('child_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+
+            $homeworks = $rows->filter(function ($row) use ($user, $childId, $ownedChildIds, $specialistChildIds) {
                 $ids = $row->assigned_child_ids;
                 if (is_string($ids)) {
                     $decoded = json_decode($ids, true);
@@ -153,11 +168,18 @@ class HomeworkController extends Controller
                 if ($user->role === 'parent') {
                     return count(array_intersect($ids, $ownedChildIds ?? [])) > 0;
                 }
+                if ($user->role === 'specialist') {
+                    return count(array_intersect($ids, $specialistChildIds ?? [])) > 0;
+                }
                 return true;
-            })->map(function ($row) use ($user, $childId, $ownedChildIds) {
+            })->map(function ($row) use ($user, $childId, $ownedChildIds, $specialistChildIds) {
                 $visibleChildIds = $childId !== null
                     ? [$childId]
-                    : ($user->role === 'parent' ? ($ownedChildIds ?? []) : null);
+                    : match ($user->role) {
+                        'parent' => $ownedChildIds ?? [],
+                        'specialist' => $specialistChildIds ?? [],
+                        default => null,
+                    };
 
                 return $this->normalize($row, $visibleChildIds);
             })->values();
@@ -195,6 +217,17 @@ class HomeworkController extends Controller
         $validChildCount = DB::table('children')->whereIn('id', $assigned)->count();
         if ($validChildCount !== count($assigned)) {
             return response()->json(['error' => 'بعض الأطفال المحددين غير موجودين'], 422);
+        }
+
+        if ($user->role === 'specialist') {
+            $authorizedCount = DB::table('child_specialist')
+                ->whereIn('child_id', $assigned)
+                ->where('specialist_id', $user->id)
+                ->distinct()
+                ->count('child_id');
+            if ($authorizedCount !== count($assigned)) {
+                return response()->json(['error' => 'يمكنك إسناد الواجبات فقط للأطفال ضمن فريقك'], 403);
+            }
         }
 
         if ($user->role === 'teacher') {
@@ -357,6 +390,9 @@ class HomeworkController extends Controller
             return response()->json(['error' => 'التسليم غير موجود'], 404);
         }
         if ($user->role === 'teacher' && (int) $submission->teacher_id !== (int) $user->id) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+        if ($user->role === 'specialist' && !$this->canViewChild($user, (int) $submission->child_id)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
