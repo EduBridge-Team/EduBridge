@@ -14,6 +14,8 @@ on:
       - "Procfile"
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/web-deploy-build.yml"
+      - "deploy/README.md"
       - ".github/workflows/branch-guard.yml"
       - "CONTRIBUTING.md"
   pull_request:
@@ -29,6 +31,8 @@ on:
       - "Procfile"
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/web-deploy-build.yml"
+      - "deploy/README.md"
       - ".github/workflows/branch-guard.yml"
       - "CONTRIBUTING.md"
   workflow_dispatch:
