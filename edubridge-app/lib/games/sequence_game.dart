@@ -184,7 +184,6 @@ class _SequenceGameState extends State<SequenceGame> {
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
     final large = _profile.extraLargeTouchTargets;
 
     return Scaffold(
