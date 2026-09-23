@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Support\R2Storage;
 use Illuminate\Console\Command;
+use GuzzleHttp\Client;
 
 class CheckR2Storage extends Command
 {
@@ -29,6 +30,21 @@ class CheckR2Storage extends Command
 
                 if ($received !== $payload) {
                     throw new \RuntimeException('Read-back content did not match');
+                }
+
+                if ($label === 'media') {
+                    $publicUrl = R2Storage::mediaPublicUrl($key);
+                    $public = (new Client([
+                        'timeout' => 20,
+                        'connect_timeout' => 10,
+                        'http_errors' => false,
+                    ]))->get($publicUrl);
+
+                    if ($public->getStatusCode() !== 200 || (string) $public->getBody() !== $payload) {
+                        throw new \RuntimeException('Public media URL check failed: ' . $publicUrl);
+                    }
+
+                    $this->info("OK: public media URL reachable at " . rtrim((string) env('R2_MEDIA_PUBLIC_URL'), '/'));
                 }
 
                 R2Storage::delete($bucket, $key);
