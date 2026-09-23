@@ -45,14 +45,19 @@ class MediaController extends Controller
     // يدعم body: {type,url} للتوافق القديم أو multipart: type + file.
     public function store(Request $request, $lessonId)
     {
+        $user = $request->attributes->get('jwt_user');
         $type = (string) $request->input('type');
         if (!in_array($type, self::TYPES, true)) {
             return response()->json(['error' => 'نوع الوسيط غير صالح'], 422);
         }
 
         try {
-            if (!DB::table('lessons')->where('id', $lessonId)->exists()) {
+            $lesson = DB::table('lessons')->where('id', $lessonId)->first();
+            if (!$lesson) {
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
+            }
+            if (!$this->canManageLesson($user, $lesson)) {
+                return response()->json(['error' => 'لا يمكنك تعديل وسائط درس لم تقم بإنشائه'], 403);
             }
 
             $url = $request->input('url');
@@ -89,12 +94,22 @@ class MediaController extends Controller
 
     // حذف وسيط (معلّم / أدمن)
     // DELETE /api/media/:id
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $user = $request->attributes->get('jwt_user');
+
         try {
             $media = DB::table('media')->where('id', $id)->first();
             if (!$media) {
                 return response()->json(['error' => 'الوسيط غير موجود'], 404);
+            }
+
+            $lesson = DB::table('lessons')->where('id', $media->lesson_id)->first();
+            if (!$lesson) {
+                return response()->json(['error' => 'الدرس غير موجود'], 404);
+            }
+            if (!$this->canManageLesson($user, $lesson)) {
+                return response()->json(['error' => 'لا يمكنك حذف وسائط درس لم تقم بإنشائه'], 403);
             }
 
             DB::table('media')->where('id', $id)->delete();
@@ -116,6 +131,18 @@ class MediaController extends Controller
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
+    }
+
+    private function canManageLesson($user, $lesson): bool
+    {
+        if (!$user || !$lesson) {
+            return false;
+        }
+        if (($user->role ?? null) === 'admin') {
+            return true;
+        }
+
+        return (int) ($lesson->teacher_id ?? 0) === (int) ($user->id ?? 0);
     }
 
     private function validateFile($file, string $type): void
