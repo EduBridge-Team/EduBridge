@@ -54,4 +54,39 @@ class AuthRegistrationPrivacyTest extends TestCase
         $this->assertSame('parent@example.com', $payload['user']['email']);
         $this->assertSame('parent', $payload['user']['role']);
     }
+    public function test_public_registration_rejects_privileged_roles(): void
+    {
+        foreach (['admin', 'ministry', 'institution'] as $role) {
+            $request = Request::create('/api/auth/register', 'POST', [
+                'name' => 'حساب إداري',
+                'email' => $role . '@example.com',
+                'password' => 'safe-password-123',
+                'role' => $role,
+            ]);
+            $request->headers->set('Accept', 'application/json');
+
+            $response = app(AuthController::class)->register($request);
+
+            $this->assertSame(400, $response->getStatusCode(), "Role {$role} must not self-register");
+        }
+    }
+
+    public function test_specialist_can_register_with_supported_specialty(): void
+    {
+        $request = Request::create('/api/auth/register', 'POST', [
+            'name' => 'مختص تعليمي',
+            'email' => 'specialist@example.com',
+            'password' => 'safe-password-123',
+            'role' => 'specialist',
+            'specialty' => 'learning_support',
+        ]);
+        $request->headers->set('Accept', 'application/json');
+
+        $response = app(AuthController::class)->register($request);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $payload = json_decode($response->getContent(), true);
+        $this->assertSame('learning_support', $payload['user']['specialty']);
+    }
+
 }
