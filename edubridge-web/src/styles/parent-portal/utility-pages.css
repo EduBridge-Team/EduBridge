@@ -1,0 +1,456 @@
+/* Search / consultations / support / notifications / verification pages */
+.pp-content .search-row {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--pp-line);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(21,91,147,.04);
+}
+
+.pp-content .search-row input {
+  margin: 0;
+  min-height: 48px;
+}
+
+.pp-content .search-row .btn {
+  min-width: 112px;
+}
+
+.pp-content .search-result,
+.pp-content .ticket,
+.pp-content .verify-row,
+.pp-content .cert-item,
+.pp-content .note-item {
+  border-color: var(--pp-line);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(21,91,147,.045);
+}
+
+.pp-content .search-result,
+.pp-content .verify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.pp-content .search-result-side,
+.pp-content .verify-actions,
+.pp-content .actions,
+.pp-content .consult-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pp-content .consult-detail,
+.pp-content .admin-reply,
+.pp-content .cert-add {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #dceaf4;
+  border-radius: 14px;
+  background: #f7fbfe;
+}
+
+.pp-content .notes-list,
+.pp-content .cert-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pp-content .note-add {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.pp-content .note-add textarea {
+  margin: 0;
+}
+
+.pp-content .tabs {
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+@media (min-width: 681px) and (max-width: 1120px) {
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .pp-content .portal-lessons-page .daily-picks > .daily-picks-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .pp-content .portal-lessons-page {
+    padding-bottom: 20px;
+  }
+
+  .pp-content .portal-lessons-page .lessons-hero {
+    padding: 22px 14px 18px;
+    border-radius: 20px;
+  }
+
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pp-content .portal-lessons-page .lesson-card-actions,
+  .pp-content .search-row,
+  .pp-content .note-add {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-content .portal-lessons-page .lesson-card-actions > .btn,
+  .pp-content .portal-lessons-page .lesson-ratings > button,
+  .pp-content .search-row .btn {
+    width: 100%;
+  }
+
+  .pp-content .portal-lessons-page .daily-picks > .daily-picks-head,
+  .pp-content .search-result,
+  .pp-content .verify-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pp-content .search-result-side,
+  .pp-content .verify-actions {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   Mobile portal: hamburger-only navigation and compact drawer
+   ============================================================ */
+@media (max-width: 900px) {
+  .pp-mobile-nav {
+    display: none !important;
+  }
+
+  .pp-sidebar {
+    width: min(340px, 82vw) !important;
+    padding: 16px 14px 18px !important;
+    gap: 12px !important;
+    border-radius: 0 0 0 24px;
+    background: rgba(255,255,255,.99);
+    box-shadow: -18px 0 46px rgba(10,56,94,.18);
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .pp-sidebar-head {
+    min-height: 54px;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .pp-brand {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 9px !important;
+    text-align: right;
+  }
+
+  .pp-brand img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .pp-brand > span {
+    display: block !important;
+  }
+
+  .pp-brand strong {
+    font-size: 20px !important;
+    line-height: 1.1;
+  }
+
+  .pp-drawer-close {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 13px;
+  }
+
+  .pp-nav {
+    gap: 5px;
+  }
+
+  .pp-nav button {
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -14px;
+    height: 26px;
+  }
+
+  .pp-noor-card {
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    display: grid !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "pet title"
+      "button button";
+    align-items: center !important;
+    gap: 4px 10px !important;
+    text-align: right !important;
+    overflow: hidden;
+  }
+
+  .pp-noor-card .noor-pet {
+    grid-area: pet;
+    width: 72px !important;
+    height: 72px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .pp-noor-card > strong {
+    grid-area: title;
+    align-self: end;
+    font-size: 16px !important;
+    color: var(--pp-blue-deep);
+  }
+
+  .pp-noor-card > button {
+    grid-area: button;
+    width: 100%;
+    min-height: 38px;
+    margin-top: 7px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--pp-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  body.role-portal-drawer-open {
+    overflow: hidden;
+  }
+
+  body.role-portal-drawer-open .noor-launcher {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-sidebar {
+    width: min(326px, 86vw) !important;
+  }
+
+  .pp-toolbar {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+
+  .pp-menu-button,
+  .pp-notification,
+  .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pp-profile-avatar {
+    flex-basis: 40px;
+  }
+
+  .pp-global-search {
+    min-height: 42px;
+    padding-inline: 10px;
+  }
+
+  .pp-global-search button {
+    font-size: 11px;
+  }
+}
+
+
+/* Prevent phantom page scroll caused by legacy 100vh root sizing. */
+@supports (height: 100dvh) {
+  html.parent-portal-active,
+  body.parent-portal-active,
+  body.parent-portal-active #root {
+    min-height: 100dvh !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.parent-portal-active,
+  body.parent-portal-active,
+  body.parent-portal-active #root,
+  .pp-shell {
+    min-height: 100dvh !important;
+  }
+
+  .pp-body {
+    min-height: 0;
+  }
+}
+
+
+/* ============================================================
+   Complete dark theme for the shared role portal
+   ============================================================ */
+:root[data-theme="dark"] {
+  --pp-blue: #59b8ff;
+  --pp-blue-deep: #d8efff;
+  --pp-cyan: #42cde0;
+  --pp-teal: #55d7c8;
+  --pp-ink: #eef8ff;
+  --pp-text: #a9c0d4;
+  --pp-line: #214663;
+  --pp-soft: #0b2945;
+  --pp-card: rgba(13, 41, 71, .96);
+  --pp-shadow: 0 16px 42px rgba(0, 0, 0, .24);
+}
+
+:root[data-theme="dark"] body.parent-portal-active,
+:root[data-theme="dark"] html.parent-portal-active {
+  background: #071d35 !important;
+}
+
+:root[data-theme="dark"] .pp-shell {
+  background:
+    radial-gradient(circle at 12% 5%, rgba(37,191,212,.08), transparent 26rem),
+    linear-gradient(180deg, #071d35 0%, #09243f 100%);
+  color: var(--pp-ink);
+}
+
+:root[data-theme="dark"] .pp-sidebar {
+  border-color: var(--pp-line);
+  background: rgba(8, 31, 53, .985);
+  box-shadow: -10px 0 34px rgba(0,0,0,.22);
+}
+
+:root[data-theme="dark"] .pp-brand {
+  color: #7bc8ff;
+}
+
+:root[data-theme="dark"] .pp-nav button {
+  color: #b7ccdc;
+}
+
+:root[data-theme="dark"] .pp-nav button:hover {
+  background: #102f4e;
+  color: #eef9ff;
+}
+
+:root[data-theme="dark"] .pp-nav button.active {
+  background: linear-gradient(135deg, #103a5d, #0e4557);
+  color: #eef9ff;
+}
+
+:root[data-theme="dark"] .pp-toolbar {
+  border-bottom-color: rgba(33,70,99,.9);
+  background: rgba(7, 29, 53, .9);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+:root[data-theme="dark"] .pp-global-search,
+:root[data-theme="dark"] .pp-theme-toggle,
+:root[data-theme="dark"] .pp-notification,
+:root[data-theme="dark"] .pp-menu-button,
+:root[data-theme="dark"] .pp-drawer-close {
+  border-color: #214663;
+  background: #102f4e;
+  color: #76cfff;
+}
+
+:root[data-theme="dark"] .pp-theme-toggle:hover {
+  border-color: #326584;
+  background: #143a5b;
+}
+
+:root[data-theme="dark"] .pp-global-search button {
+  color: #9db7cb;
+}
+
+:root[data-theme="dark"] .pp-profile {
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-noor-card {
+  border-color: #27506d;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(66,205,224,.12), transparent 8rem),
+    linear-gradient(145deg, #0d2947, #103a52);
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+
+:root[data-theme="dark"] .pp-noor-card > strong,
+:root[data-theme="dark"] .pp-content .page-title h2,
+:root[data-theme="dark"] .pp-content .page-title h3 {
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-content .page-title,
+:root[data-theme="dark"] .pp-content .card,
+:root[data-theme="dark"] .pp-content .form-card,
+:root[data-theme="dark"] .pp-content .profile-card,
+:root[data-theme="dark"] .pp-content .progress-card,
+:root[data-theme="dark"] .pp-content .support-card,
+:root[data-theme="dark"] .pp-content .consultation-card,
+:root[data-theme="dark"] .pp-content .access-child-card,
+:root[data-theme="dark"] .pp-content .state {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+  box-shadow: 0 10px 28px rgba(0,0,0,.14);
+}
+
+:root[data-theme="dark"] .pp-content input,
+:root[data-theme="dark"] .pp-content select,
+:root[data-theme="dark"] .pp-content textarea {
+  border-color: #28506c;
+  background: #0a223b;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-content input::placeholder,
+:root[data-theme="dark"] .pp-content textarea::placeholder {
+  color: #7895ab;
+}
+
