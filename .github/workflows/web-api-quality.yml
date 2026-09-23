@@ -14,6 +14,7 @@ on:
       - "Procfile"
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/branch-guard.yml"
   pull_request:
     branches:
       - main
@@ -27,6 +28,7 @@ on:
       - "Procfile"
       - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/branch-guard.yml"
   workflow_dispatch:
 
 permissions:
