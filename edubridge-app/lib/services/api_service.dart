@@ -772,17 +772,6 @@ class ApiService {
 
   // ===== دوال إضافية =====
 
-  static Future<Map<String, dynamic>?> getDashboardStats() async {
-    try {
-      final res = await authGet('/dashboard/stats');
-      final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
   static Future<List<dynamic>> searchLessons(String query) async {
     try {
       final res = await authGet(
@@ -915,19 +904,6 @@ class ApiService {
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
         return data['results'] ?? [];
-      }
-      return [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  static Future<List<dynamic>> getChildrenOfParent(int parentId) async {
-    try {
-      final res = await authGet('/users/$parentId/children');
-      final data = _decodeBody(res);
-      if (res.statusCode == 200) {
-        return data['children'] ?? [];
       }
       return [];
     } catch (e) {
