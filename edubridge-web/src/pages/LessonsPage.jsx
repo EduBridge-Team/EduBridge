@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   Clock3, Grid2X2, Search, Square, Volume2, X,
@@ -23,7 +23,7 @@ export default function LessonsPage() {
   const [speakingId, setSpeakingId] = useState(null)
   const searchRef = useRef(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -34,12 +34,12 @@ export default function LessonsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     load()
     return () => window.speechSynthesis?.cancel()
-  }, [])
+  }, [load])
 
   useEffect(() => {
     if (!loading && location.state?.focusSearch) searchRef.current?.focus()
