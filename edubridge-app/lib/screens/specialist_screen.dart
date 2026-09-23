@@ -1244,7 +1244,6 @@ class _SpecialistDashboardScreenState
     final age = child['age'] ?? '?';
     final disability = (child['disability_type'] ?? '').toString();
     final description = (child['disability_description'] ?? '').toString();
-    final medicalHistory = (child['medical_history'] ?? '').toString();
     final strengths = (child['strengths'] as List? ?? [])
         .map((e) => e.toString())
         .toList();
@@ -1334,8 +1333,6 @@ class _SpecialistDashboardScreenState
             const SizedBox(height: 12),
             if (description.isNotEmpty)
               _infoRow('وصف الإعاقة', description, c),
-            if (medicalHistory.isNotEmpty)
-              _infoRow('التاريخ الطبي', medicalHistory, c),
             if (specialNeeds.isNotEmpty)
               _infoRow('احتياجات خاصة', specialNeeds, c),
             if (preferredStyle.isNotEmpty)
@@ -1687,13 +1684,13 @@ class _SpecialistDashboardScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('🧠 طلب دعم نفسي',
+                          Text('📘 طلب دعم تعليمي',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                                 color: AppColors.purple,
                               )),
-                          Text('ولي الأمر يطلب جلسة نفسية',
+                          Text('ولي الأمر يطلب اجتماع دعم تعليمي',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.black54)),
                         ],
