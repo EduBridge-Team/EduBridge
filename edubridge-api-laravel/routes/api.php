@@ -190,7 +190,7 @@ Route::middleware('auth.jwt')->group(function () {
 
     // الأطفال
     Route::post('/children', [ChildController::class, 'store'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware('role:parent,admin');
     Route::get('/children', [ChildController::class, 'index']);
     Route::get('/children/{id}', [ChildController::class, 'show'])->middleware('child.access');
     Route::put('/children/{id}', [ChildController::class, 'update'])->middleware('child.access');
