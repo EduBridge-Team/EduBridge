@@ -20,7 +20,7 @@ class HomeworkController extends Controller
             ->orderByDesc('h.created_at');
     }
 
-    private function normalize($row): array
+    private function normalize($row, ?array $visibleChildIds = null): array
     {
         $data = (array) $row;
 
@@ -36,6 +36,7 @@ class HomeworkController extends Controller
         $submissions = DB::table('homework_submissions as hs')
             ->join('children as c', 'c.id', '=', 'hs.child_id')
             ->where('hs.homework_id', $data['id'])
+            ->when($visibleChildIds !== null, fn ($query) => $query->whereIn('hs.child_id', $visibleChildIds))
             ->orderByDesc('hs.submitted_at')
             ->select('hs.*', 'c.name as child_name')
             ->get()
@@ -126,7 +127,16 @@ class HomeworkController extends Controller
         try {
             $rows = $this->homeworkQuery()->get();
 
-            $homeworks = $rows->filter(function ($row) use ($user, $childId) {
+            $ownedChildIds = null;
+            if ($user->role === 'parent') {
+                $ownedChildIds = DB::table('child_parent')
+                    ->where('parent_id', $user->id)
+                    ->pluck('child_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+
+            $homeworks = $rows->filter(function ($row) use ($user, $childId, $ownedChildIds) {
                 $ids = $row->assigned_child_ids;
                 if (is_string($ids)) {
                     $decoded = json_decode($ids, true);
@@ -141,15 +151,16 @@ class HomeworkController extends Controller
                     return (int) $row->teacher_id === (int) $user->id;
                 }
                 if ($user->role === 'parent') {
-                    $owned = DB::table('child_parent')
-                        ->where('parent_id', $user->id)
-                        ->pluck('child_id')
-                        ->map(fn ($id) => (int) $id)
-                        ->all();
-                    return count(array_intersect($ids, $owned)) > 0;
+                    return count(array_intersect($ids, $ownedChildIds ?? [])) > 0;
                 }
                 return true;
-            })->map(fn ($row) => $this->normalize($row))->values();
+            })->map(function ($row) use ($user, $childId, $ownedChildIds) {
+                $visibleChildIds = $childId !== null
+                    ? [$childId]
+                    : ($user->role === 'parent' ? ($ownedChildIds ?? []) : null);
+
+                return $this->normalize($row, $visibleChildIds);
+            })->values();
 
             return response()->json(['homeworks' => $homeworks]);
         } catch (\Throwable $e) {
