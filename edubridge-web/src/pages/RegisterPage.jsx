@@ -9,7 +9,8 @@ export default function RegisterPage() {
     name: '',
     email: '',
     national_id: '',
-    role: 'parent', // الأدمن لا يُنشأ من الواجهة
+    role: 'parent',
+    specialty: 'learning_support',
     password: '',
     confirm: '',
   })
@@ -34,8 +35,8 @@ export default function RegisterPage() {
     setError(null)
 
     // تحقق من المدخلات قبل الإرسال
-    if (form.password.length < 6) {
-      setError('كلمة المرور 6 أحرف على الأقل')
+    if (form.password.length < 8 || form.password.length > 128) {
+      setError('كلمة المرور يجب أن تكون بين 8 و128 حرفاً')
       return
     }
     if (form.password !== form.confirm) {
@@ -51,6 +52,7 @@ export default function RegisterPage() {
         form.password,
         form.role,
         form.national_id.trim(),
+        form.role === 'specialist' ? form.specialty : null,
       )
       // نجاح — نرجع لصفحة الدخول مع رسالة
       navigate('/login', {
@@ -105,9 +107,19 @@ export default function RegisterPage() {
             <option value="parent">ولي أمر</option>
             <option value="teacher">معلّم</option>
             <option value="specialist">مختص</option>
-            <option value="ministry">وزارة</option>
-            <option value="institution">مؤسسة</option>
           </select>
+
+          {form.role === 'specialist' && (
+            <>
+              <label htmlFor="specialty">التخصص</label>
+              <select id="specialty" value={form.specialty} onChange={set('specialty')}>
+                <option value="learning_support">دعم تعليمي</option>
+                <option value="educational">خطط تعلم</option>
+                <option value="communication_support">دعم التواصل التعليمي</option>
+                <option value="learning_behavior">دعم سلوك التعلم</option>
+              </select>
+            </>
+          )}
 
           <label htmlFor="password">كلمة المرور</label>
           <input
@@ -117,6 +129,8 @@ export default function RegisterPage() {
             onChange={set('password')}
             required
             autoComplete="new-password"
+            minLength={8}
+            maxLength={128}
           />
 
           <label htmlFor="confirm">تأكيد كلمة المرور</label>

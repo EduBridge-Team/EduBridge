@@ -175,6 +175,7 @@ class _IconOnlyWrapper extends StatelessWidget {
 class IconOnlyScope extends InheritedWidget {
   final bool enabled;
   const IconOnlyScope({
+    super.key,
     required this.enabled,
     required super.child,
   });
@@ -203,6 +204,7 @@ class _TextOnlyWrapper extends StatelessWidget {
 class TextOnlyScope extends InheritedWidget {
   final bool enabled;
   const TextOnlyScope({
+    super.key,
     required this.enabled,
     required super.child,
   });

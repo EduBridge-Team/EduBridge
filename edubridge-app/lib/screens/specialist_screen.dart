@@ -21,8 +21,8 @@ import 'add_lesson_sheet.dart';
 import 'case_discussion_screen.dart';
 import 'choose_specialty_screen.dart';
 import 'plan_evaluation_screen.dart';
-import 'therapy_requests_screen.dart';
-import 'therapy_sessions_screen.dart';
+import 'learning_support_requests_screen.dart';
+import 'learning_support_meetings_screen.dart';
 import 'specialist_suggestions_screen.dart';
 import 'welcome_screen.dart';
 import 'evaluation_sheet.dart';
@@ -247,8 +247,6 @@ class _SpecialistDashboardScreenState
         _loading = false;
       });
 
-      debugPrint(
-          '🔍 _currentUserId=$_currentUserId, _mySpecialty=$_mySpecialty');
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -431,11 +429,6 @@ class _SpecialistDashboardScreenState
   }
 
   Future<void> _viewEvaluation(int childId) async {
-    final row = _rows.firstWhere(
-      (r) => r['child']['id'] == childId,
-      orElse: () => {},
-    );
-    final child = row['child'] as Map?;
     if (!mounted) return;
 
     showModalBottomSheet(
@@ -523,7 +516,7 @@ class _SpecialistDashboardScreenState
             const SizedBox(height: 12),
             _detailRow('🧠 التقييم المعرفي', evaluation['cognitive_assessment']),
             _detailRow('🏃 التقييم الحركي', evaluation['motor_assessment']),
-            _detailRow('💚 التقييم العاطفي', evaluation['emotional_assessment']),
+            _detailRow('💚 التفاعل أثناء التعلم', evaluation['emotional_assessment']),
             _detailRow('🤝 التقييم الاجتماعي', evaluation['social_assessment']),
             _detailRow('📝 التوصيات', evaluation['recommendations']),
             _detailRow('📚 الخطة التعليمية', evaluation['educational_plan']),
@@ -570,9 +563,9 @@ class _SpecialistDashboardScreenState
         MaterialPageRoute(builder: (_) => const NotificationsScreen()));
   }
 
-  void _openTherapy() {
+  void _openLearningSupport() {
     Navigator.push(context,
-        MaterialPageRoute(builder: (_) => const TherapySessionsScreen()));
+        MaterialPageRoute(builder: (_) => const LearningSupportMeetingsScreen()));
   }
 
   void _openCaseDiscussion({int? childId}) {
@@ -638,14 +631,14 @@ class _SpecialistDashboardScreenState
     if (result == true) _load();
   }
 
-  Future<void> _recommendTherapy(Map<String, dynamic> row) async {
+  Future<void> _recommendLearningSupport(Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _RecommendTherapySheet(child: row['child']),
+      builder: (_) => _RecommendLearningSupportSheet(child: row['child']),
     );
     if (result == true) _load();
   }
@@ -696,7 +689,7 @@ class _SpecialistDashboardScreenState
     final specIds = _childSpecialistIds(child);
     if (specIds.length < 2) return false;
 
-    int psychCount = 0;
+    int supportCount = 0;
     int eduCount = 0;
     int unknownCount = 0;
 
@@ -707,15 +700,15 @@ class _SpecialistDashboardScreenState
       );
       final spec = (s['specialty'] ?? '').toString().toLowerCase();
       if (spec == 'learning_support' || spec.contains('نفس')) {
-        psychCount++;
+        supportCount++;
       } else if (spec == 'educational' || spec.contains('تعليم')) {
         eduCount++;
       } else {
         unknownCount++;
       }
     }
-    if (psychCount >= 1 && eduCount >= 1) return true;
-    if (psychCount + eduCount == 0 && unknownCount >= 2) return true;
+    if (supportCount >= 1 && eduCount >= 1) return true;
+    if (supportCount + eduCount == 0 && unknownCount >= 2) return true;
     return false;
   }
 
@@ -769,7 +762,6 @@ class _SpecialistDashboardScreenState
         return s != 'evaluated' && s != 'assigned';
       }).toList();
 
-  int get _totalChildren => _rows.length;
   int get _pendingCount => _pendingChildren.length;
   int get _doneToday =>
       _rows.fold(0, (s, r) => s + (r['stats']['doneToday'] as int));
@@ -1066,21 +1058,21 @@ class _SpecialistDashboardScreenState
                         onSelected: _openSuggestions,
                       ),
                       DashboardMenuAction(
-                        id: 'therapy_requests',
+                        id: 'learning_support_requests',
                         label: 'طلبات الدعم التعليمي',
                         icon: Icons.psychology_alt,
                         onSelected: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const TherapyRequestsScreen(),
+                            builder: (_) => const LearningSupportRequestsScreen(),
                           ),
                         ),
                       ),
                       DashboardMenuAction(
-                        id: 'therapy',
+                        id: 'learning_support',
                         label: 'الجلسات المجدولة',
                         icon: Icons.event_available,
-                        onSelected: _openTherapy,
+                        onSelected: _openLearningSupport,
                       ),
                       DashboardMenuAction(
                         id: 'support',
@@ -1252,8 +1244,6 @@ class _SpecialistDashboardScreenState
     final disability = (child['disability_type'] ?? '').toString();
     final description = (child['disability_description'] ?? '').toString();
     final medicalHistory = (child['medical_history'] ?? '').toString();
-    final psychologistNotes =
-        (child['psychologist_notes'] ?? '').toString();
     final strengths = (child['strengths'] as List? ?? [])
         .map((e) => e.toString())
         .toList();
@@ -1344,9 +1334,6 @@ class _SpecialistDashboardScreenState
               _infoRow('وصف الإعاقة', description, c),
             if (medicalHistory.isNotEmpty)
               _infoRow('التاريخ الطبي', medicalHistory, c),
-            // ✅ جديد: ملاحظات المختص النفسي
-            if (psychologistNotes.isNotEmpty)
-              _infoRow('ملاحظات المختص النفسي', psychologistNotes, c),
             if (specialNeeds.isNotEmpty)
               _infoRow('احتياجات خاصة', specialNeeds, c),
             if (preferredStyle.isNotEmpty)
@@ -1492,6 +1479,7 @@ class _SpecialistDashboardScreenState
 
   Future<void> _addMyselfToChild(Map<String, dynamic> child) async {
     if (!await _checkVerification()) return;
+    if (!mounted) return;
     if (_mySpecialty == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1615,14 +1603,14 @@ class _SpecialistDashboardScreenState
                 Expanded(
                   child: InkWell(
                     onTap: () async {
+                      final navigator = Navigator.of(context);
                       await AccessibilityService.instance.setActiveChild(
                         childId,
                         disabilityTypeHint:
                             child['disability_type']?.toString(),
                       );
-                      if (!context.mounted) return;
-                      await Navigator.push(
-                        context,
+                      await navigator.push(
+
                         MaterialPageRoute(
                           builder: (_) => ChildProgressScreen(
                             childId: childId,
@@ -1678,14 +1666,6 @@ class _SpecialistDashboardScreenState
                 ),
               ],
             ),
-
-            // ═══════════════════════════════════════════════════
-            //  ✅ جديد: قسم معلومات ولي الأمر (يظهر دائماً)
-            // ═══════════════════════════════════════════════════
-            const SizedBox(height: 12),
-            _buildParentInfoSection(child, c),
-            const SizedBox(height: 6),
-
             if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
@@ -1704,13 +1684,13 @@ class _SpecialistDashboardScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('🧠 طلب دعم نفسي',
+                          Text('📘 طلب دعم تعليمي',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                                 color: AppColors.purple,
                               )),
-                          Text('ولي الأمر يطلب جلسة نفسية',
+                          Text('ولي الأمر يطلب اجتماع دعم تعليمي',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.black54)),
                         ],
@@ -1727,7 +1707,7 @@ class _SpecialistDashboardScreenState
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const TherapyRequestsScreen(),
+                          builder: (_) => const LearningSupportRequestsScreen(),
                         ),
                       ),
                       child: const Text('اعرض',
@@ -1879,7 +1859,7 @@ class _SpecialistDashboardScreenState
                       icon: const Icon(Icons.psychology, size: 18),
                       label: const Text('اقترح دعم',
                           style: TextStyle(fontSize: 12)),
-                      onPressed: () => _recommendTherapy(row),
+                      onPressed: () => _recommendLearningSupport(row),
                     ),
                   ),
                 ],
@@ -2532,20 +2512,24 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                       textAlign: TextAlign.center),
                 )
               else
-                ...filtered.map<Widget>((s) {
-                  final id = s['id'] as int;
-                  return RadioListTile<int>(
-                    value: id,
-                    groupValue: _selectedId,
-                    activeColor: _color,
-                    title: Text(s['name']?.toString() ?? ''),
-                    subtitle: Text(
-                      s['email']?.toString() ?? '',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    onChanged: (v) => setState(() => _selectedId = v),
-                  );
-                }),
+                RadioGroup<int>(
+                  groupValue: _selectedId,
+                  onChanged: (v) => setState(() => _selectedId = v),
+                  child: Column(
+                    children: filtered.map<Widget>((s) {
+                      final id = s['id'] as int;
+                      return RadioListTile<int>(
+                        value: id,
+                        activeColor: _color,
+                        title: Text(s['name']?.toString() ?? ''),
+                        subtitle: Text(
+                          s['email']?.toString() ?? '',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               const SizedBox(height: 16),
               TextField(
                 controller: _reasonCtrl,
@@ -2614,18 +2598,18 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  _RecommendTherapySheet
+//  _RecommendLearningSupportSheet
 // ═══════════════════════════════════════════════════════════
-class _RecommendTherapySheet extends StatefulWidget {
+class _RecommendLearningSupportSheet extends StatefulWidget {
   final Map child;
-  const _RecommendTherapySheet({required this.child});
+  const _RecommendLearningSupportSheet({required this.child});
 
   @override
-  State<_RecommendTherapySheet> createState() =>
-      _RecommendTherapySheetState();
+  State<_RecommendLearningSupportSheet> createState() =>
+      _RecommendLearningSupportSheetState();
 }
 
-class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
+class _RecommendLearningSupportSheetState extends State<_RecommendLearningSupportSheet> {
   final _descCtrl = TextEditingController();
   String? _reason;
   String _urgency = 'medium';
@@ -2633,13 +2617,13 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
   String? _error;
 
   static const _reasons = [
-    'يحتاج دعم نفسي متخصص',
-    'ظهور علامات قلق مستمر',
-    'تدهور في المزاج',
-    'مشاكل في النوم',
-    'سلوك انسحابي',
-    'نوبات غضب متكررة',
-    'يحتاج تقييم نفسي شامل',
+    'صعوبة في فهم الدروس',
+    'الحاجة إلى تكييف أسلوب التعلم',
+    'صعوبة في التركيز أثناء الأنشطة التعليمية',
+    'الحاجة إلى متابعة الواجبات',
+    'صعوبة في التواصل داخل البيئة التعليمية',
+    'الحاجة إلى خطة تعلم فردية',
+    'الحاجة إلى متابعة تقدم أكاديمي',
     'أخرى',
   ];
 
@@ -2663,7 +2647,7 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
       _error = null;
     });
     try {
-      await ApiService.authPost('/therapy/recommendations', {
+      await ApiService.authPost('/learning-support/recommendations', {
         'child_id': widget.child['id'],
         'reason': _reason,
         'description': _descCtrl.text.trim(),
@@ -2708,12 +2692,12 @@ class _RecommendTherapySheetState extends State<_RecommendTherapySheet> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.psychology,
+                  const Icon(Icons.school_outlined,
                       color: AppColors.purple, size: 30),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'اقتراح دعم نفسي — ${widget.child['name']}',
+                      'اقتراح دعم تعليمي — ${widget.child['name']}',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,

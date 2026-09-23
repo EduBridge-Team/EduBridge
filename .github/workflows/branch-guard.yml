@@ -2,7 +2,7 @@ name: Branch guard
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     types: [opened, edited, reopened, synchronize]
 
 jobs:
@@ -12,10 +12,27 @@ jobs:
       - name: Verify PR source branch
         env:
           HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          if [[ "$HEAD_REF" == "develop" || "$HEAD_REF" == hotfix/* ]]; then
-            echo "OK: '$HEAD_REF' is allowed to merge into main."
-          else
+          if [[ "$BASE_REF" == "main" ]]; then
+            if [[ "$HEAD_REF" == "develop" || "$HEAD_REF" == hotfix/* ]]; then
+              echo "OK: '$HEAD_REF' is allowed to merge into main."
+              exit 0
+            fi
+
             echo "PRs into 'main' must come from 'develop' or a 'hotfix/*' branch, not '$HEAD_REF'."
             exit 1
           fi
+
+          if [[ "$BASE_REF" == "develop" ]]; then
+            if [[ "$HEAD_REF" == "main" || "$HEAD_REF" == feature/* || "$HEAD_REF" == fix/* || "$HEAD_REF" == chore/* || "$HEAD_REF" == refactor/* || "$HEAD_REF" == docs/* ]]; then
+              echo "OK: '$HEAD_REF' is allowed to merge into develop."
+              exit 0
+            fi
+
+            echo "PRs into 'develop' must come from 'main', 'feature/*', 'fix/*', 'chore/*', 'refactor/*', or 'docs/*' branches, not '$HEAD_REF'."
+            exit 1
+          fi
+
+          echo "Unsupported PR target branch: '$BASE_REF'."
+          exit 1

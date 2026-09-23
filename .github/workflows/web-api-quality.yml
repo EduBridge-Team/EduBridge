@@ -1,6 +1,23 @@
 name: Web and API quality checks
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "edubridge-web/**"
+      - "edubridge-api-laravel/**"
+      - "edubridge-app/lib/services/api_service.dart"
+      - "scripts/check_mobile_api_parity.py"
+      - "deploy/**"
+      - "Procfile"
+      - "nixpacks.toml"
+      - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/web-deploy-build.yml"
+      - "deploy/README.md"
+      - ".github/workflows/branch-guard.yml"
+      - "CONTRIBUTING.md"
   pull_request:
     branches:
       - main
@@ -10,19 +27,39 @@ on:
       - "edubridge-api-laravel/**"
       - "edubridge-app/lib/services/api_service.dart"
       - "scripts/check_mobile_api_parity.py"
+      - "deploy/**"
+      - "Procfile"
+      - "nixpacks.toml"
       - ".github/workflows/web-api-quality.yml"
+      - ".github/workflows/web-deploy-build.yml"
+      - "deploy/README.md"
+      - ".github/workflows/branch-guard.yml"
+      - "CONTRIBUTING.md"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  deploy-config:
+    name: Deployment config syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Validate deployment scripts
+        run: |
+          bash -n deploy/*.sh
+          node --check deploy/taqat-web-server.mjs
+
   mobile-api-contract:
     name: Flutter ↔ Laravel API contract
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Verify Flutter API calls have Laravel routes
@@ -32,14 +69,37 @@ jobs:
     name: PHP syntax
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
       - name: Lint Laravel PHP files
         run: |
           find edubridge-api-laravel/app edubridge-api-laravel/routes edubridge-api-laravel/database/migrations \
             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+  api-tests:
+    name: Laravel tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: edubridge-api-laravel
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Prepare test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Run Laravel tests
+        env:
+          JWT_SECRET: ci-test-jwt-secret
+        run: php artisan test
 
   web-build:
     name: React production build
@@ -48,13 +108,15 @@ jobs:
       run:
         working-directory: edubridge-web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: npm
           cache-dependency-path: edubridge-web/package-lock.json
       - run: npm ci
+      - name: Lint website
+        run: npm run lint
       - name: Build website
         env:
           VITE_API_URL: /api

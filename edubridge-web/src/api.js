@@ -20,6 +20,51 @@ export function logout() {
   localStorage.removeItem("user");
 }
 
+export async function openProtectedFile(url) {
+  if (!url) throw new Error("رابط الملف غير متاح");
+
+  if (!url.startsWith("/api/private-files/")) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  // Open the tab synchronously from the user's click. Opening it only after
+  // awaiting fetch() is treated as an unsolicited popup by mobile browsers.
+  const popup = window.open("about:blank", "_blank");
+  if (!popup) {
+    throw new Error("المتصفح منع فتح الملف. اسمح بالنوافذ المنبثقة لهذا الموقع ثم حاول مرة أخرى.");
+  }
+
+  try {
+    popup.document.title = "EduBridge";
+    popup.document.body.innerHTML =
+      '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
+
+    const token = getToken();
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    if (!res.ok) {
+      let message = `تعذّر فتح الملف (HTTP ${res.status})`;
+      try {
+        const data = await res.json();
+        message = data.error || data.message || message;
+      } catch {}
+      throw new Error(message);
+    }
+
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    popup.location.replace(objectUrl);
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 5 * 60 * 1000);
+  } catch (err) {
+    popup.close();
+    throw err;
+  }
+}
+
 export async function fetchMyProfile() {
   const data = await request("/me");
   const user = data.user || data;
@@ -100,7 +145,7 @@ export async function googleLogin(idToken) {
 }
 
 // إنشاء حساب جديد (رقم الهوية اختياري — يُستكمل توثيقه لاحقاً)
-export function register(name, email, password, role, nationalId) {
+export function register(name, email, password, role, nationalId, specialty) {
   return request("/auth/register", {
     method: "POST",
     body: JSON.stringify({
@@ -109,6 +154,7 @@ export function register(name, email, password, role, nationalId) {
       password,
       role,
       ...(nationalId ? { national_id: nationalId } : {}),
+      ...(specialty ? { specialty } : {}),
     }),
   });
 }
@@ -542,37 +588,37 @@ export function saveWeeklyReport(payload) {
   });
 }
 
-// ===== Therapy requests & sessions =====
-export function fetchTherapyRequests(params = {}) {
+// ===== Learning support requests & meetings =====
+export function fetchLearningSupportRequests(params = {}) {
   const q = new URLSearchParams(params).toString();
-  return request(`/therapy/requests${q ? `?${q}` : ''}`);
+  return request(`/learning-support/requests${q ? `?${q}` : ''}`);
 }
 
-export function createTherapyRequestWeb(payload) {
-  return request('/therapy/requests', {
+export function createLearningSupportRequestWeb(payload) {
+  return request('/learning-support/requests', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
 
-export function scheduleTherapyRequestWeb(id, payload) {
-  return request(`/therapy/requests/${id}/schedule`, {
+export function scheduleLearningSupportRequestWeb(id, payload) {
+  return request(`/learning-support/requests/${id}/schedule`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   });
 }
 
-export function cancelTherapyRequestWeb(id) {
-  return request(`/therapy/requests/${id}/cancel`, { method: 'PUT', body: '{}' });
+export function cancelLearningSupportRequestWeb(id) {
+  return request(`/learning-support/requests/${id}/cancel`, { method: 'PUT', body: '{}' });
 }
 
-export function fetchTherapySessions(childId) {
+export function fetchLearningSupportMeetings(childId) {
   const q = childId ? `?child_id=${encodeURIComponent(childId)}` : '';
-  return request(`/therapy/sessions${q}`);
+  return request(`/learning-support/meetings${q}`);
 }
 
-export function completeTherapySessionWeb(id, payload) {
-  return request(`/therapy/sessions/${id}/complete`, {
+export function completeLearningSupportMeetingWeb(id, payload) {
+  return request(`/learning-support/meetings/${id}/complete`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   });

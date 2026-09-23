@@ -8,7 +8,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
-import '../../utils/navigation.dart';
 
 enum LessonTarget { everyone, byDisability, specificChildren }
 
@@ -449,29 +448,33 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ],
           ),
           const SizedBox(height: 10),
-          RadioListTile<LessonTarget>(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            title: const Text('كل الطلاب'),
-            value: LessonTarget.everyone,
+          RadioGroup<LessonTarget>(
             groupValue: _target,
-            onChanged: (v) => setState(() => _target = v!),
-          ),
-          RadioListTile<LessonTarget>(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            title: const Text('حسب نوع الإعاقة'),
-            value: LessonTarget.byDisability,
-            groupValue: _target,
-            onChanged: (v) => setState(() => _target = v!),
-          ),
-          RadioListTile<LessonTarget>(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            title: const Text('طلاب محدّدون'),
-            value: LessonTarget.specificChildren,
-            groupValue: _target,
-            onChanged: (v) => setState(() => _target = v!),
+            onChanged: (v) {
+              if (v != null) setState(() => _target = v);
+            },
+            child: const Column(
+              children: [
+                RadioListTile<LessonTarget>(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: Text('كل الطلاب'),
+                  value: LessonTarget.everyone,
+                ),
+                RadioListTile<LessonTarget>(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: Text('حسب نوع الإعاقة'),
+                  value: LessonTarget.byDisability,
+                ),
+                RadioListTile<LessonTarget>(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: Text('طلاب محدّدون'),
+                  value: LessonTarget.specificChildren,
+                ),
+              ],
+            ),
           ),
           if (_target == LessonTarget.byDisability) ...[
             const SizedBox(height: 8),

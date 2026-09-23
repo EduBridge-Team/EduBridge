@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createCaseDiscussionWeb, fetchCaseDiscussion, fetchCaseDiscussions, fetchChildren, fetchUsers, getUser, resolveCaseDiscussionWeb, sendCaseDiscussionMessage } from '../api'
 import '../feature-parity.css'
 
 export default function CaseDiscussionsPage(){
   const me=getUser()
+  const meId=me?.id
   const [items,setItems]=useState([])
   const [selected,setSelected]=useState(null)
   const [children,setChildren]=useState([])
@@ -13,12 +14,12 @@ export default function CaseDiscussionsPage(){
   const [draft,setDraft]=useState({child_id:'',topic:'',description:'',participant_ids:[]})
   const [message,setMessage]=useState({content:'',type:'text'})
 
-  const load=async()=>{try{
+  const load=useCallback(async()=>{try{
     const [d,c,u]=await Promise.all([fetchCaseDiscussions(),fetchChildren(),fetchUsers()])
-    setItems(d.discussions||[]);setChildren(c.children||[]);setUsers((u.users||[]).filter(x=>['teacher','specialist'].includes(x.role)&&x.id!==me?.id));setError('')
-    if(!draft.child_id&&(c.children||[])[0])setDraft(x=>({...x,child_id:String(c.children[0].id)}))
-  }catch(e){setError(e.message)}}
-  useEffect(()=>{load()},[])
+    setItems(d.discussions||[]);setChildren(c.children||[]);setUsers((u.users||[]).filter(x=>['teacher','specialist'].includes(x.role)&&x.id!==meId));setError('')
+    if((c.children||[])[0])setDraft(x=>x.child_id?x:{...x,child_id:String(c.children[0].id)})
+  }catch(e){setError(e.message)}},[meId])
+  useEffect(()=>{load()},[load])
 
   const open=async(id)=>{try{const d=await fetchCaseDiscussion(id);setSelected(d.discussion)}catch(e){setError(e.message)}}
   const create=async(e)=>{e.preventDefault();setBusy(true);try{

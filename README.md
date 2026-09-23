@@ -7,8 +7,7 @@
 | الملف / المجلد | الوصف |
 |----------------|-------|
 | `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
-| `edubridge_schema.sql`  | سكربت إنشاء الجداول (PostgreSQL) |
-| `edubridge_seed.sql`    | بيانات تجريبية |
+| `edubridge_schema.sql`  | مخطط SQL قديم للمرجعية فقط؛ Laravel migrations هي المصدر الحالي |
 | `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
@@ -18,7 +17,7 @@
 
 ## التقنيات
 
-- **Backend:** Laravel 12 (PHP)
+- **Backend:** Laravel 13 (PHP 8.4+)
 - **الموبايل:** Flutter (مع قراءة صوتية flutter_tts)
 - **الويب:** React + Vite + React Router
 - **قاعدة البيانات:** PostgreSQL
@@ -26,8 +25,9 @@
 
 ## خطوات التشغيل
 
-### 1) قاعدة البيانات
-أنشئ قاعدة باسم `edubridge` ونفّذ عليها `edubridge_schema.sql` ثم `edubridge_seed.sql`.
+### 1) الـ Backend + قاعدة البيانات
+
+أنشئ قاعدة PostgreSQL فارغة، ثم دع Laravel يدير المخطط عبر migrations. لا تستخدم ملفات seed ثابتة على الإنتاج.
 
 ### 2) الـ Backend (Laravel)
 ```bash
@@ -35,7 +35,8 @@ cd edubridge-api-laravel
 composer install
 cp .env.example .env
 php artisan key:generate
-# عدّل .env: بيانات PostgreSQL + أضف JWT_SECRET=نص عشوائي طويل
+# عدّل .env: بيانات PostgreSQL + JWT_SECRET وباقي إعدادات البيئة
+php artisan migrate
 php artisan serve --host=0.0.0.0 --port=3000
 ```
 
@@ -66,10 +67,10 @@ POST /api/auth/login           تسجيل دخول (يرجّع token)
 GET  /api/me                   حمولة التوكن (محمي)
 POST /api/assistant/chat       محادثة آمنة مع مساعد «نور» (محمي، 20 طلب/دقيقة)
 
-POST /api/children             (parent/teacher/specialist/admin)
-GET  /api/children             (ولي الأمر: أطفاله فقط)
-GET  /api/children/:id
-PUT  /api/children/:id         (تعديل بيانات الطفل)
+POST /api/children             (parent/admin فقط)
+GET  /api/children             (حسب الدور والصلاحية؛ المعلّم يرى الأطفال المسندين إليه)
+GET  /api/children/:id         (محمي بصلاحية الوصول للطفل)
+PUT  /api/children/:id         (محمي بصلاحية الوصول للطفل)
 POST /api/children/:id/parents (teacher/specialist/admin)
 POST /api/children/:id/assign-teacher (teacher/specialist/admin)
 GET  /api/children/:id/lessons (مفلترة حسب إعاقة الطفل)
@@ -140,28 +141,52 @@ GET  /api/users                            (admin: الكل، teacher/specialist
 
 كل المسارات ما عدا `register`/`login` تتطلب هيدر `Authorization: Bearer <token>`.
 
-## بيانات تجريبية
+## اختبارات التكامل
 
-باسورد كل الحسابات: `password123`
+لا توجد بيانات دخول ثابتة داخل المستودع. عند تشغيل اختبار تسجيل الدخول مرّر حساب اختبار مخصص لبيئة التطوير فقط:
 
-- معلّم: teacher@edu.com
-- مختص: specialist@edu.com
-- ولي أمر: parent@edu.com
-- أدمن: admin@edu.com
+```bash
+flutter test integration_test/login_test.dart \
+  --dart-define=EDUBRIDGE_TEST_EMAIL=test@example.com \
+  --dart-define=EDUBRIDGE_TEST_PASSWORD='replace-with-test-password'
+```
+
+لا تستخدم حساب إنتاج حقيقي في الاختبارات.
 
 ## النشر
 
-الموقع منشور على: <https://edubridge.alwaysdata.net>
+الإنتاج الأساسي يعمل على Taqat Academy:
 
-للتحديث من الجوال (عبر SSH/Termius) بأمر واحد بعد الدمج إلى `main`:
+- الموقع: <https://edubridge.win>
+- API: <https://api.edubridge.win>
+- المستودع: `EduBridge-Team/EduBridge`، الفرع `main`
+- الويب يعمل عبر `deploy/taqat-web-server.mjs` مع proxy داخلي من `/api` إلى API.
+- قاعدة PostgreSQL الإنتاجية هي قاعدة Taqat المرتبطة بتطبيق EduBridge API.
+
+ملفات `deploy/deploy.sh` و`deploy/web` باقية كمسار نشر قديم/احتياطي لـ Alwaysdata، وليست مسار الإنتاج الأساسي.
+
+### ترحيل الملفات الحساسة القديمة
+
+ملفات الهوية والشهادات ومستندات القرابة الجديدة تُحفظ خارج `public/`. بعد تحديث الخادم، افحص الملفات القديمة أولاً بدون أي تغيير:
 
 ```bash
-cd ~/EduBridge && git pull && bash deploy/deploy.sh
+cd ~/EduBridge/edubridge-api-laravel
+php artisan edubridge:migrate-sensitive-uploads
 ```
 
-السكربت يرقّي قاعدة البيانات (`database/upgrade_parent_features.sql` — آمن وقابل للتكرار)،
-ويمسح إعدادات Laravel، وينشر نسخة الموقع المبنية من `deploy/web`. التفاصيل في
-`deploy/README.md` و`دليل التحديث والنشر.docx`.
+إذا كانت نتيجة الـ dry run سليمة، نفّذ النقل وتحديث روابط قاعدة البيانات:
+
+```bash
+php artisan edubridge:migrate-sensitive-uploads --apply
+```
+
+بعد التحقق من أن الملفات الجديدة تفتح من لوحة التوثيق، يمكن حذف النسخ العامة القديمة التي لم يعد لها أي مرجع:
+
+```bash
+php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
+```
+
+> لا تستخدم `--delete-public` قبل أخذ نسخة احتياطية والتحقق من فتح الملفات بعد خطوة `--apply`.
 
 ## الحالة
 
@@ -171,7 +196,8 @@ cd ~/EduBridge && git pull && bash deploy/deploy.sh
 - [x] مساعد «نور» الذكي: رفيق متحرك، محادثة عربية، ذاكرة محلية قصيرة، ومساعدة مرتبطة بمحتوى الدرس
 - [x] واجهة الويب: لوحات لكل دور (ولي أمر/معلّم/مختص/أدمن) + الإشعارات + شريط علوي وبحث في الدروس وصفحة من نحن
 - [x] بطاقات اللوحة (باك + فرونت): توثيق هوية الطالب وولي الأمر (1)، البحث برقم الهوية (2)، حساب الوزارة ومراجعة المناهج (3)، توثيق هوية الموظفين (4)، دراسة الحالة مع المختصين (7)، تقييمات الدروس (8)، إثبات ملكية المعلّم/المختص بالشهادات (9)، حساب المؤسسة (10)، الدعم الفني والشكاوى وحذف المستخدمين (11)، وإصلاح ظهور المعلّمين عند تعيين معلّم من حساب المختص (12)
-- [ ] الإضافات الاختيارية: الوسائط، الجلسات، الملاحظات
+- [x] وسائط الدروس واجتماعات الدعم التعليمي والتقارير والمتابعة
+- [ ] تحسينات اختيارية مستقبلية: توسيع الاختبارات، مراقبة الأداء، وتحسين تجربة الإدارة
 
-> ملاحظة: بعد السحب على الخادم، شغّل `bash deploy/deploy.sh` لترقية قاعدة البيانات
-> (`database/upgrade_board_cards.sql` — آمنة وقابلة للتكرار) قبل استخدام الميزات الجديدة.
+> الإنتاج الأساسي على Taqat. استخدم Laravel migrations/أوامر الصيانة الموثقة داخل `edubridge-api-laravel/README.md`.
+> مسار `deploy/deploy.sh` باقٍ فقط للاستضافة الاحتياطية القديمة.

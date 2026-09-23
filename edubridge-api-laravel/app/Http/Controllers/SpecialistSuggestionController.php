@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 
 class SpecialistSuggestionController extends Controller
 {
-    private const SPECIALTIES = ['learning_support', 'educational', 'communication_support', 'learning_behavior', 'psychological'];
+    private const SPECIALTIES = ['learning_support', 'educational', 'communication_support', 'learning_behavior'];
     private const STATUSES = ['pending', 'accepted', 'rejected'];
 
     public function updateSpecialty(Request $request)

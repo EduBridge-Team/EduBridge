@@ -210,7 +210,6 @@ class _ChildrenAccessibilityOverviewScreenState
     final name = (child['name'] ?? '').toString();
     final id = child['id'] as int;
     final age = child['age'] ?? '?';
-    final disabilityType = child['disability_type']?.toString();
 
     final profile = AccessibilityService.instance.profileForChild(id) ??
         const AccessibilityProfile(type: DisabilityType.none);

@@ -1,4 +1,8 @@
-# النشر من الجوال (Termius / SSH)
+# النشر الاحتياطي القديم على Alwaysdata (Termius / SSH)
+
+> الإنتاج الأساسي الآن على Taqat: https://edubridge.win و https://api.edubridge.win
+>
+> هذا الدليل محفوظ فقط لمسار Alwaysdata الاحتياطي/القديم.
 
 هذا المجلد يحتوي نسخة الموقع **الجاهزة للنشر** (`deploy/web`) وسكربت نشر واحد
 (`deploy.sh`) حتى تُحدِّث الاستضافة من جوالك بدون كمبيوتر.
@@ -28,3 +32,14 @@
 > نسخة الموقع في `deploy/web` مبنية بـ `VITE_API_URL=/api`. لإعادة بنائها لاحقاً:
 > `cd edubridge-web && VITE_API_URL=/api npm run build` ثم انسخ ناتج `dist`
 > إلى `deploy/web` (`index.html` تُسمّى `app.html`).
+
+
+<!-- Auto-deploy verification marker: 2026-09-23 -->
+
+## ملاحظة حول الحزمة الاحتياطية للموقع
+
+مسار الإنتاج الحالي على Taqat **لا يعتمد على** `deploy/web`; يتم بناء واجهة React مباشرة أثناء نشر Taqat عبر `deploy/taqat-build.sh`.
+
+إذا احتجت حزمة الويب القديمة/الاحتياطية (مثل نشر Alwaysdata)، شغّل GitHub Action باسم **Build deployable website** يدويًا من تبويب Actions. سيُنشئ Artifact باسم `EduBridge-Web-Deploy-<run_number>` يمكن تنزيله واستخدام محتوى مجلد `web` منه.
+
+لا يقوم هذا الـ workflow بالكتابة إلى `main` أو تجاوز حماية الفروع.

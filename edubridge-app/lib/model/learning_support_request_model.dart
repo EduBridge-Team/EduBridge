@@ -1,12 +1,12 @@
-// lib/models/therapy_request_model.dart
-enum TherapyRequestStatus {
+// lib/models/learning_support_request_model.dart
+enum LearningSupportRequestStatus {
   pending,    // في انتظار المختص
   scheduled,  // تم تحديد موعد
   completed,  // انتهت
   cancelled,  // ملغية
 }
 
-class TherapyRequest {
+class LearningSupportRequest {
   final int id;
   final int childId;
   final String childName;
@@ -15,7 +15,7 @@ class TherapyRequest {
   final String reason;
   final String? description;
   final String urgency; // low | medium | high
-  final TherapyRequestStatus status;
+  final LearningSupportRequestStatus status;
   final DateTime? scheduledAt;
   final String? meetingLink;
   final int? specialistId;
@@ -23,7 +23,7 @@ class TherapyRequest {
   final String? specialistNotes;
   final DateTime createdAt;
 
-  TherapyRequest({
+  LearningSupportRequest({
     required this.id,
     required this.childId,
     required this.childName,
@@ -41,8 +41,8 @@ class TherapyRequest {
     required this.createdAt,
   });
 
-  factory TherapyRequest.fromJson(Map<String, dynamic> json) =>
-      TherapyRequest(
+  factory LearningSupportRequest.fromJson(Map<String, dynamic> json) =>
+      LearningSupportRequest(
         id: json['id'],
         childId: json['child_id'],
         childName: json['child_name'] ?? '',
@@ -51,9 +51,9 @@ class TherapyRequest {
         reason: json['reason'] ?? '',
         description: json['description'],
         urgency: json['urgency'] ?? 'medium',
-        status: TherapyRequestStatus.values.firstWhere(
+        status: LearningSupportRequestStatus.values.firstWhere(
           (e) => e.name == json['status'],
-          orElse: () => TherapyRequestStatus.pending,
+          orElse: () => LearningSupportRequestStatus.pending,
         ),
         scheduledAt: json['scheduled_at'] != null
             ? DateTime.parse(json['scheduled_at'])
@@ -66,8 +66,8 @@ class TherapyRequest {
       );
 
   // ─── مساعدات ───
-  bool get isPending => status == TherapyRequestStatus.pending;
-  bool get isScheduled => status == TherapyRequestStatus.scheduled;
+  bool get isPending => status == LearningSupportRequestStatus.pending;
+  bool get isScheduled => status == LearningSupportRequestStatus.scheduled;
 
   String get urgencyLabel {
     switch (urgency) {
@@ -82,13 +82,13 @@ class TherapyRequest {
 
   String get statusLabel {
     switch (status) {
-      case TherapyRequestStatus.pending:
+      case LearningSupportRequestStatus.pending:
         return 'قيد المراجعة';
-      case TherapyRequestStatus.scheduled:
+      case LearningSupportRequestStatus.scheduled:
         return 'تم تحديد موعد';
-      case TherapyRequestStatus.completed:
+      case LearningSupportRequestStatus.completed:
         return 'مكتملة';
-      case TherapyRequestStatus.cancelled:
+      case LearningSupportRequestStatus.cancelled:
         return 'ملغية';
     }
   }

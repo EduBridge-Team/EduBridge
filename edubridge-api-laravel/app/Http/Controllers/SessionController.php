@@ -46,6 +46,40 @@ class SessionController extends Controller
         return $data;
     }
 
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) {
+            return false;
+        }
+        if ($user->role === 'admin') {
+            return DB::table('children')->where('id', $childId)->exists();
+        }
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+        if ($user->role === 'parent') {
+            return DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
+        }
+
+        return false;
+    }
+
     private function canAccess($user, $session): bool
     {
         if (!$user || !$session) {
@@ -58,7 +92,7 @@ class SessionController extends Controller
             return (int) $session->specialist_id === (int) $user->id;
         }
         if ($user->role === 'teacher') {
-            return true;
+            return $this->canAccessChild($user, (int) $session->child_id);
         }
         if ($user->role === 'parent') {
             return DB::table('child_parent')
@@ -70,7 +104,7 @@ class SessionController extends Controller
         return false;
     }
 
-    // GET /api/sessions and /api/therapy/sessions
+    // GET /api/sessions and /api/learning-support/meetings
     public function index(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
@@ -80,6 +114,18 @@ class SessionController extends Controller
 
             if ($user->role === 'specialist') {
                 $query->where('s.specialist_id', $user->id);
+            } elseif ($user->role === 'teacher') {
+                $query->where(function ($q) use ($user) {
+                    $q->whereIn('s.child_id', function ($sub) use ($user) {
+                        $sub->from('children')
+                            ->select('id')
+                            ->where('assigned_teacher_id', $user->id);
+                    })->orWhereIn('s.child_id', function ($sub) use ($user) {
+                        $sub->from('child_teacher')
+                            ->select('child_id')
+                            ->where('teacher_id', $user->id);
+                    });
+                });
             } elseif ($user->role === 'parent') {
                 $query->join('child_parent as cp', 'cp.child_id', '=', 's.child_id')
                     ->where('cp.parent_id', $user->id);
@@ -87,14 +133,8 @@ class SessionController extends Controller
 
             if ($request->filled('child_id')) {
                 $childId = (int) $request->query('child_id');
-                if ($user->role === 'parent') {
-                    $owns = DB::table('child_parent')
-                        ->where('child_id', $childId)
-                        ->where('parent_id', $user->id)
-                        ->exists();
-                    if (!$owns) {
-                        return response()->json(['error' => 'غير مصرّح'], 403);
-                    }
+                if (!$this->canAccessChild($user, $childId)) {
+                    return response()->json(['error' => 'غير مصرّح'], 403);
                 }
                 $query->where('s.child_id', $childId);
             }
@@ -113,7 +153,7 @@ class SessionController extends Controller
         return $this->index($request);
     }
 
-    // POST /api/sessions and /api/therapy/sessions
+    // POST /api/sessions and /api/learning-support/meetings
     public function store(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
@@ -143,6 +183,9 @@ class SessionController extends Controller
         if (!DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
         }
+        if ($user->role === 'specialist' && !$this->canAccessChild($user, $childId)) {
+            return response()->json(['error' => 'يمكنك إنشاء جلسات فقط للأطفال ضمن فريقك'], 403);
+        }
         if (!DB::table('users')->where('id', $specialistId)->where('role', 'specialist')->exists()) {
             return response()->json(['error' => 'المختص غير موجود'], 404);
         }
@@ -162,9 +205,9 @@ class SessionController extends Controller
             $session = $this->baseQuery()->where('s.id', $id)->first();
             Notify::toChildParents(
                 $childId,
-                'تم تحديد جلسة علاجية',
-                'تمت إضافة جلسة علاجية جديدة. افتح الجلسات لعرض الموعد.',
-                'therapy_session_scheduled'
+                'تم تحديد اجتماع دعم تعليمي',
+                'تمت إضافة جلسة دعم تعليمي جديدة. افتح اجتماعات الدعم لعرض الموعد.',
+                'learning_support_meeting_scheduled'
             );
 
             return response()->json(['session' => $this->normalizeSession($session)], 201);
@@ -174,7 +217,7 @@ class SessionController extends Controller
         }
     }
 
-    // PUT /api/therapy/sessions/{id}/complete
+    // PUT /api/learning-support/meetings/{id}/complete
     public function complete(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
@@ -192,7 +235,7 @@ class SessionController extends Controller
 
         $mood = $request->input('mood_rating');
         if ($mood !== null && ((int) $mood < 1 || (int) $mood > 5)) {
-            return response()->json(['error' => 'التقييم النفسي يجب أن يكون بين 1 و5'], 422);
+            return response()->json(['error' => 'تقييم المشاركة التعليمية يجب أن يكون بين 1 و5'], 422);
         }
 
         $tags = $request->input('tags', []);
@@ -211,9 +254,9 @@ class SessionController extends Controller
                     'tags' => json_encode($tags ?? [], JSON_UNESCAPED_UNICODE),
                 ]);
 
-                if (!empty($session->therapy_request_id)) {
-                    DB::table('therapy_requests')
-                        ->where('id', $session->therapy_request_id)
+                if (!empty($session->learning_support_request_id)) {
+                    DB::table('learning_support_requests')
+                        ->where('id', $session->learning_support_request_id)
                         ->update([
                             'status' => 'completed',
                             'completed_at' => now(),

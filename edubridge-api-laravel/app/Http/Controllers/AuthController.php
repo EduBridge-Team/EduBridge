@@ -63,21 +63,27 @@ class AuthController extends Controller
     // POST /api/auth/register
     public function register(Request $request)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $password = $request->input('password');
+        $name = trim((string) $request->input('name'));
+        $email = trim((string) $request->input('email'));
+        $password = (string) $request->input('password');
         $role = $request->input('role');
         $phone = $request->input('phone');
         $specialty = $request->input('specialty');
 
         // تحقق أساسي من المدخلات
-        if (!$name || !$email || !$password || !$role) {
+        if ($name === '' || $email === '' || $password === '' || !$role) {
             return response()->json(['error' => 'الاسم والإيميل والباسورد والدور مطلوبة'], 400);
         }
-        if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'])) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['error' => 'البريد الإلكتروني غير صالح'], 422);
+        }
+        if (mb_strlen($password) < 8 || mb_strlen($password) > 128) {
+            return response()->json(['error' => 'كلمة المرور يجب أن تكون بين 8 و128 حرفاً'], 422);
+        }
+        if (!in_array($role, ['parent', 'teacher', 'specialist'], true)) {
             return response()->json(['error' => 'الدور غير صالح'], 400);
         }
-        if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['learning_support', 'educational', 'communication_support', 'learning_behavior', 'psychological'], true)) {
+        if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['learning_support', 'educational', 'communication_support', 'learning_behavior'], true)) {
             return response()->json(['error' => 'التخصص غير صالح'], 422);
         }
 
@@ -117,7 +123,19 @@ class AuthController extends Controller
 
             $user = DB::table('users')->find($id);
 
-            return response()->json(['user' => $user], 201);
+            return response()->json([
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'phone' => Schema::hasColumn('users', 'phone') ? ($user->phone ?? null) : null,
+                    'specialty' => Schema::hasColumn('users', 'specialty') ? ($user->specialty ?? null) : null,
+                    'verification_status' => Schema::hasColumn('users', 'verification_status')
+                        ? ($user->verification_status ?? 'pending')
+                        : 'pending',
+                ],
+            ], 201);
         } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
@@ -232,9 +250,13 @@ class AuthController extends Controller
 
             $email = $payload['email'] ?? null;
             $name = $payload['name'] ?? $payload['given_name'] ?? ($email ? explode('@', $email)[0] : 'Google User');
+            $emailVerified = $payload['email_verified'] ?? false;
 
             if (!$email) {
                 return response()->json(['error' => 'البريد الإلكتروني من Google غير متوفر'], 401);
+            }
+            if (!in_array($emailVerified, [true, 1, '1', 'true'], true)) {
+                return response()->json(['error' => 'البريد الإلكتروني في حساب Google غير موثّق'], 401);
             }
 
             $user = DB::table('users')->where('email', $email)->first();

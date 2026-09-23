@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { fetchParentLessons } from '../api'
 import '../feature-parity.css'
 
@@ -8,8 +8,8 @@ export default function ParentLessonsPage(){
   const [error,setError]=useState('')
   const [speakingId,setSpeakingId]=useState(null)
 
-  const load=async()=>{try{const d=await fetchParentLessons();setLessons(d.lessons||[]);setError('')}catch(e){setError(e.message)}}
-  useEffect(()=>{load();return()=>window.speechSynthesis?.cancel()},[])
+  const load=useCallback(async()=>{try{const d=await fetchParentLessons();setLessons(d.lessons||[]);setError('')}catch(e){setError(e.message)}},[])
+  useEffect(()=>{load();return()=>window.speechSynthesis?.cancel()},[load])
 
   const filtered=useMemo(()=>{
     const q=query.trim()

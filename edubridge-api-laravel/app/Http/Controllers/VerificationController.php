@@ -26,6 +26,13 @@ class VerificationController extends Controller
         }
         if ($request->has('id_document_url')) {
             $url = trim((string) $request->input('id_document_url'));
+            if ($url !== '') {
+                $expectedPrefix = '/api/private-files/user/' . (int) $user->id . '/';
+                $currentUrl = (string) (DB::table('users')->where('id', $user->id)->value('id_document_url') ?? '');
+                if (!str_starts_with($url, $expectedPrefix) && $url !== $currentUrl) {
+                    return response()->json(['error' => 'ملف الهوية يجب أن يكون مرفوعاً من حسابك عبر التخزين الآمن'], 422);
+                }
+            }
             $updates['id_document_url'] = $url !== '' ? $url : null;
         }
 

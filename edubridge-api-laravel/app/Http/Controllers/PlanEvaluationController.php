@@ -15,9 +15,26 @@ class PlanEvaluationController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        $childId = (int) $request->input('child_id');
-        if ($childId <= 0 || !DB::table('children')->where('id', $childId)->exists()) {
+        $approval = DB::table('ministry_approvals')->where('id', $planId)->first();
+        if (!$approval) {
+            return response()->json(['error' => 'الخطة غير موجودة'], 404);
+        }
+
+        $childId = (int) $approval->child_id;
+        $requestedChildId = $request->input('child_id');
+        if ($requestedChildId !== null && (int) $requestedChildId !== $childId) {
+            return response()->json(['error' => 'الخطة لا تخص هذا الطفل'], 422);
+        }
+
+        if (!DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
+        }
+        if ($me->role === 'specialist'
+            && !DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $me->id)
+                ->exists()) {
+            return response()->json(['error' => 'يمكنك تقييم خطط الأطفال ضمن فريقك فقط'], 403);
         }
 
         $appropriate = $request->input('is_plan_appropriate');
@@ -43,8 +60,7 @@ class PlanEvaluationController extends Controller
             'is_plan_appropriate','notes_for_teacher','recommended_changes','updated_at'
         ]);
 
-        $approval = DB::table('ministry_approvals')->where('id', $planId)->first();
-        if ($approval && $approval->teacher_id) {
+        if ($approval->teacher_id) {
             Notify::toUser($approval->teacher_id, 'تقييم جديد للخطة',
                 'أضاف المختص تقييماً على الخطة التعليمية.', 'plan_evaluation');
         }

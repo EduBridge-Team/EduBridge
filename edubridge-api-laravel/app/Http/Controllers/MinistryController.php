@@ -133,7 +133,7 @@ class MinistryController extends Controller
                 'total_children' => DB::table('children')->count(),
                 'active_children' => DB::table('children')->whereIn('status', ['evaluated', 'assigned'])->count(),
                 'homework_completion_rate' => min(100, $homeworkRate),
-                'therapy_sessions_count' => DB::table('sessions')->count(),
+                'learning_support_meetings_count' => DB::table('sessions')->count(),
                 'by_disability_type' => $byDisability,
                 'by_age_group' => $byAge,
             ]);

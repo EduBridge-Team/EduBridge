@@ -1,26 +1,26 @@
-// lib/screens/therapy/therapy_sessions_screen.dart
+// lib/screens/learning_support_meetings_screen.dart
 // عرض اجتماعات الدعم التعليمي — للعرض فقط (الإنشاء يتم من طلبات الدعم)
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
-import '../model/therapy_model.dart';
+import '../services/api_service.dart';
+import '../theme.dart';
+import '../model/learning_support_meeting_model.dart';
 
-class TherapySessionsScreen extends StatefulWidget {
+class LearningSupportMeetingsScreen extends StatefulWidget {
   final int? childId;
   final String? childName;
 
-  const TherapySessionsScreen({
+  const LearningSupportMeetingsScreen({
     super.key,
     this.childId,
     this.childName,
   });
 
   @override
-  State<TherapySessionsScreen> createState() => _TherapySessionsScreenState();
+  State<LearningSupportMeetingsScreen> createState() => _LearningSupportMeetingsScreenState();
 }
 
-class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
-  List<TherapySession> _sessions = [];
+class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsScreen> {
+  List<LearningSupportMeeting> _sessions = [];
   bool _loading = true;
   String? _error;
   String _filter = 'all'; // all | scheduled | completed
@@ -37,11 +37,11 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
       _error = null;
     });
     try {
-      final list = await ApiService.getTherapySessions(childId: widget.childId);
+      final list = await ApiService.getLearningSupportMeetings(childId: widget.childId);
       if (!mounted) return;
       setState(() {
         _sessions = list
-            .map((e) => TherapySession.fromJson(e as Map<String, dynamic>))
+            .map((e) => LearningSupportMeeting.fromJson(e as Map<String, dynamic>))
             .toList();
         _loading = false;
       });
@@ -54,15 +54,15 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
     }
   }
 
-  List<TherapySession> get _filtered {
+  List<LearningSupportMeeting> get _filtered {
     switch (_filter) {
       case 'scheduled':
         return _sessions
-            .where((s) => s.status == TherapySessionStatus.scheduled)
+            .where((s) => s.status == LearningSupportMeetingStatus.scheduled)
             .toList();
       case 'completed':
         return _sessions
-            .where((s) => s.status == TherapySessionStatus.completed)
+            .where((s) => s.status == LearningSupportMeetingStatus.completed)
             .toList();
       default:
         return _sessions;
@@ -104,7 +104,7 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
                   label: 'مجدولة',
                   count: _sessions
                       .where((s) =>
-                          s.status == TherapySessionStatus.scheduled)
+                          s.status == LearningSupportMeetingStatus.scheduled)
                       .length,
                   selected: _filter == 'scheduled',
                   color: AppColors.orange,
@@ -115,7 +115,7 @@ class _TherapySessionsScreenState extends State<TherapySessionsScreen> {
                   label: 'منتهية',
                   count: _sessions
                       .where((s) =>
-                          s.status == TherapySessionStatus.completed)
+                          s.status == LearningSupportMeetingStatus.completed)
                       .length,
                   selected: _filter == 'completed',
                   color: AppColors.green,
@@ -298,61 +298,61 @@ class _FilterChip extends StatelessWidget {
 //  بطاقة الجلسة
 // ═══════════════════════════════════════════════════════════
 class _SessionCard extends StatelessWidget {
-  final TherapySession session;
+  final LearningSupportMeeting session;
 
   const _SessionCard({required this.session});
 
   String get _typeLabel {
     switch (session.type) {
-      case TherapySessionType.learningPlanning:
+      case LearningSupportMeetingType.learningPlanning:
         return 'اجتماع تخطيط تعليمي';
-      case TherapySessionType.followUp:
+      case LearningSupportMeetingType.followUp:
         return 'متابعة';
-      case TherapySessionType.teamReview:
+      case LearningSupportMeetingType.teamReview:
         return 'مراجعة فريق الدعم';
-      case TherapySessionType.parentReview:
+      case LearningSupportMeetingType.parentReview:
         return 'متابعة مع ولي الأمر';
-      case TherapySessionType.groupSupport:
+      case LearningSupportMeetingType.groupSupport:
         return 'دعم تعليمي جماعي';
     }
   }
 
   IconData get _typeIcon {
     switch (session.type) {
-      case TherapySessionType.learningPlanning:
+      case LearningSupportMeetingType.learningPlanning:
         return Icons.play_circle_outline;
-      case TherapySessionType.followUp:
+      case LearningSupportMeetingType.followUp:
         return Icons.autorenew;
-      case TherapySessionType.teamReview:
+      case LearningSupportMeetingType.teamReview:
         return Icons.warning_amber;
-      case TherapySessionType.parentReview:
+      case LearningSupportMeetingType.parentReview:
         return Icons.family_restroom;
-      case TherapySessionType.groupSupport:
+      case LearningSupportMeetingType.groupSupport:
         return Icons.groups;
     }
   }
 
   String get _statusLabel {
     switch (session.status) {
-      case TherapySessionStatus.scheduled:
+      case LearningSupportMeetingStatus.scheduled:
         return 'مجدولة';
-      case TherapySessionStatus.completed:
+      case LearningSupportMeetingStatus.completed:
         return 'مكتملة';
-      case TherapySessionStatus.cancelled:
+      case LearningSupportMeetingStatus.cancelled:
         return 'ملغية';
-      case TherapySessionStatus.noShow:
+      case LearningSupportMeetingStatus.noShow:
         return 'لم يحضر';
     }
   }
 
   Color get _statusColor {
     switch (session.status) {
-      case TherapySessionStatus.scheduled:
+      case LearningSupportMeetingStatus.scheduled:
         return AppColors.orange;
-      case TherapySessionStatus.completed:
+      case LearningSupportMeetingStatus.completed:
         return AppColors.green;
-      case TherapySessionStatus.cancelled:
-      case TherapySessionStatus.noShow:
+      case LearningSupportMeetingStatus.cancelled:
+      case LearningSupportMeetingStatus.noShow:
         return AppColors.red;
     }
   }
@@ -473,7 +473,7 @@ class _SessionCard extends StatelessWidget {
               _section('💡 التوصيات', session.recommendations!, c),
             ],
 
-            // ─── الحالة النفسية ───
+            // ─── المشاركة التعليمية ───
             if (session.moodRating != null) ...[
               const SizedBox(height: 10),
               Row(
@@ -481,7 +481,7 @@ class _SessionCard extends StatelessWidget {
                   Icon(Icons.mood, size: 18, color: c.muted),
                   const SizedBox(width: 6),
                   Text(
-                    'الحالة النفسية: ',
+                    'المشاركة التعليمية: ',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.bold,

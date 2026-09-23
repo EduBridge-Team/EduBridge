@@ -8,6 +8,42 @@ use Illuminate\Support\Facades\DB;
 
 class MinistryApprovalController extends Controller
 {
+    private function canAccessChild($user, int $childId): bool
+    {
+        if (!$user) return false;
+
+        if (in_array($user->role, ['admin', 'ministry'], true)) {
+            return DB::table('children')->where('id', $childId)->exists();
+        }
+
+        if ($user->role === 'parent') {
+            return DB::table('child_parent')
+                ->where('child_id', $childId)
+                ->where('parent_id', $user->id)
+                ->exists();
+        }
+
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
+
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+
+        return false;
+    }
+
     private function query()
     {
         return DB::table('ministry_approvals as a')
@@ -51,6 +87,14 @@ class MinistryApprovalController extends Controller
         if (!DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
         }
+        if (!$this->canAccessChild($me, $childId)) {
+            return response()->json(['error' => 'لا تملك صلاحية على هذا الطفل'], 403);
+        }
+
+        $teacherId = $request->input('teacher_id');
+        if ($teacherId && !DB::table('users')->where('id', $teacherId)->where('role', 'teacher')->exists()) {
+            return response()->json(['error' => 'المعلّم غير موجود'], 422);
+        }
 
         $methods = $request->input('teaching_methods', []);
         if (!is_array($methods)) {
@@ -62,7 +106,7 @@ class MinistryApprovalController extends Controller
                 'child_id' => $childId,
                 'evaluation_id' => $request->input('evaluation_id'),
                 'submitted_by' => $me->id,
-                'teacher_id' => $request->input('teacher_id'),
+                'teacher_id' => $teacherId,
                 'educational_plan' => $plan,
                 'cognitive_assessment' => $request->input('cognitive_assessment'),
                 'motor_assessment' => $request->input('motor_assessment'),
@@ -173,8 +217,13 @@ class MinistryApprovalController extends Controller
         return response()->json(['approval' => $this->normalize($row)]);
     }
 
-    public function childStatus($childId)
+    public function childStatus(Request $request, $childId)
     {
+        $me = $request->attributes->get('jwt_user');
+        if (!$this->canAccessChild($me, (int) $childId)) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+
         $row = DB::table('ministry_approvals')
             ->where('child_id', $childId)
             ->orderByDesc('created_at')

@@ -1,5 +1,4 @@
 // شاشة الدردشة - التواصل بين المعلم والمختص
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -81,6 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messageCtrl.clear();
       await _loadMessages();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('تعذّر إرسال الرسالة: $e')),
       );

@@ -32,8 +32,6 @@ export default function ChildFormPage() {
     age: existing.age != null ? String(existing.age) : '',
     disability_type: existing.disability_type || '',
     disability_description: existing.disability_description || '',
-    medical_history: existing.medical_history || '',
-    psychologist_notes: existing.psychologist_notes || '',
     special_needs: existing.special_needs || '',
     preferred_learning_style: existing.preferred_learning_style || '',
     strengths: fromList(existing.strengths),
@@ -89,8 +87,6 @@ export default function ChildFormPage() {
       age,
       disability_type: clean(form.disability_type),
       disability_description: clean(form.disability_description),
-      medical_history: clean(form.medical_history),
-      psychologist_notes: clean(form.psychologist_notes),
       special_needs: clean(form.special_needs),
       preferred_learning_style: clean(form.preferred_learning_style),
       strengths: toList(form.strengths),
@@ -199,7 +195,7 @@ export default function ChildFormPage() {
             onChange={set('medical_history')}
           />
 
-          <label htmlFor="psychologist_notes">ملاحظات المختص النفسي (اختياري)</label>
+          <label htmlFor="psychologist_notes">ملاحظات مختص الدعم التعليمي (اختياري)</label>
           <textarea
             id="psychologist_notes"
             rows={3}

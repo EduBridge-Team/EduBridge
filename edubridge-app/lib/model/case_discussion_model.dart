@@ -152,9 +152,10 @@ class CaseParticipant {
 
   String get emoji {
     if (role == 'teacher') return '👨‍🏫';
-    if (specialty == 'psychological') return '🧠';
+    if (specialty == 'learning_support') return '📘';
     if (specialty == 'educational') return '📚';
-    if (specialty == 'speech') return '🗣️';
+    if (specialty == 'communication_support') return '🗣️';
+    if (specialty == 'learning_behavior') return '🎯';
     return '🧩';
   }
 }

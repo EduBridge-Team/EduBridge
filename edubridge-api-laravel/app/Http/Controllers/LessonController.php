@@ -3,13 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Support\Notify;
+use App\Support\R2Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use InvalidArgumentException;
 
 class LessonController extends Controller
 {
+    private function canTargetChildren($user, array $childIds): bool
+    {
+        if (!$user || !$childIds) {
+            return false;
+        }
+
+        $childIds = array_values(array_unique(array_map('intval', $childIds)));
+        if (DB::table('children')->whereIn('id', $childIds)->count() !== count($childIds)) {
+            return false;
+        }
+
+        if (($user->role ?? null) === 'admin') {
+            return true;
+        }
+
+        if (($user->role ?? null) === 'teacher') {
+            $primary = DB::table('children')
+                ->whereIn('id', $childIds)
+                ->where('assigned_teacher_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            $team = DB::table('child_teacher')
+                ->whereIn('child_id', $childIds)
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            return count(array_unique(array_merge($primary, $team))) === count($childIds);
+        }
+
+        if (($user->role ?? null) === 'specialist') {
+            return DB::table('child_specialist')
+                ->whereIn('child_id', $childIds)
+                ->where('specialist_id', $user->id)
+                ->distinct()
+                ->count('child_id') === count($childIds);
+        }
+
+        return false;
+    }
+
     private const TARGET_TYPES = ['everyone', 'byDisability', 'specificChildren', 'parents'];
 
     private const MEDIA_RULES = [
@@ -54,13 +98,17 @@ class LessonController extends Controller
             return response()->json(['error' => 'اختر طالباً واحداً على الأقل'], 422);
         }
 
+        $user = $request->attributes->get('jwt_user');
+        if ($targetType === 'specificChildren' && !$this->canTargetChildren($user, $targetChildIds)) {
+            return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
+        }
+
         try {
             $this->validateUploadedMedia($request);
         } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
-        $user = $request->attributes->get('jwt_user');
         $lessonId = null;
 
         DB::beginTransaction();
@@ -104,7 +152,8 @@ class LessonController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             if ($lessonId !== null) {
-                $this->removeLessonUploadDirectory($lessonId);
+                $urls = DB::table('media')->where('lesson_id', $lessonId)->pluck('url')->all();
+                $this->removeLessonObjects($urls);
             }
             report($e);
             return response()->json(['error' => 'تعذّر حفظ الدرس ووسائطه'], 500);
@@ -236,6 +285,9 @@ class LessonController extends Controller
         if ($targetType === 'specificChildren' && empty($targetChildIds)) {
             return response()->json(['error' => 'اختر طالباً واحداً على الأقل'], 422);
         }
+        if ($targetType === 'specificChildren' && !$this->canTargetChildren($user, $targetChildIds)) {
+            return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
+        }
 
         try {
             $this->validateUploadedMedia($request);
@@ -305,8 +357,13 @@ class LessonController extends Controller
         }
 
         try {
+            $mediaUrls = DB::table('media')
+                ->where('lesson_id', $lesson->id)
+                ->pluck('url')
+                ->all();
+
             DB::table('lessons')->where('id', $lesson->id)->delete();
-            $this->removeLessonUploadDirectory((int) $lesson->id);
+            $this->removeLessonObjects($mediaUrls);
 
             return response()->json(['ok' => true]);
         } catch (\Throwable $e) {
@@ -336,10 +393,14 @@ class LessonController extends Controller
             ->get(['id', 'url']);
 
         foreach ($items as $item) {
-            $relative = ltrim((string) $item->url, '/');
-            $path = public_path($relative);
-            if (is_file($path)) {
-                @unlink($path);
+            $path = parse_url((string) $item->url, PHP_URL_PATH) ?: '';
+            $key = ltrim($path, '/');
+            if (str_starts_with($key, 'lessons/')) {
+                try {
+                    R2Storage::delete(R2Storage::mediaBucket(), $key);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
             }
         }
 
@@ -423,19 +484,20 @@ class LessonController extends Controller
     private function persistUploadedMedia($file, int $lessonId, string $type): void
     {
         $extension = strtolower((string) $file->getClientOriginalExtension());
-        $directory = public_path('uploads/lessons/' . $lessonId);
-
-        if (!is_dir($directory)) {
-            @mkdir($directory, 0755, true);
-        }
-
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
-        $file->move($directory, $filename);
+        $key = 'lessons/' . $lessonId . '/' . $filename;
+
+        R2Storage::putUploadedFile(
+            R2Storage::mediaBucket(),
+            $key,
+            $file,
+            (string) $file->getMimeType()
+        );
 
         DB::table('media')->insert([
             'lesson_id' => $lessonId,
             'type' => $type,
-            'url' => '/uploads/lessons/' . $lessonId . '/' . $filename,
+            'url' => R2Storage::mediaPublicUrl($key),
         ]);
     }
 
@@ -506,11 +568,20 @@ class LessonController extends Controller
         return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
     }
 
-    private function removeLessonUploadDirectory(int $lessonId): void
+    private function removeLessonObjects(array $urls): void
     {
-        $directory = public_path('uploads/lessons/' . $lessonId);
-        if (is_dir($directory)) {
-            File::deleteDirectory($directory);
+        foreach ($urls as $url) {
+            $path = parse_url((string) $url, PHP_URL_PATH) ?: '';
+            $key = ltrim($path, '/');
+            if (!str_starts_with($key, 'lessons/')) {
+                continue;
+            }
+
+            try {
+                R2Storage::delete(R2Storage::mediaBucket(), $key);
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
     }
 }

@@ -2,22 +2,25 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:edubridge_app/main.dart';
+import 'package:edubridge_app/main.dart' as app;
+import 'package:edubridge_app/screens/admin_screen.dart';
+import 'package:edubridge_app/services/api_service.dart';
+import 'package:edubridge_app/utils/home_router.dart';
 
 void main() {
   testWidgets('المستخدم الضيف يرى الشاشة الترحيبية',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(const EduBridgeApp());
-    await tester.pumpAndSettle();
+    await tester.pumpWidget(const app.EduBridgeApp());
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
 
-    expect(find.text('جسر التعليمي'), findsOneWidget);
-    expect(find.text('🚀 ابدأ رحلتك التعليمية'), findsOneWidget);
+    expect(find.text('معاً ندعم تقدُّمه'), findsOneWidget);
+    expect(find.text('Skip'), findsOneWidget);
   });
 
-  testWidgets('الجلسة المحفوظة تتجاوز الشاشة الترحيبية',
-      (WidgetTester tester) async {
+  test('الجلسة المحفوظة تحل إلى واجهة الدور الصحيح', () async {
     SharedPreferences.setMockInitialValues({
       'token': 'saved-token',
       'role': 'admin',
@@ -25,10 +28,8 @@ void main() {
       'userId': 1,
     });
 
-    await tester.pumpWidget(const EduBridgeApp());
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-
-    expect(find.text('🚀 ابدأ رحلتك التعليمية'), findsNothing);
+    expect(await ApiService.getToken(), 'saved-token');
+    final destination = await homeScreenForRole();
+    expect(destination, isA<AdminScreen>());
   });
 }

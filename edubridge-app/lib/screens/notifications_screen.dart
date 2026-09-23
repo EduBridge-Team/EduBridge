@@ -73,6 +73,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           current.map((n) => {...n as Map, 'is_read': true}).toList();
 
       await NotificationListenerService.instance.refresh();
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديد جميع الإشعارات كمقروءة')),
@@ -87,7 +88,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  // ✅ محدّثة — إضافة أيقونات الجلسات النفسية
+  // أيقونات إشعارات الدعم التعليمي
   String _getIcon(String type) {
     switch (type) {
       case 'child_added':
@@ -118,14 +119,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return '🧠';
       case 'plan_evaluation_created':
         return '📋';
-      case 'therapy_session_scheduled':
+      case 'learning_support_meeting_scheduled':
         return '🗓️';
       // ✅ جديد
-      case 'therapy_request_created':
+      case 'learning_support_request_created':
         return '🧠';
-      case 'therapy_scheduled':
+      case 'learning_support_scheduled':
         return '📅';
-      case 'therapy_request_cancelled':
+      case 'learning_support_request_cancelled':
         return '❌';
       case 'specialist_suggestion':
        return '🤝';

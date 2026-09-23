@@ -1,5 +1,6 @@
 // خدمة WebSocket للدردشة والإشعارات الفورية
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import '../config.dart';
@@ -22,13 +23,13 @@ class WebSocketService {
   // ===== الاتصال بالـ WebSocket =====
   void connect(String token) {
     if (_channel != null) {
-      print('⚠️ WebSocket already connected');
+      debugPrint('⚠️ WebSocket already connected');
       return;
     }
 
     try {
       final url = '${Config.wsUrl}?token=$token';
-      print('🔌 Connecting to WebSocket: $url');
+      debugPrint('🔌 Connecting to WebSocket');
       
       _channel = IOWebSocketChannel.connect(Uri.parse(url));
       _isConnected = true;
@@ -37,25 +38,25 @@ class WebSocketService {
         (data) {
           try {
             final json = jsonDecode(data);
-            print('📩 WebSocket message received: $json');
+            debugPrint('📩 WebSocket message received');
             _notifyListeners(json);
           } catch (e) {
-            print('❌ Error parsing WebSocket message: $e');
+            debugPrint('❌ Error parsing WebSocket message: $e');
           }
         },
         onDone: () {
-          print('🔌 WebSocket disconnected');
+          debugPrint('🔌 WebSocket disconnected');
           _isConnected = false;
           _channel = null;
         },
         onError: (error) {
-          print('❌ WebSocket error: $error');
+          debugPrint('❌ WebSocket error: $error');
           _isConnected = false;
           _channel = null;
         },
       );
     } catch (e) {
-      print('❌ WebSocket connection error: $e');
+      debugPrint('❌ WebSocket connection error: $e');
       _isConnected = false;
       _channel = null;
     }
@@ -67,22 +68,22 @@ class WebSocketService {
       _channel!.sink.close();
       _channel = null;
       _isConnected = false;
-      print('🔌 WebSocket disconnected manually');
+      debugPrint('🔌 WebSocket disconnected manually');
     }
   }
 
   // ===== إرسال رسالة =====
   void sendMessage(Map<String, dynamic> data) {
     if (_channel == null || !_isConnected) {
-      print('⚠️ Cannot send message: WebSocket not connected');
+      debugPrint('⚠️ Cannot send message: WebSocket not connected');
       return;
     }
 
     try {
       _channel!.sink.add(jsonEncode(data));
-      print('📤 WebSocket message sent: $data');
+      debugPrint('📤 WebSocket message sent');
     } catch (e) {
-      print('❌ Error sending WebSocket message: $e');
+      debugPrint('❌ Error sending WebSocket message: $e');
     }
   }
 
@@ -111,18 +112,18 @@ class WebSocketService {
   void addListener(void Function(Map<String, dynamic>) listener) {
     if (!_listeners.contains(listener)) {
       _listeners.add(listener);
-      print('👂 Listener added. Total: ${_listeners.length}');
+      debugPrint('👂 Listener added. Total: ${_listeners.length}');
     }
   }
 
   void removeListener(void Function(Map<String, dynamic>) listener) {
     _listeners.remove(listener);
-    print('👂 Listener removed. Total: ${_listeners.length}');
+    debugPrint('👂 Listener removed. Total: ${_listeners.length}');
   }
 
   void clearListeners() {
     _listeners.clear();
-    print('👂 All listeners cleared');
+    debugPrint('👂 All listeners cleared');
   }
 
   void _notifyListeners(Map<String, dynamic> data) {
@@ -130,7 +131,7 @@ class WebSocketService {
       try {
         listener(data);
       } catch (e) {
-        print('❌ Error in listener: $e');
+        debugPrint('❌ Error in listener: $e');
       }
     }
   }
@@ -153,6 +154,6 @@ class WebSocketService {
   void dispose() {
     disconnect();
     _listeners.clear();
-    print('🧹 WebSocketService disposed');
+    debugPrint('🧹 WebSocketService disposed');
   }
 }

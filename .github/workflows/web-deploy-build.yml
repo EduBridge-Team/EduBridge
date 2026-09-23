@@ -1,30 +1,20 @@
 name: Build deployable website
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'edubridge-web/**'
-      - '.github/workflows/web-deploy-build.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: web-deploy-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: npm
@@ -52,29 +42,19 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          # Copy the complete Vite output, including every file from public/.
-          # This prevents newly added hero/brand images from disappearing in production.
-          rm -rf deploy/web
-          mkdir -p deploy/web
-          cp -R edubridge-web/dist/. deploy/web/
-          cp deploy/web/index.html deploy/web/app.html
-          rm -f deploy/web/index.html
-          # Laravel owns the document-root .htaccess. Never bundle the SPA
-          # FallbackResource file, otherwise /api requests fail at Apache level.
-          rm -f deploy/web/.htaccess
+          rm -rf deploy-artifact
+          mkdir -p deploy-artifact/web
+          cp -R edubridge-web/dist/. deploy-artifact/web/
+          cp deploy-artifact/web/index.html deploy-artifact/web/app.html
+          rm -f deploy-artifact/web/index.html
 
-      - name: Commit deploy bundle
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add deploy/web
-          if git diff --cached --quiet; then
-            echo 'Deploy bundle is already current.'
-            exit 0
-          fi
-          git commit -m 'build(web): refresh deploy bundle'
-          # main may have advanced while Vite was building (for example an API-only commit).
-          # Rebase the generated deploy commit onto the latest branch before pushing.
-          git fetch origin "${GITHUB_REF_NAME}"
-          git rebase --autostash "origin/${GITHUB_REF_NAME}"
-          git push origin HEAD:${GITHUB_REF_NAME}
+          # Laravel owns the document-root .htaccess in the legacy deployment.
+          rm -f deploy-artifact/web/.htaccess
+
+      - name: Upload legacy deploy bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: EduBridge-Web-Deploy-${{ github.run_number }}
+          path: deploy-artifact/web
+          if-no-files-found: error
+          retention-days: 30

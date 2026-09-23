@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\Notify;
+use App\Support\R2Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class HomeworkController extends Controller
             ->orderByDesc('h.created_at');
     }
 
-    private function normalize($row): array
+    private function normalize($row, ?array $visibleChildIds = null): array
     {
         $data = (array) $row;
 
@@ -35,6 +36,7 @@ class HomeworkController extends Controller
         $submissions = DB::table('homework_submissions as hs')
             ->join('children as c', 'c.id', '=', 'hs.child_id')
             ->where('hs.homework_id', $data['id'])
+            ->when($visibleChildIds !== null, fn ($query) => $query->whereIn('hs.child_id', $visibleChildIds))
             ->orderByDesc('hs.submitted_at')
             ->select('hs.*', 'c.name as child_name')
             ->get()
@@ -60,7 +62,23 @@ class HomeworkController extends Controller
     private function canViewChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['teacher','specialist','admin'], true)) return true;
+        if ($user->role === 'admin') return true;
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
 
         return $user->role === 'parent'
             && DB::table('child_parent')
@@ -88,14 +106,16 @@ class HomeworkController extends Controller
                 throw new \RuntimeException('حجم الملف يتجاوز 10 ميغابايت');
             }
 
-            $dir = public_path('uploads/homework');
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0755, true);
-            }
-
             $name = $prefix . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.' . $ext;
-            $file->move($dir, $name);
-            $urls[] = '/uploads/homework/' . $name;
+            $key = 'homework/' . $name;
+
+            R2Storage::putUploadedFile(
+                R2Storage::mediaBucket(),
+                $key,
+                $file,
+                (string) $file->getMimeType()
+            );
+            $urls[] = R2Storage::mediaPublicUrl($key);
         }
 
         return $urls;
@@ -113,7 +133,25 @@ class HomeworkController extends Controller
         try {
             $rows = $this->homeworkQuery()->get();
 
-            $homeworks = $rows->filter(function ($row) use ($user, $childId) {
+            $ownedChildIds = null;
+            if ($user->role === 'parent') {
+                $ownedChildIds = DB::table('child_parent')
+                    ->where('parent_id', $user->id)
+                    ->pluck('child_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+
+            $specialistChildIds = null;
+            if ($user->role === 'specialist') {
+                $specialistChildIds = DB::table('child_specialist')
+                    ->where('specialist_id', $user->id)
+                    ->pluck('child_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+
+            $homeworks = $rows->filter(function ($row) use ($user, $childId, $ownedChildIds, $specialistChildIds) {
                 $ids = $row->assigned_child_ids;
                 if (is_string($ids)) {
                     $decoded = json_decode($ids, true);
@@ -128,15 +166,23 @@ class HomeworkController extends Controller
                     return (int) $row->teacher_id === (int) $user->id;
                 }
                 if ($user->role === 'parent') {
-                    $owned = DB::table('child_parent')
-                        ->where('parent_id', $user->id)
-                        ->pluck('child_id')
-                        ->map(fn ($id) => (int) $id)
-                        ->all();
-                    return count(array_intersect($ids, $owned)) > 0;
+                    return count(array_intersect($ids, $ownedChildIds ?? [])) > 0;
+                }
+                if ($user->role === 'specialist') {
+                    return count(array_intersect($ids, $specialistChildIds ?? [])) > 0;
                 }
                 return true;
-            })->map(fn ($row) => $this->normalize($row))->values();
+            })->map(function ($row) use ($user, $childId, $ownedChildIds, $specialistChildIds) {
+                $visibleChildIds = $childId !== null
+                    ? [$childId]
+                    : match ($user->role) {
+                        'parent' => $ownedChildIds ?? [],
+                        'specialist' => $specialistChildIds ?? [],
+                        default => null,
+                    };
+
+                return $this->normalize($row, $visibleChildIds);
+            })->values();
 
             return response()->json(['homeworks' => $homeworks]);
         } catch (\Throwable $e) {
@@ -171,6 +217,36 @@ class HomeworkController extends Controller
         $validChildCount = DB::table('children')->whereIn('id', $assigned)->count();
         if ($validChildCount !== count($assigned)) {
             return response()->json(['error' => 'بعض الأطفال المحددين غير موجودين'], 422);
+        }
+
+        if ($user->role === 'specialist') {
+            $authorizedCount = DB::table('child_specialist')
+                ->whereIn('child_id', $assigned)
+                ->where('specialist_id', $user->id)
+                ->distinct()
+                ->count('child_id');
+            if ($authorizedCount !== count($assigned)) {
+                return response()->json(['error' => 'يمكنك إسناد الواجبات فقط للأطفال ضمن فريقك'], 403);
+            }
+        }
+
+        if ($user->role === 'teacher') {
+            $authorizedIds = DB::table('children')
+                ->whereIn('id', $assigned)
+                ->where('assigned_teacher_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $teamIds = DB::table('child_teacher')
+                ->whereIn('child_id', $assigned)
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $authorizedCount = count(array_unique(array_merge($authorizedIds, $teamIds)));
+            if ($authorizedCount !== count($assigned)) {
+                return response()->json(['error' => 'يمكنك إسناد الواجبات فقط للأطفال المسندين إليك'], 403);
+            }
         }
 
         try {
@@ -314,6 +390,9 @@ class HomeworkController extends Controller
             return response()->json(['error' => 'التسليم غير موجود'], 404);
         }
         if ($user->role === 'teacher' && (int) $submission->teacher_id !== (int) $user->id) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+        if ($user->role === 'specialist' && !$this->canViewChild($user, (int) $submission->child_id)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 

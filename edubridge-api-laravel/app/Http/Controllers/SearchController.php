@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 // البحث برقم الهوية (البطاقة 2)
-// بحث سريع عن طالب/ولي أمر/موظف برقم الهوية الكامل أو الجزئي مع حالة التوثيق.
+// بحث دقيق عن طالب/ولي أمر/موظف برقم الهوية الكامل مع حالة التوثيق.
 // الصلاحيات محكومة: الموظفون فقط (معلّم/مختص/أدمن/وزارة/مؤسسة).
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,17 +14,23 @@ class SearchController extends Controller
     public function byNationalId(Request $request)
     {
         $q = trim((string) $request->query('q'));
-        if ($q === '' || strlen($q) < 2) {
-            return response()->json(['error' => 'أدخل رقم هوية (حرفان على الأقل)'], 400);
+        if (!preg_match('/^\d{6,20}$/', $q)) {
+            return response()->json(['error' => 'أدخل رقم الهوية الكامل بالأرقام فقط'], 422);
         }
 
-        $like = '%' . $q . '%';
+        $mask = static function (?string $value): ?string {
+            if (!$value) return null;
+            $length = strlen($value);
+            if ($length <= 4) return str_repeat('•', $length);
+
+            return str_repeat('•', $length - 4) . substr($value, -4);
+        };
 
         try {
             // المستخدمون (موظفون وأولياء أمور) — برقم الهوية
             $users = DB::table('users')
-                ->select('id', 'name', 'email', 'role', 'national_id', 'verification_status')
-                ->where('national_id', 'like', $like)
+                ->select('id', 'name', 'role', 'national_id', 'verification_status')
+                ->where('national_id', $q)
                 ->orderBy('name')
                 ->limit(20)
                 ->get()
@@ -33,16 +39,17 @@ class SearchController extends Controller
                     'id' => $u->id,
                     'name' => $u->name,
                     'role' => $u->role,
-                    'email' => $u->email,
-                    'national_id' => $u->national_id,
+                    'national_id' => $mask($u->national_id),
                     'verification_status' => $u->verification_status,
                 ]);
 
             // الأطفال — برقم هوية الطفل أو رقم هوية ولي الأمر
             $children = DB::table('children')
                 ->select('id', 'name', 'child_national_id', 'guardian_national_id', 'doc_verification_status')
-                ->where('child_national_id', 'like', $like)
-                ->orWhere('guardian_national_id', 'like', $like)
+                ->where(function ($query) use ($q) {
+                    $query->where('child_national_id', $q)
+                        ->orWhere('guardian_national_id', $q);
+                })
                 ->orderBy('name')
                 ->limit(20)
                 ->get()
@@ -50,8 +57,8 @@ class SearchController extends Controller
                     'kind' => 'child',
                     'id' => $c->id,
                     'name' => $c->name,
-                    'national_id' => $c->child_national_id,
-                    'guardian_national_id' => $c->guardian_national_id,
+                    'national_id' => $mask($c->child_national_id),
+                    'guardian_national_id' => $mask($c->guardian_national_id),
                     'verification_status' => $c->doc_verification_status,
                 ]);
 

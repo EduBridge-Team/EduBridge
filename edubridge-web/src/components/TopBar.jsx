@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Home, LayoutDashboard, BookOpen, Info, Users, Search, Stethoscope, IdCard,
-  LifeBuoy, Bell, Building2, Settings, ShieldCheck, Landmark, LogIn, LogOut,
+  LifeBuoy, Bell, Building2, Settings, ShieldCheck, Landmark, LogOut,
   Accessibility, MessageCircle, Moon, Sun,
 } from 'lucide-react'
 import { getUser, logout } from '../api'

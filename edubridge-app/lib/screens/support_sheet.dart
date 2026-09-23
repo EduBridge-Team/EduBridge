@@ -25,6 +25,8 @@ class _SupportSheetState extends State<SupportSheet> {
   }
 
   Future<void> _sendTicket() async {
+    final messenger = ScaffoldMessenger.of(context);
+
     setState(() {
       _sending = true;
       _error = null;
@@ -45,9 +47,11 @@ class _SupportSheetState extends State<SupportSheet> {
       });
       final data = jsonDecode(res.body);
 
+      if (!mounted) return;
+
       if (res.statusCode == 200 || res.statusCode == 201) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(content: Text('تم إرسال رسالتك للدعم الفني بنجاح')),
         );
       } else {
@@ -56,13 +60,17 @@ class _SupportSheetState extends State<SupportSheet> {
         });
       }
     } catch (_) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'تعذّر الاتصال بالسيرفر';
+        });
+      }
     } finally {
-      setState(() {
-        _sending = false;
-      });
+      if (mounted) {
+        setState(() {
+          _sending = false;
+        });
+      }
     }
   }
 

@@ -2,9 +2,7 @@
 
 namespace App\Http\Middleware;
 
-// ميدل وير للتحقق من التوكن — يحمي المسارات المحمية
 use Closure;
-use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
@@ -13,9 +11,8 @@ class JwtAuth
 {
     public function handle(Request $request, Closure $next)
     {
-        $header = $request->header('Authorization');
-        // الشكل المتوقع: "Bearer <token>"
-        $token = $header ? (explode(' ', $header)[1] ?? null) : null;
+        // Laravel only returns a token for a proper "Authorization: Bearer <token>" header.
+        $token = $request->bearerToken();
 
         if (!$token) {
             return response()->json(['error' => 'التوكن مفقود'], 401);
@@ -30,10 +27,20 @@ class JwtAuth
             }
 
             $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+
+            $userId = $decoded->id ?? null;
+            $role = $decoded->role ?? null;
+            if ((!is_int($userId) && !ctype_digit((string) $userId))
+                || (int) $userId <= 0
+                || !is_string($role)
+                || trim($role) === '') {
+                return response()->json(['error' => 'توكن غير صالح'], 401);
+            }
+
             // نمرر حمولة التوكن للمسارات التالية — { id, role }
             $request->attributes->set('jwt_user', $decoded);
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'توكن غير صالح'], 403);
+            return response()->json(['error' => 'توكن غير صالح'], 401);
         }
 
         return $next($request);

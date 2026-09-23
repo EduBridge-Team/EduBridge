@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use App\Support\R2Storage;
 use InvalidArgumentException;
 
 class MediaController extends Controller
@@ -45,14 +45,19 @@ class MediaController extends Controller
     // يدعم body: {type,url} للتوافق القديم أو multipart: type + file.
     public function store(Request $request, $lessonId)
     {
+        $user = $request->attributes->get('jwt_user');
         $type = (string) $request->input('type');
         if (!in_array($type, self::TYPES, true)) {
             return response()->json(['error' => 'نوع الوسيط غير صالح'], 422);
         }
 
         try {
-            if (!DB::table('lessons')->where('id', $lessonId)->exists()) {
+            $lesson = DB::table('lessons')->where('id', $lessonId)->first();
+            if (!$lesson) {
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
+            }
+            if (!$this->canManageLesson($user, $lesson)) {
+                return response()->json(['error' => 'لا يمكنك تعديل وسائط درس لم تقم بإنشائه'], 403);
             }
 
             $url = $request->input('url');
@@ -89,20 +94,35 @@ class MediaController extends Controller
 
     // حذف وسيط (معلّم / أدمن)
     // DELETE /api/media/:id
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $user = $request->attributes->get('jwt_user');
+
         try {
             $media = DB::table('media')->where('id', $id)->first();
             if (!$media) {
                 return response()->json(['error' => 'الوسيط غير موجود'], 404);
             }
 
+            $lesson = DB::table('lessons')->where('id', $media->lesson_id)->first();
+            if (!$lesson) {
+                return response()->json(['error' => 'الدرس غير موجود'], 404);
+            }
+            if (!$this->canManageLesson($user, $lesson)) {
+                return response()->json(['error' => 'لا يمكنك حذف وسائط درس لم تقم بإنشائه'], 403);
+            }
+
             DB::table('media')->where('id', $id)->delete();
 
-            if (is_string($media->url) && str_starts_with($media->url, '/uploads/lessons/')) {
-                $path = public_path(ltrim($media->url, '/'));
-                if (is_file($path)) {
-                    File::delete($path);
+            if (is_string($media->url) && str_contains($media->url, '/lessons/')) {
+                $path = parse_url($media->url, PHP_URL_PATH) ?: '';
+                $key = ltrim($path, '/');
+                if (str_starts_with($key, 'lessons/')) {
+                    try {
+                        R2Storage::delete(R2Storage::mediaBucket(), $key);
+                    } catch (\Throwable $e) {
+                        report($e);
+                    }
                 }
             }
 
@@ -111,6 +131,18 @@ class MediaController extends Controller
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
+    }
+
+    private function canManageLesson($user, $lesson): bool
+    {
+        if (!$user || !$lesson) {
+            return false;
+        }
+        if (($user->role ?? null) === 'admin') {
+            return true;
+        }
+
+        return (int) ($lesson->teacher_id ?? 0) === (int) ($user->id ?? 0);
     }
 
     private function validateFile($file, string $type): void
@@ -133,16 +165,17 @@ class MediaController extends Controller
     private function storeFile($file, int $lessonId, string $type): string
     {
         $extension = strtolower((string) $file->getClientOriginalExtension());
-        $directory = public_path('uploads/lessons/' . $lessonId);
-
-        if (!is_dir($directory)) {
-            @mkdir($directory, 0755, true);
-        }
-
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
-        $file->move($directory, $filename);
+        $key = 'lessons/' . $lessonId . '/' . $filename;
 
-        return '/uploads/lessons/' . $lessonId . '/' . $filename;
+        R2Storage::putUploadedFile(
+            R2Storage::mediaBucket(),
+            $key,
+            $file,
+            (string) $file->getMimeType()
+        );
+
+        return R2Storage::mediaPublicUrl($key);
     }
 
     private function absoluteUrl(Request $request, ?string $url): ?string

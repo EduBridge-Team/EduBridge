@@ -171,29 +171,29 @@ class _CreateSpecialistProgressScreenState
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('✅ مناسبة'),
-                          value: true,
-                          groupValue: _planAppropriate,
-                          onChanged: (v) =>
-                              setState(() => _planAppropriate = v!),
+                  RadioGroup<bool>(
+                    groupValue: _planAppropriate,
+                    onChanged: (v) {
+                      if (v != null) setState(() => _planAppropriate = v);
+                    },
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('✅ مناسبة'),
+                            value: true,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('⚠️ تحتاج تعديل'),
-                          value: false,
-                          groupValue: _planAppropriate,
-                          onChanged: (v) =>
-                              setState(() => _planAppropriate = v!),
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('⚠️ تحتاج تعديل'),
+                            value: false,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (!_planAppropriate) ...[
                     const SizedBox(height: 8),
@@ -212,7 +212,7 @@ class _CreateSpecialistProgressScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── مزاج الطفل ───
+            // ─── المشاركة التعليمية ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -223,7 +223,7 @@ class _CreateSpecialistProgressScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'حالة الطفل النفسية هذا الأسبوع:',
+                    'مشاركة الطفل التعليمية هذا الأسبوع:',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

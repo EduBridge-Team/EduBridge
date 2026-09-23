@@ -1,25 +1,25 @@
-// lib/screens/create_therapy_request_screen.dart
+// lib/screens/create_learning_support_request_screen.dart
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
-class CreateTherapyRequestScreen extends StatefulWidget {
+class CreateLearningSupportRequestScreen extends StatefulWidget {
   final int childId;
   final String childName;
 
-  const CreateTherapyRequestScreen({
+  const CreateLearningSupportRequestScreen({
     super.key,
     required this.childId,
     required this.childName,
   });
 
   @override
-  State<CreateTherapyRequestScreen> createState() =>
-      _CreateTherapyRequestScreenState();
+  State<CreateLearningSupportRequestScreen> createState() =>
+      _CreateLearningSupportRequestScreenState();
 }
 
-class _CreateTherapyRequestScreenState
-    extends State<CreateTherapyRequestScreen> {
+class _CreateLearningSupportRequestScreenState
+    extends State<CreateLearningSupportRequestScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionCtrl = TextEditingController();
 
@@ -61,7 +61,7 @@ class _CreateTherapyRequestScreenState
     });
 
     try {
-      final result = await ApiService.createTherapyRequest(
+      final result = await ApiService.createLearningSupportRequest(
         childId: widget.childId,
         reason: _selectedReason!,
         description: _descriptionCtrl.text.trim().isEmpty
@@ -118,7 +118,7 @@ class _CreateTherapyRequestScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'طلب دعم نفسي',
+                          'طلب دعم تعليمي',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -126,7 +126,7 @@ class _CreateTherapyRequestScreenState
                           ),
                         ),
                         Text(
-                          'سيصل طلبك للمختص النفسي المتابع لـ ${widget.childName}',
+                          'سيصل طلبك لمختص الدعم التعليمي المتابع لـ ${widget.childName}',
                           style: TextStyle(fontSize: 13, color: c.muted),
                         ),
                       ],

@@ -1,10 +1,8 @@
 // لعبة لغة الإشارة — للأطفال الصمّ وضعاف السمع
 // تعلّم الطفل ربط الحرف بإشارته
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../services/accessibility_service.dart';
 import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
@@ -35,7 +33,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   late (String, String, String) _target;
   int _score = 0;
   int _round = 0;
-  int _streak = 0;
   static const _totalRounds = 8;
 
   @override
@@ -63,7 +60,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       setState(() {
         _score++;
         _round++;
-        _streak++;
       });
 
       // 📳 اهتزاز قوي عند الصحيح
@@ -79,7 +75,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     } else {
       // ❌ خطأ
       HapticFeedback.mediumImpact();
-      setState(() => _streak = 0);
     }
   }
 
@@ -139,7 +134,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                   setState(() {
                     _score = 0;
                     _round = 0;
-                    _streak = 0;
                   });
                   _newRound();
                 },

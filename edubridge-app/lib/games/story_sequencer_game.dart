@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
-import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class StorySequencerGame extends StatefulWidget {
@@ -214,7 +213,6 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
     final large = _profile.extraLargeTouchTargets;
 
     return Scaffold(

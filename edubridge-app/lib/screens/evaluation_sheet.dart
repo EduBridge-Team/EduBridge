@@ -402,9 +402,9 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                   controller: _emotionalCtrl,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    labelText: 'التقييم العاطفي *',
+                    labelText: 'التفاعل أثناء التعلم *',
                     prefixIcon: Icon(Icons.mood),
-                    hintText: 'الحالة النفسية، التعامل مع المشاعر، ...',
+                    hintText: 'التفاعل مع الأنشطة، الاستجابة للتوجيه، المشاركة، ...',
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? 'هذا الحقل مطلوب'

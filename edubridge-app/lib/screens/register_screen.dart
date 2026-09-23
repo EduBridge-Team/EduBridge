@@ -17,7 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
-  final _specialtyCtrl = TextEditingController(); // ✅ جديد
+  String _specialty = 'learning_support';
 
   String _role = 'parent';
   bool _loading = false;
@@ -29,19 +29,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'specialist': 'مختص',
   };
 
-  // ✅ هل يحتاج حقل التخصص؟
-  bool get _needsSpecialty =>
-      _role == 'teacher' || _role == 'specialist';
+  bool get _needsSpecialty => _role == 'specialist';
 
-  String get _specialtyLabel {
-    return _role == 'teacher' ? 'المادة التي تدرّسها *' : 'التخصص *';
-  }
-
-  String get _specialtyHint {
-    return _role == 'teacher'
-        ? 'مثال: رياضيات، لغة عربية، علوم'
-        : 'مثال: تخاطب، دعم نفسي، تعديل سلوك';
-  }
+  static const _specialties = {
+    'learning_support': 'دعم تعليمي',
+    'educational': 'خطط تعلم',
+    'communication_support': 'دعم التواصل التعليمي',
+    'learning_behavior': 'دعم سلوك التعلم',
+  };
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
@@ -51,8 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _error = null;
     });
 
-    // ✅ نرسل التخصص مع الاسم في حقل name أو حقل منفصل
-    final specialty = _needsSpecialty ? _specialtyCtrl.text.trim() : null;
+    final specialty = _needsSpecialty ? _specialty : null;
 
     final error = await ApiService.register(
       _nameCtrl.text.trim(),
@@ -60,10 +54,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _passwordCtrl.text,
       _role,
       phone: null,
+      specialty: specialty,
     );
-
-    // ملاحظة: تحتاج تمرير specialty أيضاً للـ API
-    // يمكنك تعديل ApiService.register ليقبل specialty
 
     if (!mounted) return;
     setState(() => _loading = false);
@@ -87,7 +79,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
-    _specialtyCtrl.dispose();
     super.dispose();
   }
 
@@ -169,36 +160,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: (v) {
                       setState(() {
                         _role = v ?? 'parent';
-                        if (!_needsSpecialty) _specialtyCtrl.clear();
+                        if (_role != 'specialist') {
+                          _specialty = 'learning_support';
+                        }
                       });
                     },
                   ),
 
-                  // ✅ حقل التخصص — يظهر فقط للمعلم/المختص
                   if (_needsSpecialty) ...[
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _specialtyCtrl,
-                      style: const TextStyle(fontSize: 18),
-                      decoration: InputDecoration(
-                        labelText: _specialtyLabel,
-                        hintText: _specialtyHint,
-                        border: const OutlineInputBorder(),
-                        prefixIcon: Icon(
-                          _role == 'teacher'
-                              ? Icons.menu_book
-                              : Icons.psychology,
-                        ),
+                    DropdownButtonFormField<String>(
+                      initialValue: _specialty,
+                      decoration: const InputDecoration(
+                        labelText: 'التخصص',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.school_outlined),
                       ),
-                      validator: (v) {
-                        if (!_needsSpecialty) return null;
-                        if (v == null || v.trim().isEmpty) {
-                          return _role == 'teacher'
-                              ? 'المادة مطلوبة'
-                              : 'التخصص مطلوب';
-                        }
-                        return null;
-                      },
+                      items: _specialties.entries
+                          .map((e) => DropdownMenuItem(
+                                value: e.key,
+                                child: Text(e.value),
+                              ))
+                          .toList(),
+                      onChanged: (v) =>
+                          setState(() => _specialty = v ?? 'learning_support'),
                     ),
                   ],
 
@@ -207,6 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _passwordCtrl,
                     obscureText: true,
+                    maxLength: 128,
                     style: const TextStyle(fontSize: 18),
                     decoration: const InputDecoration(
                       labelText: 'كلمة المرور',
@@ -215,8 +201,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'كلمة المرور مطلوبة';
-                      if (v.length < 6) {
-                        return 'كلمة المرور 6 أحرف على الأقل';
+                      if (v.length < 8 || v.length > 128) {
+                        return 'كلمة المرور يجب أن تكون بين 8 و128 حرفاً';
                       }
                       return null;
                     },

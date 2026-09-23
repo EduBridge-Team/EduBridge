@@ -35,7 +35,7 @@ import ConversationsPage from './pages/ConversationsPage'
 import InstitutionDashboard from './pages/InstitutionDashboard'
 import HomeworkPage from './pages/HomeworkPage'
 import WeeklyReportsPage from './pages/WeeklyReportsPage'
-import TherapyPage from './pages/TherapyPage'
+import LearningSupportPage from './pages/LearningSupportPage'
 import CareTeamPage from './pages/CareTeamPage'
 import CaseDiscussionsPage from './pages/CaseDiscussionsPage'
 import SpecialistWorkflowPage from './pages/SpecialistWorkflowPage'
@@ -112,7 +112,7 @@ export default function App() {
         <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />
 
         <Route path="/children" element={<RolePage roles={CHILD_ROLES}><ChildrenPage /></RolePage>} />
-        <Route path="/children/new" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
+        <Route path="/children/new" element={<RolePage roles={['parent', 'admin']}><ChildFormPage /></RolePage>} />
         <Route path="/children/:childId" element={<RolePage roles={CHILD_ROLES}><ChildDetailsPage /></RolePage>} />
         <Route path="/children/:childId/edit" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
         <Route path="/children/:childId/lessons" element={<RolePage roles={CHILD_ROLES}><ChildLessonsPage /></RolePage>} />
@@ -125,7 +125,7 @@ export default function App() {
         <Route path="/consultations" element={<RolePage roles={CONSULTATION_ROLES}><ConsultationsPage /></RolePage>} />
         <Route path="/homeworks" element={<RolePage roles={['parent','teacher','specialist','admin']}><HomeworkPage /></RolePage>} />
         <Route path="/weekly-reports" element={<RolePage roles={['parent','teacher','specialist','admin']}><WeeklyReportsPage /></RolePage>} />
-        <Route path="/therapy" element={<RolePage roles={['parent','specialist','admin']}><TherapyPage /></RolePage>} />
+        <Route path="/learning-support" element={<RolePage roles={['parent','specialist','admin']}><LearningSupportPage /></RolePage>} />
         <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
         <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
         <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />

@@ -30,9 +30,16 @@ class ChildAccessMiddleware
             }
 
             $payload = $response->getData(true);
+            $teamChildIds = DB::table('child_teacher')
+                ->where('teacher_id', $user->id)
+                ->pluck('child_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
             $payload['children'] = array_values(array_filter(
                 $payload['children'] ?? [],
                 fn ($child) => (int) ($child['assigned_teacher_id'] ?? 0) === (int) $user->id
+                    || in_array((int) ($child['id'] ?? 0), $teamChildIds, true)
             ));
             $response->setData($payload);
             return $response;
@@ -43,7 +50,7 @@ class ChildAccessMiddleware
             $request->is('api/progress/child/*') ||
             $request->is('api/evaluations/child/*') ||
             $request->is('api/sessions/child/*') ||
-            $request->is('api/therapy/requests/child/*');
+            $request->is('api/learning-support/requests/child/*');
 
         if (!$childScoped) {
             return $next($request);
@@ -61,7 +68,11 @@ class ChildAccessMiddleware
 
         $allowed = match ($user->role) {
             'admin', 'specialist' => true,
-            'teacher' => (int) ($child->assigned_teacher_id ?? 0) === (int) $user->id,
+            'teacher' => (int) ($child->assigned_teacher_id ?? 0) === (int) $user->id
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists(),
             'parent' => DB::table('child_parent')
                 ->where('child_id', $childId)
                 ->where('parent_id', $user->id)

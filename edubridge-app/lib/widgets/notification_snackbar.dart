@@ -114,7 +114,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
     );
   }
 
-  // ✅ محدّثة — إضافة أيقونات الجلسات النفسية
+  // أيقونات إشعارات الدعم التعليمي
   String _iconFor(String? type) {
     switch (type) {
       case 'homework_assigned':
@@ -145,14 +145,14 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
         return '🧠';
       case 'plan_evaluation_created':
         return '📋';
-      case 'therapy_session_scheduled':
+      case 'learning_support_meeting_scheduled':
         return '🗓️';
-      // ✅ جديد: طلبات الجلسات النفسية
-      case 'therapy_request_created':
+      // طلبات الدعم التعليمي
+      case 'learning_support_request_created':
         return '🧠';
-      case 'therapy_scheduled':
+      case 'learning_support_scheduled':
         return '📅';
-      case 'therapy_request_cancelled':
+      case 'learning_support_request_cancelled':
         return '❌';
       case 'specialist_suggestion':
          return '🤝';

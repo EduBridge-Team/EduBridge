@@ -12,7 +12,23 @@ class WeeklyReportController extends Controller
     private function canViewChild($user, int $childId): bool
     {
         if (!$user) return false;
-        if (in_array($user->role, ['teacher','specialist','admin'], true)) return true;
+        if ($user->role === 'admin') return true;
+        if ($user->role === 'specialist') {
+            return DB::table('child_specialist')
+                ->where('child_id', $childId)
+                ->where('specialist_id', $user->id)
+                ->exists();
+        }
+        if ($user->role === 'teacher') {
+            return DB::table('children')
+                ->where('id', $childId)
+                ->where('assigned_teacher_id', $user->id)
+                ->exists()
+                || DB::table('child_teacher')
+                    ->where('child_id', $childId)
+                    ->where('teacher_id', $user->id)
+                    ->exists();
+        }
 
         return $user->role === 'parent'
             && DB::table('child_parent')
@@ -72,12 +88,12 @@ class WeeklyReportController extends Controller
                 ->count()
             : 0;
 
-        $data['therapy_sessions_scheduled'] = (int) DB::table('sessions')
+        $data['learning_support_meetings_scheduled'] = (int) DB::table('sessions')
             ->where('child_id', $childId)
             ->whereBetween('scheduled_at', [$weekStart, $weekEnd])
             ->count();
 
-        $data['therapy_sessions_attended'] = (int) DB::table('sessions')
+        $data['learning_support_meetings_attended'] = (int) DB::table('sessions')
             ->where('child_id', $childId)
             ->whereBetween('scheduled_at', [$weekStart, $weekEnd])
             ->where('status', 'done')
@@ -161,6 +177,9 @@ class WeeklyReportController extends Controller
         $childId = (int) $request->input('child_id');
         if ($childId <= 0 || !DB::table('children')->where('id', $childId)->exists()) {
             return response()->json(['error' => 'الطفل غير موجود'], 404);
+        }
+        if (!$this->canViewChild($user, $childId)) {
+            return response()->json(['error' => 'لا تملك صلاحية تعديل تقرير هذا الطفل'], 403);
         }
 
         try {

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\Notify;
+use App\Support\R2Storage;
 
 class CertificateController extends Controller
 {
@@ -69,17 +70,29 @@ class CertificateController extends Controller
                 return response()->json(['error' => 'حجم الشهادة يتجاوز 10MB'], 422);
             }
 
-            $dir = public_path('uploads/certificates');
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0755, true);
+            $mime = strtolower((string) $file->getMimeType());
+            if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true)) {
+                return response()->json(['error' => 'نوع ملف الشهادة غير مدعوم'], 422);
             }
+
             $name = 'certificate_' . $me->id . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
-            $file->move($dir, $name);
-            $url = rtrim($request->getSchemeAndHttpHost(), '/') . '/uploads/certificates/' . $name;
+            $key = 'user-files/' . (int) $me->id . '/' . $name;
+            R2Storage::putUploadedFile(
+                R2Storage::privateBucket(),
+                $key,
+                $file,
+                $mime
+            );
+            $url = '/api/private-files/user/' . (int) $me->id . '/' . $name;
         }
 
         if ($url === '') {
             return response()->json(['error' => 'ملف الشهادة مطلوب'], 400);
+        }
+
+        $expectedPrefix = '/api/private-files/user/' . (int) $me->id . '/';
+        if (!str_starts_with($url, $expectedPrefix)) {
+            return response()->json(['error' => 'يجب رفع ملف الشهادة من خلال التخزين الآمن'], 422);
         }
 
         try {
@@ -146,6 +159,22 @@ class CertificateController extends Controller
             }
 
             DB::table('certificates')->where('id', $id)->delete();
+
+            $prefix = '/api/private-files/user/' . (int) $cert->user_id . '/';
+            if (is_string($cert->url) && str_starts_with($cert->url, $prefix)) {
+                $filename = basename(parse_url($cert->url, PHP_URL_PATH) ?: $cert->url);
+                if (preg_match('/^[A-Za-z0-9._-]+$/', $filename)) {
+                    try {
+                        R2Storage::delete(
+                            R2Storage::privateBucket(),
+                            'user-files/' . (int) $cert->user_id . '/' . $filename
+                        );
+                    } catch (\Throwable $e) {
+                        report($e);
+                    }
+                }
+            }
+
             return response()->json(['message' => 'تم الحذف']);
         } catch (\Exception $e) {
             report($e);

@@ -44,7 +44,7 @@ export function isPortalPathForRole(pathname, role) {
     return role === 'parent'
   }
 
-  if (pathname === '/therapy') {
+  if (pathname === '/learning-support') {
     return ['parent', 'specialist', 'admin'].includes(role)
   }
 

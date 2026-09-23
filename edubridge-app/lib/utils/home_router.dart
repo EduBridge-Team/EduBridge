@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../screens/home_screen.dart';
 import '../screens/teacher_screen.dart';
-import '../screens/speclalist_screen.dart';
+import '../screens/specialist_screen.dart';
 import '../screens/parent_screen.dart';
 import '../screens/ministry_screen.dart';
 import '../screens/admin_screen.dart';

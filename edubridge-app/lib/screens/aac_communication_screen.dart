@@ -1,7 +1,6 @@
 // lib/screens/aac_communication_screen.dart
 // AAC — التواصل البديل بالصور (لمن لا يستطيع الكلام)
 import 'package:flutter/material.dart';
-import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../utils/adaptive_helper.dart';

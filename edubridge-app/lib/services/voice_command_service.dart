@@ -27,6 +27,7 @@ import '../screens/aac_communication_screen.dart';
 import '../screens/add_child_screen.dart';
 import '../screens/assistant_screen.dart';
 import '../screens/case_discussion_screen.dart';
+import '../screens/care_team_screen.dart';
 import '../screens/change_password_screen.dart';
 import '../screens/chats_screen.dart';
 import '../screens/child_accessibility_settings_screen.dart';
@@ -35,14 +36,14 @@ import '../screens/child_lessons_screen.dart';
 import '../screens/child_progress_screen.dart';
 import '../screens/children_accessibility_overview_screen.dart';
 import '../screens/children_screen.dart';
-import '../screens/create_therapy_request_screen.dart';
+import '../screens/create_learning_support_request_screen.dart';
 import '../screens/educational_games_screen.dart';
 import '../screens/lessons_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/parent_lessons_screen.dart';
 import '../screens/profile_screen.dart';
-import '../screens/therapy_requests_screen.dart';
-import '../screens/therapy_sessions_screen.dart';
+import '../screens/learning_support_requests_screen.dart';
+import '../screens/learning_support_meetings_screen.dart';
 import '../screens/verify_identity_screen.dart';
 import '../screens/weekly_report_screen.dart';
 
@@ -109,11 +110,13 @@ class VoiceCommandService {
     lastReply.value = '';
     isListening.value = true;
     await _speech.listen(
-      localeId: 'ar-SA',
-      listenFor: const Duration(seconds: 10),
-      pauseFor: const Duration(seconds: 4),
-      partialResults: true,
       onResult: _onResult,
+      listenOptions: stt.SpeechListenOptions(
+        localeId: 'ar-SA',
+        listenFor: const Duration(seconds: 10),
+        pauseFor: const Duration(seconds: 4),
+        partialResults: true,
+      ),
     );
   }
 
@@ -378,16 +381,12 @@ class VoiceCommandService {
       final child = _findChild(text);
       if (child != null) {
         await _reply('سأفتح فريق ${child['name']}');
-        // نستخدم CareTeamScreen إذا موجود
-        // ملاحظة: تأكد من الاستيراد
-        // nav.push(MaterialPageRoute(
-        //   builder: (_) => CareTeamScreen(
-        //     childId: child['id'],
-        //     childName: (child['name'] ?? '').toString(),
-        //   ),
-        // ));
-        // fallback مؤقت:
-        nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
+        nav.push(MaterialPageRoute(
+          builder: (_) => CareTeamScreen(
+            childId: child['id'],
+            childName: (child['name'] ?? '').toString(),
+          ),
+        ));
         return;
       }
       await _reply('سأفتح قائمة الأطفال');
@@ -395,16 +394,16 @@ class VoiceCommandService {
       return;
     }
 
-    // ═══ 6.6 جلسة نفسية للطفل ═══
+    // ═══ 6.6 طلب دعم تعليمي للطفل ═══
     if (_matches(text, [
-      'طلب جلسه', 'جلسه نفسيه', 'طلب جلسه نفسيه',
-      'افتح جلسه نفسيه',
+      'طلب دعم', 'دعم تعليمي', 'طلب دعم تعليمي',
+      'افتح دعم تعليمي',
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح طلب جلسة نفسية لـ ${child['name']}');
+        await _reply('سأفتح طلب دعم تعليمي لـ ${child['name']}');
         nav.push(MaterialPageRoute(
-          builder: (_) => CreateTherapyRequestScreen(
+          builder: (_) => CreateLearningSupportRequestScreen(
             childId: child['id'],
             childName: (child['name'] ?? '').toString(),
           ),
@@ -571,11 +570,11 @@ class VoiceCommandService {
     }
 
     if (_matches(text, [
-      'جلسات', 'الجلسات', 'جلسات نفسيه',
+      'جلسات', 'الجلسات', 'اجتماعات دعم', 'اجتماعات الدعم',
     ])) {
       await _reply('سأفتح الجلسات');
       nav.push(MaterialPageRoute(
-        builder: (_) => const TherapySessionsScreen(),
+        builder: (_) => const LearningSupportMeetingsScreen(),
       ));
       return;
     }
@@ -585,7 +584,7 @@ class VoiceCommandService {
     ])) {
       await _reply('سأفتح طلبات الدعم');
       nav.push(MaterialPageRoute(
-        builder: (_) => const TherapyRequestsScreen(),
+        builder: (_) => const LearningSupportRequestsScreen(),
       ));
       return;
     }
@@ -603,6 +602,11 @@ class VoiceCommandService {
     if (_matches(text, [
       'اضف طفل', 'اضافه طفل', 'ضيف طفل', 'طفل جديد',
     ])) {
+      final role = await ApiService.getRole();
+      if (role != 'parent' && role != 'admin') {
+        await _reply('إضافة طفل متاحة لولي الأمر والأدمن فقط');
+        return;
+      }
       await _reply('سأفتح إضافة طفل جديد');
       nav.push(MaterialPageRoute(
         builder: (_) => const AddChildScreen(),
@@ -627,7 +631,7 @@ class VoiceCommandService {
         'افتح دراسة حالة [اسم الطفل]. '
         'كمان: الألعاب، الأطفال، الإشعارات، المحادثات، المساعد، '
         'التواصل بالصور، دروس ولي الأمر، احتياجات الأبناء، '
-        'الملف الشخصي، توثيق الهوية، إضافة طفل. '
+        'الملف الشخصي، توثيق الهوية. '
         'وتقدر تقول: اقرأ، أوقف، ارجع، الرئيسية، الوضع الليلي',
       );
       return;

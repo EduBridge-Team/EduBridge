@@ -1,5 +1,5 @@
 // صفحة قائمة الأطفال
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, BookOpen, CheckCircle2, GraduationCap, Plus, Search,
@@ -23,6 +23,8 @@ export default function ChildrenPage() {
   const navigate = useNavigate()
   const me = getUser()
   const isParent = me?.role === 'parent'
+  const isAdmin = me?.role === 'admin'
+  const canAddChild = isParent || isAdmin
   const [children, setChildren] = useState([])
   const [summaries, setSummaries] = useState({})
   const [loading, setLoading] = useState(true)
@@ -30,7 +32,7 @@ export default function ChildrenPage() {
   const [query, setQuery] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -54,12 +56,11 @@ export default function ChildrenPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isParent])
 
   useEffect(() => {
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [load])
 
   const visibleChildren = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -100,10 +101,28 @@ export default function ChildrenPage() {
   }
 
   if (!isParent) {
-    if (children.length === 0) return <div className="state">لا يوجد أطفال بعد</div>
+    if (children.length === 0) {
+      return (
+        <div className="state">
+          لا يوجد أطفال بعد
+          {canAddChild && (
+            <button className="btn" style={{ marginTop: 16 }} onClick={() => navigate('/children/new')}>
+              <Plus size={18} /> إضافة طفل
+            </button>
+          )}
+        </div>
+      )
+    }
     return (
       <div>
-        <div className="page-title"><h2>الأطفال</h2></div>
+        <div className="page-title">
+          <h2>الأطفال</h2>
+          {canAddChild && (
+            <button className="btn" onClick={() => navigate('/children/new')}>
+              <Plus size={18} /> إضافة طفل
+            </button>
+          )}
+        </div>
         {children.map((child) => (
           <div
             key={child.id}

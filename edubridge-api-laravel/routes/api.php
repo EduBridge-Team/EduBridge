@@ -24,7 +24,7 @@ use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
-use App\Http\Controllers\TherapyRequestController;
+use App\Http\Controllers\LearningSupportRequestController;
 use App\Http\Controllers\SpecialistSuggestionController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
@@ -36,15 +36,19 @@ use App\Http\Controllers\MinistryApprovalController;
 use App\Http\Controllers\PlanEvaluationController;
 
 // المصادقة (بدون توكن)
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/google', [AuthController::class, 'google']);
+Route::post('/auth/register', [AuthController::class, 'register'])
+    ->middleware('throttle:5,1');
+Route::post('/auth/login', [AuthController::class, 'login'])
+    ->middleware('throttle:10,1');
+Route::post('/auth/google', [AuthController::class, 'google'])
+    ->middleware('throttle:10,1');
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/me/password', [AuthController::class, 'changePassword']);
+    Route::put('/me/password', [AuthController::class, 'changePassword'])
+        ->middleware('throttle:10,1');
     Route::post('/me/avatar', [AccountController::class, 'uploadAvatar']);
     Route::delete('/me/avatar', [AccountController::class, 'removeAvatar']);
     Route::delete('/me', [AccountController::class, 'destroy']);
@@ -77,12 +81,12 @@ Route::middleware('auth.jwt')->group(function () {
     // حذف مستخدم (أدمن) — البطاقة 11
     Route::delete('/users/{id}', [UserController::class, 'destroy'])
         ->middleware('role:admin');
-    Route::get('/users/{parentId}/children', [LegacyMobileController::class, 'childrenOfParent'])
-        ->middleware('role:teacher,specialist,admin,ministry,institution');
-    Route::get('/dashboard/stats', [LegacyMobileController::class, 'dashboardStats']);
-
     // رفع الملفات (صور الهوية/الشهادات/مستندات القرابة)
-    Route::post('/uploads', [UploadController::class, 'store']);
+    Route::post('/uploads', [UploadController::class, 'store'])->middleware('throttle:20,1');
+    Route::get('/private-files/user/{userId}/{filename}', [UploadController::class, 'show'])
+        ->where('filename', '[A-Za-z0-9._-]+');
+    Route::get('/private-files/child/{childId}/{filename}', [UploadController::class, 'showChild'])
+        ->where('filename', '[A-Za-z0-9._-]+');
 
     // توثيق الهوية — المستخدم نفسه + الأدمن (البطاقات 1، 4، 9)
     Route::post('/me/identity', [VerificationController::class, 'submitMine']);
@@ -166,46 +170,49 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:admin');
 
     // دراسة الحالة مع المختصين (البطاقة 7)
-    Route::get('/consultations', [ConsultationController::class, 'index']);
-    Route::post('/consultations', [ConsultationController::class, 'store']);
-    Route::get('/consultations/{id}', [ConsultationController::class, 'show']);
+    Route::get('/consultations', [ConsultationController::class, 'index'])
+        ->middleware('role:parent,teacher,specialist,admin');
+    Route::post('/consultations', [ConsultationController::class, 'store'])
+        ->middleware('role:parent,teacher,admin');
+    Route::get('/consultations/{id}', [ConsultationController::class, 'show'])
+        ->middleware('role:parent,teacher,specialist,admin');
     Route::put('/consultations/{id}', [ConsultationController::class, 'update'])
         ->middleware('role:specialist,admin');
     Route::post('/consultations/{id}/notes', [ConsultationController::class, 'addNote'])
         ->middleware('role:specialist,admin');
 
     // طلبات الدعم التعليمي — ولي الأمر يرسل، ومختص الدعم يراجع ويحدد موعد المتابعة والرابط
-    Route::post('/therapy/requests', [TherapyRequestController::class, 'store'])
+    Route::post('/learning-support/requests', [LearningSupportRequestController::class, 'store'])
         ->middleware(['role:parent', 'throttle:10,1']);
-    Route::get('/therapy/requests', [TherapyRequestController::class, 'index'])
+    Route::get('/learning-support/requests', [LearningSupportRequestController::class, 'index'])
         ->middleware('role:parent,specialist,admin');
-    Route::get('/therapy/requests/child/{childId}/pending', [TherapyRequestController::class, 'pendingForChild'])
-        ->middleware('role:parent,specialist,admin');
-    Route::put('/therapy/requests/{id}/schedule', [TherapyRequestController::class, 'schedule'])
+    Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
+        ->middleware(['role:parent,specialist,admin', 'child.access']);
+    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportRequestController::class, 'schedule'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/requests/{id}/complete', [TherapyRequestController::class, 'complete'])
+    Route::put('/learning-support/requests/{id}/complete', [LearningSupportRequestController::class, 'complete'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/requests/{id}/cancel', [TherapyRequestController::class, 'cancel'])
+    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportRequestController::class, 'cancel'])
         ->middleware('role:parent,specialist,admin');
 
     // الأطفال
     Route::post('/children', [ChildController::class, 'store'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware('role:parent,admin');
     Route::get('/children', [ChildController::class, 'index']);
-    Route::get('/children/{id}', [ChildController::class, 'show']);
-    Route::put('/children/{id}', [ChildController::class, 'update']);
+    Route::get('/children/{id}', [ChildController::class, 'show'])->middleware('child.access');
+    Route::put('/children/{id}', [ChildController::class, 'update'])->middleware('child.access');
     Route::delete('/children/{id}', [ChildController::class, 'destroy'])
         ->middleware('role:admin');
     Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
-        ->middleware('role:teacher,specialist,admin');
+        ->middleware('role:admin');
     Route::post('/children/{id}/assign-teacher', [ChildController::class, 'assignTeacher'])
-        ->middleware('role:teacher,specialist,admin');
-    Route::get('/children/{id}/lessons', [ChildController::class, 'lessons']);
-    Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild']);
+        ->middleware('role:admin');
+    Route::get('/children/{id}/lessons', [ChildController::class, 'lessons'])->middleware('child.access');
+    Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild'])->middleware('child.access');
 
     // اقتراحات متابعة المختصين
     Route::post('/children/{childId}/specialist-suggestions', [SpecialistSuggestionController::class, 'store'])
-        ->middleware('role:teacher,specialist,admin');
+        ->middleware(['role:teacher,specialist,admin', 'child.access']);
     Route::get('/specialist-suggestions', [SpecialistSuggestionController::class, 'index'])
         ->middleware('role:specialist,admin');
     Route::put('/specialist-suggestions/{id}/accept', [SpecialistSuggestionController::class, 'accept'])
@@ -227,27 +234,27 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/reports/weekly', [WeeklyReportController::class, 'show'])
         ->middleware('role:parent,teacher,specialist,admin');
     Route::get('/reports/weekly/child/{childId}', [WeeklyReportController::class, 'byChild'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/reports/weekly', [WeeklyReportController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
 
     // فريق الرعاية — واجهات موحّدة + توافق مع شاشات Flutter الحالية
     Route::get('/children/{childId}/care-team', [CareTeamController::class, 'careTeam'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/children/{childId}/care-team', [CareTeamController::class, 'addCareTeamMember'])
         ->middleware('role:specialist,admin');
     Route::delete('/children/{childId}/care-team/{userId}', [CareTeamController::class, 'removeCareTeamMember'])
         ->middleware('role:specialist,admin');
 
     Route::get('/children/{childId}/teachers', [CareTeamController::class, 'listTeachers'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/children/{childId}/teachers', [CareTeamController::class, 'addTeacher'])
         ->middleware('role:specialist,admin');
     Route::delete('/children/{childId}/teachers/{teacherId}', [CareTeamController::class, 'removeTeacher'])
         ->middleware('role:specialist,admin');
 
     Route::get('/children/{childId}/specialists', [CareTeamController::class, 'listSpecialists'])
-        ->middleware('role:parent,teacher,specialist,admin');
+        ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/children/{childId}/specialists', [CareTeamController::class, 'addSpecialist'])
         ->middleware('role:specialist,admin');
     Route::delete('/children/{childId}/specialists/{specialistId}', [CareTeamController::class, 'removeSpecialist'])
@@ -266,13 +273,13 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:teacher,specialist,admin');
 
     // إعدادات التكييف الخاصة بكل طفل — متزامنة بين الأجهزة
-    Route::get('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'show']);
-    Route::put('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'update']);
+    Route::get('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'show'])->middleware('child.access');
+    Route::put('/children/{childId}/accessibility-profile', [ChildAccessibilityProfileController::class, 'update'])->middleware('child.access');
 
     // التقييمات
-    Route::get('/evaluations/child/{childId}', [EvaluationController::class, 'byChild']);
+    Route::get('/evaluations/child/{childId}', [EvaluationController::class, 'byChild'])->middleware('child.access');
     Route::post('/evaluations/child/{childId}', [EvaluationController::class, 'store'])
-        ->middleware('role:teacher,specialist,admin');
+        ->middleware(['role:teacher,specialist,admin', 'child.access']);
 
     // أنواع الإعاقة (قائمة مرجعية)
     Route::get('/disability-types', [DisabilityTypeController::class, 'index']);
@@ -303,15 +310,15 @@ Route::middleware('auth.jwt')->group(function () {
     // التقدّم (ولي الأمر يعرض فقط — لا يعدّل)
     Route::post('/progress', [ProgressController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
-    Route::get('/progress/child/{childId}', [ProgressController::class, 'byChild']);
-    Route::get('/progress/child/{childId}/summary', [ProgressController::class, 'summary']);
+    Route::get('/progress/child/{childId}', [ProgressController::class, 'byChild'])->middleware('child.access');
+    Route::get('/progress/child/{childId}/summary', [ProgressController::class, 'summary'])->middleware('child.access');
 
     // اجتماعات الدعم التعليمي — مع إبقاء المسارات القديمة للتوافق التقني
-    Route::get('/therapy/sessions', [SessionController::class, 'index'])
+    Route::get('/learning-support/meetings', [SessionController::class, 'index'])
         ->middleware('role:parent,teacher,specialist,admin');
-    Route::post('/therapy/sessions', [SessionController::class, 'store'])
+    Route::post('/learning-support/meetings', [SessionController::class, 'store'])
         ->middleware('role:specialist,admin');
-    Route::put('/therapy/sessions/{id}/complete', [SessionController::class, 'complete'])
+    Route::put('/learning-support/meetings/{id}/complete', [SessionController::class, 'complete'])
         ->middleware('role:specialist,admin');
 
     Route::get('/sessions', [SessionController::class, 'index'])
@@ -319,15 +326,13 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/sessions', [SessionController::class, 'store'])
         ->middleware('role:specialist,admin');
     Route::get('/sessions/child/{childId}', [SessionController::class, 'byChild'])
-        ->middleware('role:specialist,admin,teacher');
+        ->middleware(['role:specialist,admin,teacher', 'child.access']);
     Route::put('/sessions/{id}', [SessionController::class, 'update'])
         ->middleware('role:specialist,admin');
 
     // الإشعارات — لكل مستخدم إشعاراته
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread/count', [NotificationController::class, 'unreadCount']);
-    Route::post('/notifications', [NotificationController::class, 'store'])
-        ->middleware('role:teacher,specialist,admin');
     // نقبل PUT و POST لتوافق الموقع والتطبيق معاً
     Route::match(['put', 'post'], '/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{id}/read', [NotificationController::class, 'markRead']);

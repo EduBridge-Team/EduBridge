@@ -67,8 +67,11 @@ class _EditChildScreenState extends State<EditChildScreen> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         List list = [];
-        if (data is List) list = data;
-        else if (data is Map) list = data['users'] ?? data['data'] ?? [];
+        if (data is List) {
+          list = data;
+        } else if (data is Map) {
+          list = data['users'] ?? data['data'] ?? [];
+        }
         setState(() => _teachers = list.cast<Map<String, dynamic>>());
       }
     } catch (_) {} finally {
@@ -83,8 +86,11 @@ class _EditChildScreenState extends State<EditChildScreen> {
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
         List list = [];
-        if (data is List) list = data;
-        else if (data is Map) list = data['users'] ?? data['data'] ?? [];
+        if (data is List) {
+          list = data;
+        } else if (data is Map) {
+          list = data['users'] ?? data['data'] ?? [];
+        }
         setState(() => _specialists = list.cast<Map<String, dynamic>>());
       }
     } catch (_) {} finally {
@@ -128,6 +134,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
 
       final res = await ApiService.authPut('/children/${widget.child['id']}', body);
       final data = jsonDecode(res.body);
+      if (!mounted) return;
 
       if (res.statusCode == 200) {
         Navigator.pop(context, true);
@@ -140,13 +147,17 @@ class _EditChildScreenState extends State<EditChildScreen> {
         });
       }
     } catch (_) {
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'تعذّر الاتصال بالسيرفر';
+        });
+      }
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 

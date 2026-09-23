@@ -1,34 +1,47 @@
 // models/care_team_model.dart
 enum SpecialistSpecialty {
-  learning_support,
+  learningSupport,
   educational,
-  communication_support,
-  learning_behavior,
+  communicationSupport,
+  learningBehavior,
 }
 
 extension SpecialistSpecialtyX on SpecialistSpecialty {
+  String get apiValue {
+    switch (this) {
+      case SpecialistSpecialty.learningSupport:
+        return 'learning_support';
+      case SpecialistSpecialty.educational:
+        return 'educational';
+      case SpecialistSpecialty.communicationSupport:
+        return 'communication_support';
+      case SpecialistSpecialty.learningBehavior:
+        return 'learning_behavior';
+    }
+  }
+
   String get label {
     switch (this) {
-      case SpecialistSpecialty.learning_support:
+      case SpecialistSpecialty.learningSupport:
         return 'دعم تعليمي';
       case SpecialistSpecialty.educational:
         return 'خطط تعلم';
-      case SpecialistSpecialty.communication_support:
+      case SpecialistSpecialty.communicationSupport:
         return 'دعم التواصل التعليمي';
-      case SpecialistSpecialty.learning_behavior:
+      case SpecialistSpecialty.learningBehavior:
         return 'دعم سلوك التعلم';
     }
   }
 
   String get emoji {
     switch (this) {
-      case SpecialistSpecialty.learning_support:
+      case SpecialistSpecialty.learningSupport:
         return '📘';
       case SpecialistSpecialty.educational:
         return '📚';
-      case SpecialistSpecialty.communication_support:
+      case SpecialistSpecialty.communicationSupport:
         return '🗣️';
-      case SpecialistSpecialty.learning_behavior:
+      case SpecialistSpecialty.learningBehavior:
         return '🎯';
     }
   }
@@ -58,8 +71,8 @@ class CareTeamMember {
         role: json['role'] ?? '',
         specialty: json['specialty'] != null
             ? SpecialistSpecialty.values.firstWhere(
-                (e) => e.name == json['specialty'],
-                orElse: () => SpecialistSpecialty.learning_support,
+                (e) => e.apiValue == json['specialty'],
+                orElse: () => SpecialistSpecialty.learningSupport,
               )
             : null,
         subject: json['subject'],
