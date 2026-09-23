@@ -1,5 +1,5 @@
 // لوحة المختص — متابعة وتقييم خطط الدعم التعليمية
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import {
   getUser,
@@ -32,13 +32,14 @@ function computeStats(rows) {
 
 export default function SpecialistDashboard() {
   const me = getUser()
+  const role = me?.role
   const navigate = useNavigate()
   const [rows, setRows] = useState([]) // [{child, stats, progress}]
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [approvingId, setApprovingId] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -58,12 +59,12 @@ export default function SpecialistDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    if (!me || me.role !== 'specialist') return
+    if (role !== 'specialist') return
     load()
-  }, [me?.role])
+  }, [load, role])
 
   // الحماية: للمختص فقط — بعد تعريف جميع Hooks للحفاظ على ترتيبها
   if (!me || me.role !== 'specialist') {
