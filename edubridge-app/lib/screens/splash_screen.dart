@@ -45,16 +45,19 @@ const _capOrigin = Offset(464, 743.5);
 const _ringHole = Rect.fromLTWH(20, 20, 92, 89);
 const _lift = 300.0;
 
+// ✅ معدّلة: حروف "Bridge" مُقرّبة من "Edu" (بدون مسافة)
+//    تم إزاحة حروف B, r, i, d, g, e بمقدار -50 بكسل على X
+//    لتصبح المسافة بين "u" و "B" = 106 بكسل مثل باقي المسافات
 const _letters = <_LetterSpec>[
   _LetterSpec('letter_1_E', Offset(87, 1032), 138),
   _LetterSpec('letter_2_d', Offset(189, 1025), 243),
   _LetterSpec('letter_3_u', Offset(304, 1058), 358),
-  _LetterSpec('letter_4_B', Offset(458, 1032), 514),
-  _LetterSpec('letter_5_r', Offset(574, 1056), 606),
-  _LetterSpec('letter_6_i', Offset(643, 1018), 664),
-  _LetterSpec('letter_7_d', Offset(688, 1025), 742),
-  _LetterSpec('letter_8_g', Offset(798, 1057), 852),
-  _LetterSpec('letter_9_e', Offset(904, 1057), 950),
+  _LetterSpec('letter_4_B', Offset(408, 1032), 464),
+  _LetterSpec('letter_5_r', Offset(524, 1056), 556),
+  _LetterSpec('letter_6_i', Offset(593, 1018), 614),
+  _LetterSpec('letter_7_d', Offset(638, 1025), 692),
+  _LetterSpec('letter_8_g', Offset(748, 1057), 802),
+  _LetterSpec('letter_9_e', Offset(854, 1057), 900),
 ];
 
 const _ballDiameter = 26.0;
@@ -329,7 +332,8 @@ class _LogoIntroState extends State<LogoIntro>
                   Icon(Icons.school, color: Colors.white, size: 110),
                   SizedBox(height: 24),
                   Text(
-                    'Edu Bridge',
+                    // ✅ "EduBridge" بدون مسافة
+                    'EduBridge',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 40,

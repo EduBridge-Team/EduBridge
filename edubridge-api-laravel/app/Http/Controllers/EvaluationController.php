@@ -102,6 +102,17 @@ class EvaluationController extends Controller
                 'child_evaluated'
             );
 
+            // إذا عيّن المختص/الأدمن معلماً أثناء التقييم، يخطره الخادم مباشرة.
+            // إبقاء الإشعار في الخادم يمنع تطبيق الجوال من الحاجة لمسار عام لإرسال إشعارات.
+            if ($assignedTeacherId) {
+                Notify::toUser(
+                    $assignedTeacherId,
+                    'تقييم جديد للطفل',
+                    'رفع المختص تقييماً للطفل "' . ($child->name ?? '') . '" — راجع الخطة وابدأ التنفيذ',
+                    'evaluation_created'
+                );
+            }
+
             return response()->json(['evaluation' => $this->decode(DB::table('evaluations')->find($id))], 201);
         } catch (\Exception $e) {
             report($e);

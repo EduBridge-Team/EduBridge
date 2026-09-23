@@ -1,5 +1,5 @@
 // شاشة المعلم — الخطة + الواجبات + التقارير الأسبوعية + دراسة الحالة
-import 'dart:convert';
+// ✅ معدّلة: الضغط على بطاقة الطفل يفتح TeacherChildDetailsScreen
 import 'package:flutter/material.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';
 import 'add_certificate_sheet.dart';
@@ -23,6 +23,7 @@ import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 import 'chats_screen.dart';
 import 'verify_identity_screen.dart';
+import 'teacher_child_details_screen.dart';
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
@@ -86,9 +87,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
         ApiService.authGet('/disability-types'),
       ]);
 
-      final childrenData = jsonDecode(responses[0].body);
-      final lessonsData = jsonDecode(responses[1].body);
-      final typesData = jsonDecode(responses[2].body);
+      final childrenData = ApiService.decodeMap(responses[0].body);
+      final lessonsData = ApiService.decodeMap(responses[1].body);
+      final typesData = ApiService.decodeMap(responses[2].body);
 
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
@@ -96,18 +97,14 @@ class _TeacherScreenState extends State<TeacherScreen> {
         final allChildren = childrenData['children'] ?? [];
         final myId = _currentUserId?.toString();
 
-        // ✅ فلترة الأطفال: يظهر إذا كان المعلم مضمّناً
         final myChildren = allChildren.where((child) {
-          // assigned_teacher_id (قديم)
           if (child['assigned_teacher_id']?.toString() == myId) return true;
 
-          // assigned_teacher_ids (متعدد - جديد)
           final ids = child['assigned_teacher_ids'] as List?;
           if (ids != null && ids.map((e) => e.toString()).contains(myId)) {
             return true;
           }
 
-          // teacher_ids (احتياط)
           final tIds = child['teacher_ids'] as List?;
           if (tIds != null && tIds.map((e) => e.toString()).contains(myId)) {
             return true;
@@ -281,17 +278,13 @@ class _TeacherScreenState extends State<TeacherScreen> {
     );
   }
 
-  void _openChild(Map child) {
-    final age = child['age'] is int ? child['age'] as int : 8;
+  void _openChildDetails(Map child) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChildLessonsScreen(
+        builder: (_) => TeacherChildDetailsScreen(
           childId: child['id'],
           childName: (child['name'] ?? '').toString(),
-          age: age,
-          disabilityType: child['disability_type']?.toString(),
-          parentPhone: child['parent_phone']?.toString(),
         ),
       ),
     ).then((_) => _loadData());
@@ -780,13 +773,12 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   ],
                 ),
                 trailing: const Icon(Icons.chevron_left),
-                onTap: () => _openChild(child),
+                onTap: () => _openChildDetails(child),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Column(
                   children: [
-                    // صف 1: الخطة + التقدّم
                     Row(
                       children: [
                         Expanded(
@@ -817,8 +809,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ],
                     ),
                     const SizedBox(height: 6),
-
-                    // صف 2: اكتب تقرير + التقارير
                     Row(
                       children: [
                         Expanded(
@@ -852,8 +842,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                       ],
                     ),
                     const SizedBox(height: 6),
-
-                    // صف 3: دراسة الحالة
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(

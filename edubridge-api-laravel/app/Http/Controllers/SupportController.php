@@ -122,4 +122,11 @@ class SupportController extends Controller
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
     }
+    // توافق مع شاشة الأدمن في تطبيق Flutter القديم.
+    public function resolve(Request $request, $id)
+    {
+        $request->merge(['status' => 'resolved']);
+        return $this->update($request, $id);
+    }
+
 }

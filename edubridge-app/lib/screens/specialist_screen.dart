@@ -4,6 +4,7 @@
 // - فتح شاشة تحديد التخصص عند عدم وجوده
 // - اقتراح مختص دعم تعليمي
 // - دراسة الحالة
+// ✅ محدّث: قسم معلومات ولي الأمر في بطاقة "طفلي" + إخفاء زر الاقتراح حسب المختص الموجود
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _SpecialistDashboardScreenState
   // ✅ Switch: أطفالي فقط / قائمة الانتظار
   bool _showOnlyMine = true;
   int? _currentUserId;
-  String? _mySpecialty; // 'learning_support' | 'educational' | null
+  String? _mySpecialty;
 
   bool _verificationDialogShown = false;
   bool _specialtyDialogShown = false;
@@ -89,7 +90,7 @@ class _SpecialistDashboardScreenState
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  التحقق من التخصص — يفتح شاشة الاختيار لو غير محدد
+  //  التحقق من التخصص
   // ═══════════════════════════════════════════════════════════
   Future<void> _checkSpecialty() async {
     if (_specialtyDialogShown) return;
@@ -111,9 +112,9 @@ class _SpecialistDashboardScreenState
 
     if (result != null) {
       setState(() => _mySpecialty = result);
-      await _load(); // أعد التحميل ليعكس التخصص الجديد
+      await _load();
     } else {
-      _specialtyDialogShown = false; // اسمح بإعادة المحاولة
+      _specialtyDialogShown = false;
     }
   }
 
@@ -196,11 +197,11 @@ class _SpecialistDashboardScreenState
       }
 
       // ═══════════════════════════════════════════════════════
-      //  ✅ استخراج التخصص (3 طرق متتالية)
+      //  استخراج التخصص
       // ═══════════════════════════════════════════════════════
       String? specialty;
 
-      // 1) من /me (الأدق)
+      // 1) من /me
       try {
         final meRes = await ApiService.authGet('/me');
         if (meRes.statusCode == 200) {
@@ -777,7 +778,6 @@ class _SpecialistDashboardScreenState
           Column(
             children: [
               _buildHeader(c),
-              // ─── البحث + الجرس ───
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -837,7 +837,6 @@ class _SpecialistDashboardScreenState
                   ],
                 ),
               ),
-              // ─── Switch + الإحصائيات ───
               if (_tabIndex == 0 && !_loading) ...[
                 _buildFilterCard(c),
                 const SizedBox(height: 8),
@@ -1244,6 +1243,7 @@ class _SpecialistDashboardScreenState
     final age = child['age'] ?? '?';
     final disability = (child['disability_type'] ?? '').toString();
     final description = (child['disability_description'] ?? '').toString();
+    final medicalHistory = (child['medical_history'] ?? '').toString();
     final strengths = (child['strengths'] as List? ?? [])
         .map((e) => e.toString())
         .toList();
@@ -1259,7 +1259,6 @@ class _SpecialistDashboardScreenState
     final isAdding = _approvingId == child['id'];
     final hasSpecialty = _mySpecialty != null;
 
-    // ✅ احسب التسمية والألوان حسب التخصص
     final specType = _mySpecialty == 'learning_support'
         ? 'مختص دعم تعليمي'
         : _mySpecialty == 'educational'
@@ -1333,6 +1332,8 @@ class _SpecialistDashboardScreenState
             const SizedBox(height: 12),
             if (description.isNotEmpty)
               _infoRow('وصف الإعاقة', description, c),
+            if (medicalHistory.isNotEmpty)
+              _infoRow('التاريخ الطبي', medicalHistory, c),
             if (specialNeeds.isNotEmpty)
               _infoRow('احتياجات خاصة', specialNeeds, c),
             if (preferredStyle.isNotEmpty)
@@ -1347,7 +1348,6 @@ class _SpecialistDashboardScreenState
 
             // ═══ زر الإضافة ═══
             if (!hasSpecialty)
-              // ✅ لو التخصص غير محدد → زر يفتح الشاشة
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -1419,7 +1419,7 @@ class _SpecialistDashboardScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 90,
+            width: 120,
             child: Text(label,
                 style: TextStyle(
                   fontSize: 12,
@@ -1445,7 +1445,7 @@ class _SpecialistDashboardScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 90,
+            width: 120,
             child: Text(label,
                 style: TextStyle(
                   fontSize: 12,
@@ -1666,7 +1666,7 @@ class _SpecialistDashboardScreenState
                 ),
               ],
             ),
-            if (child['has_pending_learning_support_request'] == true) ...[
+            if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -1864,50 +1864,134 @@ class _SpecialistDashboardScreenState
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 40),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 6),
-                        foregroundColor: AppColors.purple,
-                        side: const BorderSide(
-                            color: AppColors.purple, width: 1.5),
-                      ),
-                      icon: const Icon(Icons.recommend, size: 16),
-                      label: const Text('اقترح مختص دعم تعليمي',
+
+              // ═══════════════════════════════════════════════════
+              //  ✅ إخفاء زر الاقتراح حسب المختص الموجود
+              // ═══════════════════════════════════════════════════
+              Builder(builder: (_) {
+                final hasLearningSupport =
+                    _hasSpecialistOfType(child, 'learning_support');
+                final hasEducational =
+                    _hasSpecialistOfType(child, 'educational');
+
+                // كلا النوعين موجودان → لا نعرض شيئاً
+                if (hasLearningSupport && hasEducational) {
+                  return const SizedBox.shrink();
+                }
+
+                // واحد فقط مفقود → زر بعرض كامل
+                if (!hasLearningSupport) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 42),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          foregroundColor: AppColors.purple,
+                          side: const BorderSide(
+                              color: AppColors.purple, width: 1.5),
+                        ),
+                        icon: const Icon(Icons.recommend, size: 18),
+                        label: const Text(
+                          'اقترح مختص دعم تعليمي',
                           style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold)),
-                      onPressed: () =>
-                          _openSuggestSpecialist(row, 'learning_support'),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 40),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 6),
-                        foregroundColor: AppColors.navy,
-                        side: const BorderSide(
-                            color: AppColors.navy, width: 1.5),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () => _openSuggestSpecialist(
+                            row, 'learning_support'),
                       ),
-                      icon: const Icon(Icons.school, size: 16),
-                      label: const Text('اقترح مختص تعليمي',
-                          style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold)),
-                      onPressed: () =>
-                          _openSuggestSpecialist(row, 'educational'),
                     ),
+                  );
+                }
+
+                if (!hasEducational) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 42),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          foregroundColor: AppColors.navy,
+                          side: const BorderSide(
+                              color: AppColors.navy, width: 1.5),
+                        ),
+                        icon: const Icon(Icons.school, size: 18),
+                        label: const Text(
+                          'اقترح مختص تعليمي',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () => _openSuggestSpecialist(
+                            row, 'educational'),
+                      ),
+                    ),
+                  );
+                }
+
+                // كلا الزرين مفقودان → نعرضهما بجانب بعضهما
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 40),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6),
+                            foregroundColor: AppColors.purple,
+                            side: const BorderSide(
+                                color: AppColors.purple, width: 1.5),
+                          ),
+                          icon: const Icon(Icons.recommend, size: 16),
+                          label: const Text(
+                            'اقترح مختص دعم تعليمي',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () => _openSuggestSpecialist(
+                              row, 'learning_support'),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 40),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6),
+                            foregroundColor: AppColors.navy,
+                            side: const BorderSide(
+                                color: AppColors.navy, width: 1.5),
+                          ),
+                          icon: const Icon(Icons.school, size: 16),
+                          label: const Text(
+                            'اقترح مختص تعليمي',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () => _openSuggestSpecialist(
+                              row, 'educational'),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              }),
             ],
             if (!isPending && child['current_plan_id'] != null) ...[
               const SizedBox(height: 8),
@@ -1924,6 +2008,103 @@ class _SpecialistDashboardScreenState
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ✅ قسم معلومات ولي الأمر (Expandable)
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildParentInfoSection(
+      Map<String, dynamic> child, JisrColors c) {
+    final description =
+        (child['disability_description'] ?? '').toString();
+    final medicalHistory =
+        (child['medical_history'] ?? '').toString();
+    final psychologistNotes =
+        (child['psychologist_notes'] ?? '').toString();
+    final specialNeeds =
+        (child['special_needs'] ?? '').toString();
+    final preferredStyle =
+        (child['preferred_learning_style'] ?? '').toString();
+    final strengths = (child['strengths'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+    final challenges = (child['challenges'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+
+    final hasAny = description.isNotEmpty ||
+        medicalHistory.isNotEmpty ||
+        psychologistNotes.isNotEmpty ||
+        specialNeeds.isNotEmpty ||
+        preferredStyle.isNotEmpty ||
+        strengths.isNotEmpty ||
+        challenges.isNotEmpty;
+
+    if (!hasAny) return const SizedBox.shrink();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.teal.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.teal.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          leading: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppColors.teal,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.folder_shared,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          title: const Text(
+            '📁 معلومات ولي الأمر',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          subtitle: Text(
+            'بيانات أدخلها ولي الأمر',
+            style: TextStyle(fontSize: 11, color: c.muted),
+          ),
+          children: [
+            if (description.isNotEmpty)
+              _infoRow('وصف الإعاقة', description, c),
+            if (medicalHistory.isNotEmpty)
+              _infoRow('التاريخ الطبي', medicalHistory, c),
+            if (psychologistNotes.isNotEmpty)
+              _infoRow(
+                  'ملاحظات المختص النفسي', psychologistNotes, c),
+            if (specialNeeds.isNotEmpty)
+              _infoRow('احتياجات خاصة', specialNeeds, c),
+            if (preferredStyle.isNotEmpty)
+              _infoRow('أسلوب التعلم المفضل', preferredStyle, c),
+            if (strengths.isNotEmpty)
+              _chipsRow('نقاط القوة', strengths, c,
+                  AppColors.greenDeep, c.tintGreen),
+            if (challenges.isNotEmpty)
+              _chipsRow('التحديات', challenges, c,
+                  AppColors.orangeDeep, c.tintOrange),
           ],
         ),
       ),

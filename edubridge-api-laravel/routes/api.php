@@ -34,6 +34,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\LegacyMobileController;
 use App\Http\Controllers\MinistryApprovalController;
 use App\Http\Controllers\PlanEvaluationController;
+use App\Http\Controllers\DashboardController;
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register'])
@@ -45,6 +46,9 @@ Route::post('/auth/google', [AuthController::class, 'google'])
 
 // كل ما يلي يتطلب توكن صالح
 Route::middleware('auth.jwt')->group(function () {
+    // إحصائيات لوحة التحكم — النطاق محسوب حسب صلاحية المستخدم
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
     // الملف الشخصي للمستخدم الحالي
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/password', [AuthController::class, 'changePassword'])
@@ -168,6 +172,10 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/support', [SupportController::class, 'store']);
     Route::put('/support/{id}', [SupportController::class, 'update'])
         ->middleware('role:admin');
+    Route::get('/support/tickets', [SupportController::class, 'index'])
+        ->middleware('role:admin');
+    Route::put('/support/tickets/{id}/resolve', [SupportController::class, 'resolve'])
+        ->middleware('role:admin');
 
     // دراسة الحالة مع المختصين (البطاقة 7)
     Route::get('/consultations', [ConsultationController::class, 'index'])
@@ -184,6 +192,8 @@ Route::middleware('auth.jwt')->group(function () {
     // طلبات الدعم التعليمي — ولي الأمر يرسل، ومختص الدعم يراجع ويحدد موعد المتابعة والرابط
     Route::post('/learning-support/requests', [LearningSupportRequestController::class, 'store'])
         ->middleware(['role:parent', 'throttle:10,1']);
+    Route::post('/learning-support/recommendations', [LearningSupportRequestController::class, 'recommendToParent'])
+        ->middleware(['role:specialist,admin', 'throttle:20,1']);
     Route::get('/learning-support/requests', [LearningSupportRequestController::class, 'index'])
         ->middleware('role:parent,specialist,admin');
     Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
@@ -237,6 +247,8 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
     Route::post('/reports/weekly', [WeeklyReportController::class, 'store'])
         ->middleware('role:teacher,specialist,admin');
+    Route::post('/reports/weekly/specialist', [WeeklyReportController::class, 'storeSpecialist'])
+        ->middleware('role:specialist,admin');
 
     // فريق الرعاية — واجهات موحّدة + توافق مع شاشات Flutter الحالية
     Route::get('/children/{childId}/care-team', [CareTeamController::class, 'careTeam'])
