@@ -1,5 +1,5 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, User, ClipboardList, BookOpen, TrendingUp, Gamepad2, Accessibility } from 'lucide-react'
 import { fetchChildDetails, fetchChildEvaluations } from '../api'
@@ -43,7 +43,7 @@ export default function ChildDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -58,11 +58,11 @@ export default function ChildDetailsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [childId])
 
   useEffect(() => {
     load()
-  }, [childId])
+  }, [load])
 
   const name = child?.name || fallbackName
 
