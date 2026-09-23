@@ -1,6 +1,5 @@
 // lib/widgets/adaptive/adaptive_video_player.dart
 // مشغّل فيديو مع دعم الترجمات والوصف الصوتي
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
