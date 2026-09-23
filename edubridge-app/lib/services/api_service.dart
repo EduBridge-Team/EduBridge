@@ -1,6 +1,5 @@
 // lib/services/api_service.dart
-// طبقة الاتصال بالـ API - كاملة ومتكاملة مع جميع التحديثات
-
+// طبقة الاتصال بالـ API - كاملة ومتكاملة
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -49,6 +48,64 @@ class ApiService {
     } catch (_) {
       return {};
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ✅ Helpers عامة — استخدمها في الشاشات بدل jsonDecode
+  // ═══════════════════════════════════════════════════════════
+
+  /// فكّ JSON كـ Map بأمان — لا يفشل أبداً
+  static Map<String, dynamic> decodeMap(String body) {
+    if (body.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      return {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  /// فكّ JSON كـ List بأمان
+  static List<dynamic> decodeList(String body) {
+    if (body.isEmpty) return [];
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is List) return decoded;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// استخرج مفتاح من JSON كـ List بأمان
+  /// مثال: ApiService.extractList(body, 'lessons')
+  static List<dynamic> extractList(String body, String key) {
+    final map = decodeMap(body);
+    final val = map[key];
+    if (val is List) return val;
+    return [];
+  }
+
+  /// استخرج مفتاح من JSON كـ Map بأمان
+  /// مثال: ApiService.extractMap(body, 'summary')
+  static Map<String, dynamic>? extractMap(String body, String key) {
+    final map = decodeMap(body);
+    final val = map[key];
+    if (val is Map<String, dynamic>) return val;
+    if (val is Map) return Map<String, dynamic>.from(val);
+    return null;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ✅ Helper: تحويل آمن لأي Map من JSON إلى Map<String, dynamic>
+  // ═══════════════════════════════════════════════════════════
+  static Map<String, dynamic>? _asStringMap(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
   }
 
   // ===== دوال التخزين المحلي =====
@@ -116,7 +173,8 @@ class ApiService {
       if (res.statusCode == 200) {
         await _saveToken(data['token']);
         if (data['user'] != null) {
-          await saveUserData(data['user']);
+          final user = _asStringMap(data['user']);
+          if (user != null) await saveUserData(user);
         }
 
         final token = data['token'];
@@ -135,7 +193,7 @@ class ApiService {
 
   static Future<String?> register(
       String name, String email, String password, String role,
-      {String? phone,String? specialty}) async {
+      {String? phone, String? specialty}) async {
     try {
       final res = await http.post(
         Uri.parse('${Config.baseUrl}/auth/register'),
@@ -146,7 +204,7 @@ class ApiService {
           'password': password,
           'role': role,
           'phone': phone,
-        'specialty': specialty,
+          'specialty': specialty,
         }),
       );
 
@@ -300,12 +358,10 @@ class ApiService {
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      final data = responseBody.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(responseBody) as Map<String, dynamic>);
+      final data = decodeMap(responseBody);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        return data['child'];
+        return _asStringMap(data['child']);
       }
       throw Exception(data['error'] ?? 'فشل إضافة الطفل');
     } catch (e) {
@@ -318,7 +374,7 @@ class ApiService {
       final res = await authGet('/children/$childId');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['child'];
+        return _asStringMap(data['child']);
       }
       return null;
     } catch (e) {
@@ -332,7 +388,7 @@ class ApiService {
       final res = await authPut('/children/$childId', data);
       final responseData = _decodeBody(res);
       if (res.statusCode == 200) {
-        return responseData['child'];
+        return _asStringMap(responseData['child']);
       }
       throw Exception(responseData['error'] ?? 'فشل تحديث بيانات الطفل');
     } catch (e) {
@@ -382,7 +438,7 @@ class ApiService {
 
       final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return data['evaluation'];
+        return _asStringMap(data['evaluation']);
       }
       throw Exception(data['error'] ?? 'فشل تقييم الطفل');
     } catch (e) {
@@ -412,7 +468,7 @@ class ApiService {
 
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['child'];
+        return _asStringMap(data['child']);
       }
       throw Exception(data['error'] ?? 'فشل تعيين المعلم');
     } catch (e) {
@@ -441,7 +497,7 @@ class ApiService {
       final res = await authGet('/lessons/$lessonId');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['lesson'];
+        return _asStringMap(data['lesson']);
       }
       return null;
     } catch (e) {
@@ -449,7 +505,6 @@ class ApiService {
     }
   }
 
-  /// ✅ مُحدَّثة: يقبل الملفات الجديدة (ترجمات، لغة إشارة، وصف صوتي)
   static Future<Map<String, dynamic>?> createLessonWithMedia({
     required String title,
     String? content,
@@ -487,7 +542,6 @@ class ApiService {
         request.fields['audio_description'] = audioDescription.trim();
       }
 
-      // ✅ صور الدرس (يمكن رفع أكثر من صورة)
       if (imageFiles != null) {
         for (final image in imageFiles) {
           if (await image.exists()) {
@@ -498,7 +552,6 @@ class ApiService {
         }
       }
 
-      // ✅ الملفات الأساسية
       if (videoFile != null && await videoFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('video', videoFile.path),
@@ -510,7 +563,6 @@ class ApiService {
         );
       }
 
-      // ✅ الملفات الجديدة
       if (captionFile != null && await captionFile.exists()) {
         request.files.add(
           await http.MultipartFile.fromPath('caption', captionFile.path),
@@ -525,12 +577,10 @@ class ApiService {
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      final data = responseBody.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(responseBody) as Map<String, dynamic>);
+      final data = decodeMap(responseBody);
 
       if (response.statusCode == 201) {
-        return data['lesson'];
+        return _asStringMap(data['lesson']);
       }
       throw Exception(data['error'] ?? 'فشل إنشاء الدرس');
     } catch (e) {
@@ -558,7 +608,7 @@ class ApiService {
     try {
       final res = await authGet('/progress/child/$childId');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
+      if (res.statusCode == 200) return _asStringMap(data);
       return null;
     } catch (e) {
       return null;
@@ -571,7 +621,7 @@ class ApiService {
       final res = await authGet('/progress/child/$childId/summary');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['summary'];
+        return _asStringMap(data['summary']);
       }
       return null;
     } catch (e) {
@@ -595,7 +645,7 @@ class ApiService {
 
       final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return data['progress'];
+        return _asStringMap(data['progress']);
       }
       throw Exception(data['error'] ?? 'فشل تسجيل التقدم');
     } catch (e) {
@@ -697,7 +747,8 @@ class ApiService {
 
       final data = _decodeBody(res);
       if (res.statusCode == 201) {
-        return data['conversation']['id'];
+        final conv = _asStringMap(data['conversation']);
+        return conv?['id'] ?? 0;
       }
       throw Exception(data['error'] ?? 'فشل إنشاء المحادثة');
     } catch (e) {
@@ -753,7 +804,7 @@ class ApiService {
       final res = await authPut('/users/$userId', data);
       final responseData = _decodeBody(res);
       if (res.statusCode == 200) {
-        return responseData['user'];
+        return _asStringMap(responseData['user']);
       }
       throw Exception(responseData['error'] ?? 'فشل تحديث المستخدم');
     } catch (e) {
@@ -776,7 +827,7 @@ class ApiService {
     try {
       final res = await authGet('/dashboard/stats');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
+      if (res.statusCode == 200) return _asStringMap(data);
       return null;
     } catch (e) {
       return null;
@@ -804,10 +855,8 @@ class ApiService {
       final res = await authGet('/me/verification');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        final verification = data['verification'];
-        final status = verification is Map
-            ? verification['verification_status'] as String?
-            : null;
+        final verification = _asStringMap(data['verification']);
+        final status = verification?['verification_status'] as String?;
         return status == 'verified' ? 'approved' : (status ?? 'none');
       }
       return 'none';
@@ -840,9 +889,7 @@ class ApiService {
 
       final uploadResponse = await uploadRequest.send();
       final uploadBody = await uploadResponse.stream.bytesToString();
-      final uploadData = uploadBody.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(uploadBody) as Map<String, dynamic>);
+      final uploadData = decodeMap(uploadBody);
 
       if (uploadResponse.statusCode != 200 &&
           uploadResponse.statusCode != 201) {
@@ -956,9 +1003,7 @@ class ApiService {
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      final data = responseBody.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(responseBody) as Map<String, dynamic>);
+      final data = decodeMap(responseBody);
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(data['error'] ?? 'تعذّر حفظ الشهادة');
@@ -1017,7 +1062,7 @@ class ApiService {
       });
       final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return data['approval'];
+        return _asStringMap(data['approval']);
       }
       throw Exception(data['error'] ?? 'فشل إرسال الطلب');
     } catch (e) {
@@ -1138,7 +1183,7 @@ class ApiService {
     try {
       final res = await authGet('/ministry/stats');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
+      if (res.statusCode == 200) return _asStringMap(data);
       return null;
     } catch (e) {
       return null;
@@ -1196,18 +1241,15 @@ class ApiService {
 
       final response = await request.send();
       final body = await response.stream.bytesToString();
-      final data = body.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(body) as Map<String, dynamic>);
+      final data = decodeMap(body);
 
-      if (response.statusCode == 201) return data['homework'];
+      if (response.statusCode == 201) return _asStringMap(data['homework']);
       throw Exception(data['error'] ?? 'فشل إنشاء الواجب');
     } catch (e) {
       _handleError(e);
     }
   }
 
-  /// ✅ مُصلَّحة: ترسل كل الملفات (file + files)
   static Future<Map<String, dynamic>?> submitHomework({
     required int homeworkId,
     required int childId,
@@ -1227,7 +1269,6 @@ class ApiService {
         request.fields['text_answer'] = textAnswer;
       }
 
-      // ✅ اجمع كل الملفات (المفرد + المتعدد)
       final allFiles = <File>[
         if (file != null) file,
         ...?files,
@@ -1243,12 +1284,10 @@ class ApiService {
 
       final response = await request.send();
       final body = await response.stream.bytesToString();
-      final data = body.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(body) as Map<String, dynamic>);
+      final data = decodeMap(body);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        return data['submission'] ?? data;
+        return _asStringMap(data['submission'] ?? data);
       }
       throw Exception(data['error'] ?? 'فشل تسليم الواجب');
     } catch (e) {
@@ -1306,7 +1345,7 @@ class ApiService {
         'goals': goals,
       });
       final data = _decodeBody(res);
-      if (res.statusCode == 201) return data['session'];
+      if (res.statusCode == 201) return _asStringMap(data['session']);
       throw Exception(data['error'] ?? 'فشل إنشاء الجلسة');
     } catch (e) {
       _handleError(e);
@@ -1347,7 +1386,7 @@ class ApiService {
         '/reports/weekly?child_id=$childId&week_start=${week.toIso8601String()}',
       );
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data['report'];
+      if (res.statusCode == 200) return _asStringMap(data['report']);
       return null;
     } catch (e) {
       return null;
@@ -1377,7 +1416,7 @@ class ApiService {
     try {
       final res = await authGet('/children/$childId/care-team');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data['care_team'];
+      if (res.statusCode == 200) return _asStringMap(data['care_team']);
       return null;
     } catch (e) {
       return null;
@@ -1447,7 +1486,7 @@ class ApiService {
     try {
       final res = await authGet('/ministry/statistics');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
+      if (res.statusCode == 200) return _asStringMap(data);
       return null;
     } catch (e) {
       return null;
@@ -1458,7 +1497,7 @@ class ApiService {
     try {
       final res = await authGet('/ministry/statistics/progress');
       final data = _decodeBody(res);
-      if (res.statusCode == 200) return data;
+      if (res.statusCode == 200) return _asStringMap(data);
       return null;
     } catch (e) {
       return null;
@@ -1484,7 +1523,7 @@ class ApiService {
       });
       final data = _decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return data['request'];
+        return _asStringMap(data['request']);
       }
       throw Exception(data['error'] ?? 'فشل إرسال الطلب');
     } catch (e) {
@@ -1566,7 +1605,7 @@ class ApiService {
       final res = await authGet('/me');
       final data = _decodeBody(res);
       if (res.statusCode == 200) {
-        return data['user'] ?? data;
+        return _asStringMap(data['user'] ?? data);
       }
       throw Exception(data['error'] ?? 'تعذّر تحميل الملف الشخصي');
     } catch (e) {
@@ -1618,9 +1657,7 @@ class ApiService {
 
       final response = await request.send();
       final body = await response.stream.bytesToString();
-      final data = body.isEmpty
-          ? <String, dynamic>{}
-          : (jsonDecode(body) as Map<String, dynamic>);
+      final data = decodeMap(body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final url = data['avatar_url'] as String?;
@@ -1663,250 +1700,254 @@ class ApiService {
       await prefs.setString('avatar_url', url);
     }
   }
- 
 
-// ═══════════════════════════════════════════════════════════
-//  تعيين متعدد
-// ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════
+  //  تعيين متعدد
+  // ═══════════════════════════════════════════════════════════
 
-/// المختص يعيّن معلماً إضافياً لطفل (يسمح بأكثر من معلم)
-static Future<bool> addTeacherToChild({
-  required int childId,
-  required int teacherId,
-}) async {
-  try {
-    final res = await authPost('/children/$childId/teachers', {
-      'teacher_id': teacherId,
-    });
-    return res.statusCode == 200 || res.statusCode == 201;
-  } catch (e) {
-    return false;
+  static Future<bool> addTeacherToChild({
+    required int childId,
+    required int teacherId,
+  }) async {
+    try {
+      final res = await authPost('/children/$childId/teachers', {
+        'teacher_id': teacherId,
+      });
+      return res.statusCode == 200 || res.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-static Future<bool> removeTeacherFromChild({
-  required int childId,
-  required int teacherId,
-}) async {
-  try {
-    final res = await authDelete('/children/$childId/teachers/$teacherId');
-    return res.statusCode == 200 || res.statusCode == 204;
-  } catch (e) {
-    return false;
+  static Future<bool> removeTeacherFromChild({
+    required int childId,
+    required int teacherId,
+  }) async {
+    try {
+      final res = await authDelete('/children/$childId/teachers/$teacherId');
+      return res.statusCode == 200 || res.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-static Future<List<dynamic>> getChildTeachers(int childId) async {
-  try {
-    final res = await authGet('/children/$childId/teachers');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['teachers'] ?? [];
-    return [];
-  } catch (e) {
-    return [];
+  static Future<List<dynamic>> getChildTeachers(int childId) async {
+    try {
+      final res = await authGet('/children/$childId/teachers');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['teachers'] ?? [];
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
-}
 
-// ═══════════════════════════════════════════════════════════
-//  تعيين المختصين (نفسي + تعليمي)
-// ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════
+  //  تعيين المختصين (نفسي + تعليمي)
+  // ═══════════════════════════════════════════════════════════
 
-static Future<Map<String, dynamic>?> getChildSpecialists(int childId) async {
-  try {
-    final res = await authGet('/children/$childId/specialists');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data;
-    return null;
-  } catch (e) {
-    return null;
+  static Future<Map<String, dynamic>?> getChildSpecialists(
+      int childId) async {
+    try {
+      final res = await authGet('/children/$childId/specialists');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return _asStringMap(data);
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
-}
 
-static Future<String?> assignSpecialist({
-  required int childId,
-  required int specialistId,
-  required String specialty, // learning_support | educational | communication_support | learning_behavior
-}) async {
-  try {
-    final res = await authPost('/children/$childId/specialists', {
-      'specialist_id': specialistId,
-      'specialty': specialty,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 200 || res.statusCode == 201) return null;
-    return data['error'] ?? 'فشل التعيين';
-  } catch (e) {
-    return 'تعذّر الاتصال بالسيرفر';
-  }
-}
-
-static Future<bool> removeSpecialist({
-  required int childId,
-  required int specialistId,
-}) async {
-  try {
-    final res =
-        await authDelete('/children/$childId/specialists/$specialistId');
-    return res.statusCode == 200 || res.statusCode == 204;
-  } catch (e) {
-    return false;
-  }
-}
-
-
-// ═══════════════════════════════════════════════════════════
-//  دراسات الحالة
-// ═══════════════════════════════════════════════════════════
-
-static Future<List<dynamic>> getCaseDiscussions({int? childId}) async {
-  try {
-    final path = childId != null
-        ? '/case-discussions?child_id=$childId'
-        : '/case-discussions';
-    final res = await authGet(path);
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['discussions'] ?? [];
-    return [];
-  } catch (_) {
-    return [];
-  }
-}
-
-static Future<Map<String, dynamic>?> createCaseDiscussion({
-  required int childId,
-  required String topic,
-  String? description,
-  required List<int> participantIds,
-}) async {
-  try {
-    final res = await authPost('/case-discussions', {
-      'child_id': childId,
-      'topic': topic,
-      'description': description,
-      'participant_ids': participantIds,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 201) return data['discussion'];
-    throw Exception(data['error'] ?? 'فشل إنشاء الدراسة');
-  } catch (e) {
-    _handleError(e);
-  }
-}
-
-static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
-    int discussionId) async {
-  try {
-    final res = await authGet('/case-discussions/$discussionId');
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['discussion'];
-    return null;
-  } catch (_) {
-    return null;
-  }
-}
-
-static Future<Map<String, dynamic>?> addCaseMessage({
-  required int discussionId,
-  required String content,
-  String type = 'text',
-}) async {
-  try {
-    final res = await authPost('/case-discussions/$discussionId/messages', {
-      'content': content,
-      'type': type,
-    });
-    final data = _decodeBody(res);
-    if (res.statusCode == 201) return data['message'];
-    throw Exception(data['error'] ?? 'فشل إرسال الرسالة');
-  } catch (e) {
-    _handleError(e);
-  }
-}
-
-static Future<bool> resolveCaseDiscussion(int discussionId) async {
-  try {
-    final res = await authPut('/case-discussions/$discussionId/resolve', {});
-    return res.statusCode == 200;
-  } catch (_) {
-    return false;
-  }
-}
-// ═══════════════════════════════════════════════════════════
-//  اقتراحات المختصين
-// ═══════════════════════════════════════════════════════════
-
-/// اقتراح مختص لطفل (يُرسل إشعار للمختص المقترح)
-static Future<String?> suggestSpecialistToChild({
-  required int childId,
-  required int specialistId,
-  required String specialty,
-  required String reason,
-}) async {
-  try {
-    final res = await authPost(
-      '/children/$childId/specialist-suggestions',
-      {
+  static Future<String?> assignSpecialist({
+    required int childId,
+    required int specialistId,
+    required String specialty,
+  }) async {
+    try {
+      final res = await authPost('/children/$childId/specialists', {
         'specialist_id': specialistId,
         'specialty': specialty,
-        'reason': reason,
-      },
-    );
-    if (res.statusCode == 200 || res.statusCode == 201) return null;
-    final data = _decodeBody(res);
-    return data['error'] ?? 'فشل إرسال التوصية';
-  } catch (e) {
-    return 'تعذّر الاتصال بالسيرفر';
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 200 || res.statusCode == 201) return null;
+      return data['error'] ?? 'فشل التعيين';
+    } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
   }
-}
 
-/// اقتراحاتي (التي وصلتني كمختص)
-static Future<List<dynamic>> getMySpecialistSuggestions({
-  String? status,
-}) async {
-  try {
-    final path = status != null
-        ? '/specialist-suggestions?status=$status'
-        : '/specialist-suggestions';
-    final res = await authGet(path);
-    final data = _decodeBody(res);
-    if (res.statusCode == 200) return data['suggestions'] ?? [];
-    return [];
-  } catch (_) {
-    return [];
+  static Future<bool> removeSpecialist({
+    required int childId,
+    required int specialistId,
+  }) async {
+    try {
+      final res =
+          await authDelete('/children/$childId/specialists/$specialistId');
+      return res.statusCode == 200 || res.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-/// قبول اقتراح
-static Future<String?> acceptSuggestion(int suggestionId) async {
-  try {
-    final res = await authPut(
-      '/specialist-suggestions/$suggestionId/accept', {},
-    );
-    if (res.statusCode == 200) return null;
-    final data = _decodeBody(res);
-    return data['error'] ?? 'فشل القبول';
-  } catch (e) {
-    return 'تعذّر الاتصال بالسيرفر';
-  }
-}
+  // ═══════════════════════════════════════════════════════════
+  //  دراسات الحالة
+  // ═══════════════════════════════════════════════════════════
 
-/// رفض اقتراح
-static Future<String?> rejectSuggestion(
-  int suggestionId, {
-  String? reason,
-}) async {
-  try {
-    final res = await authPut(
-      '/specialist-suggestions/$suggestionId/reject',
-      {'reason': reason ?? ''},
-    );
-    if (res.statusCode == 200) return null;
-    final data = _decodeBody(res);
-    return data['error'] ?? 'فشل الرفض';
-  } catch (e) {
-    return 'تعذّر الاتصال بالسيرفر';
+  static Future<List<dynamic>> getCaseDiscussions({int? childId}) async {
+    try {
+      final path = childId != null
+          ? '/case-discussions?child_id=$childId'
+          : '/case-discussions';
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['discussions'] ?? [];
+      return [];
+    } catch (_) {
+      return [];
+    }
   }
-}
+
+  static Future<Map<String, dynamic>?> createCaseDiscussion({
+    required int childId,
+    required String topic,
+    String? description,
+    required List<int> participantIds,
+  }) async {
+    try {
+      final res = await authPost('/case-discussions', {
+        'child_id': childId,
+        'topic': topic,
+        'description': description,
+        'participant_ids': participantIds,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 201) {
+        return _asStringMap(data['discussion']);
+      }
+      throw Exception(data['error'] ?? 'فشل إنشاء الدراسة');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
+      int discussionId) async {
+    try {
+      final res = await authGet('/case-discussions/$discussionId');
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) {
+        return _asStringMap(data['discussion']);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> addCaseMessage({
+    required int discussionId,
+    required String content,
+    String type = 'text',
+  }) async {
+    try {
+      final res =
+          await authPost('/case-discussions/$discussionId/messages', {
+        'content': content,
+        'type': type,
+      });
+      final data = _decodeBody(res);
+      if (res.statusCode == 201) {
+        return _asStringMap(data['message']);
+      }
+      throw Exception(data['error'] ?? 'فشل إرسال الرسالة');
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  static Future<bool> resolveCaseDiscussion(int discussionId) async {
+    try {
+      final res =
+          await authPut('/case-discussions/$discussionId/resolve', {});
+      return res.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  اقتراحات المختصين
+  // ═══════════════════════════════════════════════════════════
+
+  static Future<String?> suggestSpecialistToChild({
+    required int childId,
+    required int specialistId,
+    required String specialty,
+    required String reason,
+  }) async {
+    try {
+      final res = await authPost(
+        '/children/$childId/specialist-suggestions',
+        {
+          'specialist_id': specialistId,
+          'specialty': specialty,
+          'reason': reason,
+        },
+      );
+      if (res.statusCode == 200 || res.statusCode == 201) return null;
+      final data = _decodeBody(res);
+      return data['error'] ?? 'فشل إرسال التوصية';
+    } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
+  static Future<List<dynamic>> getMySpecialistSuggestions({
+    String? status,
+  }) async {
+    try {
+      final path = status != null
+          ? '/specialist-suggestions?status=$status'
+          : '/specialist-suggestions';
+      final res = await authGet(path);
+      final data = _decodeBody(res);
+      if (res.statusCode == 200) return data['suggestions'] ?? [];
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<String?> acceptSuggestion(int suggestionId) async {
+    try {
+      final res = await authPut(
+        '/specialist-suggestions/$suggestionId/accept', {},
+      );
+      if (res.statusCode == 200) return null;
+      final data = _decodeBody(res);
+      return data['error'] ?? 'فشل القبول';
+    } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
+  static Future<String?> rejectSuggestion(
+    int suggestionId, {
+    String? reason,
+  }) async {
+    try {
+      final res = await authPut(
+        '/specialist-suggestions/$suggestionId/reject',
+        {'reason': reason ?? ''},
+      );
+      if (res.statusCode == 200) return null;
+      final data = _decodeBody(res);
+      return data['error'] ?? 'فشل الرفض';
+    } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
   // ===== حذف الحساب =====
   static Future<void> deleteAccount() async {
     try {

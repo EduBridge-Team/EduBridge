@@ -1,7 +1,7 @@
 // lib/screens/case_discussion_screen.dart
 // دراسة الحالة — نقاش بين المعلم والمختص بخصوص طفل
+// ✅ معدّلة: المُنشئ يُضاف تلقائياً كمشارك + لا يمكنه إلغاء نفسه
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../model/case_discussion_model.dart';
 import '../services/api_service.dart';
@@ -67,7 +67,8 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       if (!mounted) return;
       setState(() {
         _items = raw
-            .map((e) => CaseDiscussion.fromJson(e as Map<String, dynamic>))
+            .map((e) => CaseDiscussion.fromJson(
+                Map<String, dynamic>.from(e as Map)))
             .toList();
         _loading = false;
       });
@@ -347,7 +348,6 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
   void initState() {
     super.initState();
     _load();
-    // تحديث تلقائي كل 10 ثوان
     _refreshTimer = Timer.periodic(
       const Duration(seconds: 10),
       (_) => _refreshSilently(),
@@ -368,8 +368,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
         await ApiService.getCaseDiscussionDetails(widget.discussionId);
     if (!mounted) return;
     setState(() {
-      _discussion =
-          data != null ? CaseDiscussion.fromJson(data) : null;
+      _discussion = data != null ? CaseDiscussion.fromJson(data) : null;
       _loading = false;
     });
     _scrollToBottom();
@@ -608,12 +607,12 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
       ),
       child: Column(
         children: [
-          // اختيار نوع الرسالة
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _typeChip('رسالة', CaseMessageType.text, Icons.chat_bubble_outline),
+                _typeChip('رسالة', CaseMessageType.text,
+                    Icons.chat_bubble_outline),
                 const SizedBox(width: 6),
                 _typeChip('ملاحظة', CaseMessageType.observation,
                     Icons.visibility_outlined),
@@ -813,6 +812,7 @@ class _MessageBubble extends StatelessWidget {
 
 // ═══════════════════════════════════════════════════════════
 //  BottomSheet: دراسة حالة جديدة
+//  ✅ المُنشئ يُضاف تلقائياً كمشارك ولا يمكنه إلغاء نفسه
 // ═══════════════════════════════════════════════════════════
 class _NewDiscussionSheet extends StatefulWidget {
   const _NewDiscussionSheet();
@@ -831,6 +831,8 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   bool _loading = true;
   bool _saving = false;
   String? _error;
+
+  int? _myUserId;
 
   @override
   void initState() {
@@ -852,25 +854,26 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         ApiService.authGet('/users'),
       ]);
 
-      final childrenRes = responses[0];
-      final usersRes = responses[1];
+      if (!mounted) return;
+
+      final children = ApiService.extractList(responses[0].body, 'children');
+      final users = ApiService.extractList(responses[1].body, 'users');
+
+      final meId = await ApiService.getUserId();
 
       if (!mounted) return;
 
-      final childrenBody = childrenRes.statusCode == 200 && childrenRes.body.isNotEmpty
-          ? jsonDecode(childrenRes.body) as Map<String, dynamic>
-          : <String, dynamic>{};
-      final usersBody = usersRes.statusCode == 200 && usersRes.body.isNotEmpty
-          ? jsonDecode(usersRes.body) as Map<String, dynamic>
-          : <String, dynamic>{};
-
       setState(() {
-        _children = childrenBody['children'] ?? [];
-        final allUsers = usersBody['users'] ?? [];
-        _availableParticipants = allUsers
+        _children = children;
+        _availableParticipants = users
             .where((u) =>
                 u['role'] == 'teacher' || u['role'] == 'specialist')
             .toList();
+        _myUserId = meId;
+
+        if (meId != null) {
+          _selectedParticipants.add(meId);
+        }
         _loading = false;
       });
     } catch (_) {
@@ -891,7 +894,11 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
       setState(() => _error = 'العنوان مطلوب');
       return;
     }
-    if (_selectedParticipants.isEmpty) {
+
+    final participantIds = Set<int>.from(_selectedParticipants);
+    if (_myUserId != null) participantIds.add(_myUserId!);
+
+    if (participantIds.isEmpty) {
       setState(() => _error = 'اختر مشاركاً واحداً على الأقل');
       return;
     }
@@ -908,7 +915,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         description: _descCtrl.text.trim().isEmpty
             ? null
             : _descCtrl.text.trim(),
-        participantIds: _selectedParticipants.toList(),
+        participantIds: participantIds.toList(),
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -1002,13 +1009,35 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          'المشاركون (${_selectedParticipants.length}):',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: c.heading,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'المشاركون (${_selectedParticipants.length}):',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: c.heading,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.teal.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                'أنت مشارك تلقائياً',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.tealDeep,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         ...(_availableParticipants.map<Widget>((u) {
@@ -1017,21 +1046,33 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
                           final role = u['role']?.toString() ?? '';
                           final roleLabel =
                               role == 'teacher' ? '👨‍🏫 معلّم' : '🧩 مختص';
+                          final isMe = id == _myUserId;
                           final selected =
                               _selectedParticipants.contains(id);
+
                           return CheckboxListTile(
                             dense: true,
                             value: selected,
-                            title: Text('$roleLabel — $name'),
-                            onChanged: (v) {
-                              setState(() {
-                                if (v == true) {
-                                  _selectedParticipants.add(id);
-                                } else {
-                                  _selectedParticipants.remove(id);
-                                }
-                              });
-                            },
+                            enabled: !isMe,
+                            title: Text(
+                              '$roleLabel — $name${isMe ? ' (أنت)' : ''}',
+                              style: TextStyle(
+                                fontWeight:
+                                    isMe ? FontWeight.bold : FontWeight.normal,
+                                color: isMe ? AppColors.tealDeep : null,
+                              ),
+                            ),
+                            onChanged: isMe
+                                ? null
+                                : (v) {
+                                    setState(() {
+                                      if (v == true) {
+                                        _selectedParticipants.add(id);
+                                      } else {
+                                        _selectedParticipants.remove(id);
+                                      }
+                                    });
+                                  },
                           );
                         })),
                       ],

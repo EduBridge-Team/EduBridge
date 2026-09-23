@@ -1,9 +1,9 @@
 // إعدادات التطبيق
 class Config {
+    static const String baseUrl = "https://edubridge.win/api";
+  static const String wsUrl = "wss://edubridge.win/ws";
+
   
-   // 🔹 للمحاكي (Android Emulator)
-    static const String baseUrl = "https://edubridge.alwaysdata.net/api";
-  static const String wsUrl = "wss://edubridge.alwaysdata.net/ws";
    
   
   // 🔹 للجهاز الحقيقي (USB) - تحتاج adb reverse
