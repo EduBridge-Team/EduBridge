@@ -74,7 +74,7 @@ class AuthController extends Controller
         if (!$name || !$email || !$password || !$role) {
             return response()->json(['error' => 'الاسم والإيميل والباسورد والدور مطلوبة'], 400);
         }
-        if (!in_array($role, ['parent', 'teacher', 'specialist', 'admin', 'ministry', 'institution'])) {
+        if (!in_array($role, ['parent', 'teacher', 'specialist'], true)) {
             return response()->json(['error' => 'الدور غير صالح'], 400);
         }
         if ($role === 'specialist' && $specialty !== null && !in_array($specialty, ['learning_support', 'educational', 'communication_support', 'learning_behavior'], true)) {
