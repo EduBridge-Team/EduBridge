@@ -147,7 +147,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
         return '📋';
       case 'learning_support_meeting_scheduled':
         return '🗓️';
-      // ✅ جديد: طلبات الجلسات النفسية
+      // طلبات الدعم التعليمي
       case 'learning_support_request_created':
         return '🧠';
       case 'learning_support_scheduled':

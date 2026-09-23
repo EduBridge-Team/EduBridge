@@ -13,8 +13,6 @@ class ChildController extends Controller
     private const TEXT_FIELDS = [
         'disability_type',
         'disability_description',
-        'medical_history',
-        'psychologist_notes',
         'special_needs',
         'preferred_learning_style',
         'notes',
@@ -50,6 +48,9 @@ class ChildController extends Controller
                 $child->$key = json_decode($child->$key, true);
             }
         }
+        // لا نعيد الحقول الصحية القديمة في واجهات المنتج التعليمي.
+        unset($child->medical_history, $child->psychologist_notes);
+
         // للتوافق: لو ما فيه نوع إعاقة نصّي نستعمل اسم النوع من القائمة المرجعية
         if (empty($child->disability_type) && !empty($child->disability_name)) {
             $child->disability_type = $child->disability_name;

@@ -86,8 +86,8 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
             const SizedBox(width: 8),
             _bigStat(
               '${s['learning_support_meetings_count'] ?? 0}',
-              'جلسات العلاج',
-              Icons.psychology,
+              'اجتماعات الدعم التعليمي',
+              Icons.school_outlined,
               AppColors.pink,
             ),
           ],

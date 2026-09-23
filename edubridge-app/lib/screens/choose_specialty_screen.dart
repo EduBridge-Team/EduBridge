@@ -132,10 +132,10 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
 
             // ─── مختص دعم تعليمي ───
             _SpecialtyCard(
-              icon: Icons.psychology,
+              icon: Icons.school_outlined,
               title: 'مختص دعم تعليمي',
               description:
-                  'متابعة الجانب الدعم تعليمي والعاطفي للأطفال، تشخيص الحالات، وتقديم الدعم التعليمي',
+                  'متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي',
               color: AppColors.purple,
               selected: _selected == 'learning_support',
               onTap: () => setState(() => _selected = 'learning_support'),
