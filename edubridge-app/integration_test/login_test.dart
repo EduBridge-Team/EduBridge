@@ -21,11 +21,15 @@ Future<bool> pumpUntilFound(
   return false;
 }
 
+const _testEmail = String.fromEnvironment('EDUBRIDGE_TEST_EMAIL');
+const _testPassword = String.fromEnvironment('EDUBRIDGE_TEST_PASSWORD');
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('تسجيل الدخول بحساب المعلّم يصل للشاشة الرئيسية',
-      (tester) async {
+  testWidgets(
+    'تسجيل الدخول بحساب الاختبار يصل للشاشة الرئيسية',
+    (tester) async {
     // نبدأ بلا توكن محفوظ حتى تظهر شاشة الدخول دائماً
     SharedPreferences.setMockInitialValues({});
 
@@ -37,10 +41,10 @@ void main() {
     expect(await pumpUntilFound(tester, loginBtn), true,
         reason: 'شاشة الدخول لم تظهر');
 
-    // إدخال بيانات الحساب التجريبي
+    // بيانات الاختبار تأتي من --dart-define ولا تُحفظ في المستودع.
     final fields = find.byType(TextField);
-    await tester.enterText(fields.at(0), 'teacher@edu.com');
-    await tester.enterText(fields.at(1), 'password123');
+    await tester.enterText(fields.at(0), _testEmail);
+    await tester.enterText(fields.at(1), _testPassword);
     await tester.pump(const Duration(milliseconds: 300));
 
     // ضغط زر الدخول
@@ -53,5 +57,9 @@ void main() {
 
     // زر «الأطفال» موجود في الشاشة الرئيسية
     expect(find.text('الأطفال'), findsOneWidget);
-  });
+    },
+    skip: _testEmail.isEmpty || _testPassword.isEmpty
+        ? 'مرّر EDUBRIDGE_TEST_EMAIL و EDUBRIDGE_TEST_PASSWORD لتشغيل اختبار التكامل'
+        : false,
+  );
 }
