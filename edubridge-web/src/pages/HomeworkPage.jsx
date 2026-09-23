@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createHomeworkWeb, fetchChildren, fetchHomeworks, getUser, gradeHomeworkWeb, submitHomeworkWeb } from '../api'
 import '../feature-parity.css'
 
@@ -14,15 +14,15 @@ export default function HomeworkPage() {
   const [submission,setSubmission]=useState({homework_id:null,child_id:'',text_answer:'',files:[]})
   const [grades,setGrades]=useState({})
 
-  const load=async()=>{
+  const load=useCallback(async()=>{
     try{
       const [c,h]=await Promise.all([fetchChildren(),fetchHomeworks()])
       setChildren(c.children||[])
       setItems(h.homeworks||[])
       setError('')
     }catch(e){setError(e.message)}
-  }
-  useEffect(()=>{load()},[])
+  },[])
+  useEffect(()=>{load()},[load])
 
   const dueDefault=useMemo(()=>{
     const d=new Date(Date.now()+7*86400000)
