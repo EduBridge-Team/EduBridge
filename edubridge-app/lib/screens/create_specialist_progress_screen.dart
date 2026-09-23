@@ -171,29 +171,29 @@ class _CreateSpecialistProgressScreenState
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('✅ مناسبة'),
-                          value: true,
-                          groupValue: _planAppropriate,
-                          onChanged: (v) =>
-                              setState(() => _planAppropriate = v!),
+                  RadioGroup<bool>(
+                    groupValue: _planAppropriate,
+                    onChanged: (v) {
+                      if (v != null) setState(() => _planAppropriate = v);
+                    },
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('✅ مناسبة'),
+                            value: true,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('⚠️ تحتاج تعديل'),
-                          value: false,
-                          groupValue: _planAppropriate,
-                          onChanged: (v) =>
-                              setState(() => _planAppropriate = v!),
+                        Expanded(
+                          child: RadioListTile<bool>(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('⚠️ تحتاج تعديل'),
+                            value: false,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (!_planAppropriate) ...[
                     const SizedBox(height: 8),
