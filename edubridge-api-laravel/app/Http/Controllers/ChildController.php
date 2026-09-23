@@ -290,7 +290,14 @@ class ChildController extends Controller
                     if ($user->role !== 'admin') {
                         return response()->json(['error' => 'هذا الحقل إداري فقط'], 403);
                     }
-                    $data[$f] = $request->input($f);
+
+                    $value = $request->input($f);
+                    if ($f === 'assigned_teacher_id' && $value !== null
+                        && !DB::table('users')->where('id', $value)->where('role', 'teacher')->exists()) {
+                        return response()->json(['error' => 'المعلّم غير موجود'], 422);
+                    }
+
+                    $data[$f] = $value;
                 }
             }
             foreach (self::TEXT_FIELDS as $f) {
