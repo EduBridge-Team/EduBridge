@@ -35,8 +35,8 @@ export default function RegisterPage() {
     setError(null)
 
     // تحقق من المدخلات قبل الإرسال
-    if (form.password.length < 6) {
-      setError('كلمة المرور 6 أحرف على الأقل')
+    if (form.password.length < 8 || form.password.length > 128) {
+      setError('كلمة المرور يجب أن تكون بين 8 و128 حرفاً')
       return
     }
     if (form.password !== form.confirm) {
@@ -129,6 +129,8 @@ export default function RegisterPage() {
             onChange={set('password')}
             required
             autoComplete="new-password"
+            minLength={8}
+            maxLength={128}
           />
 
           <label htmlFor="confirm">تأكيد كلمة المرور</label>
