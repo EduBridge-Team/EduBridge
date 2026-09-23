@@ -27,6 +27,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
 use App\Http\Controllers\LearningSupportRequestController;
+use App\Http\Controllers\LearningSupportMeetingController;
 use App\Http\Controllers\SpecialistSuggestionController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
@@ -200,11 +201,11 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:parent,specialist,admin');
     Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
         ->middleware(['role:parent,specialist,admin', 'child.access']);
-    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportRequestController::class, 'schedule'])
+    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportMeetingController::class, 'schedule'])
         ->middleware('role:specialist,admin');
-    Route::put('/learning-support/requests/{id}/complete', [LearningSupportRequestController::class, 'complete'])
+    Route::put('/learning-support/requests/{id}/complete', [LearningSupportMeetingController::class, 'complete'])
         ->middleware('role:specialist,admin');
-    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportRequestController::class, 'cancel'])
+    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportMeetingController::class, 'cancel'])
         ->middleware('role:parent,specialist,admin');
 
     // الأطفال
