@@ -1482,6 +1482,7 @@ class _SpecialistDashboardScreenState
 
   Future<void> _addMyselfToChild(Map<String, dynamic> child) async {
     if (!await _checkVerification()) return;
+    if (!mounted) return;
     if (_mySpecialty == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1605,14 +1606,14 @@ class _SpecialistDashboardScreenState
                 Expanded(
                   child: InkWell(
                     onTap: () async {
+                      final navigator = Navigator.of(context);
                       await AccessibilityService.instance.setActiveChild(
                         childId,
                         disabilityTypeHint:
                             child['disability_type']?.toString(),
                       );
-                      if (!context.mounted) return;
-                      await Navigator.push(
-                        context,
+                      await navigator.push(
+
                         MaterialPageRoute(
                           builder: (_) => ChildProgressScreen(
                             childId: childId,
