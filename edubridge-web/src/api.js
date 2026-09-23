@@ -145,7 +145,7 @@ export async function googleLogin(idToken) {
 }
 
 // إنشاء حساب جديد (رقم الهوية اختياري — يُستكمل توثيقه لاحقاً)
-export function register(name, email, password, role, nationalId) {
+export function register(name, email, password, role, nationalId, specialty) {
   return request("/auth/register", {
     method: "POST",
     body: JSON.stringify({
@@ -154,6 +154,7 @@ export function register(name, email, password, role, nationalId) {
       password,
       role,
       ...(nationalId ? { national_id: nationalId } : {}),
+      ...(specialty ? { specialty } : {}),
     }),
   });
 }
