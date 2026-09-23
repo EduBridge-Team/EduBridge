@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
-import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class SequenceGame extends StatefulWidget {
