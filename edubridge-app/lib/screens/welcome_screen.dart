@@ -254,11 +254,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget _buildPage(_OnboardingPage page, int index) {
     final isCurrent = index == _currentPage;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+    return CustomScrollView(
+      physics: const ClampingScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          sliver: SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
           // ═══════════════════════════════════════════════
           //  صورة الدرس — مع حركة طفو خفيفة + هالة ضوئية
           // ═══════════════════════════════════════════════
@@ -391,8 +396,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
             ),
           ),
-        ],
-      ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
