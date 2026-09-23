@@ -86,27 +86,27 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                       TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RadioListTile<bool>(
-                        title: const Text('✅ مناسبة'),
-                        value: true,
-                        groupValue: _isAppropriate,
-                        onChanged: (v) =>
-                            setState(() => _isAppropriate = v!),
+                RadioGroup<bool>(
+                  groupValue: _isAppropriate,
+                  onChanged: (v) {
+                    if (v != null) setState(() => _isAppropriate = v);
+                  },
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        child: RadioListTile<bool>(
+                          title: Text('✅ مناسبة'),
+                          value: true,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: RadioListTile<bool>(
-                        title: const Text('❌ تحتاج تعديل'),
-                        value: false,
-                        groupValue: _isAppropriate,
-                        onChanged: (v) =>
-                            setState(() => _isAppropriate = v!),
+                      Expanded(
+                        child: RadioListTile<bool>(
+                          title: Text('❌ تحتاج تعديل'),
+                          value: false,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
