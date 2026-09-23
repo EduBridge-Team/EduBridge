@@ -13,12 +13,18 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-API_SERVICE = ROOT / "edubridge-app/lib/services/api_service.dart"
+APP_LIB = ROOT / "edubridge-app/lib"
 LARAVEL_ROUTES = ROOT / "edubridge-api-laravel/routes/api.php"
 
 CLIENT_CALL_RE = re.compile(
-    r"""\b(authGet|authPost|authPut|authDelete)\(\s*(['"])(/[^'"]*)\2""",
-    re.MULTILINE,
+    r"""\b(authGet|authPost|authPut|authDelete)\(\s*
+        (?:
+            '((?:\\.|[^'\\$]|\$(?!\{)|\$\{[^}]*\})*)'
+            |
+            "((?:\\.|[^"\\$]|\$(?!\{)|\$\{[^}]*\})*)"
+        )
+    """,
+    re.MULTILINE | re.VERBOSE,
 )
 
 ROUTE_RE = re.compile(
@@ -53,7 +59,10 @@ def normalize_path(path: str) -> str:
 def extract_client_calls(text: str) -> set[tuple[str, str]]:
     calls: set[tuple[str, str]] = set()
     for match in CLIENT_CALL_RE.finditer(text):
-        calls.add((METHOD_MAP[match.group(1)], normalize_path(match.group(3))))
+        path = match.group(2) if match.group(2) is not None else match.group(3)
+        if not path.startswith("/"):
+            continue
+        calls.add((METHOD_MAP[match.group(1)], normalize_path(path)))
     return calls
 
 
@@ -71,10 +80,12 @@ def extract_backend_routes(text: str) -> set[tuple[str, str]]:
 
 
 def main() -> int:
-    client_text = API_SERVICE.read_text(encoding="utf-8")
     routes_text = LARAVEL_ROUTES.read_text(encoding="utf-8")
 
-    client_calls = extract_client_calls(client_text)
+    client_calls: set[tuple[str, str]] = set()
+    for dart_file in APP_LIB.rglob("*.dart"):
+        client_calls.update(extract_client_calls(dart_file.read_text(encoding="utf-8")))
+
     backend_routes = extract_backend_routes(routes_text)
 
     missing = sorted(client_calls - backend_routes)
