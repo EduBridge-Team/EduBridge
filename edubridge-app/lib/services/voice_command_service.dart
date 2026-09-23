@@ -110,11 +110,13 @@ class VoiceCommandService {
     lastReply.value = '';
     isListening.value = true;
     await _speech.listen(
-      localeId: 'ar-SA',
-      listenFor: const Duration(seconds: 10),
-      pauseFor: const Duration(seconds: 4),
-      partialResults: true,
       onResult: _onResult,
+      listenOptions: stt.SpeechListenOptions(
+        localeId: 'ar-SA',
+        listenFor: const Duration(seconds: 10),
+        pauseFor: const Duration(seconds: 4),
+        partialResults: true,
+      ),
     );
   }
 
