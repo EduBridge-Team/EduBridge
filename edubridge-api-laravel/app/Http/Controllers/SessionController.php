@@ -237,4 +237,3 @@ class SessionController extends Controller
         return response()->json(['session' => $this->normalizeSession($fresh)]);
     }
 }
-}
