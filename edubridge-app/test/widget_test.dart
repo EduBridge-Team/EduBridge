@@ -2,14 +2,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:edubridge_app/main.dart';
+import 'package:edubridge_app/main.dart' as app;
 
 void main() {
   testWidgets('المستخدم الضيف يرى الشاشة الترحيبية',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(const EduBridgeApp());
+    await tester.pumpWidget(const app.EduBridgeApp());
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
 
@@ -26,9 +26,10 @@ void main() {
       'userId': 1,
     });
 
-    await tester.pumpWidget(const EduBridgeApp());
+    app.main();
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pump();
 
     expect(find.text('معاً ندعم تقدُّمه'), findsNothing);
   });
