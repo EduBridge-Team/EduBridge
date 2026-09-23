@@ -483,7 +483,7 @@ ThemeData buildBlindHighContrastTheme() {
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black,
-      foregroundColor: const Color(0xFFFFD400),
+      foregroundColor: Color(0xFFFFD400),
       elevation: 0,
       titleTextStyle: TextStyle(
         fontSize: 24,
