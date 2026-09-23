@@ -31,7 +31,7 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
     Future.delayed(const Duration(milliseconds: 850), () async {
       if (!mounted) return;
       if (_index == _questions.length - 1) {
-        await VisualCelebration.show(context, message: 'أحسنت! ' + _score.toString() + ' من ' + _questions.length.toString(), emoji: '🧠', childName: widget.childName, duration: const Duration(seconds: 3));
+        await VisualCelebration.show(context, message: 'أحسنت! $_score من ${_questions.length}', emoji: '🧠', childName: widget.childName, duration: const Duration(seconds: 3));
         if (mounted) Navigator.pop(context);
       } else {
         setState(() { _index++; _locked = false; });
@@ -61,7 +61,7 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
               ),
             )),
             const Spacer(),
-            Text('النتيجة: ' + _score.toString(), textAlign: TextAlign.center),
+            Text('النتيجة: $_score', textAlign: TextAlign.center),
           ],
         ),
       ),
