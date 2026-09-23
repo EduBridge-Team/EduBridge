@@ -52,29 +52,49 @@ jobs:
 
       - name: Prepare deploy bundle
         run: |
-          # Copy the complete Vite output, including every file from public/.
-          # This prevents newly added hero/brand images from disappearing in production.
-          rm -rf deploy/web
-          mkdir -p deploy/web
-          cp -R edubridge-web/dist/. deploy/web/
-          cp deploy/web/index.html deploy/web/app.html
-          rm -f deploy/web/index.html
+          # Build the deployable snapshot outside the Git worktree. The branch may
+          # advance while Vite is building, so generated files must not participate
+          # in a merge/rebase.
+          rm -rf /tmp/edubridge-deploy-web
+          mkdir -p /tmp/edubridge-deploy-web
+          cp -R edubridge-web/dist/. /tmp/edubridge-deploy-web/
+          cp /tmp/edubridge-deploy-web/index.html /tmp/edubridge-deploy-web/app.html
+          rm -f /tmp/edubridge-deploy-web/index.html
           # Laravel owns the document-root .htaccess. Never bundle the SPA
           # FallbackResource file, otherwise /api requests fail at Apache level.
-          rm -f deploy/web/.htaccess
+          rm -f /tmp/edubridge-deploy-web/.htaccess
 
       - name: Commit deploy bundle
         run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add deploy/web
-          if git diff --cached --quiet; then
-            echo 'Deploy bundle is already current.'
-            exit 0
-          fi
-          git commit -m 'build(web): refresh deploy bundle'
-          # main may have advanced while Vite was building (for example an API-only commit).
-          # Rebase the generated deploy commit onto the latest branch before pushing.
-          git fetch origin "${GITHUB_REF_NAME}"
-          git rebase --autostash "origin/${GITHUB_REF_NAME}"
-          git push origin HEAD:${GITHUB_REF_NAME}
+
+          # API-only commits can advance main while this job is building. Always
+          # apply the generated bundle on top of the newest main instead of
+          # rebasing generated assets, which can create content conflicts.
+          for attempt in 1 2 3; do
+            echo "Deploy push attempt ${attempt}/3"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+
+            rm -rf deploy/web
+            mkdir -p deploy/web
+            cp -R /tmp/edubridge-deploy-web/. deploy/web/
+
+            git add deploy/web
+            if git diff --cached --quiet; then
+              echo 'Deploy bundle is already current.'
+              exit 0
+            fi
+
+            git commit -m 'build(web): refresh deploy bundle'
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+
+            echo 'main advanced during push; retrying on the newest head...'
+          done
+
+          echo 'Unable to publish deploy bundle after 3 attempts.'
+          exit 1
