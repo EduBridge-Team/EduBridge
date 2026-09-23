@@ -104,7 +104,8 @@ class LessonController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             if ($lessonId !== null) {
-                $this->removeLessonUploadDirectory($lessonId);
+                $urls = DB::table('media')->where('lesson_id', $lessonId)->pluck('url')->all();
+                $this->removeLessonObjects($urls);
             }
             report($e);
             return response()->json(['error' => 'تعذّر حفظ الدرس ووسائطه'], 500);
@@ -305,8 +306,13 @@ class LessonController extends Controller
         }
 
         try {
+            $mediaUrls = DB::table('media')
+                ->where('lesson_id', $lesson->id)
+                ->pluck('url')
+                ->all();
+
             DB::table('lessons')->where('id', $lesson->id)->delete();
-            $this->removeLessonUploadDirectory((int) $lesson->id);
+            $this->removeLessonObjects($mediaUrls);
 
             return response()->json(['ok' => true]);
         } catch (\Throwable $e) {
@@ -511,18 +517,19 @@ class LessonController extends Controller
         return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
     }
 
-    private function removeLessonUploadDirectory(int $lessonId): void
+    private function removeLessonObjects(array $urls): void
     {
-        $items = DB::table('media')->where('lesson_id', $lessonId)->get(['url']);
-        foreach ($items as $item) {
-            $path = parse_url((string) $item->url, PHP_URL_PATH) ?: '';
+        foreach ($urls as $url) {
+            $path = parse_url((string) $url, PHP_URL_PATH) ?: '';
             $key = ltrim($path, '/');
-            if (str_starts_with($key, 'lessons/')) {
-                try {
-                    R2Storage::delete(R2Storage::mediaBucket(), $key);
-                } catch (\Throwable $e) {
-                    report($e);
-                }
+            if (!str_starts_with($key, 'lessons/')) {
+                continue;
+            }
+
+            try {
+                R2Storage::delete(R2Storage::mediaBucket(), $key);
+            } catch (\Throwable $e) {
+                report($e);
             }
         }
     }
