@@ -4,6 +4,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
+use App\Http\Controllers\ChildLessonController;
+use App\Http\Controllers\ChildRelationController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\UserController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\ChildAccessibilityProfileController;
 use App\Http\Controllers\LearningSupportRequestController;
+use App\Http\Controllers\LearningSupportMeetingController;
 use App\Http\Controllers\SpecialistSuggestionController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\WeeklyReportController;
@@ -198,11 +201,11 @@ Route::middleware('auth.jwt')->group(function () {
         ->middleware('role:parent,specialist,admin');
     Route::get('/learning-support/requests/child/{childId}/pending', [LearningSupportRequestController::class, 'pendingForChild'])
         ->middleware(['role:parent,specialist,admin', 'child.access']);
-    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportRequestController::class, 'schedule'])
+    Route::put('/learning-support/requests/{id}/schedule', [LearningSupportMeetingController::class, 'schedule'])
         ->middleware('role:specialist,admin');
-    Route::put('/learning-support/requests/{id}/complete', [LearningSupportRequestController::class, 'complete'])
+    Route::put('/learning-support/requests/{id}/complete', [LearningSupportMeetingController::class, 'complete'])
         ->middleware('role:specialist,admin');
-    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportRequestController::class, 'cancel'])
+    Route::put('/learning-support/requests/{id}/cancel', [LearningSupportMeetingController::class, 'cancel'])
         ->middleware('role:parent,specialist,admin');
 
     // الأطفال
@@ -213,11 +216,11 @@ Route::middleware('auth.jwt')->group(function () {
     Route::put('/children/{id}', [ChildController::class, 'update'])->middleware('child.access');
     Route::delete('/children/{id}', [ChildController::class, 'destroy'])
         ->middleware('role:admin');
-    Route::post('/children/{id}/parents', [ChildController::class, 'addParent'])
+    Route::post('/children/{id}/parents', [ChildRelationController::class, 'addParent'])
         ->middleware('role:admin');
-    Route::post('/children/{id}/assign-teacher', [ChildController::class, 'assignTeacher'])
+    Route::post('/children/{id}/assign-teacher', [ChildRelationController::class, 'assignTeacher'])
         ->middleware('role:admin');
-    Route::get('/children/{id}/lessons', [ChildController::class, 'lessons'])->middleware('child.access');
+    Route::get('/children/{id}/lessons', [ChildLessonController::class, 'lessons'])->middleware('child.access');
     Route::get('/children/{id}/evaluations', [EvaluationController::class, 'byChild'])->middleware('child.access');
 
     // اقتراحات متابعة المختصين
