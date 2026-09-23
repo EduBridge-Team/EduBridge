@@ -10,7 +10,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const EduBridgeApp());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
 
     expect(find.text('جسر التعليمي'), findsOneWidget);
     expect(find.text('🚀 ابدأ رحلتك التعليمية'), findsOneWidget);
