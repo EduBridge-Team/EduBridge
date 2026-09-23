@@ -3,7 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../screens/welcome_screen.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../utils/navigation.dart';
 
 class LegalLinksButton extends StatelessWidget {
   const LegalLinksButton({super.key});
