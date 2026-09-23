@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\Notify;
+use App\Support\R2Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -98,14 +99,16 @@ class HomeworkController extends Controller
                 throw new \RuntimeException('حجم الملف يتجاوز 10 ميغابايت');
             }
 
-            $dir = public_path('uploads/homework');
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0755, true);
-            }
-
             $name = $prefix . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.' . $ext;
-            $file->move($dir, $name);
-            $urls[] = '/uploads/homework/' . $name;
+            $key = 'homework/' . $name;
+
+            R2Storage::putUploadedFile(
+                R2Storage::mediaBucket(),
+                $key,
+                $file,
+                (string) $file->getMimeType()
+            );
+            $urls[] = R2Storage::mediaPublicUrl($key);
         }
 
         return $urls;
