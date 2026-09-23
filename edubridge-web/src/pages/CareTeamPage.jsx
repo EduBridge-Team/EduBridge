@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { addCareTeamMember, fetchCareTeam, fetchChildren, fetchUsers, getUser, removeCareTeamMember } from '../api'
 import '../feature-parity.css'
 
@@ -13,15 +13,15 @@ export default function CareTeamPage(){
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
 
-  const loadChildren=async()=>{
+  const loadChildren=useCallback(async()=>{
     try{
       const c=await fetchChildren(); const list=c.children||[]
       setChildren(list)
-      if(!childId&&list[0]) setChildId(String(list[0].id))
+      setChildId(current=>current || (list[0] ? String(list[0].id) : ''))
       if(canManage){const u=await fetchUsers();setUsers((u.users||[]).filter(x=>['teacher','specialist'].includes(x.role)))}
     }catch(e){setError(e.message)}
-  }
-  useEffect(()=>{loadChildren()},[])
+  },[canManage])
+  useEffect(()=>{loadChildren()},[loadChildren])
   useEffect(()=>{if(childId)fetchCareTeam(childId).then(d=>setTeam(d.care_team||{members:[]})).catch(e=>setError(e.message))},[childId])
 
   const add=async(e)=>{e.preventDefault();setBusy(true);setError('');try{
