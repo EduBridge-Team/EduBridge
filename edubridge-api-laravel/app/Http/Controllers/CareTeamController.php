@@ -218,10 +218,10 @@ class CareTeamController extends Controller
         }
 
         $all = $this->specialists($childId);
-        $learningSupport = $all->first(fn ($s) => in_array($s->specialty, ['learning_support', 'psychological'], true));
+        $learningSupport = $all->firstWhere('specialty', 'learning_support');
         $educational = $all->firstWhere('specialty', 'educational');
         $others = $all->filter(fn ($s) =>
-            !in_array($s->specialty, ['learning_support','psychological','educational'], true)
+            !in_array($s->specialty, ['learning_support','educational'], true)
         )->values();
 
         return response()->json([
