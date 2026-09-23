@@ -1,3 +1,20 @@
+/* ============================================================
+   Lower dashboard wrapper + clean separators
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-fullwidth-lower {
+    width: calc(100% + 230px);
+    max-width: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 30;
+    transform: translateX(230px);
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    background: #f8fbfe;
+  }
+
   /* Children now fill the wrapper; avoid stacking transforms/overflow rules. */
   .pd-fullwidth-lower > .pd-lower-grid,
   .pd-fullwidth-lower > .pd-quick-actions,
@@ -229,10 +246,3 @@ body.parent-dashboard-page::-webkit-scrollbar {
 /* ============================================================
    Clean transition below the sidebar
    ============================================================ */
-@media (min-width: 901px) {
-  /* Remove the artificial horizontal divider that appeared under Noor. */
-  .pd-fullwidth-lower::before {
-    content: none !important;
-    display: none !important;
-  }
-
