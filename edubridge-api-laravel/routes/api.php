@@ -329,8 +329,6 @@ Route::middleware('auth.jwt')->group(function () {
     // الإشعارات — لكل مستخدم إشعاراته
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread/count', [NotificationController::class, 'unreadCount']);
-    Route::post('/notifications', [NotificationController::class, 'store'])
-        ->middleware('role:teacher,specialist,admin');
     // نقبل PUT و POST لتوافق الموقع والتطبيق معاً
     Route::match(['put', 'post'], '/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{id}/read', [NotificationController::class, 'markRead']);
