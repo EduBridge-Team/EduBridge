@@ -1,0 +1,533 @@
+  /* Round the inner bottom edge where the sidebar ends above the lower content. */
+  .pd-sidebar {
+    border-bottom-left-radius: 24px;
+  }
+
+  .pd-noor-side {
+    border-radius: 22px !important;
+  }
+
+  /* Prevent Android/Chrome's document scrollbar from showing beside the sidebar.
+     The dashboard becomes the scroll container and its own scrollbar stays hidden. */
+  body.parent-dashboard-page {
+    overflow: hidden;
+  }
+
+  .parent-dashboard-v2 {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .parent-dashboard-v2::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   Parent dashboard responsive polish — mobile web + hero image
+   ============================================================ */
+.pd-mobile-nav {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .pd-hero-art img {
+    width: min(100%, 520px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 230px !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.parent-dashboard-page,
+  body.parent-dashboard-page {
+    overflow: auto !important;
+    background: #f7fbfe;
+  }
+
+  .parent-dashboard-v2 {
+    width: 100%;
+    height: auto !important;
+    min-height: 100dvh;
+    margin: 0;
+    display: block;
+    overflow: visible !important;
+    background:
+      radial-gradient(circle at 10% 4%, rgba(37,191,212,.09), transparent 20rem),
+      #f7fbfe;
+  }
+
+  .pd-sidebar {
+    display: none !important;
+  }
+
+  .pd-main {
+    width: 100%;
+  }
+
+  .pd-toolbar {
+    position: sticky;
+    top: 0;
+    min-height: 70px;
+    padding: 10px 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+    background: rgba(255,255,255,.94);
+  }
+
+  .pd-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-self: stretch;
+    min-height: 43px;
+    order: 3;
+  }
+
+  .pd-notification {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .pd-profile {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .pd-profile strong {
+    max-width: 165px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pd-profile-chevron {
+    display: none;
+  }
+
+  .pd-content {
+    width: calc(100% - 18px);
+    margin: 0 auto;
+    padding: 12px 0 92px;
+    gap: 10px;
+  }
+
+  .pd-hero {
+    min-height: 0;
+    padding: 18px 16px 0;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    border-radius: 20px;
+  }
+
+  .pd-hero-copy {
+    max-width: none;
+    text-align: right;
+  }
+
+  .pd-hero h1 {
+    font-size: clamp(27px, 8vw, 38px);
+  }
+
+  .pd-hero h2 {
+    font-size: clamp(19px, 5.6vw, 26px);
+  }
+
+  .pd-hero p {
+    font-size: 13px;
+  }
+
+  .pd-hero-art {
+    min-height: 178px;
+    width: 100%;
+    margin-top: 4px;
+    display: grid;
+    place-items: end center;
+    overflow: hidden;
+  }
+
+  .pd-hero-art img {
+    width: min(100%, 520px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 205px !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    transform: none !important;
+  }
+
+  .pd-deco {
+    display: none;
+  }
+
+  .pd-section {
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .pd-section-head {
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .pd-section-head h2 {
+    font-size: 19px;
+  }
+
+  .pd-head-actions {
+    gap: 6px;
+  }
+
+  .pd-link-btn,
+  .pd-primary-mini {
+    min-height: 34px;
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+
+  .pd-children-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pd-child-card {
+    min-height: 0;
+    padding: 13px;
+    gap: 11px;
+  }
+
+  .pd-kid-avatar {
+    width: 66px;
+    height: 66px;
+    flex-basis: 66px;
+  }
+
+  .pd-child-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-progress-section {
+    min-height: 0 !important;
+  }
+
+  .pd-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .pd-metric-card {
+    min-height: 142px !important;
+    padding: 10px;
+  }
+
+  .pd-ring {
+    width: 66px;
+    height: 66px;
+  }
+
+  .pd-fullwidth-lower,
+  .pd-lower-grid,
+  .pd-quick-actions,
+  .pd-noor-banner {
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .pd-lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .pd-quick-actions h2 {
+    grid-column: 1 / -1 !important;
+  }
+
+  .pd-noor-banner {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+  }
+
+  .pd-noor-bubbles {
+    display: none;
+  }
+
+  .pd-mobile-nav {
+    position: fixed;
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    z-index: 80;
+    min-height: 66px;
+    padding: 7px;
+    border: 1px solid #dceaf4;
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 16px 38px rgba(17,78,126,.16);
+    backdrop-filter: blur(15px);
+  }
+
+  .pd-mobile-nav button {
+    border: 0;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    background: transparent;
+    color: #71899e;
+    font: inherit;
+    font-size: 9px;
+    font-weight: 800;
+  }
+
+  .pd-mobile-nav button.active {
+    color: var(--pd-blue);
+    background: #e9f6fd;
+  }
+}
+
+@media (max-width: 520px) {
+  .pd-content {
+    width: calc(100% - 12px);
+  }
+
+  .pd-toolbar {
+    padding-inline: 9px;
+  }
+
+  .pd-user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pd-profile strong {
+    max-width: 120px;
+    font-size: 12px;
+  }
+
+  .pd-hero {
+    padding-inline: 13px;
+  }
+
+  .pd-hero-art {
+    min-height: 158px;
+  }
+
+  .pd-hero-art img {
+    max-height: 182px !important;
+  }
+
+  .pd-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* Desktop never uses the mobile bottom navigation. */
+@media (min-width: 901px) {
+  .pd-mobile-nav {
+    display: none !important;
+  }
+}
+
+
+/* ============================================================
+   Match parent dashboard topbar to the shared parent portal bar
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-toolbar {
+    min-height: 78px;
+    padding: 13px 28px;
+    grid-template-columns: minmax(280px, 1fr) auto auto;
+    gap: 14px;
+    border-bottom: 1px solid rgba(220,234,244,.9);
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(16px);
+    z-index: 45;
+  }
+
+  .pd-search {
+    width: min(610px, 100%);
+    min-height: 47px;
+    padding: 0 15px;
+    gap: 9px;
+    border: 1px solid #e2eef5;
+    border-radius: 14px;
+    background: #f1f8fc;
+  }
+
+  .pd-search input {
+    min-height: 45px;
+  }
+
+  .pd-notification {
+    width: 43px;
+    height: 43px;
+    border: 1px solid #e2edf4;
+    border-radius: 13px;
+    background: #f6fbfe;
+  }
+
+  .pd-profile {
+    min-width: 190px;
+    padding: 3px;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: transparent;
+    color: var(--pd-ink);
+    font: inherit;
+    text-align: right;
+    cursor: pointer;
+  }
+
+  .pd-profile-copy {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+  }
+
+  .pd-profile-copy strong {
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .pd-profile-copy small {
+    color: var(--pd-text);
+    font-size: 10px;
+  }
+
+  .pd-user-avatar {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+  }
+}
+
+
+/* ============================================================
+   Dark mode: remove light seams from the full-width lower area
+   ============================================================ */
+:root[data-theme="dark"] .pd-fullwidth-lower {
+  background: #071d35 !important;
+}
+
+:root[data-theme="dark"] .pd-lower-grid {
+  background: transparent !important;
+}
+
+:root[data-theme="dark"] .pd-today,
+:root[data-theme="dark"] .pd-conversations,
+:root[data-theme="dark"] .pd-quick-actions,
+:root[data-theme="dark"] .pd-noor-banner {
+  border-color: #214566 !important;
+}
+
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-lower-grid,
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-quick-actions,
+:root[data-theme="dark"] .pd-fullwidth-lower > .pd-noor-banner {
+  background-clip: padding-box;
+}
+
+:root[data-theme="dark"] .pd-schedule-row,
+:root[data-theme="dark"] .pd-list article {
+  border-color: #214566 !important;
+}
+
+
+/* ============================================================
+   Parent dashboard inside the shared portal shell
+   ============================================================ */
+/*
+ * /parent is already rendered by RolePortalShell. Keep the dashboard
+ * constrained to the shell's main column so it can never slide underneath
+ * the shared right sidebar. The dashboard's old standalone sidebar/topbar
+ * stay available outside the shell, but are suppressed here to avoid
+ * duplicate navigation chrome.
+ */
+.pp-shell .pp-content > .parent-dashboard-v2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.pp-shell .parent-dashboard-v2 > .pd-sidebar,
+.pp-shell .parent-dashboard-v2 > .pd-main > .pd-toolbar,
+.pp-shell .parent-dashboard-v2 .pd-mobile-nav {
+  display: none !important;
+}
+
+.pp-shell .parent-dashboard-v2 > .pd-main,
+.pp-shell .parent-dashboard-v2 .pd-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.pp-shell .parent-dashboard-v2 .pd-content {
+  padding: 0 0 24px !important;
+}
+
+/* Older dashboard rules deliberately expanded the lower cards into the
+ * dashboard's own sidebar column. Inside RolePortalShell that space belongs
+ * to the shared sidebar, so keep every section inside the main column. */
+.pp-shell .parent-dashboard-v2 .pd-fullwidth-lower,
+.pp-shell .parent-dashboard-v2 .pd-lower-grid,
+.pp-shell .parent-dashboard-v2 .pd-quick-actions,
+.pp-shell .parent-dashboard-v2 .pd-noor-banner {
+  width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+  inset: auto !important;
+}
+
+@media (min-width: 901px) {
+  html.parent-dashboard-page.parent-portal-active,
+  body.parent-dashboard-page.parent-portal-active {
+    overflow-y: auto !important;
+    overflow-x: clip !important;
+  }
+
+  .pp-shell .parent-dashboard-v2 {
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-shell .parent-dashboard-v2 > .pd-main {
+    width: 100% !important;
+  }
+
+  .pp-shell .parent-dashboard-v2 .pd-content {
+    width: 100% !important;
+    padding-bottom: 24px !important;
+  }
+}
+
