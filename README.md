@@ -7,8 +7,7 @@
 | الملف / المجلد | الوصف |
 |----------------|-------|
 | `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
-| `edubridge_schema.sql`  | سكربت إنشاء الجداول (PostgreSQL) |
-| `edubridge_seed.sql`    | بيانات تجريبية |
+| `edubridge_schema.sql`  | مخطط SQL قديم للمرجعية فقط؛ Laravel migrations هي المصدر الحالي |
 | `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
@@ -26,8 +25,9 @@
 
 ## خطوات التشغيل
 
-### 1) قاعدة البيانات
-أنشئ قاعدة باسم `edubridge` ونفّذ عليها `edubridge_schema.sql` ثم `edubridge_seed.sql`.
+### 1) الـ Backend + قاعدة البيانات
+
+أنشئ قاعدة PostgreSQL فارغة، ثم دع Laravel يدير المخطط عبر migrations. لا تستخدم ملفات seed ثابتة على الإنتاج.
 
 ### 2) الـ Backend (Laravel)
 ```bash
@@ -35,7 +35,8 @@ cd edubridge-api-laravel
 composer install
 cp .env.example .env
 php artisan key:generate
-# عدّل .env: بيانات PostgreSQL + أضف JWT_SECRET=نص عشوائي طويل
+# عدّل .env: بيانات PostgreSQL + JWT_SECRET وباقي إعدادات البيئة
+php artisan migrate
 php artisan serve --host=0.0.0.0 --port=3000
 ```
 
@@ -140,14 +141,17 @@ GET  /api/users                            (admin: الكل، teacher/specialist
 
 كل المسارات ما عدا `register`/`login` تتطلب هيدر `Authorization: Bearer <token>`.
 
-## بيانات تجريبية
+## اختبارات التكامل
 
-باسورد كل الحسابات: `password123`
+لا توجد بيانات دخول ثابتة داخل المستودع. عند تشغيل اختبار تسجيل الدخول مرّر حساب اختبار مخصص لبيئة التطوير فقط:
 
-- معلّم: teacher@edu.com
-- مختص: specialist@edu.com
-- ولي أمر: parent@edu.com
-- أدمن: admin@edu.com
+```bash
+flutter test integration_test/login_test.dart \
+  --dart-define=EDUBRIDGE_TEST_EMAIL=test@example.com \
+  --dart-define=EDUBRIDGE_TEST_PASSWORD='replace-with-test-password'
+```
+
+لا تستخدم حساب إنتاج حقيقي في الاختبارات.
 
 ## النشر
 
@@ -195,5 +199,5 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 - [x] وسائط الدروس واجتماعات الدعم التعليمي والتقارير والمتابعة
 - [ ] تحسينات اختيارية مستقبلية: توسيع الاختبارات، مراقبة الأداء، وتحسين تجربة الإدارة
 
-> ملاحظة: بعد السحب على الخادم، شغّل `bash deploy/deploy.sh` لترقية قاعدة البيانات
-> (`database/upgrade_board_cards.sql` — آمنة وقابلة للتكرار) قبل استخدام الميزات الجديدة.
+> الإنتاج الأساسي على Taqat. استخدم Laravel migrations/أوامر الصيانة الموثقة داخل `edubridge-api-laravel/README.md`.
+> مسار `deploy/deploy.sh` باقٍ فقط للاستضافة الاحتياطية القديمة.
