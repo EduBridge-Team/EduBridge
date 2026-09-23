@@ -68,9 +68,9 @@ GET  /api/me                   حمولة التوكن (محمي)
 POST /api/assistant/chat       محادثة آمنة مع مساعد «نور» (محمي، 20 طلب/دقيقة)
 
 POST /api/children             (parent/teacher/specialist/admin)
-GET  /api/children             (ولي الأمر: أطفاله فقط)
-GET  /api/children/:id
-PUT  /api/children/:id         (تعديل بيانات الطفل)
+GET  /api/children             (حسب الدور والصلاحية؛ المعلّم يرى الأطفال المسندين إليه)
+GET  /api/children/:id         (محمي بصلاحية الوصول للطفل)
+PUT  /api/children/:id         (محمي بصلاحية الوصول للطفل)
 POST /api/children/:id/parents (teacher/specialist/admin)
 POST /api/children/:id/assign-teacher (teacher/specialist/admin)
 GET  /api/children/:id/lessons (مفلترة حسب إعاقة الطفل)
