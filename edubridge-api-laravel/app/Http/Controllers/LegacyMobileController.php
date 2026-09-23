@@ -129,35 +129,5 @@ class LegacyMobileController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function childrenOfParent($parentId)
-    {
-        $children = DB::table('children as c')
-            ->join('child_parent as cp', 'cp.child_id', '=', 'c.id')
-            ->leftJoin('disability_types as dt', 'dt.id', '=', 'c.disability_type_id')
-            ->where('cp.parent_id', $parentId)
-            ->select('c.*', 'dt.name as disability_name')
-            ->orderBy('c.name')
-            ->get();
 
-        return response()->json(['children' => $children]);
-    }
-
-    public function dashboardStats(Request $request)
-    {
-        $me = $request->attributes->get('jwt_user');
-
-        $stats = [
-            'children_count' => DB::table('children')->count(),
-            'lessons_count' => DB::table('lessons')->count(),
-            'users_count' => DB::table('users')->count(),
-            'notifications_unread' => DB::table('notifications')->where('user_id', $me->id)->where('is_read', false)->count(),
-        ];
-
-        if ($me->role === 'parent') {
-            $ids = DB::table('child_parent')->where('parent_id', $me->id)->pluck('child_id');
-            $stats['children_count'] = $ids->count();
-        }
-
-        return response()->json($stats);
-    }
 }
