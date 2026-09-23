@@ -375,34 +375,3 @@
 }
 
 
-/* ============================================================
-   Continuous Arabic typewriter + extra hero decorations
-   ============================================================ */
-.reference-home .hero-typewriter {
-  min-height: 2.25em;
-  overflow: visible;
-}
-
-.reference-home .hero-typewriter > .hero-type-line {
-  position: relative;
-  display: inline-block;
-  min-height: 1.06em;
-  background: none;
-  color: var(--home-ink);
-  animation: none;
-  white-space: nowrap;
-}
-
-.reference-home .hero-typewriter > .hero-type-line::after {
-  content: none;
-}
-
-.reference-home .hero-typewriter > .hero-type-accent {
-  background: linear-gradient(
-    90deg,
-    var(--home-cyan) 0%,
-    #1598d6 32%,
-    var(--home-cyan) 58%,
-    #58d7ca 82%,
-    var(--home-cyan) 100%
-  );
