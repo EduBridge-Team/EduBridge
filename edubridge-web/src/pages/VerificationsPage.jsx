@@ -1,5 +1,5 @@
 // مراجعة التوثيق (أدمن) — المستخدمون والأطفال والشهادات (البطاقات 1، 4، 9)
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { ShieldCheck, Paperclip, Baby } from 'lucide-react'
 import {
@@ -43,7 +43,7 @@ export default function VerificationsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -61,12 +61,11 @@ export default function VerificationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter])
 
   useEffect(() => {
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter])
+  }, [load])
 
   if (!me || me.role !== 'admin') return <Navigate to="/" replace />
 
