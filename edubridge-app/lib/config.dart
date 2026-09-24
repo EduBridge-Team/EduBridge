@@ -1,12 +1,9 @@
 // إعدادات التطبيق
 class Config {
-  
-   // 🔹 للمحاكي (Android Emulator)
-    static const String baseUrl = "https://edubridge.alwaysdata.net/api";
-  static const String wsUrl = "wss://edubridge.alwaysdata.net/ws";
-   
-  
-  // 🔹 للجهاز الحقيقي (USB) - تحتاج adb reverse
-  // static const String baseUrl = "http://127.0.0.1:8000/api";
-  // static const String wsUrl = "ws://127.0.0.1:8000";
+  // Production API
+  static const String baseUrl = "https://api.edubridge.win/api";
+
+  // WebSocket endpoint is not currently exposed by the Oracle deployment.
+  // Keep this empty until a production WebSocket service is explicitly configured.
+  static const String wsUrl = "";
 }
