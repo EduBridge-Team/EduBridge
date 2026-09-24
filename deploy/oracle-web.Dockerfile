@@ -18,11 +18,11 @@ WORKDIR /app
 
 ENV NODE_ENV=production \
     PORT=8080 \
-    TAQAT_API_ORIGIN=https://api.edubridge.win
+    API_ORIGIN=https://api.edubridge.win
 
 COPY --from=build /app/edubridge-web/dist ./edubridge-web/dist
-COPY deploy/taqat-web-server.mjs ./deploy/taqat-web-server.mjs
+COPY deploy/web-server.mjs ./deploy/web-server.mjs
 
 EXPOSE 8080
 
-CMD ["node", "deploy/taqat-web-server.mjs"]
+CMD ["node", "deploy/web-server.mjs"]
