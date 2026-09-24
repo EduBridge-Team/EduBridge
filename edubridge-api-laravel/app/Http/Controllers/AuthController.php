@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthAccountRecoveryActions;
 use App\Http\Controllers\Concerns\AuthControllerHelpers;
 use App\Http\Controllers\Concerns\AuthGoogleActions;
 use App\Http\Controllers\Concerns\AuthLoginActions;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Concerns\AuthRegisterHelpers;
 class AuthController extends Controller
 {
     use AuthControllerHelpers;
+    use AuthAccountRecoveryActions;
     use AuthRegisterHelpers;
     use AuthRegisterActions;
     use AuthLoginActions;
