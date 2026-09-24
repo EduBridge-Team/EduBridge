@@ -9,6 +9,7 @@ use App\Http\Controllers\Concerns\LessonMediaHelpers;
 use App\Http\Controllers\Concerns\LessonReadActions;
 use App\Http\Controllers\Concerns\LessonSerializationHelpers;
 use App\Http\Controllers\Concerns\LessonUpdateActions;
+use App\Http\Controllers\Concerns\LessonUpdateHelpers;
 
 class LessonController extends Controller
 {
@@ -17,6 +18,7 @@ class LessonController extends Controller
     use LessonSerializationHelpers;
     use LessonReadActions;
     use LessonCreateActions;
+    use LessonUpdateHelpers;
     use LessonUpdateActions;
     use LessonDeleteActions;
 
