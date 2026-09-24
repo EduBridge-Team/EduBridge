@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
+  Accessibility,
   ArrowLeft,
   BarChart3,
   BookOpen,
@@ -8,7 +9,6 @@ import {
   Heart,
   Play,
   ShieldCheck,
-  Sparkles,
   Users,
   Volume2,
   Quote,
@@ -49,7 +49,7 @@ const FEATURES = [
   { Icon: BarChart3, title: 'متابعة التقدم', text: 'تقارير واضحة لقياس النمو والإنجازات' },
   { Icon: Users, title: 'تعاون مستمر', text: 'تواصل فعّال بين الأسرة والمعلمين والمختصين' },
   { Icon: ShieldCheck, title: 'إتاحة وشمولية', text: 'تصميم يدعم مختلف القدرات والاحتياجات' },
-  { Icon: Sparkles, title: 'مساعد ذكي', text: 'مساندة فورية وإرشاد تعليمي مع نور' },
+  { Icon: Accessibility, title: 'مساندة تعليمية', text: 'إرشاد مبسط وأدوات مساعدة تراعي احتياجات المتعلم' },
 ]
 
 const IMPACT = [
@@ -70,8 +70,8 @@ const IMPACT = [
   },
 ]
 
-const HERO_TITLE_LINE_ONE = 'تعليم ذكي وشامل'
-const HERO_TITLE_LINE_TWO = 'لكل طفل'
+const HERO_TITLE_LINE_ONE = 'تعليم يناسب قدرات'
+const HERO_TITLE_LINE_TWO = 'كل طفل'
 const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
 
 const SUCCESS_STORIES = [
@@ -156,8 +156,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p>
-            في EduBridge نؤمن بأن كل إنسان قادر على التعلّم. نوفر أدوات تعليمية
-            مبتكرة وتجربة مخصصة تدعم الأطفال من مختلف القدرات والإمكانات.
+            في EduBridge نبني تجربة تعليمية مرنة تراعي اختلاف القدرات والاحتياجات، وتجمع الأسرة والمعلم والمختص حول رحلة تعلم أوضح وأكثر تكافؤاً.
           </p>
 
           <div className="hero-actions">
@@ -170,15 +169,15 @@ export default function HomePage() {
           <div className="hero-promises">
             <span><Users size={18} /> تعليم شامل</span>
             <span><Heart size={18} /> فرص متساوية</span>
-            <span><Sparkles size={18} /> مستقبل أفضل</span>
+            <span><Accessibility size={18} /> إمكانات متنوعة</span>
           </div>
         </div>
 
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
           <img
             className="reference-hero-image"
-            src="/edubridge-hero-child.webp"
-            alt="طفل مبتسم مع عناصر EduBridge التعليمية"
+            src="/brand-homepage.webp"
+            alt="تعليم دامج ومساندة تعليمية من EduBridge"
           />
         </div>
       </section>
@@ -223,8 +222,8 @@ export default function HomePage() {
         <div className="noor-figure"><NoorPet size={224} trackMouse /></div>
         <div className="noor-copy">
           <span className="hero-kicker">دعم ذكي.. في كل خطوة</span>
-          <h2>مساعدك الذكي <em>نور</em></h2>
-          <p>نور هو المساعد الذكي من EduBridge، يجيب عن أسئلتك ويقترح أنشطة ودروساً مخصصة ويقدم إرشادات فورية للأسرة والمعلمين.</p>
+          <h2>مساعدك التعليمي <em>نور</em></h2>
+          <p>نور مساعد تعليمي داخل EduBridge يساعد في تبسيط المحتوى والإجابة عن الأسئلة واقتراح خطوات مناسبة للأسرة والمعلمين.</p>
           <button className="btn" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/login')}>جرّب نور الآن <ArrowLeft size={17} /></button>
         </div>
       </section>
@@ -255,8 +254,8 @@ export default function HomePage() {
         <div className="section-heading success-heading">
           <div>
             <span className="hero-kicker">تجارب تلهمنا</span>
-            <h2 id="success-stories-title">قصص نجاح ملهمة</h2>
-            <p>نماذج لرحلات تعليمية أكثر وضوحاً وتعاوناً مع EduBridge</p>
+            <h2 id="success-stories-title">تقييمات وتجارب المجتمع</h2>
+            <p>مساحة مخصصة لعرض آراء أولياء الأمور والمعلمين والمختصين وربطها بالتقييمات الحقيقية عند توفرها.</p>
           </div>
         </div>
         <div className="success-stories-grid">
