@@ -83,7 +83,7 @@ jobs:
             contract=true
           fi
 
-          if matches '^(deploy/|Procfile$|nixpacks\.toml$|\.github/workflows/web-deploy-build\.yml$|\.github/workflows/web-api-quality\.yml$)'; then
+          if matches '^(deploy/|\.github/workflows/web-api-quality\.yml$)'; then
             deploy=true
           fi
 
@@ -105,7 +105,7 @@ jobs:
       - name: Validate deployment scripts
         run: |
           bash -n deploy/*.sh
-          node --check deploy/taqat-web-server.mjs
+          node --check deploy/web-server.mjs
 
           cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' edubridge-api-laravel/.env
@@ -121,6 +121,9 @@ jobs:
             --env-file edubridge-api-laravel/.env \
             -f deploy/oracle-compose.yml \
             config >/dev/null
+
+          test -z "$(find edubridge-api-laravel/database -maxdepth 1 -name 'upgrade_*.sql' -print -quit)"
+          test ! -e edubridge_schema.sql
 
           rm -f edubridge-api-laravel/.env
 
