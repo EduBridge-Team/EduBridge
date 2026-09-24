@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\SpecialistSuggestionCreateActions;
 use App\Http\Controllers\Concerns\SpecialistSuggestionHelpers;
 use App\Http\Controllers\Concerns\SpecialistSuggestionReadActions;
 use App\Http\Controllers\Concerns\SpecialistSuggestionResponseActions;
+use App\Http\Controllers\Concerns\SpecialistSuggestionResponseHelpers;
 use App\Http\Controllers\Concerns\SpecialistSuggestionSpecialtyActions;
 
 class SpecialistSuggestionController extends Controller
@@ -14,6 +15,7 @@ class SpecialistSuggestionController extends Controller
     use SpecialistSuggestionReadActions;
     use SpecialistSuggestionSpecialtyActions;
     use SpecialistSuggestionCreateActions;
+    use SpecialistSuggestionResponseHelpers;
     use SpecialistSuggestionResponseActions;
 
     private const SPECIALTIES = ['learning_support', 'educational', 'communication_support', 'learning_behavior'];
