@@ -411,3 +411,47 @@
 }
 
 
+
+
+
+/* Compact side launcher requested for the portal: fixed, calm, and non-roaming. */
+.noor-assistant {
+    inset-inline-start: 14px;
+    bottom: 18px;
+    transform: none !important;
+}
+
+.noor-launcher {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+}
+
+.noor-panel {
+    width: clamp(320px, 27vw, 380px);
+    height: clamp(390px, 58vh, 520px);
+    min-height: 390px;
+}
+
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline-start: 10px;
+        inset-inline-end: auto;
+        bottom: 10px;
+        align-items: flex-start;
+    }
+
+    .noor-panel {
+        width: calc(100vw - 20px);
+        height: min(62vh, 500px);
+    }
+
+    .noor-launcher {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        min-height: 64px;
+    }
+}
+
