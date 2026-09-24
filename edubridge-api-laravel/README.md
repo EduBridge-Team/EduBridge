@@ -11,7 +11,7 @@ Laravel API for the EduBridge education and accessibility platform.
 - Cloudflare R2 for production file storage
 - Groq for the Noor educational assistant
 
-Production is deployed on Taqat Academy. The public API domain is:
+Production is deployed on Oracle Cloud. The public API domain is:
 
 ```text
 https://api.edubridge.win
@@ -119,7 +119,7 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 - Cloudflare R2 لتخزين الملفات في الإنتاج
 - Groq لتشغيل المساعد التعليمي «نور»
 
-بيئة الإنتاج مستضافة على Taqat Academy، وعنوان الـAPI العام هو:
+بيئة الإنتاج مستضافة على Oracle Cloud، وعنوان الـAPI العام هو:
 
 ```text
 https://api.edubridge.win
