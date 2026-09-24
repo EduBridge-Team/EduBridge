@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: "8080"
-      TAQAT_API_ORIGIN: https://api.edubridge.win
+      API_ORIGIN: https://api.edubridge.win
     depends_on:
       api:
         condition: service_healthy
