@@ -9,6 +9,7 @@ use App\Http\Controllers\Concerns\LearningSupportRequestHelpers;
 class LearningSupportMeetingController extends Controller
 {
     use LearningSupportRequestHelpers;
+    use LearningSupportMeetingScheduleHelpers;
     use LearningSupportMeetingScheduleAction;
     use LearningSupportMeetingLifecycleActions;
 }
