@@ -48,38 +48,14 @@ trait WeeklyReportSpecialistWriteActions
         $weekEnd = (clone $weekStart)->addDays(6)->endOfDay();
 
         try {
-            $existing = DB::table('weekly_reports')
-                ->where('child_id', $childId)
-                ->whereDate('week_start', $weekStart->toDateString())
-                ->first();
-
-            if ($existing) {
-                DB::table('weekly_reports')->where('id', $existing->id)->update([
-                    'specialist_notes' => $specialistNotes,
-                    'updated_at' => now(),
-                ]);
-                $id = $existing->id;
-                $status = 200;
-            } else {
-                $id = DB::table('weekly_reports')->insertGetId([
-                    'child_id' => $childId,
-                    'author_id' => $user->id,
-                    'week_start' => $weekStart,
-                    'week_end' => $weekEnd,
-                    'lessons_completed' => 0,
-                    'progress_percentage' => 0,
-                    'specialist_notes' => $specialistNotes,
-                    'achievements' => json_encode([], JSON_UNESCAPED_UNICODE),
-                    'concerns' => json_encode(
-                        $recommendations !== '' ? [$recommendations] : [],
-                        JSON_UNESCAPED_UNICODE
-                    ),
-                    'generated_at' => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-                $status = 201;
-            }
+            $saved = $this->persistSpecialistWeeklyReport(
+                $user,
+                $childId,
+                $weekStart,
+                $weekEnd,
+                $specialistNotes,
+                $recommendations
+            );
 
             Notify::toChildParents(
                 $childId,
@@ -88,11 +64,11 @@ trait WeeklyReportSpecialistWriteActions
                 'specialist_progress_created'
             );
 
-            $row = $this->reportQuery()->where('wr.id', $id)->first();
+            $row = $this->reportQuery()->where('wr.id', $saved['id'])->first();
 
             return response()->json([
                 'report' => $this->enrich($this->normalize($row)),
-            ], $status);
+            ], $saved['status']);
         } catch (\Throwable $e) {
             report($e);
 
