@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
@@ -119,5 +118,4 @@ final class R2Storage
     {
         return R2StorageTransport::request('HEAD', $bucket, $key);
     }
-
 }
