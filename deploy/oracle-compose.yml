@@ -48,10 +48,9 @@ services:
       - edubridge-net
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "php -r '$$body=@file_get_contents("http://127.0.0.1:8081/"); exit($$body === false ? 1 : 0);'"
-        ]
+        - CMD-SHELL
+        - >-
+          php -r '$body=@file_get_contents("http://127.0.0.1:8081/"); exit($body === false ? 1 : 0);'
       interval: 15s
       timeout: 5s
       retries: 10
@@ -76,10 +75,9 @@ services:
       - "127.0.0.1:8082:8080"
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "node -e 'fetch("http://127.0.0.1:8080/").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))'"
-        ]
+        - CMD-SHELL
+        - >-
+          node -e 'fetch("http://127.0.0.1:8080/").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))'
       interval: 15s
       timeout: 5s
       retries: 10
