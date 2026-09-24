@@ -9,6 +9,7 @@ use App\Http\Controllers\Concerns\WeeklyReportGeneralWriteActions;
 use App\Http\Controllers\Concerns\WeeklyReportReadActions;
 use App\Http\Controllers\Concerns\WeeklyReportSpecialistHelpers;
 use App\Http\Controllers\Concerns\WeeklyReportSpecialistWriteActions;
+use App\Http\Controllers\Concerns\WeeklyReportSpecialistWriteHelpers;
 
 class WeeklyReportController extends Controller
 {
@@ -18,5 +19,6 @@ class WeeklyReportController extends Controller
     use WeeklyReportReadActions;
     use WeeklyReportGeneralWriteActions;
     use WeeklyReportSpecialistHelpers;
+    use WeeklyReportSpecialistWriteHelpers;
     use WeeklyReportSpecialistWriteActions;
 }
