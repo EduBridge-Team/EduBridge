@@ -222,17 +222,19 @@
 }
 
 @media (min-width: 781px) {
-    /* Keep desktop login/register inside the viewport with no page scrollbar. */
+    /* Keep auth pages centered while still allowing short viewports to scroll safely. */
     .auth-page {
-        height: calc(100dvh - 78px);
-        min-height: 0;
-        padding: clamp(10px, 2vh, 22px) 24px;
-        overflow: hidden;
+        min-height: calc(100dvh - 78px);
+        height: auto;
+        padding: clamp(14px, 2.4vh, 26px) 24px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        align-items: center;
     }
 
     .auth-page-login .auth-card-branded {
-        width: min(430px, calc(100% - 40px));
-        padding: 22px 30px 24px;
+        width: min(440px, calc(100% - 40px));
+        padding: 20px 30px 24px;
     }
 
     .auth-page-login .auth-brand-icon {
@@ -241,8 +243,8 @@
     }
 
     .auth-page-register .auth-card-branded {
-        width: min(450px, calc(100% - 40px));
-        padding: 16px 26px 18px;
+        width: min(470px, calc(100% - 40px));
+        padding: 18px 28px 20px;
     }
 
     .auth-page-register .auth-brand-icon {
@@ -284,8 +286,8 @@
 
     .auth-page-register input,
     .auth-page-register select {
-        min-height: 34px;
-        padding: 5px 10px;
+        min-height: 40px;
+        padding: 7px 11px;
         font-size: 13.5px;
     }
 
@@ -345,8 +347,8 @@
 
     .auth-page-register input,
     .auth-page-register select {
-        min-height: 31px;
-        padding-block: 3px;
+        min-height: 36px;
+        padding-block: 5px;
         font-size: 12.5px;
     }
 
@@ -424,3 +426,35 @@
 }
 
 
+
+
+/* Auth navigation links are links, styled as controls without nested interactive elements. */
+.auth-card-branded > .link-btn {
+    display: inline-flex;
+    width: auto;
+    margin: 12px auto 0;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.auth-card-branded form {
+    width: 100%;
+}
+
+.auth-card-branded input,
+.auth-card-branded select {
+    width: 100%;
+}
+
+@media (max-width: 580px) {
+    .auth-page {
+        min-height: calc(100dvh - 67px);
+        overflow-y: auto;
+    }
+
+    .auth-card-branded {
+        width: 100%;
+        margin: auto;
+    }
+}
