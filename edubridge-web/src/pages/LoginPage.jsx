@@ -115,6 +115,7 @@ export default function LoginPage() {
         <h1>EduBridge</h1>
         <div className="subtitle">جسر تعليمي</div>
         <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
+        <h2 className="auth-form-title">تسجيل الدخول</h2>
 
         {successMsg && <div className="success-box">{successMsg}</div>}
 
@@ -150,9 +151,7 @@ export default function LoginPage() {
         <div id="google-signin-button" className="google-btn-shell" />
         {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
 
-        <Link to="/register">
-          <button className="link-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
-        </Link>
+        <Link className="link-btn" to="/register">ليس لديك حساب؟ أنشئ حساباً جديداً</Link>
       </div>
     </div>
   )

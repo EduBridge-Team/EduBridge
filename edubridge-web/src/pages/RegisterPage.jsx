@@ -150,9 +150,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <Link to="/login">
-          <button className="link-btn">لديك حساب؟ سجّل دخولك</button>
-        </Link>
+        <Link className="link-btn" to="/login">لديك حساب؟ سجّل دخولك</Link>
       </div>
     </div>
   )

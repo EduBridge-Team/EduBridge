@@ -1,12 +1,13 @@
 /* HQ transparent hero: give the artwork more visual weight without affecting mobile text. */
 @media (min-width: 1025px) {
   .reference-home .reference-hero {
-    grid-template-columns: .90fr 1.10fr;
-    gap: 24px;
+    grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr);
+    gap: clamp(20px, 3vw, 40px);
   }
 
   .reference-hero-art {
-    width: 114%;
+    width: 100%;
+    max-width: 760px;
     justify-self: center;
   }
 
@@ -19,12 +20,13 @@
 
 @media (min-width: 781px) and (max-width: 1024px) {
   .reference-home .reference-hero {
-    grid-template-columns: .88fr 1.12fr;
-    gap: 12px;
+    grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr);
+    gap: 18px;
   }
 
   .reference-hero-art {
-    width: 118%;
+    width: 100%;
+    max-width: 700px;
     justify-self: center;
   }
 
@@ -375,3 +377,53 @@
 }
 
 
+
+
+@media (max-width: 1024px) {
+  .reference-home .reference-hero {
+    overflow: clip;
+  }
+}
+
+@media (max-width: 780px) {
+  .reference-home .reference-hero {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding-top: 24px;
+  }
+
+  .reference-hero-art {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  .reference-home .home-hero-copy {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  .reference-home .hero-actions {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .reference-home .hero-actions .btn {
+    min-width: min(100%, 190px);
+  }
+}
+
+@media (max-width: 480px) {
+  .reference-home .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .reference-home .hero-actions .btn {
+    width: 100%;
+  }
+
+  .reference-home .hero-promises {
+    gap: 10px 14px;
+    flex-wrap: wrap;
+  }
+}
