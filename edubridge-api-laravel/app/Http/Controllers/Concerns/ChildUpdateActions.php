@@ -39,20 +39,9 @@ trait ChildUpdateActions
                 }
             }
 
-            foreach (['organization_id', 'status', 'assigned_teacher_id'] as $field) {
-                if ($request->has($field)) {
-                    if ($user->role !== 'admin') {
-                        return response()->json(['error' => 'هذا الحقل إداري فقط'], 403);
-                    }
-
-                    $value = $request->input($field);
-                    if ($field === 'assigned_teacher_id' && $value !== null
-                        && !DB::table('users')->where('id', $value)->where('role', 'teacher')->exists()) {
-                        return response()->json(['error' => 'المعلّم غير موجود'], 422);
-                    }
-
-                    $data[$field] = $value;
-                }
+            $adminError = $this->collectAdminChildUpdates($request, $user, $data);
+            if ($adminError) {
+                return $adminError;
             }
 
             foreach (self::TEXT_FIELDS as $field) {
@@ -61,43 +50,14 @@ trait ChildUpdateActions
                 }
             }
 
-            foreach (self::IDENTITY_FIELDS as $field) {
-                if ($request->has($field)) {
-                    if (!in_array($user->role, ['parent', 'admin'], true)) {
-                        return response()->json([
-                            'error' => 'تعديل بيانات التوثيق متاح لولي الأمر والأدمن فقط',
-                        ], 403);
-                    }
-
-                    $value = $request->input($field);
-                    if (in_array($field, ['guardian_id_document_url', 'kinship_document_url'], true)
-                        && !$this->validateDocumentUrl(
-                            $user,
-                            is_string($value) ? $value : null,
-                            isset($child->$field) ? (string) $child->$field : null
-                        )) {
-                        return response()->json([
-                            'error' => 'مستندات الطفل يجب رفعها من حسابك عبر التخزين الآمن',
-                        ], 422);
-                    }
-
-                    $data[$field] = $value;
-                }
-            }
-
-            $identityChanged = false;
-            foreach (self::IDENTITY_FIELDS as $field) {
-                if ($request->has($field)) {
-                    $identityChanged = true;
-                    break;
-                }
-            }
-
-            if ($identityChanged && !$request->has('doc_verification_status')) {
-                $data['doc_verification_status'] = 'pending';
-            }
-            if ($request->has('doc_verification_status') && $user->role === 'admin') {
-                $data['doc_verification_status'] = $request->input('doc_verification_status');
+            $identityError = $this->collectIdentityChildUpdates(
+                $request,
+                $user,
+                $child,
+                $data
+            );
+            if ($identityError) {
+                return $identityError;
             }
 
             foreach (['strengths', 'challenges'] as $field) {
