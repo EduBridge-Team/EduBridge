@@ -6,10 +6,10 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../edubridge-web/dist/", import.meta.url));
 const port = Number(process.env.PORT || 8080);
-const apiOrigin = new URL(process.env.TAQAT_API_ORIGIN || "https://api.edubridge.win");
+const apiOrigin = new URL(process.env.API_ORIGIN || "https://api.edubridge.win");
 
 if (apiOrigin.protocol !== "https:") {
-  throw new Error("TAQAT_API_ORIGIN must use https");
+  throw new Error("API_ORIGIN must use https");
 }
 
 const mime = {
