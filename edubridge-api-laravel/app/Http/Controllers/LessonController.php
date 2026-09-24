@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\LessonControllerHelpers;
+use App\Http\Controllers\Concerns\LessonCreateActions;
+use App\Http\Controllers\Concerns\LessonDeleteActions;
+use App\Http\Controllers\Concerns\LessonReadActions;
+use App\Http\Controllers\Concerns\LessonUpdateActions;
+
 class LessonController extends Controller
 {
-    use \App\Http\Controllers\Concerns\LessonControllerHelpers;
-    use \App\Http\Controllers\Concerns\LessonReadActions;
-    use \App\Http\Controllers\Concerns\LessonWriteActions;
+    use LessonControllerHelpers;
+    use LessonReadActions;
+    use LessonCreateActions;
+    use LessonUpdateActions;
+    use LessonDeleteActions;
 
     private const TARGET_TYPES = ['everyone', 'byDisability', 'specificChildren', 'parents'];
 
