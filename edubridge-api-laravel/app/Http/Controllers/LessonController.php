@@ -10,7 +10,9 @@ use App\Http\Controllers\Concerns\LessonUpdateActions;
 
 class LessonController extends Controller
 {
-    use LessonControllerHelpers;
+    use LessonAccessHelpers;
+    use LessonMediaHelpers;
+    use LessonSerializationHelpers;
     use LessonReadActions;
     use LessonCreateActions;
     use LessonUpdateActions;
