@@ -10,12 +10,10 @@ trait LearningSupportMeetingScheduleHelpers
     private function parseScheduledAt(string $scheduledRaw)
     {
         try {
-            $scheduledAt = Carbon::parse($scheduledRaw);
+            return Carbon::parse($scheduledRaw);
         } catch (\Throwable $e) {
             return null;
         }
-
-        return $scheduledAt->isPast() ? null : $scheduledAt;
     }
 
     private function resolveAssignedSpecialistId($user, $request, $learningSupportRequest): int
