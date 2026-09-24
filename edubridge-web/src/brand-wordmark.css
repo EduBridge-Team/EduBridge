@@ -28,9 +28,21 @@
   color: transparent;
 }
 
+.brand-lockup--topbar {
+  min-height: 46px;
+  align-items: center;
+}
+
 .brand-lockup--topbar .brand-lockup-icon {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
+  align-self: center;
+}
+
+.brand-lockup--topbar .brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
 }
 
 .brand-lockup--topbar .brand-wordmark {
