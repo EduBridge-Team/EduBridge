@@ -50,7 +50,7 @@ services:
       test:
         - CMD-SHELL
         - >-
-          php -r '$body=@file_get_contents("http://127.0.0.1:8081/"); exit($body === false ? 1 : 0);'
+          php -r '$$body=@file_get_contents("http://127.0.0.1:8081/"); exit($$body === false ? 1 : 0);'
       interval: 15s
       timeout: 5s
       retries: 10
