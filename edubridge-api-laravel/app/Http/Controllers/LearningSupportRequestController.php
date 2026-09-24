@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\LearningSupportRecommendationActions;
+use App\Http\Controllers\Concerns\LearningSupportRequestCreateActions;
 use App\Http\Controllers\Concerns\LearningSupportRequestHelpers;
 use App\Http\Controllers\Concerns\LearningSupportRequestReadActions;
-use App\Http\Controllers\Concerns\LearningSupportRequestWriteActions;
 
 class LearningSupportRequestController extends Controller
 {
     use LearningSupportRequestHelpers;
     use LearningSupportRequestReadActions;
-    use LearningSupportRequestWriteActions;
+    use LearningSupportRequestCreateActions;
+    use LearningSupportRecommendationActions;
 }
