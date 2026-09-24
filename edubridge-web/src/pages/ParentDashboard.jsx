@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft, BarChart3, Bell, CalendarDays, ChevronDown, Home, MessageCircle,
+  ArrowLeft, BarChart3, Bell, BookOpen, CalendarDays, ChevronDown, Home, MessageCircle,
   PlayCircle, Plus, Search, Settings, Sparkles, Users,
 } from 'lucide-react'
 import {
