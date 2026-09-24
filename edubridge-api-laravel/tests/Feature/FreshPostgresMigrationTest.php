@@ -2,16 +2,21 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class FreshPostgresMigrationTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_fresh_database_contains_core_edubridge_tables(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Fresh schema smoke test requires PostgreSQL.');
+        }
+
+        Artisan::call('migrate:fresh', ['--force' => true]);
+
         foreach ([
             'users',
             'children',
