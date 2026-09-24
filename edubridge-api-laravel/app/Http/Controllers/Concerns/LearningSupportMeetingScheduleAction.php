@@ -29,7 +29,10 @@ trait LearningSupportMeetingScheduleAction
 
         $scheduledAt = $this->parseScheduledAt($scheduledRaw);
         if (!$scheduledAt) {
-            return response()->json(['error' => 'صيغة الموعد غير صالحة أو الموعد ليس قادماً'], 422);
+            return response()->json(['error' => 'صيغة الموعد غير صالحة'], 422);
+        }
+        if ($scheduledAt->isPast()) {
+            return response()->json(['error' => 'يجب اختيار موعد قادم'], 422);
         }
 
         $learningSupportRequest = DB::table('learning_support_requests')->where('id', $id)->first();
