@@ -1,0 +1,11 @@
+[Unit]
+Description=Run EduBridge PostgreSQL backup daily
+
+[Timer]
+OnCalendar=*-*-* 03:20:00 UTC
+Persistent=true
+RandomizedDelaySec=10m
+Unit=edubridge-backup.service
+
+[Install]
+WantedBy=timers.target

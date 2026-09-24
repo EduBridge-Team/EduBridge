@@ -133,3 +133,52 @@ bash deploy/oracle-deploy.sh
 ```
 
 Do not restore an older database dump merely to roll back application code unless the deployed release included an incompatible schema migration.
+
+
+## Automated PostgreSQL backups
+
+EduBridge includes `deploy/oracle-backup.sh`. Each run:
+
+1. Creates a PostgreSQL custom-format dump from `edubridge-postgres`.
+2. Verifies the archive with `pg_restore --list`.
+3. Writes a SHA-256 checksum.
+4. Uploads the dump to the private R2 bucket under `database-backups/YYYY/MM/DD/`.
+5. Keeps local copies for 7 days by default.
+
+Install the included systemd timer:
+
+```bash
+sudo cp deploy/systemd/edubridge-backup.service /etc/systemd/system/
+sudo cp deploy/systemd/edubridge-backup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now edubridge-backup.timer
+```
+
+The default schedule is once per day at 03:20 UTC with up to 10 minutes of randomized delay. Confirm it with:
+
+```bash
+systemctl list-timers edubridge-backup.timer
+```
+
+Run one backup immediately and inspect its log:
+
+```bash
+sudo systemctl start edubridge-backup.service
+sudo journalctl -u edubridge-backup.service -n 100 --no-pager
+```
+
+Local backup settings can be overridden with environment variables such as `EDUBRIDGE_BACKUP_RETENTION_DAYS`, `EDUBRIDGE_BACKUP_DIR`, and `EDUBRIDGE_BACKUP_UPLOAD_R2`.
+
+## Fresh database bootstrap
+
+Laravel migrations are now able to initialize a new **PostgreSQL** database from empty state. The early EduBridge domain baseline creates the historical core tables before later feature migrations run.
+
+The name `sessions` is reserved for EduBridge specialist/child sessions. Laravel HTTP sessions use `SESSION_DRIVER=file`; do not reintroduce Laravel's default database `sessions` table under that name.
+
+Validate a disposable database with:
+
+```bash
+php artisan migrate:fresh --force
+```
+
+Never run `migrate:fresh` against production. Production deployments still do not run schema changes automatically.

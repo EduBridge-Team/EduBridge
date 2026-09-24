@@ -177,6 +177,66 @@ jobs:
           JWT_SECRET: ci-test-jwt-secret
         run: php artisan test
 
+
+  postgres-migration-smoke:
+    name: Fresh PostgreSQL migration
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: edubridge_test
+          POSTGRES_USER: edubridge
+          POSTGRES_PASSWORD: edubridge-ci-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge -d edubridge_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: edubridge-api-laravel
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Prepare PostgreSQL environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Migrate an empty PostgreSQL database
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: edubridge_test
+          DB_USERNAME: edubridge
+          DB_PASSWORD: edubridge-ci-password
+          SESSION_DRIVER: file
+          JWT_SECRET: ci-test-jwt-secret
+        run: php artisan migrate:fresh --force
+      - name: Verify fresh schema
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: edubridge_test
+          DB_USERNAME: edubridge
+          DB_PASSWORD: edubridge-ci-password
+          SESSION_DRIVER: file
+          JWT_SECRET: ci-test-jwt-secret
+        run: php artisan test --filter=FreshPostgresMigrationTest
+
   web-build:
     name: React production build
     needs: changes

@@ -1,0 +1,11 @@
+[Unit]
+Description=EduBridge PostgreSQL backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/EduBridge
+Environment=EDUBRIDGE_BACKUP_UPLOAD_R2=1
+ExecStart=/usr/bin/bash /home/ubuntu/EduBridge/deploy/oracle-backup.sh
