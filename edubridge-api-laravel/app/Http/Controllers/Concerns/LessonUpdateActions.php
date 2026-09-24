@@ -48,49 +48,18 @@ trait LessonUpdateActions
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
-        $disabilityTypeId = $request->has('disability_type_id')
-            ? $request->input('disability_type_id')
-            : $lesson->disability_type_id;
-
-        if ($disabilityTypeId === '' || $disabilityTypeId === null) {
-            $disabilityTypeId = null;
-        }
+        $payload = $this->lessonUpdatePayload(
+            $request,
+            $lesson,
+            $title,
+            $targetType,
+            $targetChildIds
+        );
 
         DB::beginTransaction();
 
         try {
-            DB::table('lessons')->where('id', $lesson->id)->update([
-                'title' => $title,
-                'content' => $request->input('content', $lesson->content),
-                'disability_type_id' => $disabilityTypeId,
-                'education_level' => $request->input('education_level', $lesson->education_level ?? null),
-                'target_type' => $targetType,
-                'target_child_ids' => empty($targetChildIds)
-                    ? null
-                    : json_encode(array_values($targetChildIds)),
-                'audio_description' => $request->input(
-                    'audio_description',
-                    $lesson->audio_description ?? null
-                ),
-            ]);
-
-            if (count($this->imageFiles($request)) > 0) {
-                $this->deleteMediaByType((int) $lesson->id, 'image');
-
-                foreach ($this->imageFiles($request) as $image) {
-                    $this->persistUploadedMedia($image, (int) $lesson->id, 'image');
-                }
-            }
-
-            foreach (['video', 'audio', 'caption', 'sign_language'] as $type) {
-                $file = $request->file($type);
-
-                if ($file && $file->isValid()) {
-                    $this->deleteMediaByType((int) $lesson->id, $type);
-                    $this->persistUploadedMedia($file, (int) $lesson->id, $type);
-                }
-            }
-
+            $this->persistLessonUpdate($request, $lesson, $payload);
             DB::commit();
 
             $updated = DB::table('lessons')->find($lesson->id);
