@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../utils/home_router.dart';
 
 class VerifyIdentityScreen extends StatefulWidget {
   const VerifyIdentityScreen({super.key});
@@ -71,13 +70,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
 
     if (status == 'verified') {
       _timer?.cancel();
-      final home = await homeScreenForRole();
-      if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => home),
-        (route) => false,
-      );
     }
   }
 
@@ -169,7 +161,56 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    // 1) قيد المراجعة
+    // 1) موثّق — ابقَ في الشاشة واعرض الحالة بدلاً من إعادة التوجيه تلقائياً.
+    if (_verificationStatus == 'verified') {
+      return Scaffold(
+        appBar: JisrAppBar(title: 'توثيق الهوية'),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.verified_user,
+                  size: 76,
+                  color: AppColors.green,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'تم توثيق حسابك',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _isTeacherOrSpecialist
+                      ? 'تم اعتماد الهوية وبياناتك المهنية. يمكنك استخدام صلاحياتك بشكل طبيعي.'
+                      : 'تم اعتماد هويتك بنجاح.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: c.muted, fontSize: 15, height: 1.6),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('العودة'),
+                    onPressed: () => Navigator.maybePop(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 2) قيد المراجعة
     if (_verificationStatus == 'pending') {
       return Scaffold(
         appBar: JisrAppBar(title: 'توثيق الهوية'),
@@ -220,7 +261,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 2) مرفوض
+    // 3) مرفوض
     if (_verificationStatus == 'rejected') {
       return Scaffold(
         appBar: JisrAppBar(title: 'توثيق الهوية'),
@@ -267,7 +308,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 3) نموذج جديد
+    // 4) نموذج جديد
     return Scaffold(
       appBar: JisrAppBar(title: 'توثيق الهوية'),
       body: SingleChildScrollView(
