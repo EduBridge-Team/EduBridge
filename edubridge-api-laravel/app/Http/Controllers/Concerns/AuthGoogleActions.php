@@ -48,12 +48,16 @@ trait AuthGoogleActions
 
             if (!$user) {
                 $passwordHash = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT, ['cost' => 10]);
-                $id = DB::table('users')->insertGetId([
+                $insert = [
                     'name' => $name,
                     'email' => $email,
                     'password_hash' => $passwordHash,
                     'role' => 'parent',
-                ]);
+                ];
+                if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'email_verified_at')) {
+                    $insert['email_verified_at'] = now();
+                }
+                $id = DB::table('users')->insertGetId($insert);
 
                 $user = DB::table('users')
                     ->select('id', 'name', 'email', 'role', 'phone', 'created_at')
