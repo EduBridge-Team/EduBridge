@@ -1,0 +1,14 @@
+.git
+.github
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/vendor
+**/dist
+**/build
+**/storage/logs/*
+*.dump
+*.sql.gz
+branding/*.pdf
+.DS_Store

@@ -7,7 +7,7 @@
 | الملف / المجلد | الوصف |
 |----------------|-------|
 | `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
-| `edubridge_schema.sql`  | مخطط SQL قديم للمرجعية فقط؛ Laravel migrations هي المصدر الحالي |
+| `edubridge_schema.sql`  | مخطط SQL قديم للمرجعية فقط؛ لا يُستخدم مباشرة على الإنتاج |
 | `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
@@ -27,7 +27,7 @@
 
 ### 1) الـ Backend + قاعدة البيانات
 
-أنشئ قاعدة PostgreSQL فارغة، ثم دع Laravel يدير المخطط عبر migrations. لا تستخدم ملفات seed ثابتة على الإنتاج.
+للتطوير المحلي استخدم PostgreSQL مع Laravel. قاعدة الإنتاج الحالية لها مخطط تاريخي أوسع من migrations الموجودة في المستودع، لذلك لا تستخدم `migrate:fresh` أو تحاول إنشاء قاعدة إنتاج جديدة من migrations فقط قبل اكتمال توحيد المخطط.
 
 ### 2) الـ Backend (Laravel)
 ```bash
@@ -155,15 +155,25 @@ flutter test integration_test/login_test.dart \
 
 ## النشر
 
-الإنتاج الأساسي يعمل على Taqat Academy:
+الإنتاج الأساسي يعمل على Oracle Cloud:
 
 - الموقع: <https://edubridge.win>
 - API: <https://api.edubridge.win>
 - المستودع: `EduBridge-Team/EduBridge`، الفرع `main`
-- الويب يعمل عبر `deploy/taqat-web-server.mjs` مع proxy داخلي من `/api` إلى API.
-- قاعدة PostgreSQL الإنتاجية هي قاعدة Taqat المرتبطة بتطبيق EduBridge API.
+- PostgreSQL 17 يعمل داخل Docker على شبكة خاصة وغير منشور للإنترنت.
+- Laravel API منشور محليًا فقط على `127.0.0.1:8081`.
+- React/Vite web منشور محليًا فقط على `127.0.0.1:8082`.
+- Caddy الموجود على الخادم ينهي TLS ويعمل reverse proxy للدومينات العامة.
+- ملفات R2 تبقى على Cloudflare R2 حسب إعدادات البيئة.
 
-ملفات `deploy/deploy.sh` و`deploy/web` باقية كمسار نشر قديم/احتياطي لـ Alwaysdata، وليست مسار الإنتاج الأساسي.
+النشر المتكرر يتم عبر:
+
+```bash
+git pull --ff-only origin main
+bash deploy/oracle-deploy.sh
+```
+
+راجع `docs/ORACLE_DEPLOYMENT.md` للتفاصيل والنسخ الاحتياطي والـrollback. مسارات Taqat/Alwaysdata القديمة باقية كمرجع/احتياط وليست مسار الإنتاج الأساسي.
 
 ### ترحيل الملفات الحساسة القديمة
 
@@ -199,5 +209,5 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 - [x] وسائط الدروس واجتماعات الدعم التعليمي والتقارير والمتابعة
 - [ ] تحسينات اختيارية مستقبلية: توسيع الاختبارات، مراقبة الأداء، وتحسين تجربة الإدارة
 
-> الإنتاج الأساسي على Taqat. استخدم Laravel migrations/أوامر الصيانة الموثقة داخل `edubridge-api-laravel/README.md`.
-> مسار `deploy/deploy.sh` باقٍ فقط للاستضافة الاحتياطية القديمة.
+> الإنتاج الأساسي على Oracle Cloud. استخدم `deploy/oracle-deploy.sh` للنشر و`docs/ORACLE_DEPLOYMENT.md` للتشغيل والنسخ الاحتياطي.
+> تغييرات قاعدة البيانات لا تُطبّق تلقائيًا أثناء النشر؛ خذ نسخة احتياطية وراجع أي migration/SQL قبل تشغيله على الإنتاج.
