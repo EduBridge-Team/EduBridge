@@ -23,6 +23,8 @@ docker volume create edubridge-postgres-data
 
 Both commands are idempotently handled by `deploy/oracle-deploy.sh`.
 
+The first run also detects the temporary containers that were created manually during the Oracle migration. It only replaces an unmanaged `edubridge-postgres` container after verifying that it uses the persistent `edubridge-postgres-data` volume, then hands the API/web/PostgreSQL container names over to Compose. This does not delete the PostgreSQL volume.
+
 ## Environment
 
 Create and maintain `edubridge-api-laravel/.env` only on the server. Never commit it.
