@@ -13,6 +13,7 @@ class ChildController extends Controller
     use ChildControllerHelpers;
     use ChildReadActions;
     use ChildCreateActions;
+    use ChildUpdateHelpers;
     use ChildUpdateActions;
     use ChildDeleteActions;
 
