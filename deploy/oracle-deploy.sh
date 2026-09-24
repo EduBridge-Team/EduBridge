@@ -35,6 +35,45 @@ echo "==> Ensuring persistent Docker resources exist..."
 docker network inspect edubridge-net >/dev/null 2>&1 || docker network create edubridge-net >/dev/null
 docker volume inspect edubridge-postgres-data >/dev/null 2>&1 || docker volume create edubridge-postgres-data >/dev/null
 
+container_project() {
+  docker inspect --format='{{index .Config.Labels "com.docker.compose.project"}}' "$1" 2>/dev/null || true
+}
+
+echo "==> Checking for pre-Compose EduBridge containers..."
+for name in edubridge-postgres edubridge-api edubridge-web; do
+  if ! docker container inspect "$name" >/dev/null 2>&1; then
+    continue
+  fi
+
+  owner="$(container_project "$name")"
+  if [[ "$owner" == "$PROJECT_NAME" ]]; then
+    continue
+  fi
+
+  if [[ -n "$owner" && "$owner" != "<no value>" ]]; then
+    echo "ERROR: container $name is managed by another Compose project: $owner" >&2
+    exit 1
+  fi
+
+  if [[ "$name" == "edubridge-postgres" ]]; then
+    mounts="$(docker inspect --format='{{range .Mounts}}{{println .Name}}{{end}}' "$name")"
+    if ! grep -qx 'edubridge-postgres-data' <<<"$mounts"; then
+      echo "ERROR: refusing to replace legacy PostgreSQL container because it is not using edubridge-postgres-data." >&2
+      exit 1
+    fi
+  fi
+done
+
+for name in edubridge-api edubridge-web edubridge-postgres; do
+  if docker container inspect "$name" >/dev/null 2>&1; then
+    owner="$(container_project "$name")"
+    if [[ -z "$owner" || "$owner" == "<no value>" ]]; then
+      echo "==> Handing off legacy container to Compose: $name"
+      docker rm -f "$name" >/dev/null
+    fi
+  fi
+done
+
 echo "==> Starting PostgreSQL without altering its data..."
 compose up -d postgres
 
