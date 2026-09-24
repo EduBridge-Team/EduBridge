@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Support\Notify;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,18 +15,15 @@ trait LearningSupportMeetingScheduleAction
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        $scheduledRaw = trim((string) $request->input('scheduled_at', ''));
-        $meetingLink = trim((string) $request->input('meeting_link', ''));
-        $notes = trim((string) $request->input('specialist_notes', ''));
-
-        if ($scheduledRaw === '' || $meetingLink === '') {
+        $input = $this->scheduleInput($request);
+        if ($input['scheduled_raw'] === '' || $input['meeting_link'] === '') {
             return response()->json(['error' => 'التاريخ ورابط الاجتماع مطلوبان'], 422);
         }
-        if (!filter_var($meetingLink, FILTER_VALIDATE_URL)) {
+        if (!filter_var($input['meeting_link'], FILTER_VALIDATE_URL)) {
             return response()->json(['error' => 'رابط الاجتماع غير صالح'], 422);
         }
 
-        $scheduledAt = $this->parseScheduledAt($scheduledRaw);
+        $scheduledAt = $this->parseScheduledAt($input['scheduled_raw']);
         if (!$scheduledAt) {
             return response()->json(['error' => 'صيغة الموعد غير صالحة'], 422);
         }
@@ -59,31 +55,13 @@ trait LearningSupportMeetingScheduleAction
         }
 
         try {
-            DB::transaction(function () use (
-                $id,
+            $this->persistScheduledMeeting(
                 $learningSupportRequest,
                 $assignedSpecialistId,
                 $scheduledAt,
-                $meetingLink,
-                $notes
-            ) {
-                DB::table('learning_support_requests')->where('id', $id)->update([
-                    'specialist_id' => $assignedSpecialistId,
-                    'scheduled_at' => $scheduledAt,
-                    'meeting_link' => $meetingLink,
-                    'specialist_notes' => $notes !== '' ? $notes : null,
-                    'status' => 'scheduled',
-                    'updated_at' => now(),
-                ]);
-
-                $this->upsertSessionForRequest(
-                    $learningSupportRequest,
-                    $assignedSpecialistId,
-                    $scheduledAt,
-                    $meetingLink,
-                    $notes !== '' ? $notes : null
-                );
-            });
+                $input['meeting_link'],
+                $input['notes']
+            );
 
             $childName = (string) (DB::table('children')
                 ->where('id', $learningSupportRequest->child_id)
