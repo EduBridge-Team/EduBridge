@@ -22,6 +22,13 @@ class WebSocketService {
 
   // ===== الاتصال بالـ WebSocket =====
   void connect(String token) {
+    if (Config.wsUrl.isEmpty) {
+      debugPrint('ℹ️ WebSocket is not configured for production');
+      _isConnected = false;
+      _channel = null;
+      return;
+    }
+
     if (_channel != null) {
       debugPrint('⚠️ WebSocket already connected');
       return;
