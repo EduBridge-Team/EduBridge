@@ -5,10 +5,11 @@ import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRol
 import TopBar from './components/TopBar'
 import RolePortalShell from './components/ParentPortalShell'
 import AssistantWidget from './components/AssistantWidget'
-import NoorRunnerWidget from './components/NoorRunnerWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import ChildrenPage from './pages/ChildrenPage'
 import ChildLessonsPage from './pages/ChildLessonsPage'
 import ChildProgressPage from './pages/ChildProgressPage'
@@ -92,6 +93,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
         <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
+        <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
+        <Route path="/reset-password" element={<GuestOnly><ResetPasswordPage /></GuestOnly>} />
         <Route path="/dashboard" element={<DashboardRedirect />} />
         <Route path="/about" element={<Page><AboutPage /></Page>} />
         <Route path="/" element={<HomeRedirect />} />
@@ -135,7 +138,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <AssistantWidget />
-      <NoorRunnerWidget />
       <VoiceCommandWidget />
     </div>
   )
