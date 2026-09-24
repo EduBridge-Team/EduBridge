@@ -7,6 +7,7 @@ use App\Http\Controllers\Concerns\ChildCreateActions;
 use App\Http\Controllers\Concerns\ChildDeleteActions;
 use App\Http\Controllers\Concerns\ChildReadActions;
 use App\Http\Controllers\Concerns\ChildUpdateActions;
+use App\Http\Controllers\Concerns\ChildUpdateHelpers;
 
 class ChildController extends Controller
 {
