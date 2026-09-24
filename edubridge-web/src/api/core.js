@@ -159,3 +159,25 @@ export function register(name, email, password, role, nationalId, specialty) {
   });
 }
 
+
+
+export function forgotPassword(email) {
+  return request("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(email, token, password) {
+  return request("/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ email, token, password }),
+  });
+}
+
+export function resendEmailVerification(email) {
+  return request("/auth/resend-verification", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
