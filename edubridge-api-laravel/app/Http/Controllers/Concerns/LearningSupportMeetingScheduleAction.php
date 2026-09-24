@@ -27,13 +27,9 @@ trait LearningSupportMeetingScheduleAction
             return response()->json(['error' => 'رابط الاجتماع غير صالح'], 422);
         }
 
-        try {
-            $scheduledAt = Carbon::parse($scheduledRaw);
-        } catch (\Throwable $e) {
-            return response()->json(['error' => 'صيغة الموعد غير صالحة'], 422);
-        }
-        if ($scheduledAt->isPast()) {
-            return response()->json(['error' => 'يجب اختيار موعد قادم'], 422);
+        $scheduledAt = $this->parseScheduledAt($scheduledRaw);
+        if (!$scheduledAt) {
+            return response()->json(['error' => 'صيغة الموعد غير صالحة أو الموعد ليس قادماً'], 422);
         }
 
         $learningSupportRequest = DB::table('learning_support_requests')->where('id', $id)->first();
@@ -49,12 +45,13 @@ trait LearningSupportMeetingScheduleAction
             return response()->json(['error' => 'هذا الطلب يتابعه مختص آخر'], 409);
         }
 
-        $assignedSpecialistId = $user->role === 'specialist'
-            ? (int) $user->id
-            : (int) ($request->input('specialist_id') ?: ($learningSupportRequest->specialist_id ?: 0));
+        $assignedSpecialistId = $this->resolveAssignedSpecialistId(
+            $user,
+            $request,
+            $learningSupportRequest
+        );
 
-        if ($assignedSpecialistId <= 0
-            || !DB::table('users')->where('id', $assignedSpecialistId)->where('role', 'specialist')->exists()) {
+        if (!$this->validSpecialist($assignedSpecialistId)) {
             return response()->json(['error' => 'يجب تحديد مختص دعم تعليمي صالح للاجتماع'], 422);
         }
 
