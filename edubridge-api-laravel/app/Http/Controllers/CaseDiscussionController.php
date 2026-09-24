@@ -10,7 +10,8 @@ use App\Http\Controllers\Concerns\CaseDiscussionReadActions;
 
 class CaseDiscussionController extends Controller
 {
-    use CaseDiscussionControllerHelpers;
+    use CaseDiscussionAccessHelpers;
+    use CaseDiscussionQueryHelpers;
     use CaseDiscussionReadActions;
     use CaseDiscussionCreateActions;
     use CaseDiscussionMessageActions;
