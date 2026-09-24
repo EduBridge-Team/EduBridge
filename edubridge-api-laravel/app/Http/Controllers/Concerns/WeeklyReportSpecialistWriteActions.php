@@ -37,23 +37,13 @@ trait WeeklyReportSpecialistWriteActions
             return response()->json(['error' => 'تقييم التفاعل يجب أن يكون بين 1 و5'], 422);
         }
 
-        $sections = [$notes];
-
-        if ($recommendations !== '') {
-            $sections[] = 'التوصيات: ' . $recommendations;
-        }
-        if ($appropriate !== null) {
-            $isAppropriate = filter_var($appropriate, FILTER_VALIDATE_BOOLEAN);
-            $sections[] = 'ملاءمة الخطة: ' . ($isAppropriate ? 'مناسبة' : 'تحتاج تعديلاً');
-        }
-        if ($planEvaluation !== '') {
-            $sections[] = 'تقييم الخطة: ' . $planEvaluation;
-        }
-        if ($mood !== null) {
-            $sections[] = 'تقييم التفاعل: ' . (int) $mood . '/5';
-        }
-
-        $specialistNotes = implode("\n", $sections);
+        $specialistNotes = $this->specialistNotesPayload(
+            $notes,
+            $recommendations,
+            $planEvaluation,
+            $appropriate,
+            $mood
+        );
         $weekStart = now()->startOfWeek(Carbon::MONDAY)->startOfDay();
         $weekEnd = (clone $weekStart)->addDays(6)->endOfDay();
 
