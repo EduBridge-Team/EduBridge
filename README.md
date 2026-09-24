@@ -7,11 +7,10 @@
 | الملف / المجلد | الوصف |
 |----------------|-------|
 | `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
-| `edubridge_schema.sql`  | مخطط SQL قديم للمرجعية فقط؛ لا يُستخدم مباشرة على الإنتاج |
 | `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
-| `deploy/`               | حزمة النشر من الجوال (سكربت SSH + نسخة الموقع المبنية) |
+| `deploy/`               | ملفات نشر Oracle ونسخ PostgreSQL الاحتياطية |
 | `دليل التحديث والنشر.docx` | دليل تحديث ونشر المشروع خطوة بخطوة |
 | `branding/`             | ملفات الهوية (الشعار والأيقونات) |
 
@@ -27,7 +26,7 @@
 
 ### 1) الـ Backend + قاعدة البيانات
 
-للتطوير المحلي استخدم PostgreSQL مع Laravel. قاعدة الإنتاج الحالية لها مخطط تاريخي أوسع من migrations الموجودة في المستودع، لذلك لا تستخدم `migrate:fresh` أو تحاول إنشاء قاعدة إنتاج جديدة من migrations فقط قبل اكتمال توحيد المخطط.
+للتطوير المحلي استخدم PostgreSQL مع Laravel. الـ migrations هي المصدر الرسمي الوحيد للمخطط، وCI يتحقق من إنشاء قاعدة PostgreSQL 17 فارغة باستخدام `migrate:fresh`. لا تستخدم `migrate:fresh` على قاعدة الإنتاج.
 
 ### 2) الـ Backend (Laravel)
 ```bash
@@ -173,7 +172,7 @@ git pull --ff-only origin main
 bash deploy/oracle-deploy.sh
 ```
 
-راجع `docs/ORACLE_DEPLOYMENT.md` للتفاصيل والنسخ الاحتياطي والـrollback. مسارات Taqat/Alwaysdata القديمة باقية كمرجع/احتياط وليست مسار الإنتاج الأساسي.
+راجع `docs/ORACLE_DEPLOYMENT.md` للتفاصيل والنسخ الاحتياطي والـrollback. مسار الإنتاج المدعوم هو Oracle فقط.
 
 ### ترحيل الملفات الحساسة القديمة
 
@@ -210,4 +209,4 @@ php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
 - [ ] تحسينات اختيارية مستقبلية: توسيع الاختبارات، مراقبة الأداء، وتحسين تجربة الإدارة
 
 > الإنتاج الأساسي على Oracle Cloud. استخدم `deploy/oracle-deploy.sh` للنشر و`docs/ORACLE_DEPLOYMENT.md` للتشغيل والنسخ الاحتياطي.
-> تغييرات قاعدة البيانات لا تُطبّق تلقائيًا أثناء النشر؛ خذ نسخة احتياطية وراجع أي migration/SQL قبل تشغيله على الإنتاج.
+> تغييرات قاعدة البيانات لا تُطبّق تلقائيًا أثناء النشر؛ خذ نسخة احتياطية وراجع أي migration قبل تشغيله على الإنتاج.
