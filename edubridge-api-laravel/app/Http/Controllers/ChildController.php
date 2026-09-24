@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ChildControllerHelpers;
+use App\Http\Controllers\Concerns\ChildCreateActions;
+use App\Http\Controllers\Concerns\ChildDeleteActions;
 use App\Http\Controllers\Concerns\ChildReadActions;
-use App\Http\Controllers\Concerns\ChildWriteActions;
+use App\Http\Controllers\Concerns\ChildUpdateActions;
 
 class ChildController extends Controller
 {
     use ChildControllerHelpers;
     use ChildReadActions;
-    use ChildWriteActions;
+    use ChildCreateActions;
+    use ChildUpdateActions;
+    use ChildDeleteActions;
 
     private const TEXT_FIELDS = [
         'disability_type',
