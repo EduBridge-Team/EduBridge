@@ -2,121 +2,13 @@
 
 namespace App\Http\Controllers;
 
-// التقييمات — يُنشئها المعلّم/المختص، ويعرضها ولي الأمر ضمن تفاصيل الطفل
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Support\Notify;
+use App\Http\Controllers\Concerns\EvaluationControllerHelpers;
+use App\Http\Controllers\Concerns\EvaluationReadActions;
+use App\Http\Controllers\Concerns\EvaluationWriteActions;
 
 class EvaluationController extends Controller
 {
-    // فكّ ترميز أساليب التدريس المخزّنة كـ JSON
-    private function decode($eval)
-    {
-        if ($eval && isset($eval->teaching_methods) && is_string($eval->teaching_methods)) {
-            $eval->teaching_methods = json_decode($eval->teaching_methods, true);
-        }
-        return $eval;
-    }
-
-    // تقييمات طفل معيّن
-    // GET /api/children/:childId/evaluations
-    // GET /api/evaluations/child/:childId
-    public function byChild($childId)
-    {
-        try {
-            $evaluations = DB::table('evaluations as e')
-                ->leftJoin('users as u', 'u.id', '=', 'e.evaluator_id')
-                ->where('e.child_id', $childId)
-                ->orderByDesc('e.created_at')
-                ->select('e.*', 'u.name as evaluator_name')
-                ->get()
-                ->map(fn ($e) => $this->decode($e));
-
-            return response()->json(['evaluations' => $evaluations]);
-        } catch (\Exception $e) {
-            report($e);
-            return response()->json(['error' => 'خطأ في السيرفر'], 500);
-        }
-    }
-
-    // إنشاء تقييم لطفل (معلّم / مختص / أدمن)
-    // POST /api/evaluations/child/:childId
-    public function store(Request $request, $childId)
-    {
-        $user = $request->attributes->get('jwt_user');
-
-        try {
-            if (!DB::table('children')->where('id', $childId)->exists()) {
-                return response()->json(['error' => 'الطفل غير موجود'], 404);
-            }
-
-            $assignedTeacherId = $request->input('assigned_teacher_id');
-            if ($assignedTeacherId) {
-                if (!in_array($user->role, ['specialist', 'admin'], true)) {
-                    return response()->json(['error' => 'تعيين المعلّم من التقييم متاح للمختص والأدمن فقط'], 403);
-                }
-                if (!DB::table('users')->where('id', $assignedTeacherId)->where('role', 'teacher')->exists()) {
-                    return response()->json(['error' => 'المعلّم غير موجود'], 422);
-                }
-            }
-
-            $data = [
-                'child_id' => $childId,
-                'evaluator_id' => $user->id ?? null,
-                'evaluation_type' => $request->input('evaluation_type'),
-                'cognitive_assessment' => $request->input('cognitive_assessment'),
-                'motor_assessment' => $request->input('motor_assessment'),
-                'emotional_assessment' => $request->input('emotional_assessment'),
-                'social_assessment' => $request->input('social_assessment'),
-                'recommendations' => $request->input('recommendations'),
-                'educational_plan' => $request->input('educational_plan'),
-                'assigned_teacher_id' => $assignedTeacherId,
-            ];
-            if ($request->has('teaching_methods') && $request->input('teaching_methods') !== null) {
-                $data['teaching_methods'] = json_encode($request->input('teaching_methods'), JSON_UNESCAPED_UNICODE);
-            }
-
-            $id = DB::table('evaluations')->insertGetId($data);
-
-            // تحديث حالة الطفل: مُقيَّم، ومُعيَّن إن رافق التقييم تعيين معلّم
-            $childUpdate = ['status' => 'evaluated'];
-            if ($assignedTeacherId) {
-                $childUpdate['assigned_teacher_id'] = $assignedTeacherId;
-                $childUpdate['status'] = 'assigned';
-
-                DB::table('child_teacher')->insertOrIgnore([
-                    'child_id' => $childId,
-                    'teacher_id' => $assignedTeacherId,
-                    'assigned_at' => now(),
-                    'created_at' => now(),
-                ]);
-            }
-            DB::table('children')->where('id', $childId)->update($childUpdate);
-
-            // إشعار أولياء أمر الطفل بوجود تقييم جديد
-            $child = DB::table('children')->where('id', $childId)->first();
-            Notify::toChildParents(
-                $childId,
-                'تقييم جديد',
-                'تم إضافة تقييم جديد للطفل ' . ($child->name ?? 'طفلك'),
-                'child_evaluated'
-            );
-
-            // إذا عيّن المختص/الأدمن معلماً أثناء التقييم، يخطره الخادم مباشرة.
-            // إبقاء الإشعار في الخادم يمنع تطبيق الجوال من الحاجة لمسار عام لإرسال إشعارات.
-            if ($assignedTeacherId) {
-                Notify::toUser(
-                    $assignedTeacherId,
-                    'تقييم جديد للطفل',
-                    'رفع المختص تقييماً للطفل "' . ($child->name ?? '') . '" — راجع الخطة وابدأ التنفيذ',
-                    'evaluation_created'
-                );
-            }
-
-            return response()->json(['evaluation' => $this->decode(DB::table('evaluations')->find($id))], 201);
-        } catch (\Exception $e) {
-            report($e);
-            return response()->json(['error' => 'خطأ في السيرفر'], 500);
-        }
-    }
+    use EvaluationControllerHelpers;
+    use EvaluationReadActions;
+    use EvaluationWriteActions;
 }
