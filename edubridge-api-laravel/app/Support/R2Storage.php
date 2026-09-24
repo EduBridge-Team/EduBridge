@@ -22,11 +22,16 @@ final class R2Storage
     {
         $base = rtrim(self::requiredEnv('R2_MEDIA_PUBLIC_URL'), '/');
         $encoded = implode('/', array_map('rawurlencode', explode('/', ltrim($key, '/'))));
+
         return $base . '/' . $encoded;
     }
 
-    public static function putUploadedFile(string $bucket, string $key, $file, ?string $contentType = null): void
-    {
+    public static function putUploadedFile(
+        string $bucket,
+        string $key,
+        $file,
+        ?string $contentType = null
+    ): void {
         $path = $file->getRealPath();
         if (!$path || !is_file($path)) {
             throw new RuntimeException('Uploaded file is not readable');
@@ -53,8 +58,12 @@ final class R2Storage
         }
     }
 
-    public static function putLocalFile(string $bucket, string $key, string $path, ?string $contentType = null): void
-    {
+    public static function putLocalFile(
+        string $bucket,
+        string $key,
+        string $path,
+        ?string $contentType = null
+    ): void {
         if (!is_file($path) || !is_readable($path)) {
             throw new RuntimeException('Local file is not readable: ' . $path);
         }
@@ -80,8 +89,12 @@ final class R2Storage
         }
     }
 
-    public static function putString(string $bucket, string $key, string $contents, string $contentType = 'text/plain'): void
-    {
+    public static function putString(
+        string $bucket,
+        string $key,
+        string $contents,
+        string $contentType = 'text/plain'
+    ): void {
         self::request(
             'PUT',
             $bucket,
@@ -123,72 +136,25 @@ final class R2Storage
         $encodedKey = implode('/', array_map('rawurlencode', explode('/', ltrim($key, '/'))));
         $encodedBucket = rawurlencode($bucket);
         $url = $endpoint . '/' . $encodedBucket . '/' . $encodedKey;
-
-        $parts = parse_url($url);
-        if (!$parts || empty($parts['host'])) {
-            throw new RuntimeException('Invalid R2 endpoint');
-        }
-
-        $host = $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '');
-        $canonicalUri = $parts['path'] ?? '/';
         $payloadHash ??= hash('sha256', '');
 
-        $now = gmdate('Ymd\THis\Z');
-        $date = substr($now, 0, 8);
-
-        $headers = [
-            'host' => $host,
-            'x-amz-content-sha256' => $payloadHash,
-            'x-amz-date' => $now,
-        ];
-        if ($contentType) {
-            $headers['content-type'] = $contentType;
-        }
-        ksort($headers);
-
-        $canonicalHeaders = '';
-        foreach ($headers as $name => $value) {
-            $canonicalHeaders .= strtolower($name) . ':' . trim((string) $value) . "\n";
-        }
-        $signedHeaders = implode(';', array_keys($headers));
-
-        $canonicalRequest = strtoupper($method) . "\n"
-            . $canonicalUri . "\n"
-            . "\n"
-            . $canonicalHeaders . "\n"
-            . $signedHeaders . "\n"
-            . $payloadHash;
-
-        $scope = $date . '/' . $region . '/s3/aws4_request';
-        $stringToSign = "AWS4-HMAC-SHA256\n"
-            . $now . "\n"
-            . $scope . "\n"
-            . hash('sha256', $canonicalRequest);
-
-        $kDate = hash_hmac('sha256', $date, 'AWS4' . $secretKey, true);
-        $kRegion = hash_hmac('sha256', $region, $kDate, true);
-        $kService = hash_hmac('sha256', 's3', $kRegion, true);
-        $kSigning = hash_hmac('sha256', 'aws4_request', $kService, true);
-        $signature = hash_hmac('sha256', $stringToSign, $kSigning);
-
-        $requestHeaders = [
-            'Host' => $host,
-            'x-amz-content-sha256' => $payloadHash,
-            'x-amz-date' => $now,
-            'Authorization' => 'AWS4-HMAC-SHA256 Credential=' . $accessKey . '/' . $scope
-                . ', SignedHeaders=' . $signedHeaders
-                . ', Signature=' . $signature,
-        ];
-        if ($contentType) {
-            $requestHeaders['Content-Type'] = $contentType;
-        }
+        $headers = R2RequestSigner::headers(
+            $method,
+            $url,
+            $payloadHash,
+            $contentType,
+            $accessKey,
+            $secretKey,
+            $region
+        );
 
         $options = [
-            'headers' => $requestHeaders,
+            'headers' => $headers,
             'http_errors' => true,
             'timeout' => 120,
             'connect_timeout' => 15,
         ];
+
         if ($body !== null) {
             $options['body'] = $body;
         }
