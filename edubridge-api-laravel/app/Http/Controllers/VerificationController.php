@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\VerificationReviewActions;
+use App\Http\Controllers\Concerns\VerificationChildReviewActions;
 use App\Http\Controllers\Concerns\VerificationSelfActions;
+use App\Http\Controllers\Concerns\VerificationUserReviewActions;
 
 class VerificationController extends Controller
 {
     use VerificationSelfActions;
-    use VerificationReviewActions;
+    use VerificationUserReviewActions;
+    use VerificationChildReviewActions;
 
     private const STATUSES = ['pending', 'verified', 'rejected'];
 }
