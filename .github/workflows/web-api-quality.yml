@@ -109,13 +109,13 @@ jobs:
 
           cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' edubridge-api-laravel/.env
-          cat >> edubridge-api-laravel/.env <<'EOF'
-DB_HOST=edubridge-postgres
-DB_PORT=5432
-DB_DATABASE=edubridge
-DB_USERNAME=edubridge
-DB_PASSWORD=ci-compose-password
-EOF
+          printf '%s\n' \
+            'DB_HOST=edubridge-postgres' \
+            'DB_PORT=5432' \
+            'DB_DATABASE=edubridge' \
+            'DB_USERNAME=edubridge' \
+            'DB_PASSWORD=ci-compose-password' \
+            >> edubridge-api-laravel/.env
 
           docker compose \
             --env-file edubridge-api-laravel/.env \
