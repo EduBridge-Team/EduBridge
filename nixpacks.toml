@@ -7,7 +7,7 @@
 # available from the Taqat terminal for database migration and maintenance.
 
 [phases.setup]
-nixPkgs = ["php84", "php84Packages.composer", "libpq", "postgresql_17", "nodejs_22"]
+nixPkgs = ["php84", "php84Packages.composer", "postgresql_17", "nodejs_22"]
 
 [phases.install]
 cmds = ["bash deploy/taqat-install.sh"]
