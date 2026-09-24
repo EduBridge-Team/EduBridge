@@ -5,30 +5,10 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - "edubridge-web/**"
-      - "edubridge-api-laravel/**"
-      - "edubridge-app/lib/services/api_service.dart"
-      - "scripts/check_mobile_api_parity.py"
-      - "deploy/**"
-      - "Procfile"
-      - "nixpacks.toml"
-      - ".github/workflows/web-api-quality.yml"
-      - ".github/workflows/web-deploy-build.yml"
   pull_request:
     branches:
       - main
       - develop
-    paths:
-      - "edubridge-web/**"
-      - "edubridge-api-laravel/**"
-      - "edubridge-app/lib/services/api_service.dart"
-      - "scripts/check_mobile_api_parity.py"
-      - "deploy/**"
-      - "Procfile"
-      - "nixpacks.toml"
-      - ".github/workflows/web-api-quality.yml"
-      - ".github/workflows/web-deploy-build.yml"
   workflow_dispatch:
 
 permissions:

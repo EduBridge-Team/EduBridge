@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_LIB = ROOT / "edubridge-app/lib"
-LARAVEL_ROUTES = ROOT / "edubridge-api-laravel/routes/api.php"
+LARAVEL_ROUTES_DIR = ROOT / "edubridge-api-laravel/routes"
 
 CLIENT_CALL_RE = re.compile(
     r"""\b(authGet|authPost|authPut|authDelete)\(\s*
@@ -80,7 +80,12 @@ def extract_backend_routes(text: str) -> set[tuple[str, str]]:
 
 
 def main() -> int:
-    routes_text = LARAVEL_ROUTES.read_text(encoding="utf-8")
+    route_files = [LARAVEL_ROUTES_DIR / "api.php", *sorted((LARAVEL_ROUTES_DIR / "api").glob("*.php"))]
+    routes_text = "\n".join(
+        route_file.read_text(encoding="utf-8")
+        for route_file in route_files
+        if route_file.exists()
+    )
 
     client_calls: set[tuple[str, str]] = set()
     for dart_file in APP_LIB.rglob("*.dart"):
