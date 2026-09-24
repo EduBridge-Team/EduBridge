@@ -12,11 +12,11 @@
 }
 
 .reference-home .reference-hero {
-  width: min(1180px, calc(100% - 44px));
-  min-height: 590px;
-  grid-template-columns: 1fr 1fr;
-  gap: 44px;
-  padding: 44px 0 34px;
+  width: min(1240px, calc(100% - 44px));
+  min-height: 560px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px;
+  padding: 42px 0 36px;
 }
 
 .reference-home .home-hero-copy {
@@ -159,7 +159,7 @@
 }
 
 .reference-home .home-section {
-  width: min(1180px, calc(100% - 44px));
+  width: min(1240px, calc(100% - 44px));
 }
 
 .reference-home .audience-section {
@@ -510,3 +510,53 @@
 }
 
 
+
+
+/* Shared landing rhythm and overflow safety. */
+.reference-home {
+  overflow-x: clip;
+}
+
+.reference-home .home-section,
+.reference-home .home-stats,
+.reference-home .reference-hero {
+  scroll-margin-top: 88px;
+}
+
+.reference-home .home-section {
+  margin-inline: auto;
+}
+
+.reference-home .audience-card,
+.reference-home .home-feature,
+.reference-home .impact-card,
+.reference-home .success-story-card {
+  min-width: 0;
+}
+
+@media (max-width: 780px) {
+  .reference-home .reference-hero,
+  .reference-home .home-section,
+  .reference-home .home-stats {
+    width: min(100% - 28px, 680px);
+  }
+
+  .reference-home .audience-section,
+  .reference-home .reference-noor {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reference-home .reference-hero,
+  .reference-home .home-section,
+  .reference-home .home-stats {
+    width: calc(100% - 20px);
+  }
+
+  .reference-home .audience-section,
+  .reference-home .reference-noor {
+    padding-inline: 16px;
+    border-radius: 18px;
+  }
+}
