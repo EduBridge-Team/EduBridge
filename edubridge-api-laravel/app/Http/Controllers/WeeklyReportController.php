@@ -12,5 +12,6 @@ class WeeklyReportController extends Controller
     use WeeklyReportControllerHelpers;
     use WeeklyReportReadActions;
     use WeeklyReportGeneralWriteActions;
+    use WeeklyReportSpecialistHelpers;
     use WeeklyReportSpecialistWriteActions;
 }
