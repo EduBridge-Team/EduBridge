@@ -6,7 +6,6 @@ return [
     'allowed_origins' => [
         'https://edubridge.win',
         'https://www.edubridge.win',
-        'https://edubridge.apps.taqat.academy',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],

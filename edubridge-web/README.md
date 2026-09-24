@@ -70,7 +70,7 @@ The production website is:
 https://edubridge.win
 ```
 
-The current production deployment is handled through the Taqat deployment scripts in `deploy/`. The legacy `deploy/web` bundle is retained only for the older backup deployment path.
+Production is built and deployed on Oracle through `deploy/oracle-deploy.sh` and `deploy/oracle-web.Dockerfile`.
 
 ---
 
@@ -144,4 +144,4 @@ https://api.edubridge.win
 https://edubridge.win
 ```
 
-يتم النشر الحالي من خلال سكربتات Taqat الموجودة داخل `deploy/`. أما `deploy/web` فهو مسار قديم/احتياطي خاص بطريقة النشر السابقة.
+يتم بناء ونشر نسخة الإنتاج على Oracle من خلال `deploy/oracle-deploy.sh` و `deploy/oracle-web.Dockerfile`.
