@@ -39,6 +39,7 @@ services:
       DB_HOST: edubridge-postgres
       DB_PORT: "5432"
       SESSION_DRIVER: file
+      CACHE_STORE: file
     depends_on:
       postgres:
         condition: service_healthy
