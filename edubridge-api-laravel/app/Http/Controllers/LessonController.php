@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\LessonControllerHelpers;
+use App\Http\Controllers\Concerns\LessonAccessHelpers;
 use App\Http\Controllers\Concerns\LessonCreateActions;
 use App\Http\Controllers\Concerns\LessonDeleteActions;
+use App\Http\Controllers\Concerns\LessonMediaHelpers;
 use App\Http\Controllers\Concerns\LessonReadActions;
+use App\Http\Controllers\Concerns\LessonSerializationHelpers;
 use App\Http\Controllers\Concerns\LessonUpdateActions;
 
 class LessonController extends Controller
 {
-    use LessonControllerHelpers;
+    use LessonAccessHelpers;
+    use LessonMediaHelpers;
+    use LessonSerializationHelpers;
     use LessonReadActions;
     use LessonCreateActions;
     use LessonUpdateActions;
