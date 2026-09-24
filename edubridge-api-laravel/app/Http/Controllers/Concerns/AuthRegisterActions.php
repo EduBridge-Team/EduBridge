@@ -32,6 +32,12 @@ trait AuthRegisterActions
             $id = DB::table('users')->insertGetId($insert);
             $user = DB::table('users')->find($id);
 
+            try {
+                $this->sendVerificationEmail($user);
+            } catch (\Throwable $mailError) {
+                report($mailError);
+            }
+
             return response()->json([
                 'user' => $this->serializeRegisteredUser($user),
             ], 201);
