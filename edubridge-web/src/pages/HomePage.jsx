@@ -15,6 +15,8 @@ import {
   Users,
   Volume2,
   Quote,
+  Star,
+  BadgeCheck,
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
@@ -104,18 +106,18 @@ const HERO_TITLE_LINE_ONE = 'تعليم يناسب قدرات'
 const HERO_TITLE_LINE_TWO = 'كل طفل'
 const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
 
-const SUCCESS_STORIES = [
+const COMMUNITY_EXPERIENCES = [
   {
     avatar: 'أ',
     role: 'ولي أمر',
     title: 'متابعة أوضح في كل خطوة',
-    text: 'أصبحت متابعة التقدّم والأنشطة أسهل، وأصبح لدى الأسرة تصور أوضح لما يحتاجه الطفل في المرحلة التالية.',
+    text: 'متابعة التقدّم والأنشطة في مكان واحد تساعد الأسرة على تكوين صورة أوضح عن احتياجات الطفل والخطوة التالية.',
   },
   {
     avatar: 'م',
     role: 'معلمة',
     title: 'تعليم أكثر مرونة',
-    text: 'تساعد الأدوات المرنة والمحتوى المتنوع على تكييف الدروس بصورة أفضل مع قدرات كل طالب واحتياجاته.',
+    text: 'الأدوات المرنة والمحتوى المتنوع يسهّلان تكييف الدروس بصورة أفضل مع قدرات كل طالب واحتياجاته.',
   },
   {
     avatar: 'خ',
@@ -303,22 +305,37 @@ export default function HomePage() {
       <section className="home-section success-stories-section" aria-labelledby="success-stories-title">
         <div className="section-heading success-heading">
           <div>
-            <span className="hero-kicker">تجارب تلهمنا</span>
-            <h2 id="success-stories-title">تقييمات وتجارب المجتمع</h2>
-            <p>مساحة مخصصة لعرض آراء أولياء الأمور والمعلمين والمختصين وربطها بالتقييمات الحقيقية عند توفرها.</p>
+            <span className="hero-kicker">تجارب المجتمع</span>
+            <h2 id="success-stories-title">آراء وتقييمات المستخدمين</h2>
+            <p>نعرض التقييمات الحقيقية فقط بعد التحقق منها. لا نستخدم أرقام رضا أو مراجعات مصطنعة.</p>
           </div>
         </div>
+
+        <div className="reviews-trust-panel">
+          <div className="reviews-stars" aria-label="التقييم العام غير متوفر بعد">
+            {[0, 1, 2, 3, 4].map((star) => <Star key={star} size={22} aria-hidden="true" />)}
+          </div>
+          <div>
+            <b>التقييم العام سيظهر بعد جمع تقييمات موثقة</b>
+            <span><BadgeCheck size={15} /> سيتم تمييز المراجعات الموثقة بوضوح</span>
+          </div>
+          <a className="btn outline reviews-cta" href="#contact">شاركنا تجربتك</a>
+        </div>
+
         <div className="success-stories-grid">
-          {SUCCESS_STORIES.map((story) => (
+          {COMMUNITY_EXPERIENCES.map((story) => (
             <article className="success-story-card" key={story.title}>
-              <Quote className="story-quote" size={24} aria-hidden="true" />
+              <div className="story-card-topline">
+                <Quote className="story-quote" size={24} aria-hidden="true" />
+                <span className="story-sample-badge">نموذج تجربة</span>
+              </div>
               <h3>{story.title}</h3>
               <p>{story.text}</p>
               <div className="story-person">
                 <span className="story-avatar" aria-hidden="true">{story.avatar}</span>
                 <div>
                   <b>{story.role}</b>
-                  <small>من مجتمع EduBridge</small>
+                  <small>مثال توضيحي — ليس مراجعة منشورة</small>
                 </div>
               </div>
             </article>
