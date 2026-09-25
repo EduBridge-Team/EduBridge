@@ -4,6 +4,7 @@ import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+part 'weekly_report_view.dart';
 
 class WeeklyReportScreen extends StatefulWidget {
   final int childId;
@@ -52,21 +53,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: JisrAppBar(title: 'تقرير ${widget.childName} الأسبوعي'),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? _buildError()
-                : _report == null
-                    ? _buildEmpty()
-                    : _buildReport(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => buildView(context);
 
   Widget _buildError() {
     return Center(
