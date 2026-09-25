@@ -68,7 +68,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(AppIcons.users),
                     ),
-                    items: _roles.entries
+                    items: _RegisterScreenState._roles.entries
                         .map((e) => DropdownMenuItem(
                               value: e.key,
                               child: Text(e.value,
@@ -94,7 +94,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(AppIcons.specialist),
                       ),
-                      items: _specialties.entries
+                      items: _RegisterScreenState._specialties.entries
                           .map((e) => DropdownMenuItem(
                                 value: e.key,
                                 child: Text(e.value),
