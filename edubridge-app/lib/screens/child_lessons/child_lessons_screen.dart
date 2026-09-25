@@ -68,6 +68,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   final AudioPlayer _lessonAudioPlayer = AudioPlayer();
   String? _activeAudioUrl;
 
+  void _updateChildLessonsState(VoidCallback callback) => setState(callback);
+
   @override
   void initState() {
     super.initState();
