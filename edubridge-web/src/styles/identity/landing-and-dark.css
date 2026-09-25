@@ -160,24 +160,14 @@
   text-align: right;
 }
 
-.site-footer .footer-identity .brand-lockup {
-  gap: 10px;
+.site-footer .footer-full-logo {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
   margin-bottom: 14px;
-}
-
-.site-footer .footer-identity .brand-lockup-icon {
-  width: 58px !important;
-  height: 58px !important;
   object-fit: contain;
   filter: brightness(0) invert(1);
-}
-
-.site-footer .footer-identity .brand-wordmark {
-  font-size: 37px;
-  background: none;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-  letter-spacing: -1px;
 }
 
 .site-footer .footer-identity p {
@@ -267,14 +257,13 @@
   max-width: 1180px;
   margin: 30px auto 0;
   padding-top: 18px;
-  border-top: 1px solid rgba(255,255,255,.18);
+  border-top: 0;
   color: rgba(255,255,255,.62);
 }
 
 .site-footer .footer-copy::before {
-  height: 5px;
-  max-width: 220px;
-  margin-bottom: 16px;
+  content: none !important;
+  display: none !important;
 }
 
 @media (max-width: 900px) {
@@ -298,6 +287,11 @@
   .site-footer .footer-column {
     align-items: center;
     text-align: center;
+  }
+
+  .site-footer .footer-full-logo {
+    width: 210px;
+    margin-inline: auto;
   }
 
   .site-footer .footer-identity p {
