@@ -42,7 +42,7 @@ export default function Footer() {
 
       <div className="footer-grid">
         <div className="footer-identity">
-          <BrandLogo className="footer-brand-logo" />
+          <BrandLogo className="footer-brand-logo" light />
           <p>معاً، لكل طفل فرصة. تعليم مرن وشامل يدعم اختلاف القدرات والاحتياجات.</p>
         </div>
 
