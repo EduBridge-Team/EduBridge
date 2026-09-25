@@ -208,13 +208,12 @@ export default function HomePage() {
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
           <img
             className="reference-hero-image"
-            src="https://images.pexels.com/photos/5306431/pexels-photo-5306431.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop"
-            alt="طلاب يتعلمون مع معلمة باستخدام جهاز لوحي في بيئة تعليمية دامجة"
-            width="1600"
-            height="900"
+            src="/edubridge-hero-inclusive-edu.webp"
+            alt="طلاب متنوعون يتعلمون مع معلمة باستخدام جهاز لوحي في بيئة تعليمية دامجة"
+            width="1280"
+            height="720"
             decoding="async"
             fetchPriority="high"
-            referrerPolicy="no-referrer"
             onError={(event) => {
               event.currentTarget.onerror = null
               event.currentTarget.src = '/edubridge-hero-inclusive.webp'
