@@ -3,10 +3,30 @@
 namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
+use App\Support\Notify;
 use Illuminate\Support\Facades\DB;
 
 trait NotificationWriteActions
 {
+    public function send(Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'title' => ['required', 'string', 'max:150'],
+            'body' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:40'],
+        ]);
+
+        Notify::toUser(
+            (int) $data['user_id'],
+            $data['title'],
+            $data['body'],
+            $data['type'] ?? null,
+        );
+
+        return response()->json(['message' => 'تم إرسال الإشعار'], 201);
+    }
+
     public function markRead(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
