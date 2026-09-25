@@ -6,6 +6,7 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 
 part 'learning_support_request_cards.dart';
+part 'schedule_learning_support_sheet.dart';
 
 class LearningSupportRequestsScreen extends StatefulWidget {
   const LearningSupportRequestsScreen({super.key});
