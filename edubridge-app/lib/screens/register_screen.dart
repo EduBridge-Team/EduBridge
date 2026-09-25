@@ -1,5 +1,6 @@
-// register_screen.dart — النسخة المحدّثة
+// lib/screens/register_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/brand_lockup.dart';
@@ -64,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم إنشاء الحساب بنجاح — سجّل دخولك الآن'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.green,
         ),
       );
       Navigator.pop(context);
@@ -113,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: const InputDecoration(
                       labelText: 'الاسم',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: Icon(AppIcons.profile),
                     ),
                     validator: (v) =>
                         (v == null || v.trim().isEmpty) ? 'الاسم مطلوب' : null,
@@ -127,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: const InputDecoration(
                       labelText: 'الإيميل',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: Icon(AppIcons.notifications),
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
@@ -148,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: const InputDecoration(
                       labelText: 'الدور',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.badge),
+                      prefixIcon: Icon(AppIcons.users),
                     ),
                     items: _roles.entries
                         .map((e) => DropdownMenuItem(
@@ -174,7 +175,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         labelText: 'التخصص',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.school_outlined),
+                        prefixIcon: Icon(AppIcons.specialist),
                       ),
                       items: _specialties.entries
                           .map((e) => DropdownMenuItem(
@@ -197,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: const InputDecoration(
                       labelText: 'كلمة المرور',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: Icon(AppIcons.lock),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'كلمة المرور مطلوبة';
@@ -216,32 +217,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: const InputDecoration(
                       labelText: 'تأكيد كلمة المرور',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline),
+                      prefixIcon: Icon(AppIcons.lock),
                     ),
                     validator: (v) =>
-                        v != _passwordCtrl.text ? 'كلمتا المرور غير متطابقتين' : null,
+                        v != _passwordCtrl.text
+                            ? 'كلمتا المرور غير متطابقتين'
+                            : null,
                   ),
                   const SizedBox(height: 16),
 
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
-                        _error!,
-                        style:
-                            const TextStyle(color: Colors.red, fontSize: 16),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(AppIcons.error,
+                                color: AppColors.red, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                style: const TextStyle(
+                                    color: AppColors.red, fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
                   SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandBlue,
+                      ),
                       onPressed: _loading ? null : _register,
-                      child: _loading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('إنشاء الحساب',
-                              style: TextStyle(fontSize: 20)),
+                      icon: _loading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2),
+                            )
+                          : const Icon(AppIcons.check),
+                      label: Text(
+                        _loading ? 'جارٍ الإنشاء...' : 'إنشاء الحساب',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],

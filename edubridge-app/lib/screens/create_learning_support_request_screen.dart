@@ -1,5 +1,6 @@
 // lib/screens/create_learning_support_request_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -28,7 +29,6 @@ class _CreateLearningSupportRequestScreenState
   bool _saving = false;
   String? _error;
 
-  // ✅ الأسباب الجاهزة
   static const _reasons = [
     'صعوبة في فهم الدروس',
     'تراجع في التقدم الدراسي',
@@ -75,8 +75,8 @@ class _CreateLearningSupportRequestScreenState
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم إرسال الطلب للمختص — سيصلك إشعار بالموعد'),
-            backgroundColor: Colors.green,
+            content: Text('تم إرسال الطلب للمختص — سيصلك إشعار بالموعد'),
+            backgroundColor: AppColors.green,
             duration: Duration(seconds: 4),
           ),
         );
@@ -95,13 +95,12 @@ class _CreateLearningSupportRequestScreenState
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '📘 طلب دعم تعليمي'),
+      appBar: JisrAppBar(title: 'طلب دعم تعليمي'),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // ─── رأس توضيحي ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -110,8 +109,8 @@ class _CreateLearningSupportRequestScreenState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.school_outlined,
-                      color: AppColors.tealDeep, size: 40),
+                  const Icon(AppIcons.specialist,
+                      color: AppColors.brandBlue, size: 40),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -137,7 +136,6 @@ class _CreateLearningSupportRequestScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── السبب الرئيسي ───
             Text(
               'السبب الرئيسي *',
               style: TextStyle(
@@ -169,7 +167,6 @@ class _CreateLearningSupportRequestScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── الشرح ───
             Text(
               'اشرح نوع الدعم التعليمي المطلوب',
               style: TextStyle(
@@ -187,7 +184,7 @@ class _CreateLearningSupportRequestScreenState
                 hintText:
                     'اشرح الصعوبة التعليمية، متى تظهر، وما الذي يساعد الطفل أثناء التعلم...',
                 alignLabelWithHint: true,
-                prefixIcon: Icon(Icons.description),
+                prefixIcon: Icon(AppIcons.edit),
               ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
@@ -201,7 +198,6 @@ class _CreateLearningSupportRequestScreenState
             ),
             const SizedBox(height: 12),
 
-            // ─── درجة الأهمية ───
             Text(
               'أولوية المتابعة',
               style: TextStyle(
@@ -215,7 +211,7 @@ class _CreateLearningSupportRequestScreenState
               children: [
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🟢 مرنة',
+                    label: 'مرنة',
                     selected: _urgency == 'low',
                     color: AppColors.green,
                     onTap: () => setState(() => _urgency = 'low'),
@@ -224,7 +220,7 @@ class _CreateLearningSupportRequestScreenState
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🟡 عادية',
+                    label: 'عادية',
                     selected: _urgency == 'medium',
                     color: AppColors.orange,
                     onTap: () => setState(() => _urgency = 'medium'),
@@ -233,7 +229,7 @@ class _CreateLearningSupportRequestScreenState
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: '🟠 مرتفعة',
+                    label: 'مرتفعة',
                     selected: _urgency == 'high',
                     color: AppColors.red,
                     onTap: () => setState(() => _urgency = 'high'),
@@ -243,7 +239,6 @@ class _CreateLearningSupportRequestScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── ملاحظة ───
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -252,7 +247,7 @@ class _CreateLearningSupportRequestScreenState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline,
+                  const Icon(AppIcons.info,
                       color: AppColors.orangeDeep),
                   const SizedBox(width: 8),
                   Expanded(
@@ -267,7 +262,24 @@ class _CreateLearningSupportRequestScreenState
 
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.error,
+                        color: AppColors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(_error!,
+                          style: const TextStyle(color: AppColors.red)),
+                    ),
+                  ],
+                ),
+              ),
             ],
 
             const SizedBox(height: 24),
@@ -275,7 +287,7 @@ class _CreateLearningSupportRequestScreenState
               height: 56,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.tealDeep,
+                  backgroundColor: AppColors.brandBlue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -286,11 +298,9 @@ class _CreateLearningSupportRequestScreenState
                         width: 22,
                         height: 22,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
+                            strokeWidth: 2, color: Colors.white),
                       )
-                    : const Icon(Icons.send),
+                    : const Icon(AppIcons.send),
                 label: Text(
                   _saving ? 'جارِ الإرسال...' : 'إرسال طلب الدعم',
                   style: const TextStyle(

@@ -1,10 +1,13 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
+import 'admin/admin_screen.dart';
 import 'welcome_screen.dart';
-import 'admin_screen.dart';
+
 import 'children_screen.dart';
 import 'lessons_screen.dart';
 
@@ -41,6 +44,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
+          // ═══ الهيدر ═══
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -80,20 +84,20 @@ class HomeScreen extends StatelessWidget {
                             DashboardMenuAction(
                               id: 'theme',
                               label: 'تبديل وضع العرض',
-                              icon: Icons.contrast,
+                              icon: AppIcons.theme,
                               onSelected: toggleThemeMode,
                             ),
                             DashboardMenuAction(
                               id: 'legal',
                               label: 'الخصوصية والحساب',
-                              icon: Icons.privacy_tip_outlined,
+                              icon: AppIcons.privacy,
                               onSelected: () =>
                                   const LegalLinksButton().show(context),
                             ),
                             DashboardMenuAction(
                               id: 'logout',
                               label: 'تسجيل الخروج',
-                              icon: Icons.logout,
+                              icon: AppIcons.logout,
                               destructive: true,
                               onSelected: () => _logout(context),
                             ),
@@ -112,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'مرحباً بك 👋',
+                              'مرحباً بك',
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white70),
                             ),
@@ -136,6 +140,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // ═══ القائمة ═══
           Expanded(
             child: FutureBuilder<String?>(
               future: ApiService.getRole(),
@@ -146,7 +152,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     if (isAdmin)
                       _MenuTile(
-                        icon: '⚙️',
+                        icon: AppIcons.dashboard,
                         tint: c.tintTeal,
                         title: 'لوحة التحكم الإدارية',
                         subtitle: 'إدارة المستخدمين وربط الأطفال بأولياء الأمور',
@@ -159,14 +165,14 @@ class HomeScreen extends StatelessWidget {
                         },
                       ),
                     _MenuTile(
-                      icon: '👧',
+                      icon: AppIcons.child,
                       tint: c.tintTeal,
                       title: 'الأطفال',
                       subtitle: 'عرض الأطفال ودروسهم وتقدّمهم',
                       onTap: () => _openChildren(context),
                     ),
                     _MenuTile(
-                      icon: '📚',
+                      icon: AppIcons.lesson,
                       tint: c.tintGreen,
                       title: 'تصفح الدروس',
                       subtitle: 'كل الدروس مع بحث',
@@ -179,7 +185,7 @@ class HomeScreen extends StatelessWidget {
                       },
                     ),
                     _MenuTile(
-                      icon: '📊',
+                      icon: AppIcons.progress,
                       tint: c.tintOrange,
                       title: 'التقدّم والمكافآت',
                       subtitle: 'ملخّص الإنجاز والنجوم وشارات كل طفل',
@@ -203,8 +209,11 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+//  بطاقة قائمة موحّدة بألوان الهوية
+// ═══════════════════════════════════════════════════════════
 class _MenuTile extends StatelessWidget {
-  final String icon;
+  final IconData icon;
   final Color tint;
   final String title;
   final String subtitle;
@@ -243,7 +252,8 @@ class _MenuTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 alignment: Alignment.center,
-                child: Text(icon, style: const TextStyle(fontSize: 26)),
+                child: Icon(icon,
+                    size: 26, color: AppColors.brandBlue),
               ),
               const SizedBox(width: 14),
               Expanded(

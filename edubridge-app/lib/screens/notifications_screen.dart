@@ -1,5 +1,6 @@
 // lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';
 import '../theme.dart';
@@ -88,54 +89,72 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  // أيقونات إشعارات الدعم التعليمي
-  String _getIcon(String type) {
+  IconData _getIcon(String type) {
     switch (type) {
       case 'child_added':
-        return '👶';
+        return AppIcons.child;
       case 'child_evaluated':
-        return '📋';
+        return AppIcons.evaluate;
       case 'child_assigned':
-        return '👨‍🏫';
+        return AppIcons.teacher;
       case 'lesson_added':
-        return '📚';
+        return AppIcons.lesson;
       case 'plan_approved':
-        return '✅';
+        return AppIcons.check;
       case 'plan_rejected':
-        return '❌';
+        return AppIcons.error;
       case 'plan_submitted':
-        return '📤';
+        return AppIcons.upload;
       case 'homework_assigned':
-        return '📝';
+        return AppIcons.homework;
       case 'homework_submitted':
-        return '📥';
+        return AppIcons.download;
       case 'homework_submitted_late':
-        return '⏰';
+        return AppIcons.clock;
       case 'homework_graded':
-        return '⭐';
+        return AppIcons.starFilled;
       case 'weekly_report_created':
-        return '📊';
+        return AppIcons.report;
       case 'specialist_progress_created':
-        return '🧠';
+        return AppIcons.specialist;
       case 'plan_evaluation_created':
-        return '📋';
+        return AppIcons.evaluate;
       case 'learning_support_meeting_scheduled':
-        return '🗓️';
-      // ✅ جديد
+        return AppIcons.event;
       case 'learning_support_request_created':
-        return '🧠';
+        return AppIcons.specialist;
       case 'learning_support_scheduled':
-        return '📅';
+        return AppIcons.calendar;
       case 'learning_support_request_cancelled':
-        return '❌';
+        return AppIcons.error;
       case 'specialist_suggestion':
-       return '🤝';
-     case 'suggestion_accepted':
-       return '✅';
-     case 'suggestion_rejected':
-       return '❌';  
+        return AppIcons.users;
+      case 'suggestion_accepted':
+        return AppIcons.check;
+      case 'suggestion_rejected':
+        return AppIcons.error;
       default:
-        return '🔔';
+        return AppIcons.notifications;
+    }
+  }
+
+  Color _getIconColor(String type) {
+    switch (type) {
+      case 'plan_approved':
+      case 'suggestion_accepted':
+      case 'homework_graded':
+        return AppColors.green;
+      case 'plan_rejected':
+      case 'suggestion_rejected':
+      case 'learning_support_request_cancelled':
+        return AppColors.red;
+      case 'homework_submitted_late':
+        return AppColors.orangeDeep;
+      case 'learning_support_scheduled':
+      case 'learning_support_meeting_scheduled':
+        return AppColors.brandTeal;
+      default:
+        return AppColors.brandBlue;
     }
   }
 
@@ -148,7 +167,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         title: 'الإشعارات',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             tooltip: 'تحديث',
             onPressed: _loading ? null : _load,
           ),
@@ -190,10 +209,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(_error!,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+                style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
@@ -210,7 +229,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.notifications_off, size: 64, color: c.muted),
+                Icon(AppIcons.notifications, size: 64, color: c.muted),
                 const SizedBox(height: 16),
                 Text(
                   'لا توجد إشعارات',
@@ -240,6 +259,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         : null;
     final title = (n['title'] ?? '').toString();
     final body = (n['body'] ?? '').toString();
+    final type = n['type']?.toString() ?? '';
+    final icon = _getIcon(type);
+    final iconColor = _getIconColor(type);
 
     return Speakable(
       text: '$title: $body',
@@ -249,9 +271,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         color: isRead ? null : c.tintTeal.withValues(alpha: 0.3),
         child: ListTile(
           contentPadding: const EdgeInsets.all(12),
-          leading: Text(
-            _getIcon(n['type']?.toString() ?? ''),
-            style: const TextStyle(fontSize: 28),
+          leading: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 24, color: iconColor),
           ),
           title: Text(
             title,
@@ -281,27 +309,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   width: 10,
                   height: 10,
                   decoration: const BoxDecoration(
-                    color: Colors.blue,
+                    color: AppColors.brandBlue,
                     shape: BoxShape.circle,
                   ),
                 ),
-            onTap: () {
-          _markRead(n['id']);
-          final type = n['type']?.toString();
-          if (type == 'specialist_suggestion' ||
-              type == 'suggestion_accepted' ||
-              type == 'suggestion_rejected') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const SpecialistSuggestionsScreen(),
-              ),
-
-            );
-              }
+          onTap: () {
+            _markRead(n['id']);
+            if (type == 'specialist_suggestion' ||
+                type == 'suggestion_accepted' ||
+                type == 'suggestion_rejected') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SpecialistSuggestionsScreen(),
+                ),
+              );
             }
-        )
-        
+          },
+        ),
       ),
     );
   }

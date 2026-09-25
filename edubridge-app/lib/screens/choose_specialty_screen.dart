@@ -1,7 +1,7 @@
 // lib/screens/choose_specialty_screen.dart
-// شاشة اختيار التخصص للمختص (عند عدم تحديده)
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -40,8 +40,8 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
       if (res.statusCode == 200 || res.statusCode == 204) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم حفظ تخصصك بنجاح'),
-            backgroundColor: Colors.green,
+            content: Text('تم حفظ تخصصك بنجاح'),
+            backgroundColor: AppColors.green,
           ),
         );
         widget.onDone?.call();
@@ -69,13 +69,12 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '🎯 تحديد التخصص'),
+      appBar: JisrAppBar(title: 'تحديد التخصص'),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ─── تنبيه ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -88,7 +87,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline,
+                  const Icon(AppIcons.warning,
                       color: AppColors.orangeDeep, size: 28),
                   const SizedBox(width: 12),
                   Expanded(
@@ -130,9 +129,8 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
             ),
             const SizedBox(height: 16),
 
-            // ─── مختص دعم تعليمي ───
             _SpecialtyCard(
-              icon: Icons.school_outlined,
+              icon: AppIcons.specialist,
               title: 'مختص دعم تعليمي',
               description:
                   'متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي',
@@ -142,13 +140,12 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
             ),
             const SizedBox(height: 12),
 
-            // ─── مختص تعليمي ───
             _SpecialtyCard(
-              icon: Icons.school,
+              icon: AppIcons.lesson,
               title: 'مختص تعليمي',
               description:
                   'تقييم الجانب التعليمي، تصميم الخطط التعليمية، ومتابعة تقدّم الأطفال',
-              color: AppColors.navy,
+              color: AppColors.brandBlue,
               selected: _selected == 'educational',
               onTap: () => setState(() => _selected = 'educational'),
             ),
@@ -159,19 +156,27 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  _error!,
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.error,
+                        color: AppColors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: AppColors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),
             ],
 
-            // ─── زر الحفظ ───
             SizedBox(
               height: 56,
               child: ElevatedButton.icon(
@@ -180,7 +185,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
                       ? Colors.grey
                       : (_selected == 'learning_support'
                           ? AppColors.purple
-                          : AppColors.navy),
+                          : AppColors.brandBlue),
                 ),
                 icon: _saving
                     ? const SizedBox(
@@ -191,7 +196,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.check),
+                    : const Icon(AppIcons.check),
                 label: Text(
                   _saving ? 'جارٍ الحفظ...' : 'تأكيد التخصص',
                   style: const TextStyle(
@@ -205,7 +210,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '⚠️ بعد الحفظ، لا يمكن التغيير إلا بالتواصل مع الدعم الفني',
+              'بعد الحفظ، لا يمكن التغيير إلا بالتواصل مع الدعم الفني',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11.5,
@@ -307,7 +312,7 @@ class _SpecialtyCard extends StatelessWidget {
               ),
             ),
             if (selected)
-              Icon(Icons.check_circle, color: color, size: 28),
+              Icon(AppIcons.check, color: color, size: 28),
           ],
         ),
       ),
