@@ -4,9 +4,12 @@ import {
   Accessibility,
   ArrowLeft,
   BarChart3,
+  Bell,
   BookOpen,
   CheckCircle2,
+  ClipboardCheck,
   Heart,
+  MessageCircle,
   Play,
   ShieldCheck,
   Users,
@@ -44,12 +47,39 @@ const AUDIENCES = [
   },
 ]
 
+const SERVICES = [
+  {
+    Icon: BookOpen,
+    title: 'التعلّم والدروس',
+    text: 'دروس وأنشطة تعليمية يمكن تكييفها مع مستوى الطفل واحتياجاته، مع محتوى متنوع يدعم رحلة التعلّم اليومية.',
+    audience: 'للطفل والمعلم',
+  },
+  {
+    Icon: BarChart3,
+    title: 'متابعة وتقييم التقدّم',
+    text: 'متابعة واضحة للإنجاز والتقدّم تساعد الأسرة والمعلم على فهم ما تحقق وتحديد الخطوة التعليمية التالية.',
+    audience: 'للأسرة وفريق التعليم',
+  },
+  {
+    Icon: MessageCircle,
+    title: 'التواصل والتعاون',
+    text: 'مساحة منظمة تجمع ولي الأمر والمعلم والمختص لتبادل المتابعة والملاحظات حول احتياجات الطفل وتقدّمه.',
+    audience: 'للفريق الداعم',
+  },
+  {
+    Icon: ClipboardCheck,
+    title: 'الدعم التعليمي المتخصص',
+    text: 'إدارة طلبات الدعم والتقييم والمتابعة مع المختصين ضمن رحلة مترابطة تساعد على بناء تدخلات تعليمية أوضح.',
+    audience: 'للأسرة والمختص',
+  },
+]
+
 const FEATURES = [
-  { Icon: BookOpen, title: 'دروس مخصصة', text: 'محتوى يناسب مستوى وقدرات كل طفل' },
-  { Icon: BarChart3, title: 'متابعة التقدم', text: 'تقارير واضحة لقياس النمو والإنجازات' },
-  { Icon: Users, title: 'تعاون مستمر', text: 'تواصل فعّال بين الأسرة والمعلمين والمختصين' },
-  { Icon: ShieldCheck, title: 'إتاحة وشمولية', text: 'تصميم يدعم مختلف القدرات والاحتياجات' },
-  { Icon: Accessibility, title: 'مساندة تعليمية', text: 'إرشاد مبسط وأدوات مساعدة تراعي احتياجات المتعلم' },
+  { Icon: Accessibility, title: 'وصول أسهل', text: 'واجهة تراعي اختلاف القدرات وتدعم تجربة استخدام أكثر شمولاً' },
+  { Icon: Users, title: 'تجربة حسب الدور', text: 'مساحات وأدوات مناسبة لولي الأمر والمعلم والمختص' },
+  { Icon: Bell, title: 'متابعة وتنبيهات', text: 'تنظيم أفضل للمهام والتحديثات التي تحتاج انتباه المستخدم' },
+  { Icon: ShieldCheck, title: 'خصوصية وصلاحيات', text: 'وصول منظم للمعلومات بحسب دور المستخدم وصلاحياته' },
+  { Icon: Heart, title: 'رحلة مترابطة', text: 'تجميع أهم تفاصيل التعلّم والدعم في مكان واحد بدلاً من تشتتها' },
 ]
 
 const IMPACT = [
@@ -163,7 +193,7 @@ export default function HomePage() {
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/register')}>
               ابدأ رحلتك الآن <ArrowLeft size={18} />
             </button>
-            <a className="btn outline" href="#features"><Play size={18} /> شاهد ما نقدمه</a>
+            <a className="btn outline" href="#services"><Play size={18} /> شاهد ما نقدمه</a>
           </div>
 
           <div className="hero-promises">
@@ -185,7 +215,7 @@ export default function HomePage() {
       <section className="home-section audience-section">
         <div className="section-heading compact">
           <div><h2>لمن صُممت EduBridge؟</h2><p>حلول مخصصة لكل من يشارك في رحلة التعلّم</p></div>
-          <a href="#features" className="soft-link">اكتشف المزيد <ArrowLeft size={16} /></a>
+          <a href="#services" className="soft-link">اكتشف المزيد <ArrowLeft size={16} /></a>
         </div>
         <div className="audience-grid">
           {AUDIENCES.map((item) => (
@@ -200,8 +230,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="home-section services-section" id="services" aria-labelledby="services-title">
+        <div className="section-heading services-heading">
+          <div>
+            <span className="hero-kicker">ما الذي نقدمه؟</span>
+            <h2 id="services-title">خدمات EduBridge</h2>
+            <p>خدمات تعليمية وداعمة تربط أجزاء رحلة الطفل بدل أن تبقى كل خطوة منفصلة عن الأخرى.</p>
+          </div>
+        </div>
+        <div className="services-grid">
+          {SERVICES.map(({ Icon, title, text, audience }) => (
+            <article className="service-card" key={title}>
+              <span className="service-icon"><Icon size={28} /></span>
+              <span className="service-audience">{audience}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="home-section features-section" id="features">
-        <div className="section-heading"><div><h2>مميزات منصتنا</h2><p>تجربة تعليمية متكاملة تدعم الجميع</p></div></div>
+        <div className="section-heading"><div><h2>مميزات المنصة</h2><p>خصائص تجعل استخدام الخدمات أبسط وأكثر تنظيماً وشمولاً</p></div></div>
         <div className="home-features-grid">
           {FEATURES.map(({ Icon, title, text }) => (
             <article className="home-feature" key={title}>
