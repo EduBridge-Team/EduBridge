@@ -8,7 +8,7 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
   Future<void> _ensureChildrenLoaded() async {
     if (_childrenCache.isNotEmpty &&
         _childrenCacheTime != null &&
-        DateTime.now().difference(_childrenCacheTime!) < _cacheDuration) {
+        DateTime.now().difference(_childrenCacheTime!) < VoiceCommandService._cacheDuration) {
       return;
     }
     try {
