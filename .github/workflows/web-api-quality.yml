@@ -195,6 +195,7 @@ jobs:
         run: php artisan test
       - name: No API changes
         if: needs.changes.outputs.api != 'true'
+        working-directory: .
         run: echo "No Laravel changes; required Laravel tests check passes."
 
 
