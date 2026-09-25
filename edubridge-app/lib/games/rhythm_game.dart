@@ -157,7 +157,7 @@ class _RhythmGameState extends State<RhythmGame> {
     VisualCelebration.show(
       context,
       message: 'أحسنت! أتممت التمرين',
-      emoji: '🎵',
+      icon: Icons.music_note,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     ).then((_) {

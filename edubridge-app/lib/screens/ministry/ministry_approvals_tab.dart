@@ -55,7 +55,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(AppIcons.check, color: AppColors.green, size: 32),
+            Icon(AppIcons.check, color: AppColors.brandTealDeep, size: 32),
             SizedBox(width: 8),
             Text('اعتماد الخطة'),
           ],
@@ -71,7 +71,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
             child: const Text('إلغاء'),
           ),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTealDeep),
             icon: const Icon(AppIcons.check),
             label: const Text('اعتماد'),
             onPressed: () => Navigator.pop(context, true),
@@ -96,7 +96,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('تم اعتماد الخطة وإشعار المختص والمعلم'),
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.brandTealDeep,
       ),
     );
     _load();
@@ -317,7 +317,7 @@ class _MinistryApprovalCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.brandTealDeep,
                   child: Text(
                     (approval['child_name'] ?? '؟').toString().characters.first,
                     style: const TextStyle(
@@ -349,19 +349,19 @@ class _MinistryApprovalCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withValues(alpha: 0.15),
+                    color: AppColors.brandTealDeep.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(AppIcons.clock, size: 12, color: AppColors.orangeDeep),
+                      Icon(AppIcons.clock, size: 12, color: AppColors.brandTealDeep),
                       SizedBox(width: 4),
                       Text('قيد المراجعة',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.orangeDeep,
+                            color: AppColors.brandTealDeep,
                           )),
                     ],
                   ),
@@ -454,7 +454,7 @@ class _MinistryProcessedCard extends StatelessWidget {
     final c = JisrColors.of(context);
     final status = approval['status'] ?? 'pending';
     final isApproved = status == 'approved';
-    final color = isApproved ? AppColors.green : AppColors.red;
+    final color = isApproved ? AppColors.brandTealDeep : AppColors.red;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),

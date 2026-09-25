@@ -60,7 +60,7 @@ class _RecommendLearningSupportSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم إرسال التوصية لولي الأمر'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTealDeep,
         ),
       );
     } catch (e) {
@@ -93,7 +93,7 @@ class _RecommendLearningSupportSheetState
             children: [
               Row(
                 children: [
-                  const Icon(AppIcons.specialist, color: AppColors.purple, size: 30),
+                  const Icon(AppIcons.specialist, color: AppColors.brandTealDeep, size: 30),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -162,7 +162,7 @@ class _RecommendLearningSupportSheetState
                     flex: 2,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.purple,
+                        backgroundColor: AppColors.brandTealDeep,
                         foregroundColor: Colors.white,
                       ),
                       onPressed: _saving ? null : _save,

@@ -115,7 +115,7 @@ class _SymbolsGameState extends State<SymbolsGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',
-      emoji: '🌈',
+      icon: Icons.star_border_outlined,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

@@ -31,7 +31,7 @@ class VisualCelebration extends StatefulWidget {
     String? emoji,
     Duration duration = const Duration(seconds: 3),
     bool playSound = true,
-    String? childName,
+    String? childName, required IconData icon,
   }) async {
     final overlay = Overlay.maybeOf(context, rootOverlay: true);
     if (overlay == null) return;

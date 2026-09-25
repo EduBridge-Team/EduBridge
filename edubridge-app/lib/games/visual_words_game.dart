@@ -129,7 +129,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds كلمات',
-      emoji: '💙',
+      icon: Icons.star,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

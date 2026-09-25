@@ -71,7 +71,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم حفظ التصحيح وإرساله للطالب'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandTealDeep,
           ),
         );
       } else {
@@ -109,7 +109,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
             children: [
               Row(
                 children: [
-                  const Icon(AppIcons.grade, color: AppColors.green, size: 28),
+                  const Icon(AppIcons.grade, color: AppColors.brandTealDeep, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

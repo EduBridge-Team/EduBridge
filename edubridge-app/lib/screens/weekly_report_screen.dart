@@ -184,7 +184,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               label: 'اجتماعات الدعم',
               value:
                   '${r.learningSupportMeetingsAttended}/${r.learningSupportMeetingsScheduled}',
-              color: AppColors.pink,
+              color: AppColors.brandBlueLight,
             ),
             const SizedBox(width: 8),
             _statCard(

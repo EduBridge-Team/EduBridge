@@ -61,7 +61,7 @@ class SpecialistPickerSheet extends StatelessWidget {
             final email = (specialist['email'] ?? '').toString();
             return ListTile(
               leading: CircleAvatar(
-                backgroundColor: AppColors.orange,
+                backgroundColor: AppColors.brandBlueLight,
                 child: Text(
                   name.trim().isEmpty ? 'م' : name.trim().characters.first,
                   style: const TextStyle(color: Colors.white),

@@ -191,9 +191,9 @@ class _SpecialistSuggestionsScreenState
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                _filterChip('معلقة', 'pending', AppColors.orange),
+                _filterChip('معلقة', 'pending', AppColors.brandBlueLight),
                 const SizedBox(width: 8),
-                _filterChip('مقبولة', 'accepted', AppColors.green),
+                _filterChip('مقبولة', 'accepted', AppColors.brandTealDeep),
                 const SizedBox(width: 8),
                 _filterChip('مرفوضة', 'rejected', AppColors.red),
                 const SizedBox(width: 8),

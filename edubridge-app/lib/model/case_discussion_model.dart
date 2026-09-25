@@ -1,5 +1,7 @@
-// lib/models/case_discussion_model.dart
+// lib/model/case_discussion_model.dart
 // نموذج دراسة الحالة — نقاش بين المعلم والمختص بإشراف
+import 'package:flutter/material.dart';
+
 enum CaseMessageType {
   text,        // رسالة عادية
   observation, // ملاحظة
@@ -58,7 +60,6 @@ class CaseDiscussion {
   final int id;
   final int childId;
   final String childName;
-  final String childAvatar; // emoji فقط للعرض
   final String? disabilityType;
   final String topic;
   final String? description;
@@ -75,7 +76,6 @@ class CaseDiscussion {
     required this.id,
     required this.childId,
     required this.childName,
-    this.childAvatar = '🧒',
     this.disabilityType,
     required this.topic,
     this.description,
@@ -89,12 +89,10 @@ class CaseDiscussion {
     this.unreadCount = 0,
   });
 
-  factory CaseDiscussion.fromJson(Map<String, dynamic> json) =>
-      CaseDiscussion(
+  factory CaseDiscussion.fromJson(Map<String, dynamic> json) => CaseDiscussion(
         id: json['id'],
         childId: json['child_id'],
         childName: json['child_name'] ?? '',
-        childAvatar: json['child_avatar'] ?? '🧒',
         disabilityType: json['disability_type'],
         topic: json['topic'] ?? '',
         description: json['description'],
@@ -150,12 +148,15 @@ class CaseParticipant {
         specialty: json['specialty'],
       );
 
-  String get emoji {
-    if (role == 'teacher') return '👨‍🏫';
-    if (specialty == 'learning_support') return '📘';
-    if (specialty == 'educational') return '📚';
-    if (specialty == 'communication_support') return '🗣️';
-    if (specialty == 'learning_behavior') return '🎯';
-    return '🧩';
+  // ─── أيقونة الدور بدل الإيموجي ───
+  IconData get icon {
+    if (role == 'teacher') return Icons.school;
+    if (specialty == 'learning_support') return Icons.menu_book;
+    if (specialty == 'educational') return Icons.auto_stories;
+    if (specialty == 'communication_support') {
+      return Icons.record_voice_over;
+    }
+    if (specialty == 'learning_behavior') return Icons.track_changes;
+    return Icons.extension;
   }
 }

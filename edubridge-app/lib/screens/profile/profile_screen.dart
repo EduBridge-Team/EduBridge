@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم تحديث الصورة'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.blue,
         ),
       );
     } catch (e) {
@@ -138,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم حذف الصورة'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.blue,
         ),
       );
     }
@@ -422,7 +422,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: isVerified ? AppIcons.verified : AppIcons.info,
               label: 'الحالة',
               value: isVerified ? 'موثّق' : 'غير موثّق',
-              valueColor: isVerified ? AppColors.green : AppColors.orange,
+              valueColor: isVerified ? AppColors.brandBlueLight : AppColors.brandTealDeep,
             ),
           ],
         ),
@@ -509,7 +509,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.orange,
+                        color: AppColors.blue,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -551,7 +551,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.green.withValues(alpha: 0.9),
+                color: AppColors.brandBlue.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Row(

@@ -71,7 +71,7 @@ class _ShapesGameState extends State<ShapesGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',
-      emoji: '🔺',
+      icon:Icons.circle,
       childName: widget.childName,
     );
     if (mounted) Navigator.pop(context);

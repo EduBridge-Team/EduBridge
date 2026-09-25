@@ -80,21 +80,21 @@ List<Map<String, dynamic>> getSampleLessons(DisabilityType type) {
       return [
         {
           'id': -1,
-          'title': '🍎 الفواكه',
+          'title': ' الفواكه',
           'content':
               'هذه تفاحة 🍎. التفاحة لونها أحمر. أكل التفاحة مفيد!',
           'is_sample': true,
         },
         {
           'id': -2,
-          'title': '🐶 الحيوانات',
+          'title': ' الحيوانات',
           'content':
               'هذا كلب 🐶. الكلب يقول: هَو هَو. الكلب صديق الإنسان.',
           'is_sample': true,
         },
         {
           'id': -3,
-          'title': '🌞 الطقس',
+          'title': ' الطقس',
           'content':
               'اليوم الشمس مشرقة ☀️. نلبس ملابس خفيفة. نشرب ماء كثيراً.',
           'is_sample': true,

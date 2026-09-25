@@ -201,7 +201,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds قصص',
-      emoji: '📖',
+      icon:Icons.book,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

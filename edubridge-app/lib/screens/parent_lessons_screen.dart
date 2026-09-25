@@ -137,11 +137,11 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: AppColors.purple.withValues(alpha: 0.1),
+            color: AppColors.brandBlueLight.withValues(alpha: 0.1),
             child: Row(
               children: [
                 const Icon(AppIcons.parent,
-                    color: AppColors.purple, size: 32),
+                    color: AppColors.brandBlueLight, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -152,7 +152,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.purple,
+                          color: AppColors.brandBlueLight,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -291,11 +291,11 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: AppColors.purple.withValues(alpha: 0.12),
+                    color: AppColors.brandBlueLight.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(AppIcons.parent,
-                      size: 26, color: AppColors.purple),
+                      size: 26, color: AppColors.brandBlueLight),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -355,7 +355,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                 height: 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.purple,
+                    backgroundColor: AppColors.brandBlueLight,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),

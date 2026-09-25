@@ -110,7 +110,7 @@ class _LearningSupportMeetingsScreenState
                           s.status == LearningSupportMeetingStatus.scheduled)
                       .length,
                   selected: _filter == 'scheduled',
-                  color: AppColors.orange,
+                  color: AppColors.brandBlueLight,
                   onTap: () => setState(() => _filter = 'scheduled'),
                 ),
                 const SizedBox(width: 8),
@@ -121,7 +121,7 @@ class _LearningSupportMeetingsScreenState
                           s.status == LearningSupportMeetingStatus.completed)
                       .length,
                   selected: _filter == 'completed',
-                  color: AppColors.green,
+                  color: AppColors.brandTealDeep,
                   onTap: () => setState(() => _filter = 'completed'),
                 ),
               ],
@@ -341,12 +341,12 @@ class _SessionCard extends StatelessWidget {
   Color get _statusColor {
     switch (session.status) {
       case LearningSupportMeetingStatus.scheduled:
-        return AppColors.orange;
+        return AppColors.brandBlueLight;
       case LearningSupportMeetingStatus.completed:
-        return AppColors.green;
+        return AppColors.brandTealDeep;
       case LearningSupportMeetingStatus.cancelled:
       case LearningSupportMeetingStatus.noShow:
-        return AppColors.red;
+        return AppColors.brandTealLight;
     }
   }
 

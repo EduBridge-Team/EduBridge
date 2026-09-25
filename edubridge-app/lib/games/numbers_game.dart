@@ -86,7 +86,7 @@ class _NumbersGameState extends State<NumbersGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $scorePercent%',
-      emoji: '🔢',
+      icon: Icons.numbers,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

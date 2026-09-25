@@ -114,7 +114,7 @@ Widget buildCustomDisabilityBox({
       children: [
         Row(
           children: [
-            const Icon(AppIcons.edit, color: AppColors.orangeDeep, size: 24),
+            const Icon(AppIcons.edit, color: AppColors.brandBlue, size: 24),
             const SizedBox(width: 8),
             Text(
               'اكتب اسم الإعاقة',
@@ -145,7 +145,7 @@ Widget buildCustomDisabilityBox({
           height: 48,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.blue,
               foregroundColor: Colors.white,
             ),
             icon: const Icon(AppIcons.check),

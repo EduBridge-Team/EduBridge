@@ -143,13 +143,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'plan_approved':
       case 'suggestion_accepted':
       case 'homework_graded':
-        return AppColors.green;
+        return AppColors.brandBlue;
       case 'plan_rejected':
       case 'suggestion_rejected':
       case 'learning_support_request_cancelled':
-        return AppColors.red;
+        return AppColors.brandTealDeep;
       case 'homework_submitted_late':
-        return AppColors.orangeDeep;
+        return AppColors.brandBlueLight;
       case 'learning_support_scheduled':
       case 'learning_support_meeting_scheduled':
         return AppColors.brandTeal;

@@ -248,11 +248,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.orange.withValues(alpha: 0.15),
+                  color: AppColors.brandBlueLight.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(AppIcons.verified,
-                    size: 48, color: AppColors.orange),
+                    size: 48, color: AppColors.brandBlueLight),
               ),
               const SizedBox(height: 20),
               Text(
@@ -280,7 +280,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 height: 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orange,
+                    backgroundColor: AppColors.brandBlueLight,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -325,7 +325,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('يرجى توثيق الهوية أولاً'),
-            backgroundColor: AppColors.orange,
+            backgroundColor: AppColors.brandBlueLight,
           ),
         );
       }
@@ -517,7 +517,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم اعتماد إنجاز الدرس'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandTealDeep,
           ),
         );
       }
@@ -629,7 +629,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           children: [
             Row(
               children: [
-                const Icon(AppIcons.evaluate, color: AppColors.orange),
+                const Icon(AppIcons.evaluate, color: AppColors.brandBlueLight),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text('تفاصيل التقييم',
@@ -836,7 +836,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ? AppIcons.specialist
                   : AppIcons.lesson,
               color: _mySpecialty == 'learning_support'
-                  ? AppColors.purple
+                  ? AppColors.brandTealDeep
                   : AppColors.brandBlue,
               size: 28,
             ),
@@ -857,7 +857,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _mySpecialty == 'learning_support'
-                  ? AppColors.purple
+                  ? AppColors.brandTealDeep
                   : AppColors.brandBlue,
             ),
             onPressed: () => Navigator.pop(context, true),
@@ -945,21 +945,21 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         icon: AppIcons.clock,
                         value: '$_pendingCount',
                         label: 'بانتظار التقييم',
-                        color: AppColors.orange,
+                        color: AppColors.brandBlue,
                       ),
                       const SizedBox(width: 8),
                       _StatsCard(
                         icon: AppIcons.check,
                         value: '$_doneToday',
                         label: 'منجز اليوم',
-                        color: AppColors.green,
+                        color: AppColors.brandTealDeep,
                       ),
                       const SizedBox(width: 8),
                       _StatsCard(
                         icon: AppIcons.progress,
                         value: '$_pendingProgress',
                         label: 'قيد التنفيذ',
-                        color: AppColors.brandTeal,
+                        color: AppColors.brandTealLight,
                       ),
                     ],
                   ),
@@ -1007,7 +1007,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               },
               icon: const Icon(AppIcons.add),
               label: const Text('إضافة درس'),
-              backgroundColor: AppColors.green,
+              backgroundColor: AppColors.brandTealDeep,
             )
           : null,
     );
@@ -1061,11 +1061,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         decoration: BoxDecoration(
           color: _showOnlyMine
               ? AppColors.brandBlue.withValues(alpha: 0.1)
-              : AppColors.orange.withValues(alpha: 0.1),
+              : AppColors.brandTealDeep.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color:
-                _showOnlyMine ? AppColors.brandBlue : AppColors.orangeDeep,
+                _showOnlyMine ? AppColors.brandBlue : AppColors.brandTealDeep,
             width: 1.8,
           ),
         ),
@@ -1077,7 +1077,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               decoration: BoxDecoration(
                 color: _showOnlyMine
                     ? AppColors.brandBlue
-                    : AppColors.orangeDeep,
+                    : AppColors.brandTealDeep,
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
@@ -1102,7 +1102,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                           fontWeight: FontWeight.bold,
                           color: _showOnlyMine
                               ? AppColors.brandBlue
-                              : AppColors.orangeDeep,
+                              : AppColors.brandTealDeep,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -1112,7 +1112,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         decoration: BoxDecoration(
                           color: _showOnlyMine
                               ? AppColors.brandBlue
-                              : AppColors.orangeDeep,
+                              : AppColors.brandTealDeep,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -1139,9 +1139,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             Switch(
               value: _showOnlyMine,
               activeThumbColor: AppColors.brandBlue,
-              inactiveThumbColor: AppColors.orangeDeep,
+              inactiveThumbColor: AppColors.brandTealDeep,
               inactiveTrackColor:
-                  AppColors.orange.withValues(alpha: 0.35),
+                  AppColors.brandTeal.withValues(alpha: 0.35),
               onChanged: (v) => setState(() => _showOnlyMine = v),
             ),
           ],
@@ -1191,7 +1191,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('تم إضافة الدرس بنجاح'),
-              backgroundColor: AppColors.green,
+              backgroundColor: AppColors.brandTealDeep,
             ),
           );
         },

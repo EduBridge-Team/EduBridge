@@ -148,7 +148,7 @@ Widget buildAdaptiveHeader({
                     await VisualCelebration.show(
                       context,
                       message: 'أحسنت! انتهت $timerMinutes دقائق',
-                      emoji: '⏰',
+                      icon: AppIcons.clock, 
                       childName: childName,
                       duration: const Duration(seconds: 2),
                     );
@@ -168,11 +168,25 @@ Widget buildAdaptiveHeader({
         child: VisualTimeline(
           title: 'خطوات الدرس',
           steps: [
-            const TimelineStep(emoji: '📖', label: 'اقرأ العنوان', done: true),
+            const TimelineStep(
+              icon: AppIcons.lesson, 
+              label: 'اقرأ العنوان',
+              done: true,
+            ),
             TimelineStep(
-                emoji: '🎧', label: 'استمع للشرح', current: !canMarkDone),
-            TimelineStep(emoji: '✍️', label: 'حلّ التمرين', done: canMarkDone),
-            const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
+              icon: AppIcons.audio, 
+              label: 'استمع للشرح',
+              current: !canMarkDone, 
+            ),
+            TimelineStep(
+              icon: AppIcons.homework, 
+              label: 'حلّ التمرين',
+              done: canMarkDone,
+            ),
+            const TimelineStep(
+              icon: AppIcons.starFilled, 
+              label: 'احصل على نجمة',
+            ),
           ],
         ),
       ),

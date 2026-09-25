@@ -85,7 +85,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت يا ${widget.childName}! $scorePercent%',
-      emoji: '🤟',
+    icon: Icons.handshake_rounded,
       duration: const Duration(seconds: 4),
     );
 

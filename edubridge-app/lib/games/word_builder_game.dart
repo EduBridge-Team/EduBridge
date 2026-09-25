@@ -105,8 +105,9 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds كلمات',
-      emoji: '🔤',
-      childName: widget.childName,
+      icon: Icons.abc,
+      
+      childName: widget.childName, 
     );
     if (mounted) Navigator.pop(context);
   }

@@ -16,10 +16,10 @@ Widget buildMinistryToggleCard({
       duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: active ? AppColors.orange.withValues(alpha: 0.08) : c.card,
+        color: active ? AppColors.brandBlueLight.withValues(alpha: 0.08) : c.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: active ? AppColors.orange : c.line,
+          color: active ? AppColors.brandBlueLight : c.line,
           width: active ? 2 : 1.5,
         ),
       ),
@@ -35,12 +35,12 @@ Widget buildMinistryToggleCard({
                 height: 46,
                 decoration: BoxDecoration(
                   color: active
-                      ? AppColors.orange
+                      ? AppColors.blue
                       : c.muted.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: active
-                        ? AppColors.orangeDeep
+                        ? AppColors.brandBlueDeep
                         : c.muted.withValues(alpha: 0.5),
                     width: 2.5,
                   ),
@@ -62,7 +62,7 @@ Widget buildMinistryToggleCard({
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: active ? AppColors.orangeDeep : c.heading,
+                        color: active ? AppColors.brandBlueDeep : c.heading,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -81,7 +81,7 @@ Widget buildMinistryToggleCard({
               ),
               Switch(
                 value: active,
-                activeThumbColor: AppColors.orange,
+                activeThumbColor: AppColors.brandBlueLight,
                 inactiveThumbColor: c.muted,
                 onChanged: onChanged,
               ),
@@ -97,7 +97,7 @@ Widget buildMinistryToggleCard({
                 color: c.card,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: AppColors.orange.withValues(alpha: 0.2),
+                  color: AppColors.blue.withValues(alpha: 0.2),
                 ),
               ),
               child: const Column(
@@ -105,19 +105,19 @@ Widget buildMinistryToggleCard({
                 children: [
                   _MinistryStep(
                     icon: Icons.check_circle,
-                    color: AppColors.green,
+                    color: AppColors.brandTealDeep,
                     text: 'عند الموافقة: يُشعَر المعلم والمختص',
                   ),
                   SizedBox(height: 8),
                   _MinistryStep(
                     icon: Icons.cancel,
-                    color: AppColors.red,
+                    color: AppColors.brandBlueDeep,
                     text: 'عند الرفض: تعود إليك الخطة للتعديل',
                   ),
                   SizedBox(height: 8),
                   _MinistryStep(
                     icon: Icons.schedule,
-                    color: AppColors.orange,
+                    color: AppColors.brandGreen,
                     text: 'قد يستغرق الرد من 24 إلى 48 ساعة',
                   ),
                 ],

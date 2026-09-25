@@ -141,7 +141,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم حفظ التعديلات بنجاح'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.blue,
           ),
         );
       } else {
@@ -185,7 +185,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
                 child: Row(
                   children: [
                     const Icon(AppIcons.info,
-                        color: AppColors.orangeDeep),
+                        color: AppColors.brandTealDeep),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -198,7 +198,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
                   ],
                 ),
               ),
-
+              const SizedBox(height: 16),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'اسم الطفل'),
@@ -324,7 +324,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
             ElevatedButton.icon(
               onPressed: _loading ? null : _save,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.brandTealDeep,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               icon: _loading

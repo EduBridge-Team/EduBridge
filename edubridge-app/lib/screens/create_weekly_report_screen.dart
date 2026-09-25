@@ -94,8 +94,8 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم حفظ التقرير الأسبوعي'),
-            backgroundColor: Colors.green,
+            content: Text(' تم حفظ التقرير الأسبوعي'),
+            backgroundColor: AppColors.brandTealDeep,
           ),
         );
         Navigator.pop(context, true);
@@ -119,7 +119,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '📊 تقرير أسبوعي — ${widget.childName}'),
+      appBar: JisrAppBar(title: ' تقرير أسبوعي — ${widget.childName}'),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -249,7 +249,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
 
             // ─── الإنجازات ───
             Text(
-              '🏆 الإنجازات',
+              ' الإنجازات',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -299,7 +299,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
 
             // ─── نقاط للانتباه ───
             Text(
-              '⚠️ نقاط للانتباه',
+              ' نقاط للانتباه',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,

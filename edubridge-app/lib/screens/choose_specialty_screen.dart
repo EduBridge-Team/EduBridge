@@ -78,17 +78,17 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.1),
+                color: AppColors.brandBlueLight.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.orange.withValues(alpha: 0.4),
+                  color: AppColors.brandTeal.withValues(alpha: 0.4),
                   width: 2,
                 ),
               ),
               child: Row(
                 children: [
                   const Icon(AppIcons.warning,
-                      color: AppColors.orangeDeep, size: 28),
+                      color: AppColors.brandTeal, size: 28),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -99,7 +99,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.orangeDeep,
+                            color: AppColors.brandTealDeep,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -134,7 +134,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
               title: 'مختص دعم تعليمي',
               description:
                   'متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي',
-              color: AppColors.purple,
+              color: AppColors.brandBlueLight,
               selected: _selected == 'learning_support',
               onTap: () => setState(() => _selected = 'learning_support'),
             ),
@@ -184,7 +184,7 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
                   backgroundColor: _selected == null
                       ? Colors.grey
                       : (_selected == 'learning_support'
-                          ? AppColors.purple
+                          ? AppColors.brandTealDeep
                           : AppColors.brandBlue),
                 ),
                 icon: _saving

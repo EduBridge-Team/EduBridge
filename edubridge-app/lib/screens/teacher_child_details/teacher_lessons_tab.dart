@@ -72,11 +72,11 @@ class _LessonsTabState extends State<_LessonsTab>
   ({String label, Color color, IconData icon}) _statusInfo(String status) {
     switch (status) {
       case 'done':
-        return (label: 'مكتمل', color: AppColors.green, icon: AppIcons.check);
+        return (label: 'مكتمل', color: AppColors.brandTealDeep, icon: AppIcons.check);
       case 'in_progress':
         return (
           label: 'قيد التنفيذ',
-          color: AppColors.orange,
+          color: AppColors.brandBlueLight,
           icon: AppIcons.refresh,
         );
       default:
@@ -210,7 +210,7 @@ class _LessonsTabState extends State<_LessonsTab>
                   ),
                 ),
                 const SizedBox(height: 8),
-                _summaryRow('مكتمل', _doneCount, AppColors.brandGreen),
+                _summaryRow('مكتمل', _doneCount, AppColors.brandTealDeep),
                 _summaryRow('قيد التنفيذ', _inProgressCount,
                     Colors.white.withValues(alpha: 0.9)),
                 _summaryRow('لم يبدأ', _notStartedCount,
@@ -313,7 +313,7 @@ class _LessonsTabState extends State<_LessonsTab>
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.greenDeep,
+                            color: AppColors.brandTealDeep,
                           ),
                         ),
                       ],

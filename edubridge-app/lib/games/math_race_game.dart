@@ -115,7 +115,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
     await VisualCelebration.show(
       context,
       message: '$_score صحيحة!',
-      emoji: '➕',
+      icon: Icons.plus_one,
       childName: widget.childName,
     );
     if (mounted) Navigator.pop(context);

@@ -259,7 +259,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
             height: large ? 60 : 52,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
+                backgroundColor: AppColors.blue,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -305,7 +305,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       children: [
         Row(
           children: [
-            const Icon(AppIcons.check, color: AppColors.green, size: 22),
+            const Icon(AppIcons.check, color: AppColors.brandTealDeep, size: 22),
             const SizedBox(width: 6),
             Text(
               'الملفات المرفوعة (${_files.length}):',
@@ -366,7 +366,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       height: large ? 70 : 56,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTealDeep,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

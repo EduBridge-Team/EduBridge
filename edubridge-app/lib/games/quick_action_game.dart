@@ -150,7 +150,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
     await VisualCelebration.show(
       context,
       message: message,
-      emoji: emoji,
+      icon: Icons.mail,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

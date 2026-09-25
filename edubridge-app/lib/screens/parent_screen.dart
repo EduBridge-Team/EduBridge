@@ -499,7 +499,7 @@ class _ParentScreenState extends State<ParentScreen> {
                     label: 'الواجبات',
                     icon: AppIcons.homework,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.orange,
+                    backgroundColor: AppColors.brandTealDeep,
                     fullWidth: true,
                     fontSize: 10,
                     onPressed: () => _openHomework(child),
@@ -606,9 +606,9 @@ class _ParentScreenState extends State<ParentScreen> {
 
   Widget _buildStatusBadge(String? status) {
     final (text, color, icon) = switch (status) {
-      'evaluated' => ('تم التقييم', AppColors.green, AppIcons.check),
+      'evaluated' => ('تم التقييم', AppColors.brandTealDeep, AppIcons.check),
       'assigned' => ('تم التعيين', AppColors.brandBlue, AppIcons.verified),
-      _ => ('قيد الانتظار', AppColors.orange, AppIcons.clock),
+      _ => ('قيد الانتظار', AppColors.green, AppIcons.clock),
     };
 
     return Container(

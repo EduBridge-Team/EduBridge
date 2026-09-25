@@ -88,7 +88,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
               Row(
                 children: [
                   const Icon(AppIcons.certificate,
-                      color: AppColors.orange, size: 26),
+                      color: AppColors.brandBlueLight, size: 26),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -128,7 +128,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                     Row(
                       children: [
                         const Icon(AppIcons.attach,
-                            size: 20, color: AppColors.greenDeep),
+                            size: 20, color: AppColors.brandTealDeep),
                         const SizedBox(width: 6),
                         Text(
                           'ملف الشهادة (اختياري صورة أو PDF)',
@@ -149,7 +149,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                           label: const Text('اختر ملف الشهادة'),
                           onPressed: _pickFile,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.green,
+                            backgroundColor: AppColors.brandTeal,
                             foregroundColor: Colors.white,
                           ),
                         ),
@@ -211,7 +211,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.orange,
+                        backgroundColor: AppColors.brandBlueLight,
                         foregroundColor: Colors.white,
                       ),
                       icon: _saving

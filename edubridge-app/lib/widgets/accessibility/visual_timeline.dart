@@ -1,16 +1,17 @@
 // خط زمني بصري ثابت — يُظهر ما تم إنجازه وما هو التالي
 import 'package:flutter/material.dart';
+import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
 import '../../theme.dart';
 
 class TimelineStep {
-  final String emoji;
+  final IconData icon;
   final String label;
   final bool done;
   final bool current;
 
   const TimelineStep({
-    required this.emoji,
+    required this.icon,
     required this.label,
     this.done = false,
     this.current = false,
@@ -98,13 +99,10 @@ class _TimelineRow extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: Text(
-              step.done ? '✓' : step.emoji,
-              style: TextStyle(
-                fontSize: large ? 26 : 22,
-                fontWeight: FontWeight.bold,
-                color: fg,
-              ),
+            child: Icon(
+              step.done ? AppIcons.check : step.icon,
+              size: large ? 30 : 24,
+              color: fg,
             ),
           ),
           const SizedBox(width: 14),

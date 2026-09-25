@@ -147,7 +147,7 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _isAppropriate ? AppColors.green : AppColors.orange,
+                    _isAppropriate ? AppColors.brandBlueLight : AppColors.brandTealDeep,
               ),
               icon: Icon(_isAppropriate
                   ? AppIcons.check

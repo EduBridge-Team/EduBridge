@@ -147,7 +147,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           if (_specialists?['others'] is List)
             ...(_specialists!['others'] as List).map((s) =>
                 _specialistCard(s, 'مختص', AppIcons.specialist,
-                    AppColors.pink)),
+                    AppColors.brandBlueDeep)),
 
           const SizedBox(height: 20),
         ],
@@ -208,7 +208,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTealDeep,
           child: Text(
             name.isNotEmpty ? name.characters.first : '؟',
             style: const TextStyle(
@@ -230,11 +230,11 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: AppColors.green.withValues(alpha: 0.15),
+            color: AppColors.brandTealDeep.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(AppIcons.teacher,
-              size: 18, color: AppColors.greenDeep),
+              size: 18, color: AppColors.brandTealDeep),
         ),
       ),
     );

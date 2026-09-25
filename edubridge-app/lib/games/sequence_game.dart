@@ -171,7 +171,7 @@ class _SequenceGameState extends State<SequenceGame> {
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',
-      emoji: '🧩',
+      icon: Icons.auto_awesome,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

@@ -81,7 +81,7 @@ class _ColorsGameState extends State<ColorsGame> {
     await VisualCelebration.show(
       context,
       message: 'أنهيت اللعبة! $scorePercent%',
-      emoji: '🌈',
+      icon: Icons.star_border_outlined,
       childName: widget.childName,
       duration: const Duration(seconds: 3),
     );

@@ -101,7 +101,7 @@ class _ChildAccessibilitySettingsScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('يرجى كتابة اسم الإعاقة'),
-          backgroundColor: AppColors.orange,
+          backgroundColor: AppColors.blue,
         ),
       );
       return;

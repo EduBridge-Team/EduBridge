@@ -227,7 +227,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                   value: percent,
                   strokeWidth: 14,
                   strokeCap: StrokeCap.round,
-                  color: AppColors.green,
+                  color: AppColors.brandTealDeep,
                   backgroundColor: Colors.grey.shade200,
                 ),
               ),
@@ -254,10 +254,10 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         SizedBox(height: AdaptiveHelper.spacing),
         Row(
           children: [
-            _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
+            _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.brandBlueLight),
             SizedBox(width: AdaptiveHelper.spacing / 2),
             _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
-                AppColors.orangeDeep),
+                AppColors.brandTeal),
           ],
         ),
         SizedBox(height: AdaptiveHelper.spacing / 2),
@@ -304,21 +304,21 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   Widget _buildRewardsSection() {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
 
-    final badges = <({String emoji, String title, bool earned, String hint})>[
+    final badges = <({IconData icon, String title, bool earned, String hint})>[
       (
-        emoji: '🌟',
+        icon: AppIcons.star,
         title: 'البداية المشرقة',
         earned: done >= 1,
         hint: 'أكمل أول درس',
       ),
       (
-        emoji: '🏅',
+        icon: AppIcons.grade,
         title: 'نجم المثابرة',
         earned: done >= 5,
         hint: done >= 5 ? '' : 'بقي ${5 - done} دروس',
       ),
       (
-        emoji: '🏆',
+        icon: AppIcons.trophy,
         title: 'بطل الدروس',
         earned: done >= 10,
         hint: done >= 10 ? '' : 'بقي ${10 - done} دروس',
@@ -366,18 +366,18 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   }
 
   Widget _buildBadgeCard(
-      ({String emoji, String title, bool earned, String hint}) badge) {
+      ({IconData icon, String title, bool earned, String hint}) badge) {
     return AdaptiveCard(
       backgroundColor: badge.earned
-          ? AppColors.green.withValues(alpha: 0.1)
+          ? AppColors.brandTealDeep.withValues(alpha: 0.1)
           : AdaptiveHelper.cardColor(context),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            badge.earned ? AppIcons.trophy : AppIcons.lock,
+            badge.earned ? badge.icon : AppIcons.lock,
             size: AdaptiveHelper.iconSize + 8,
-            color: badge.earned ? AppColors.green : AppColors.muted,
+            color: badge.earned ? AppColors.brandTealDeep : AppColors.muted,
           ),
           SizedBox(height: AdaptiveHelper.spacing / 4),
           AdaptiveText(
@@ -445,13 +445,13 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         return (
           label: 'مكتمل',
           icon: AppIcons.check,
-          color: AppColors.green,
+          color: AppColors.brandBlueLight,
         );
       case 'in_progress':
         return (
           label: 'قيد التنفيذ',
           icon: AppIcons.refresh,
-          color: AppColors.orangeDeep,
+          color: AppColors.brandTealDeep,
         );
       default:
         return (

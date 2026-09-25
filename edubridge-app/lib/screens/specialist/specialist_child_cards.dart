@@ -38,7 +38,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
         : AppIcons.lesson;
 
     final specColor = _mySpecialty == 'learning_support'
-        ? AppColors.purple
+        ? AppColors.brandTealDeep
         : AppColors.brandBlue;
 
     return Card(
@@ -107,10 +107,10 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
             if (preferredStyle.isNotEmpty)
               _infoRowExt('أسلوب التعلم', preferredStyle, c),
             if (strengths.isNotEmpty)
-              _chipsRowExt('نقاط القوة', strengths, c, AppColors.greenDeep,
+              _chipsRowExt('نقاط القوة', strengths, c, AppColors.brandBlueDeep,
                   c.tintGreen),
             if (challenges.isNotEmpty)
-              _chipsRowExt('التحديات', challenges, c, AppColors.orangeDeep,
+              _chipsRowExt('التحديات', challenges, c, AppColors.brandTealDeep,
                   c.tintOrange),
             const SizedBox(height: 12),
 
@@ -120,7 +120,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                 height: 48,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orangeDeep,
+                    backgroundColor: AppColors.brandTealDeep,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -277,14 +277,14 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.orange.withValues(alpha: 0.15),
+                          color: AppColors.brandTealDeep.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text('بانتظار التقييم',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.orangeDeep,
+                              color: AppColors.brandTealDeep,
                             )),
                       ),
                   ],
@@ -315,7 +315,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(AppIcons.clock,
-                            size: 12, color: AppColors.orangeDeep),
+                            size: 12, color: AppColors.brandTealDeep),
                         const SizedBox(width: 4),
                         Text(
                           '${current['lesson_title'] ?? ''}',
@@ -343,7 +343,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                   child: isPending
                       ? ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.orange,
+                            backgroundColor: AppColors.brandBlueLight,
                           ),
                           icon: const Icon(AppIcons.evaluate,
                               color: Colors.white),
@@ -450,7 +450,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                         minimumSize: const Size(0, 42),
                         padding:
                             const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: AppColors.purple,
+                        backgroundColor: AppColors.brandTealDeep,
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(AppIcons.specialist, size: 18),
@@ -494,14 +494,14 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.purple.withValues(alpha: 0.1),
+        color: AppColors.brandTealDeep.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.purple, width: 2),
+        border: Border.all(color: AppColors.brandTealDeep, width: 2),
       ),
       child: Row(
         children: [
           const Icon(AppIcons.specialist,
-              color: AppColors.purple, size: 28),
+              color: AppColors.brandTealDeep, size: 28),
           const SizedBox(width: 10),
           const Expanded(
             child: Column(
@@ -511,7 +511,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: AppColors.purple,
+                      color: AppColors.brandTealDeep,
                     )),
                 Text('ولي الأمر يطلب اجتماع دعم تعليمي',
                     style: TextStyle(
@@ -521,7 +521,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.purple,
+              backgroundColor: AppColors.brandTealDeep,
               foregroundColor: Colors.white,
               minimumSize: const Size(0, 36),
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -564,9 +564,9 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(0, 42),
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              foregroundColor: AppColors.purple,
+              foregroundColor: AppColors.brandBlueLight,
               side: const BorderSide(
-                  color: AppColors.purple, width: 1.5),
+                  color: AppColors.brandBlueLight, width: 1.5),
             ),
             icon: const Icon(AppIcons.specialist, size: 18),
             label: const Text(
@@ -616,9 +616,9 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(0, 40),
                 padding: const EdgeInsets.symmetric(horizontal: 6),
-                foregroundColor: AppColors.purple,
+                foregroundColor: AppColors.brandBlueLight,
                 side: const BorderSide(
-                    color: AppColors.purple, width: 1.5),
+                    color: AppColors.brandBlueLight, width: 1.5),
               ),
               icon: const Icon(AppIcons.specialist, size: 16),
               label: const Text('اقترح مختص دعم تعليمي',

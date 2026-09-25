@@ -322,13 +322,13 @@ class _ChildrenAccessibilityOverviewScreenState
                   Icon(
                     AppIcons.check,
                     size: AdaptiveHelper.iconSize * 0.7,
-                    color: AppColors.green,
+                    color: AppColors.brandTealDeep,
                   ),
                   SizedBox(width: AdaptiveHelper.spacing / 3),
                   AdaptiveText(
                     '$activeFeatures ميزة تكييف مُفعّلة',
                     type: AdaptiveTextType.caption,
-                    color: AppColors.green,
+                    color: AppColors.brandTealDeep,
                     fontWeight: FontWeight.bold,
                   ),
                 ],

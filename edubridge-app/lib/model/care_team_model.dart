@@ -1,4 +1,7 @@
 // models/care_team_model.dart
+import 'package:flutter/material.dart';
+import '../app_icons.dart'; // عدّل المسار حسب مكان الملف
+
 enum SpecialistSpecialty {
   learningSupport,
   educational,
@@ -33,16 +36,16 @@ extension SpecialistSpecialtyX on SpecialistSpecialty {
     }
   }
 
-  String get emoji {
+  IconData get icon {
     switch (this) {
       case SpecialistSpecialty.learningSupport:
-        return '📘';
+        return AppIcons.lesson;
       case SpecialistSpecialty.educational:
-        return '📚';
+        return AppIcons.plan;
       case SpecialistSpecialty.communicationSupport:
-        return '🗣️';
+        return AppIcons.forum;
       case SpecialistSpecialty.learningBehavior:
-        return '🎯';
+        return AppIcons.evaluate;
     }
   }
 }

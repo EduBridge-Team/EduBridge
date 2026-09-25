@@ -181,9 +181,9 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           await VisualCelebration.show(
             context,
             message: 'أكملت الدرس!',
-            emoji: '🏆',
+             icon:  AppIcons.trophy,
             childName: widget.childName,
-            duration: const Duration(seconds: 3),
+            duration: const Duration(seconds: 3), 
           );
         }
 
@@ -207,7 +207,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         ),
         title: Row(
           children: [
-            Icon(AppIcons.game, color: AppColors.orange, size: 26),
+            Icon(AppIcons.game, color: AppColors.blue, size: 26),
             const SizedBox(width: 8),
             const AdaptiveText('وقت اللعب!', type: AdaptiveTextType.title),
           ],
@@ -230,7 +230,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
               Expanded(
                 child: AdaptiveButton(
                   label: 'هيا!',
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.blue,
                   onPressed: () {
                     Navigator.pop(context);
                     _openGames();

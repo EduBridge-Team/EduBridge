@@ -20,7 +20,7 @@ Widget buildVerifiedState({
             const Icon(
               Icons.verified_user,
               size: 76,
-              color: AppColors.green,
+              color: AppColors.brandBlueLight,
             ),
             const SizedBox(height: 16),
             Text(
@@ -288,7 +288,7 @@ Widget _buildCertificateSection({
       color: c.tintYellow,
       borderRadius: BorderRadius.circular(16),
       border: Border.all(
-        color: AppColors.orange.withValues(alpha: 0.4),
+        color: AppColors.brandBlueLight.withValues(alpha: 0.4),
         width: 1.5,
       ),
     ),
@@ -298,7 +298,7 @@ Widget _buildCertificateSection({
         Row(
           children: [
             const Icon(Icons.workspace_premium,
-                color: AppColors.orangeDeep, size: 24),
+                color: AppColors.brandBlueDeep, size: 24),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -313,7 +313,7 @@ Widget _buildCertificateSection({
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.2),
+                color: AppColors.brandBlueLight.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(
@@ -321,7 +321,7 @@ Widget _buildCertificateSection({
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.orangeDeep,
+                  color: AppColors.brandBlueDeep,
                 ),
               ),
             ),
@@ -347,7 +347,7 @@ Widget _buildCertificateSection({
                   height: 46,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.blue,
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.upload_file, size: 18),
@@ -362,9 +362,9 @@ Widget _buildCertificateSection({
                   height: 46,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.orange,
+                      foregroundColor: AppColors.blue,
                       side: const BorderSide(
-                          color: AppColors.orange, width: 1.5),
+                          color: AppColors.blue, width: 1.5),
                     ),
                     icon: const Icon(Icons.camera_alt, size: 18),
                     label: const Text('الكاميرا'),

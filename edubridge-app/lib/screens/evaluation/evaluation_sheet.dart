@@ -151,7 +151,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
     _showSuccessDialog(
       icon: AppIcons.upload,
-      iconColor: AppColors.orange,
+      iconColor: AppColors.brandBlueLight,
       title: 'تم الإرسال للوزارة',
       message: 'سيتم مراجعة الخطة من الوزارة.\n\n'
           '• عند الموافقة: يُشعَر المعلم والمعلمون المعنيون\n'
@@ -346,7 +346,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
       ),
       child: Row(
         children: [
-          const Icon(AppIcons.info, color: AppColors.orangeDeep, size: 22),
+          const Icon(AppIcons.info, color: AppColors.brandBlueLight, size: 22),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -536,7 +536,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  _sendToMinistry ? AppColors.orange : AppColors.green,
+                  _sendToMinistry ? AppColors.brandBlueLight : AppColors.brandTealDeep,
               foregroundColor: Colors.white,
               minimumSize: const Size(0, 48),
             ),
