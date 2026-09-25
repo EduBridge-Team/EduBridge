@@ -119,16 +119,8 @@ export default function LoginPage() {
   return (
     <div className="center-page auth-page auth-page-login">
       <div className="auth-split">
-        <section className="auth-visual" aria-label="EduBridge">
-          <img src="/brand-homepage.webp" alt="تجربة تعليمية دامجة من EduBridge" />
-          <div className="auth-visual-copy">
-            <div className="brand-lockup auth-visual-brand">
-              <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
-              <span className="brand-wordmark">EduBridge</span>
-            </div>
-            <h2>تعلم يناسب قدرات كل طفل</h2>
-            <p>منصة تجمع الأسرة والمعلم والمختص لتقديم تجربة تعليمية أكثر شمولاً ووضوحاً.</p>
-          </div>
+        <section className="auth-visual auth-visual-art" aria-label="مرحباً بعودتك إلى EduBridge">
+          <img src="/auth-login.avif" alt="مرحباً بعودتك إلى EduBridge" />
         </section>
 
         <div className="auth-card auth-card-branded">
