@@ -208,16 +208,10 @@ export default function HomePage() {
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
           <img
             className="reference-hero-image"
-            src="/edubridge-hero-working.webp"
-            alt="تعليم دامج ومساندة تعليمية من EduBridge"
-            width="1536"
-            height="1024"
+            src="/edubridge-hero-inclusive.webp"
+            alt="طلاب يتعلمون مع دعم تربوي في بيئة دامجة"
             decoding="async"
             fetchPriority="high"
-            onError={(event) => {
-              event.currentTarget.onerror = null
-              event.currentTarget.src = '/brand-homepage.webp'
-            }}
           />
         </div>
       </section>
