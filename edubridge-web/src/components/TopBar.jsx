@@ -10,6 +10,7 @@ import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { isPortalPathForRole } from '../portalRoutes'
 import { useTheme } from '../theme'
+import BrandLogo from './BrandLogo'
 
 export default function TopBar() {
   const navigate = useNavigate()
@@ -55,9 +56,7 @@ export default function TopBar() {
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <span className="topbar-brand-crop">
-          <img className="topbar-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
-        </span>
+        <BrandLogo className="topbar-brand-logo" />
       </div>
 
       <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
