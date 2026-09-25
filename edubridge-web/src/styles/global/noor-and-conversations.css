@@ -1,0 +1,457 @@
+/* بطاقة مستخدم: أزرار + حالة التوثيق */
+.user-card-actions { display: flex; gap: 8px; margin-top: 10px; }
+.user-card-actions .btn { flex: 1; }
+.user-verify { font-size: 12px; font-weight: 700; margin-top: 6px; }
+.user-verify.verified { color: var(--green-deep); }
+.user-verify.pending  { color: var(--coral-deep); }
+.user-verify.rejected { color: var(--danger-deep); }
+
+/* ============================================================
+   نور — المساعد الذكي (يظهر للمستخدم المسجّل فقط)
+   ============================================================ */
+
+.noor-assistant {
+    position: fixed;
+    inset-inline-start: 18px;
+    bottom: 18px;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.noor-launcher {
+    width: 86px;
+    height: 86px;
+    min-width: 86px;
+    min-height: 86px;
+    padding: 0;
+    border: 2px solid color-mix(in srgb, var(--teal) 55%, #ffffff);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--surface) 92%, var(--teal));
+    color: #fff;
+    box-shadow:
+        0 12px 30px oklch(22% 0.06 250 / 0.3),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font: inherit;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+
+.noor-launcher:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow:
+        0 15px 34px oklch(22% 0.06 250 / 0.34),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+}
+
+.noor-launcher:focus-visible,
+.noor-icon-btn:focus-visible,
+.noor-form button:focus-visible,
+.noor-form textarea:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+}
+
+.noor-panel {
+    width: min(390px, calc(100vw - 28px));
+    height: min(590px, calc(100vh - 100px));
+    min-height: 390px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 18px 55px oklch(22% 0.06 250 / 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.noor-header {
+    padding: 13px 14px;
+    background: var(--navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.noor-header > span:nth-child(2) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.noor-header strong {
+    font-size: 17px;
+}
+
+.noor-header small {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 11.5px;
+}
+
+.noor-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.noor-pet {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+    animation: noor-pet-bob 2.8s ease-in-out infinite;
+}
+
+.noor-pet-character {
+    transform-origin: 70px 61px;
+    transition: transform .16s cubic-bezier(.2, .75, .3, 1);
+    will-change: transform;
+}
+
+.noor-pet-shadow { fill: oklch(18% 0.03 250 / 0.18); }
+.noor-pet-glow { fill: color-mix(in srgb, var(--teal) 24%, transparent); }
+.noor-pet-body,
+.noor-pet-ear,
+.noor-pet-arm { fill: #31c8c4; }
+.noor-pet-ear-inner,
+.noor-pet-eyes,
+.noor-pet-mouth,
+.noor-pet-badge { fill: #1154ad; }
+.noor-pet-face,
+.noor-pet-mitten { fill: #fff; }
+.noor-pet-face-rim { fill: rgba(185, 223, 237, .42); }
+.noor-pet-body-highlight {
+    fill: rgba(255, 255, 255, .12);
+    pointer-events: none;
+}
+.noor-pet-mitten {
+    stroke: #bfd2e5;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+}
+.noor-pet-arm-shade {
+    fill: none;
+    stroke: rgba(17, 84, 173, .22);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+}
+.noor-pet-eye-shine { fill: #fff; }
+.noor-pet-cheek,
+.noor-pet-mouth-inner,
+.noor-pet-headset-cup-pad,
+.noor-pet-attention { fill: #bfd2e5; }
+
+.noor-pet-blink {
+    fill: none;
+    stroke: var(--navy-deep);
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: noor-pet-blink 5.4s infinite;
+}
+
+.noor-pet-eyes {
+    animation: noor-pet-eyes 5.4s infinite;
+}
+
+.noor-pet-headset-band,
+.noor-pet-headset-mic {
+    fill: none;
+    stroke: #1154ad;
+    stroke-width: 5.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.noor-pet-headset-cup-back { fill: #1154ad; }
+.noor-pet-headset-cup-pad { fill: #d8e6f1; }
+
+.noor-pet-brain {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.noor-pet-brain circle {
+    fill: #fff;
+    stroke: none;
+}
+
+.noor-pet-attention {
+    animation: noor-pet-attention 1.25s ease-in-out infinite alternate;
+}
+
+@keyframes noor-pet-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes noor-pet-eyes {
+    0%, 88%, 94%, 100% { opacity: 1; }
+    89%, 93% { opacity: 0; }
+}
+
+@keyframes noor-pet-blink {
+    0%, 88%, 94%, 100% { opacity: 0; }
+    89%, 93% { opacity: 1; }
+}
+
+@keyframes noor-pet-attention {
+    from { opacity: .5; transform: translateY(1px); }
+    to { opacity: 1; transform: translateY(-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noor-pet,
+    .noor-pet-eyes,
+    .noor-pet-blink,
+    .noor-pet-attention {
+        animation: none;
+    }
+
+    .noor-pet-character {
+        transition: none;
+    }
+}
+
+.noor-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.noor-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.noor-notice {
+    padding: 7px 14px;
+    background: oklch(95% 0.045 85);
+    color: var(--navy);
+    font-size: 12px;
+    text-align: center;
+}
+
+.noor-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.noor-message {
+    max-width: 86%;
+    padding: 10px 13px;
+    border-radius: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.noor-message.assistant {
+    align-self: flex-start;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-end-start-radius: 4px;
+}
+
+.noor-message.user {
+    align-self: flex-end;
+    background: var(--teal-deep);
+    color: #fff;
+    border-end-end-radius: 4px;
+}
+
+.noor-typing {
+    color: var(--muted);
+}
+
+.noor-error {
+    padding: 7px 14px;
+    background: var(--tint-coral);
+    color: var(--danger-deep);
+    font-size: 12px;
+}
+
+.noor-form {
+    padding: 10px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--surface);
+}
+
+.noor-form textarea {
+    flex: 1;
+    min-height: 44px;
+    max-height: 110px;
+    resize: vertical;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+}
+
+.noor-form button {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--coral);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.noor-form button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline: 10px;
+        bottom: 10px;
+        align-items: stretch;
+    }
+
+    .noor-panel {
+        width: 100%;
+        height: min(68vh, 560px);
+    }
+
+    .noor-launcher {
+        align-self: flex-start;
+    }
+}
+
+/* Noor launcher movement parity with the mobile app. */
+.noor-assistant {
+    will-change: transform;
+}
+
+.noor-launcher {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.noor-assistant.is-dragging .noor-launcher {
+    cursor: grabbing;
+    filter: brightness(1.06);
+}
+
+/* ===== المحادثات ===== */
+.chat-layout {
+    display: grid; grid-template-columns: minmax(230px, 32%) 1fr; min-height: 590px;
+    overflow: hidden; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface);
+}
+.conversation-list { border-left: 1px solid var(--line); overflow-y: auto; }
+.conversation-item,
+.user-picker-list button {
+    width: 100%; display: flex; align-items: center; gap: 11px; padding: 14px;
+    border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink);
+    text-align: right; cursor: pointer;
+}
+.conversation-item:hover,
+.conversation-item.active,
+.user-picker-list button:hover { background: var(--tint-teal); }
+.conversation-item > span:last-child,
+.user-picker-list button > span:last-child { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.conversation-item small,
+.user-picker-list small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-panel { min-width: 0; display: flex; flex-direction: column; }
+.chat-panel-head { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+.chat-panel-head > div { display: flex; flex: 1; flex-direction: column; }
+.chat-panel-head small { color: var(--muted); }
+.chat-messages { flex: 1; height: 455px; overflow-y: auto; padding: 18px; background: var(--bg); }
+.chat-bubble {
+    width: fit-content; max-width: min(78%, 520px); display: flex; flex-direction: column;
+    margin: 8px 0; padding: 10px 13px; border: 1px solid var(--line); border-radius: 15px 15px 4px 15px;
+    background: var(--surface); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.chat-bubble.mine { margin-right: auto; border: 0; border-radius: 15px 15px 15px 4px; background: var(--teal-deep); color: #fff; }
+.chat-bubble small { align-self: flex-end; margin-top: 3px; opacity: .72; font-size: 11px; }
+.chat-compose { display: flex; gap: 9px; padding: 12px; border-top: 1px solid var(--line); }
+.chat-compose input { margin: 0; }
+.chat-compose .btn { min-width: 48px; padding-inline: 13px; }
+.user-picker-list { max-height: 460px; overflow-y: auto; }
+
+@media (max-width: 720px) {
+    .chat-layout { grid-template-columns: 1fr; min-height: 0; }
+    .conversation-list { max-height: 230px; border-left: 0; border-bottom: 1px solid var(--line); }
+    .chat-messages { height: 390px; }
+}
+
+
+
+
+
+/* Compact side launcher requested for the portal: fixed, calm, and non-roaming. */
+.noor-assistant {
+    inset-inline-start: 14px;
+    bottom: 18px;
+    transform: none !important;
+}
+
+.noor-launcher {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+}
+
+.noor-panel {
+    width: clamp(320px, 27vw, 380px);
+    height: clamp(390px, 58vh, 520px);
+    min-height: 390px;
+}
+
+@media (max-width: 520px) {
+    .noor-assistant {
+        inset-inline-start: 10px;
+        inset-inline-end: auto;
+        bottom: 10px;
+        align-items: flex-start;
+    }
+
+    .noor-panel {
+        width: calc(100vw - 20px);
+        height: min(62vh, 500px);
+    }
+
+    .noor-launcher {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        min-height: 64px;
+    }
+}
+

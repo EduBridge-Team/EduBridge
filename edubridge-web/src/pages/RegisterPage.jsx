@@ -56,7 +56,7 @@ export default function RegisterPage() {
       )
       // نجاح — نرجع لصفحة الدخول مع رسالة
       navigate('/login', {
-        state: { message: 'تم إنشاء الحساب بنجاح — سجّل دخولك الآن' },
+        state: { message: 'تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب، ثم سجّل دخولك.' },
       })
     } catch (err) {
       setError(err.message)
@@ -150,9 +150,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <Link to="/login">
-          <button className="link-btn">لديك حساب؟ سجّل دخولك</button>
-        </Link>
+        <Link className="link-btn" to="/login">لديك حساب؟ سجّل دخولك</Link>
       </div>
     </div>
   )

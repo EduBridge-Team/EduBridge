@@ -1,20 +1,26 @@
 // صفحة تسجيل الدخول
-import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { googleLogin, login } from '../api'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { googleLogin, login, resendEmailVerification } from '../api'
 import { dashboardFor } from '../roleRoutes'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [params] = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+  const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleReady, setGoogleReady] = useState(false)
 
-  // رسالة نجاح قادمة من صفحة التسجيل
-  const successMsg = location.state?.message
+  const successMsg = useMemo(() => {
+    if (location.state?.message) return location.state.message
+    if (params.get('verified') === '1') return 'تم تأكيد بريدك الإلكتروني بنجاح. يمكنك تسجيل الدخول الآن.'
+    if (params.get('verified') === '0') return 'تعذر تأكيد البريد. اطلب رسالة تحقق جديدة من النموذج أدناه.'
+    return ''
+  }, [location.state, params])
 
   useEffect(() => {
     const root = document.documentElement
@@ -29,18 +35,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    if (!googleClientId) {
-      return
-    }
+    if (!googleClientId) return
 
     let cancelled = false
     let pollId
 
-    // تهيئة زر Google بعد التأكد من تحميل سكربت GSI (يُحمَّل async defer فقد لا يكون جاهزاً عند التركيب)
     const setupGoogle = () => {
-      if (cancelled || !window.google?.accounts?.id) {
-        return false
-      }
+      if (cancelled || !window.google?.accounts?.id) return false
 
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -73,12 +74,9 @@ export default function LoginPage() {
       return true
     }
 
-    // إن لم يكن السكربت جاهزاً بعد، نُعيد المحاولة دورياً حتى يصل
     if (!setupGoogle()) {
       pollId = setInterval(() => {
-        if (setupGoogle()) {
-          clearInterval(pollId)
-        }
+        if (setupGoogle()) clearInterval(pollId)
       }, 200)
     }
 
@@ -91,6 +89,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
+    setNotice('')
     setLoading(true)
     try {
       const u = await login(email.trim(), password)
@@ -102,57 +101,87 @@ export default function LoginPage() {
     }
   }
 
+  const resendVerification = async () => {
+    if (!email.trim()) {
+      setError('أدخل بريدك الإلكتروني أولاً')
+      return
+    }
+    setError('')
+    setNotice('')
+    try {
+      const data = await resendEmailVerification(email.trim())
+      setNotice(data.message)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   return (
     <div className="center-page auth-page auth-page-login">
-      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-a" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-b" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-dots" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-a" aria-hidden="true">✦</div>
-      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-b" aria-hidden="true">✦</div>
-      <div className="auth-card auth-card-branded">
-        <div className="auth-card-corner-dots" aria-hidden="true" />
-        <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
-        <h1>EduBridge</h1>
-        <div className="subtitle">جسر تعليمي</div>
-        <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
+      <div className="auth-split">
+        <section className="auth-visual" aria-label="EduBridge">
+          <img src="/brand-homepage.webp" alt="تجربة تعليمية دامجة من EduBridge" />
+          <div className="auth-visual-copy">
+            <div className="brand-lockup auth-visual-brand">
+              <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
+              <span className="brand-wordmark">EduBridge</span>
+            </div>
+            <h2>تعلم يناسب قدرات كل طفل</h2>
+            <p>منصة تجمع الأسرة والمعلم والمختص لتقديم تجربة تعليمية أكثر شمولاً ووضوحاً.</p>
+          </div>
+        </section>
 
-        {successMsg && <div className="success-box">{successMsg}</div>}
+        <div className="auth-card auth-card-branded">
+          <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
+          <h1>EduBridge</h1>
+          <div className="subtitle">جسر تعليمي</div>
+          <div className="tagline">فرص تعلم متساوية للجميع</div>
+          <h2 className="auth-form-title">تسجيل الدخول</h2>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email">الإيميل</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
+          {successMsg && <div className={params.get('verified') === '0' ? 'error-box' : 'success-box'}>{successMsg}</div>}
+          {notice && <div className="success-box">{notice}</div>}
 
-          <label htmlFor="password">كلمة المرور</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="email">البريد الإلكتروني</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
 
-          {error && <div className="error-box">{error}</div>}
+            <div className="auth-label-row">
+              <label htmlFor="password">كلمة المرور</label>
+              <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
+            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
 
-          <button className="btn full" type="submit" disabled={loading}>
-            {loading ? 'جارِ الدخول...' : 'دخول'}
+            {error && <div className="error-box">{error}</div>}
+
+            <button className="btn full" type="submit" disabled={loading}>
+              {loading ? 'جارِ الدخول...' : 'دخول'}
+            </button>
+          </form>
+
+          <button type="button" className="auth-secondary-action" onClick={resendVerification}>
+            لم تصلك رسالة تأكيد البريد؟
           </button>
-        </form>
 
-        <div className="auth-divider">أو</div>
-        <div id="google-signin-button" className="google-btn-shell" />
-        {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
+          <div className="auth-divider">أو</div>
+          <div id="google-signin-button" className="google-btn-shell" />
+          {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
 
-        <Link to="/register">
-          <button className="link-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
-        </Link>
+          <Link className="link-btn" to="/register">ليس لديك حساب؟ أنشئ حساباً جديداً</Link>
+        </div>
       </div>
     </div>
   )

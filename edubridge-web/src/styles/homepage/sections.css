@@ -1,0 +1,242 @@
+/* ============================================================
+   Continuous Arabic typewriter + extra hero decorations
+   ============================================================ */
+.reference-home .hero-typewriter {
+  min-height: 2.25em;
+  overflow: visible;
+}
+
+.reference-home .hero-typewriter > .hero-type-line {
+  position: relative;
+  display: inline-block;
+  min-height: 1.06em;
+  background: none;
+  color: var(--home-ink);
+  animation: none;
+  white-space: nowrap;
+}
+
+.reference-home .hero-typewriter > .hero-type-line::after {
+  content: none;
+}
+
+.reference-home .hero-typewriter > .hero-type-accent {
+  background: linear-gradient(
+    90deg,
+    var(--home-cyan) 0%,
+    #1598d6 32%,
+    var(--home-cyan) 58%,
+    #58d7ca 82%,
+    var(--home-cyan) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-title-shimmer 5.5s 1.1s ease-in-out infinite;
+}
+
+.hero-type-cursor {
+  display: inline-block;
+  width: .075em;
+  height: .86em;
+  margin-inline-start: .10em;
+  border-radius: 999px;
+  background: currentColor;
+  vertical-align: -.06em;
+  animation: hero-caret-blink .78s steps(1, end) infinite;
+}
+
+.hero-type-accent .hero-type-cursor {
+  background: var(--home-cyan);
+}
+
+@keyframes hero-caret-blink {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
+
+.reference-home .home-hero-copy,
+.reference-home .reference-hero-art {
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================================
+   Keep surrounding hero copy static; only the main title types.
+   Add decorative accents across the rest of the landing page.
+   ============================================================ */
+.reference-home .home-hero-copy .hero-kicker,
+.reference-home .home-hero-copy > p,
+.reference-home .home-hero-copy .hero-actions,
+.reference-home .home-hero-copy .hero-promises {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+  will-change: auto;
+}
+
+/* Audience panel accents */
+.reference-home .audience-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.reference-home .audience-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 185px;
+  height: 185px;
+  inset-inline-start: -86px;
+  top: -92px;
+  border-radius: 50%;
+  border: 24px solid rgba(37, 185, 218, .10);
+  box-shadow: 0 0 0 18px rgba(82, 210, 200, .055);
+}
+
+.reference-home .audience-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 118px;
+  height: 84px;
+  inset-inline-end: 14px;
+  bottom: 8px;
+  opacity: .28;
+  background-image: radial-gradient(circle, rgba(23, 105, 194, .42) 2px, transparent 2.4px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(135deg, #000 22%, transparent 95%);
+}
+
+/* Feature section accents */
+.reference-home .features-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .features-section::before {
+  content: "✦";
+  position: absolute;
+  z-index: -1;
+  inset-inline-start: -22px;
+  top: 40%;
+  color: rgba(37, 185, 218, .20);
+  font-size: 54px;
+  line-height: 1;
+  transform: rotate(-12deg);
+}
+
+.reference-home .features-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 150px;
+  height: 60px;
+  inset-inline-end: -66px;
+  top: 16px;
+  border-radius: 999px;
+  border: 18px solid rgba(82, 210, 200, .12);
+  transform: rotate(18deg);
+}
+
+/* Noor card: extra brand ribbon + spark */
+.reference-home .reference-noor {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.reference-home .reference-noor::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 260px;
+  height: 82px;
+  inset-inline-start: -92px;
+  bottom: -28px;
+  border-radius: 999px;
+  border: 24px solid rgba(37, 185, 218, .13);
+  transform: rotate(-10deg);
+}
+
+.reference-home .reference-noor::after {
+  content: "✦";
+  position: absolute;
+  z-index: 0;
+  inset-inline-end: 28px;
+  top: 20px;
+  color: rgba(23, 105, 194, .20);
+  font-size: 32px;
+  transform: rotate(12deg);
+}
+
+/* Stats strip: subtle dotted constellation */
+.reference-home .home-stats {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .home-stats::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 150px;
+  height: 58px;
+  inset-inline-start: -62px;
+  top: -18px;
+  opacity: .25;
+  background-image: radial-gradient(circle, rgba(37, 185, 218, .46) 2px, transparent 2.4px);
+  background-size: 13px 13px;
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+
+.reference-home .home-stats::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 48px;
+  height: 48px;
+  inset-inline-end: -18px;
+  bottom: -15px;
+  border-radius: 50%;
+  border: 2px solid rgba(82, 210, 200, .28);
+  box-shadow:
+    0 0 0 9px rgba(82, 210, 200, .055),
+    -34px -13px 0 -20px rgba(23, 105, 194, .25);
+}
+
+/* Impact area: corner ribbon + soft glow */
+.reference-home .impact-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.reference-home .impact-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 240px;
+  height: 240px;
+  inset-inline-end: -160px;
+  top: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37,185,218,.10), rgba(82,210,200,.05) 48%, transparent 70%);
+}
+
+.reference-home .impact-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 118px;
+  height: 52px;
+  inset-inline-start: -46px;
+  bottom: 22px;
+  border-radius: 999px;
+  border: 15px solid rgba(23, 105, 194, .08);
+  transform: rotate(15deg);
+}
+

@@ -2,6 +2,65 @@
 part of 'verify_identity_screen.dart';
 
 // ═══════════════════════════════════════════════════════════
+//  State 0: موثّق — شاشة تأكيد (جديد من زميلك)
+// ═══════════════════════════════════════════════════════════
+Widget buildVerifiedState({
+  required BuildContext context,
+  required JisrColors c,
+  required bool isTeacherOrSpecialist,
+}) {
+  return Scaffold(
+    appBar: JisrAppBar(title: 'توثيق الهوية'),
+    body: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.verified_user,
+              size: 76,
+              color: AppColors.green,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'تم توثيق حسابك',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: c.heading,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isTeacherOrSpecialist
+                  ? 'تم اعتماد الهوية وبياناتك المهنية. يمكنك استخدام صلاحياتك بشكل طبيعي.'
+                  : 'تم اعتماد هويتك بنجاح.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: c.muted,
+                fontSize: 15,
+                height: 1.6,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('العودة'),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 //  State 1: قيد المراجعة
 // ═══════════════════════════════════════════════════════════
 Widget buildPendingState({

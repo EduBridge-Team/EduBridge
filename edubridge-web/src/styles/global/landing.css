@@ -1,0 +1,593 @@
+/* ===== ملخّص التقدّم ===== */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.summary-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 18px;
+    text-align: center;
+}
+
+.summary-card .num {
+    font-family: "Baloo Bhaijaan 2", cursive;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+}
+
+.summary-card .lbl {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 12.5px;
+}
+
+.status-chip {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 13px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.status-chip.done {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.status-chip.in_progress {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.status-chip.not_started {
+    background: oklch(92% 0.01 250);
+    color: var(--navy);
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.page-title h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.back-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-sm);
+    min-width: 42px;
+    min-height: 42px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--navy);
+}
+
+.back-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal-deep);
+}
+
+
+/* ============================================================
+   صفحة الهبوط
+   ============================================================ */
+
+.landing .section {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 44px 24px;
+}
+
+
+/* شارة صغيرة فوق العنوان */
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--tint-coral);
+    border: none;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-weight: 700;
+    color: var(--coral-deep);
+    font-size: 13.5px;
+}
+
+
+/* القسم البطولي */
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 56px;
+    flex-wrap: wrap-reverse;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 72px 24px 56px;
+}
+
+.hero-text {
+    flex: 1 1 420px;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    line-height: 1.32;
+    color: var(--navy);
+    margin: 18px 0 20px;
+}
+
+.hero-text h1 .hl {
+    color: var(--teal-deep);
+}
+
+.hero-text p {
+    font-size: 17.5px;
+    color: var(--muted);
+    line-height: 1.85;
+    margin: 0 0 32px;
+    max-width: 520px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero .btn {
+    min-height: 54px;
+    font-size: 17px;
+}
+
+
+/* شعار الهبوط داخل فقاعة لونية ناعمة */
+
+.hero-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 340px;
+    max-width: 80vw;
+    min-height: 300px;
+}
+
+.hero-art .blob {
+    position: absolute;
+    inset: 6% 8%;
+    border-radius: 44%;
+    background: var(--tint-teal);
+}
+
+.hero-logo {
+    position: relative;
+    width: 230px;
+    max-width: 62vw;
+    height: auto;
+    filter: drop-shadow(0 16px 24px oklch(30% 0.07 250 / 0.18));
+}
+
+.hero-float {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--navy);
+}
+
+.hero-float .d {
+    display: grid;
+    place-items: center;
+    color: var(--teal-deep);
+}
+
+.hero-float.a {
+    top: 8%;
+    inset-inline-start: -6%;
+}
+
+.hero-float.b {
+    bottom: 6%;
+    inset-inline-end: -8%;
+}
+
+
+/* عناوين الأقسام */
+
+.section-label {
+    color: var(--coral-deep);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.section-title {
+    font-size: 27px;
+    margin: 6px 0 22px;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.section-link {
+    color: var(--teal-deep);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+}
+
+
+/* الرسالة: الإحصاءات + الرؤية */
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.4fr;
+    gap: 20px;
+}
+
+.stats-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.stats-card .stat+.stat {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+}
+
+.stats-card .num {
+    font-family: "Baloo Bhaijaan 2", cursive;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--navy);
+}
+
+.stats-card .lbl {
+    color: var(--muted);
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.vision-card {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 20px;
+    padding: 36px;
+}
+
+.vision-icon {
+    color: #fff;
+    display: flex;
+}
+
+.vision-card h3 {
+    color: #fff;
+    font-size: 23px;
+    margin: 14px 0 10px;
+}
+
+.vision-card p {
+    line-height: 1.9;
+    opacity: 0.88;
+    margin: 0;
+    font-size: 15.5px;
+}
+
+
+/* بطاقات المزايا */
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.feature-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 24px;
+}
+
+.feature-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+}
+
+.feature-card:nth-child(2n) .feature-icon {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.feature-card h3 {
+    margin: 12px 0 6px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.75;
+}
+
+
+/* المسارات التعليمية */
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.program-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.12s, border-color 0.12s;
+}
+
+.program-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--teal);
+}
+
+.program-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.program-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+}
+
+.program-card:nth-child(2) .program-icon {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.program-card:nth-child(3) .program-icon {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.program-tag {
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+    border-radius: 999px;
+    padding: 4px 13px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.program-card:nth-child(2) .program-tag {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.program-card:nth-child(3) .program-tag {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.program-card h3 {
+    margin: 2px 0 0;
+    font-size: 19px;
+}
+
+.program-card p {
+    color: var(--muted);
+    flex: 1;
+    line-height: 1.75;
+    margin: 0;
+    font-size: 15px;
+}
+
+
+/* شريط ميزات الوصول */
+
+.access-band {
+    background: var(--navy);
+    color: #fff;
+    padding: 52px 32px;
+    margin: 0 24px 44px;
+    border-radius: 22px;
+    max-width: 1112px;
+    margin-inline: auto;
+}
+
+.access-band h2 {
+    color: #fff;
+    font-size: 26px;
+    margin: 0 0 28px;
+}
+
+.access-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 28px;
+}
+
+.access-icon {
+    display: flex;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.access-item h3 {
+    color: #fff;
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.access-item p {
+    opacity: 0.82;
+    line-height: 1.75;
+    margin: 0;
+    font-size: 14.5px;
+}
+
+
+/* النشرة البريدية */
+
+.newsletter {
+    text-align: center;
+}
+
+.newsletter .muted {
+    color: var(--muted);
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.newsletter-form input {
+    max-width: 340px;
+}
+
+
+/* التذييل */
+
+.site-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 36px 24px 20px;
+    margin-top: 30px;
+}
+
+.footer-grid {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr;
+    gap: 28px;
+}
+
+.footer-brand {
+    color: var(--navy);
+    margin: 0 0 8px;
+    font-size: 17px;
+}
+
+.site-footer h4 {
+    margin: 0 0 10px;
+    font-size: 14.5px;
+}
+
+.site-footer p.muted {
+    max-width: 340px;
+}
+
+.site-footer a {
+    display: block;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 14.5px;
+}
+
+.site-footer a:hover {
+    color: var(--teal-deep);
+}
+
+.site-footer .muted {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 14.5px;
+}
+
+.footer-contact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 14.5px;
+    margin-bottom: 6px;
+}
+
+.footer-copy {
+    max-width: 1160px;
+    margin: 26px auto 0;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--muted);
+}
+
+
+/* خط قوس قزح فوق سطر الحقوق — لمسة الهوية */
+
+.footer-copy::before {
+    content: "";
+    display: block;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--rainbow);
+    max-width: 200px;
+    margin: 0 auto 14px;
+}
+
+
+/* ============================================================
+   لوحة التحكم الإدارية
+   ============================================================ */
+
+

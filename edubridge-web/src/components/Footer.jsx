@@ -12,6 +12,14 @@ function InstagramIcon({ size = 20 }) {
   )
 }
 
+function FacebookIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M13.7 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5H17V3.9c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H8.2v3h2.6v8h2.9Z" />
+    </svg>
+  )
+}
+
 function LinkedinIcon({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -23,6 +31,7 @@ function LinkedinIcon({ size = 20 }) {
 const ANDROID_DOWNLOAD_URL = 'https://github.com/EduBridge-Team/EduBridge/releases/download/v1.10.0/app-release.apk'
 const LINKEDIN_URL = 'https://www.linkedin.com/company/%D8%AC%D8%B3%D8%B1-%D8%AA%D8%B9%D9%84%D9%8A%D9%85%D9%8A-edubridge/'
 const INSTAGRAM_URL = 'https://www.instagram.com/edu_bridge12?stkn=dDlmMTdnMnBrczB0'
+const FACEBOOK_URL = import.meta.env.VITE_FACEBOOK_URL || ''
 
 export default function Footer() {
   return (
@@ -36,7 +45,7 @@ export default function Footer() {
             <img className="brand-lockup-icon" src="/edubridge-icon.png" alt="" />
             <span className="brand-wordmark">EduBridge</span>
           </div>
-          <p>معاً، لكل طفل فرصة. تعليم ذكي وشامل يدعم رحلة كل متعلم.</p>
+          <p>معاً، لكل طفل فرصة. تعليم مرن وشامل يدعم اختلاف القدرات والاحتياجات.</p>
         </div>
 
         <div className="footer-column">
@@ -44,6 +53,7 @@ export default function Footer() {
           <Link to="/">الرئيسية</Link>
           <Link to="/about">من نحن</Link>
           <Link to="/lessons">الدروس</Link>
+          <a href="/#features">الخدمات والمميزات</a>
           <Link to="/login">تسجيل الدخول</Link>
         </div>
 
@@ -57,6 +67,7 @@ export default function Footer() {
         <div className="footer-column footer-follow">
           <h4>تابعنا على</h4>
           <div className="footer-socials" aria-label="حسابات EduBridge على شبكات التواصل">
+            {FACEBOOK_URL && <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="EduBridge على Facebook"><FacebookIcon size={20} /></a>}
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="EduBridge على Instagram">
               <InstagramIcon size={20} />
             </a>
@@ -79,7 +90,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-copy">
-        © 2026 EduBridge — جميع الحقوق محفوظة.
+        EduBridge © 2026
       </div>
     </footer>
   )

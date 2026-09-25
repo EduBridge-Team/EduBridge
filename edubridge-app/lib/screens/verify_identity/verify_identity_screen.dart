@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
-import '../../utils/home_router.dart';
 
 part 'verify_identity_states.dart';
 
@@ -74,13 +73,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
 
     if (status == 'verified') {
       _timer?.cancel();
-      final home = await homeScreenForRole();
-      if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => home),
-        (route) => false,
-      );
     }
   }
 
@@ -172,7 +164,16 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    // 1) قيد المراجعة
+    // 1) موثّق — ابقَ في الشاشة واعرض الحالة بدلاً من إعادة التوجيه تلقائياً.
+    if (_verificationStatus == 'verified') {
+      return buildVerifiedState(
+        context: context,
+        c: c,
+        isTeacherOrSpecialist: _isTeacherOrSpecialist,
+      );
+    }
+
+    // 2) قيد المراجعة
     if (_verificationStatus == 'pending') {
       return buildPendingState(
         context: context,
@@ -183,7 +184,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 2) مرفوض
+    // 3) مرفوض
     if (_verificationStatus == 'rejected') {
       return buildRejectedState(
         context: context,
@@ -197,7 +198,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 3) نموذج جديد
+    // 4) نموذج جديد
     return buildFormState(
       context: context,
       c: c,
