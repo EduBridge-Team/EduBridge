@@ -4,7 +4,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   Future<void> _loadRole() async {
     final role = await ApiService.getRole();
     if (!mounted) return;
-    setState(() {
+    _updateChildLessonsState(() {
       _canMarkDone = role == 'teacher' || role == 'specialist' || role == 'admin';
     });
   }
@@ -12,11 +12,11 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   Future<void> _loadStars() async {
     final stars = await RewardService.instance.getStars(widget.childId);
     if (!mounted) return;
-    setState(() => _stars = stars);
+    _updateChildLessonsState(() => _stars = stars);
   }
 
   Future<void> _loadLessons() async {
-    setState(() {
+    _updateChildLessonsState(() {
       _loading = true;
       _error = null;
     });
@@ -42,20 +42,20 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
           }
         }
         if (!mounted) return;
-        setState(() {
+        _updateChildLessonsState(() {
           _lessons = lessonsData['lessons'] ?? [];
           _loading = false;
         });
       } else {
         if (!mounted) return;
-        setState(() {
+        _updateChildLessonsState(() {
           _error = lessonsData['error'] ?? 'تعذّر جلب الدروس';
           _loading = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
+      _updateChildLessonsState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _loading = false;
       });
@@ -63,7 +63,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   }
 
   Future<void> _markLessonDone(int lessonId) async {
-    setState(() => _savingLessonId = lessonId);
+    _updateChildLessonsState(() => _savingLessonId = lessonId);
 
     try {
       final res = await ApiService.authPost('/progress', {
@@ -74,7 +74,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
 
       if (!mounted) return;
       if (res.statusCode == 201) {
-        setState(() => _doneLessonIds.add(lessonId));
+        _updateChildLessonsState(() => _doneLessonIds.add(lessonId));
 
         await RewardService.instance.addStar(widget.childId);
         await _loadStars();
@@ -106,7 +106,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     } catch (e) {
       // Silent
     } finally {
-      if (mounted) setState(() => _savingLessonId = null);
+      if (mounted) _updateChildLessonsState(() => _savingLessonId = null);
     }
   }
 
@@ -160,13 +160,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     final rawId = lesson['id'];
     if (_speakingLessonId == rawId) {
       await TtsService.instance.stop();
-      if (mounted) setState(() => _speakingLessonId = null);
+      if (mounted) _updateChildLessonsState(() => _speakingLessonId = null);
       return;
     }
 
     await TtsService.instance.stop();
     if (!mounted) return;
-    setState(() => _speakingLessonId = rawId is int ? rawId : null);
+    _updateChildLessonsState(() => _speakingLessonId = rawId is int ? rawId : null);
 
     var text = [
       lesson['title'] ?? '',
@@ -174,7 +174,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     ].where((t) => t.toString().isNotEmpty).join('. ');
 
     if (text.trim().isEmpty) {
-      if (mounted) setState(() => _speakingLessonId = null);
+      if (mounted) _updateChildLessonsState(() => _speakingLessonId = null);
       return;
     }
 
@@ -191,7 +191,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     } else {
       await TtsService.instance.speakLine(text);
     }
-    if (mounted) setState(() => _speakingLessonId = null);
+    if (mounted) _updateChildLessonsState(() => _speakingLessonId = null);
   }
 
   Future<T?> _openOutsideChildScope<T>(Route<T> route) async {
@@ -237,7 +237,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
         ),
       ),
     );
-    if (mounted) setState(() {});
+    if (mounted) _updateChildLessonsState(() {});
   }
 
   void _openProgress() async {
@@ -282,13 +282,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   Future<void> _toggleLessonAudio(String url) async {
     if (_activeAudioUrl == url) {
       await _lessonAudioPlayer.stop();
-      if (mounted) setState(() => _activeAudioUrl = null);
+      if (mounted) _updateChildLessonsState(() => _activeAudioUrl = null);
       return;
     }
 
     await _lessonAudioPlayer.stop();
     await _lessonAudioPlayer.play(UrlSource(url));
-    if (mounted) setState(() => _activeAudioUrl = url);
+    if (mounted) _updateChildLessonsState(() => _activeAudioUrl = url);
   }
 
   void _openAssistantFromLesson(String title, String content) {
