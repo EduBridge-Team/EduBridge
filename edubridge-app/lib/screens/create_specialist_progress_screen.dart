@@ -1,5 +1,6 @@
 // lib/screens/create_specialist_progress_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -86,8 +87,8 @@ class _CreateSpecialistProgressScreenState
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم حفظ تقدّم الطفل'),
-            backgroundColor: Colors.green,
+            content: Text('تم حفظ تقدّم الطفل'),
+            backgroundColor: AppColors.green,
           ),
         );
         Navigator.pop(context, true);
@@ -110,13 +111,12 @@ class _CreateSpecialistProgressScreenState
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '🧠 تقييم تقدّم ${widget.childName}'),
+      appBar: JisrAppBar(title: 'تقييم تقدّم ${widget.childName}'),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // ─── تقرير المعلم (مرجع) ───
             if (_loadingReport)
               const Center(child: CircularProgressIndicator())
             else if (_teacherReport != null)
@@ -126,13 +126,12 @@ class _CreateSpecialistProgressScreenState
 
             const SizedBox(height: 20),
 
-            // ─── الملاحظات ───
             TextFormField(
               controller: _notesCtrl,
               maxLines: 4,
               decoration: const InputDecoration(
                 labelText: 'ملاحظاتك على تقدّم الطفل',
-                prefixIcon: Icon(Icons.notes),
+                prefixIcon: Icon(AppIcons.edit),
                 alignLabelWithHint: true,
                 hintText: 'كيف ترى تقدّم الطفل من واقع تقرير المعلم؟',
               ),
@@ -141,19 +140,17 @@ class _CreateSpecialistProgressScreenState
             ),
             const SizedBox(height: 16),
 
-            // ─── التوصيات ───
             TextFormField(
               controller: _recommendationsCtrl,
               maxLines: 3,
               decoration: const InputDecoration(
                 labelText: 'توصياتك للمعلم',
-                prefixIcon: Icon(Icons.lightbulb),
+                prefixIcon: Icon(AppIcons.info),
                 alignLabelWithHint: true,
               ),
             ),
             const SizedBox(height: 20),
 
-            // ─── هل الخطة مناسبة؟ ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -181,14 +178,14 @@ class _CreateSpecialistProgressScreenState
                         Expanded(
                           child: RadioListTile<bool>(
                             contentPadding: EdgeInsets.zero,
-                            title: Text('✅ مناسبة'),
+                            title: Text('مناسبة'),
                             value: true,
                           ),
                         ),
                         Expanded(
                           child: RadioListTile<bool>(
                             contentPadding: EdgeInsets.zero,
-                            title: Text('⚠️ تحتاج تعديل'),
+                            title: Text('تحتاج تعديل'),
                             value: false,
                           ),
                         ),
@@ -212,7 +209,6 @@ class _CreateSpecialistProgressScreenState
             ),
             const SizedBox(height: 20),
 
-            // ─── المشاركة التعليمية ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -234,7 +230,13 @@ class _CreateSpecialistProgressScreenState
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(5, (i) {
                       final rating = i + 1;
-                      final emojis = ['😢', '😕', '😐', '🙂', '😄'];
+                      final icons = [
+                        Icons.sentiment_very_dissatisfied,
+                        Icons.sentiment_dissatisfied,
+                        Icons.sentiment_neutral,
+                        Icons.sentiment_satisfied,
+                        Icons.sentiment_very_satisfied,
+                      ];
                       final isSelected = _moodRating == rating;
                       return GestureDetector(
                         onTap: () =>
@@ -251,9 +253,12 @@ class _CreateSpecialistProgressScreenState
                                     color: AppColors.orange, width: 2)
                                 : null,
                           ),
-                          child: Text(
-                            emojis[i],
-                            style: const TextStyle(fontSize: 34),
+                          child: Icon(
+                            icons[i],
+                            size: 34,
+                            color: isSelected
+                                ? AppColors.orangeDeep
+                                : c.muted,
                           ),
                         ),
                       );
@@ -265,7 +270,7 @@ class _CreateSpecialistProgressScreenState
 
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: const TextStyle(color: AppColors.red)),
             ],
 
             const SizedBox(height: 24),
@@ -284,7 +289,7 @@ class _CreateSpecialistProgressScreenState
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.check),
+                    : const Icon(AppIcons.check),
                 label: Text(
                   _saving ? 'جارِ الحفظ...' : 'حفظ التقييم',
                   style: const TextStyle(
@@ -306,7 +311,7 @@ class _CreateSpecialistProgressScreenState
         color: c.tintTeal,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.tealDeep.withValues(alpha: 0.3),
+          color: AppColors.brandBlue.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -315,7 +320,7 @@ class _CreateSpecialistProgressScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.article, color: AppColors.tealDeep),
+              const Icon(AppIcons.report, color: AppColors.brandBlue),
               const SizedBox(width: 8),
               const Text(
                 'تقرير المعلم (مرجع)',
@@ -359,7 +364,7 @@ class _CreateSpecialistProgressScreenState
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: AppColors.orangeDeep),
+          const Icon(AppIcons.info, color: AppColors.orangeDeep),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -381,7 +386,7 @@ class _CreateSpecialistProgressScreenState
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.tealDeep,
+              color: AppColors.brandBlue,
             ),
           ),
           Text(label, style: const TextStyle(fontSize: 11)),

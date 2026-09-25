@@ -1,7 +1,7 @@
-// screens/child_progress_screen.dart
-// تقدّم الطفل — مع كل ميزات التكييف
+// lib/screens/child_progress_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/reward_service.dart';
 import '../theme.dart';
@@ -9,7 +9,6 @@ import '../utils/adaptive_helper.dart';
 import '../widgets/accessibility/adaptive_card.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
-
 
 class ChildProgressScreen extends StatefulWidget {
   final int childId;
@@ -94,21 +93,23 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.insights, color: Colors.white),
+              const Icon(AppIcons.progress, color: Colors.white),
               const SizedBox(width: 8),
-              Text(
-                'تقدّم ${widget.childName}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Flexible(
+                child: Text(
+                  'تقدّم ${widget.childName}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
           centerTitle: true,
           actions: [
-            // النجوم
             Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -118,7 +119,8 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
               ),
               child: Row(
                 children: [
-                  const Text('⭐', style: TextStyle(fontSize: 20)),
+                  const Icon(AppIcons.starFilled,
+                      size: 18, color: AppColors.yellow),
                   const SizedBox(width: 4),
                   Text(
                     '$_stars',
@@ -151,12 +153,12 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 60, color: Colors.red),
+              const Icon(AppIcons.error, size: 60, color: AppColors.red),
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveText(
                 _error!,
                 textAlign: TextAlign.center,
-                color: Colors.red,
+                color: AppColors.red,
               ),
             ],
           ),
@@ -170,9 +172,9 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.insights,
+              AppIcons.progress,
               size: AdaptiveHelper.iconSize * 2,
-              color: Colors.grey,
+              color: AppColors.muted,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             const AdaptiveText(
@@ -212,7 +214,6 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
 
     return Column(
       children: [
-        // حلقة الإنجاز
         SizedBox(
           width: 160,
           height: 160,
@@ -241,7 +242,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                       color: AdaptiveHelper.textColor(context),
                     ),
                   ),
-                  AdaptiveText(
+                  const AdaptiveText(
                     'الإنجاز',
                     type: AdaptiveTextType.caption,
                   ),
@@ -253,22 +254,22 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         SizedBox(height: AdaptiveHelper.spacing),
         Row(
           children: [
-            _summaryCard('مكتمل', '$done', Icons.check_circle, AppColors.green),
+            _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
             SizedBox(width: AdaptiveHelper.spacing / 2),
-            _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew,
+            _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
                 AppColors.orangeDeep),
           ],
         ),
         SizedBox(height: AdaptiveHelper.spacing / 2),
         Row(
           children: [
-            _summaryCard('لم يبدأ', '$notStarted', Icons.hourglass_empty,
+            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock,
                 AppColors.muted),
             SizedBox(width: AdaptiveHelper.spacing / 2),
             _summaryCard(
               'متوسّط',
               avgScore != null ? '$avgScore%' : '—',
-              Icons.star,
+              AppIcons.starFilled,
               AppColors.yellow,
             ),
           ],
@@ -328,16 +329,16 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AdaptiveText(
-          'المكافآت 🎉',
+          'المكافآت',
           type: AdaptiveTextType.title,
         ),
         SizedBox(height: AdaptiveHelper.spacing),
 
-        // شريط النجوم
         AdaptiveCard(
           child: Row(
             children: [
-              Text('⭐', style: TextStyle(fontSize: AdaptiveHelper.iconSize)),
+              Icon(AppIcons.starFilled,
+                  size: AdaptiveHelper.iconSize, color: AppColors.yellow),
               SizedBox(width: AdaptiveHelper.spacing / 2),
               Expanded(
                 child: AdaptiveText(
@@ -351,7 +352,6 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         ),
         SizedBox(height: AdaptiveHelper.spacing),
 
-        // الشارات
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
@@ -374,9 +374,10 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            badge.earned ? badge.emoji : '🔒',
-            style: TextStyle(fontSize: AdaptiveHelper.iconSize + 8),
+          Icon(
+            badge.earned ? AppIcons.trophy : AppIcons.lock,
+            size: AdaptiveHelper.iconSize + 8,
+            color: badge.earned ? AppColors.green : AppColors.muted,
           ),
           SizedBox(height: AdaptiveHelper.spacing / 4),
           AdaptiveText(
@@ -443,19 +444,19 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       case 'done':
         return (
           label: 'مكتمل',
-          icon: Icons.check_circle,
+          icon: AppIcons.check,
           color: AppColors.green,
         );
       case 'in_progress':
         return (
           label: 'قيد التنفيذ',
-          icon: Icons.autorenew,
+          icon: AppIcons.refresh,
           color: AppColors.orangeDeep,
         );
       default:
         return (
           label: 'لم يبدأ',
-          icon: Icons.hourglass_empty,
+          icon: AppIcons.clock,
           color: AppColors.muted,
         );
     }

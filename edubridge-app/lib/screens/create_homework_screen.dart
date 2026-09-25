@@ -1,9 +1,10 @@
-// screens/homework/create_homework_screen.dart
+// lib/screens/create_homework_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
+import '../app_icons.dart';
+import '../services/api_service.dart';
+import '../theme.dart';
 import '../utils/safe_bottom.dart';
 
 class CreateHomeworkScreen extends StatefulWidget {
@@ -28,6 +29,14 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
   String? _error;
 
   final _picker = ImagePicker();
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _subjectCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickAttachment() async {
     final file = await _picker.pickMedia();
@@ -75,8 +84,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم إنشاء الواجب بنجاح'),
-            backgroundColor: Colors.green,
+            content: Text('تم إنشاء الواجب بنجاح'),
+            backgroundColor: AppColors.green,
           ),
         );
       }
@@ -93,7 +102,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '📝 واجب جديد'),
+      appBar: JisrAppBar(title: 'واجب جديد'),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -108,7 +117,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
               controller: _titleCtrl,
               decoration: const InputDecoration(
                 labelText: 'عنوان الواجب *',
-                prefixIcon: Icon(Icons.title),
+                prefixIcon: Icon(AppIcons.edit),
               ),
               validator: (v) =>
                   v == null || v.trim().isEmpty ? 'العنوان مطلوب' : null,
@@ -119,7 +128,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
               maxLines: 4,
               decoration: const InputDecoration(
                 labelText: 'الوصف *',
-                prefixIcon: Icon(Icons.description),
+                prefixIcon: Icon(AppIcons.info),
                 alignLabelWithHint: true,
               ),
               validator: (v) =>
@@ -130,7 +139,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
               controller: _subjectCtrl,
               decoration: const InputDecoration(
                 labelText: 'المادة (اختياري)',
-                prefixIcon: Icon(Icons.book),
+                prefixIcon: Icon(AppIcons.lesson),
                 hintText: 'مثال: رياضيات',
               ),
             ),
@@ -146,7 +155,8 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, color: AppColors.orange),
+                    const Icon(AppIcons.calendar,
+                        color: AppColors.orange),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -166,7 +176,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.edit),
+                    const Icon(AppIcons.edit),
                   ],
                 ),
               ),
@@ -205,10 +215,10 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.teal,
+                      backgroundColor: AppColors.brandBlue,
                       foregroundColor: Colors.white,
                     ),
-                    icon: const Icon(Icons.attach_file),
+                    icon: const Icon(AppIcons.attach),
                     label: const Text('إضافة مرفق'),
                     onPressed: _pickAttachment,
                   ),
@@ -219,10 +229,11 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
               const SizedBox(height: 8),
               ..._attachments.asMap().entries.map((e) => ListTile(
                     dense: true,
-                    leading: const Icon(Icons.insert_drive_file),
+                    leading: const Icon(AppIcons.attach),
                     title: Text(e.value.path.split('/').last),
                     trailing: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.red),
+                      icon: const Icon(AppIcons.close,
+                          color: AppColors.red),
                       onPressed: () =>
                           setState(() => _attachments.removeAt(e.key)),
                     ),
@@ -230,7 +241,24 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
             ],
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.error,
+                        color: AppColors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(_error!,
+                          style: const TextStyle(color: AppColors.red)),
+                    ),
+                  ],
+                ),
+              ),
             ],
             const SizedBox(height: 20),
             SizedBox(
@@ -239,7 +267,14 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.green,
                 ),
-                icon: const Icon(Icons.save),
+                icon: _saving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Icon(AppIcons.save),
                 label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الواجب'),
                 onPressed: _saving ? null : _save,
               ),

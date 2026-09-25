@@ -1,6 +1,6 @@
 // lib/screens/learning_support_meetings_screen.dart
-// عرض اجتماعات الدعم التعليمي — للعرض فقط (الإنشاء يتم من طلبات الدعم)
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../model/learning_support_meeting_model.dart';
@@ -16,14 +16,16 @@ class LearningSupportMeetingsScreen extends StatefulWidget {
   });
 
   @override
-  State<LearningSupportMeetingsScreen> createState() => _LearningSupportMeetingsScreenState();
+  State<LearningSupportMeetingsScreen> createState() =>
+      _LearningSupportMeetingsScreenState();
 }
 
-class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsScreen> {
+class _LearningSupportMeetingsScreenState
+    extends State<LearningSupportMeetingsScreen> {
   List<LearningSupportMeeting> _sessions = [];
   bool _loading = true;
   String? _error;
-  String _filter = 'all'; // all | scheduled | completed
+  String _filter = 'all';
 
   @override
   void initState() {
@@ -37,11 +39,13 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
       _error = null;
     });
     try {
-      final list = await ApiService.getLearningSupportMeetings(childId: widget.childId);
+      final list = await ApiService.getLearningSupportMeetings(
+          childId: widget.childId);
       if (!mounted) return;
       setState(() {
         _sessions = list
-            .map((e) => LearningSupportMeeting.fromJson(e as Map<String, dynamic>))
+            .map((e) =>
+                LearningSupportMeeting.fromJson(e as Map<String, dynamic>))
             .toList();
         _loading = false;
       });
@@ -74,11 +78,11 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
     return Scaffold(
       appBar: JisrAppBar(
         title: widget.childName != null
-            ? '📘 اجتماعات ${widget.childName}'
-            : '🧠 اجتماعات الدعم التعليمي',
+            ? 'اجتماعات ${widget.childName}'
+            : 'اجتماعات الدعم التعليمي',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             tooltip: 'تحديث',
             onPressed: _load,
           ),
@@ -86,7 +90,6 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
       ),
       body: Column(
         children: [
-          // ─── شريط الفلاتر ───
           Container(
             padding: const EdgeInsets.all(12),
             color: JisrColors.of(context).card,
@@ -96,7 +99,7 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
                   label: 'الكل',
                   count: _sessions.length,
                   selected: _filter == 'all',
-                  color: AppColors.navy,
+                  color: AppColors.brandBlue,
                   onTap: () => setState(() => _filter = 'all'),
                 ),
                 const SizedBox(width: 8),
@@ -124,8 +127,6 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
               ],
             ),
           ),
-
-          // ─── القائمة ───
           Expanded(
             child: RefreshIndicator(
               onRefresh: _load,
@@ -147,13 +148,13 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(AppIcons.error, size: 64, color: AppColors.red),
             const SizedBox(height: 12),
             Text(_error!,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+                style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
@@ -191,7 +192,7 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
     return ListView(
       children: [
         const SizedBox(height: 120),
-        Icon(Icons.event_note, size: 80, color: c.muted),
+        Icon(AppIcons.event, size: 80, color: c.muted),
         const SizedBox(height: 16),
         Center(
           child: Text(
@@ -221,9 +222,6 @@ class _LearningSupportMeetingsScreenState extends State<LearningSupportMeetingsS
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  الفلتر
-// ═══════════════════════════════════════════════════════════
 class _FilterChip extends StatelessWidget {
   final String label;
   final int count;
@@ -272,9 +270,7 @@ class _FilterChip extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
-                  color: selected
-                      ? color
-                      : Colors.grey.shade400,
+                  color: selected ? color : Colors.grey.shade400,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -294,9 +290,6 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  بطاقة الجلسة
-// ═══════════════════════════════════════════════════════════
 class _SessionCard extends StatelessWidget {
   final LearningSupportMeeting session;
 
@@ -320,15 +313,15 @@ class _SessionCard extends StatelessWidget {
   IconData get _typeIcon {
     switch (session.type) {
       case LearningSupportMeetingType.learningPlanning:
-        return Icons.play_circle_outline;
+        return AppIcons.plan;
       case LearningSupportMeetingType.followUp:
-        return Icons.autorenew;
+        return AppIcons.refresh;
       case LearningSupportMeetingType.teamReview:
-        return Icons.warning_amber;
+        return AppIcons.warning;
       case LearningSupportMeetingType.parentReview:
-        return Icons.family_restroom;
+        return AppIcons.parent;
       case LearningSupportMeetingType.groupSupport:
-        return Icons.groups;
+        return AppIcons.users;
     }
   }
 
@@ -378,7 +371,6 @@ class _SessionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── الرأس: النوع + الحالة ───
             Row(
               children: [
                 Container(
@@ -435,50 +427,46 @@ class _SessionCard extends StatelessWidget {
             Divider(color: c.line, height: 1),
             const SizedBox(height: 12),
 
-            // ─── المعلومات ───
-            _infoRow(Icons.calendar_today, 'الموعد',
+            _infoRow(AppIcons.calendar, 'الموعد',
                 _formatDate(session.scheduledAt), c),
             const SizedBox(height: 6),
-            _infoRow(Icons.timer_outlined, 'المدة',
+            _infoRow(AppIcons.clock, 'المدة',
                 '${session.durationMinutes} دقيقة', c),
 
             if (session.specialistName.isNotEmpty) ...[
               const SizedBox(height: 6),
-              _infoRow(Icons.person_outline, 'المختص',
+              _infoRow(AppIcons.specialist, 'المختص',
                   session.specialistName, c),
             ],
 
             if (session.completedAt != null) ...[
               const SizedBox(height: 6),
-              _infoRow(Icons.check_circle_outline, 'اكتملت',
+              _infoRow(AppIcons.check, 'اكتملت',
                   _formatDate(session.completedAt!), c),
             ],
 
-            // ─── الأهداف ───
             if (session.goals != null && session.goals!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _section('🎯 الأهداف', session.goals!, c),
+              _section('الأهداف', session.goals!, c),
             ],
 
-            // ─── الملاحظات ───
             if (session.notes != null && session.notes!.isNotEmpty) ...[
               const SizedBox(height: 10),
-              _section('📝 ملاحظات', session.notes!, c),
+              _section('ملاحظات', session.notes!, c),
             ],
 
-            // ─── التوصيات ───
             if (session.recommendations != null &&
                 session.recommendations!.isNotEmpty) ...[
               const SizedBox(height: 10),
-              _section('💡 التوصيات', session.recommendations!, c),
+              _section('التوصيات', session.recommendations!, c),
             ],
 
-            // ─── المشاركة التعليمية ───
             if (session.moodRating != null) ...[
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Icon(Icons.mood, size: 18, color: c.muted),
+                  Icon(Icons.sentiment_satisfied,
+                      size: 18, color: c.muted),
                   const SizedBox(width: 6),
                   Text(
                     'المشاركة التعليمية: ',
@@ -491,8 +479,8 @@ class _SessionCard extends StatelessWidget {
                   ...List.generate(5, (i) {
                     return Icon(
                       i < session.moodRating!
-                          ? Icons.star
-                          : Icons.star_border,
+                          ? AppIcons.starFilled
+                          : AppIcons.star,
                       size: 18,
                       color: AppColors.yellow,
                     );
@@ -501,7 +489,6 @@ class _SessionCard extends StatelessWidget {
               ),
             ],
 
-            // ─── الوسوم ───
             if (session.tags.isNotEmpty) ...[
               const SizedBox(height: 10),
               Wrap(

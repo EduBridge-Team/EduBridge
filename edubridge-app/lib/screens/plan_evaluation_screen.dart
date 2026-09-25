@@ -1,7 +1,8 @@
-// screens/specialist/plan_evaluation_screen.dart
+// lib/screens/plan_evaluation_screen.dart
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
+import '../app_icons.dart';
+import '../services/api_service.dart';
+import '../theme.dart';
 
 class PlanEvaluationScreen extends StatefulWidget {
   final int childId;
@@ -24,6 +25,13 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
   final _notesCtrl = TextEditingController();
   final _changesCtrl = TextEditingController();
   bool _saving = false;
+
+  @override
+  void dispose() {
+    _notesCtrl.dispose();
+    _changesCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _save() async {
     setState(() => _saving = true);
@@ -49,8 +57,8 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ تم حفظ التقييم'),
-            backgroundColor: Colors.green,
+            content: Text('تم حفظ التقييم'),
+            backgroundColor: AppColors.green,
           ),
         );
       }
@@ -95,13 +103,13 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                     children: [
                       Expanded(
                         child: RadioListTile<bool>(
-                          title: Text('✅ مناسبة'),
+                          title: Text('مناسبة'),
                           value: true,
                         ),
                       ),
                       Expanded(
                         child: RadioListTile<bool>(
-                          title: Text('❌ تحتاج تعديل'),
+                          title: Text('تحتاج تعديل'),
                           value: false,
                         ),
                       ),
@@ -119,6 +127,7 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
               labelText: 'ملاحظاتك للمعلم',
               alignLabelWithHint: true,
               hintText: 'اكتب ملاحظاتك حول ما يحتاج تحسين...',
+              prefixIcon: Icon(AppIcons.edit),
             ),
           ),
           const SizedBox(height: 12),
@@ -129,6 +138,7 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
               labelText: 'التغييرات المقترحة',
               alignLabelWithHint: true,
               hintText: 'كل سطر = تغيير واحد',
+              prefixIcon: Icon(AppIcons.attach),
             ),
           ),
           const SizedBox(height: 20),
@@ -139,7 +149,9 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                 backgroundColor:
                     _isAppropriate ? AppColors.green : AppColors.orange,
               ),
-              icon: Icon(_isAppropriate ? Icons.check : Icons.warning),
+              icon: Icon(_isAppropriate
+                  ? AppIcons.check
+                  : AppIcons.warning),
               label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ التقييم'),
               onPressed: _saving ? null : _save,
             ),

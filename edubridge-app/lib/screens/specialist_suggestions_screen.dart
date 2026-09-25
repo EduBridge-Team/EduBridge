@@ -1,6 +1,6 @@
 // lib/screens/specialist_suggestions_screen.dart
-// اقتراحات المتابعة الواردة للمختص
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -56,7 +56,7 @@ class _SpecialistSuggestionsScreenState
             borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 28),
+            Icon(AppIcons.check, color: AppColors.green, size: 28),
             SizedBox(width: 8),
             Text('تأكيد القبول'),
           ],
@@ -73,7 +73,7 @@ class _SpecialistSuggestionsScreenState
           ),
           ElevatedButton(
             style:
-                ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                ElevatedButton.styleFrom(backgroundColor: AppColors.green),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('قبول'),
           ),
@@ -88,15 +88,15 @@ class _SpecialistSuggestionsScreenState
 
     if (err != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ $err'), backgroundColor: Colors.red),
+        SnackBar(content: Text(err), backgroundColor: AppColors.red),
       );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('✅ تمت إضافة الطفل لمتابعتك'),
-        backgroundColor: Colors.green,
+        content: Text('تمت إضافة الطفل لمتابعتك'),
+        backgroundColor: AppColors.green,
       ),
     );
     _load();
@@ -111,7 +111,7 @@ class _SpecialistSuggestionsScreenState
             borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.cancel, color: Colors.red, size: 28),
+            Icon(AppIcons.error, color: AppColors.red, size: 28),
             SizedBox(width: 8),
             Text('رفض الاقتراح'),
           ],
@@ -139,7 +139,7 @@ class _SpecialistSuggestionsScreenState
             child: const Text('إلغاء'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('رفض'),
           ),
@@ -157,7 +157,7 @@ class _SpecialistSuggestionsScreenState
 
     if (err != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ $err'), backgroundColor: Colors.red),
+        SnackBar(content: Text(err), backgroundColor: AppColors.red),
       );
       return;
     }
@@ -165,7 +165,7 @@ class _SpecialistSuggestionsScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('تم رفض الاقتراح'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.orange,
       ),
     );
     _load();
@@ -177,17 +177,16 @@ class _SpecialistSuggestionsScreenState
 
     return Scaffold(
       appBar: JisrAppBar(
-        title: '🤝 اقتراحات المتابعة',
+        title: 'اقتراحات المتابعة',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             onPressed: _load,
           ),
         ],
       ),
       body: Column(
         children: [
-          // ─── الفلاتر ───
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -198,7 +197,7 @@ class _SpecialistSuggestionsScreenState
                 const SizedBox(width: 8),
                 _filterChip('مرفوضة', 'rejected', AppColors.red),
                 const SizedBox(width: 8),
-                _filterChip('الكل', 'all', AppColors.navy),
+                _filterChip('الكل', 'all', AppColors.brandBlue),
               ],
             ),
           ),
@@ -257,7 +256,7 @@ class _SpecialistSuggestionsScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(_error!,
-                style: const TextStyle(color: Colors.red)),
+                style: const TextStyle(color: AppColors.red)),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _load,
@@ -271,7 +270,7 @@ class _SpecialistSuggestionsScreenState
       return ListView(
         children: [
           const SizedBox(height: 100),
-          Icon(Icons.inbox, size: 72, color: c.muted),
+          Icon(Icons.inbox_outlined, size: 72, color: c.muted),
           const SizedBox(height: 16),
           Center(
             child: Text(
@@ -299,18 +298,22 @@ class _SpecialistSuggestionsScreenState
 
     Color statusColor;
     String statusLabel;
+    IconData statusIcon;
     switch (status) {
       case 'accepted':
-        statusColor = Colors.green;
-        statusLabel = '✅ مقبول';
+        statusColor = AppColors.green;
+        statusLabel = 'مقبول';
+        statusIcon = AppIcons.check;
         break;
       case 'rejected':
-        statusColor = Colors.red;
-        statusLabel = '❌ مرفوض';
+        statusColor = AppColors.red;
+        statusLabel = 'مرفوض';
+        statusIcon = AppIcons.error;
         break;
       default:
         statusColor = AppColors.orange;
-        statusLabel = '⏳ معلّق';
+        statusLabel = 'معلّق';
+        statusIcon = AppIcons.clock;
     }
 
     return Card(
@@ -320,13 +323,13 @@ class _SpecialistSuggestionsScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── الرأس ───
             Row(
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor:
-                      isLearningSupport ? AppColors.purple : AppColors.navy,
+                  backgroundColor: isLearningSupport
+                      ? AppColors.purple
+                      : AppColors.brandBlue,
                   child: Text(
                     (s['child_name'] ?? '؟').toString().characters.first,
                     style: const TextStyle(
@@ -363,32 +366,40 @@ class _SpecialistSuggestionsScreenState
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    statusLabel,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(statusIcon, size: 12, color: statusColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        statusLabel,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
 
-            // ─── التخصص + السبب ───
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: (isLearningSupport ? AppColors.purple : AppColors.navy)
+                color: (isLearningSupport ? AppColors.purple : AppColors.brandBlue)
                     .withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
                   Icon(
-                    isLearningSupport ? Icons.psychology : Icons.school,
-                    color: isLearningSupport ? AppColors.purple : AppColors.navy,
+                    isLearningSupport ? AppIcons.specialist : AppIcons.lesson,
+                    color: isLearningSupport
+                        ? AppColors.brandTealDeep
+                        : AppColors.brandBlue,
                     size: 20,
                   ),
                   const SizedBox(width: 6),
@@ -397,7 +408,9 @@ class _SpecialistSuggestionsScreenState
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: isLearningSupport ? AppColors.purple : AppColors.navy,
+                      color: isLearningSupport
+                          ? AppColors.brandTealDeep
+                          : AppColors.brandBlue,
                     ),
                   ),
                 ],
@@ -405,11 +418,10 @@ class _SpecialistSuggestionsScreenState
             ),
             const SizedBox(height: 8),
             Text(
-              '💬 ${s['reason'] ?? ''}',
+              '${s['reason'] ?? ''}',
               style: TextStyle(fontSize: 14, height: 1.5, color: c.body),
             ),
 
-            // ─── أزرار ───
             if (status == 'pending') ...[
               const SizedBox(height: 14),
               Row(
@@ -418,10 +430,10 @@ class _SpecialistSuggestionsScreenState
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 44),
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
+                        foregroundColor: AppColors.red,
+                        side: const BorderSide(color: AppColors.red),
                       ),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(AppIcons.close),
                       label: const Text('رفض'),
                       onPressed: () => _reject(s),
                     ),
@@ -432,9 +444,9 @@ class _SpecialistSuggestionsScreenState
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(0, 44),
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.green,
                       ),
-                      icon: const Icon(Icons.check),
+                      icon: const Icon(AppIcons.check),
                       label: const Text('قبول ومتابعة'),
                       onPressed: () => _accept(s),
                     ),

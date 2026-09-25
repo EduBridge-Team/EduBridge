@@ -1,7 +1,8 @@
-// screens/parent_screen.dart
-// لوحة ولي الأمر — مع كل ميزات التكييف + دروس لولي الأمر
+// lib/screens/parent_screen.dart
+// لوحة ولي الأمر — بهوية EduBridge
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/adaptive_helper.dart';
@@ -10,23 +11,22 @@ import '../widgets/accessibility/adaptive_card.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';
-
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
+import 'add_child/add_child_screen.dart';
+import 'child_homework/child_homework_screen.dart';
+import 'child_lessons/child_lessons_screen.dart';
 import 'notifications_screen.dart';
 import 'support_sheet.dart';
-import 'child_lessons_screen.dart';
 import 'child_progress_screen.dart';
-import 'add_child_screen.dart';
 import 'edit_child_screen.dart';
 import 'children_accessibility_overview_screen.dart';
-import 'child_homework_screen.dart';
 import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
 import 'create_learning_support_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
-import 'parent_lessons_screen.dart'; // ✅ جديد
+import 'parent_lessons_screen.dart';
 
 class ParentScreen extends StatefulWidget {
   const ParentScreen({super.key});
@@ -76,10 +76,6 @@ class _ParentScreenState extends State<ParentScreen> {
       });
     }
   }
-
-  // ═══════════════════════════════════════════════════════════
-  //  التنقل بين الشاشات
-  // ═══════════════════════════════════════════════════════════
 
   Future<void> _openChildDetails(Map child) async {
     if (!mounted) return;
@@ -181,7 +177,6 @@ class _ParentScreenState extends State<ParentScreen> {
     if (result == true) _loadData();
   }
 
-  // ✅ جديد: فتح شاشة دروس ولي الأمر
   void _openParentLessons() {
     Navigator.push(
       context,
@@ -208,9 +203,9 @@ class _ParentScreenState extends State<ParentScreen> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _openAddChild,
-          icon: const Icon(Icons.add),
+          icon: const Icon(AppIcons.add),
           label: const Text('إضافة طفل'),
-          backgroundColor: AppColors.teal,
+          backgroundColor: AppColors.brandBlue,
         ),
       ),
     );
@@ -219,9 +214,7 @@ class _ParentScreenState extends State<ParentScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.headerGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppColors.headerGradient),
       ),
       leadingWidth: 70,
       leading: const Center(child: ProfileAvatarButton(size: 44)),
@@ -248,7 +241,7 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'notifications',
               label: 'الإشعارات',
-              icon: Icons.notifications_outlined,
+              icon: AppIcons.notifications,
               onSelected: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -259,7 +252,7 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'parent_lessons',
               label: 'دروس لولي الأمر',
-              icon: Icons.family_restroom,
+              icon: AppIcons.parent,
               onSelected: _openParentLessons,
             ),
             DashboardMenuAction(
@@ -277,7 +270,7 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'support',
               label: 'الدعم الفني',
-              icon: Icons.headset_mic,
+              icon: AppIcons.support,
               onSelected: () => showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -288,7 +281,7 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'chats',
               label: 'المحادثات',
-              icon: Icons.chat_outlined,
+              icon: AppIcons.chat,
               onSelected: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ChatsScreen()),
@@ -297,7 +290,7 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'certificate',
               label: 'إضافة شهادة',
-              icon: Icons.workspace_premium_outlined,
+              icon: AppIcons.certificate,
               onSelected: () => showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -308,13 +301,13 @@ class _ParentScreenState extends State<ParentScreen> {
             DashboardMenuAction(
               id: 'legal',
               label: 'الخصوصية والحساب',
-              icon: Icons.privacy_tip_outlined,
+              icon: AppIcons.privacy,
               onSelected: () => const LegalLinksButton().show(context),
             ),
             DashboardMenuAction(
               id: 'logout',
               label: 'تسجيل الخروج',
-              icon: Icons.logout,
+              icon: AppIcons.logout,
               destructive: true,
               onSelected: () async {
                 final navigator = Navigator.of(context);
@@ -348,7 +341,7 @@ class _ParentScreenState extends State<ParentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AdaptiveText(
-                    'مرحباً $name 👋',
+                    'مرحباً $name',
                     type: AdaptiveTextType.title,
                     color: Colors.white,
                   ),
@@ -393,20 +386,20 @@ class _ParentScreenState extends State<ParentScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              AppIcons.error,
               size: AdaptiveHelper.iconSize * 2,
-              color: Colors.red,
+              color: AppColors.red,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveText(
               _error!,
               textAlign: TextAlign.center,
-              color: Colors.red,
+              color: AppColors.red,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveButton(
               label: 'إعادة المحاولة',
-              icon: Icons.refresh,
+              icon: AppIcons.refresh,
               onPressed: _loadData,
             ),
           ],
@@ -425,7 +418,7 @@ class _ParentScreenState extends State<ParentScreen> {
             Icon(
               Icons.people_outline,
               size: AdaptiveHelper.iconSize * 2,
-              color: Colors.grey,
+              color: AppColors.muted,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             const AdaptiveText(
@@ -459,7 +452,7 @@ class _ParentScreenState extends State<ParentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ═══ الرأس: الأفاتار + المعلومات + الحالة ═══
+            // ─── الرأس ───
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -487,7 +480,7 @@ class _ParentScreenState extends State<ParentScreen> {
                         AdaptiveText(
                           'المعلم: ${child['assigned_teacher_name']}',
                           type: AdaptiveTextType.caption,
-                          color: AppColors.tealDeep,
+                          color: AppColors.brandBlue,
                         ),
                     ],
                   ),
@@ -498,13 +491,13 @@ class _ParentScreenState extends State<ParentScreen> {
 
             SizedBox(height: AdaptiveHelper.spacing),
 
-            // ═══ الصف 1: الواجبات + التقرير + الفريق ═══
+            // ─── الصف 1 ───
             Row(
               children: [
                 Expanded(
                   child: AdaptiveButton(
                     label: 'الواجبات',
-                    icon: Icons.assignment,
+                    icon: AppIcons.homework,
                     style: AdaptiveButtonStyle.outlined,
                     backgroundColor: AppColors.orange,
                     fullWidth: true,
@@ -516,9 +509,9 @@ class _ParentScreenState extends State<ParentScreen> {
                 Expanded(
                   child: AdaptiveButton(
                     label: 'التقرير',
-                    icon: Icons.bar_chart,
+                    icon: AppIcons.report,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.teal,
+                    backgroundColor: AppColors.brandTeal,
                     fullWidth: true,
                     fontSize: 10,
                     onPressed: () => _openWeeklyReport(child),
@@ -528,9 +521,9 @@ class _ParentScreenState extends State<ParentScreen> {
                 Expanded(
                   child: AdaptiveButton(
                     label: 'الفريق',
-                    icon: Icons.groups,
+                    icon: AppIcons.users,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.pink,
+                    backgroundColor: AppColors.brandBlue,
                     fullWidth: true,
                     fontSize: 10,
                     onPressed: () => _openCareTeam(child),
@@ -540,13 +533,13 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
-            // ═══ الصف 2: التقدّم + تعديل ═══
+            // ─── الصف 2 ───
             Row(
               children: [
                 Expanded(
                   child: AdaptiveButton(
                     label: 'التقدّم',
-                    icon: Icons.insights,
+                    icon: AppIcons.progress,
                     style: AdaptiveButtonStyle.outlined,
                     backgroundColor: AppColors.green,
                     fullWidth: true,
@@ -557,9 +550,9 @@ class _ParentScreenState extends State<ParentScreen> {
                 Expanded(
                   child: AdaptiveButton(
                     label: 'تعديل',
-                    icon: Icons.edit,
+                    icon: AppIcons.edit,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.navy,
+                    backgroundColor: AppColors.brandBlue,
                     fullWidth: true,
                     onPressed: () => _openEditChild(child),
                   ),
@@ -568,20 +561,20 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
-            // ═══ الصف 3: دروس لولي الأمر (جديد) ═══
+            // ─── دروس لولي الأمر ───
             AdaptiveButton(
               label: 'دروس لولي الأمر',
-              icon: Icons.family_restroom,
+              icon: AppIcons.parent,
               backgroundColor: AppColors.purple,
               onPressed: _openParentLessons,
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
-            // ═══ الصف 4: طلب جلسة دعم تعليمي ═══
+            // ─── طلب جلسة دعم تعليمي ───
             AdaptiveButton(
               label: 'طلب جلسة دعم تعليمي',
-              icon: Icons.psychology,
-              backgroundColor: AppColors.purple,
+              icon: AppIcons.specialist,
+              backgroundColor: AppColors.brandTeal,
               onPressed: () => _openLearningSupportRequest(child),
             ),
           ],
@@ -601,7 +594,7 @@ class _ParentScreenState extends State<ParentScreen> {
       ),
       alignment: Alignment.center,
       child: Text(
-        name.isNotEmpty ? name.characters.first : '🙂',
+        name.isNotEmpty ? name.characters.first : '؟',
         style: TextStyle(
           fontSize: size * 0.4,
           fontWeight: FontWeight.bold,
@@ -612,10 +605,10 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 
   Widget _buildStatusBadge(String? status) {
-    final (text, color) = switch (status) {
-      'evaluated' => ('تم التقييم ✓', AppColors.green),
-      'assigned' => ('تم التعيين ✓', AppColors.teal),
-      _ => ('قيد الانتظار', AppColors.orange),
+    final (text, color, icon) = switch (status) {
+      'evaluated' => ('تم التقييم', AppColors.green, AppIcons.check),
+      'assigned' => ('تم التعيين', AppColors.brandBlue, AppIcons.verified),
+      _ => ('قيد الانتظار', AppColors.orange, AppIcons.clock),
     };
 
     return Container(
@@ -625,13 +618,20 @@ class _ParentScreenState extends State<ParentScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color, width: 1.5),
       ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: AdaptiveHelper.bodyFontSize - 4,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: AdaptiveHelper.bodyFontSize - 4,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }

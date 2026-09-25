@@ -1,6 +1,6 @@
-// شاشة عرض الخطة التعليمية
-
+// lib/screens/educational_plan_sheet.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -69,7 +69,7 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                 ? Center(
                     child: Column(
                       children: [
-                        Icon(Icons.error, size: 48, color: c.muted),
+                        Icon(AppIcons.error, size: 48, color: c.muted),
                         const SizedBox(height: 12),
                         Text(_error!, style: TextStyle(color: c.muted)),
                       ],
@@ -80,7 +80,8 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.school, color: AppColors.teal),
+                          const Icon(AppIcons.plan,
+                              color: AppColors.brandBlue),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -93,14 +94,13 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close),
+                            icon: const Icon(AppIcons.close),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
 
-                      // ملخص التقييم
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -110,26 +110,32 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'ملخص التقييم',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              children: [
+                                const Icon(AppIcons.info,
+                                    color: AppColors.brandBlue, size: 20),
+                                const SizedBox(width: 6),
+                                const Text(
+                                  'ملخص التقييم',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             if (_evaluation?['recommendations'] != null)
-                              Text('📝 ${_evaluation?['recommendations']}'),
+                              Text('التوصيات: ${_evaluation?['recommendations']}'),
                             if (_evaluation?['educational_plan'] != null) ...[
                               const SizedBox(height: 8),
-                              Text('📚 ${_evaluation?['educational_plan']}'),
+                              Text('الخطة: ${_evaluation?['educational_plan']}'),
                             ],
                           ],
                         ),
                       ),
                       const SizedBox(height: 16),
 
-                      // الجوانب الأربعة
                       const Text(
                         'التقييمات التفصيلية',
                         style: TextStyle(
@@ -138,14 +144,17 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _detailRow('🧠 المعرفي', _evaluation?['cognitive_assessment']),
-                      _detailRow('🏃 الحركي', _evaluation?['motor_assessment']),
-                      _detailRow('💚 العاطفي', _evaluation?['emotional_assessment']),
-                      _detailRow('🤝 الاجتماعي', _evaluation?['social_assessment']),
+                      _detailRow(AppIcons.cognitive, 'المعرفي',
+                          _evaluation?['cognitive_assessment']),
+                      _detailRow(AppIcons.motor, 'الحركي',
+                          _evaluation?['motor_assessment']),
+                      _detailRow(AppIcons.speech, 'العاطفي',
+                          _evaluation?['emotional_assessment']),
+                      _detailRow(AppIcons.users, 'الاجتماعي',
+                          _evaluation?['social_assessment']),
 
                       const SizedBox(height: 16),
 
-                      // طرق التدريس
                       if (_evaluation?['teaching_methods'] != null) ...[
                         const Text(
                           'طرق التدريس المقترحة',
@@ -181,25 +190,35 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
     );
   }
 
-  Widget _detailRow(String label, String? value) {
+  Widget _detailRow(IconData icon, String label, String? value) {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
+    final c = JisrColors.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: JisrColors.of(context).muted,
+          Icon(icon, size: 18, color: AppColors.brandBlue),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: c.muted,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(color: c.body),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: TextStyle(color: JisrColors.of(context).body),
           ),
         ],
       ),

@@ -1,8 +1,9 @@
 // lib/screens/parent_lessons_screen.dart
-// دروس مخصصة لأولياء الأمور — كيف يتعاملون مع أبنائهم ذوي الإعاقة
+// دروس مخصصة لأولياء الأمور
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
@@ -121,10 +122,10 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: JisrAppBar(
-        title: '👪 دروس لولي الأمر',
+        title: 'دروس لولي الأمر',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             tooltip: 'تحديث',
             onPressed: _load,
           ),
@@ -132,14 +133,14 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       ),
       body: Column(
         children: [
-          // ─── رأس توضيحي ───
+          // رأس توضيحي
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             color: AppColors.purple.withValues(alpha: 0.1),
             child: Row(
               children: [
-                const Icon(Icons.family_restroom,
+                const Icon(AppIcons.parent,
                     color: AppColors.purple, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
@@ -147,7 +148,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'دروس مخصصة لك 👪',
+                        'دروس مخصصة لك',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -170,20 +171,19 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
             ),
           ),
 
-          // ─── البحث ───
+          // بحث
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
               style: const TextStyle(fontSize: 17),
               decoration: const InputDecoration(
                 hintText: 'ابحث في الدروس...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(AppIcons.search),
               ),
               onChanged: (v) => setState(() => _query = v),
             ),
           ),
 
-          // ─── القائمة ───
           Expanded(
             child: RefreshIndicator(
               onRefresh: _load,
@@ -205,10 +205,10 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(_error!,
-                style: const TextStyle(fontSize: 16, color: Colors.red)),
+                style: const TextStyle(fontSize: 16, color: AppColors.red)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
@@ -222,7 +222,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       return ListView(
         children: [
           const SizedBox(height: 120),
-          const Icon(Icons.menu_book, size: 80, color: Colors.grey),
+          Icon(AppIcons.lesson, size: 80, color: AppColors.muted),
           const SizedBox(height: 16),
           Center(
             child: Text(
@@ -285,7 +285,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── العنوان ───
             Row(
               children: [
                 Container(
@@ -295,7 +294,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                     color: AppColors.purple.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.family_restroom,
+                  child: const Icon(AppIcons.parent,
                       size: 26, color: AppColors.purple),
                 ),
                 const SizedBox(width: 12),
@@ -312,7 +311,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               ],
             ),
 
-            // ─── صور ───
             if (images.isNotEmpty) ...[
               const SizedBox(height: 12),
               SizedBox(
@@ -333,8 +331,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                         height: 160,
                         color: Colors.black12,
                         alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image_outlined,
-                            size: 42),
+                        child: const Icon(AppIcons.image, size: 42),
                       ),
                     ),
                   ),
@@ -342,7 +339,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               ),
             ],
 
-            // ─── المحتوى ───
             if (content.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
@@ -353,7 +349,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
 
             const SizedBox(height: 14),
 
-            // ─── زر الفيديو ───
             if (hasVideo) ...[
               SizedBox(
                 width: double.infinity,
@@ -366,7 +361,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  icon: const Icon(Icons.play_circle_fill, size: 26),
+                  icon: const Icon(AppIcons.play, size: 26),
                   label: const Text(
                     'شاهد الفيديو',
                     style: TextStyle(
@@ -393,7 +388,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               const SizedBox(height: 8),
             ],
 
-            // ─── زر الصوت ───
             if (hasAudio) ...[
               SizedBox(
                 width: double.infinity,
@@ -409,8 +403,8 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                   ),
                   icon: Icon(
                     _activeAudioUrl == audioUrl
-                        ? Icons.stop_circle
-                        : Icons.headphones,
+                        ? Icons.stop_circle_outlined
+                        : Icons.headphones_outlined,
                     size: 22,
                   ),
                   label: Text(
@@ -426,13 +420,14 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               const SizedBox(height: 8),
             ],
 
-            // ─── زر الاستماع للنص ───
             SizedBox(
               width: double.infinity,
               height: 48,
               child: OutlinedButton.icon(
                 icon: Icon(
-                  isSpeaking ? Icons.stop_circle : Icons.volume_up,
+                  isSpeaking
+                      ? Icons.stop_circle_outlined
+                      : AppIcons.volumeUp,
                   size: 24,
                 ),
                 label: Text(

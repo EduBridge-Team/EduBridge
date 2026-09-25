@@ -1,7 +1,8 @@
-// نموذج إضافة شهادة (إثبات أهلية) – للمعلم/المختص
+// lib/screens/add_certificate_sheet.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/safe_bottom.dart';
@@ -22,7 +23,6 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickFile() async {
-    // نستخدم pickMedia لالتقاط أي ملف (صورة أو PDF)
     final XFile? file = await _picker.pickMedia();
     if (file != null) {
       setState(() => _file = File(file.path));
@@ -53,7 +53,10 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
       widget.onSaved();
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إضافة الشهادة بنجاح')),
+        const SnackBar(
+          content: Text('تم إضافة الشهادة بنجاح'),
+          backgroundColor: AppColors.green,
+        ),
       );
     } catch (e) {
       setState(() {
@@ -84,7 +87,8 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.workspace_premium, color: AppColors.orange),
+                  const Icon(AppIcons.certificate,
+                      color: AppColors.orange, size: 26),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -97,7 +101,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(AppIcons.close),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -108,7 +112,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                 decoration: const InputDecoration(
                   labelText: 'عنوان الشهادة',
                   hintText: 'مثال: بكالوريوس تربية خاصة',
-                  prefixIcon: Icon(Icons.title),
+                  prefixIcon: Icon(AppIcons.edit),
                 ),
               ),
               const SizedBox(height: 16),
@@ -121,12 +125,19 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'ملف الشهادة (اختياري صورة أو PDF)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: c.onTint,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(AppIcons.attach,
+                            size: 20, color: AppColors.greenDeep),
+                        const SizedBox(width: 6),
+                        Text(
+                          'ملف الشهادة (اختياري صورة أو PDF)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: c.onTint,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     if (_file == null)
@@ -134,7 +145,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                         width: double.infinity,
                         height: 44,
                         child: ElevatedButton.icon(
-                          icon: const Icon(Icons.upload_file),
+                          icon: const Icon(AppIcons.upload),
                           label: const Text('اختر ملف الشهادة'),
                           onPressed: _pickFile,
                           style: ElevatedButton.styleFrom(
@@ -146,17 +157,19 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                     else
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: c.success),
+                          Icon(AppIcons.check, color: c.success),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _file!.path.split('/').last,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: c.onTint, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  color: c.onTint,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.close, color: c.onTint),
+                            icon: Icon(AppIcons.close, color: c.onTint),
                             onPressed: () => setState(() => _file = null),
                           ),
                         ],
@@ -166,7 +179,24 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: Color.fromARGB(255, 54, 206, 244))),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(AppIcons.error,
+                          color: AppColors.red, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(_error!,
+                            style: const TextStyle(color: AppColors.red)),
+                      ),
+                    ],
+                  ),
+                ),
               ],
               const SizedBox(height: 20),
               Row(
@@ -179,12 +209,21 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.orange,
+                        foregroundColor: Colors.white,
                       ),
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(AppIcons.save),
                       onPressed: _saving ? null : _save,
-                      child: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الشهادة'),
+                      label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الشهادة'),
                     ),
                   ),
                 ],

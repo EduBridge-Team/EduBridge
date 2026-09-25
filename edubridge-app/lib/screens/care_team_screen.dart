@@ -1,5 +1,6 @@
-// lib/screens/care_team_screen.dart — النسخة الموسّعة
+// lib/screens/care_team_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -19,7 +20,7 @@ class CareTeamScreen extends StatefulWidget {
 
 class _CareTeamScreenState extends State<CareTeamScreen> {
   List<Map<String, dynamic>> _teachers = [];
-  Map<String, dynamic>? _specialists; // {learning_support: ..., educational: ...}
+  Map<String, dynamic>? _specialists;
   bool _loading = true;
   String? _error;
 
@@ -36,10 +37,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     });
 
     try {
-      // 1. جلب المعلمين
       final teachers = await ApiService.getChildTeachers(widget.childId);
-
-      // 2. جلب المختصين
       final specialistsMap =
           await ApiService.getChildSpecialists(widget.childId);
 
@@ -61,7 +59,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: '👥 فريق ${widget.childName}'),
+      appBar: JisrAppBar(title: 'فريق ${widget.childName}'),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -77,13 +75,13 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(AppIcons.error, size: 64, color: AppColors.red),
             const SizedBox(height: 12),
             Text(_error!,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+                style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
@@ -98,7 +96,6 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // ─── ملخص الفريق ───
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -107,7 +104,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
           child: Column(
             children: [
-              const Icon(Icons.groups, color: Colors.white, size: 48),
+              const Icon(AppIcons.users, color: Colors.white, size: 48),
               const SizedBox(height: 8),
               Text(
                 '${_teachers.length + totalSpecialists} أعضاء في الفريق',
@@ -127,18 +124,15 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         ),
         const SizedBox(height: 20),
 
-        // ═══════════════════════════════════════════
-        //  المختصون (دعم تعليمي + تعليمي + إضافيون)
-        // ═══════════════════════════════════════════
         if (totalSpecialists > 0) ...[
-          _sectionTitle('🧠 المختصون', c),
+          _sectionTitle('المختصون', c),
           const SizedBox(height: 10),
 
           if (_specialists?['learning_support'] != null)
             _specialistCard(
               _specialists!['learning_support'],
               'مختص دعم تعليمي',
-              Icons.psychology,
+              AppIcons.specialist,
               AppColors.purple,
             ),
 
@@ -146,23 +140,20 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
             _specialistCard(
               _specialists!['educational'],
               'مختص تعليمي',
-              Icons.menu_book,
-              AppColors.navy,
+              AppIcons.lesson,
+              AppColors.brandBlue,
             ),
 
-          // مختصون إضافيون (إن وُجدوا)
           if (_specialists?['others'] is List)
             ...(_specialists!['others'] as List).map((s) =>
-                _specialistCard(s, 'مختص', Icons.person, AppColors.pink)),
+                _specialistCard(s, 'مختص', AppIcons.specialist,
+                    AppColors.pink)),
 
           const SizedBox(height: 20),
         ],
 
-        // ═══════════════════════════════════════════
-        //  المعلمون (متعددون)
-        // ═══════════════════════════════════════════
         if (_teachers.isNotEmpty) ...[
-          _sectionTitle('👨‍🏫 المعلمون (${_teachers.length})', c),
+          _sectionTitle('المعلمون (${_teachers.length})', c),
           const SizedBox(height: 10),
           ..._teachers.map((t) => _teacherCard(t)),
         ],
@@ -242,10 +233,8 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
             color: AppColors.green.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Text(
-            '👨‍🏫',
-            style: TextStyle(fontSize: 16),
-          ),
+          child: const Icon(AppIcons.teacher,
+              size: 18, color: AppColors.greenDeep),
         ),
       ),
     );

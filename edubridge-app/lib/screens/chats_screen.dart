@@ -1,4 +1,6 @@
+// lib/screens/chats_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'chat_screen.dart';
@@ -108,25 +110,29 @@ class _ChatsScreenState extends State<ChatsScreen> {
       appBar: JisrAppBar(title: 'المحادثات'),
       floatingActionButton: FloatingActionButton(
         onPressed: _startNewConversation,
-        backgroundColor: AppColors.teal,
-        child: const Icon(Icons.add_comment, color: Colors.white),
+        backgroundColor: AppColors.brandBlue,
+        child: const Icon(AppIcons.add, color: Colors.white),
       ),
       body: RefreshIndicator(
         onRefresh: _loadConversations,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+                ? Center(
+                    child: Text(_error!,
+                        style: const TextStyle(color: AppColors.red)))
                 : _conversations.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.chat_bubble_outline, size: 72, color: c.muted),
+                            Icon(AppIcons.chat, size: 72, color: c.muted),
                             const SizedBox(height: 16),
-                            Text('لا توجد محادثات بعد', style: TextStyle(color: c.muted)),
+                            Text('لا توجد محادثات بعد',
+                                style: TextStyle(color: c.muted)),
                             const SizedBox(height: 8),
-                            Text('اضغط + لبدء محادثة جديدة', style: TextStyle(color: c.muted)),
+                            Text('اضغط + لبدء محادثة جديدة',
+                                style: TextStyle(color: c.muted)),
                           ],
                         ),
                       )
@@ -149,15 +155,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: AppColors.kidPalette[i % AppColors.kidPalette.length],
+                                backgroundColor: AppColors.kidPalette[
+                                    i % AppColors.kidPalette.length],
                                 child: Text(
                                   _initial(otherName),
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              title: Text(otherName, style: TextStyle(fontWeight: FontWeight.bold, color: c.heading)),
+                              title: Text(
+                                otherName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: c.heading,
+                                ),
+                              ),
                               subtitle: Text(
-                                lastMsg.isNotEmpty ? lastMsg : 'لا توجد رسائل بعد',
+                                lastMsg.isNotEmpty
+                                    ? lastMsg
+                                    : 'لا توجد رسائل بعد',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(color: c.muted),
@@ -165,7 +183,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               trailing: lastDate != null
                                   ? Text(
                                       '${lastDate.day}/${lastDate.month}/${lastDate.year}',
-                                      style: TextStyle(fontSize: 11, color: c.muted),
+                                      style: TextStyle(
+                                          fontSize: 11, color: c.muted),
                                     )
                                   : null,
                               onTap: () async {
@@ -175,7 +194,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                     builder: (_) => ChatScreen(
                                       conversationId: conv['id'],
                                       otherUserName: otherName,
-                                      otherUserRole: conv['other_user_role'] ?? '',
+                                      otherUserRole:
+                                          conv['other_user_role'] ?? '',
                                       childName: conv['subject'] ?? '',
                                     ),
                                   ),
@@ -191,7 +211,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 }
 
-// شاشة اختيار مستخدم لبدء محادثة
 class _UserPickerSheet extends StatelessWidget {
   final List users;
   final void Function(Map user) onSelect;
@@ -215,21 +234,29 @@ class _UserPickerSheet extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.person_add, color: AppColors.teal),
+              const Icon(AppIcons.users, color: AppColors.brandBlue),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('اختر مستخدماً للتواصل',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading)),
+                child: Text(
+                  'اختر مستخدماً للتواصل',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: c.heading),
+                ),
               ),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(AppIcons.close),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
           const SizedBox(height: 16),
           if (users.isEmpty)
-            Center(child: Text('لا يوجد مستخدمون متاحون', style: TextStyle(color: c.muted)))
+            Center(
+              child: Text('لا يوجد مستخدمون متاحون',
+                  style: TextStyle(color: c.muted)),
+            )
           else
             Flexible(
               child: ListView.builder(
@@ -241,12 +268,16 @@ class _UserPickerSheet extends StatelessWidget {
                   final userEmail = (user['email'] ?? '').toString();
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.kidPalette[i % AppColors.kidPalette.length],
+                      backgroundColor: AppColors.kidPalette[
+                          i % AppColors.kidPalette.length],
                       child: Text(
                         userName.trim().isEmpty
                             ? '؟'
                             : userName.trim().characters.first,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     title: Text(userName),

@@ -1,5 +1,6 @@
-// شاشة الدردشة - التواصل بين المعلم والمختص
+// lib/screens/chat_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -112,14 +113,13 @@ class _ChatScreenState extends State<ChatScreen> {
         title: '${widget.otherUserName} (${widget.otherUserRole})',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             onPressed: _loadMessages,
           ),
         ],
       ),
       body: Column(
         children: [
-          // رأس المحادثة مع اسم الطفل
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -128,13 +128,17 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.child_care, color: AppColors.tealDeep),
+                const Icon(AppIcons.child, color: AppColors.brandBlue),
                 const SizedBox(width: 8),
-                Text(
-                  'مناقشة حالة: ${widget.childName}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: c.heading,
+                Expanded(
+                  child: Text(
+                    widget.childName.isNotEmpty
+                        ? 'مناقشة حالة: ${widget.childName}'
+                        : 'محادثة عامة',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: c.heading,
+                    ),
                   ),
                 ),
               ],
@@ -148,7 +152,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(_error!, style: const TextStyle(color: Colors.red)),
+                            Text(_error!,
+                                style:
+                                    const TextStyle(color: AppColors.red)),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadMessages,
@@ -162,17 +168,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.chat_bubble_outline, size: 64, color: c.muted),
+                                Icon(AppIcons.chat, size: 64, color: c.muted),
                                 const SizedBox(height: 16),
-                                Text(
-                                  'لا توجد رسائل بعد',
-                                  style: TextStyle(color: c.muted),
-                                ),
+                                Text('لا توجد رسائل بعد',
+                                    style: TextStyle(color: c.muted)),
                                 const SizedBox(height: 8),
-                                Text(
-                                  'ابدأ المحادثة الآن',
-                                  style: TextStyle(fontSize: 14, color: c.muted),
-                                ),
+                                Text('ابدأ المحادثة الآن',
+                                    style: TextStyle(
+                                        fontSize: 14, color: c.muted)),
                               ],
                             ),
                           )
@@ -190,17 +193,17 @@ class _ChatScreenState extends State<ChatScreen> {
                               return _ChatBubble(
                                 message: msg['content'] ?? '',
                                 isMe: isMe,
-                                senderName: isMe ? 'أنا' : widget.otherUserName,
+                                senderName:
+                                    isMe ? 'أنا' : widget.otherUserName,
                                 time: date != null
                                     ? '${date.hour}:${date.minute.toString().padLeft(2, '0')}'
                                     : '',
-                                color: isMe ? AppColors.teal : c.card,
+                                color: isMe ? AppColors.brandBlue : c.card,
                                 textColor: isMe ? Colors.white : c.body,
                               );
                             },
                           ),
           ),
-          // حقل الإدخال
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -222,7 +225,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       filled: true,
                       fillColor: c.card,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
@@ -230,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 const SizedBox(width: 8),
                 Container(
                   decoration: const BoxDecoration(
-                    color: AppColors.teal,
+                    color: AppColors.brandBlue,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -243,7 +247,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.send, color: Colors.white),
+                        : const Icon(AppIcons.send, color: Colors.white),
                     onPressed: _sending ? null : _sendMessage,
                   ),
                 ),
@@ -256,7 +260,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-// مكوّن فقاعة الدردشة
 class _ChatBubble extends StatelessWidget {
   final String message;
   final bool isMe;
@@ -279,7 +282,8 @@ class _ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isMe)
             Container(
@@ -303,14 +307,19 @@ class _ChatBubble extends StatelessWidget {
             ),
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
-                  bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
+                  bottomLeft: isMe
+                      ? const Radius.circular(16)
+                      : const Radius.circular(4),
+                  bottomRight: isMe
+                      ? const Radius.circular(4)
+                      : const Radius.circular(16),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -353,14 +362,14 @@ class _ChatBubble extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(left: 8),
               decoration: const BoxDecoration(
-                color: AppColors.tealDeep,
+                color: AppColors.brandBlue,
                 shape: BoxShape.circle,
               ),
               child: const CircleAvatar(
                 radius: 16,
-                backgroundColor: AppColors.tealDeep,
+                backgroundColor: AppColors.brandBlue,
                 child: Icon(
-                  Icons.person,
+                  AppIcons.profile,
                   size: 16,
                   color: Colors.white,
                 ),
