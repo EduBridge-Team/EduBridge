@@ -2,6 +2,8 @@
 .reference-hero-art {
   position: relative;
   min-height: 0;
+  aspect-ratio: 16 / 9;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
   padding: 14px;
@@ -42,13 +44,16 @@
 .reference-hero-image {
   display: block;
   width: 100%;
-  max-width: 720px;
-  aspect-ratio: 3 / 2;
+  max-width: none;
+  height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  object-position: center;
+  object-position: center 42%;
   margin-inline: auto;
   border-radius: 26px;
   box-shadow: 0 14px 34px rgba(24, 105, 181, .10);
+  image-rendering: auto;
+  filter: saturate(1.02) contrast(1.015);
 }
 
 .topbar-guest {
@@ -62,7 +67,9 @@
   direction: rtl;
 }
 .topbar-guest .topbar-brand {
-  min-width: 150px;
+  width: 240px;
+  min-width: 240px;
+  flex: 0 0 240px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -145,7 +152,9 @@
 
 @media (max-width: 780px) {
   .reference-hero-image {
-    max-width: 620px;
+    width: 100%;
+    max-width: none;
+    height: 100%;
   }
   .reference-hero-art {
     order: -1;
@@ -156,7 +165,9 @@
     padding: 7px 14px;
   }
   .topbar-guest .topbar-brand {
-    min-width: 0;
+    width: 220px;
+    min-width: 220px;
+    flex: 0 0 220px;
   }
   .topbar-guest .topbar-menu.open {
     display: flex;
@@ -187,12 +198,16 @@
 }
 
 
-/* Unified brand image keeps the icon/wordmark relationship fixed at every size. */
-.topbar-brand-logo {
+/* Override the older global .topbar-brand img rule (38x38) with higher specificity. */
+.topbar-brand .topbar-brand-logo {
   display: block;
-  width: 205px;
+  width: 240px;
+  max-width: none;
   height: auto;
+  flex: 0 0 auto;
   overflow: visible;
+  object-fit: contain;
+  border-radius: 0;
 }
 
 
@@ -274,20 +289,24 @@
   }
 
   .topbar-guest .topbar-brand {
-    min-width: 128px;
+    width: 220px;
+    min-width: 220px;
+    flex: 0 0 220px;
   }
 }
 
 /* True mobile keeps the hamburger menu. */
 @media (max-width: 780px) {
-  .topbar-brand-logo {
-    width: 190px;
+  .topbar-brand .topbar-brand-logo {
+    width: 220px;
+    height: auto;
   }
 }
 
 @media (min-width: 781px) and (max-width: 1024px) {
-  .topbar-brand-logo {
-    width: 210px;
+  .topbar-brand .topbar-brand-logo {
+    width: 220px;
+    height: auto;
   }
 }
 
