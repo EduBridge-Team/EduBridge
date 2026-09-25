@@ -1,9 +1,9 @@
 part of 'aac_communication_screen.dart';
 
-extension AACCommunicationScreenStateView on _AACCommunicationScreenState {
+extension _AACCommunicationScreenStateView on _AACCommunicationScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
-    final items = _categories[_selectedCategory] ?? [];
+    final items = _AACCommunicationScreenState._categories[_selectedCategory] ?? [];
 
     return Scaffold(
       backgroundColor: AdaptiveHelper.surfaceColor(context),
@@ -119,7 +119,7 @@ extension AACCommunicationScreenStateView on _AACCommunicationScreenState {
               padding: EdgeInsets.symmetric(
                 horizontal: AdaptiveHelper.spacing,
               ),
-              children: _categories.keys.map((cat) {
+              children: _AACCommunicationScreenState._categories.keys.map((cat) {
                 final selected = cat == _selectedCategory;
                 return Padding(
                   padding: EdgeInsets.only(
