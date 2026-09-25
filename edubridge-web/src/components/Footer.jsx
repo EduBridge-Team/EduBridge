@@ -41,7 +41,9 @@ export default function Footer() {
 
       <div className="footer-grid">
         <div className="footer-identity">
-          <img className="footer-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
+          <span className="footer-brand-crop">
+            <img className="footer-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
+          </span>
           <p>معاً، لكل طفل فرصة. تعليم مرن وشامل يدعم اختلاف القدرات والاحتياجات.</p>
         </div>
 
