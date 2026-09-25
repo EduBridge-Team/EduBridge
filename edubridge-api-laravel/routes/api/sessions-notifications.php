@@ -21,6 +21,8 @@ Route::put('/sessions/{id}', [\App\Http\Controllers\SessionController::class, 'u
 
 // الإشعارات
 Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+Route::post('/notifications/send', [\App\Http\Controllers\NotificationController::class, 'send'])
+    ->middleware('role:specialist,admin');
 Route::get('/notifications/unread/count', [\App\Http\Controllers\NotificationController::class, 'unreadCount']);
 Route::match(['put', 'post'], '/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead']);
 Route::put('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markRead']);

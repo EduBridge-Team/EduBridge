@@ -130,55 +130,72 @@ jobs:
   mobile-api-contract:
     name: Flutter ↔ Laravel API contract
     needs: changes
-    if: needs.changes.outputs.contract == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        if: needs.changes.outputs.contract == 'true'
       - uses: actions/setup-python@v6
+        if: needs.changes.outputs.contract == 'true'
         with:
           python-version: "3.12"
       - name: Verify Flutter API calls have Laravel routes
+        if: needs.changes.outputs.contract == 'true'
         run: python scripts/check_mobile_api_parity.py
+      - name: No API contract changes
+        if: needs.changes.outputs.contract != 'true'
+        run: echo "No Flutter/Laravel contract changes; required check passes."
 
   php-syntax:
     name: PHP syntax
     needs: changes
-    if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        if: needs.changes.outputs.api == 'true'
       - uses: shivammathur/setup-php@v2
+        if: needs.changes.outputs.api == 'true'
         with:
           php-version: "8.4"
       - name: Lint Laravel PHP files
+        if: needs.changes.outputs.api == 'true'
         run: |
           find edubridge-api-laravel/app edubridge-api-laravel/routes edubridge-api-laravel/database/migrations \
             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: No API PHP changes
+        if: needs.changes.outputs.api != 'true'
+        run: echo "No Laravel changes; required PHP syntax check passes."
 
   api-tests:
     name: Laravel tests
     needs: changes
-    if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: edubridge-api-laravel
     steps:
       - uses: actions/checkout@v5
+        if: needs.changes.outputs.api == 'true'
       - uses: shivammathur/setup-php@v2
+        if: needs.changes.outputs.api == 'true'
         with:
           php-version: "8.4"
           coverage: none
       - name: Install Composer dependencies
+        if: needs.changes.outputs.api == 'true'
         run: composer install --no-interaction --prefer-dist
       - name: Prepare test environment
+        if: needs.changes.outputs.api == 'true'
         run: |
           cp .env.example .env
           php artisan key:generate
       - name: Run Laravel tests
+        if: needs.changes.outputs.api == 'true'
         env:
           JWT_SECRET: ci-test-jwt-secret
         run: php artisan test
+      - name: No API changes
+        if: needs.changes.outputs.api != 'true'
+        run: echo "No Laravel changes; required Laravel tests check passes."
 
 
   postgres-migration-smoke:
@@ -243,22 +260,30 @@ jobs:
   web-build:
     name: React production build
     needs: changes
-    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: edubridge-web
     steps:
       - uses: actions/checkout@v5
+        if: needs.changes.outputs.web == 'true'
       - uses: actions/setup-node@v5
+        if: needs.changes.outputs.web == 'true'
         with:
           node-version: "20"
           cache: npm
           cache-dependency-path: edubridge-web/package-lock.json
-      - run: npm ci
+      - name: Install web dependencies
+        if: needs.changes.outputs.web == 'true'
+        run: npm ci
       - name: Lint website
+        if: needs.changes.outputs.web == 'true'
         run: npm run lint
       - name: Build website
+        if: needs.changes.outputs.web == 'true'
         env:
           VITE_API_URL: /api
         run: npm run build
+      - name: No web changes
+        if: needs.changes.outputs.web != 'true'
+        run: echo "No web changes; required React build check passes."
