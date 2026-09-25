@@ -208,7 +208,7 @@ export default function HomePage() {
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
           <img
             className="reference-hero-image"
-            src="/brand-homepage.webp"
+            src="/edubridge-hero-inclusive.webp"
             alt="تعليم دامج ومساندة تعليمية من EduBridge"
           />
         </div>
