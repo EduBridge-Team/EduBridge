@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+part 'pet_avatar_view.dart';
 
 /// Noor is drawn with Flutter primitives so the assistant stays crisp,
 /// offline-friendly, and visually identical to the website mascot.
@@ -33,28 +34,7 @@ class _PetAvatarState extends State<PetAvatar>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-
-    return Semantics(
-      label: 'نور، المساعد الذكي',
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final phase = reduceMotion ? 0.0 : _controller.value;
-          final bob =
-              reduceMotion ? 0.0 : math.sin(phase * math.pi * 2) * 2.8;
-          return Transform.translate(
-            offset: Offset(0, bob),
-            child: CustomPaint(
-              size: Size.square(widget.size),
-              painter: _NoorPainter(phase: phase),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => buildView(context);
 }
 
 class _NoorPainter extends CustomPainter {
