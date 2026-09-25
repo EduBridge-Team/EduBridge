@@ -7,6 +7,7 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 
 part 'verify_identity_states.dart';
+part 'verify_identity_form.dart';
 
 class VerifyIdentityScreen extends StatefulWidget {
   const VerifyIdentityScreen({super.key});

@@ -53,6 +53,7 @@ import 'api_service.dart';
 import 'tts_service.dart';
 
 part 'voice_command_routing.dart';
+part 'voice_command_execution.dart';
 
 class VoiceCommandService {
   VoiceCommandService._();
