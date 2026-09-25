@@ -84,3 +84,65 @@
     letter-spacing: -.8px;
   }
 }
+
+
+/* Brand scale polish: keep icon and wordmark visually balanced. */
+.brand-lockup--topbar {
+  gap: 10px;
+  min-height: 58px;
+}
+.brand-lockup--topbar .brand-lockup-icon {
+  width: 58px;
+  height: 58px;
+  flex-basis: 58px;
+}
+.brand-lockup--topbar .brand-wordmark {
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 34px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.brand-lockup--footer {
+  gap: 12px;
+  min-height: 72px;
+}
+.brand-lockup--footer .brand-lockup-icon {
+  width: 72px;
+  height: 72px;
+  flex-basis: 72px;
+}
+.brand-lockup--footer .brand-wordmark {
+  min-height: 72px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 43px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+@media (max-width: 780px) {
+  .brand-lockup--topbar .brand-lockup-icon {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+  }
+  .brand-lockup--topbar .brand-wordmark {
+    min-height: 50px;
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 580px) {
+  .brand-lockup--footer .brand-lockup-icon {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+  }
+  .brand-lockup--footer .brand-wordmark {
+    min-height: 64px;
+    font-size: 39px;
+  }
+}

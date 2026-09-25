@@ -1,34 +1,56 @@
 /* Exact hero placement + guest top bar refinement. */
 .reference-hero-art {
+  position: relative;
   min-height: 0;
-  display: block;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  overflow: visible;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  border: 1px solid rgba(163, 215, 237, .65);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 20% 8%, rgba(255,255,255,.98), transparent 18rem),
+    linear-gradient(145deg, rgba(232,248,255,.98), rgba(238,252,248,.96));
+  box-shadow: 0 24px 58px rgba(23, 105, 194, .12);
+  overflow: hidden;
+  isolation: isolate;
 }
-.reference-hero-art::before,
+.reference-hero-art::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 260px;
+  height: 260px;
+  inset-inline-end: -110px;
+  top: -105px;
+  border-radius: 50%;
+  background: rgba(82, 210, 200, .20);
+  filter: blur(2px);
+  z-index: -1;
+}
 .reference-hero-art::after {
-  display: none;
+  content: "";
+  position: absolute;
+  display: block;
+  width: 220px;
+  height: 220px;
+  inset-inline-start: -105px;
+  bottom: -110px;
+  border-radius: 50%;
+  background: rgba(37, 185, 218, .16);
+  z-index: -1;
 }
 .reference-hero-image {
   display: block;
   width: 100%;
-  max-width: 650px;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
+  max-width: 720px;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  object-position: center;
   margin-inline: auto;
-  border-radius: 0;
-  filter: drop-shadow(0 18px 42px rgba(25, 111, 173, .08));
+  border-radius: 26px;
+  box-shadow: 0 14px 34px rgba(24, 105, 181, .10);
 }
 
-.topbar-full-logo {
-  display: block;
-  width: 142px;
-  height: 52px;
-  object-fit: contain;
-}
 .topbar-guest {
   min-height: 76px;
   padding: 8px max(24px, calc((100vw - 1180px) / 2));
@@ -128,10 +150,6 @@
   .reference-hero-art {
     order: -1;
     min-height: 0;
-  }
-  .topbar-full-logo {
-    width: 122px;
-    height: 45px;
   }
   .topbar-guest {
     min-height: 66px;

@@ -160,14 +160,18 @@
   text-align: right;
 }
 
-.site-footer .footer-full-logo {
-  display: block;
-  width: 220px;
-  max-width: 100%;
-  height: auto;
+.site-footer .footer-identity .brand-lockup {
   margin-bottom: 14px;
-  object-fit: contain;
+}
+
+.site-footer .footer-identity .brand-lockup-icon {
   filter: brightness(0) invert(1);
+}
+
+.site-footer .footer-identity .brand-wordmark {
+  background: none;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
 }
 
 .site-footer .footer-identity p {
@@ -289,8 +293,7 @@
     text-align: center;
   }
 
-  .site-footer .footer-full-logo {
-    width: 210px;
+  .site-footer .footer-identity .brand-lockup {
     margin-inline: auto;
   }
 
