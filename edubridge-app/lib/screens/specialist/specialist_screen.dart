@@ -27,6 +27,8 @@ import '../../widgets/dashboard_menu.dart';
 part 'specialist_header.dart';
 part 'specialist_progress_tab.dart';
 part 'specialist_child_cards.dart';
+part 'specialist_available_child_card.dart';
+part 'specialist_my_child_card.dart';
 part 'specialist_lessons_tab.dart';
 part 'specialist_suggest_sheet.dart';
 part 'specialist_recommend_sheet.dart';
@@ -34,6 +36,8 @@ part 'specialist_lesson_detail_sheet.dart';
 part 'specialist_stats_widgets.dart';
 part 'specialist_dashboard_widgets.dart';
 part 'specialist_dashboard_logic.dart';
+part 'specialist_evaluation_logic.dart';
+part 'specialist_dashboard_actions.dart';
 
 class SpecialistDashboardScreen extends StatefulWidget {
   const SpecialistDashboardScreen({super.key});
