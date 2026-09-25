@@ -183,7 +183,7 @@ Future<Map<String, dynamic>?> _api_getWeeklyReport({
     DateTime? weekStart,
   }) async {
     try {
-      final week = weekStart ?? _lastMonday();
+      final week = weekStart ?? _apiLastMonday();
       final res = await ApiService.authGet(
         '/reports/weekly?child_id=$childId&week_start=${week.toIso8601String()}',
       );
@@ -379,3 +379,8 @@ Future<bool> _api_cancelLearningSupportRequest(int requestId) async {
       return false;
     }
   }
+
+DateTime _apiLastMonday() {
+  final now = DateTime.now();
+  return now.subtract(Duration(days: now.weekday - 1));
+}
