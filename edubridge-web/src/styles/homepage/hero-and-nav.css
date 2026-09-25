@@ -193,14 +193,16 @@
 }
 
 
-/* Unified brand image keeps the icon/wordmark relationship fixed at every size. */
-.topbar-brand-logo {
+/* Override the older global .topbar-brand img rule (38x38) with higher specificity. */
+.topbar-brand .topbar-brand-logo {
   display: block;
   width: 240px;
   max-width: none;
   height: auto;
   flex: 0 0 auto;
   overflow: visible;
+  object-fit: contain;
+  border-radius: 0;
 }
 
 
@@ -290,14 +292,16 @@
 
 /* True mobile keeps the hamburger menu. */
 @media (max-width: 780px) {
-  .topbar-brand-logo {
+  .topbar-brand .topbar-brand-logo {
     width: 220px;
+    height: auto;
   }
 }
 
 @media (min-width: 781px) and (max-width: 1024px) {
-  .topbar-brand-logo {
+  .topbar-brand .topbar-brand-logo {
     width: 220px;
+    height: auto;
   }
 }
 
