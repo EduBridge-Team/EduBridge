@@ -187,19 +187,15 @@
 }
 
 
-/* Desktop-mode fix: Android Chrome reports ~980px CSS width even when Desktop site is enabled.
-   Keep the guest header in its desktop layout down to 781px. */
-.topbar-guest .brand-lockup--topbar {
-  gap: 8px;
+/* Unified brand image keeps the icon/wordmark relationship fixed at every size. */
+.topbar-brand-logo {
+  display: block;
+  width: 210px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
-.topbar-guest .brand-lockup--topbar .brand-lockup-icon {
-  width: 38px;
-  height: 38px;
-}
-.topbar-guest .brand-lockup--topbar .brand-wordmark {
-  font-size: 25px;
-  letter-spacing: -.7px;
-}
+
 
 @media (min-width: 781px) and (max-width: 1024px) {
   .topbar-guest {
@@ -285,12 +281,14 @@
 
 /* True mobile keeps the hamburger menu. */
 @media (max-width: 780px) {
-  .topbar-guest .brand-lockup--topbar .brand-lockup-icon {
-    width: 34px;
-    height: 34px;
+  .topbar-brand-logo {
+    width: 185px;
   }
-  .topbar-guest .brand-lockup--topbar .brand-wordmark {
-    font-size: 22px;
+}
+
+@media (min-width: 781px) and (max-width: 1024px) {
+  .topbar-brand-logo {
+    width: 176px;
   }
 }
 
