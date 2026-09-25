@@ -17,7 +17,7 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
 
     expect(find.text('معاً ندعم تقدُّمه'), findsOneWidget);
-    expect(find.text('Skip'), findsOneWidget);
+    expect(find.text('تخطي'), findsOneWidget);
   });
 
   test('الجلسة المحفوظة تحل إلى واجهة الدور الصحيح', () async {
