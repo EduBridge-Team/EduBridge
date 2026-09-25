@@ -74,7 +74,7 @@ extension _HomeScreenView on HomeScreen {
                           [ApiService.getName(), ApiService.getRole()]),
                       builder: (context, snapshot) {
                         final name = snapshot.data?[0];
-                        final role = _roleNames[snapshot.data?[1]];
+                        final role = HomeScreen._roleNames[snapshot.data?[1]];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
