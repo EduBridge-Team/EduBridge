@@ -24,7 +24,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
     final selected = _filter == value;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _filter = value),
+        onTap: () => _updateHomeworkState(() => _filter = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           decoration: BoxDecoration(
