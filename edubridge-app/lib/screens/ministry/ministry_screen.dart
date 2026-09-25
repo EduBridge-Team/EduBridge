@@ -16,6 +16,7 @@ part 'ministry_header.dart';
 part 'ministry_tab_bar.dart';
 part 'ministry_overview_tab.dart';
 part 'ministry_approvals_tab.dart';
+part 'ministry_approval_widgets.dart';
 part 'ministry_users_tab.dart';
 
 class MinistryScreen extends StatefulWidget {

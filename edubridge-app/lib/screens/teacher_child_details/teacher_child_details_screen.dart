@@ -6,6 +6,7 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 
 part 'teacher_homework_tab.dart';
+part 'teacher_homework_tab_widgets.dart';
 part 'teacher_lessons_tab.dart';
 part 'teacher_grade_sheet.dart';
 
