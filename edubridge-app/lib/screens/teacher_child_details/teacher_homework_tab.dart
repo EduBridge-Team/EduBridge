@@ -21,6 +21,8 @@ class _HomeworkTabState extends State<_HomeworkTab>
   @override
   bool get wantKeepAlive => true;
 
+  void _updateHomeworkState(VoidCallback callback) => setState(callback);
+
   @override
   void initState() {
     super.initState();
