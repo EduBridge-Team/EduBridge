@@ -10,6 +10,7 @@ import '../../widgets/legal_links_button.dart';
 import '../edit_child_screen.dart';
 
 part 'admin_users_tab.dart';
+part 'admin_user_children_sheet.dart';
 part 'admin_user_tiles.dart';
 part 'admin_shared_widgets.dart';
 part 'admin_verification_tab.dart';
