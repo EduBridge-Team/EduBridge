@@ -55,7 +55,9 @@ export default function TopBar() {
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <img className="topbar-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
+        <span className="topbar-brand-crop">
+          <img className="topbar-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
+        </span>
       </div>
 
       <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
