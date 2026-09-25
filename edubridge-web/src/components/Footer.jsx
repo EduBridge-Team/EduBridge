@@ -53,7 +53,8 @@ export default function Footer() {
           <Link to="/">الرئيسية</Link>
           <Link to="/about">من نحن</Link>
           <Link to="/lessons">الدروس</Link>
-          <a href="/#features">الخدمات والمميزات</a>
+          <a href="/#services">الخدمات</a>
+          <a href="/#features">المميزات</a>
           <Link to="/login">تسجيل الدخول</Link>
         </div>
 
