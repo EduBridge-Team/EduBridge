@@ -11,6 +11,7 @@ import '../../model/homework_model.dart';
 
 part 'child_homework_card.dart';
 part 'child_homework_submit_sheet.dart';
+part 'child_homework_submit_sheet_widgets.dart';
 
 class ChildHomeworkScreen extends StatefulWidget {
   final int childId;
