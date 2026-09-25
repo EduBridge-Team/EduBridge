@@ -1,6 +1,7 @@
 // تذييل الموقع — مشترك بين الصفحات
 import { Link } from 'react-router-dom'
 import { Download, Headphones, MapPin, Smartphone } from 'lucide-react'
+import BrandLogo from './BrandLogo'
 
 function InstagramIcon({ size = 20 }) {
   return (
@@ -41,9 +42,7 @@ export default function Footer() {
 
       <div className="footer-grid">
         <div className="footer-identity">
-          <span className="footer-brand-crop">
-            <img className="footer-brand-logo" src="/edubridge-logo.png" alt="EduBridge" />
-          </span>
+          <BrandLogo className="footer-brand-logo" />
           <p>معاً، لكل طفل فرصة. تعليم مرن وشامل يدعم اختلاف القدرات والاحتياجات.</p>
         </div>
 
