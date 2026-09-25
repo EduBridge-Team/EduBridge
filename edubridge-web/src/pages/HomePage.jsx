@@ -210,6 +210,8 @@ export default function HomePage() {
             className="reference-hero-image"
             src="/edubridge-hero-inclusive.webp"
             alt="طلاب يتعلمون مع دعم تربوي في بيئة دامجة"
+            width="599"
+            height="337"
             decoding="async"
             fetchPriority="high"
           />
