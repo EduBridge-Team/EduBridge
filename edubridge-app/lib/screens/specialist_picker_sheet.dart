@@ -1,6 +1,8 @@
-// شاشة اختيار المختص للتواصل
+// lib/screens/specialist_picker_sheet.dart
 import 'package:flutter/material.dart';
-import '../theme.dart';
+import '../../app_icons.dart';
+import '../../theme.dart';
+
 
 class SpecialistPickerSheet extends StatelessWidget {
   final List specialists;
@@ -31,7 +33,7 @@ class SpecialistPickerSheet extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.chat, color: AppColors.teal),
+              const Icon(AppIcons.chat, color: AppColors.brandBlue),
               const SizedBox(width: 8),
               Text(
                 'تواصل مع مختص',
@@ -43,7 +45,7 @@ class SpecialistPickerSheet extends StatelessWidget {
               ),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(AppIcons.close),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -58,18 +60,18 @@ class SpecialistPickerSheet extends StatelessWidget {
             final name = (specialist['name'] ?? '').toString();
             final email = (specialist['email'] ?? '').toString();
             return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.orange,
-                  child: Text(
-                    name.trim().isEmpty ? 'م' : name.trim().characters.first,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+              leading: CircleAvatar(
+                backgroundColor: AppColors.orange,
+                child: Text(
+                  name.trim().isEmpty ? 'م' : name.trim().characters.first,
+                  style: const TextStyle(color: Colors.white),
                 ),
-                title: Text(name.isEmpty ? 'مختص' : name),
-                subtitle: Text(email),
-                trailing: const Icon(Icons.chat_bubble_outline),
-                onTap: () => onSelect(specialist),
-              );
+              ),
+              title: Text(name.isEmpty ? 'مختص' : name),
+              subtitle: Text(email),
+              trailing: const Icon(AppIcons.chat),
+              onTap: () => onSelect(specialist),
+            );
           }),
           if (specialists.isEmpty)
             Center(

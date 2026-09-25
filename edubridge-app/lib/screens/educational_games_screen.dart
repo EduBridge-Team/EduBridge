@@ -1,5 +1,6 @@
-// شاشة الألعاب التعليمية — تتكيّف حسب البروفايل والعمر
+// lib/screens/educational_games_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../games/advanced_reading_game.dart';
 import '../games/audio_matching_game.dart';
 import '../games/colors_game.dart';
@@ -41,35 +42,38 @@ class EducationalGamesScreen extends StatelessWidget {
     final isDeaf = profile.type == DisabilityType.deaf;
     final isCalm = profile.sensoryCalmMode;
 
-    // تشجيع صوتي
     if (!isDeaf && !isCalm) {
       EncouragementService.instance.praiseGame();
     }
 
-    // ✅ فلترة الألعاب حسب العمر + الإعاقة
     final games = gamesFor(profile.type, group);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'الألعاب التعليمية 🎮'),
+      appBar: JisrAppBar(title: 'الألعاب التعليمية'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ترحيب
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: isCalm
-                    ? const LinearGradient(colors: [AppColors.teal, AppColors.tealDeep])
+                    ? const LinearGradient(
+                        colors: [AppColors.brandTeal, AppColors.brandBlue])
                     : AppColors.headerGradient,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 children: [
-                  Text(
-                    isBlind ? '🎧' : isDeaf ? '🤟' : '🎉',
-                    style: const TextStyle(fontSize: 44),
+                  Icon(
+                    isBlind
+                        ? AppIcons.deaf
+                        : isDeaf
+                            ? AppIcons.signLanguage
+                            : AppIcons.game,
+                    color: Colors.white,
+                    size: 44,
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -91,7 +95,8 @@ class EducationalGamesScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           '${games.length} ألعاب مناسبة لعمرك (${ageGroupLabel(group)})',
-                          style: const TextStyle(fontSize: 12, color: Colors.white70),
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white70),
                         ),
                       ],
                     ),
@@ -101,7 +106,6 @@ class EducationalGamesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // الألعاب
             ...games.map((g) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _GameCard(
@@ -115,7 +119,7 @@ class EducationalGamesScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Icon(Icons.extension_off, size: 72, color: c.muted),
+                    Icon(AppIcons.game, size: 72, color: c.muted),
                     const SizedBox(height: 16),
                     Text(
                       'لا توجد ألعاب مناسبة بعد',
@@ -130,7 +134,8 @@ class EducationalGamesScreen extends StatelessWidget {
     );
   }
 
-  void _openGame(BuildContext context, GameInfo game, AccessibilityProfile profile) {
+  void _openGame(
+      BuildContext context, GameInfo game, AccessibilityProfile profile) {
     Widget? screen;
 
     switch (game.id) {
@@ -203,7 +208,8 @@ class _GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final large = AccessibilityService.instance.profile.value.extraLargeTouchTargets;
+    final large =
+        AccessibilityService.instance.profile.value.extraLargeTouchTargets;
 
     return InkWell(
       onTap: onTap,
@@ -216,7 +222,7 @@ class _GameCard extends StatelessWidget {
           border: Border.all(color: c.line),
           boxShadow: [
             BoxShadow(
-              color: AppColors.navy.withValues(alpha: 0.05),
+              color: AppColors.brandBlue.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -228,12 +234,15 @@ class _GameCard extends StatelessWidget {
               width: large ? 80 : 64,
               height: large ? 80 : 64,
               decoration: BoxDecoration(
-                color: AppColors.teal.withValues(alpha: 0.12),
+                color: AppColors.brandTeal.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(18),
               ),
               alignment: Alignment.center,
-              child: Text(game.emoji,
-                  style: TextStyle(fontSize: large ? 42 : 34)),
+              child: Icon(
+                AppIcons.game,
+                size: large ? 42 : 34,
+                color: AppColors.brandBlue,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -256,7 +265,8 @@ class _GameCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_left, color: AppColors.teal, size: 32),
+            const Icon(Icons.chevron_left,
+                color: AppColors.brandBlue, size: 32),
           ],
         ),
       ),

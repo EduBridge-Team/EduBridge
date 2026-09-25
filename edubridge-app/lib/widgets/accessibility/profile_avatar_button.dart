@@ -1,6 +1,6 @@
 // lib/widgets/profile_avatar_button.dart
 import 'package:flutter/material.dart';
-import '../../screens/profile_screen.dart';
+import '../../screens/profile/profile_screen.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 

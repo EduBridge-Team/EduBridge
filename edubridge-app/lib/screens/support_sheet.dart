@@ -1,5 +1,7 @@
+// lib/screens/support_sheet.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/safe_bottom.dart';
@@ -32,7 +34,8 @@ class _SupportSheetState extends State<SupportSheet> {
       _error = null;
     });
 
-    if (_subjectController.text.trim().isEmpty || _messageController.text.trim().isEmpty) {
+    if (_subjectController.text.trim().isEmpty ||
+        _messageController.text.trim().isEmpty) {
       setState(() {
         _error = 'الرجاء تعبئة الموضوع والرسالة';
         _sending = false;
@@ -101,10 +104,22 @@ class _SupportSheetState extends State<SupportSheet> {
                 ),
               ),
             ),
-            Text(
-              'تواصل مع الدعم الفني',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(AppIcons.support,
+                    color: AppColors.brandBlue, size: 26),
+                const SizedBox(width: 8),
+                Text(
+                  'تواصل مع الدعم الفني',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             TextField(
@@ -112,7 +127,7 @@ class _SupportSheetState extends State<SupportSheet> {
               decoration: const InputDecoration(
                 labelText: 'الموضوع',
                 hintText: 'مثال: مشكلة في تسجيل الدخول',
-                prefixIcon: Icon(Icons.subject),
+                prefixIcon: Icon(AppIcons.edit),
               ),
             ),
             const SizedBox(height: 16),
@@ -127,17 +142,43 @@ class _SupportSheetState extends State<SupportSheet> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.blueAccent)),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.error,
+                        color: AppColors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: AppColors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
             const SizedBox(height: 20),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: _sending ? null : _sendTicket,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.tealDeep,
+                backgroundColor: AppColors.brandBlue,
+                minimumSize: const Size(0, 52),
               ),
-              child: _sending
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('إرسال'),
+              icon: _sending
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
+                    )
+                  : const Icon(AppIcons.send),
+              label: Text(_sending ? 'جارٍ الإرسال...' : 'إرسال'),
             ),
           ],
         ),

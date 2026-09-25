@@ -1,6 +1,7 @@
-// شاشة تصفّح كل الدروس مع بحث وقراءة صوتية
+// lib/screens/lessons_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
@@ -20,7 +21,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
   String? _error;
   String _query = '';
 
-  // ✅ إصلاح: نستخدم TtsService بدل FlutterTts مباشر
   int? _speakingLessonId;
 
   @override
@@ -66,7 +66,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
     }
   }
 
-  // ✅ إصلاح: استخدام TtsService.instance بدل FlutterTts
   Future<void> _toggleSpeak(Map lesson) async {
     final lessonId = lesson['id'];
     if (_speakingLessonId == lessonId) {
@@ -128,7 +127,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
               style: const TextStyle(fontSize: 17),
               decoration: const InputDecoration(
                 hintText: 'ابحث عن درس...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(AppIcons.search),
               ),
               onChanged: (v) => setState(() => _query = v),
             ),
@@ -154,12 +153,12 @@ class _LessonsScreenState extends State<LessonsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(_error!,
-                style: const TextStyle(fontSize: 16, color: Colors.red)),
+                style: const TextStyle(fontSize: 16, color: AppColors.red)),
             const SizedBox(height: 16),
             SizedBox(
               height: 56,
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.refresh, size: 28),
+                icon: const Icon(AppIcons.refresh, size: 28),
                 label: const Text('إعادة المحاولة',
                     style: TextStyle(fontSize: 18)),
                 onPressed: _loadLessons,
@@ -175,7 +174,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
       return ListView(
         children: [
           const SizedBox(height: 120),
-          Icon(Icons.menu_book, size: 72, color: JisrColors.of(context).muted),
+          Icon(AppIcons.lesson,
+              size: 72, color: JisrColors.of(context).muted),
           const SizedBox(height: 16),
           Center(
             child: Text(
@@ -220,7 +220,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
                       color: c.tintGreen,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(Icons.menu_book, size: 28, color: c.success),
+                    child: const Icon(AppIcons.lesson,
+                        size: 28, color: AppColors.greenDeep),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -248,7 +249,9 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 height: 56,
                 child: OutlinedButton.icon(
                   icon: Icon(
-                    isSpeaking ? Icons.stop_circle : Icons.volume_up,
+                    isSpeaking
+                        ? Icons.stop_circle_outlined
+                        : AppIcons.volumeUp,
                     size: 28,
                   ),
                   label: Text(
@@ -263,7 +266,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  icon: const Icon(Icons.auto_awesome, size: 24),
+                  icon: const Icon(AppIcons.speech, size: 24),
                   label: const Text('اسأل نور عن الدرس'),
                   onPressed: () => Navigator.push(
                     context,

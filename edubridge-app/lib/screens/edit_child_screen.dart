@@ -1,11 +1,13 @@
+// lib/screens/edit_child_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
 class EditChildScreen extends StatefulWidget {
   final Map child;
-  final String currentUserRole; // 'admin', 'specialist', 'teacher', 'parent'
+  final String currentUserRole;
   final Map currentUser;
 
   const EditChildScreen({
@@ -23,11 +25,9 @@ class _EditChildScreenState extends State<EditChildScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _ageController;
   late final TextEditingController _descriptionController;
-  
-  // للمختص فقط
+
   TextEditingController? _reasonController;
 
-  // للأدمن والمختص
   String? _newTeacherId;
   String? _newSpecialistId;
 
@@ -35,7 +35,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
   List<Map<String, dynamic>> _specialists = [];
   bool _loadingTeachers = false;
   bool _loadingSpecialists = false;
-  
+
   bool _loading = false;
   String? _error;
 
@@ -45,16 +45,17 @@ class _EditChildScreenState extends State<EditChildScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.child['name']?.toString() ?? '');
-    _ageController = TextEditingController(text: widget.child['age']?.toString() ?? '');
-    _descriptionController = TextEditingController(text: widget.child['description']?.toString() ?? '');
+    _nameController =
+        TextEditingController(text: widget.child['name']?.toString() ?? '');
+    _ageController =
+        TextEditingController(text: widget.child['age']?.toString() ?? '');
+    _descriptionController = TextEditingController(
+        text: widget.child['description']?.toString() ?? '');
 
     if (_isAdmin) {
-      // الأدمن يحتاج قائمة المعلمين والمختصين
       _loadTeachers();
       _loadSpecialists();
     } else if (_isSpecialist) {
-      // المختص يحتاج قائمة المعلمين فقط، وسبب التغيير
       _reasonController = TextEditingController();
       _loadTeachers();
     }
@@ -121,25 +122,27 @@ class _EditChildScreenState extends State<EditChildScreen> {
       };
 
       if (_isAdmin) {
-        // الأدمن يرسل المعلم والمختص
         if (_newTeacherId != null) body['teacher_id'] = _newTeacherId;
         if (_newSpecialistId != null) body['specialist_id'] = _newSpecialistId;
       } else if (_isSpecialist) {
-        // المختص يرسل المعلم مع ذكر السبب
         if (_newTeacherId != null) {
           body['teacher_id'] = _newTeacherId;
           body['reason'] = _reasonController?.text.trim();
         }
       }
 
-      final res = await ApiService.authPut('/children/${widget.child['id']}', body);
+      final res =
+          await ApiService.authPut('/children/${widget.child['id']}', body);
       final data = jsonDecode(res.body);
       if (!mounted) return;
 
       if (res.statusCode == 200) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم حفظ التعديلات بنجاح')),
+          const SnackBar(
+            content: Text('تم حفظ التعديلات بنجاح'),
+            backgroundColor: AppColors.green,
+          ),
         );
       } else {
         setState(() {
@@ -172,22 +175,24 @@ class _EditChildScreenState extends State<EditChildScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // تنبيه لولي الأمر
             if (widget.currentUserRole == 'parent')
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.tintOrange,
+                  color: c.tintOrange,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.teal),
-                    SizedBox(width: 8),
+                    const Icon(AppIcons.info,
+                        color: AppColors.orangeDeep),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'يمكنك تعديل البيانات الأساسية فقط. لا يمكنك تغيير المعلّم أو الأخصائي.',
-                        style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: c.onTint,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -208,57 +213,66 @@ class _EditChildScreenState extends State<EditChildScreen> {
             TextField(
               controller: _descriptionController,
               maxLines: 3,
-              decoration: const InputDecoration(labelText: 'ملاحظات عامة (اختياري)'),
+              decoration:
+                  const InputDecoration(labelText: 'ملاحظات عامة (اختياري)'),
             ),
 
-            // 📌 للأدمن: تغيير المعلم والمختص
             if (_isAdmin) ...[
               const SizedBox(height: 20),
               Divider(color: c.line),
               const SizedBox(height: 16),
               Text(
                 'إدارة المتابعة (للأدمن)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.heading),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading),
               ),
               const SizedBox(height: 12),
 
-              // قائمة المعلمين
               if (_loadingTeachers)
                 const Center(child: CircularProgressIndicator())
               else
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'المعلم المسؤول'),
-                  items: _teachers.map((t) => DropdownMenuItem(
-                    value: t['id'].toString(),
-                    child: Text(t['name']?.toString() ?? ''),
-                  )).toList(),
+                  decoration:
+                      const InputDecoration(labelText: 'المعلم المسؤول'),
+                  items: _teachers
+                      .map((t) => DropdownMenuItem(
+                            value: t['id'].toString(),
+                            child: Text(t['name']?.toString() ?? ''),
+                          ))
+                      .toList(),
                   onChanged: (v) => _newTeacherId = v,
                 ),
-              
+
               const SizedBox(height: 12),
 
-              // قائمة المختصين
               if (_loadingSpecialists)
                 const Center(child: CircularProgressIndicator())
               else
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'المختص المسؤول'),
-                  items: _specialists.map((s) => DropdownMenuItem(
-                    value: s['id'].toString(),
-                    child: Text(s['name']?.toString() ?? ''),
-                  )).toList(),
+                  decoration:
+                      const InputDecoration(labelText: 'المختص المسؤول'),
+                  items: _specialists
+                      .map((s) => DropdownMenuItem(
+                            value: s['id'].toString(),
+                            child: Text(s['name']?.toString() ?? ''),
+                          ))
+                      .toList(),
                   onChanged: (v) => _newSpecialistId = v,
                 ),
             ],
 
-            // 📌 للمختص: تغيير المعلم مع ذكر الأسباب
             if (_isSpecialist) ...[
               const SizedBox(height: 20),
               Divider(color: c.line),
               const SizedBox(height: 16),
               Text(
                 'تغيير المعلم (للمختص)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.heading),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading),
               ),
               const SizedBox(height: 8),
               if (_loadingTeachers)
@@ -266,10 +280,12 @@ class _EditChildScreenState extends State<EditChildScreen> {
               else
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'المعلم الجديد'),
-                  items: _teachers.map((t) => DropdownMenuItem(
-                    value: t['id'].toString(),
-                    child: Text(t['name']?.toString() ?? ''),
-                  )).toList(),
+                  items: _teachers
+                      .map((t) => DropdownMenuItem(
+                            value: t['id'].toString(),
+                            child: Text(t['name']?.toString() ?? ''),
+                          ))
+                      .toList(),
                   onChanged: (v) => _newTeacherId = v,
                 ),
               const SizedBox(height: 12),
@@ -285,16 +301,41 @@ class _EditChildScreenState extends State<EditChildScreen> {
 
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Color.fromARGB(255, 54, 143, 244))),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.error,
+                        color: AppColors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(_error!,
+                          style: const TextStyle(color: AppColors.red)),
+                    ),
+                  ],
+                ),
+              ),
             ],
             const SizedBox(height: 24),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: _loading ? null : _save,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.green,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Text(_loading ? 'جارِ الحفظ...' : 'حفظ التعديلات'),
+              icon: _loading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
+                    )
+                  : const Icon(AppIcons.save),
+              label: Text(_loading ? 'جارِ الحفظ...' : 'حفظ التعديلات'),
             ),
           ],
         ),

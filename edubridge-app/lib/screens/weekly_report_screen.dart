@@ -1,5 +1,6 @@
 // lib/screens/weekly_report_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -53,7 +54,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: '📊 تقرير ${widget.childName} الأسبوعي'),
+      appBar: JisrAppBar(title: 'تقرير ${widget.childName} الأسبوعي'),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -72,13 +73,13 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+          const Icon(AppIcons.error, size: 64, color: AppColors.red),
           const SizedBox(height: 16),
           Text(_error!,
-              style: const TextStyle(fontSize: 16, color: Colors.red)),
+              style: const TextStyle(fontSize: 16, color: AppColors.red)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(AppIcons.refresh),
             label: const Text('إعادة المحاولة'),
             onPressed: _load,
           ),
@@ -92,7 +93,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     return ListView(
       children: [
         const SizedBox(height: 120),
-        Icon(Icons.assignment_outlined, size: 80, color: c.muted),
+        Icon(AppIcons.homework, size: 80, color: c.muted),
         const SizedBox(height: 16),
         Center(
           child: Text(
@@ -122,7 +123,6 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // ─── رأس التقرير ───
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -131,8 +131,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           ),
           child: Column(
             children: [
-              const Icon(Icons.calendar_month,
-                  color: Colors.white, size: 36),
+              const Icon(AppIcons.calendar, color: Colors.white, size: 36),
               const SizedBox(height: 8),
               Text(
                 'الأسبوع: ${r.weekStart.day}/${r.weekStart.month} — '
@@ -160,18 +159,17 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         ),
         const SizedBox(height: 16),
 
-        // ─── الملخص ───
         Row(
           children: [
             _statCard(
-              icon: Icons.menu_book,
+              icon: AppIcons.lesson,
               label: 'الدروس',
               value: '${r.lessonsCompleted}/${r.lessonsTotal}',
-              color: AppColors.teal,
+              color: AppColors.brandTeal,
             ),
             const SizedBox(width: 8),
             _statCard(
-              icon: Icons.assignment,
+              icon: AppIcons.homework,
               label: 'الواجبات',
               value: '${r.homeworkSubmitted}/${r.homeworkAssigned}',
               color: AppColors.orange,
@@ -182,7 +180,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         Row(
           children: [
             _statCard(
-              icon: Icons.psychology,
+              icon: AppIcons.specialist,
               label: 'اجتماعات الدعم',
               value:
                   '${r.learningSupportMeetingsAttended}/${r.learningSupportMeetingsScheduled}',
@@ -190,7 +188,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             ),
             const SizedBox(width: 8),
             _statCard(
-              icon: Icons.check_circle,
+              icon: AppIcons.check,
               label: 'الإنجاز',
               value: '${(r.homeworkRate * 100).toStringAsFixed(0)}%',
               color: AppColors.green,
@@ -198,58 +196,70 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           ],
         ),
 
-        // ─── ملاحظة المعلم ───
         if (r.teacherNotes != null && r.teacherNotes!.isNotEmpty) ...[
           const SizedBox(height: 20),
           _noteCard(
-            icon: '👨‍🏫',
+            icon: AppIcons.teacher,
             title: 'ملاحظة المعلم',
             content: r.teacherNotes!,
             color: c.tintTeal,
           ),
         ],
 
-        // ─── ملاحظة المختص ───
         if (r.specialistNotes != null && r.specialistNotes!.isNotEmpty) ...[
           const SizedBox(height: 12),
           _noteCard(
-            icon: '🧠',
+            icon: AppIcons.specialist,
             title: 'تقييم المختص',
             content: r.specialistNotes!,
             color: c.tintOrange,
           ),
         ],
 
-        // ─── الإنجازات ───
         if (r.achievements.isNotEmpty) ...[
           const SizedBox(height: 20),
-          const Text(
-            '🏆 الإنجازات',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              const Icon(AppIcons.trophy,
+                  size: 22, color: AppColors.yellow),
+              const SizedBox(width: 8),
+              const Text(
+                'الإنجازات',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           ...r.achievements.map((a) => Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
-                  leading: const Icon(Icons.star, color: AppColors.yellow),
+                  leading: const Icon(AppIcons.starFilled,
+                      color: AppColors.yellow),
                   title: Text(a),
                 ),
               )),
         ],
 
-        // ─── نقاط للانتباه ───
         if (r.concerns.isNotEmpty) ...[
           const SizedBox(height: 16),
-          const Text(
-            '⚠️ نقاط للانتباه',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              const Icon(AppIcons.warning,
+                  size: 22, color: AppColors.orangeDeep),
+              const SizedBox(width: 8),
+              const Text(
+                'نقاط للانتباه',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           ...r.concerns.map((cn) => Card(
                 margin: const EdgeInsets.only(bottom: 8),
-                color: Colors.red.withValues(alpha: 0.05),
+                color: AppColors.red.withValues(alpha: 0.05),
                 child: ListTile(
-                  leading: const Icon(Icons.warning, color: Colors.red),
+                  leading: const Icon(AppIcons.warning,
+                      color: AppColors.red),
                   title: Text(cn),
                 ),
               )),
@@ -294,7 +304,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   }
 
   Widget _noteCard({
-    required String icon,
+    required IconData icon,
     required String title,
     required String content,
     required Color color,
@@ -310,7 +320,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         children: [
           Row(
             children: [
-              Text(icon, style: const TextStyle(fontSize: 22)),
+              Icon(icon, size: 22, color: AppColors.brandBlue),
               const SizedBox(width: 8),
               Text(
                 title,

@@ -1,9 +1,9 @@
 // اختبارات بدء التطبيق واستعادة الجلسة المحفوظة.
+import 'package:edubridge_app/screens/admin/admin_screen.dart' show AdminScreen;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edubridge_app/main.dart' as app;
-import 'package:edubridge_app/screens/admin_screen.dart';
 import 'package:edubridge_app/services/api_service.dart';
 import 'package:edubridge_app/utils/home_router.dart';
 
