@@ -67,7 +67,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                   value: _selectedReason,
                   isExpanded: true,
                   hint: const Text('اختر السبب...'),
-                  items: _reasons
+                  items: _CreateLearningSupportRequestScreenState._reasons
                       .map((r) =>
                           DropdownMenuItem(value: r, child: Text(r)))
                       .toList(),
