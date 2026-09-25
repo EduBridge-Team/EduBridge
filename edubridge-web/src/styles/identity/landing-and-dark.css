@@ -166,7 +166,6 @@
   height: auto;
   margin-bottom: 14px;
   overflow: visible;
-  filter: brightness(0) invert(1);
 }
 
 .site-footer .footer-identity p {
