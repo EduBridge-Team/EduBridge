@@ -24,27 +24,27 @@ import '../games/word_builder_game.dart';
 
 // ─── الشاشات ───
 import '../screens/aac_communication_screen.dart';
-import '../screens/add_child_screen.dart';
+import '../screens/add_child/add_child_screen.dart';
 import '../screens/assistant_screen.dart';
-import '../screens/case_discussion_screen.dart';
 import '../screens/care_team_screen.dart';
+import '../screens/case_discussion/case_discussion_screen.dart';
 import '../screens/change_password_screen.dart';
 import '../screens/chats_screen.dart';
-import '../screens/child_accessibility_settings_screen.dart';
-import '../screens/child_homework_screen.dart';
-import '../screens/child_lessons_screen.dart';
+import '../screens/child_accessibility/child_accessibility_settings_screen.dart';
+import '../screens/child_homework/child_homework_screen.dart';
+import '../screens/child_lessons/child_lessons_screen.dart';
 import '../screens/child_progress_screen.dart';
 import '../screens/children_accessibility_overview_screen.dart';
 import '../screens/children_screen.dart';
 import '../screens/create_learning_support_request_screen.dart';
 import '../screens/educational_games_screen.dart';
+import '../screens/learning_support_requests/learning_support_requests_screen.dart';
 import '../screens/lessons_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/parent_lessons_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/learning_support_requests_screen.dart';
 import '../screens/learning_support_meetings_screen.dart';
-import '../screens/verify_identity_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/verify_identity/verify_identity_screen.dart';
 import '../screens/weekly_report_screen.dart';
 
 import '../theme.dart';

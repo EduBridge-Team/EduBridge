@@ -16,74 +16,95 @@ Future<void> toggleThemeMode() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setBool('dark_mode', isDark);
 }
-
 class AppColors {
   AppColors._();
 
+  // ═══════════════════════════════════════════════════════════
+  //  🎨 ألوان الهوية البصرية الرسمية — EduBridge
+  // ═══════════════════════════════════════════════════════════
 
-  /// اللون الأساسي — أزرق ملكي عميق
-  static const navy = Color(0xFF1769C2);
-  static const navyDeep = Color(0xFF0D55AA);
+  /// اللون الأساسي — أزرق ملكي (Edu)
+  static const brandBlue       = Color(0xFF1769C2);
+  static const brandBlueDeep   = Color(0xFF0D55AA);
+  static const brandBlueLight  = Color(0xFF2A8AD5);
 
-  /// اللون الثانوي — تركوازي الشعار
-  static const teal = Color(0xFF21BFD0);
-  static const tealDeep = Color(0xFF119EAE);
+  /// اللون الثانوي — تركوازي (الأيقونة)
+  static const brandTeal       = Color(0xFF21BFD0);
+  static const brandTealDeep   = Color(0xFF119EAE);
+  static const brandTealLight  = Color(0xFF69D4CA);
 
-  /// أزرق متوسط (وسط التدرّج في الشعار)
-  static const blue = Color(0xFF2A8AD5);
+  /// لون التمييز — أخضر فاتح (Bridge)
+  static const brandGreen      = Color(0xFF7BE49A);
+  static const brandGreenDeep  = Color(0xFF57B25A);
 
-  /// تركوازي فاتح (لمسات)
-  static const lightTeal = Color(0xFF69D4CA);
+  // ═══════════════════════════════════════════════════════════
+  //  Aliases — للتوافق مع الكود القديم (لا تكسر شيئاً)
+  // ═══════════════════════════════════════════════════════════
+  static const navy       = brandBlue;
+  static const navyDeep   = brandBlueDeep;
+  static const blue       = brandBlueLight;
+  static const teal       = brandTeal;
+  static const tealDeep   = brandTealDeep;
+  static const lightTeal  = brandTealLight;
 
-
-  static const green = Color(0xFF57B25A);       // نجاح
-  static const greenDeep = Color(0xFF3F9142);
-  static const orange = Color(0xFFF2842B);      // تنبيه
+  static const green      = brandGreenDeep;  // للنجاح (مقروء)
+  static const greenDeep  = Color(0xFF3F9142);
+  static const orange     = Color(0xFFF2842B);
   static const orangeDeep = Color(0xFFD96E17);
-  static const yellow = Color(0xFFFFC23C);      // تحذير خفيف
-  static const pink = Color(0xFFF06C8B);        // لمسة مميزة
-  static const red = Color(0xFFE53935);    
-  static const purple = Color(0xFF8B6DD4);     // خطأ
+  static const yellow     = Color(0xFFFFC23C);
+  static const pink       = Color(0xFFF06C8B);
+  static const red        = Color(0xFFE53935);
+  static const purple     = Color(0xFF8B6DD4);
 
+  static const cream      = Color(0xFFF8FCFF);
 
-  static const cream = Color(0xFFF8FCFF);
-
-  static const tintBlue = Color(0xFFE9F5FF);    // أزرق فاتح جداً
-  static const tintTeal = Color(0xFFE4F9FB);    // تركوازي فاتح جداً
-  static const tintGreen = Color(0xFFE5F4E5);
+  // خلفيات خفيفة من الهوية
+  static const tintBlue   = Color(0xFFE9F5FF);
+  static const tintTeal   = Color(0xFFE4F9FB);
+  static const tintGreen  = Color(0xFFE6F8EC);   // ← فاتح ليتناسب مع brandGreen
   static const tintOrange = Color(0xFFFFF0E0);
   static const tintYellow = Color(0xFFFFF8E1);
 
-
-  static const ink = Color(0xFF183F6B);
+  static const ink   = Color(0xFF183F6B);
   static const muted = Color(0xFF6884A4);
 
   static const lineCool = Color(0xFFD9EBF7);
+
+  /// لوحة الألوان للأطفال — من الهوية
   static const kidPalette = [
     Color(0xFF1769C2), // أزرق ملكي
     Color(0xFF21BFD0), // تركوازي
+    Color(0xFF7BE49A), // أخضر الهوية
     Color(0xFF2A8AD5), // أزرق متوسط
     Color(0xFF69D4CA), // تركوازي فاتح
-    Color(0xFF119EAE), // تركوازي عميق
   ];
 
+  /// التدرّج الرئيسي — من أعلى اليمين (أزرق) إلى أسفل اليسار (تركوازي)
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     colors: [
-      Color.fromARGB(255, 12, 102, 203),
-      Color.fromARGB(255, 23, 73, 127),
-      Color(0xFF21BFD0),
+      brandBlue,       // #1769C2
+      brandBlueDeep,   // #0D55AA
+      brandTeal,       // #21BFD0
     ],
+    stops: [0.0, 0.5, 1.0],
   );
 
+  /// تدرّج التمييز — أزرق → تركوازي (بدون الأخضر لتجنّب الإزعاج البصري)
   static const accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [blue, teal],
+    colors: [brandBlueLight, brandTeal],
+  );
+
+  /// تدرّج خاص للأزرار الرئيسية
+  static const primaryGradient = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    colors: [brandBlue, brandBlueDeep],
   );
 }
-
 class JisrColors {
   final Color heading;
   final Color body;
@@ -150,10 +171,12 @@ ThemeData buildJisrTheme() {
   final base = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.navy,
-      primary: AppColors.navy,
-      secondary: AppColors.teal,
-      surface: Colors.white,
+
+       seedColor: AppColors.brandBlue,   // ← استخدم الاسم الرسمي
+       primary:   AppColors.brandBlue,
+       secondary: AppColors.brandTeal,
+       tertiary:  AppColors.brandGreen,   // ← جديد: الأخضر كـ tertiary
+       surface: Colors.white,
     ),
     scaffoldBackgroundColor: AppColors.cream,
   );

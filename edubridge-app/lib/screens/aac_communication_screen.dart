@@ -1,6 +1,7 @@
 // lib/screens/aac_communication_screen.dart
 // AAC — التواصل البديل بالصور (لمن لا يستطيع الكلام)
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../utils/adaptive_helper.dart';
@@ -20,54 +21,54 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
 
   static const _categories = {
     'أساسية': [
-      ('👋', 'مرحباً', 'مرحبا'),
-      ('🙋', 'أنا', 'أنا'),
-      ('✅', 'نعم', 'نعم'),
-      ('❌', 'لا', 'لا'),
-      ('🙏', 'شكراً', 'شكرا'),
-      ('🙋‍♂️', 'من فضلك', 'من فضلك'),
-      ('😊', 'سعيد', 'أنا سعيد'),
-      ('😢', 'حزين', 'أنا حزين'),
+      (AppIcons.speech, 'مرحباً', 'مرحبا'),
+      (AppIcons.profile, 'أنا', 'أنا'),
+      (AppIcons.check, 'نعم', 'نعم'),
+      (AppIcons.close, 'لا', 'لا'),
+      (AppIcons.starFilled, 'شكراً', 'شكرا'),
+      (AppIcons.users, 'من فضلك', 'من فضلك'),
+      (Icons.sentiment_satisfied, 'سعيد', 'أنا سعيد'),
+      (Icons.sentiment_dissatisfied, 'حزين', 'أنا حزين'),
     ],
     'احتياجات': [
-      ('💧', 'ماء', 'أريد ماء'),
-      ('🍎', 'طعام', 'أريد طعام'),
-      ('🚽', 'حمام', 'أريد الحمام'),
-      ('😴', 'نوم', 'أريد أن أنام'),
-      ('🤒', 'مرض', 'أنا مريض'),
-      ('🥶', 'بارد', 'أشعر بالبرد'),
-      ('🥵', 'حار', 'أشعر بالحرارة'),
-      ('🤗', 'عناق', 'أريد عناق'),
+      (Icons.water_drop_outlined, 'ماء', 'أريد ماء'),
+      (Icons.restaurant_outlined, 'طعام', 'أريد طعام'),
+      (Icons.wc_outlined, 'حمام', 'أريد الحمام'),
+      (Icons.bedtime_outlined, 'نوم', 'أريد أن أنام'),
+      (Icons.sick_outlined, 'مرض', 'أنا مريض'),
+      (Icons.ac_unit_outlined, 'بارد', 'أشعر بالبرد'),
+      (Icons.wb_sunny_outlined, 'حار', 'أشعر بالحرارة'),
+      (Icons.volunteer_activism_outlined, 'عناق', 'أريد عناق'),
     ],
     'مشاعر': [
-      ('😡', 'غاضب', 'أنا غاضب'),
-      ('😨', 'خائف', 'أنا خائف'),
-      ('😕', 'مرتبك', 'أنا مرتبك'),
-      ('🥰', 'محبوب', 'أشعر بالحب'),
-      ('😔', 'متعب', 'أنا متعب'),
-      ('😃', 'متحمس', 'أنا متحمس'),
-      ('🤔', 'أفكر', 'أنا أفكر'),
-      ('😌', 'مرتاح', 'أنا مرتاح'),
+      (Icons.mood_bad_outlined, 'غاضب', 'أنا غاضب'),
+      (Icons.psychology_outlined, 'خائف', 'أنا خائف'),
+      (Icons.help_outline, 'مرتبك', 'أنا مرتبك'),
+      (Icons.favorite_outline, 'محبوب', 'أشعر بالحب'),
+      (Icons.battery_0_bar_outlined, 'متعب', 'أنا متعب'),
+      (Icons.emoji_emotions_outlined, 'متحمس', 'أنا متحمس'),
+      (Icons.psychology_alt_outlined, 'أفكر', 'أنا أفكر'),
+      (Icons.spa_outlined, 'مرتاح', 'أنا مرتاح'),
     ],
     'أنشطة': [
-      ('🎮', 'ألعب', 'أريد أن ألعب'),
-      ('📚', 'أقرأ', 'أريد أن أقرأ'),
-      ('🎨', 'أرسم', 'أريد أن أرسم'),
-      ('🎵', 'أسمع', 'أريد سماع موسيقى'),
-      ('🎬', 'أشاهد', 'أريد مشاهدة'),
-      ('🏃', 'ألعب', 'أريد أن أتحرك'),
-      ('🛏️', 'أرتاح', 'أريد الراحة'),
-      ('📝', 'أدرس', 'أريد أن أدرس'),
+      (Icons.videogame_asset_outlined, 'ألعب', 'أريد أن ألعب'),
+      (Icons.menu_book_outlined, 'أقرأ', 'أريد أن أقرأ'),
+      (Icons.palette_outlined, 'أرسم', 'أريد أن أرسم'),
+      (Icons.music_note_outlined, 'أسمع', 'أريد سماع موسيقى'),
+      (Icons.movie_outlined, 'أشاهد', 'أريد مشاهدة'),
+      (Icons.directions_run_outlined, 'ألعب', 'أريد أن أتحرك'),
+      (Icons.weekend_outlined, 'أرتاح', 'أريد الراحة'),
+      (Icons.edit_note_outlined, 'أدرس', 'أريد أن أدرس'),
     ],
     'أشخاص': [
-      ('👩', 'أمي', 'أريد أمي'),
-      ('👨', 'أبي', 'أريد أبي'),
-      ('👶', 'أخي', 'أريد أخي'),
-      ('👧', 'أختي', 'أريد أختي'),
-      ('👨‍🏫', 'معلمي', 'أريد معلمي'),
-      ('🧑‍⚕️', 'الطبيب', 'أريد الطبيب'),
-      ('🧩', 'المختص', 'أريد المختص'),
-      ('👥', 'أصدقائي', 'أريد أصدقائي'),
+      (Icons.woman_outlined, 'أمي', 'أريد أمي'),
+      (Icons.man_outlined, 'أبي', 'أريد أبي'),
+      (Icons.child_friendly_outlined, 'أخي', 'أريد أخي'),
+      (Icons.girl_outlined, 'أختي', 'أريد أختي'),
+      (AppIcons.teacher, 'معلمي', 'أريد معلمي'),
+      (Icons.medical_services_outlined, 'الطبيب', 'أريد الطبيب'),
+      (AppIcons.specialist, 'المختص', 'أريد المختص'),
+      (AppIcons.users, 'أصدقائي', 'أريد أصدقائي'),
     ],
   };
 
@@ -101,7 +102,7 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
 
     return Scaffold(
       backgroundColor: AdaptiveHelper.surfaceColor(context),
-      appBar: JisrAppBar(title: '🗣️ تواصل بالصور'),
+      appBar: JisrAppBar(title: 'تواصل بالصور'),
       body: Column(
         children: [
           // ─── الجملة الحالية ───
@@ -166,7 +167,7 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
                           minimumSize: Size(0, AdaptiveHelper.buttonHeight),
                         ),
                         onPressed: _speakAll,
-                        icon: const Icon(Icons.volume_up),
+                        icon: const Icon(AppIcons.volumeUp),
                         label: Text(
                           'قلها',
                           style:
@@ -184,7 +185,8 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
                         ),
                       ),
                       onPressed: _removeLast,
-                      icon: const Icon(Icons.backspace, color: Colors.white),
+                      icon: const Icon(Icons.backspace_outlined,
+                          color: Colors.white),
                     ),
                     SizedBox(width: AdaptiveHelper.spacing / 2),
                     IconButton.filled(
@@ -196,7 +198,7 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
                         ),
                       ),
                       onPressed: _clear,
-                      icon: const Icon(Icons.clear_all, color: Colors.white),
+                      icon: const Icon(AppIcons.delete, color: Colors.white),
                     ),
                   ],
                 ),
@@ -249,9 +251,9 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
               ),
               itemCount: items.length,
               itemBuilder: (context, i) {
-                final (emoji, label, spoken) = items[i];
+                final (icon, label, spoken) = items[i];
                 return _AACChip(
-                  emoji: emoji,
+                  icon: icon,
                   label: label,
                   onTap: () => _addToSentence(label, spoken),
                 );
@@ -265,12 +267,12 @@ class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
 }
 
 class _AACChip extends StatelessWidget {
-  final String emoji;
+  final IconData icon;
   final String label;
   final VoidCallback onTap;
 
   const _AACChip({
-    required this.emoji,
+    required this.icon,
     required this.label,
     required this.onTap,
   });
@@ -299,7 +301,11 @@ class _AACChip extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: TextStyle(fontSize: AdaptiveHelper.iconSize * 1.5)),
+            Icon(
+              icon,
+              size: AdaptiveHelper.iconSize * 1.5,
+              color: AdaptiveHelper.accentColor(context),
+            ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6),

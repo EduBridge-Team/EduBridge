@@ -1,5 +1,6 @@
+// lib/screens/assistant_screen.dart
 import 'package:flutter/material.dart';
-
+import '../app_icons.dart';
 import '../services/assistant_service.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
@@ -18,7 +19,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
   static const _welcome = AssistantMessage(
     role: 'assistant',
     content:
-        'مرحباً! أنا نور ✨\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟',
+        'مرحباً! أنا نور\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟',
   );
 
   final _inputController = TextEditingController();
@@ -124,7 +125,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
           IconButton(
             tooltip: 'مسح المحادثة',
             onPressed: _sending ? null : _clearHistory,
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(AppIcons.delete),
           ),
         ],
       ),
@@ -173,7 +174,8 @@ class _AssistantScreenState extends State<AssistantScreen> {
             if (!_loadingHistory && _messages.length <= 1)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
                   children: [
                     if (hasLessonContext)
@@ -224,7 +226,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                   IconButton.filled(
                     tooltip: 'إرسال',
                     onPressed: _sending ? null : _send,
-                    icon: const Icon(Icons.send_rounded),
+                    icon: const Icon(AppIcons.send),
                     style: IconButton.styleFrom(
                       minimumSize: const Size(52, 52),
                       backgroundColor: AppColors.orange,
@@ -257,7 +259,7 @@ class _MessageBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         decoration: BoxDecoration(
-          color: isUser ? AppColors.tealDeep : c.card,
+          color: isUser ? AppColors.brandBlue : c.card,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -314,7 +316,7 @@ class _SuggestionChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
       child: ActionChip(
-        avatar: const Icon(Icons.auto_awesome, size: 18),
+        avatar: const Icon(AppIcons.info, size: 18),
         label: Text(text),
         onPressed: () => onTap(text),
       ),

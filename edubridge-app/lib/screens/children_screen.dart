@@ -1,18 +1,17 @@
-// شاشة قائمة الأطفال
+// lib/screens/children_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+
 import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/listen_button.dart';
 import '../widgets/speakable.dart';
-import 'child_lessons_screen.dart';
+import 'child_lessons/child_lessons_screen.dart';
 import 'child_progress_screen.dart';
 
 class ChildrenScreen extends StatefulWidget {
-  /// عند true: اختيار الطفل يفتح تقدّمه ومكافآته مباشرة بدل دروسه
   final bool forProgress;
-
   const ChildrenScreen({super.key, this.forProgress = false});
 
   @override
@@ -32,7 +31,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
 
   @override
   void dispose() {
-    TtsService.instance.stop(); // إيقاف القراءة عند مغادرة الشاشة
+    TtsService.instance.stop();
     super.dispose();
   }
 
@@ -69,10 +68,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
     return Scaffold(
       appBar: JisrAppBar(
         title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
-        actions: const [
-          // تفعيل وضع القراءة باللمس (accessibility)
-          ListenButton(),
-        ],
+        actions: const [ListenButton()],
       ),
       body: RefreshIndicator(
         onRefresh: _loadChildren,
@@ -87,11 +83,14 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
     }
     if (_error != null) {
       return Center(
-        child: Text(_error!, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 0, 171, 154))),
+        child: Text(_error!,
+            style: const TextStyle(fontSize: 16, color: AppColors.red)),
       );
     }
     if (_children.isEmpty) {
-      return const Center(child: Text('لا يوجد أطفال بعد', style: TextStyle(fontSize: 18)));
+      return const Center(
+        child: Text('لا يوجد أطفال بعد', style: TextStyle(fontSize: 18)),
+      );
     }
 
     return ListView.builder(
@@ -99,17 +98,13 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
       itemCount: _children.length,
       itemBuilder: (context, i) {
         final child = _children[i];
-        // لون متناوب لكل طفل من لوحة الهوية + الحرف الأول من اسمه
         final color = AppColors.kidPalette[i % AppColors.kidPalette.length];
-        // تحويل صريح إلى String — القيمة القادمة من JSON نوعها dynamic
         final String name = (child['name'] ?? '').toString();
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 6),
-          // في وضع القراءة باللمس: النقر يقرأ اسم الطفل. وإلا: يفتح دروسه/تقدّمه.
           child: Speakable(
             text: name,
             onTap: () {
-              // حسب مصدر الدخول: التقدّم والمكافآت مباشرة، أو الدروس
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -132,7 +127,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                 radius: 26,
                 backgroundColor: color,
                 child: Text(
-                  name.isNotEmpty ? name.characters.first : '🙂',
+                  name.isNotEmpty ? name.characters.first : '؟',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -148,7 +143,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                   color: JisrColors.of(context).heading,
                 ),
               ),
-              trailing: const Icon(Icons.chevron_left), // اتجاه RTL
+              trailing: const Icon(Icons.chevron_left),
             ),
           ),
         );

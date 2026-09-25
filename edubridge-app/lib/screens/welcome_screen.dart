@@ -1,6 +1,8 @@
-// الشاشة الترحيبية — 3 واجهات فاخرة مع خلفية متحركة
+// lib/screens/welcome_screen.dart
+// الشاشة الترحيبية — بهوية EduBridge
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../theme.dart';
 import 'login_screen.dart';
 
@@ -47,19 +49,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void initState() {
     super.initState();
 
-    // دوران بطيء جداً للخلفية
     _bgController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 40),
     )..repeat();
 
-    // طفو الصورة
     _floatController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
 
-    // ظهور/اختفاء زر "ابدأ"
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -78,8 +77,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   void _onPageChanged(int i) {
     setState(() => _currentPage = i);
-
-    // إظهار/إخفاء زر "ابدأ" حسب الصفحة
     if (i == _pages.length - 1) {
       _fadeController.forward();
     } else {
@@ -97,21 +94,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F7FF),
+      backgroundColor: AppColors.cream,
       body: Stack(
         children: [
-          // ═══════════════════════════════════════════════
-          //  خلفية متحركة فاخرة (دوائر + أشكال طافية)
-          // ═══════════════════════════════════════════════
           _AnimatedBackground(controller: _bgController),
-
-          // ═══════════════════════════════════════════════
-          //  المحتوى
-          // ═══════════════════════════════════════════════
           SafeArea(
             child: Column(
               children: [
-                // ─── زر Skip أعلى اليمين ───
+                // ─── زر Skip ───
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: Padding(
@@ -119,7 +109,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: TextButton(
                       onPressed: _goToLogin,
                       style: TextButton.styleFrom(
-                        foregroundColor: AppColors.navy,
+                        foregroundColor: AppColors.brandBlue,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
@@ -127,13 +117,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                           side: BorderSide(
-                            color: AppColors.navy.withValues(alpha: 0.25),
+                            color: AppColors.brandBlue.withValues(alpha: 0.25),
                             width: 1.2,
                           ),
                         ),
                       ),
                       child: const Text(
-                        'Skip',
+                        'تخطي',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -154,7 +144,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
                 ),
 
-                // ─── النقاط الدلالية ───
+                // ─── النقاط ───
                 Padding(
                   padding: const EdgeInsets.only(top: 4, bottom: 20),
                   child: Row(
@@ -169,13 +159,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         height: 8,
                         decoration: BoxDecoration(
                           color: active
-                              ? AppColors.navy
-                              : AppColors.navy.withValues(alpha: 0.22),
+                              ? AppColors.brandBlue
+                              : AppColors.brandBlue.withValues(alpha: 0.22),
                           borderRadius: BorderRadius.circular(4),
                           boxShadow: active
                               ? [
                                   BoxShadow(
-                                    color: AppColors.navy
+                                    color: AppColors.brandBlue
                                         .withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 2),
@@ -188,7 +178,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
                 ),
 
-                // ─── زر "ابدأ" يظهر فقط في الصفحة الأخيرة ───
+                // ─── زر ابدأ ───
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
                   child: FadeTransition(
@@ -206,12 +196,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         child: ElevatedButton(
                           onPressed: _isLastPage ? _goToLogin : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.navy,
+                            backgroundColor: AppColors.brandBlue,
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.transparent,
                             disabledForegroundColor: Colors.transparent,
                             elevation: 8,
-                            shadowColor: AppColors.navy.withValues(alpha: 0.4),
+                            shadowColor:
+                                AppColors.brandBlue.withValues(alpha: 0.4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -257,138 +248,130 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-          // ═══════════════════════════════════════════════
-          //  صورة الدرس — مع حركة طفو خفيفة + هالة ضوئية
-          // ═══════════════════════════════════════════════
-          AnimatedBuilder(
-            animation: _floatController,
-            builder: (context, child) {
-              // طفو عمودي ± 8 بكسل
-              final dy = (_floatController.value - 0.5) * 16;
-              return Transform.translate(
-                offset: Offset(0, dy),
-                child: child,
-              );
-            },
-            child: AnimatedScale(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutBack,
-              scale: isCurrent ? 1.0 : 0.92,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(36),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.white.withValues(alpha: 0.9),
-                      Colors.white.withValues(alpha: 0.5),
-                    ],
-                  ),
-                  boxShadow: [
-                    // هالة خارجية زرقاء
-                    BoxShadow(
-                      color: AppColors.navy.withValues(alpha: 0.12),
-                      blurRadius: 40,
-                      spreadRadius: 5,
-                      offset: const Offset(0, 18),
-                    ),
-                    // هالة داخلية فاتحة
-                    BoxShadow(
-                      color: AppColors.teal.withValues(alpha: 0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Image.asset(
-                    page.image,
-                    fit: BoxFit.contain,
-                    height: 240,
-                    errorBuilder: (_, __, ___) => Container(
-                      height: 240,
-                      alignment: Alignment.center,
+                // ─── الصورة ───
+                AnimatedBuilder(
+                  animation: _floatController,
+                  builder: (context, child) {
+                    final dy = (_floatController.value - 0.5) * 16;
+                    return Transform.translate(
+                      offset: Offset(0, dy),
+                      child: child,
+                    );
+                  },
+                  child: AnimatedScale(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOutBack,
+                    scale: isCurrent ? 1.0 : 0.92,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(36),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.9),
+                            Colors.white.withValues(alpha: 0.5),
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.brandBlue.withValues(alpha: 0.12),
+                            blurRadius: 40,
+                            spreadRadius: 5,
+                            offset: const Offset(0, 18),
+                          ),
+                          BoxShadow(
+                            color: AppColors.brandTeal.withValues(alpha: 0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      child: const Icon(
-                        Icons.image_outlined,
-                        size: 80,
-                        color: Colors.grey,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        child: Image.asset(
+                          page.image,
+                          fit: BoxFit.contain,
+                          height: 240,
+                          errorBuilder: (_, __, ___) => Container(
+                            height: 240,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Icon(
+                              AppIcons.image,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
 
-          const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-          // ═══════════════════════════════════════════════
-          //  العنوان — مع شريط تمييز صغير فوقه
-          // ═══════════════════════════════════════════════
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 400),
-            opacity: isCurrent ? 1.0 : 0.5,
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 18),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.teal, AppColors.navy],
+                // ─── الشريط ───
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 400),
+                  opacity: isCurrent ? 1.0 : 0.5,
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.brandTeal, AppColors.brandBlue],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
 
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 400),
-            opacity: isCurrent ? 1.0 : 0.5,
-            child: Text(
-              page.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F2148),
-                height: 1.3,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // ═══════════════════════════════════════════════
-          //  الوصف
-          // ═══════════════════════════════════════════════
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 400),
-            opacity: isCurrent ? 1.0 : 0.5,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                page.subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Color(0xFF5B6B85),
-                  height: 1.9,
+                // ─── العنوان ───
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 400),
+                  opacity: isCurrent ? 1.0 : 0.5,
+                  child: Text(
+                    page.title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      height: 1.3,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
+
+                const SizedBox(height: 16),
+
+                // ─── الوصف ───
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 400),
+                  opacity: isCurrent ? 1.0 : 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      page.subtitle,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.muted,
+                        height: 1.9,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -399,7 +382,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 }
 
 // ═══════════════════════════════════════════════════════════
-//  الخلفية المتحركة الفاخرة
+//  الخلفية المتحركة
 // ═══════════════════════════════════════════════════════════
 class _AnimatedBackground extends StatelessWidget {
   final AnimationController controller;
@@ -429,9 +412,7 @@ class _BackgroundPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final t = progress * 2 * math.pi;
 
-    // ═══════════════════════════════════════════════════
-    //  1. التدرّج الأساسي الناعم (توب-دون)
-    // ═══════════════════════════════════════════════════
+    // ─── التدرّج الأساسي ───
     final bgPaint = Paint()
       ..shader = const LinearGradient(
         begin: Alignment.topCenter,
@@ -447,14 +428,12 @@ class _BackgroundPainter extends CustomPainter {
       bgPaint,
     );
 
-    // ═══════════════════════════════════════════════════
-    //  2. دائرة زرقاء كبيرة أعلى اليسار — تدور ببطء
-    // ═══════════════════════════════════════════════════
-    final navyBlob = Paint()
+    // ─── دائرة أزرق ملكي ───
+    final blueBlob = Paint()
       ..shader = RadialGradient(
         colors: [
-          AppColors.navy.withValues(alpha: 0.20),
-          AppColors.navy.withValues(alpha: 0.0),
+          AppColors.brandBlue.withValues(alpha: 0.20),
+          AppColors.brandBlue.withValues(alpha: 0.0),
         ],
       ).createShader(Rect.fromCircle(
         center: Offset(
@@ -469,17 +448,15 @@ class _BackgroundPainter extends CustomPainter {
         size.height * 0.08 + math.cos(t) * 12,
       ),
       size.width * 0.55,
-      navyBlob,
+      blueBlob,
     );
 
-    // ═══════════════════════════════════════════════════
-    //  3. دائرة تركوازية كبيرة أسفل اليمين — تطفو
-    // ═══════════════════════════════════════════════════
+    // ─── دائرة تركوازية ───
     final tealBlob = Paint()
       ..shader = RadialGradient(
         colors: [
-          AppColors.teal.withValues(alpha: 0.22),
-          AppColors.teal.withValues(alpha: 0.0),
+          AppColors.brandTeal.withValues(alpha: 0.22),
+          AppColors.brandTeal.withValues(alpha: 0.0),
         ],
       ).createShader(Rect.fromCircle(
         center: Offset(
@@ -497,69 +474,70 @@ class _BackgroundPainter extends CustomPainter {
       tealBlob,
     );
 
-    // ═══════════════════════════════════════════════════
-    //  4. دوائر صغيرة متحركة (جزيئات)
-    // ═══════════════════════════════════════════════════
+    // ─── دائرة خضراء (الهوية) ───
+    final greenBlob = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.brandGreen.withValues(alpha: 0.18),
+          AppColors.brandGreen.withValues(alpha: 0.0),
+        ],
+      ).createShader(Rect.fromCircle(
+        center: Offset(
+          size.width * 0.5 + math.sin(t * 0.8) * 25,
+          size.height * 0.4 + math.cos(t * 0.9) * 20,
+        ),
+        radius: size.width * 0.30,
+      ));
+    canvas.drawCircle(
+      Offset(
+        size.width * 0.5 + math.sin(t * 0.8) * 25,
+        size.height * 0.4 + math.cos(t * 0.9) * 20,
+      ),
+      size.width * 0.30,
+      greenBlob,
+    );
+
+    // ─── جزيئات ───
     _drawParticle(
       canvas,
-      size,
       Offset(
         size.width * 0.15 + math.sin(t * 1.3) * 20,
         size.height * 0.30 + math.cos(t * 1.1) * 20,
       ),
       6,
-      AppColors.teal.withValues(alpha: 0.35),
+      AppColors.brandTeal.withValues(alpha: 0.35),
     );
-
     _drawParticle(
       canvas,
-      size,
       Offset(
         size.width * 0.85 + math.cos(t * 0.9) * 25,
         size.height * 0.20 + math.sin(t * 1.2) * 20,
       ),
       8,
-      AppColors.navy.withValues(alpha: 0.28),
+      AppColors.brandBlue.withValues(alpha: 0.28),
     );
-
     _drawParticle(
       canvas,
-      size,
       Offset(
         size.width * 0.75 + math.sin(t * 1.5) * 18,
         size.height * 0.55 + math.cos(t * 1.4) * 18,
       ),
       5,
-      AppColors.yellow.withValues(alpha: 0.45),
+      AppColors.brandGreen.withValues(alpha: 0.55),
     );
-
     _drawParticle(
       canvas,
-      size,
       Offset(
         size.width * 0.20 + math.cos(t * 1.7) * 22,
         size.height * 0.65 + math.sin(t * 1.6) * 22,
       ),
       7,
-      AppColors.pink.withValues(alpha: 0.22),
+      AppColors.brandBlue.withValues(alpha: 0.22),
     );
 
-    _drawParticle(
-      canvas,
-      size,
-      Offset(
-        size.width * 0.50 + math.sin(t * 0.7) * 30,
-        size.height * 0.90 + math.cos(t * 0.8) * 15,
-      ),
-      4,
-      AppColors.teal.withValues(alpha: 0.30),
-    );
-
-    // ═══════════════════════════════════════════════════
-    //  5. حلقة رقيقة كبيرة — تدور ببطء شديد
-    // ═══════════════════════════════════════════════════
+    // ─── حلقة رقيقة ───
     final ringPaint = Paint()
-      ..color = AppColors.navy.withValues(alpha: 0.05)
+      ..color = AppColors.brandBlue.withValues(alpha: 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     canvas.drawCircle(
@@ -567,64 +545,10 @@ class _BackgroundPainter extends CustomPainter {
       size.width * 0.65,
       ringPaint,
     );
-
-    // ═══════════════════════════════════════════════════
-    //  6. نجوم/شرارات صغيرة
-    // ═══════════════════════════════════════════════════
-    _drawSparkle(
-      canvas,
-      Offset(
-        size.width * 0.10 + math.sin(t * 2) * 10,
-        size.height * 0.45,
-      ),
-      5,
-      AppColors.yellow.withValues(alpha: 0.6),
-    );
-
-    _drawSparkle(
-      canvas,
-      Offset(
-        size.width * 0.90 + math.cos(t * 2) * 10,
-        size.height * 0.42,
-      ),
-      5,
-      AppColors.orange.withValues(alpha: 0.5),
-    );
   }
 
-  void _drawParticle(
-    Canvas canvas,
-    Size size,
-    Offset center,
-    double radius,
-    Color color,
-  ) {
-    final paint = Paint()..color = color;
-    canvas.drawCircle(center, radius, paint);
-  }
-
-  void _drawSparkle(
-    Canvas canvas,
-    Offset center,
-    double size,
-    Color color,
-  ) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    // نجمة رباعية
-    canvas.drawLine(
-      Offset(center.dx, center.dy - size),
-      Offset(center.dx, center.dy + size),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(center.dx - size, center.dy),
-      Offset(center.dx + size, center.dy),
-      paint,
-    );
+  void _drawParticle(Canvas canvas, Offset center, double radius, Color color) {
+    canvas.drawCircle(center, radius, Paint()..color = color);
   }
 
   @override

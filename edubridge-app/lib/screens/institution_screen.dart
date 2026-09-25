@@ -1,4 +1,6 @@
+// lib/screens/institution_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/dashboard_menu.dart';
@@ -6,7 +8,7 @@ import '../widgets/legal_links_button.dart';
 import 'chats_screen.dart';
 import 'children_screen.dart';
 import 'lessons_screen.dart';
-import 'verify_identity_screen.dart';
+import 'verify_identity/verify_identity_screen.dart';
 import 'welcome_screen.dart';
 
 class InstitutionScreen extends StatelessWidget {
@@ -74,20 +76,20 @@ class InstitutionScreen extends StatelessWidget {
                             DashboardMenuAction(
                               id: 'theme',
                               label: 'تبديل وضع العرض',
-                              icon: Icons.contrast,
+                              icon: AppIcons.theme,
                               onSelected: toggleThemeMode,
                             ),
                             DashboardMenuAction(
                               id: 'legal',
                               label: 'الخصوصية والحساب',
-                              icon: Icons.privacy_tip_outlined,
+                              icon: AppIcons.privacy,
                               onSelected: () =>
                                   const LegalLinksButton().show(context),
                             ),
                             DashboardMenuAction(
                               id: 'logout',
                               label: 'تسجيل الخروج',
-                              icon: Icons.logout,
+                              icon: AppIcons.logout,
                               destructive: true,
                               onSelected: () => _logout(context),
                             ),
@@ -125,19 +127,19 @@ class InstitutionScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _MetricCard(
-                        icon: Icons.groups_2_outlined,
+                        icon: AppIcons.users,
                         value: '٢٤',
                         label: 'عضوًا بالفريق',
-                        color: AppColors.navy,
+                        color: AppColors.brandBlue,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: _MetricCard(
-                        icon: Icons.fact_check_outlined,
+                        icon: AppIcons.check,
                         value: '١٨',
                         label: 'حالة نشطة',
-                        color: AppColors.tealDeep,
+                        color: AppColors.brandTeal,
                       ),
                     ),
                   ],
@@ -153,28 +155,28 @@ class InstitutionScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 _ActionCard(
-                  icon: Icons.badge_outlined,
+                  icon: AppIcons.child,
                   title: 'ملفات الطلاب',
                   subtitle: 'عرض الطلاب والحالات المرتبطة بالمؤسسة',
-                  color: AppColors.navy,
+                  color: AppColors.brandBlue,
                   onTap: () => _open(context, const ChildrenScreen()),
                 ),
                 _ActionCard(
-                  icon: Icons.menu_book_rounded,
+                  icon: AppIcons.lesson,
                   title: 'مكتبة الدروس',
                   subtitle: 'الوصول إلى المحتوى التعليمي المعتمد',
-                  color: AppColors.tealDeep,
+                  color: AppColors.brandTeal,
                   onTap: () => _open(context, const LessonsScreen()),
                 ),
                 _ActionCard(
-                  icon: Icons.forum_outlined,
+                  icon: AppIcons.forum,
                   title: 'تواصل الفريق',
                   subtitle: 'محادثات المعلمين والمختصين',
                   color: const Color(0xFF7557BD),
                   onTap: () => _open(context, const ChatsScreen()),
                 ),
                 _ActionCard(
-                  icon: Icons.verified_user_outlined,
+                  icon: AppIcons.verified,
                   title: 'توثيق المؤسسة',
                   subtitle: 'متابعة حالة الهوية والصلاحيات',
                   color: const Color(0xFFB77318),
@@ -288,7 +290,8 @@ class _ActionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_back_ios_new_rounded, color: c.muted, size: 17),
+              Icon(Icons.arrow_back_ios_new_rounded,
+                  color: c.muted, size: 17),
             ],
           ),
         ),

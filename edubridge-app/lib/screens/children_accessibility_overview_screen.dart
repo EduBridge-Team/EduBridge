@@ -1,7 +1,7 @@
-// screens/children_accessibility_overview_screen.dart
-// شاشة تعرض كل الأبناء وحالة التكييف الخاصة بكل واحد
+// lib/screens/children_accessibility_overview_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/accessibility_service.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -10,7 +10,7 @@ import '../widgets/accessibility/adaptive_button.dart';
 import '../widgets/accessibility/adaptive_card.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
-import 'child_accessibility_settings_screen.dart';
+import 'child_accessibility/child_accessibility_settings_screen.dart';
 
 class ChildrenAccessibilityOverviewScreen extends StatefulWidget {
   const ChildrenAccessibilityOverviewScreen({super.key});
@@ -45,7 +45,6 @@ class _ChildrenAccessibilityOverviewScreenState
       if (res.statusCode == 200) {
         final list = data['children'] ?? [];
 
-        // ✅ إنشاء بروفايل افتراضي لكل طفل جديد
         for (final c in list) {
           final id = c['id'] as int;
           if (AccessibilityService.instance.profileForChild(id) == null) {
@@ -77,9 +76,6 @@ class _ChildrenAccessibilityOverviewScreenState
     }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  فتح إعدادات الطفل
-  // ═══════════════════════════════════════════════════════════
   Future<void> _openChildSettings(Map child) async {
     final id = child['id'] as int;
     final name = (child['name'] ?? '').toString();
@@ -100,9 +96,6 @@ class _ChildrenAccessibilityOverviewScreenState
     if (mounted) setState(() {});
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  بناء الواجهة
-  // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
@@ -132,7 +125,7 @@ class _ChildrenAccessibilityOverviewScreenState
           centerTitle: true,
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
+              icon: const Icon(AppIcons.refresh, color: Colors.white),
               tooltip: 'تحديث',
               onPressed: _load,
             ),
@@ -178,7 +171,7 @@ class _ChildrenAccessibilityOverviewScreenState
         child: Row(
           children: [
             Icon(
-              Icons.tips_and_updates,
+              AppIcons.info,
               size: AdaptiveHelper.iconSize,
               color: AdaptiveHelper.accentColor(context),
             ),
@@ -187,13 +180,13 @@ class _ChildrenAccessibilityOverviewScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AdaptiveText(
+                  const AdaptiveText(
                     'خصص التكييف لكل طفل',
                     type: AdaptiveTextType.body,
                     fontWeight: FontWeight.bold,
                   ),
                   SizedBox(height: AdaptiveHelper.spacing / 4),
-                  AdaptiveText(
+                  const AdaptiveText(
                     'كل طفل له احتياجات مختلفة. اضغط على طفلك لتخصيص تجربته.',
                     type: AdaptiveTextType.caption,
                   ),
@@ -215,7 +208,6 @@ class _ChildrenAccessibilityOverviewScreenState
         const AccessibilityProfile(type: DisabilityType.none);
 
     final color = AppColors.kidPalette[index % AppColors.kidPalette.length];
-    final emoji = disabilityEmojis[profile.type] ?? '⚪';
     final label = profile.type == DisabilityType.other
         ? (profile.customDisabilityName ?? 'مخصّص')
         : (disabilityLabels[profile.type] ?? 'بدون تكييف');
@@ -240,7 +232,7 @@ class _ChildrenAccessibilityOverviewScreenState
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    name.isNotEmpty ? name.characters.first : '🙂',
+                    name.isNotEmpty ? name.characters.first : '؟',
                     style: TextStyle(
                       fontSize: AdaptiveHelper.avatarSize * 0.4,
                       fontWeight: FontWeight.bold,
@@ -293,9 +285,11 @@ class _ChildrenAccessibilityOverviewScreenState
               ),
               child: Row(
                 children: [
-                  Text(emoji,
-                      style:
-                          TextStyle(fontSize: AdaptiveHelper.iconSize)),
+                  Icon(
+                    AppIcons.specialist,
+                    size: AdaptiveHelper.iconSize,
+                    color: AdaptiveHelper.accentColor(context),
+                  ),
                   SizedBox(width: AdaptiveHelper.spacing / 2),
                   Expanded(
                     child: Column(
@@ -307,7 +301,7 @@ class _ChildrenAccessibilityOverviewScreenState
                           color: AdaptiveHelper.accentColor(context),
                           fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         AdaptiveText(
                           label,
                           type: AdaptiveTextType.body,
@@ -326,7 +320,7 @@ class _ChildrenAccessibilityOverviewScreenState
               Row(
                 children: [
                   Icon(
-                    Icons.check_circle,
+                    AppIcons.check,
                     size: AdaptiveHelper.iconSize * 0.7,
                     color: AppColors.green,
                   ),
@@ -352,7 +346,7 @@ class _ChildrenAccessibilityOverviewScreenState
 
             AdaptiveButton(
               label: 'تخصيص التكييف',
-              icon: Icons.tune,
+              icon: AppIcons.settings,
               backgroundColor: AdaptiveHelper.accentColor(context),
               onPressed: () => _openChildSettings(child),
             ),
@@ -425,7 +419,7 @@ class _ChildrenAccessibilityOverviewScreenState
   List<Widget> _buildFeatureBadges(AccessibilityProfile p) {
     final badges = <Widget>[];
 
-    void addBadge(String emoji, String label, Color color) {
+    void addBadge(IconData icon, String label, Color color) {
       badges.add(
         Container(
           padding: EdgeInsets.symmetric(
@@ -440,7 +434,7 @@ class _ChildrenAccessibilityOverviewScreenState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 14)),
+              Icon(icon, size: 14, color: color),
               const SizedBox(width: 4),
               Text(
                 label,
@@ -456,42 +450,52 @@ class _ChildrenAccessibilityOverviewScreenState
       );
     }
 
-    if (p.videoCaptions) addBadge('📝', 'ترجمات', AppColors.pink);
+    if (p.videoCaptions) addBadge(AppIcons.captions, 'ترجمات', AppColors.pink);
     if (p.signLanguageTranslation) {
-      addBadge('🤟', 'لغة إشارة', AppColors.pink);
+      addBadge(AppIcons.signLanguage, 'لغة إشارة', AppColors.pink);
     }
-    if (p.vibrationAlerts) addBadge('📳', 'اهتزاز', AppColors.pink);
-    if (p.detailedAltText) addBadge('🔊', 'وصف صوتي', AppColors.navy);
+    if (p.vibrationAlerts) addBadge(Icons.vibration, 'اهتزاز', AppColors.pink);
+    if (p.detailedAltText) {
+      addBadge(AppIcons.volumeUp, 'وصف صوتي', AppColors.brandBlue);
+    }
     if (p.audioDescriptions) {
-      addBadge('🎧', 'وصف فيديو', AppColors.navy);
+      addBadge(AppIcons.speech, 'وصف فيديو', AppColors.brandBlue);
     }
     if (p.pictureCommunication) {
-      addBadge('🖼️', 'تواصل بالصور', AppColors.purple);
+      addBadge(AppIcons.aac, 'تواصل بالصور', AppColors.purple);
     }
-    if (p.voiceToText) addBadge('🎤', 'كتابة صوتية', AppColors.purple);
-    if (p.slowSpeech) addBadge('🐢', 'نطق بطيء', AppColors.orangeDeep);
-    if (p.voiceControl) addBadge('🎙️', 'تحكم صوتي', AppColors.tealDeep);
+    if (p.voiceToText) addBadge(AppIcons.mic, 'كتابة صوتية', AppColors.purple);
+    if (p.slowSpeech) addBadge(Icons.speed, 'نطق بطيء', AppColors.orangeDeep);
+    if (p.voiceControl) {
+      addBadge(AppIcons.mic, 'تحكم صوتي', AppColors.brandBlue);
+    }
     if (p.keyboardOnlyNavigation || p.keyboardShortcuts) {
-      addBadge('⌨️', 'لوحة مفاتيح', AppColors.tealDeep);
+      addBadge(Icons.keyboard, 'لوحة مفاتيح', AppColors.brandBlue);
     }
     if (p.verySimpleLanguage) {
-      addBadge('💡', 'لغة مبسّطة', AppColors.purple);
+      addBadge(AppIcons.info, 'لغة مبسّطة', AppColors.purple);
     }
-    if (p.iconOnlyMode) addBadge('🎨', 'أيقونات', AppColors.purple);
-    if (p.rewardSystem) addBadge('⭐', 'مكافآت', AppColors.yellow);
+    if (p.iconOnlyMode) addBadge(AppIcons.aac, 'أيقونات', AppColors.purple);
+    if (p.rewardSystem) {
+      addBadge(AppIcons.starFilled, 'مكافآت', AppColors.yellow);
+    }
     if (p.shortSentences) {
-      addBadge('📏', 'جمل قصيرة', AppColors.purple);
+      addBadge(Icons.short_text, 'جمل قصيرة', AppColors.purple);
     }
     if (p.extraLargeTouchTargets) {
-      addBadge('🔘', 'أزرار كبيرة', AppColors.tealDeep);
+      addBadge(Icons.touch_app, 'أزرار كبيرة', AppColors.brandBlue);
     }
-    if (p.autoReadOnTap) addBadge('👆', 'نطق باللمس', AppColors.teal);
-    if (p.highContrast) addBadge('🌓', 'تباين عالٍ', AppColors.navy);
-    if (p.noTimers) addBadge('⏸️', 'بدون وقت', AppColors.green);
+    if (p.autoReadOnTap) {
+      addBadge(AppIcons.volumeUp, 'نطق باللمس', AppColors.brandTeal);
+    }
+    if (p.highContrast) addBadge(AppIcons.theme, 'تباين عالٍ', AppColors.brandBlue);
+    if (p.noTimers) addBadge(Icons.pause, 'بدون وقت', AppColors.green);
     if (p.reducedAnimations) {
-      addBadge('🎬', 'حركة هادئة', AppColors.teal);
+      addBadge(Icons.slow_motion_video, 'حركة هادئة', AppColors.brandTeal);
     }
-    if (p.emergencyButton) addBadge('🚨', 'طوارئ', AppColors.red);
+    if (p.emergencyButton) {
+      addBadge(AppIcons.emergency, 'طوارئ', AppColors.red);
+    }
 
     if (badges.isEmpty) {
       badges.add(
@@ -504,14 +508,14 @@ class _ChildrenAccessibilityOverviewScreenState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('⚪', style: TextStyle(fontSize: 14)),
+              const Icon(AppIcons.info, size: 14, color: AppColors.muted),
               const SizedBox(width: 4),
               Text(
                 'لا توجد ميزات',
                 style: TextStyle(
                   fontSize: AdaptiveHelper.bodyFontSize - 5,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: AppColors.muted,
                 ),
               ),
             ],
@@ -530,7 +534,7 @@ class _ChildrenAccessibilityOverviewScreenState
         Icon(
           Icons.people_outline,
           size: AdaptiveHelper.iconSize * 2,
-          color: Colors.grey,
+          color: AppColors.muted,
         ),
         SizedBox(height: AdaptiveHelper.spacing),
         const AdaptiveText(
@@ -556,21 +560,21 @@ class _ChildrenAccessibilityOverviewScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              AppIcons.error,
               size: AdaptiveHelper.iconSize * 2,
-              color: Colors.red,
+              color: AppColors.red,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveText(
               _error!,
               type: AdaptiveTextType.body,
               textAlign: TextAlign.center,
-              color: Colors.red,
+              color: AppColors.red,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveButton(
               label: 'إعادة المحاولة',
-              icon: Icons.refresh,
+              icon: AppIcons.refresh,
               onPressed: _load,
             ),
           ],

@@ -1,4 +1,6 @@
+// lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
+import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/home_router.dart';
@@ -66,7 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
             start: -90,
             child: _GlowCircle(
               size: 260,
-              color: AppColors.teal.withValues(alpha: isDark ? .12 : .16),
+              color: AppColors.brandTeal
+                  .withValues(alpha: isDark ? .12 : .16),
             ),
           ),
           PositionedDirectional(
@@ -74,7 +77,8 @@ class _LoginScreenState extends State<LoginScreen> {
             end: -80,
             child: _GlowCircle(
               size: 300,
-              color: AppColors.navy.withValues(alpha: isDark ? .14 : .10),
+              color: AppColors.brandBlue
+                  .withValues(alpha: isDark ? .14 : .10),
             ),
           ),
           SafeArea(
@@ -85,14 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   constraints: const BoxConstraints(maxWidth: 480),
                   child: Column(
                     children: [
-                      Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: IconButton.filledTonal(
-                          onPressed: () => Navigator.maybePop(context),
-                          icon: const Icon(Icons.arrow_forward_rounded),
-                          tooltip: 'رجوع',
-                        ),
-                      ),
+                      const SizedBox(height: 20),
                       const BrandLockup(
                         iconSize: 70,
                         fontSize: 39,
@@ -122,7 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           border: Border.all(color: colors.line),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.navy.withValues(alpha: .08),
+                              color: AppColors.brandBlue
+                                  .withValues(alpha: .08),
                               blurRadius: 36,
                               offset: const Offset(0, 14),
                             ),
@@ -139,7 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: const InputDecoration(
                                   labelText: 'البريد الإلكتروني',
-                                  prefixIcon: Icon(Icons.mail_outline_rounded),
+                                  prefixIcon:
+                                      Icon(Icons.mail_outline_rounded),
                                 ),
                               ),
                               const SizedBox(height: 14),
@@ -152,10 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 decoration: InputDecoration(
                                   labelText: 'كلمة المرور',
-                                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                                  prefixIcon: const Icon(
+                                      Icons.lock_outline_rounded),
                                   suffixIcon: IconButton(
                                     onPressed: () => setState(
-                                      () => _obscurePassword = !_obscurePassword,
+                                      () => _obscurePassword =
+                                          !_obscurePassword,
                                     ),
                                     icon: Icon(
                                       _obscurePassword
@@ -173,12 +174,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: AppColors.red.withValues(alpha: .08),
+                                    color: AppColors.red
+                                        .withValues(alpha: .08),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.error_outline,
+                                      const Icon(AppIcons.error,
                                           color: AppColors.red),
                                       const SizedBox(width: 8),
                                       Expanded(
@@ -207,7 +209,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       )
                                     : const Icon(Icons.login_rounded),
-                                label: Text(_loading ? 'جارِ الدخول...' : 'تسجيل الدخول'),
+                                label: Text(_loading
+                                    ? 'جارِ الدخول...'
+                                    : 'تسجيل الدخول'),
                               ),
                             ],
                           ),
@@ -217,9 +221,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextButton(
                         onPressed: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const RegisterScreen()),
                         ),
-                        child: const Text('ليس لديك حساب؟ أنشئ حساباً جديداً'),
+                        child: const Text(
+                            'ليس لديك حساب؟ أنشئ حساباً جديداً'),
                       ),
                     ],
                   ),
