@@ -206,18 +206,15 @@ export default function HomePage() {
         </div>
 
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
-          <picture className="reference-hero-picture">
-            <source srcSet="/edubridge-hero-inclusive.avif" type="image/avif" />
-            <img
-              className="reference-hero-image"
-              src="/edubridge-hero-inclusive.webp"
-              alt="تعليم دامج ومساندة تعليمية من EduBridge"
-              width="1536"
-              height="1024"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </picture>
+          <img
+            className="reference-hero-image"
+            src="/edubridge-hero-inclusive-v2.webp"
+            alt="تعليم دامج ومساندة تعليمية من EduBridge"
+            width="1536"
+            height="1024"
+            decoding="async"
+            fetchPriority="high"
+          />
         </div>
       </section>
 
