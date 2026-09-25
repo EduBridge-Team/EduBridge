@@ -188,24 +188,11 @@
 
 
 /* Unified brand image keeps the icon/wordmark relationship fixed at every size. */
-.topbar-brand-crop {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 205px;
-  height: 58px;
-  overflow: hidden;
-  line-height: 0;
-}
-
 .topbar-brand-logo {
   display: block;
   width: 205px;
-  max-width: none;
   height: auto;
-  object-fit: contain;
-  transform: scale(3.45);
-  transform-origin: right center;
+  overflow: visible;
 }
 
 
@@ -293,28 +280,14 @@
 
 /* True mobile keeps the hamburger menu. */
 @media (max-width: 780px) {
-  .topbar-brand-crop {
-    width: 190px;
-    height: 54px;
-  }
-
   .topbar-brand-logo {
     width: 190px;
-    transform: scale(3.45);
-    transform-origin: right center;
   }
 }
 
 @media (min-width: 781px) and (max-width: 1024px) {
-  .topbar-brand-crop {
-    width: 210px;
-    height: 58px;
-  }
-
   .topbar-brand-logo {
     width: 210px;
-    transform: scale(3.45);
-    transform-origin: right center;
   }
 }
 
