@@ -72,7 +72,12 @@ export default function RegisterPage() {
       <div className="auth-page-decor auth-page-decor-dots" aria-hidden="true" />
       <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-a" aria-hidden="true">✦</div>
       <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-b" aria-hidden="true">✦</div>
-      <div className="auth-card auth-card-branded">
+      <div className="auth-split">
+        <section className="auth-visual auth-visual-art" aria-label="ابدأ رحلتك مع EduBridge">
+          <img src="/auth-register.avif" alt="ابدأ رحلتك التعليمية مع EduBridge" />
+        </section>
+
+        <div className="auth-card auth-card-branded">
         <div className="auth-card-corner-dots" aria-hidden="true" />
         <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
         <h1>EduBridge</h1>
@@ -151,6 +156,7 @@ export default function RegisterPage() {
         </form>
 
         <Link className="link-btn" to="/login">لديك حساب؟ سجّل دخولك</Link>
+        </div>
       </div>
     </div>
   )

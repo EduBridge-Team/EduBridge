@@ -622,3 +622,56 @@
     }
 }
 
+
+
+/* ===== Generated auth artwork ===== */
+.auth-visual-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at 18% 16%, rgba(37, 185, 218, .10), transparent 19rem),
+        linear-gradient(145deg, #f7fcff, #f4fffd);
+}
+
+.auth-visual-art::after {
+    display: none;
+}
+
+.auth-visual-art > img {
+    display: block;
+    width: 100%;
+    height: 610px;
+    min-height: 610px;
+    object-fit: contain;
+    object-position: center;
+    background: #f8fdff;
+}
+
+.auth-page-register .auth-split {
+    min-height: 610px;
+}
+
+:root[data-theme="dark"] .auth-visual-art,
+:root[data-theme="dark"] .auth-visual-art > img {
+    background: #0b2944;
+}
+
+@media (max-width: 820px) {
+    .auth-visual-art {
+        min-height: 0;
+        max-height: none;
+    }
+
+    .auth-visual-art > img {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        object-fit: contain;
+    }
+
+    .auth-page-register .auth-split {
+        min-height: 0;
+    }
+}
