@@ -39,13 +39,6 @@
   background: rgba(37, 185, 218, .16);
   z-index: -1;
 }
-.reference-hero-picture {
-  display: block;
-  width: 100%;
-  max-width: 720px;
-  line-height: 0;
-}
-
 .reference-hero-image {
   display: block;
   width: 100%;
@@ -295,7 +288,7 @@
 
 @media (min-width: 781px) and (max-width: 1024px) {
   .topbar-brand-logo {
-    width: 176px;
+    width: 225px;
   }
 }
 
