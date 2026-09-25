@@ -208,10 +208,10 @@ export default function HomePage() {
         <div className="reference-hero-art" aria-label="طفل يتعلم مع EduBridge">
           <img
             className="reference-hero-image"
-            src="https://images.pexels.com/photos/5306431/pexels-photo-5306431.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            src="https://images.pexels.com/photos/5306431/pexels-photo-5306431.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop"
             alt="طلاب يتعلمون مع معلمة باستخدام جهاز لوحي في بيئة تعليمية دامجة"
             width="1600"
-            height="1067"
+            height="900"
             decoding="async"
             fetchPriority="high"
             referrerPolicy="no-referrer"

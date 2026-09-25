@@ -2,6 +2,8 @@
 .reference-hero-art {
   position: relative;
   min-height: 0;
+  aspect-ratio: 16 / 9;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
   padding: 14px;
@@ -42,10 +44,11 @@
 .reference-hero-image {
   display: block;
   width: 100%;
-  max-width: 599px;
+  max-width: none;
+  height: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  object-position: center;
+  object-position: center 42%;
   margin-inline: auto;
   border-radius: 26px;
   box-shadow: 0 14px 34px rgba(24, 105, 181, .10);
@@ -149,7 +152,9 @@
 
 @media (max-width: 780px) {
   .reference-hero-image {
-    max-width: min(100%, 560px);
+    width: 100%;
+    max-width: none;
+    height: 100%;
   }
   .reference-hero-art {
     order: -1;
