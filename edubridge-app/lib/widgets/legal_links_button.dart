@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../screens/welcome_screen.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+part 'legal_links_button_view.dart';
 
 class LegalLinksButton extends StatelessWidget {
   const LegalLinksButton({super.key});
@@ -143,13 +144,7 @@ class LegalLinksButton extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.privacy_tip_outlined, color: Colors.white),
-      tooltip: 'الخصوصية وحذف الحساب',
-      onPressed: () => show(context),
-    );
-  }
+  Widget build(BuildContext context) => buildView(context);
 }
 
 class _DeleteAccountDialog extends StatefulWidget {
