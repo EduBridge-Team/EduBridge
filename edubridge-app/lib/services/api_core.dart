@@ -1,12 +1,12 @@
 part of 'api_service.dart';
 
-_apiCoreInitializeAuthState() async {
+Future<void> _apiCoreInitializeAuthState() async {
     ApiService.isAuthenticated.value = await ApiService.getToken() != null;
     final prefs = await SharedPreferences.getInstance();
     ApiService.userRole.value = prefs.getString('role');
   }
 
-_apiCoreHandleError(Object error) {
+Never _apiCoreHandleError(Object error) {
     if (error is SocketException) {
       throw Exception('تعذّر الاتصال بالسيرفر');
     }
@@ -22,7 +22,7 @@ _apiCoreHandleError(Object error) {
     throw Exception('حدث خطأ غير متوقع');
   }
 
-_apiCoreDecodeBody(http.Response res) {
+Map<String, dynamic> _apiCoreDecodeBody(http.Response res) {
     if (res.body.isEmpty) return {};
     try {
       final decoded = jsonDecode(res.body);
@@ -34,7 +34,7 @@ _apiCoreDecodeBody(http.Response res) {
     }
   }
 
-_apiCoreDecodeMap(String body) {
+Map<String, dynamic> _apiCoreDecodeMap(String body) {
     if (body.isEmpty) return {};
     try {
       final decoded = jsonDecode(body);
@@ -46,7 +46,7 @@ _apiCoreDecodeMap(String body) {
     }
   }
 
-_apiCoreDecodeList(String body) {
+List<dynamic> _apiCoreDecodeList(String body) {
     if (body.isEmpty) return [];
     try {
       final decoded = jsonDecode(body);
@@ -57,14 +57,14 @@ _apiCoreDecodeList(String body) {
     }
   }
 
-_apiCoreExtractList(String body, String key) {
+List<dynamic> _apiCoreExtractList(String body, String key) {
     final map = ApiService.decodeMap(body);
     final val = map[key];
     if (val is List) return val;
     return [];
   }
 
-_apiCoreExtractMap(String body, String key) {
+Map<String, dynamic>? _apiCoreExtractMap(String body, String key) {
     final map = ApiService.decodeMap(body);
     final val = map[key];
     if (val is Map<String, dynamic>) return val;
@@ -72,25 +72,25 @@ _apiCoreExtractMap(String body, String key) {
     return null;
   }
 
-_apiCoreAsStringMap(dynamic value) {
+Map<String, dynamic>? _apiCoreAsStringMap(dynamic value) {
     if (value == null) return null;
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);
     return null;
   }
 
-_apiCoreSaveToken(String token) async {
+Future<void> _apiCoreSaveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
     ApiService.isAuthenticated.value = true;
   }
 
-_apiCoreGetToken() async {
+Future<String?> _apiCoreGetToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-_apiCoreSaveUserData(Map<String, dynamic> user) async {
+Future<void> _apiCoreSaveUserData(Map<String, dynamic> user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('role', user['role'] ?? '');
     await prefs.setString('name', user['name'] ?? '');
@@ -99,22 +99,22 @@ _apiCoreSaveUserData(Map<String, dynamic> user) async {
     ApiService.userRole.value = role.isEmpty ? null : role;
   }
 
-_apiCoreGetRole() async {
+Future<String?> _apiCoreGetRole() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('role');
   }
 
-_apiCoreGetName() async {
+Future<String?> _apiCoreGetName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('name');
   }
 
-_apiCoreGetUserId() async {
+Future<int?> _apiCoreGetUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('userId');
   }
 
-_apiCoreLogout() async {
+Future<void> _apiCoreLogout() async {
     WebSocketService().disconnect();
     NotificationListenerService.instance.dispose();
 
@@ -127,7 +127,7 @@ _apiCoreLogout() async {
     ApiService.userRole.value = null;
   }
 
-_apiCoreLogin(String email, String password) async {
+Future<String?> _apiCoreLogin(String email, String password) async {
     try {
       final res = await http.post(
         Uri.parse('${Config.baseUrl}/auth/login'),
@@ -158,7 +158,7 @@ _apiCoreLogin(String email, String password) async {
     }
   }
 
-_apiCoreRegister(
+Future<String?> _apiCoreRegister(
       String name, String email, String password, String role,
       {String? phone, String? specialty}) async {
     try {
@@ -186,7 +186,7 @@ _apiCoreRegister(
     }
   }
 
-_apiCoreVerifyToken() async {
+Future<bool> _apiCoreVerifyToken() async {
     try {
       final token = await ApiService.getToken();
       if (token == null) return false;
@@ -202,7 +202,7 @@ _apiCoreVerifyToken() async {
     }
   }
 
-_apiCoreAuthGet(String path) async {
+Future<http.Response> _apiCoreAuthGet(String path) async {
     final token = await ApiService.getToken();
     return http.get(
       Uri.parse('${Config.baseUrl}$path'),
@@ -210,7 +210,7 @@ _apiCoreAuthGet(String path) async {
     );
   }
 
-_apiCoreAuthPost(
+Future<http.Response> _apiCoreAuthPost(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
     return http.post(
@@ -223,7 +223,7 @@ _apiCoreAuthPost(
     );
   }
 
-_apiCoreAuthPut(
+Future<http.Response> _apiCoreAuthPut(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
     return http.put(
@@ -236,7 +236,7 @@ _apiCoreAuthPut(
     );
   }
 
-_apiCoreAuthDelete(String path) async {
+Future<http.Response> _apiCoreAuthDelete(String path) async {
     final token = await ApiService.getToken();
     return http.delete(
       Uri.parse('${Config.baseUrl}$path'),
