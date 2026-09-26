@@ -26,6 +26,8 @@ class EvaluationSheet extends StatefulWidget {
 }
 
 class _EvaluationSheetState extends State<EvaluationSheet> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
 
   final _cognitiveCtrl = TextEditingController();
