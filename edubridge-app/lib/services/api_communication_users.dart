@@ -1,7 +1,7 @@
 // API implementations for notifications, conversations, users, verification, and certificates.
 part of 'api_service.dart';
 
-Future<List<dynamic>> _api_getNotifications() async {
+Future<List<dynamic>> _apiGetNotifications() async {
     try {
       final res = await ApiService.authGet('/notifications');
       final data = ApiService._decodeBody(res);
@@ -14,7 +14,7 @@ Future<List<dynamic>> _api_getNotifications() async {
     }
   }
 
-Future<int> _api_getUnreadNotificationsCount() async {
+Future<int> _apiGetUnreadNotificationsCount() async {
     try {
       final res = await ApiService.authGet('/notifications/unread/count');
       final data = ApiService._decodeBody(res);
@@ -27,19 +27,19 @@ Future<int> _api_getUnreadNotificationsCount() async {
     }
   }
 
-Future<void> _api_markNotificationRead(int notificationId) async {
+Future<void> _apiMarkNotificationRead(int notificationId) async {
     try {
       await ApiService.authPut('/notifications/$notificationId/read', {});
     } catch (_) {}
   }
 
-Future<void> _api_markAllNotificationsRead() async {
+Future<void> _apiMarkAllNotificationsRead() async {
     try {
       await ApiService.authPost('/notifications/read-all', {});
     } catch (_) {}
   }
 
-Future<List<dynamic>> _api_getConversations() async {
+Future<List<dynamic>> _apiGetConversations() async {
     try {
       final res = await ApiService.authGet('/conversations');
       final data = ApiService._decodeBody(res);
@@ -52,7 +52,7 @@ Future<List<dynamic>> _api_getConversations() async {
     }
   }
 
-Future<List<dynamic>> _api_getMessages(int conversationId) async {
+Future<List<dynamic>> _apiGetMessages(int conversationId) async {
     try {
       final res =
           await ApiService.authGet('/conversations/$conversationId/messages');
@@ -66,7 +66,7 @@ Future<List<dynamic>> _api_getMessages(int conversationId) async {
     }
   }
 
-Future<void> _api_sendMessage({
+Future<void> _apiSendMessage({
     required int conversationId,
     required String content,
     String? fileUrl,
@@ -81,7 +81,7 @@ Future<void> _api_sendMessage({
     }
   }
 
-Future<int> _api_createConversation(
+Future<int> _apiCreateConversation(
       int otherUserId, String subject) async {
     try {
       final res = await ApiService.authPost('/conversations', {
@@ -100,7 +100,7 @@ Future<int> _api_createConversation(
     }
   }
 
-Future<List<dynamic>> _api_getConversationUsers() async {
+Future<List<dynamic>> _apiGetConversationUsers() async {
     try {
       final res = await ApiService.authGet('/conversation-users');
       final data = ApiService._decodeBody(res);
@@ -111,7 +111,7 @@ Future<List<dynamic>> _api_getConversationUsers() async {
     }
   }
 
-Future<List<dynamic>> _api_getUsers({String? role}) async {
+Future<List<dynamic>> _apiGetUsers({String? role}) async {
     try {
       String path = '/users';
       if (role != null) {
@@ -128,19 +128,19 @@ Future<List<dynamic>> _api_getUsers({String? role}) async {
     }
   }
 
-Future<List<dynamic>> _api_getTeachers() async {
-    return _api_getUsers(role: 'teacher');
+Future<List<dynamic>> _apiGetTeachers() async {
+    return _apiGetUsers(role: 'teacher');
   }
 
-Future<List<dynamic>> _api_getSpecialists() async {
-    return _api_getUsers(role: 'specialist');
+Future<List<dynamic>> _apiGetSpecialists() async {
+    return _apiGetUsers(role: 'specialist');
   }
 
-Future<List<dynamic>> _api_getParents() async {
-    return _api_getUsers(role: 'parent');
+Future<List<dynamic>> _apiGetParents() async {
+    return _apiGetUsers(role: 'parent');
   }
 
-Future<Map<String, dynamic>?> _api_updateUser(
+Future<Map<String, dynamic>?> _apiUpdateUser(
       int userId, Map<String, dynamic> data) async {
     try {
       final res = await ApiService.authPut('/users/$userId', data);
@@ -154,7 +154,7 @@ Future<Map<String, dynamic>?> _api_updateUser(
     }
   }
 
-Future<bool> _api_deleteUser(int userId) async {
+Future<bool> _apiDeleteUser(int userId) async {
     try {
       final res = await ApiService.authDelete('/users/$userId');
       return res.statusCode == 200;
@@ -163,7 +163,7 @@ Future<bool> _api_deleteUser(int userId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getDashboardStats() async {
+Future<Map<String, dynamic>?> _apiGetDashboardStats() async {
     try {
       final res = await ApiService.authGet('/dashboard/stats');
       final data = ApiService._decodeBody(res);
@@ -174,7 +174,7 @@ Future<Map<String, dynamic>?> _api_getDashboardStats() async {
     }
   }
 
-Future<List<dynamic>> _api_searchLessons(String query) async {
+Future<List<dynamic>> _apiSearchLessons(String query) async {
     try {
       final res = await ApiService.authGet(
           '/lessons/search?q=${Uri.encodeComponent(query)}');
@@ -188,7 +188,7 @@ Future<List<dynamic>> _api_searchLessons(String query) async {
     }
   }
 
-Future<String?> _api_getVerificationStatus() async {
+Future<String?> _apiGetVerificationStatus() async {
     try {
       final res = await ApiService.authGet('/me/verification');
       final data = ApiService._decodeBody(res);
@@ -203,7 +203,7 @@ Future<String?> _api_getVerificationStatus() async {
     }
   }
 
-Future<void> _api_submitIdentityVerification({
+Future<void> _apiSubmitIdentityVerification({
     required String nationalId,
     required File idImage,
   }) async {
@@ -253,12 +253,12 @@ Future<void> _api_submitIdentityVerification({
     }
   }
 
-Future<bool> _api_isVerified() async {
-    final status = await _api_getVerificationStatus();
+Future<bool> _apiIsVerified() async {
+    final status = await _apiGetVerificationStatus();
     return status == 'approved';
   }
 
-Future<List<dynamic>> _api_getVerificationRequests() async {
+Future<List<dynamic>> _apiGetVerificationRequests() async {
     try {
       final res = await ApiService.authGet('/admin/verifications');
       final data = ApiService._decodeBody(res);
@@ -271,7 +271,7 @@ Future<List<dynamic>> _api_getVerificationRequests() async {
     }
   }
 
-Future<bool> _api_approveVerification(int requestId) async {
+Future<bool> _apiApproveVerification(int requestId) async {
     try {
       final res = await ApiService.authPost(
           '/admin/verifications/$requestId/approve', {});
@@ -281,7 +281,7 @@ Future<bool> _api_approveVerification(int requestId) async {
     }
   }
 
-Future<bool> _api_rejectVerification(int requestId) async {
+Future<bool> _apiRejectVerification(int requestId) async {
     try {
       final res =
           await ApiService.authPost('/admin/verifications/$requestId/reject', {});
@@ -291,7 +291,7 @@ Future<bool> _api_rejectVerification(int requestId) async {
     }
   }
 
-Future<List<dynamic>> _api_searchByIdentity(String query) async {
+Future<List<dynamic>> _apiSearchByIdentity(String query) async {
     try {
       final res = await ApiService.authGet(
           '/admin/search?q=${Uri.encodeComponent(query)}');
@@ -305,7 +305,7 @@ Future<List<dynamic>> _api_searchByIdentity(String query) async {
     }
   }
 
-Future<void> _api_submitCertificate({
+Future<void> _apiSubmitCertificate({
     required String title,
     required File file,
   }) async {
@@ -334,7 +334,7 @@ Future<void> _api_submitCertificate({
     }
   }
 
-Future<void> _api_requestConsultation({
+Future<void> _apiRequestConsultation({
     required int childId,
     required String title,
     required String description,
