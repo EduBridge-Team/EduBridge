@@ -136,7 +136,7 @@ extension _AACCommunicationScreenStateView on _AACCommunicationScreenState {
                     selected: selected,
                     selectedColor: AdaptiveHelper.accentColor(context),
                     onSelected: (v) {
-                      if (v) setState(() => _selectedCategory = cat);
+                      if (v) _refreshState(() => _selectedCategory = cat);
                     },
                   ),
                 );
