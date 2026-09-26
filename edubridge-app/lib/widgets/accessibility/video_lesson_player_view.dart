@@ -20,7 +20,7 @@ extension _VideoLessonPlayerStateView on _VideoLessonPlayerState {
             ),
             tooltip: 'الترجمات',
             onPressed: () {
-              setState(() => _showSubtitles = !_showSubtitles);
+              _refreshState(() => _showSubtitles = !_showSubtitles);
             },
           ),
           // وصف صوتي
@@ -37,7 +37,7 @@ extension _VideoLessonPlayerStateView on _VideoLessonPlayerState {
                 } else {
                   _startAudioDescription();
                 }
-                setState(() => _audioDescriptionOn = !_audioDescriptionOn);
+                _refreshState(() => _audioDescriptionOn = !_audioDescriptionOn);
               },
             ),
         ],
@@ -140,7 +140,7 @@ extension _VideoLessonPlayerStateView on _VideoLessonPlayerState {
                                 size: 72,
                               ),
                               onPressed: () {
-                                setState(() {
+                                _refreshState(() {
                                   if (_controller!.value.isPlaying) {
                                     _controller!.pause();
                                   } else {
