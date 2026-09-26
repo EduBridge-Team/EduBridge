@@ -54,6 +54,7 @@ import 'tts_service.dart';
 
 part 'voice_command_routing.dart';
 part 'voice_command_execution.dart';
+part 'voice_command_child_navigation.dart';
 
 class VoiceCommandService {
   VoiceCommandService._();
