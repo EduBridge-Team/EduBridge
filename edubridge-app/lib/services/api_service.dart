@@ -9,6 +9,7 @@ import '../config.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
+part 'api_core.dart';
 part 'api_children_learning.dart';
 part 'api_communication_users.dart';
 part 'api_ministry.dart';
@@ -19,271 +20,78 @@ class ApiService {
   static final ValueNotifier<bool> isAuthenticated = ValueNotifier(false);
   static final ValueNotifier<String?> userRole = ValueNotifier<String?>(null);
 
-  static Future<void> initializeAuthState() async {
-    isAuthenticated.value = await getToken() != null;
-    final prefs = await SharedPreferences.getInstance();
-    userRole.value = prefs.getString('role');
-  }
+  static Future<void> initializeAuthState() => _apiCoreInitializeAuthState();
 
   // ═══════════════════════════════════════════════════════════
   //  معالج أخطاء موحّد
   // ═══════════════════════════════════════════════════════════
-  static Never _handleError(Object error) {
-    if (error is SocketException) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
-    }
-    if (error is http.ClientException) {
-      throw Exception('تعذّر الاتصال بالسيرفر');
-    }
-    if (error is FormatException) {
-      throw Exception('استجابة السيرفر غير صالحة، حاول مرة أخرى');
-    }
-    if (error is Exception) {
-      throw error;
-    }
-    throw Exception('حدث خطأ غير متوقع');
-  }
+  static Never _handleError(Object error) => _apiCoreHandleError(error);
 
-  static Map<String, dynamic> _decodeBody(http.Response res) {
-    if (res.body.isEmpty) return {};
-    try {
-      final decoded = jsonDecode(res.body);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return Map<String, dynamic>.from(decoded);
-      return {};
-    } catch (_) {
-      return {};
-    }
-  }
+  static Map<String, dynamic> _decodeBody(http.Response res) => _apiCoreDecodeBody(res);
 
   // ═══════════════════════════════════════════════════════════
   //  ✅ Helpers عامة — استخدمها في الشاشات بدل jsonDecode
   // ═══════════════════════════════════════════════════════════
 
   /// فكّ JSON كـ Map بأمان — لا يفشل أبداً
-  static Map<String, dynamic> decodeMap(String body) {
-    if (body.isEmpty) return {};
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return Map<String, dynamic>.from(decoded);
-      return {};
-    } catch (_) {
-      return {};
-    }
-  }
+  static Map<String, dynamic> decodeMap(String body) => _apiCoreDecodeMap(body);
 
   /// فكّ JSON كـ List بأمان
-  static List<dynamic> decodeList(String body) {
-    if (body.isEmpty) return [];
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is List) return decoded;
-      return [];
-    } catch (_) {
-      return [];
-    }
-  }
+  static List<dynamic> decodeList(String body) => _apiCoreDecodeList(body);
 
   /// استخرج مفتاح من JSON كـ List بأمان
   /// مثال: ApiService.extractList(body, 'lessons')
-  static List<dynamic> extractList(String body, String key) {
-    final map = decodeMap(body);
-    final val = map[key];
-    if (val is List) return val;
-    return [];
-  }
+  static List<dynamic> extractList(String body, String key) => _apiCoreExtractList(body, key);
 
   /// استخرج مفتاح من JSON كـ Map بأمان
   /// مثال: ApiService.extractMap(body, 'summary')
-  static Map<String, dynamic>? extractMap(String body, String key) {
-    final map = decodeMap(body);
-    final val = map[key];
-    if (val is Map<String, dynamic>) return val;
-    if (val is Map) return Map<String, dynamic>.from(val);
-    return null;
-  }
+  static Map<String, dynamic>? extractMap(String body, String key) => _apiCoreExtractMap(body, key);
 
   // ═══════════════════════════════════════════════════════════
   //  ✅ Helper: تحويل آمن لأي Map من JSON إلى Map<String, dynamic>
   // ═══════════════════════════════════════════════════════════
-  static Map<String, dynamic>? _asStringMap(dynamic value) {
-    if (value == null) return null;
-    if (value is Map<String, dynamic>) return value;
-    if (value is Map) return Map<String, dynamic>.from(value);
-    return null;
-  }
+  static Map<String, dynamic>? _asStringMap(dynamic value) => _apiCoreAsStringMap(value);
 
   // ===== دوال التخزين المحلي =====
 
-  static Future<void> _saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-    isAuthenticated.value = true;
-  }
+  static Future<void> _saveToken(String token) => _apiCoreSaveToken(token);
 
-  static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
-  }
+  static Future<String?> getToken() => _apiCoreGetToken();
 
-  static Future<void> saveUserData(Map<String, dynamic> user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('role', user['role'] ?? '');
-    await prefs.setString('name', user['name'] ?? '');
-    await prefs.setInt('userId', user['id'] ?? 0);
-    final role = user['role'] ?? '';
-    userRole.value = role.isEmpty ? null : role;
-  }
+  static Future<void> saveUserData(Map<String, dynamic> user) => _apiCoreSaveUserData(user);
 
-  static Future<String?> getRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('role');
-  }
+  static Future<String?> getRole() => _apiCoreGetRole();
 
-  static Future<String?> getName() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('name');
-  }
+  static Future<String?> getName() => _apiCoreGetName();
 
-  static Future<int?> getUserId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('userId');
-  }
+  static Future<int?> getUserId() => _apiCoreGetUserId();
 
-  static Future<void> logout() async {
-    WebSocketService().disconnect();
-    NotificationListenerService.instance.dispose();
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('role');
-    await prefs.remove('name');
-    await prefs.remove('userId');
-    isAuthenticated.value = false;
-    userRole.value = null;
-  }
+  static Future<void> logout() => _apiCoreLogout();
 
   // ===== دوال المصادقة (Auth) =====
 
-  static Future<String?> login(String email, String password) async {
-    try {
-      final res = await http.post(
-        Uri.parse('${Config.baseUrl}/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
-
-      final data = _decodeBody(res);
-
-      if (res.statusCode == 200) {
-        await _saveToken(data['token']);
-        if (data['user'] != null) {
-          final user = _asStringMap(data['user']);
-          if (user != null) await saveUserData(user);
-        }
-
-        final token = data['token'];
-        if (token != null) {
-          WebSocketService().connect(token);
-          await NotificationListenerService.instance.initialize();
-        }
-
-        return null;
-      }
-      return data['error'] ?? 'فشل تسجيل الدخول';
-    } catch (e) {
-      return 'تعذّر الاتصال بالسيرفر';
-    }
-  }
+  static Future<String?> login(String email, String password) => _apiCoreLogin(email, password);
 
   static Future<String?> register(
       String name, String email, String password, String role,
-      {String? phone, String? specialty}) async {
-    try {
-      final res = await http.post(
-        Uri.parse('${Config.baseUrl}/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-          'role': role,
-          'phone': phone,
-          'specialty': specialty,
-        }),
-      );
+      {String? phone, String? specialty}) =>
+      _apiCoreRegister(name, email, password, role, phone: phone, specialty: specialty);
 
-      final data = _decodeBody(res);
-
-      if (res.statusCode == 201) {
-        return null;
-      }
-      return data['error'] ?? 'فشل إنشاء الحساب';
-    } catch (e) {
-      return 'تعذّر الاتصال بالسيرفر';
-    }
-  }
-
-  static Future<bool> verifyToken() async {
-    try {
-      final token = await getToken();
-      if (token == null) return false;
-
-      final res = await http.get(
-        Uri.parse('${Config.baseUrl}/auth/verify'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      return res.statusCode == 200;
-    } catch (e) {
-      return false;
-    }
-  }
+  static Future<bool> verifyToken() => _apiCoreVerifyToken();
 
   // ===== دوال الطلبات المحمية =====
 
-  static Future<http.Response> authGet(String path) async {
-    final token = await getToken();
-    return http.get(
-      Uri.parse('${Config.baseUrl}$path'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-  }
+  static Future<http.Response> authGet(String path) => _apiCoreAuthGet(path);
 
   static Future<http.Response> authPost(
-      String path, Map<String, dynamic> body) async {
-    final token = await getToken();
-    return http.post(
-      Uri.parse('${Config.baseUrl}$path'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(body),
-    );
-  }
+      String path, Map<String, dynamic> body) =>
+      _apiCoreAuthPost(path, body);
 
   static Future<http.Response> authPut(
-      String path, Map<String, dynamic> body) async {
-    final token = await getToken();
-    return http.put(
-      Uri.parse('${Config.baseUrl}$path'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(body),
-    );
-  }
+      String path, Map<String, dynamic> body) =>
+      _apiCoreAuthPut(path, body);
 
-  static Future<http.Response> authDelete(String path) async {
-    final token = await getToken();
-    return http.delete(
-      Uri.parse('${Config.baseUrl}$path'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-  }
+  static Future<http.Response> authDelete(String path) => _apiCoreAuthDelete(path);
 
   // Domain API facade. Implementations live in focused part files.
     static Future<Map<String, dynamic>?> getChildren() => _api_getChildren();
