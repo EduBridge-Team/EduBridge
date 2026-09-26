@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\CaseDiscussionAccessHelpers;
 use App\Http\Controllers\Concerns\CaseDiscussionControllerHelpers;
 use App\Http\Controllers\Concerns\CaseDiscussionCreateActions;
 use App\Http\Controllers\Concerns\CaseDiscussionLifecycleActions;
 use App\Http\Controllers\Concerns\CaseDiscussionMessageActions;
+use App\Http\Controllers\Concerns\CaseDiscussionQueryHelpers;
 use App\Http\Controllers\Concerns\CaseDiscussionReadActions;
 
 class CaseDiscussionController extends Controller
