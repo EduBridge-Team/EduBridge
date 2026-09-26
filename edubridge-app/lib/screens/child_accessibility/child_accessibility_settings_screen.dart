@@ -31,6 +31,8 @@ class ChildAccessibilitySettingsScreen extends StatefulWidget {
 
 class _ChildAccessibilitySettingsScreenState
     extends State<ChildAccessibilitySettingsScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
 
