@@ -9,6 +9,8 @@ class _MinistryUsersTab extends StatefulWidget {
 }
 
 class _MinistryUsersTabState extends State<_MinistryUsersTab> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   List _users = [];
   List _children = [];
   bool _loading = true;
