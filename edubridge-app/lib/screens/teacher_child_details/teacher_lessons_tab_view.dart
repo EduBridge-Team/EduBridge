@@ -2,8 +2,6 @@ part of 'teacher_child_details_screen.dart';
 
 extension _LessonsTabStateView on _LessonsTabState {
   Widget buildView(BuildContext context) {
-    super.build(context);
-
     if (_loading) return const Center(child: CircularProgressIndicator());
 
     if (_error != null) {
