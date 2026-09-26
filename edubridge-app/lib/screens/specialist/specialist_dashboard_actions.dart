@@ -155,7 +155,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
 
     if (confirm != true) return;
     if (!mounted) return;
-    setState(() => _approvingId = child['id']);
+    _refreshState(() => _approvingId = child['id']);
 
     try {
       final err = await ApiService.assignSpecialist(
@@ -178,7 +178,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
         await _load();
       }
     } finally {
-      if (mounted) setState(() => _approvingId = null);
+      if (mounted) _refreshState(() => _approvingId = null);
     }
   }
 
