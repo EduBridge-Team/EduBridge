@@ -23,6 +23,8 @@ class VoiceMicOverlay extends StatefulWidget {
 }
 
 class _VoiceMicOverlayState extends State<VoiceMicOverlay> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   static const double _size = 68;
   static const double _margin = 14;
   static const String _xKey = 'voice_mic_x_fraction';
