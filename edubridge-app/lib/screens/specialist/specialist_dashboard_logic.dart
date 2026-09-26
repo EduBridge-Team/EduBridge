@@ -170,7 +170,7 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
     if (current == null) return;
 
     final childId = row['child']['id'];
-    setState(() => _approvingId = childId);
+    _refreshState(() => _approvingId = childId);
 
     try {
       final res = await ApiService.authPost('/progress', {
@@ -196,7 +196,7 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
         );
       }
     } finally {
-      if (mounted) setState(() => _approvingId = null);
+      if (mounted) _refreshState(() => _approvingId = null);
     }
   }
 
