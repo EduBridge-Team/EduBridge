@@ -204,7 +204,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -244,7 +244,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                   foregroundColor: Colors.white,
                   minimumSize: const Size(0, 46),
                 ),
-                onPressed: () => Navigator.pop(_),
+                onPressed: () => Navigator.pop(dialogContext),
                 child: const Text('حسناً'),
               ),
             ),
