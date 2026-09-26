@@ -13,14 +13,11 @@ import '../child_progress_screen.dart';
 import '../choose_specialty_screen.dart';
 import '../create_specialist_progress_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
-import '../learning_support_meetings_screen.dart';
 import '../learning_support_requests/learning_support_requests_screen.dart';
 import '../notifications_screen.dart';
 import '../plan_evaluation_screen.dart';
-import '../specialist_suggestions_screen.dart';
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
-import '../welcome_screen.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
 
