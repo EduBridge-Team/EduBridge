@@ -92,7 +92,10 @@ class _LessonsTabState extends State<_LessonsTab>
       _lessons.where((l) => _statusOf(l['id'] as int) == 'not_started').length;
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) {
+    super.build(context);
+    return buildView(context);
+  }
 
   Widget _buildSummaryCard() {
     final total = _lessons.length;
