@@ -48,6 +48,8 @@ class SpecialistDashboardScreen extends StatefulWidget {
 }
 
 class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   int _tabIndex = 0;
 
   List<Map<String, dynamic>> _rows = [];
