@@ -63,7 +63,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
         DropdownMenuItem(value: 'follow_up', child: Text('متابعة')),
         DropdownMenuItem(value: 'final', child: Text('تقييم نهائي')),
       ],
-      onChanged: (v) => setState(() => _evaluationType = v ?? 'initial'),
+      onChanged: (v) => _refreshState(() => _evaluationType = v ?? 'initial'),
     );
   }
 
@@ -176,7 +176,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
               child: Text('${t['name'] ?? ''} (${t['email'] ?? ''})'),
             )),
       ],
-      onChanged: (v) => setState(() => _selectedTeacherId = v),
+      onChanged: (v) => _refreshState(() => _selectedTeacherId = v),
     );
   }
 
