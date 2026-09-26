@@ -1,6 +1,6 @@
 part of 'visual_words_game.dart';
 
-extension VisualWordsGameStateView on _VisualWordsGameState {
+extension _VisualWordsGameStateView on _VisualWordsGameState {
   Widget buildView(BuildContext context) {
     final large = _profile.extraLargeTouchTargets;
 
