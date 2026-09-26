@@ -23,6 +23,8 @@ class CreateSpecialistProgressScreen extends StatefulWidget {
 
 class _CreateSpecialistProgressScreenState
     extends State<CreateSpecialistProgressScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
 
   WeeklyReport? _teacherReport;
