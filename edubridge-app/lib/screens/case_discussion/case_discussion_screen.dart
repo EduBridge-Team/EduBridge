@@ -10,6 +10,7 @@ part 'case_discussion_list.dart';
 part 'case_discussion_detail.dart';
 part 'case_discussion_message_bubble.dart';
 part 'case_new_discussion_sheet.dart';
+part 'case_discussion_detail_view.dart';
 
 class CaseDiscussionScreen extends StatefulWidget {
   final int? discussionId;
