@@ -76,7 +76,7 @@ Widget buildDisabilitySelector({
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  hasValue ? selectedValue! : 'اضغط للاختيار',
+                  hasValue ? selectedValue : 'اضغط للاختيار',
                   style: TextStyle(
                     fontSize: 15,
                     color: hasValue ? c.heading : c.muted,
