@@ -3,6 +3,25 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::select('select 1');
+        $database = 'ok';
+        $statusCode = 200;
+    } catch (\Throwable $e) {
+        $database = 'unavailable';
+        $statusCode = 503;
+    }
+
+    return response()->json([
+        'status' => $statusCode === 200 ? 'ok' : 'degraded',
+        'service' => 'EduBridge API',
+        'database' => $database,
+        'git_sha' => env('GIT_SHA'),
+        'timestamp' => now()->toIso8601String(),
+    ], $statusCode);
+});
+
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('throttle:5,1');
