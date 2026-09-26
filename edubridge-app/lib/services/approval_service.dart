@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
+part 'approval_notifications.dart';
+
 class ApprovalService {
   static const _pendingKey = 'pending_ministry_approvals';
   static const _approvedKey = 'approved_plans';
@@ -278,46 +280,14 @@ class ApprovalService {
     required String title,
     required String body,
     required String type,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_notificationsKey);
-    final list = raw != null && raw.isNotEmpty ? jsonDecode(raw) as List : [];
+  }) => _approvalAddNotification(forRole: forRole, title: title, body: body, type: type);
 
-    list.add({
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'for_role': forRole,
-      'title': title,
-      'body': body,
-      'type': type,
-      'is_read': false,
-      'created_at': DateTime.now().toIso8601String(),
-    });
+  static Future<List<Map<String, dynamic>>> getNotificationsForRole(String role) =>
+      _approvalGetNotificationsForRole(role);
 
-    await prefs.setString(_notificationsKey, jsonEncode(list));
-  }
+  static Future<void> markNotificationRead(String id) =>
+      _approvalMarkNotificationRead(id);
 
-  static Future<List<Map<String, dynamic>>> getNotificationsForRole(
-      String role) async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_notificationsKey);
-    if (raw == null || raw.isEmpty) return [];
-    final all = (jsonDecode(raw) as List).cast<Map<String, dynamic>>();
-    return all.where((n) => n['for_role'] == role).toList();
-  }
-
-  static Future<void> markNotificationRead(String id) async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_notificationsKey);
-    if (raw == null || raw.isEmpty) return;
-    final list = (jsonDecode(raw) as List).cast<Map<String, dynamic>>();
-    for (final n in list) {
-      if (n['id'] == id) n['is_read'] = true;
-    }
-    await prefs.setString(_notificationsKey, jsonEncode(list));
-  }
-
-  static Future<int> getUnreadCountForRole(String role) async {
-    final notifs = await getNotificationsForRole(role);
-    return notifs.where((n) => n['is_read'] != true).length;
-  }
+  static Future<int> getUnreadCountForRole(String role) =>
+      _approvalGetUnreadCountForRole(role);
 }
