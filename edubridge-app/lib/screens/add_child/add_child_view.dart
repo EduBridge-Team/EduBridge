@@ -77,9 +77,9 @@ extension AddChildScreenStateView on _AddChildScreenState {
                 birthCertFile: _birthCertFile,
                 onPickId: _pickIdCard,
                 onCaptureId: _captureIdCard,
-                onRemoveId: () => setState(() => _idCardFile = null),
+                onRemoveId: () => _refreshState(() => _idCardFile = null),
                 onPickBirth: _pickBirthCert,
-                onRemoveBirth: () => setState(() => _birthCertFile = null),
+                onRemoveBirth: () => _refreshState(() => _birthCertFile = null),
               ),
               const SizedBox(height: 20),
 
