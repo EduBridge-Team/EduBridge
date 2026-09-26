@@ -1,7 +1,7 @@
 // API implementations for profile, collaboration, case discussions, suggestions, and account.
 part of 'api_service.dart';
 
-Future<Map<String, dynamic>?> _api_getProfile() async {
+Future<Map<String, dynamic>?> _apiGetProfile() async {
     try {
       final res = await ApiService.authGet('/me');
       final data = ApiService._decodeBody(res);
@@ -14,7 +14,7 @@ Future<Map<String, dynamic>?> _api_getProfile() async {
     }
   }
 
-Future<void> _api_changePassword({
+Future<void> _apiChangePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
@@ -33,7 +33,7 @@ Future<void> _api_changePassword({
     }
   }
 
-Future<String?> _api_uploadProfilePicture(File image) async {
+Future<String?> _apiUploadProfilePicture(File image) async {
     try {
       final token = await ApiService.getToken();
       if (token == null || token.isEmpty) {
@@ -70,7 +70,7 @@ Future<String?> _api_uploadProfilePicture(File image) async {
     }
   }
 
-Future<bool> _api_removeProfilePicture() async {
+Future<bool> _apiRemoveProfilePicture() async {
     try {
       final res = await ApiService.authDelete('/me/avatar');
       if (res.statusCode == 200 || res.statusCode == 204) {
@@ -84,12 +84,12 @@ Future<bool> _api_removeProfilePicture() async {
     }
   }
 
-Future<String?> _api_getSavedAvatarUrl() async {
+Future<String?> _apiGetSavedAvatarUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('avatar_url');
   }
 
-Future<void> _api_saveAvatarUrl(String? url) async {
+Future<void> _apiSaveAvatarUrl(String? url) async {
     final prefs = await SharedPreferences.getInstance();
     if (url == null || url.isEmpty) {
       await prefs.remove('avatar_url');
@@ -98,7 +98,7 @@ Future<void> _api_saveAvatarUrl(String? url) async {
     }
   }
 
-Future<bool> _api_addTeacherToChild({
+Future<bool> _apiAddTeacherToChild({
     required int childId,
     required int teacherId,
   }) async {
@@ -112,7 +112,7 @@ Future<bool> _api_addTeacherToChild({
     }
   }
 
-Future<bool> _api_removeTeacherFromChild({
+Future<bool> _apiRemoveTeacherFromChild({
     required int childId,
     required int teacherId,
   }) async {
@@ -124,7 +124,7 @@ Future<bool> _api_removeTeacherFromChild({
     }
   }
 
-Future<List<dynamic>> _api_getChildTeachers(int childId) async {
+Future<List<dynamic>> _apiGetChildTeachers(int childId) async {
     try {
       final res = await ApiService.authGet('/children/$childId/teachers');
       final data = ApiService._decodeBody(res);
@@ -135,7 +135,7 @@ Future<List<dynamic>> _api_getChildTeachers(int childId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getChildSpecialists(
+Future<Map<String, dynamic>?> _apiGetChildSpecialists(
       int childId) async {
     try {
       final res = await ApiService.authGet('/children/$childId/specialists');
@@ -147,7 +147,7 @@ Future<Map<String, dynamic>?> _api_getChildSpecialists(
     }
   }
 
-Future<String?> _api_assignSpecialist({
+Future<String?> _apiAssignSpecialist({
     required int childId,
     required int specialistId,
     required String specialty,
@@ -165,7 +165,7 @@ Future<String?> _api_assignSpecialist({
     }
   }
 
-Future<bool> _api_removeSpecialist({
+Future<bool> _apiRemoveSpecialist({
     required int childId,
     required int specialistId,
   }) async {
@@ -178,7 +178,7 @@ Future<bool> _api_removeSpecialist({
     }
   }
 
-Future<List<dynamic>> _api_getCaseDiscussions({int? childId}) async {
+Future<List<dynamic>> _apiGetCaseDiscussions({int? childId}) async {
     try {
       final path = childId != null
           ? '/case-discussions?child_id=$childId'
@@ -192,7 +192,7 @@ Future<List<dynamic>> _api_getCaseDiscussions({int? childId}) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_createCaseDiscussion({
+Future<Map<String, dynamic>?> _apiCreateCaseDiscussion({
     required int childId,
     required String topic,
     String? description,
@@ -215,7 +215,7 @@ Future<Map<String, dynamic>?> _api_createCaseDiscussion({
     }
   }
 
-Future<Map<String, dynamic>?> _api_getCaseDiscussionDetails(
+Future<Map<String, dynamic>?> _apiGetCaseDiscussionDetails(
       int discussionId) async {
     try {
       final res = await ApiService.authGet('/case-discussions/$discussionId');
@@ -229,7 +229,7 @@ Future<Map<String, dynamic>?> _api_getCaseDiscussionDetails(
     }
   }
 
-Future<Map<String, dynamic>?> _api_addCaseMessage({
+Future<Map<String, dynamic>?> _apiAddCaseMessage({
     required int discussionId,
     required String content,
     String type = 'text',
@@ -250,7 +250,7 @@ Future<Map<String, dynamic>?> _api_addCaseMessage({
     }
   }
 
-Future<bool> _api_resolveCaseDiscussion(int discussionId) async {
+Future<bool> _apiResolveCaseDiscussion(int discussionId) async {
     try {
       final res =
           await ApiService.authPut('/case-discussions/$discussionId/resolve', {});
@@ -260,7 +260,7 @@ Future<bool> _api_resolveCaseDiscussion(int discussionId) async {
     }
   }
 
-Future<String?> _api_suggestSpecialistToChild({
+Future<String?> _apiSuggestSpecialistToChild({
     required int childId,
     required int specialistId,
     required String specialty,
@@ -283,7 +283,7 @@ Future<String?> _api_suggestSpecialistToChild({
     }
   }
 
-Future<List<dynamic>> _api_getMySpecialistSuggestions({
+Future<List<dynamic>> _apiGetMySpecialistSuggestions({
     String? status,
   }) async {
     try {
@@ -299,7 +299,7 @@ Future<List<dynamic>> _api_getMySpecialistSuggestions({
     }
   }
 
-Future<String?> _api_acceptSuggestion(int suggestionId) async {
+Future<String?> _apiAcceptSuggestion(int suggestionId) async {
     try {
       final res = await ApiService.authPut(
         '/specialist-suggestions/$suggestionId/accept', {},
@@ -312,7 +312,7 @@ Future<String?> _api_acceptSuggestion(int suggestionId) async {
     }
   }
 
-Future<String?> _api_rejectSuggestion(
+Future<String?> _apiRejectSuggestion(
     int suggestionId, {
     String? reason,
   }) async {
@@ -329,7 +329,7 @@ Future<String?> _api_rejectSuggestion(
     }
   }
 
-Future<void> _api_deleteAccount() async {
+Future<void> _apiDeleteAccount() async {
     try {
       final res = await ApiService.authDelete('/me');
       final data = ApiService._decodeBody(res);

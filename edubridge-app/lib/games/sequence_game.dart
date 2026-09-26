@@ -183,7 +183,6 @@ class _SequenceGameState extends State<SequenceGame> {
   // ═══════════════════════════════════════════════════════
   //  واجهة المستخدم
   // ═══════════════════════════════════════════════════════
-  @override
   void _updateGame(VoidCallback callback) => setState(callback);
 
   @override

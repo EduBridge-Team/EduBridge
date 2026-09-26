@@ -1,8 +1,7 @@
 // نماذج وإعدادات التكييف الديناميكي المشتركة.
-
-/// أنواع الإعاقات المدعومة
 part 'accessibility_profile_factories.dart';
 
+/// أنواع الإعاقات المدعومة
 enum DisabilityType {
   none,
   adhd,

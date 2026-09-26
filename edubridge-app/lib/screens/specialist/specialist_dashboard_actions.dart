@@ -2,28 +2,10 @@
 part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenState {
-  Future<void> _logout() async {
-    await ApiService.logout();
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-    );
-  }
-
   void _openNotifications() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    );
-  }
-
-  void _openLearningSupport() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LearningSupportMeetingsScreen(),
-      ),
     );
   }
 
@@ -32,15 +14,6 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       context,
       MaterialPageRoute(
         builder: (_) => CaseDiscussionScreen(filterChildId: childId),
-      ),
-    );
-  }
-
-  void _openSuggestions() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const SpecialistSuggestionsScreen(),
       ),
     );
   }

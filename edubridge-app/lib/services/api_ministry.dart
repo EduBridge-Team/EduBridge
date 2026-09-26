@@ -1,7 +1,7 @@
 // API implementations for ministry approvals and ministry views.
 part of 'api_service.dart';
 
-Future<Map<String, dynamic>?> _api_submitForMinistryApproval({
+Future<Map<String, dynamic>?> _apiSubmitForMinistryApproval({
     required int childId,
     required int evaluationId,
     required String educationalPlan,
@@ -36,7 +36,7 @@ Future<Map<String, dynamic>?> _api_submitForMinistryApproval({
     }
   }
 
-Future<List<dynamic>> _api_getPendingApprovals() async {
+Future<List<dynamic>> _apiGetPendingApprovals() async {
     try {
       final res = await ApiService.authGet('/ministry/approvals/pending');
       final data = ApiService._decodeBody(res);
@@ -49,7 +49,7 @@ Future<List<dynamic>> _api_getPendingApprovals() async {
     }
   }
 
-Future<List<dynamic>> _api_getAllApprovals({String? status}) async {
+Future<List<dynamic>> _apiGetAllApprovals({String? status}) async {
     try {
       final path = status != null
           ? '/ministry/approvals?status=$status'
@@ -65,7 +65,7 @@ Future<List<dynamic>> _api_getAllApprovals({String? status}) async {
     }
   }
 
-Future<bool> _api_approveMinistryRequest(int approvalId) async {
+Future<bool> _apiApproveMinistryRequest(int approvalId) async {
     try {
       final res = await ApiService.authPost(
         '/ministry/approvals/$approvalId/approve',
@@ -77,7 +77,7 @@ Future<bool> _api_approveMinistryRequest(int approvalId) async {
     }
   }
 
-Future<bool> _api_rejectMinistryRequest(
+Future<bool> _apiRejectMinistryRequest(
     int approvalId, {
     String? reason,
   }) async {
@@ -92,7 +92,7 @@ Future<bool> _api_rejectMinistryRequest(
     }
   }
 
-Future<List<dynamic>> _api_getApprovalNotifications() async {
+Future<List<dynamic>> _apiGetApprovalNotifications() async {
     try {
       final res = await ApiService.authGet('/ministry/approvals/notifications');
       final data = ApiService._decodeBody(res);
@@ -105,7 +105,7 @@ Future<List<dynamic>> _api_getApprovalNotifications() async {
     }
   }
 
-Future<String> _api_getChildPlanStatus(int childId) async {
+Future<String> _apiGetChildPlanStatus(int childId) async {
     try {
       final res = await ApiService.authGet(
           '/ministry/approvals/child/$childId/status');
@@ -119,7 +119,7 @@ Future<String> _api_getChildPlanStatus(int childId) async {
     }
   }
 
-Future<List<dynamic>> _api_getMinistryUsers() async {
+Future<List<dynamic>> _apiGetMinistryUsers() async {
     try {
       final res = await ApiService.authGet('/ministry/users');
       final data = ApiService._decodeBody(res);
@@ -132,7 +132,7 @@ Future<List<dynamic>> _api_getMinistryUsers() async {
     }
   }
 
-Future<List<dynamic>> _api_getMinistryChildren() async {
+Future<List<dynamic>> _apiGetMinistryChildren() async {
     try {
       final res = await ApiService.authGet('/ministry/children');
       final data = ApiService._decodeBody(res);
@@ -145,7 +145,7 @@ Future<List<dynamic>> _api_getMinistryChildren() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getMinistryStats() async {
+Future<Map<String, dynamic>?> _apiGetMinistryStats() async {
     try {
       final res = await ApiService.authGet('/ministry/stats');
       final data = ApiService._decodeBody(res);

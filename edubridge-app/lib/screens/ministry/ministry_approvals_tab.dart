@@ -176,8 +176,6 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
 
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
     if (_loading) return const Center(child: CircularProgressIndicator());
 
     return RefreshIndicator(

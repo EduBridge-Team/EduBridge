@@ -152,6 +152,7 @@ Widget buildAdaptiveHeader({
                       childName: childName,
                       duration: const Duration(seconds: 2),
                     );
+                    if (!context.mounted) return;
                     await BrainBreakDialog.show(context);
                     onTimerFinished();
                   },

@@ -1,7 +1,7 @@
 // API implementations for children, evaluations, lessons, and progress.
 part of 'api_service.dart';
 
-Future<Map<String, dynamic>?> _api_getChildren() async {
+Future<Map<String, dynamic>?> _apiGetChildren() async {
     try {
       final res = await ApiService.authGet('/children');
       final data = ApiService._decodeBody(res);
@@ -14,7 +14,7 @@ Future<Map<String, dynamic>?> _api_getChildren() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_addChild({
+Future<Map<String, dynamic>?> _apiAddChild({
     required String name,
     required int age,
     String? disabilityType,
@@ -81,7 +81,7 @@ Future<Map<String, dynamic>?> _api_addChild({
     }
   }
 
-Future<Map<String, dynamic>?> _api_getChildDetails(int childId) async {
+Future<Map<String, dynamic>?> _apiGetChildDetails(int childId) async {
     try {
       final res = await ApiService.authGet('/children/$childId');
       final data = ApiService._decodeBody(res);
@@ -94,7 +94,7 @@ Future<Map<String, dynamic>?> _api_getChildDetails(int childId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_updateChild(
+Future<Map<String, dynamic>?> _apiUpdateChild(
       int childId, Map<String, dynamic> data) async {
     try {
       final res = await ApiService.authPut('/children/$childId', data);
@@ -108,7 +108,7 @@ Future<Map<String, dynamic>?> _api_updateChild(
     }
   }
 
-Future<List<dynamic>> _api_getChildLessons(int childId) async {
+Future<List<dynamic>> _apiGetChildLessons(int childId) async {
     try {
       final res = await ApiService.authGet('/children/$childId/lessons');
       final data = ApiService._decodeBody(res);
@@ -121,7 +121,7 @@ Future<List<dynamic>> _api_getChildLessons(int childId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_evaluateChild({
+Future<Map<String, dynamic>?> _apiEvaluateChild({
     required int childId,
     required String evaluationType,
     required String cognitiveAssessment,
@@ -156,7 +156,7 @@ Future<Map<String, dynamic>?> _api_evaluateChild({
     }
   }
 
-Future<List<dynamic>> _api_getChildEvaluations(int childId) async {
+Future<List<dynamic>> _apiGetChildEvaluations(int childId) async {
     try {
       final res = await ApiService.authGet('/evaluations/child/$childId');
       final data = ApiService._decodeBody(res);
@@ -169,7 +169,7 @@ Future<List<dynamic>> _api_getChildEvaluations(int childId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_assignTeacherToChild(
+Future<Map<String, dynamic>?> _apiAssignTeacherToChild(
       int childId, int teacherId) async {
     try {
       final res = await ApiService.authPost('/children/$childId/assign-teacher', {
@@ -186,7 +186,7 @@ Future<Map<String, dynamic>?> _api_assignTeacherToChild(
     }
   }
 
-Future<List<dynamic>> _api_getLessons() async {
+Future<List<dynamic>> _apiGetLessons() async {
     try {
       final res = await ApiService.authGet('/lessons');
       final data = ApiService._decodeBody(res);
@@ -199,7 +199,7 @@ Future<List<dynamic>> _api_getLessons() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getLessonDetails(
+Future<Map<String, dynamic>?> _apiGetLessonDetails(
       int lessonId) async {
     try {
       final res = await ApiService.authGet('/lessons/$lessonId');
@@ -213,7 +213,7 @@ Future<Map<String, dynamic>?> _api_getLessonDetails(
     }
   }
 
-Future<Map<String, dynamic>?> _api_createLessonWithMedia({
+Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
     required String title,
     String? content,
     int? disabilityTypeId,
@@ -296,7 +296,7 @@ Future<Map<String, dynamic>?> _api_createLessonWithMedia({
     }
   }
 
-Future<List<dynamic>> _api_getDisabilityTypes() async {
+Future<List<dynamic>> _apiGetDisabilityTypes() async {
     try {
       final res = await ApiService.authGet('/disability-types');
       final data = ApiService._decodeBody(res);
@@ -309,7 +309,7 @@ Future<List<dynamic>> _api_getDisabilityTypes() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getChildProgress(
+Future<Map<String, dynamic>?> _apiGetChildProgress(
       int childId) async {
     try {
       final res = await ApiService.authGet('/progress/child/$childId');
@@ -321,7 +321,7 @@ Future<Map<String, dynamic>?> _api_getChildProgress(
     }
   }
 
-Future<Map<String, dynamic>?> _api_getChildProgressSummary(
+Future<Map<String, dynamic>?> _apiGetChildProgressSummary(
       int childId) async {
     try {
       final res = await ApiService.authGet('/progress/child/$childId/summary');
@@ -335,7 +335,7 @@ Future<Map<String, dynamic>?> _api_getChildProgressSummary(
     }
   }
 
-Future<Map<String, dynamic>?> _api_markLessonProgress({
+Future<Map<String, dynamic>?> _apiMarkLessonProgress({
     required int childId,
     required int lessonId,
     required String status,
