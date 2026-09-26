@@ -20,7 +20,7 @@ extension CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                   firstDate: DateTime.now().subtract(const Duration(days: 60)),
                   lastDate: DateTime.now(),
                 );
-                if (picked != null) setState(() => _weekStart = picked);
+                if (picked != null) _refreshState(() => _weekStart = picked);
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -111,7 +111,7 @@ extension CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     label: '$_progressPercent%',
                     activeColor: AppColors.tealDeep,
                     onChanged: (v) =>
-                        setState(() => _progressPercent = v.round()),
+                        _refreshState(() => _progressPercent = v.round()),
                   ),
                 ],
               ),
@@ -176,7 +176,7 @@ extension CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     backgroundColor: c.tintGreen,
                     deleteIcon: const Icon(Icons.close, size: 18),
                     onDeleted: () =>
-                        setState(() => _achievements.removeAt(e.key)),
+                        _refreshState(() => _achievements.removeAt(e.key)),
                   );
                 }).toList(),
               ),
@@ -226,7 +226,7 @@ extension CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     backgroundColor: c.tintOrange,
                     deleteIcon: const Icon(Icons.close, size: 18),
                     onDeleted: () =>
-                        setState(() => _concerns.removeAt(e.key)),
+                        _refreshState(() => _concerns.removeAt(e.key)),
                   );
                 }).toList(),
               ),
