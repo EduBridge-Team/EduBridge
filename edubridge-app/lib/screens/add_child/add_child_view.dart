@@ -1,6 +1,6 @@
 part of 'add_child_screen.dart';
 
-extension AddChildScreenStateView on _AddChildScreenState {
+extension _AddChildScreenStateView on _AddChildScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
