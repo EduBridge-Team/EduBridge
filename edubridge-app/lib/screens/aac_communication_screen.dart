@@ -17,6 +17,8 @@ class AACCommunicationScreen extends StatefulWidget {
 }
 
 class _AACCommunicationScreenState extends State<AACCommunicationScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final List<String> _sentence = [];
   String _selectedCategory = 'أساسية';
 

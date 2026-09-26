@@ -28,6 +28,8 @@ class VideoLessonPlayer extends StatefulWidget {
 }
 
 class _VideoLessonPlayerState extends State<VideoLessonPlayer> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   VideoPlayerController? _controller;
   bool _initialized = false;
   bool _showSubtitles = false;

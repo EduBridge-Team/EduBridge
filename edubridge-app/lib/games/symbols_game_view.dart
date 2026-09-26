@@ -1,6 +1,6 @@
 part of 'symbols_game.dart';
 
-extension SymbolsGameStateView on _SymbolsGameState {
+extension _SymbolsGameStateView on _SymbolsGameState {
   Widget buildView(BuildContext context) {
     final large = _profile.extraLargeTouchTargets;
 

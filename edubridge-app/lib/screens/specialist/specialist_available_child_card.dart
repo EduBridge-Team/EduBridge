@@ -137,7 +137,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                     );
                     if (result != null && mounted) {
-                      setState(() => _mySpecialty = result);
+                      _refreshState(() => _mySpecialty = result);
                     }
                   },
                 ),

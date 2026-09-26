@@ -18,6 +18,8 @@ class CreateHomeworkScreen extends StatefulWidget {
 }
 
 class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();

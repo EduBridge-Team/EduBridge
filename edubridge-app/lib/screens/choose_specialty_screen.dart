@@ -16,6 +16,8 @@ class ChooseSpecialtyScreen extends StatefulWidget {
 }
 
 class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   String? _selected;
   bool _saving = false;
   String? _error;
