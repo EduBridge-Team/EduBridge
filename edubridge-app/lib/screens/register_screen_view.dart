@@ -76,7 +76,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             ))
                         .toList(),
                     onChanged: (v) {
-                      setState(() {
+                      _refreshState(() {
                         _role = v ?? 'parent';
                         if (_role != 'specialist') {
                           _specialty = 'learning_support';
@@ -101,7 +101,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                               ))
                           .toList(),
                       onChanged: (v) =>
-                          setState(() => _specialty = v ?? 'learning_support'),
+                          _refreshState(() => _specialty = v ?? 'learning_support'),
                     ),
                   ],
 
