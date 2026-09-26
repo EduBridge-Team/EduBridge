@@ -15,7 +15,7 @@ extension _SpecialistEvaluationLogicExtension on _SpecialistDashboardScreenState
         child: child,
         teachers: _teachers,
         onSaved: (updatedChild) {
-          setState(() {
+          _refreshState(() {
             final index = _rows.indexWhere(
                 (r) => r['child']['id'] == updatedChild['id']);
             if (index != -1) {

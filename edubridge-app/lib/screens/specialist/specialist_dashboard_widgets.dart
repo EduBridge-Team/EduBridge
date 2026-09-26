@@ -131,7 +131,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
               inactiveThumbColor: AppColors.orangeDeep,
               inactiveTrackColor:
                   AppColors.orange.withValues(alpha: 0.35),
-              onChanged: (v) => setState(() => _showOnlyMine = v),
+              onChanged: (v) => _refreshState(() => _showOnlyMine = v),
             ),
           ],
         ),
@@ -173,7 +173,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
         onClose: () => _setAdding(false),
         onCreated: (lesson) {
           inlineModalOpen.value = false;
-          setState(() {
+          _refreshState(() {
             _lessons = [lesson, ..._lessons];
             _adding = false;
           });

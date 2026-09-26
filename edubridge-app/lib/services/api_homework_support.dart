@@ -1,7 +1,7 @@
 // API implementations for homework, learning support, reports, care team, and requests.
 part of 'api_service.dart';
 
-Future<List<dynamic>> _api_getHomeworks({int? childId}) async {
+Future<List<dynamic>> _apiGetHomeworks({int? childId}) async {
     try {
       final path = childId != null
           ? '/homeworks?child_id=$childId'
@@ -15,7 +15,7 @@ Future<List<dynamic>> _api_getHomeworks({int? childId}) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_createHomework({
+Future<Map<String, dynamic>?> _apiCreateHomework({
     required String title,
     required String description,
     required DateTime dueDate,
@@ -58,7 +58,7 @@ Future<Map<String, dynamic>?> _api_createHomework({
     }
   }
 
-Future<Map<String, dynamic>?> _api_submitHomework({
+Future<Map<String, dynamic>?> _apiSubmitHomework({
     required int homeworkId,
     required int childId,
     String? textAnswer,
@@ -103,7 +103,7 @@ Future<Map<String, dynamic>?> _api_submitHomework({
     }
   }
 
-Future<bool> _api_gradeHomework({
+Future<bool> _apiGradeHomework({
     required int submissionId,
     required int grade,
     String? feedback,
@@ -120,7 +120,7 @@ Future<bool> _api_gradeHomework({
     }
   }
 
-Future<List<dynamic>> _api_getLearningSupportMeetings({int? childId}) async {
+Future<List<dynamic>> _apiGetLearningSupportMeetings({int? childId}) async {
     try {
       final path = childId != null
           ? '/learning-support/meetings?child_id=$childId'
@@ -134,7 +134,7 @@ Future<List<dynamic>> _api_getLearningSupportMeetings({int? childId}) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_createLearningSupportMeeting({
+Future<Map<String, dynamic>?> _apiCreateLearningSupportMeeting({
     required int childId,
     required String type,
     required DateTime scheduledAt,
@@ -157,7 +157,7 @@ Future<Map<String, dynamic>?> _api_createLearningSupportMeeting({
     }
   }
 
-Future<bool> _api_completeLearningSupportMeeting({
+Future<bool> _apiCompleteLearningSupportMeeting({
     required int sessionId,
     required String notes,
     required String recommendations,
@@ -178,7 +178,7 @@ Future<bool> _api_completeLearningSupportMeeting({
     }
   }
 
-Future<Map<String, dynamic>?> _api_getWeeklyReport({
+Future<Map<String, dynamic>?> _apiGetWeeklyReport({
     required int childId,
     DateTime? weekStart,
   }) async {
@@ -195,7 +195,7 @@ Future<Map<String, dynamic>?> _api_getWeeklyReport({
     }
   }
 
-Future<List<dynamic>> _api_getChildWeeklyReports(int childId) async {
+Future<List<dynamic>> _apiGetChildWeeklyReports(int childId) async {
     try {
       final res = await ApiService.authGet('/reports/weekly/child/$childId');
       final data = ApiService._decodeBody(res);
@@ -206,7 +206,7 @@ Future<List<dynamic>> _api_getChildWeeklyReports(int childId) async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getCareTeam(int childId) async {
+Future<Map<String, dynamic>?> _apiGetCareTeam(int childId) async {
     try {
       final res = await ApiService.authGet('/children/$childId/care-team');
       final data = ApiService._decodeBody(res);
@@ -217,7 +217,7 @@ Future<Map<String, dynamic>?> _api_getCareTeam(int childId) async {
     }
   }
 
-Future<bool> _api_addCareTeamMember({
+Future<bool> _apiAddCareTeamMember({
     required int childId,
     required int userId,
     required String role,
@@ -237,7 +237,7 @@ Future<bool> _api_addCareTeamMember({
     }
   }
 
-Future<bool> _api_removeCareTeamMember({
+Future<bool> _apiRemoveCareTeamMember({
     required int childId,
     required int userId,
   }) async {
@@ -250,7 +250,7 @@ Future<bool> _api_removeCareTeamMember({
     }
   }
 
-Future<bool> _api_evaluatePlanAppropriateness({
+Future<bool> _apiEvaluatePlanAppropriateness({
     required int childId,
     required int planId,
     required bool isAppropriate,
@@ -270,7 +270,7 @@ Future<bool> _api_evaluatePlanAppropriateness({
     }
   }
 
-Future<Map<String, dynamic>?> _api_getMinistryStatistics() async {
+Future<Map<String, dynamic>?> _apiGetMinistryStatistics() async {
     try {
       final res = await ApiService.authGet('/ministry/statistics');
       final data = ApiService._decodeBody(res);
@@ -281,7 +281,7 @@ Future<Map<String, dynamic>?> _api_getMinistryStatistics() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_getMinistryProgressStats() async {
+Future<Map<String, dynamic>?> _apiGetMinistryProgressStats() async {
     try {
       final res = await ApiService.authGet('/ministry/statistics/progress');
       final data = ApiService._decodeBody(res);
@@ -292,7 +292,7 @@ Future<Map<String, dynamic>?> _api_getMinistryProgressStats() async {
     }
   }
 
-Future<Map<String, dynamic>?> _api_createLearningSupportRequest({
+Future<Map<String, dynamic>?> _apiCreateLearningSupportRequest({
     required int childId,
     required String reason,
     String? description,
@@ -315,7 +315,7 @@ Future<Map<String, dynamic>?> _api_createLearningSupportRequest({
     }
   }
 
-Future<List<dynamic>> _api_getLearningSupportRequests({
+Future<List<dynamic>> _apiGetLearningSupportRequests({
     int? childId,
     String? status,
   }) async {
@@ -338,7 +338,7 @@ Future<List<dynamic>> _api_getLearningSupportRequests({
     }
   }
 
-Future<bool> _api_hasPendingLearningSupportRequest(int childId) async {
+Future<bool> _apiHasPendingLearningSupportRequest(int childId) async {
     try {
       final res =
           await ApiService.authGet('/learning-support/requests/child/$childId/pending');
@@ -352,7 +352,7 @@ Future<bool> _api_hasPendingLearningSupportRequest(int childId) async {
     }
   }
 
-Future<bool> _api_scheduleLearningSupportRequest({
+Future<bool> _apiScheduleLearningSupportRequest({
     required int requestId,
     required DateTime scheduledAt,
     required String meetingLink,
@@ -370,7 +370,7 @@ Future<bool> _api_scheduleLearningSupportRequest({
     }
   }
 
-Future<bool> _api_cancelLearningSupportRequest(int requestId) async {
+Future<bool> _apiCancelLearningSupportRequest(int requestId) async {
     try {
       final res =
           await ApiService.authPut('/learning-support/requests/$requestId/cancel', {});

@@ -213,7 +213,6 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
   // ═══════════════════════════════════════════════════════
   //  واجهة المستخدم
   // ═══════════════════════════════════════════════════════
-  @override
   void _updateGame(VoidCallback callback) => setState(callback);
 
   @override

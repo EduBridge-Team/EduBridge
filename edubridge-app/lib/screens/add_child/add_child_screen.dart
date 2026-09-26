@@ -19,6 +19,8 @@ class AddChildScreen extends StatefulWidget {
 }
 
 class _AddChildScreenState extends State<AddChildScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _ageCtrl = TextEditingController();

@@ -16,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _loading = false;

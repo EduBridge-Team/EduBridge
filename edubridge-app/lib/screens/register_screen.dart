@@ -14,6 +14,8 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();

@@ -94,7 +94,7 @@ class ApiService {
   static Future<http.Response> authDelete(String path) => _apiCoreAuthDelete(path);
 
   // Domain API facade. Implementations live in focused part files.
-    static Future<Map<String, dynamic>?> getChildren() => _api_getChildren();
+    static Future<Map<String, dynamic>?> getChildren() => _apiGetChildren();
 
     static Future<Map<String, dynamic>?> addChild({
     required String name,
@@ -107,14 +107,14 @@ class ApiService {
     List<String>? challenges,
     File? idCardFile,
     File? birthCertFile,
-  }) => _api_addChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile);
+  }) => _apiAddChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile);
 
-    static Future<Map<String, dynamic>?> getChildDetails(int childId) => _api_getChildDetails(childId);
+    static Future<Map<String, dynamic>?> getChildDetails(int childId) => _apiGetChildDetails(childId);
 
     static Future<Map<String, dynamic>?> updateChild(
-      int childId, Map<String, dynamic> data) => _api_updateChild(childId, data);
+      int childId, Map<String, dynamic> data) => _apiUpdateChild(childId, data);
 
-    static Future<List<dynamic>> getChildLessons(int childId) => _api_getChildLessons(childId);
+    static Future<List<dynamic>> getChildLessons(int childId) => _apiGetChildLessons(childId);
 
     static Future<Map<String, dynamic>?> evaluateChild({
     required int childId,
@@ -127,17 +127,17 @@ class ApiService {
     int? assignedTeacherId,
     required String educationalPlan,
     required List<String> teachingMethods,
-  }) => _api_evaluateChild(childId: childId, evaluationType: evaluationType, cognitiveAssessment: cognitiveAssessment, motorAssessment: motorAssessment, emotionalAssessment: emotionalAssessment, socialAssessment: socialAssessment, recommendations: recommendations, assignedTeacherId: assignedTeacherId, educationalPlan: educationalPlan, teachingMethods: teachingMethods);
+  }) => _apiEvaluateChild(childId: childId, evaluationType: evaluationType, cognitiveAssessment: cognitiveAssessment, motorAssessment: motorAssessment, emotionalAssessment: emotionalAssessment, socialAssessment: socialAssessment, recommendations: recommendations, assignedTeacherId: assignedTeacherId, educationalPlan: educationalPlan, teachingMethods: teachingMethods);
 
-    static Future<List<dynamic>> getChildEvaluations(int childId) => _api_getChildEvaluations(childId);
+    static Future<List<dynamic>> getChildEvaluations(int childId) => _apiGetChildEvaluations(childId);
 
     static Future<Map<String, dynamic>?> assignTeacherToChild(
-      int childId, int teacherId) => _api_assignTeacherToChild(childId, teacherId);
+      int childId, int teacherId) => _apiAssignTeacherToChild(childId, teacherId);
 
-    static Future<List<dynamic>> getLessons() => _api_getLessons();
+    static Future<List<dynamic>> getLessons() => _apiGetLessons();
 
     static Future<Map<String, dynamic>?> getLessonDetails(
-      int lessonId) => _api_getLessonDetails(lessonId);
+      int lessonId) => _apiGetLessonDetails(lessonId);
 
     static Future<Map<String, dynamic>?> createLessonWithMedia({
     required String title,
@@ -151,90 +151,90 @@ class ApiService {
     String? audioDescription,
     String? targetType,
     List<int>? targetChildIds,
-  }) => _api_createLessonWithMedia(title: title, content: content, disabilityTypeId: disabilityTypeId, imageFiles: imageFiles, videoFile: videoFile, audioFile: audioFile, captionFile: captionFile, signLanguageFile: signLanguageFile, audioDescription: audioDescription, targetType: targetType, targetChildIds: targetChildIds);
+  }) => _apiCreateLessonWithMedia(title: title, content: content, disabilityTypeId: disabilityTypeId, imageFiles: imageFiles, videoFile: videoFile, audioFile: audioFile, captionFile: captionFile, signLanguageFile: signLanguageFile, audioDescription: audioDescription, targetType: targetType, targetChildIds: targetChildIds);
 
-    static Future<List<dynamic>> getDisabilityTypes() => _api_getDisabilityTypes();
+    static Future<List<dynamic>> getDisabilityTypes() => _apiGetDisabilityTypes();
 
     static Future<Map<String, dynamic>?> getChildProgress(
-      int childId) => _api_getChildProgress(childId);
+      int childId) => _apiGetChildProgress(childId);
 
     static Future<Map<String, dynamic>?> getChildProgressSummary(
-      int childId) => _api_getChildProgressSummary(childId);
+      int childId) => _apiGetChildProgressSummary(childId);
 
     static Future<Map<String, dynamic>?> markLessonProgress({
     required int childId,
     required int lessonId,
     required String status,
     int? score,
-  }) => _api_markLessonProgress(childId: childId, lessonId: lessonId, status: status, score: score);
+  }) => _apiMarkLessonProgress(childId: childId, lessonId: lessonId, status: status, score: score);
 
-    static Future<List<dynamic>> getNotifications() => _api_getNotifications();
+    static Future<List<dynamic>> getNotifications() => _apiGetNotifications();
 
-    static Future<int> getUnreadNotificationsCount() => _api_getUnreadNotificationsCount();
+    static Future<int> getUnreadNotificationsCount() => _apiGetUnreadNotificationsCount();
 
-    static Future<void> markNotificationRead(int notificationId) => _api_markNotificationRead(notificationId);
+    static Future<void> markNotificationRead(int notificationId) => _apiMarkNotificationRead(notificationId);
 
-    static Future<void> markAllNotificationsRead() => _api_markAllNotificationsRead();
+    static Future<void> markAllNotificationsRead() => _apiMarkAllNotificationsRead();
 
-    static Future<List<dynamic>> getConversations() => _api_getConversations();
+    static Future<List<dynamic>> getConversations() => _apiGetConversations();
 
-    static Future<List<dynamic>> getMessages(int conversationId) => _api_getMessages(conversationId);
+    static Future<List<dynamic>> getMessages(int conversationId) => _apiGetMessages(conversationId);
 
     static Future<void> sendMessage({
     required int conversationId,
     required String content,
     String? fileUrl,
-  }) => _api_sendMessage(conversationId: conversationId, content: content, fileUrl: fileUrl);
+  }) => _apiSendMessage(conversationId: conversationId, content: content, fileUrl: fileUrl);
 
     static Future<int> createConversation(
-      int otherUserId, String subject) => _api_createConversation(otherUserId, subject);
+      int otherUserId, String subject) => _apiCreateConversation(otherUserId, subject);
 
-    static Future<List<dynamic>> getConversationUsers() => _api_getConversationUsers();
+    static Future<List<dynamic>> getConversationUsers() => _apiGetConversationUsers();
 
-    static Future<List<dynamic>> getUsers({String? role}) => _api_getUsers(role: role);
+    static Future<List<dynamic>> getUsers({String? role}) => _apiGetUsers(role: role);
 
-    static Future<List<dynamic>> getTeachers() => _api_getTeachers();
+    static Future<List<dynamic>> getTeachers() => _apiGetTeachers();
 
-    static Future<List<dynamic>> getSpecialists() => _api_getSpecialists();
+    static Future<List<dynamic>> getSpecialists() => _apiGetSpecialists();
 
-    static Future<List<dynamic>> getParents() => _api_getParents();
+    static Future<List<dynamic>> getParents() => _apiGetParents();
 
     static Future<Map<String, dynamic>?> updateUser(
-      int userId, Map<String, dynamic> data) => _api_updateUser(userId, data);
+      int userId, Map<String, dynamic> data) => _apiUpdateUser(userId, data);
 
-    static Future<bool> deleteUser(int userId) => _api_deleteUser(userId);
+    static Future<bool> deleteUser(int userId) => _apiDeleteUser(userId);
 
-    static Future<Map<String, dynamic>?> getDashboardStats() => _api_getDashboardStats();
+    static Future<Map<String, dynamic>?> getDashboardStats() => _apiGetDashboardStats();
 
-    static Future<List<dynamic>> searchLessons(String query) => _api_searchLessons(query);
+    static Future<List<dynamic>> searchLessons(String query) => _apiSearchLessons(query);
 
-    static Future<String?> getVerificationStatus() => _api_getVerificationStatus();
+    static Future<String?> getVerificationStatus() => _apiGetVerificationStatus();
 
     static Future<void> submitIdentityVerification({
     required String nationalId,
     required File idImage,
-  }) => _api_submitIdentityVerification(nationalId: nationalId, idImage: idImage);
+  }) => _apiSubmitIdentityVerification(nationalId: nationalId, idImage: idImage);
 
-    static Future<bool> isVerified() => _api_isVerified();
+    static Future<bool> isVerified() => _apiIsVerified();
 
-    static Future<List<dynamic>> getVerificationRequests() => _api_getVerificationRequests();
+    static Future<List<dynamic>> getVerificationRequests() => _apiGetVerificationRequests();
 
-    static Future<bool> approveVerification(int requestId) => _api_approveVerification(requestId);
+    static Future<bool> approveVerification(int requestId) => _apiApproveVerification(requestId);
 
-    static Future<bool> rejectVerification(int requestId) => _api_rejectVerification(requestId);
+    static Future<bool> rejectVerification(int requestId) => _apiRejectVerification(requestId);
 
-    static Future<List<dynamic>> searchByIdentity(String query) => _api_searchByIdentity(query);
+    static Future<List<dynamic>> searchByIdentity(String query) => _apiSearchByIdentity(query);
 
     static Future<void> submitCertificate({
     required String title,
     required File file,
-  }) => _api_submitCertificate(title: title, file: file);
+  }) => _apiSubmitCertificate(title: title, file: file);
 
     static Future<void> requestConsultation({
     required int childId,
     required String title,
     required String description,
-  }) => _api_requestConsultation(childId: childId, title: title, description: description);
+  }) => _apiRequestConsultation(childId: childId, title: title, description: description);
 
     static Future<Map<String, dynamic>?> submitForMinistryApproval({
     required int childId,
@@ -247,30 +247,30 @@ class ApiService {
     required String recommendations,
     required List<String> teachingMethods,
     int? teacherId,
-  }) => _api_submitForMinistryApproval(childId: childId, evaluationId: evaluationId, educationalPlan: educationalPlan, cognitiveAssessment: cognitiveAssessment, motorAssessment: motorAssessment, emotionalAssessment: emotionalAssessment, socialAssessment: socialAssessment, recommendations: recommendations, teachingMethods: teachingMethods, teacherId: teacherId);
+  }) => _apiSubmitForMinistryApproval(childId: childId, evaluationId: evaluationId, educationalPlan: educationalPlan, cognitiveAssessment: cognitiveAssessment, motorAssessment: motorAssessment, emotionalAssessment: emotionalAssessment, socialAssessment: socialAssessment, recommendations: recommendations, teachingMethods: teachingMethods, teacherId: teacherId);
 
-    static Future<List<dynamic>> getPendingApprovals() => _api_getPendingApprovals();
+    static Future<List<dynamic>> getPendingApprovals() => _apiGetPendingApprovals();
 
-    static Future<List<dynamic>> getAllApprovals({String? status}) => _api_getAllApprovals(status: status);
+    static Future<List<dynamic>> getAllApprovals({String? status}) => _apiGetAllApprovals(status: status);
 
-    static Future<bool> approveMinistryRequest(int approvalId) => _api_approveMinistryRequest(approvalId);
+    static Future<bool> approveMinistryRequest(int approvalId) => _apiApproveMinistryRequest(approvalId);
 
     static Future<bool> rejectMinistryRequest(
     int approvalId, {
     String? reason,
-  }) => _api_rejectMinistryRequest(approvalId, reason: reason);
+  }) => _apiRejectMinistryRequest(approvalId, reason: reason);
 
-    static Future<List<dynamic>> getApprovalNotifications() => _api_getApprovalNotifications();
+    static Future<List<dynamic>> getApprovalNotifications() => _apiGetApprovalNotifications();
 
-    static Future<String> getChildPlanStatus(int childId) => _api_getChildPlanStatus(childId);
+    static Future<String> getChildPlanStatus(int childId) => _apiGetChildPlanStatus(childId);
 
-    static Future<List<dynamic>> getMinistryUsers() => _api_getMinistryUsers();
+    static Future<List<dynamic>> getMinistryUsers() => _apiGetMinistryUsers();
 
-    static Future<List<dynamic>> getMinistryChildren() => _api_getMinistryChildren();
+    static Future<List<dynamic>> getMinistryChildren() => _apiGetMinistryChildren();
 
-    static Future<Map<String, dynamic>?> getMinistryStats() => _api_getMinistryStats();
+    static Future<Map<String, dynamic>?> getMinistryStats() => _apiGetMinistryStats();
 
-    static Future<List<dynamic>> getHomeworks({int? childId}) => _api_getHomeworks(childId: childId);
+    static Future<List<dynamic>> getHomeworks({int? childId}) => _apiGetHomeworks(childId: childId);
 
     static Future<Map<String, dynamic>?> createHomework({
     required String title,
@@ -279,7 +279,7 @@ class ApiService {
     String? subject,
     required List<int> assignedChildIds,
     List<File>? attachments,
-  }) => _api_createHomework(title: title, description: description, dueDate: dueDate, subject: subject, assignedChildIds: assignedChildIds, attachments: attachments);
+  }) => _apiCreateHomework(title: title, description: description, dueDate: dueDate, subject: subject, assignedChildIds: assignedChildIds, attachments: attachments);
 
     static Future<Map<String, dynamic>?> submitHomework({
     required int homeworkId,
@@ -287,15 +287,15 @@ class ApiService {
     String? textAnswer,
     File? file,
     List<File>? files,
-  }) => _api_submitHomework(homeworkId: homeworkId, childId: childId, textAnswer: textAnswer, file: file, files: files);
+  }) => _apiSubmitHomework(homeworkId: homeworkId, childId: childId, textAnswer: textAnswer, file: file, files: files);
 
     static Future<bool> gradeHomework({
     required int submissionId,
     required int grade,
     String? feedback,
-  }) => _api_gradeHomework(submissionId: submissionId, grade: grade, feedback: feedback);
+  }) => _apiGradeHomework(submissionId: submissionId, grade: grade, feedback: feedback);
 
-    static Future<List<dynamic>> getLearningSupportMeetings({int? childId}) => _api_getLearningSupportMeetings(childId: childId);
+    static Future<List<dynamic>> getLearningSupportMeetings({int? childId}) => _apiGetLearningSupportMeetings(childId: childId);
 
     static Future<Map<String, dynamic>?> createLearningSupportMeeting({
     required int childId,
@@ -303,7 +303,7 @@ class ApiService {
     required DateTime scheduledAt,
     int durationMinutes = 45,
     String? goals,
-  }) => _api_createLearningSupportMeeting(childId: childId, type: type, scheduledAt: scheduledAt, durationMinutes: durationMinutes, goals: goals);
+  }) => _apiCreateLearningSupportMeeting(childId: childId, type: type, scheduledAt: scheduledAt, durationMinutes: durationMinutes, goals: goals);
 
     static Future<bool> completeLearningSupportMeeting({
     required int sessionId,
@@ -311,16 +311,16 @@ class ApiService {
     required String recommendations,
     int? moodRating,
     List<String>? tags,
-  }) => _api_completeLearningSupportMeeting(sessionId: sessionId, notes: notes, recommendations: recommendations, moodRating: moodRating, tags: tags);
+  }) => _apiCompleteLearningSupportMeeting(sessionId: sessionId, notes: notes, recommendations: recommendations, moodRating: moodRating, tags: tags);
 
     static Future<Map<String, dynamic>?> getWeeklyReport({
     required int childId,
     DateTime? weekStart,
-  }) => _api_getWeeklyReport(childId: childId, weekStart: weekStart);
+  }) => _apiGetWeeklyReport(childId: childId, weekStart: weekStart);
 
-    static Future<List<dynamic>> getChildWeeklyReports(int childId) => _api_getChildWeeklyReports(childId);
+    static Future<List<dynamic>> getChildWeeklyReports(int childId) => _apiGetChildWeeklyReports(childId);
 
-    static Future<Map<String, dynamic>?> getCareTeam(int childId) => _api_getCareTeam(childId);
+    static Future<Map<String, dynamic>?> getCareTeam(int childId) => _apiGetCareTeam(childId);
 
     static Future<bool> addCareTeamMember({
     required int childId,
@@ -328,12 +328,12 @@ class ApiService {
     required String role,
     String? specialty,
     String? subject,
-  }) => _api_addCareTeamMember(childId: childId, userId: userId, role: role, specialty: specialty, subject: subject);
+  }) => _apiAddCareTeamMember(childId: childId, userId: userId, role: role, specialty: specialty, subject: subject);
 
     static Future<bool> removeCareTeamMember({
     required int childId,
     required int userId,
-  }) => _api_removeCareTeamMember(childId: childId, userId: userId);
+  }) => _apiRemoveCareTeamMember(childId: childId, userId: userId);
 
     static Future<bool> evaluatePlanAppropriateness({
     required int childId,
@@ -341,113 +341,113 @@ class ApiService {
     required bool isAppropriate,
     String? notesForTeacher,
     List<String>? recommendedChanges,
-  }) => _api_evaluatePlanAppropriateness(childId: childId, planId: planId, isAppropriate: isAppropriate, notesForTeacher: notesForTeacher, recommendedChanges: recommendedChanges);
+  }) => _apiEvaluatePlanAppropriateness(childId: childId, planId: planId, isAppropriate: isAppropriate, notesForTeacher: notesForTeacher, recommendedChanges: recommendedChanges);
 
-    static Future<Map<String, dynamic>?> getMinistryStatistics() => _api_getMinistryStatistics();
+    static Future<Map<String, dynamic>?> getMinistryStatistics() => _apiGetMinistryStatistics();
 
-    static Future<Map<String, dynamic>?> getMinistryProgressStats() => _api_getMinistryProgressStats();
+    static Future<Map<String, dynamic>?> getMinistryProgressStats() => _apiGetMinistryProgressStats();
 
     static Future<Map<String, dynamic>?> createLearningSupportRequest({
     required int childId,
     required String reason,
     String? description,
     String urgency = 'medium',
-  }) => _api_createLearningSupportRequest(childId: childId, reason: reason, description: description, urgency: urgency);
+  }) => _apiCreateLearningSupportRequest(childId: childId, reason: reason, description: description, urgency: urgency);
 
     static Future<List<dynamic>> getLearningSupportRequests({
     int? childId,
     String? status,
-  }) => _api_getLearningSupportRequests(childId: childId, status: status);
+  }) => _apiGetLearningSupportRequests(childId: childId, status: status);
 
-    static Future<bool> hasPendingLearningSupportRequest(int childId) => _api_hasPendingLearningSupportRequest(childId);
+    static Future<bool> hasPendingLearningSupportRequest(int childId) => _apiHasPendingLearningSupportRequest(childId);
 
     static Future<bool> scheduleLearningSupportRequest({
     required int requestId,
     required DateTime scheduledAt,
     required String meetingLink,
     String? notes,
-  }) => _api_scheduleLearningSupportRequest(requestId: requestId, scheduledAt: scheduledAt, meetingLink: meetingLink, notes: notes);
+  }) => _apiScheduleLearningSupportRequest(requestId: requestId, scheduledAt: scheduledAt, meetingLink: meetingLink, notes: notes);
 
-    static Future<bool> cancelLearningSupportRequest(int requestId) => _api_cancelLearningSupportRequest(requestId);
+    static Future<bool> cancelLearningSupportRequest(int requestId) => _apiCancelLearningSupportRequest(requestId);
 
-    static Future<Map<String, dynamic>?> getProfile() => _api_getProfile();
+    static Future<Map<String, dynamic>?> getProfile() => _apiGetProfile();
 
     static Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
-  }) => _api_changePassword(currentPassword: currentPassword, newPassword: newPassword);
+  }) => _apiChangePassword(currentPassword: currentPassword, newPassword: newPassword);
 
-    static Future<String?> uploadProfilePicture(File image) => _api_uploadProfilePicture(image);
+    static Future<String?> uploadProfilePicture(File image) => _apiUploadProfilePicture(image);
 
-    static Future<bool> removeProfilePicture() => _api_removeProfilePicture();
+    static Future<bool> removeProfilePicture() => _apiRemoveProfilePicture();
 
-    static Future<String?> getSavedAvatarUrl() => _api_getSavedAvatarUrl();
+    static Future<String?> getSavedAvatarUrl() => _apiGetSavedAvatarUrl();
 
-    static Future<void> saveAvatarUrl(String? url) => _api_saveAvatarUrl(url);
+    static Future<void> saveAvatarUrl(String? url) => _apiSaveAvatarUrl(url);
 
     static Future<bool> addTeacherToChild({
     required int childId,
     required int teacherId,
-  }) => _api_addTeacherToChild(childId: childId, teacherId: teacherId);
+  }) => _apiAddTeacherToChild(childId: childId, teacherId: teacherId);
 
     static Future<bool> removeTeacherFromChild({
     required int childId,
     required int teacherId,
-  }) => _api_removeTeacherFromChild(childId: childId, teacherId: teacherId);
+  }) => _apiRemoveTeacherFromChild(childId: childId, teacherId: teacherId);
 
-    static Future<List<dynamic>> getChildTeachers(int childId) => _api_getChildTeachers(childId);
+    static Future<List<dynamic>> getChildTeachers(int childId) => _apiGetChildTeachers(childId);
 
     static Future<Map<String, dynamic>?> getChildSpecialists(
-      int childId) => _api_getChildSpecialists(childId);
+      int childId) => _apiGetChildSpecialists(childId);
 
     static Future<String?> assignSpecialist({
     required int childId,
     required int specialistId,
     required String specialty,
-  }) => _api_assignSpecialist(childId: childId, specialistId: specialistId, specialty: specialty);
+  }) => _apiAssignSpecialist(childId: childId, specialistId: specialistId, specialty: specialty);
 
     static Future<bool> removeSpecialist({
     required int childId,
     required int specialistId,
-  }) => _api_removeSpecialist(childId: childId, specialistId: specialistId);
+  }) => _apiRemoveSpecialist(childId: childId, specialistId: specialistId);
 
-    static Future<List<dynamic>> getCaseDiscussions({int? childId}) => _api_getCaseDiscussions(childId: childId);
+    static Future<List<dynamic>> getCaseDiscussions({int? childId}) => _apiGetCaseDiscussions(childId: childId);
 
     static Future<Map<String, dynamic>?> createCaseDiscussion({
     required int childId,
     required String topic,
     String? description,
     required List<int> participantIds,
-  }) => _api_createCaseDiscussion(childId: childId, topic: topic, description: description, participantIds: participantIds);
+  }) => _apiCreateCaseDiscussion(childId: childId, topic: topic, description: description, participantIds: participantIds);
 
     static Future<Map<String, dynamic>?> getCaseDiscussionDetails(
-      int discussionId) => _api_getCaseDiscussionDetails(discussionId);
+      int discussionId) => _apiGetCaseDiscussionDetails(discussionId);
 
     static Future<Map<String, dynamic>?> addCaseMessage({
     required int discussionId,
     required String content,
     String type = 'text',
-  }) => _api_addCaseMessage(discussionId: discussionId, content: content, type: type);
+  }) => _apiAddCaseMessage(discussionId: discussionId, content: content, type: type);
 
-    static Future<bool> resolveCaseDiscussion(int discussionId) => _api_resolveCaseDiscussion(discussionId);
+    static Future<bool> resolveCaseDiscussion(int discussionId) => _apiResolveCaseDiscussion(discussionId);
 
     static Future<String?> suggestSpecialistToChild({
     required int childId,
     required int specialistId,
     required String specialty,
     required String reason,
-  }) => _api_suggestSpecialistToChild(childId: childId, specialistId: specialistId, specialty: specialty, reason: reason);
+  }) => _apiSuggestSpecialistToChild(childId: childId, specialistId: specialistId, specialty: specialty, reason: reason);
 
     static Future<List<dynamic>> getMySpecialistSuggestions({
     String? status,
-  }) => _api_getMySpecialistSuggestions(status: status);
+  }) => _apiGetMySpecialistSuggestions(status: status);
 
-    static Future<String?> acceptSuggestion(int suggestionId) => _api_acceptSuggestion(suggestionId);
+    static Future<String?> acceptSuggestion(int suggestionId) => _apiAcceptSuggestion(suggestionId);
 
     static Future<String?> rejectSuggestion(
     int suggestionId, {
     String? reason,
-  }) => _api_rejectSuggestion(suggestionId, reason: reason);
+  }) => _apiRejectSuggestion(suggestionId, reason: reason);
 
-    static Future<void> deleteAccount() => _api_deleteAccount();
+    static Future<void> deleteAccount() => _apiDeleteAccount();
 }

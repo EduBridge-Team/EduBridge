@@ -1,6 +1,6 @@
 part of 'create_specialist_progress_screen.dart';
 
-extension CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressScreenState {
+extension _CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
@@ -65,7 +65,7 @@ extension CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressSc
                   RadioGroup<bool>(
                     groupValue: _planAppropriate,
                     onChanged: (v) {
-                      if (v != null) setState(() => _planAppropriate = v);
+                      if (v != null) _refreshState(() => _planAppropriate = v);
                     },
                     child: const Row(
                       children: [
@@ -134,7 +134,7 @@ extension CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressSc
                       final isSelected = _moodRating == rating;
                       return GestureDetector(
                         onTap: () =>
-                            setState(() => _moodRating = rating),
+                            _refreshState(() => _moodRating = rating),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(

@@ -2,28 +2,10 @@
 part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenState {
-  Future<void> _logout() async {
-    await ApiService.logout();
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-    );
-  }
-
   void _openNotifications() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    );
-  }
-
-  void _openLearningSupport() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LearningSupportMeetingsScreen(),
-      ),
     );
   }
 
@@ -32,15 +14,6 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       context,
       MaterialPageRoute(
         builder: (_) => CaseDiscussionScreen(filterChildId: childId),
-      ),
-    );
-  }
-
-  void _openSuggestions() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const SpecialistSuggestionsScreen(),
       ),
     );
   }
@@ -182,7 +155,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
 
     if (confirm != true) return;
     if (!mounted) return;
-    setState(() => _approvingId = child['id']);
+    _refreshState(() => _approvingId = child['id']);
 
     try {
       final err = await ApiService.assignSpecialist(
@@ -205,7 +178,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
         await _load();
       }
     } finally {
-      if (mounted) setState(() => _approvingId = null);
+      if (mounted) _refreshState(() => _approvingId = null);
     }
   }
 

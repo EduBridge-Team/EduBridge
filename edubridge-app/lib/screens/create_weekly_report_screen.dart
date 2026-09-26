@@ -21,6 +21,8 @@ class CreateWeeklyReportScreen extends StatefulWidget {
 }
 
 class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
 
   // ─── الحقول ───

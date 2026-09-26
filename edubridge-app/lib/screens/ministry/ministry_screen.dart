@@ -32,8 +32,6 @@ class _MinistryScreenState extends State<MinistryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
     return Scaffold(
       body: Column(
         children: [

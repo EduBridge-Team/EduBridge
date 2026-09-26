@@ -102,7 +102,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                 title: Text(name),
                 subtitle: Text(child['disability_type']?.toString() ?? ''),
                 onChanged: (v) {
-                  setState(() {
+                  _refreshState(() {
                     if (v == true) {
                       _selectedChildIds.add(id);
                     } else {
@@ -138,7 +138,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                       icon: const Icon(AppIcons.close,
                           color: AppColors.red),
                       onPressed: () =>
-                          setState(() => _attachments.removeAt(e.key)),
+                          _refreshState(() => _attachments.removeAt(e.key)),
                     ),
                   )),
             ],

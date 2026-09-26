@@ -1,6 +1,6 @@
 part of 'child_accessibility_settings_screen.dart';
 
-extension ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySettingsScreenState {
+extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySettingsScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
@@ -188,7 +188,7 @@ extension ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySettin
                   icon: const Icon(AppIcons.refresh),
                   label: const Text('إعادة الضبط'),
                   onPressed: () {
-                    setState(() => _selectedDisability = null);
+                    _refreshState(() => _selectedDisability = null);
                     AccessibilityService.instance.applyRecommendedForChild(
                         widget.childId, DisabilityType.none);
                   },
