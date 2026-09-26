@@ -22,6 +22,8 @@ class CreateLearningSupportRequestScreen extends StatefulWidget {
 
 class _CreateLearningSupportRequestScreenState
     extends State<CreateLearningSupportRequestScreen> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
   final _descriptionCtrl = TextEditingController();
 
