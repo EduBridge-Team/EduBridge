@@ -99,7 +99,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                   prefixIcon: const Icon(
                                       Icons.lock_outline_rounded),
                                   suffixIcon: IconButton(
-                                    onPressed: () => setState(
+                                    onPressed: () => _refreshState(
                                       () => _obscurePassword =
                                           !_obscurePassword,
                                     ),
