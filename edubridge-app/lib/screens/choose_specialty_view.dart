@@ -72,7 +72,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                   'متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي',
               color: AppColors.purple,
               selected: _selected == 'learning_support',
-              onTap: () => setState(() => _selected = 'learning_support'),
+              onTap: () => _refreshState(() => _selected = 'learning_support'),
             ),
             const SizedBox(height: 12),
 
@@ -83,7 +83,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                   'تقييم الجانب التعليمي، تصميم الخطط التعليمية، ومتابعة تقدّم الأطفال',
               color: AppColors.brandBlue,
               selected: _selected == 'educational',
-              onTap: () => setState(() => _selected = 'educational'),
+              onTap: () => _refreshState(() => _selected = 'educational'),
             ),
 
             const Spacer(),
