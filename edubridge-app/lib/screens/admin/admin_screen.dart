@@ -17,6 +17,7 @@ part 'admin_verification_tab.dart';
 part 'admin_support_tab.dart';
 part 'admin_edit_user_sheet.dart';
 part 'admin_search_screen.dart';
+part 'admin_users_tab_view.dart';
 
 class AdminScreen extends StatefulWidget {
   final Map admin;

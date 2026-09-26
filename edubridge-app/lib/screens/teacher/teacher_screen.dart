@@ -29,6 +29,7 @@ part 'teacher_lessons_tab.dart';
 part 'teacher_plan_sheet.dart';
 part 'teacher_shared_widgets.dart';
 part 'teacher_actions.dart';
+part 'teacher_child_card_view.dart';
 
 class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
