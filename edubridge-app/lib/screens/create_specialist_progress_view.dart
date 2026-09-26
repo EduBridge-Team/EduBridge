@@ -1,6 +1,6 @@
 part of 'create_specialist_progress_screen.dart';
 
-extension CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressScreenState {
+extension _CreateSpecialistProgressScreenStateView on _CreateSpecialistProgressScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
