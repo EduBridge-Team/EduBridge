@@ -63,7 +63,7 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
                 prefixIcon: Icon(AppIcons.search),
                 border: InputBorder.none,
               ),
-              onChanged: (v) => setState(() => _search = v),
+              onChanged: (v) => _refreshState(() => _search = v),
             ),
           ),
           const SizedBox(height: 16),
