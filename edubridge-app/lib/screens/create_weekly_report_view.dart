@@ -1,6 +1,6 @@
 part of 'create_weekly_report_screen.dart';
 
-extension CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
+extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
