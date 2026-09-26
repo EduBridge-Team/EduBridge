@@ -63,14 +63,14 @@ extension _VoiceMicOverlayStateView on _VoiceMicOverlayState {
                                         onLongPressStart: (_) {
                                           HapticFeedback
                                               .selectionClick();
-                                          setState(
+                                          _refreshState(
                                               () => _dragging = true);
                                         },
                                         onLongPressMoveUpdate: (d) =>
                                             _onPanUpdate(
                                                 d, constraints, mq),
                                         onLongPressEnd: (_) {
-                                          setState(
+                                          _refreshState(
                                               () => _dragging = false);
                                           _savePosition();
                                           HapticFeedback
