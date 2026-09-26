@@ -9,6 +9,7 @@ part 'teacher_homework_tab.dart';
 part 'teacher_homework_tab_widgets.dart';
 part 'teacher_lessons_tab.dart';
 part 'teacher_grade_sheet.dart';
+part 'teacher_lessons_tab_view.dart';
 
 class TeacherChildDetailsScreen extends StatefulWidget {
   final int childId;
