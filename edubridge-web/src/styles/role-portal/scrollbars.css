@@ -1,0 +1,50 @@
+/* Shared document scrollbar styling for role portal pages. */
+
+/* Keep the document scrollbar available across every portal page. */
+html.parent-portal-active,
+body.parent-portal-active {
+  scrollbar-width: thin !important;
+  scrollbar-color: #8dbbd5 #edf6fb !important;
+  scrollbar-gutter: stable;
+}
+
+html.parent-portal-active::-webkit-scrollbar,
+body.parent-portal-active::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+  display: block !important;
+}
+
+html.parent-portal-active::-webkit-scrollbar-track,
+body.parent-portal-active::-webkit-scrollbar-track {
+  background: #edf6fb;
+}
+
+html.parent-portal-active::-webkit-scrollbar-thumb,
+body.parent-portal-active::-webkit-scrollbar-thumb {
+  min-height: 44px;
+  border: 2px solid #edf6fb;
+  border-radius: 999px;
+  background: #8dbbd5;
+}
+
+html.parent-portal-active::-webkit-scrollbar-thumb:hover,
+body.parent-portal-active::-webkit-scrollbar-thumb:hover {
+  background: #669fbe;
+}
+
+:root[data-theme="dark"].parent-portal-active,
+:root[data-theme="dark"] body.parent-portal-active {
+  scrollbar-color: #3d718f #0a223b !important;
+}
+
+:root[data-theme="dark"].parent-portal-active::-webkit-scrollbar-track,
+:root[data-theme="dark"] body.parent-portal-active::-webkit-scrollbar-track {
+  background: #0a223b;
+}
+
+:root[data-theme="dark"].parent-portal-active::-webkit-scrollbar-thumb,
+:root[data-theme="dark"] body.parent-portal-active::-webkit-scrollbar-thumb {
+  border-color: #0a223b;
+  background: #3d718f;
+}

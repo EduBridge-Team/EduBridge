@@ -1,7 +1,7 @@
 // تذييل الموقع — مشترك بين الصفحات
 import { Link } from 'react-router-dom'
 import { Download, Headphones, MapPin, Smartphone } from 'lucide-react'
-import BrandLogo from './BrandLogo'
+import BrandLogo from './BrandLogo/BrandLogo'
 
 function InstagramIcon({ size = 20 }) {
   return (
