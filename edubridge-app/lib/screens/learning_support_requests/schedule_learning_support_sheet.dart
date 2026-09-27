@@ -83,7 +83,7 @@ class _ScheduleLearningSupportSheetState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم تحديد الموعد وإرسال الرابط لولي الأمر'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandTealDeep,
           ),
         );
       } else {
@@ -106,7 +106,7 @@ class _ScheduleLearningSupportSheetState
   Widget _buildHeader(JisrColors c) {
     return Row(
       children: [
-        const Icon(AppIcons.specialist, color: AppColors.purple, size: 32),
+        const Icon(AppIcons.specialist, color: AppColors.brandBlueLight, size: 32),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -173,12 +173,12 @@ class _ScheduleLearningSupportSheetState
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.green.withValues(alpha: 0.1),
+        color: AppColors.brandGreen.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          const Icon(AppIcons.event, color: AppColors.green),
+          const Icon(AppIcons.event, color: AppColors.brandGreen),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -215,7 +215,7 @@ class _ScheduleLearningSupportSheetState
             icon: AppIcons.clock,
             label: _time == null ? 'اختر الوقت' : _time!.format(context),
             onTap: _pickTime,
-            color: AppColors.orange,
+            color: AppColors.brandTealDeep,
             c: c,
           ),
         ),
@@ -259,7 +259,7 @@ class _ScheduleLearningSupportSheetState
         Expanded(
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.green,
+              backgroundColor: AppColors.brandTealDeep,
             ),
             icon: _saving
                 ? const SizedBox(

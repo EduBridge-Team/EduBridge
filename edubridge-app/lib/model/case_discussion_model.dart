@@ -1,10 +1,13 @@
 // lib/models/case_discussion_model.dart
 // نموذج دراسة الحالة — نقاش بين المعلم والمختص بإشراف
+import 'package:edubridge_app/app_icons.dart';
+import 'package:flutter/widgets.dart';
+
 enum CaseMessageType {
-  text,        // رسالة عادية
+  text, // رسالة عادية
   observation, // ملاحظة
-  decision,    // قرار
-  question,    // سؤال
+  decision, // قرار
+  question, // سؤال
 }
 
 enum CaseDiscussionStatus { open, inReview, resolved }
@@ -58,7 +61,6 @@ class CaseDiscussion {
   final int id;
   final int childId;
   final String childName;
-  final String childAvatar; // emoji فقط للعرض
   final String? disabilityType;
   final String topic;
   final String? description;
@@ -75,7 +77,6 @@ class CaseDiscussion {
     required this.id,
     required this.childId,
     required this.childName,
-    this.childAvatar = '🧒',
     this.disabilityType,
     required this.topic,
     this.description,
@@ -89,12 +90,10 @@ class CaseDiscussion {
     this.unreadCount = 0,
   });
 
-  factory CaseDiscussion.fromJson(Map<String, dynamic> json) =>
-      CaseDiscussion(
+  factory CaseDiscussion.fromJson(Map<String, dynamic> json) => CaseDiscussion(
         id: json['id'],
         childId: json['child_id'],
         childName: json['child_name'] ?? '',
-        childAvatar: json['child_avatar'] ?? '🧒',
         disabilityType: json['disability_type'],
         topic: json['topic'] ?? '',
         description: json['description'],
@@ -150,12 +149,12 @@ class CaseParticipant {
         specialty: json['specialty'],
       );
 
-  String get emoji {
-    if (role == 'teacher') return '👨‍🏫';
-    if (specialty == 'learning_support') return '📘';
-    if (specialty == 'educational') return '📚';
-    if (specialty == 'communication_support') return '🗣️';
-    if (specialty == 'learning_behavior') return '🎯';
-    return '🧩';
+  Object get emoji {
+    if (role == 'teacher') return AppIcons.teacher;
+    if (specialty == 'learning_support') return AppIcons.lesson;
+    if (specialty == 'educational') return AppIcons.plan;
+    if (specialty == 'communication_support') return AppIcons.forum;
+    if (specialty == 'learning_behavior') return AppIcons.evaluate;
+    return AppIcons.specialist;
   }
 }

@@ -124,7 +124,7 @@ class _LearningSupportRequestsScreenState
       padding: const EdgeInsets.all(12),
       children: [
         if (pending.isNotEmpty) ...[
-          _sectionHeader('قيد المراجعة', pending.length, AppColors.orange),
+          _sectionHeader('قيد المراجعة', pending.length, AppColors.brandBlueLight),
           ...pending.map((r) => LearningSupportRequestCard(
                 request: r,
                 onTap: () => _openScheduleSheet(r),
@@ -140,7 +140,7 @@ class _LearningSupportRequestsScreenState
           const SizedBox(height: 16),
         ],
         if (done.isNotEmpty) ...[
-          _sectionHeader('منتهية', done.length, AppColors.green),
+          _sectionHeader('منتهية', done.length, AppColors.brandGreen),
           ...done.map((r) =>
               LearningSupportRequestCard(request: r, onTap: null)),
         ],

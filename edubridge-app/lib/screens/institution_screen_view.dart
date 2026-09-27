@@ -151,7 +151,7 @@ extension _InstitutionScreenView on InstitutionScreen {
                   icon: AppIcons.verified,
                   title: 'توثيق المؤسسة',
                   subtitle: 'متابعة حالة الهوية والصلاحيات',
-                  color: const Color(0xFFB77318),
+                  color: const Color.fromARGB(255, 17, 108, 182),
                   onTap: () => _open(context, const VerifyIdentityScreen()),
                 ),
               ],

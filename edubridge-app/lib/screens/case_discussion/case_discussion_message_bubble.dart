@@ -15,14 +15,14 @@ class _MessageBubble extends StatelessWidget {
 
     switch (message.type) {
       case CaseMessageType.observation:
-        bgColor = c.tintYellow;
-        iconColor = AppColors.orangeDeep;
+        bgColor = AppColors.brandGreen;
+        iconColor = AppColors.brandGreen;
         typeLabel = 'ملاحظة';
         typeIcon = AppIcons.view;
         break;
       case CaseMessageType.decision:
-        bgColor = AppColors.green.withValues(alpha: 0.1);
-        iconColor = AppColors.green;
+        bgColor = AppColors.brandTealDeep.withValues(alpha: 0.1);
+        iconColor = AppColors.brandTealDeep;
         typeLabel = 'قرار';
         typeIcon = AppIcons.check;
         break;

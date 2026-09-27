@@ -187,7 +187,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
     _showSuccessDialog(
       icon: AppIcons.check,
-      iconColor: AppColors.green,
+      iconColor: AppColors.brandTealDeep,
       title: 'تم التقييم بنجاح',
       message: _selectedTeacherId != null
           ? 'تم إرسال التقييم للمعلم المسؤول لبدء التنفيذ مباشرة.'

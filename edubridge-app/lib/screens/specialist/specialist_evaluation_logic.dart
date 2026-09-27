@@ -99,7 +99,7 @@ extension _SpecialistEvaluationLogicExtension on _SpecialistDashboardScreenState
           children: [
             Row(
               children: [
-                const Icon(AppIcons.evaluate, color: AppColors.orange),
+                const Icon(AppIcons.evaluate, color: AppColors.brandTeal),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text('تفاصيل التقييم',

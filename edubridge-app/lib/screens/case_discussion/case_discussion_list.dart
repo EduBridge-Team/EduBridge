@@ -137,7 +137,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           const SizedBox(height: 16),
         ],
         if (resolved.isNotEmpty) ...[
-          _sectionHeader('محلولة', resolved.length, AppColors.green),
+          _sectionHeader('محلولة', resolved.length, AppColors.brandTealDeep),
           ...resolved.map((d) => _DiscussionTile(discussion: d)),
         ],
       ],
@@ -201,11 +201,11 @@ class _DiscussionTile extends StatelessWidget {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: isResolved
-                        ? AppColors.green.withValues(alpha: 0.15)
-                        : AppColors.brandTeal.withValues(alpha: 0.15),
+                        ? AppColors.blue.withValues(alpha: 0.15)
+                        : AppColors.brandTealDeep.withValues(alpha: 0.15),
                     child: Icon(
                       AppIcons.child,
-                      color: isResolved ? AppColors.green : AppColors.brandBlue,
+                      color: isResolved ? AppColors.brandBlue : AppColors.brandTealDeep,
                     ),
                   ),
                   const SizedBox(width: 12),

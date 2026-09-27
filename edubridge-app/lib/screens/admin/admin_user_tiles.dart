@@ -228,7 +228,7 @@ class _ChildListTile extends StatelessWidget {
                         _MiniIconRow(
                           icon: AppIcons.specialist,
                           text: assignedSpecialistName!,
-                          color: AppColors.orangeDeep,
+                          color: AppColors.brandTealDeep,
                         ),
                     ],
                   ),

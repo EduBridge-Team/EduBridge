@@ -10,6 +10,7 @@ import '../../widgets/disability/disability_picker_sheet.dart';
 part 'add_child_file_pickers.dart';
 part 'add_child_disability_field.dart';
 part 'add_child_view.dart';
+part 'add_child_medical_report.dart';  
 
 class AddChildScreen extends StatefulWidget {
   const AddChildScreen({super.key});
@@ -25,6 +26,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   final _nameCtrl = TextEditingController();
   final _ageCtrl = TextEditingController();
   final _disabilityDescCtrl = TextEditingController();
+  
   final _specialNeedsCtrl = TextEditingController();
   final _learningStyleCtrl = TextEditingController();
   final _strengthsCtrl = TextEditingController();
@@ -34,6 +36,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   String? _selectedDisabilityType;
   File? _idCardFile;
   File? _birthCertFile;
+  final List<File> _medicalReportFiles = []; 
   final ImagePicker _picker = ImagePicker();
 
   bool _loading = false;
@@ -81,7 +84,24 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
     if (result != null) setState(() => _selectedDisabilityType = result);
   }
+Future<void> _pickMedicalReport() async {
+  final picked = await _picker.pickMultiImage(imageQuality: 85);
+  if (picked.isEmpty) return;
+  setState(() {
+    _medicalReportFiles.addAll(picked.map((x) => File(x.path)));
+  });
+}
 
+Future<void> _captureMedicalReport() async {
+  final picked = await _picker.pickImage(
+      source: ImageSource.camera, imageQuality: 85);
+  if (picked == null) return;
+  setState(() => _medicalReportFiles.add(File(picked.path)));
+}
+
+void _removeMedicalReport(int index) {
+  setState(() => _medicalReportFiles.removeAt(index));
+}
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -101,6 +121,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
     if (_birthCertFile == null) {
       setState(() => _error = 'صورة شهادة الميلاد مطلوبة');
       return;
+    }
+    if (_medicalReportFiles.isEmpty) {
+      setState(() => _error = 'صورة التقرير الطبي مطلوبة');
+       return;
     }
 
     setState(() {
@@ -127,13 +151,14 @@ class _AddChildScreenState extends State<AddChildScreen> {
         challenges: challenges,
         idCardFile: _idCardFile,
         birthCertFile: _birthCertFile,
+        medicalReportFiles: _medicalReportFiles,
       );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم إرسال بيانات الطفل بنجاح\nبانتظار مراجعة الإدارة'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTeal,
           duration: Duration(seconds: 4),
         ),
       );
@@ -185,7 +210,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
       ),
       child: Row(
         children: [
-          const Icon(AppIcons.info, color: AppColors.orangeDeep),
+          const Icon(AppIcons.info, color: AppColors.brandTealDeep),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
