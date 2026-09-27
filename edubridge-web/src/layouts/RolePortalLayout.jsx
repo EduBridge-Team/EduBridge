@@ -14,7 +14,7 @@ import {
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
-import BrandLogo from '../components/BrandLogo'
+import BrandLogo from '../components/BrandLogo/BrandLogo'
 import NoorPet from '../components/NoorPet'
 
 function activeSection(pathname, role, homePath) {

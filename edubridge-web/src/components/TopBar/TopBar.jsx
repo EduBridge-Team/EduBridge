@@ -5,12 +5,12 @@ import {
   LifeBuoy, Bell, Building2, Settings, ShieldCheck, Landmark, LogOut,
   Accessibility, MessageCircle, Moon, Sun,
 } from 'lucide-react'
-import { getUser, logout } from '../api'
-import { ROLE_NAMES } from '../roles'
-import { dashboardFor } from '../roleRoutes'
-import { isPortalPathForRole } from '../portalRoutes'
-import { useTheme } from '../theme'
-import BrandLogo from './BrandLogo'
+import { getUser, logout } from '../../api'
+import { ROLE_NAMES } from '../../roles'
+import { dashboardFor } from '../../roleRoutes'
+import { isPortalPathForRole } from '../../portalRoutes'
+import { useTheme } from '../../theme'
+import BrandLogo from '../BrandLogo/BrandLogo'
 
 export default function TopBar() {
   const navigate = useNavigate()
