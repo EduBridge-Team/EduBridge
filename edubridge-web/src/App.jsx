@@ -42,7 +42,7 @@ import CaseDiscussionsPage from './pages/CaseDiscussionsPage'
 import SpecialistWorkflowPage from './pages/SpecialistWorkflowPage'
 import ParentLessonsPage from './pages/ParentLessonsPage'
 import AACPage from './pages/AACPage'
-import VoiceCommandWidget from './components/VoiceCommandWidget'
+import VoiceCommandWidget from './components/VoiceCommandWidget/VoiceCommandWidget'
 import './role-portal.css'
 
 function Protected({ children }) {
