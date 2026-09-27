@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pencil, Plus, X } from 'lucide-react'
-import { createLesson, updateLesson } from '../../api'
+import { createLesson, updateLesson } from '../../../api'
 
 export default function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
   const isEditing = Boolean(lesson)
