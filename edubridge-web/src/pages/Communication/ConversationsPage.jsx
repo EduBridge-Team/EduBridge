@@ -7,8 +7,8 @@ import {
   fetchConversationUsers,
   getUser,
   sendConversationMessage,
-} from '../api'
-import { ROLE_NAMES } from '../roles'
+} from '../../api'
+import { ROLE_NAMES } from '../../roles'
 
 const FILTERS = [
   { id: 'all', label: 'الكل' },

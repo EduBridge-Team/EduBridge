@@ -14,7 +14,7 @@ import {
   fetchNotifications,
   markAllNotificationsRead,
   markNotificationRead,
-} from '../api'
+} from '../../api'
 
 // أيقونة حسب نوع الإشعار
 function iconFor(type) {
