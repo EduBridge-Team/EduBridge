@@ -40,10 +40,6 @@
 /* ============================================================
    Parent dashboard responsive polish — mobile web + hero image
    ============================================================ */
-.pd-mobile-nav {
-  display: none;
-}
-
 @media (min-width: 901px) {
   .pd-hero-art img {
     width: min(100%, 520px) !important;
