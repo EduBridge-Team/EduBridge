@@ -1,0 +1,348 @@
+.about-page {
+  --about-blue: #196fad;
+  --about-cyan: #25b9da;
+  --about-teal: #52d2c8;
+  --about-ink: #17324d;
+  --about-text: #52687d;
+  display: grid;
+  gap: 34px;
+  padding: 20px 0 44px;
+}
+
+.about-hero,
+.about-story-grid,
+.about-journey,
+.about-cta {
+  border: 1px solid #e1edf6;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(247,252,255,.98), rgba(247,254,252,.98));
+  box-shadow: 0 18px 48px rgba(30, 105, 166, .07);
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, .9fr);
+  align-items: center;
+  gap: 34px;
+  padding: clamp(28px, 5vw, 58px);
+  overflow: hidden;
+}
+
+.about-hero-copy h1,
+.about-section-heading h2,
+.about-journey h2,
+.about-cta h2 {
+  color: var(--about-ink);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.about-hero-copy h1 {
+  max-width: 680px;
+  margin-top: 10px;
+  font-size: clamp(32px, 5vw, 58px);
+}
+
+.about-hero-copy > p,
+.about-story-main p,
+.about-mission-card p,
+.about-section-heading p,
+.about-value-card p,
+.about-journey p,
+.about-cta p {
+  color: var(--about-text);
+  line-height: 1.9;
+}
+
+.about-hero-copy > p {
+  max-width: 700px;
+  margin: 18px 0 0;
+  font-size: 17px;
+}
+
+.about-kicker,
+.about-section-heading > span,
+.about-mission-card > span,
+.about-cta > div > span {
+  color: var(--about-blue);
+  font-weight: 900;
+}
+
+.about-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(37, 185, 218, .10);
+}
+
+.about-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.about-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--about-blue), var(--about-cyan));
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.about-hero-art {
+  display: grid;
+  place-items: center;
+}
+
+.about-hero-art img {
+  width: 100%;
+  max-width: 590px;
+  display: block;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+.about-section {
+  display: grid;
+  gap: 20px;
+}
+
+.about-section-heading {
+  max-width: 760px;
+}
+
+.about-section-heading.centered {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.about-section-heading h2,
+.about-journey h2,
+.about-cta h2 {
+  margin-top: 6px;
+  font-size: clamp(26px, 3.5vw, 38px);
+}
+
+.about-section-heading p {
+  margin-bottom: 0;
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+  gap: 24px;
+  padding: 28px;
+}
+
+.about-story-main {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.about-story-main p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.about-mission-card {
+  padding: 24px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid #dcebf5;
+}
+
+.about-mission-card > svg {
+  color: var(--about-cyan);
+  margin-bottom: 12px;
+}
+
+.about-mission-card strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--about-ink);
+  font-size: 22px;
+}
+
+.about-mission-card p {
+  margin-bottom: 0;
+}
+
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.about-value-card {
+  min-height: 220px;
+  padding: 22px;
+  border: 1px solid #e0ecf5;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(30, 105, 166, .05);
+}
+
+.about-value-icon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: var(--about-blue);
+  background: linear-gradient(145deg, #eaf8ff, #e6faf5);
+}
+
+.about-value-card h3 {
+  color: var(--about-ink);
+  margin: 16px 0 8px;
+}
+
+.about-value-card p {
+  margin: 0;
+}
+
+.about-journey {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr);
+  gap: 26px;
+  padding: 30px;
+}
+
+.about-journey > div:first-child {
+  align-self: center;
+}
+
+.about-journey p {
+  margin-bottom: 0;
+}
+
+.about-journey-steps {
+  display: grid;
+  gap: 10px;
+}
+
+.about-journey-steps span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #dfedf5;
+  color: var(--about-ink);
+  font-weight: 800;
+}
+
+.about-journey-steps b {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  border-radius: 12px;
+  color: var(--about-blue);
+  background: #eef8ff;
+}
+
+.about-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 28px 30px;
+}
+
+.about-cta p {
+  margin-bottom: 0;
+}
+
+:root[data-theme="dark"] .about-page {
+  --about-ink: #e6f2fb;
+  --about-text: #b8cbd9;
+}
+
+:root[data-theme="dark"] .about-hero,
+:root[data-theme="dark"] .about-story-grid,
+:root[data-theme="dark"] .about-journey,
+:root[data-theme="dark"] .about-cta {
+  background: linear-gradient(135deg, #0c2945, #0b2f3f);
+  border-color: #214663;
+}
+
+:root[data-theme="dark"] .about-mission-card,
+:root[data-theme="dark"] .about-value-card,
+:root[data-theme="dark"] .about-journey-steps span {
+  background: #102f4e;
+  border-color: #28506c;
+}
+
+:root[data-theme="dark"] .about-value-icon,
+:root[data-theme="dark"] .about-journey-steps b,
+:root[data-theme="dark"] .about-kicker {
+  background: #123b5a;
+  color: #8bddff;
+}
+
+@media (max-width: 980px) {
+  .about-hero,
+  .about-story-grid,
+  .about-journey {
+    grid-template-columns: 1fr;
+  }
+
+  .about-hero-art {
+    order: -1;
+  }
+
+  .about-hero-art img {
+    max-width: 680px;
+  }
+
+  .about-values-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .about-page {
+    gap: 24px;
+    padding-top: 8px;
+  }
+
+  .about-hero,
+  .about-story-grid,
+  .about-journey,
+  .about-cta {
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .about-hero-copy h1 {
+    font-size: 32px;
+  }
+
+  .about-hero-actions,
+  .about-cta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .about-hero-actions .btn,
+  .about-cta .btn {
+    width: 100%;
+  }
+
+  .about-values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-value-card {
+    min-height: 0;
+  }
+}
