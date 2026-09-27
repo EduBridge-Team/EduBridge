@@ -51,6 +51,8 @@ export default function RolePortalShell({ children }) {
   const roleName = ROLE_NAMES[role] || role
   const homePath = dashboardFor(user)
   const { dark, toggleTheme } = useTheme()
+  const profileImage = user?.avatar_url || user?.avatar || user?.photo_url || user?.profile_photo_url || ''
+  const profileInitial = String(user?.name || roleName || '؟').trim().charAt(0) || '؟'
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [unread, setUnread] = useState(0)
@@ -310,6 +312,15 @@ export default function RolePortalShell({ children }) {
             <Menu size={21} />
           </button>
 
+          <button
+            className="pp-mobile-brand"
+            type="button"
+            onClick={() => navigate(homePath)}
+            aria-label="العودة إلى لوحة التحكم"
+          >
+            <BrandLogo className="pp-mobile-brand-logo" />
+          </button>
+
           <form className="pp-global-search" onSubmit={submitSearch}>
             <Search size={19} />
             <button type="submit">{searchPlaceholder}</button>
@@ -330,7 +341,9 @@ export default function RolePortalShell({ children }) {
           </button>
 
           <button className="pp-profile" onClick={() => navigate('/profile')} aria-label="الملف الشخصي">
-            <span className="pp-profile-avatar">{(user?.name || roleName).charAt(0)}</span>
+            <span className="pp-profile-avatar">
+              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+            </span>
             <span className="pp-profile-copy">
               <strong>أهلاً {user?.name || roleName}</strong>
               <small>{roleName}</small>
