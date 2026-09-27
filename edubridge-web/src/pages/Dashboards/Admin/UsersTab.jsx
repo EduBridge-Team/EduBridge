@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2 } from 'lucide-react'
-import { deleteChild, deleteUser, fetchChildren, fetchUsers, getUser } from '../../api'
+import { deleteChild, deleteUser, fetchChildren, fetchUsers, getUser } from '../../../api'
 import AdminRoleSection from './AdminRoleSection'
 import EditUserModal from './EditUserModal'
 

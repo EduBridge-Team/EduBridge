@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import { updateUser } from '../../api'
-import { ROLE_NAMES } from '../../roles'
+import { updateUser } from '../../../api'
+import { ROLE_NAMES } from '../../../roles'
 
 export default function EditUserModal({ user, onClose, onSaved }) {
   const [name, setName] = useState(user.name || '')
