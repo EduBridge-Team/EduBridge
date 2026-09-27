@@ -77,6 +77,9 @@ class ApiService {
       {String? phone, String? specialty}) =>
       _apiCoreRegister(name, email, password, role, phone: phone, specialty: specialty);
 
+  static Future<String?> resendEmailVerification(String email) =>
+      _apiCoreResendEmailVerification(email);
+
   static Future<bool> verifyToken() => _apiCoreVerifyToken();
 
   // ===== دوال الطلبات المحمية =====

@@ -141,6 +141,33 @@ extension _LoginScreenStateView on _LoginScreenState {
                                   ),
                                 ),
                               ],
+                              if (_notice != null) ...[
+                                const SizedBox(height: 14),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.green
+                                        .withValues(alpha: .08),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.mark_email_read_outlined,
+                                          color: AppColors.green),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          _notice!,
+                                          style: const TextStyle(
+                                            color: AppColors.green,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 20),
                               FilledButton.icon(
                                 onPressed: _loading ? null : _login,
@@ -157,6 +184,12 @@ extension _LoginScreenStateView on _LoginScreenState {
                                 label: Text(_loading
                                     ? 'جارِ الدخول...'
                                     : 'تسجيل الدخول'),
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton.icon(
+                                onPressed: _loading ? null : _resendVerification,
+                                icon: const Icon(Icons.forward_to_inbox_outlined),
+                                label: const Text('إعادة إرسال رسالة تأكيد البريد'),
                               ),
                             ],
                           ),

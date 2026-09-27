@@ -186,6 +186,24 @@ Future<String?> _apiCoreRegister(
     }
   }
 
+Future<String?> _apiCoreResendEmailVerification(String email) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${Config.baseUrl}/auth/resend-verification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      final data = ApiService._decodeBody(res);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        return null;
+      }
+      return data['error'] ?? data['message'] ?? 'تعذر إعادة إرسال رسالة التأكيد';
+    } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
 Future<bool> _apiCoreVerifyToken() async {
     try {
       final token = await ApiService.getToken();
