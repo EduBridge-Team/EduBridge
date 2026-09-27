@@ -20,6 +20,25 @@
         display: block;
     }
 
+    /* Authenticated portal header uses a compact centered logo on mobile. */
+    .topbar:not(.topbar-guest) .topbar-brand {
+        width: auto;
+        min-width: 0;
+        max-width: 148px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .topbar:not(.topbar-guest) .topbar-brand .topbar-brand-logo {
+        width: 132px !important;
+        max-width: 132px !important;
+        height: 38px !important;
+        max-height: 38px !important;
+        object-fit: contain;
+    }
+
     .hamburger {
         display: flex;
         position: absolute;
