@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getToken, getUser } from '../api'
+import { getToken, getUser } from '../../api'
 import './VoiceCommandWidget.css'
 
 const MAP=[

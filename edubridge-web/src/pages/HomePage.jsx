@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
-import EduBridgeAnimatedBackground from '../components/EduBridgeAnimatedBackground'
+import EduBridgeAnimatedBackground from '../components/EduBridgeAnimatedBackground/EduBridgeAnimatedBackground'
 import NoorPet from '../components/NoorPet'
 import { dashboardFor } from '../roleRoutes'
 import '../homepage-reference.css'
