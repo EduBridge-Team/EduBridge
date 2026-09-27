@@ -3,7 +3,7 @@ import { getToken, getUser } from './api'
 import { dashboardFor } from './roleRoutes'
 import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRole } from './portalRoutes'
 import TopBar from './components/TopBar'
-import RolePortalShell from './components/ParentPortalShell'
+import RolePortalShell from './components/RolePortalShell'
 import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -43,7 +43,7 @@ import SpecialistWorkflowPage from './pages/SpecialistWorkflowPage'
 import ParentLessonsPage from './pages/ParentLessonsPage'
 import AACPage from './pages/AACPage'
 import VoiceCommandWidget from './components/VoiceCommandWidget'
-import './parent-portal.css'
+import './role-portal.css'
 
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
