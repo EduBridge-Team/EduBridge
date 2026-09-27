@@ -150,10 +150,10 @@
   }
 
   .pp-sidebar {
-    width: min(340px, 82vw) !important;
-    padding: 16px 14px 18px !important;
-    gap: 12px !important;
-    border-radius: 0 0 0 24px;
+    width: min(320px, 88vw) !important;
+    padding: max(14px, env(safe-area-inset-top)) 12px max(16px, env(safe-area-inset-bottom)) !important;
+    gap: 10px !important;
+    border-radius: 0 0 0 20px;
     background: rgba(255,255,255,.99);
     box-shadow: -18px 0 46px rgba(10,56,94,.18);
     overflow-y: auto !important;
@@ -167,9 +167,11 @@
   }
 
   .pp-sidebar-head {
-    min-height: 54px;
+    min-height: 50px;
+    padding-bottom: 8px;
     gap: 10px;
     justify-content: space-between;
+    border-bottom: 1px solid var(--pp-line);
   }
 
   .pp-brand {
@@ -181,8 +183,8 @@
   }
 
   .pp-brand img {
-    width: 44px !important;
-    height: 44px !important;
+    width: 39px !important;
+    height: 39px !important;
   }
 
   .pp-brand > span {
@@ -190,7 +192,7 @@
   }
 
   .pp-brand strong {
-    font-size: 20px !important;
+    font-size: 18px !important;
     line-height: 1.1;
   }
 
@@ -202,15 +204,16 @@
   }
 
   .pp-nav {
-    gap: 5px;
+    gap: 4px;
   }
 
   .pp-nav button {
-    min-height: 48px;
-    padding: 10px 12px;
-    border-radius: 14px;
+    min-height: 45px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
     gap: 10px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .pp-nav button.active::after {
@@ -278,7 +281,7 @@
 
 @media (max-width: 430px) {
   .pp-sidebar {
-    width: min(326px, 86vw) !important;
+    width: min(304px, 88vw) !important;
   }
 
   .pp-toolbar {
@@ -379,6 +382,7 @@
 }
 
 :root[data-theme="dark"] .pp-nav button.active {
+  border-color: #28506c;
   background: linear-gradient(135deg, #103a5d, #0e4557);
   color: #eef9ff;
 }
@@ -453,4 +457,3 @@
 :root[data-theme="dark"] .pp-content textarea::placeholder {
   color: #7895ab;
 }
-
