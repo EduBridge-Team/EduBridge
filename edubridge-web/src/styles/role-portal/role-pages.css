@@ -1,0 +1,469 @@
+/* Children / conversations */
+:root[data-theme="dark"] .pc-heading,
+:root[data-theme="dark"] .pc-tools,
+:root[data-theme="dark"] .pc-stat,
+:root[data-theme="dark"] .pc-child-card,
+:root[data-theme="dark"] .pc-empty,
+:root[data-theme="dark"] .pcv-heading,
+:root[data-theme="dark"] .pcv-controls,
+:root[data-theme="dark"] .parent-conversations-page .chat-layout,
+:root[data-theme="dark"] .parent-conversations-page .conversation-list,
+:root[data-theme="dark"] .parent-conversations-page .chat-panel-head,
+:root[data-theme="dark"] .parent-conversations-page .chat-compose {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pc-search,
+:root[data-theme="dark"] .pc-filter,
+:root[data-theme="dark"] .pc-meta-box,
+:root[data-theme="dark"] .pcv-search {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pc-progress-track {
+  background: #24435c;
+}
+
+:root[data-theme="dark"] .parent-conversations-page .conversation-item.active {
+  border-color: #326584;
+  background: linear-gradient(135deg, #103a5d, #103b4e);
+}
+
+:root[data-theme="dark"] .parent-conversations-page .chat-messages {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(79,211,196,.05), transparent 14rem),
+    #09233c;
+}
+
+:root[data-theme="dark"] .parent-conversations-page .chat-bubble.mine {
+  background: linear-gradient(135deg, #12415f, #104c52);
+  color: #eef8ff;
+}
+
+/* Lessons */
+:root[data-theme="dark"] .portal-lessons-page .lessons-hero,
+:root[data-theme="dark"] .portal-lessons-page .lesson-card-new,
+:root[data-theme="dark"] .portal-lessons-page .daily-picks,
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.purple,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.green,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.aqua,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.violet,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.peach {
+  background: #123552;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item {
+  background: #102f4e;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item b {
+  color: #eef8ff;
+}
+
+/* Role dashboards and utility pages */
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+:root[data-theme="dark"] .pp-content .search-row,
+:root[data-theme="dark"] .pp-content .search-result,
+:root[data-theme="dark"] .pp-content .ticket,
+:root[data-theme="dark"] .pp-content .verify-row,
+:root[data-theme="dark"] .pp-content .cert-item,
+:root[data-theme="dark"] .pp-content .note-item {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.14);
+}
+
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .tabs,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-content .consult-detail,
+:root[data-theme="dark"] .pp-content .admin-reply,
+:root[data-theme="dark"] .pp-content .cert-add {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-drawer-backdrop {
+  background: rgba(2, 12, 23, .64);
+}
+
+/* Ensure native form controls and browser chrome follow the selected mode. */
+:root[data-theme="dark"] .pp-content,
+:root[data-theme="dark"] .pp-sidebar,
+:root[data-theme="dark"] .pp-toolbar {
+  color-scheme: dark;
+}
+
+
+/* ============================================================
+   Admin users — grouped like the Flutter admin app
+   ============================================================ */
+.pp-role-admin .role-page,
+.pp-role-admin .role-dashboard {
+  min-height: 0 !important;
+}
+
+.pp-role-admin .role-dashboard {
+  padding-bottom: 0 !important;
+}
+
+.pp-role-admin .admin-tabs {
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 14px !important;
+  padding: 5px !important;
+  border-radius: 999px !important;
+}
+
+.pp-role-admin .admin-tab {
+  min-height: 38px;
+  padding-inline: 20px;
+  border-radius: 999px !important;
+  font-size: 12px;
+}
+
+.pp-role-admin .admin-users-panel {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pp-role-admin .admin-users-head {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--pp-line);
+  border-radius: 18px;
+  background: var(--pp-card);
+  box-shadow: 0 8px 24px rgba(21,91,147,.04);
+}
+
+.pp-role-admin .admin-users-head > div {
+  min-width: 0;
+}
+
+.pp-role-admin .admin-users-head h3 {
+  margin: 0;
+  color: var(--pp-ink);
+  font-size: 18px;
+}
+
+.pp-role-admin .admin-users-head p {
+  margin: 2px 0 0;
+  color: var(--pp-text);
+  font-size: 11px;
+}
+
+.pp-role-admin .admin-search-wrap {
+  width: min(330px, 100%);
+  min-height: 42px;
+  padding-inline: 11px;
+  border: 1px solid var(--pp-line);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #f8fcfe;
+  color: var(--pp-blue);
+}
+
+.pp-role-admin .admin-search-wrap .admin-search {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  outline: 0;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--pp-ink);
+}
+
+.pp-role-admin .admin-group-list {
+  display: grid;
+  gap: 13px;
+}
+
+.pp-role-admin .admin-role-section {
+  overflow: hidden;
+  border: 1px solid var(--pp-line);
+  border-radius: 18px;
+  background: var(--pp-card);
+  box-shadow: 0 8px 24px rgba(21,91,147,.035);
+}
+
+.pp-role-admin .admin-role-heading {
+  min-height: 54px;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--pp-line) 72%, transparent);
+}
+
+.pp-role-admin .admin-role-heading-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.pp-role-admin .admin-role-heading-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,.58);
+  font-size: 18px;
+}
+
+.pp-role-admin .admin-role-heading h4 {
+  margin: 0;
+  color: var(--pp-ink);
+  font-size: 15px;
+}
+
+.pp-role-admin .admin-role-count {
+  min-width: 34px;
+  height: 34px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.68);
+  color: #2f6f93;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.pp-role-admin .tone-teacher .admin-role-heading {
+  background: #e8f6eb;
+}
+.pp-role-admin .tone-specialist .admin-role-heading {
+  background: #fff0df;
+}
+.pp-role-admin .tone-parent .admin-role-heading {
+  background: #eaf5ff;
+}
+.pp-role-admin .tone-children .admin-role-heading {
+  background: #e6f8fa;
+}
+.pp-role-admin .tone-ministry .admin-role-heading {
+  background: #eef3ff;
+}
+.pp-role-admin .tone-institution .admin-role-heading {
+  background: #e9f7f3;
+}
+.pp-role-admin .tone-admin .admin-role-heading {
+  background: #f0f2f7;
+}
+
+.pp-role-admin .admin-role-users,
+.pp-role-admin .admin-children-grid {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.pp-role-admin .admin-user-row,
+.pp-role-admin .admin-child-card {
+  min-width: 0;
+  min-height: 94px;
+  padding: 11px;
+  border: 1px solid var(--pp-line);
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+}
+
+.pp-role-admin .admin-user-row {
+  grid-template-areas:
+    "avatar main count"
+    "avatar main actions";
+}
+
+.pp-role-admin .admin-user-avatar,
+.pp-role-admin .admin-child-avatar {
+  grid-area: avatar;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #dff6f7, #eef6ff);
+  color: #16899c;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-user-main {
+  grid-area: main;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.pp-role-admin .admin-user-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pp-role-admin .admin-user-title strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--pp-ink);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-role-admin .admin-user-title .role-pill {
+  padding: 2px 7px;
+  font-size: 9px;
+}
+
+.pp-role-admin .admin-user-email,
+.pp-role-admin .admin-user-phone {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--pp-text);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-role-admin .admin-user-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pp-role-admin .admin-user-main .user-verify {
+  margin-top: 1px;
+  font-size: 10px;
+}
+
+.pp-role-admin .admin-linked-count {
+  grid-area: count;
+  min-width: 44px;
+  min-height: 27px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #edf6fc;
+  color: #4f7591;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-user-actions {
+  grid-area: actions;
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.pp-role-admin .admin-icon-action {
+  min-height: 27px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.pp-role-admin .admin-icon-action.edit {
+  border: 1px solid #2788c8;
+  color: #2788c8;
+}
+
+.pp-role-admin .admin-icon-action.delete {
+  border: 1px solid #d93645;
+  color: #fff;
+  background: #d93645;
+}
+
+.pp-role-admin .admin-child-card {
+  grid-template-areas: "avatar childcopy childcopy";
+  min-height: 76px;
+}
+
+.pp-role-admin .admin-child-copy {
+  grid-area: childcopy;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.pp-role-admin .admin-child-copy strong {
+  overflow: hidden;
+  color: var(--pp-ink);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-role-admin .admin-child-copy small {
+  color: var(--pp-text);
+  font-size: 10px;
+}
+
+.pp-role-admin .role-pill.role-ministry {
+  background: #e8efff;
+  color: #3b62a5;
+}
+
+.pp-role-admin .role-pill.role-institution {
+  background: #e4f6f0;
+  color: #287b68;
+}
+
+/* Remove the old role-page height that caused extra scrolling inside the portal. */
+body.role-portal-admin .pp-content {
+  padding-bottom: 10px;
+}
+
+body.role-portal-admin .pp-content .role-page,
+body.role-portal-admin .pp-content .role-dashboard,
+body.role-portal-admin .pp-content .admin-panel {
+  min-height: 0 !important;
+}
+
