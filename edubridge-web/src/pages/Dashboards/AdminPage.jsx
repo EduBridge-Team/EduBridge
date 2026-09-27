@@ -1,10 +1,10 @@
 // لوحة التحكم الإدارية — أدمن فقط
 import { Navigate } from 'react-router-dom'
 import { Settings } from 'lucide-react'
-import { getUser } from '../api'
-import Footer from '../components/Footer'
-import AdminSectionTabs from '../components/AdminSectionTabs'
-import UsersTab from './admin/UsersTab'
+import { getUser } from '../../api'
+import Footer from '../../components/Footer'
+import AdminSectionTabs from '../../components/AdminSectionTabs'
+import UsersTab from '../admin/UsersTab'
 
 export default function AdminPage() {
   const me = getUser()

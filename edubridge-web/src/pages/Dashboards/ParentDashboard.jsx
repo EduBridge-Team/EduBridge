@@ -11,12 +11,12 @@ import {
   fetchConversations,
   fetchUnreadNotificationsCount,
   getUser,
-} from '../api'
-import NoorPet from '../components/Noor/NoorPet'
-import ParentProgressSection from './parent-dashboard/ParentProgressSection'
-import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from './parent-dashboard/hooks'
-import { KID_COLORS, STATUS, clampPercent, lessonTimeLabel } from './parent-dashboard/utils'
-import './ParentDashboard.css'
+} from '../../api'
+import NoorPet from '../../components/Noor/NoorPet'
+import ParentProgressSection from '../parent-dashboard/ParentProgressSection'
+import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from '../parent-dashboard/hooks'
+import { KID_COLORS, STATUS, clampPercent, lessonTimeLabel } from '../parent-dashboard/utils'
+import '../ParentDashboard.css'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()

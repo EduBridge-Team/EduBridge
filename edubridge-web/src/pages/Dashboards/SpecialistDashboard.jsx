@@ -6,9 +6,9 @@ import {
   fetchChildren,
   fetchChildProgress,
   markLessonDone,
-} from '../api'
+} from '../../api'
 import { GraduationCap } from 'lucide-react'
-import Footer from '../components/Footer'
+import Footer from '../../components/Footer'
 
 // هل اكتمل الدرس اليوم؟ (مقارنة تاريخ الإتمام باليوم الحالي)
 function isToday(ts) {

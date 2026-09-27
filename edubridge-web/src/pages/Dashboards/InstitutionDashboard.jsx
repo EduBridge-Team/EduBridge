@@ -8,8 +8,8 @@ import {
   MessageCircle,
   Search,
 } from 'lucide-react'
-import { getUser } from '../api'
-import Footer from '../components/Footer'
+import { getUser } from '../../api'
+import Footer from '../../components/Footer'
 
 const QUICK_ACTIONS = [
   { Icon: Search, title: 'البحث عن طالب', text: 'البحث في الملفات المسموح بعرضها باستخدام رقم الهوية', to: '/search' },

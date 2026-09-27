@@ -7,12 +7,12 @@ import {
   fetchLessons,
   fetchDisabilityTypes,
   deleteLesson,
-} from '../api'
+} from '../../api'
 import {
   Plus, BookOpen, Users, Eye, Volume2, Square, X, Pencil, Trash2,
 } from 'lucide-react'
-import Footer from '../components/Footer'
-import LessonFormModal from './teacher/LessonFormModal'
+import Footer from '../../components/Footer'
+import LessonFormModal from '../teacher/LessonFormModal'
 
 export default function TeacherDashboard() {
   const me = getUser()
