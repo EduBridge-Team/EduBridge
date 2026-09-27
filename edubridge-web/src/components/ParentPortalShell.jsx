@@ -243,6 +243,11 @@ export default function RolePortalShell({ children }) {
   const searchPlaceholder = role === 'parent'
     ? 'ابحث في الدروس والمحتوى...'
     : 'ابحث برقم الهوية أو افتح صفحة البحث...'
+  const navDensity = navItems.length <= 6
+    ? 'relaxed'
+    : navItems.length <= 9
+      ? 'comfortable'
+      : 'compact'
 
   return (
     <div className={`pp-shell pp-role-${role}`} dir="rtl">
@@ -254,7 +259,11 @@ export default function RolePortalShell({ children }) {
         />
       )}
 
-      <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label={`قائمة ${roleName}`}>
+      <aside
+        className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`}
+        data-nav-density={navDensity}
+        aria-label={`قائمة ${roleName}`}
+      >
         <div className="pp-sidebar-head">
           <button className="pp-brand" onClick={() => navigate(homePath)} aria-label="EduBridge">
             <BrandLogo className="pp-brand-logo" />
