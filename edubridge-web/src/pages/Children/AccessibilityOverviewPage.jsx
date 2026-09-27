@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Accessibility, ChevronLeft, SlidersHorizontal } from 'lucide-react'
-import { fetchChildren } from '../api'
-import { DISABILITY_TYPES, getAccessibilityProfile } from '../accessibility'
+import { fetchChildren } from '../../api'
+import { DISABILITY_TYPES, getAccessibilityProfile } from '../../accessibility'
 
 export default function AccessibilityOverviewPage() {
   const navigate = useNavigate()

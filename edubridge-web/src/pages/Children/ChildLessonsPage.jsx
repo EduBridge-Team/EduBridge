@@ -2,8 +2,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check, Gamepad2, Settings } from 'lucide-react'
-import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../api'
-import { applyAccessibilityProfile, getAccessibilityProfile } from '../accessibility'
+import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../../api'
+import { applyAccessibilityProfile, getAccessibilityProfile } from '../../accessibility'
 
 export default function ChildLessonsPage() {
   const { childId } = useParams()

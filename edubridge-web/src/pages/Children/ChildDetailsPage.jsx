@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, User, ClipboardList, BookOpen, TrendingUp, Gamepad2, Accessibility } from 'lucide-react'
-import { fetchChildDetails, fetchChildEvaluations } from '../api'
+import { fetchChildDetails, fetchChildEvaluations } from '../../api'
 
 const STATUS_TEXT = {
   evaluated: 'تم التقييم ✓',

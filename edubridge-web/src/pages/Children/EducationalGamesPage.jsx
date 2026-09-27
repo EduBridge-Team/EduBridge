@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, RotateCcw, Settings, Volume2, X } from 'lucide-react'
-import { fetchChildDetails } from '../api'
-import { applyAccessibilityProfile, getAccessibilityProfile, speakArabic, typeFromText } from '../accessibility'
+import { fetchChildDetails } from '../../api'
+import { applyAccessibilityProfile, getAccessibilityProfile, speakArabic, typeFromText } from '../../accessibility'
 
 const GAMES = [
   ['animal_sounds', '🐶', 'أصوات الحيوانات', 'استمع وحدّد الحيوان', ['preschool', 'primary'], [], 'sound'],

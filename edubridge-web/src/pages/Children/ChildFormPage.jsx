@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, IdCard } from 'lucide-react'
-import { addChild, updateChild, uploadFile } from '../api'
+import { addChild, updateChild, uploadFile } from '../../api'
 
 // تحويل نص مفصول بفواصل إلى قائمة (أو null إن كان فارغاً)
 function toList(text) {

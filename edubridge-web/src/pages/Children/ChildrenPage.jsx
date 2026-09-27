@@ -5,7 +5,7 @@ import {
   ArrowLeft, BookOpen, CheckCircle2, GraduationCap, Plus, Search,
   SlidersHorizontal, UserRound, Users,
 } from 'lucide-react'
-import { fetchChildSummary, fetchChildren, getUser } from '../api'
+import { fetchChildSummary, fetchChildren, getUser } from '../../api'
 
 const STATUS_LABELS = {
   evaluated: 'خطة نشطة',

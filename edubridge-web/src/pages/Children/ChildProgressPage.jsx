@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { fetchChildProgress, fetchChildSummary } from '../api'
+import { fetchChildProgress, fetchChildSummary } from '../../api'
 
 // معلومات العرض لكل حالة
 const STATUS = {

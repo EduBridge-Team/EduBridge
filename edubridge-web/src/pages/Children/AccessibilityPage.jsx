@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, RotateCcw, Save, Sparkles } from 'lucide-react'
-import { fetchChildDetails } from '../api'
+import { fetchChildDetails } from '../../api'
 import {
   DISABILITY_TYPES, applyAccessibilityProfile, defaultProfile,
   getAccessibilityProfile, recommendedProfile, saveAccessibilityProfile,
-} from '../accessibility'
+} from '../../accessibility'
 
 const SETTINGS = [
   ['brainBreaksEnabled', 'فواصل ذهنية تلقائية', 'تذكير الطفل بأخذ استراحة قصيرة'],
