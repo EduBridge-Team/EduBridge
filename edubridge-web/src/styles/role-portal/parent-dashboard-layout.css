@@ -74,6 +74,16 @@ body.role-portal-active.parent-dashboard-page {
     margin-bottom: 0 !important;
   }
 
+  body.parent-dashboard-page .pd-today,
+  body.parent-dashboard-page .pd-conversations,
+  body.parent-dashboard-page .pd-schedule-list,
+  body.parent-dashboard-page .pd-schedule-row,
+  body.parent-dashboard-page .pd-schedule-copy {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower {
     width: calc(100% + var(--pp-sidebar-reserved)) !important;
     max-width: none !important;
