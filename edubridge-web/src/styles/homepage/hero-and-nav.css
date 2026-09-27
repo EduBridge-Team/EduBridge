@@ -199,7 +199,7 @@
 
 
 /* Override the older global .topbar-brand img rule (38x38) with higher specificity. */
-.topbar-brand .topbar-brand-logo {
+.topbar-guest .topbar-brand .topbar-brand-logo {
   display: block;
   width: 240px;
   max-width: none;
@@ -297,14 +297,14 @@
 
 /* True mobile keeps the hamburger menu. */
 @media (max-width: 780px) {
-  .topbar-brand .topbar-brand-logo {
+  .topbar-guest .topbar-brand .topbar-brand-logo {
     width: 220px;
     height: auto;
   }
 }
 
 @media (min-width: 781px) and (max-width: 1024px) {
-  .topbar-brand .topbar-brand-logo {
+  .topbar-guest .topbar-brand .topbar-brand-logo {
     width: 220px;
     height: auto;
   }
