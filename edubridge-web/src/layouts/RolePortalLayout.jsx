@@ -15,7 +15,7 @@ import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
 import BrandLogo from '../components/BrandLogo/BrandLogo'
-import NoorPet from '../components/NoorPet'
+import NoorPet from '../components/Noor/NoorPet'
 
 function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'

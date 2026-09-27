@@ -12,7 +12,7 @@ import {
   fetchUnreadNotificationsCount,
   getUser,
 } from '../api'
-import NoorPet from '../components/NoorPet'
+import NoorPet from '../components/Noor/NoorPet'
 import ParentProgressSection from './parent-dashboard/ParentProgressSection'
 import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from './parent-dashboard/hooks'
 import { KID_COLORS, STATUS, clampPercent, lessonTimeLabel } from './parent-dashboard/utils'

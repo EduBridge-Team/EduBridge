@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Send, Trash2, X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
-import { askAssistant, getToken, getUser } from '../api'
+import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
 
 const WELCOME = {

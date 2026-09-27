@@ -21,7 +21,7 @@ import {
 import { getToken, getUser } from '../api'
 import Footer from '../components/Footer'
 import EduBridgeAnimatedBackground from '../components/EduBridgeAnimatedBackground/EduBridgeAnimatedBackground'
-import NoorPet from '../components/NoorPet'
+import NoorPet from '../components/Noor/NoorPet'
 import { dashboardFor } from '../roleRoutes'
 import '../homepage-reference.css'
 

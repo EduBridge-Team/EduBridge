@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pause, Play } from 'lucide-react'
-import { getToken, getUser } from '../api'
+import { getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
 
 const SIZE = 94
