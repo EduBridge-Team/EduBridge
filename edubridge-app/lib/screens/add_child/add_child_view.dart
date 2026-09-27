@@ -83,6 +83,15 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               ),
               const SizedBox(height: 20),
 
+             buildMedicalReportSection(                      
+               context: context,
+                c: c,
+               files: _medicalReportFiles,
+               onPick: _pickMedicalReport,
+               onCapture: _captureMedicalReport,
+               onRemove: _removeMedicalReport,
+  ),
+             const SizedBox(height: 20),
               TextFormField(
                 controller: _disabilityDescCtrl,
                 maxLines: 3,
@@ -95,14 +104,17 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                     : null,
               ),
               const SizedBox(height: 16),
-
+              
               TextFormField(
                 controller: _specialNeedsCtrl,
                 maxLines: 2,
                 decoration: const InputDecoration(
-                  labelText: 'احتياجات خاصة (اختياري)',
+                  labelText: 'احتياجات خاصة *',
                   prefixIcon: Icon(AppIcons.info),
                 ),
+                 validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'احتياجات الخاصة مطلوب'
+                    : null,
               ),
               const SizedBox(height: 16),
 

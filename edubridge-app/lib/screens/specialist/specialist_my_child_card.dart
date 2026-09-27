@@ -82,7 +82,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(AppIcons.starFilled,
-                            size: 16, color: AppColors.yellow),
+                            size: 16, color: AppColors.brandTealLight),
                         const SizedBox(width: 4),
                         Text('${stats['pct']}%',
                             style: const TextStyle(
@@ -97,14 +97,14 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.orange.withValues(alpha: 0.15),
+                          color: AppColors.brandTeal.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text('بانتظار التقييم',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.orangeDeep,
+                              color: AppColors.brandTealDeep,
                             )),
                       ),
                   ],
@@ -135,7 +135,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(AppIcons.clock,
-                            size: 12, color: AppColors.orangeDeep),
+                            size: 12, color: AppColors.brandTealDeep),
                         const SizedBox(width: 4),
                         Text(
                           '${current['lesson_title'] ?? ''}',
@@ -163,7 +163,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                   child: isPending
                       ? ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.orange,
+                            backgroundColor: AppColors.brandTealDeep,
                           ),
                           icon: const Icon(AppIcons.evaluate,
                               color: Colors.white),
@@ -270,7 +270,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         minimumSize: const Size(0, 42),
                         padding:
                             const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: AppColors.purple,
+                        backgroundColor: AppColors.blue,
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(AppIcons.specialist, size: 18),

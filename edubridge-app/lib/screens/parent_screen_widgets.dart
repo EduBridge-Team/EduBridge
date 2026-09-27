@@ -176,10 +176,10 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
               children: [
                 Expanded(
                   child: AdaptiveButton(
-                    label: 'الواجبات',
+                    label: 'الواجي',
                     icon: AppIcons.homework,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.orange,
+                    backgroundColor: AppColors.blue,
                     fullWidth: true,
                     fontSize: 10,
                     onPressed: () => _openHomework(child),
@@ -221,7 +221,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     label: 'التقدّم',
                     icon: AppIcons.progress,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.green,
+                    backgroundColor: AppColors.brandTealDeep,
                     fullWidth: true,
                     onPressed: () => _openChildProgress(child),
                   ),
@@ -232,7 +232,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     label: 'تعديل',
                     icon: AppIcons.edit,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.brandBlue,
+                    backgroundColor: AppColors.brandBlueDeep,
                     fullWidth: true,
                     onPressed: () => _openEditChild(child),
                   ),
@@ -245,7 +245,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
             AdaptiveButton(
               label: 'دروس لولي الأمر',
               icon: AppIcons.parent,
-              backgroundColor: AppColors.purple,
+              backgroundColor: AppColors.brandTealDeep,
               onPressed: _openParentLessons,
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
@@ -254,7 +254,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
             AdaptiveButton(
               label: 'طلب جلسة دعم تعليمي',
               icon: AppIcons.specialist,
-              backgroundColor: AppColors.brandTeal,
+              backgroundColor: AppColors.brandTealDeep,
               onPressed: () => _openLearningSupportRequest(child),
             ),
           ],
@@ -286,9 +286,9 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
 
   Widget _buildStatusBadge(String? status) {
     final (text, color, icon) = switch (status) {
-      'evaluated' => ('تم التقييم', AppColors.green, AppIcons.check),
+      'evaluated' => ('تم التقييم', AppColors.brandTealDeep, AppIcons.check),
       'assigned' => ('تم التعيين', AppColors.brandBlue, AppIcons.verified),
-      _ => ('قيد الانتظار', AppColors.orange, AppIcons.clock),
+      _ => ('قيد الانتظار', AppColors.brandGreen, AppIcons.clock),
     };
 
     return Container(

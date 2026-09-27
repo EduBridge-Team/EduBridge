@@ -91,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم تحديث الصورة'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTealDeep,
         ),
       );
     } catch (e) {

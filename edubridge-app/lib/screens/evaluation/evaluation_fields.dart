@@ -34,7 +34,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
       ),
       child: Row(
         children: [
-          const Icon(AppIcons.info, color: AppColors.orangeDeep, size: 22),
+          const Icon(AppIcons.info, color: AppColors.brandBlueDeep, size: 22),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -224,7 +224,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  _sendToMinistry ? AppColors.orange : AppColors.green,
+                  _sendToMinistry ? AppColors.blue : AppColors.brandTealDeep,
               foregroundColor: Colors.white,
               minimumSize: const Size(0, 48),
             ),

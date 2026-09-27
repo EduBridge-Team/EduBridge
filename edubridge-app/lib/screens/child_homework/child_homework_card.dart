@@ -15,8 +15,8 @@ class _HomeworkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final large = AccessibilityService.instance
-        .profile.value.extraLargeTouchTargets;
+    final large =
+        AccessibilityService.instance.profile.value.extraLargeTouchTargets;
 
     final submission = homework.submissions
         .cast<HomeworkSubmission?>()
@@ -28,13 +28,13 @@ class _HomeworkCard extends StatelessWidget {
     Color statusColor;
     String statusText;
     if (isSubmitted) {
-      statusColor = AppColors.green;
+      statusColor = AppColors.brandBlueLight;
       statusText = submission.isLate ? 'تم التسليم (متأخر)' : 'تم التسليم';
     } else if (isOverdue) {
-      statusColor = AppColors.red;
+      statusColor = AppColors.brandTealDeep;
       statusText = 'متأخر';
     } else {
-      statusColor = AppColors.orange;
+      statusColor = AppColors.brandGreen;
       statusText = 'لم يُسلَّم';
     }
 
@@ -58,8 +58,8 @@ class _HomeworkCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
@@ -76,7 +76,6 @@ class _HomeworkCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-
             if (homework.description.isNotEmpty)
               Text(
                 homework.description,
@@ -86,7 +85,6 @@ class _HomeworkCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 10),
-
             Wrap(
               spacing: 12,
               runSpacing: 6,
@@ -94,7 +92,7 @@ class _HomeworkCard extends StatelessWidget {
                 _infoChip(
                   AppIcons.calendar,
                   'التسليم: ${homework.dueDate.day}/${homework.dueDate.month}/${homework.dueDate.year}',
-                  isOverdue ? AppColors.red : c.muted,
+                  isOverdue ? AppColors.brandTealDeep : c.muted,
                 ),
                 if (homework.subject != null)
                   _infoChip(
@@ -110,7 +108,6 @@ class _HomeworkCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
             if (isSubmitted)
               _buildSubmittedBox(submission, c, large)
             else
@@ -119,7 +116,7 @@ class _HomeworkCard extends StatelessWidget {
                 height: large ? 64 : 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.green,
+                    backgroundColor: AppColors.brandTealDeep,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -150,7 +147,7 @@ class _HomeworkCard extends StatelessWidget {
         color: c.tintGreen,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.green.withValues(alpha: 0.3),
+          color: AppColors.brandTealDeep.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),

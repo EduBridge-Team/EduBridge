@@ -110,7 +110,8 @@ class ApiService {
     List<String>? challenges,
     File? idCardFile,
     File? birthCertFile,
-  }) => _apiAddChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile);
+    List<File>? medicalReportFiles, 
+  }) => _apiAddChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile,medicalReportFiles: medicalReportFiles,);
 
     static Future<Map<String, dynamic>?> getChildDetails(int childId) => _apiGetChildDetails(childId);
 

@@ -185,7 +185,7 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم اعتماد إنجاز الدرس'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandTeal,
           ),
         );
       }

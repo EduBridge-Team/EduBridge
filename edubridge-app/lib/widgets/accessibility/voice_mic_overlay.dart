@@ -124,14 +124,14 @@ class _MicButton extends StatelessWidget {
           height: 68,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: listening ? Colors.red : AppColors.tealDeep,
+            color: listening ? Colors.blueAccent : AppColors.tealDeep,
             border: Border.all(
-              color: listening ? Colors.red.shade200 : AppColors.yellow,
+              color: listening ? AppColors.brandBlueDeep : AppColors.brandTeal,
               width: 3,
             ),
             boxShadow: [
               BoxShadow(
-                color: (listening ? Colors.red : AppColors.navy)
+                color: (listening ? AppColors.brandTeal : AppColors.navy)
                     .withValues(alpha: 0.4),
                 blurRadius: listening ? 22 : 14,
                 spreadRadius: listening ? 4 : 1,

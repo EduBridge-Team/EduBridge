@@ -169,7 +169,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                     trailing: TextButton(
                       onPressed: () => _resolveTicket(ticket),
                       child: const Text('تم الحل',
-                          style: TextStyle(color: Colors.green)),
+                          style: TextStyle(color: AppColors.brandGreen)),
                     ),
                   ),
                 );

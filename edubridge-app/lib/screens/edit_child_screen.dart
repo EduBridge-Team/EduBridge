@@ -142,7 +142,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم حفظ التعديلات بنجاح'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandTealDeep,
           ),
         );
       } else {

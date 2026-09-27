@@ -55,7 +55,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(AppIcons.check, color: AppColors.green, size: 32),
+            Icon(AppIcons.check, color: AppColors.brandTealDeep, size: 32),
             SizedBox(width: 8),
             Text('اعتماد الخطة'),
           ],
@@ -71,7 +71,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
             child: const Text('إلغاء'),
           ),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTealDeep),
             icon: const Icon(AppIcons.check),
             label: const Text('اعتماد'),
             onPressed: () => Navigator.pop(context, true),
@@ -186,7 +186,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
           _MinistrySectionHeader(
             title: 'طلبات بانتظار المراجعة',
             count: '${_pending.length}',
-            color: AppColors.orange,
+            color: AppColors.brandBlueLight,
           ),
           if (_pending.isEmpty)
             _MinistryEmptyCard(

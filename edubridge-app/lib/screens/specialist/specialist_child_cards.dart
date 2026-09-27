@@ -9,14 +9,14 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.purple.withValues(alpha: 0.1),
+        color: AppColors.brandTealDeep.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.purple, width: 2),
+        border: Border.all(color: AppColors.brandTealDeep, width: 2),
       ),
       child: Row(
         children: [
           const Icon(AppIcons.specialist,
-              color: AppColors.purple, size: 28),
+              color: AppColors.brandTealDeep, size: 28),
           const SizedBox(width: 10),
           const Expanded(
             child: Column(
@@ -131,9 +131,9 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(0, 40),
                 padding: const EdgeInsets.symmetric(horizontal: 6),
-                foregroundColor: AppColors.purple,
+                foregroundColor: AppColors.brandTealDeep,
                 side: const BorderSide(
-                    color: AppColors.purple, width: 1.5),
+                    color: AppColors.brandTeal, width: 1.5),
               ),
               icon: const Icon(AppIcons.specialist, size: 16),
               label: const Text('اقترح مختص دعم تعليمي',
