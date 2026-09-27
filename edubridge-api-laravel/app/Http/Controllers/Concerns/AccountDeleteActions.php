@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 trait AccountDeleteActions
 {
@@ -19,6 +20,26 @@ trait AccountDeleteActions
             $current = DB::table('users')->where('id', $user->id)->value('avatar_url');
 
             DB::transaction(function () use ($user) {
+                $account = DB::table('users')
+                    ->where('id', $user->id)
+                    ->first(['id', 'email']);
+
+                if (!$account) {
+                    throw new \RuntimeException('Account row was not found');
+                }
+
+                if (Schema::hasTable('email_verification_tokens')) {
+                    DB::table('email_verification_tokens')
+                        ->where('email', $account->email)
+                        ->delete();
+                }
+
+                if (Schema::hasTable('password_reset_tokens')) {
+                    DB::table('password_reset_tokens')
+                        ->where('email', $account->email)
+                        ->delete();
+                }
+
                 $deleted = DB::table('users')->where('id', $user->id)->delete();
 
                 if ($deleted !== 1) {
