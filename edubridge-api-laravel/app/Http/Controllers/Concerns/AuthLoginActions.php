@@ -39,6 +39,16 @@ trait AuthLoginActions
                 return response()->json(['error' => 'بيانات الدخول غير صحيحة'], 401);
             }
 
+            if (
+                Schema::hasColumn('users', 'email_verified_at')
+                && empty($user->email_verified_at)
+            ) {
+                return response()->json([
+                    'error' => 'يجب تأكيد بريدك الإلكتروني قبل تسجيل الدخول. تحقق من صندوق الوارد أو أعد إرسال رسالة التأكيد.',
+                    'code' => 'EMAIL_NOT_VERIFIED',
+                ], 403);
+            }
+
             if (!isset($user->role) || !is_string($user->role) || trim($user->role) === '') {
                 return response()->json([
                     'error' => 'بيانات الدور للحساب غير مكتملة على السيرفر',
