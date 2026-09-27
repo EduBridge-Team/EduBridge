@@ -6,7 +6,7 @@
     display: none !important;
   }
 
-  body.parent-portal-active .pp-shell {
+  body.role-portal-active .pp-shell {
     display: block !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -15,13 +15,13 @@
     box-sizing: border-box !important;
   }
 
-  body.parent-portal-active .pp-body {
+  body.role-portal-active .pp-body {
     width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
   }
 
-  body.parent-portal-active .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     position: fixed !important;
     inset: 0 auto 0 0 !important;
     right: 0 !important;
@@ -43,13 +43,13 @@
     box-shadow: -8px 0 26px rgba(22,94,150,.055) !important;
   }
 
-  body.parent-portal-active .pp-sidebar::-webkit-scrollbar {
+  body.role-portal-active .pp-sidebar::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
     display: none !important;
   }
 
-  body.parent-portal-active .pp-sidebar-head {
+  body.role-portal-active .pp-sidebar-head {
     flex: 0 0 auto !important;
     min-height: 52px !important;
     padding: 3px 7px 9px !important;
@@ -57,7 +57,7 @@
     border-bottom: 1px solid var(--pp-line) !important;
   }
 
-  body.parent-portal-active .pp-brand {
+  body.role-portal-active .pp-brand {
     flex: 1 1 auto !important;
     display: flex !important;
     align-items: center !important;
@@ -65,14 +65,14 @@
     text-align: right !important;
   }
 
-  body.parent-portal-active .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 152px !important;
     max-width: 100% !important;
     height: auto !important;
     object-fit: contain !important;
   }
 
-  body.parent-portal-active .pp-nav {
+  body.role-portal-active .pp-nav {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     display: flex !important;
@@ -84,11 +84,11 @@
     scrollbar-width: none !important;
   }
 
-  body.parent-portal-active .pp-nav::-webkit-scrollbar {
+  body.role-portal-active .pp-nav::-webkit-scrollbar {
     display: none !important;
   }
 
-  body.parent-portal-active .pp-nav button {
+  body.role-portal-active .pp-nav button {
     min-height: 46px !important;
     padding: 8px 9px !important;
     border-radius: 11px !important;
@@ -98,50 +98,50 @@
     line-height: 1.35 !important;
   }
 
-  body.parent-portal-active .pp-nav button > svg {
+  body.role-portal-active .pp-nav button > svg {
     width: 21px !important;
     height: 21px !important;
   }
 
-  body.parent-portal-active .pp-noor-card {
+  body.role-portal-active .pp-noor-card {
     flex: 0 0 auto !important;
     min-height: 112px !important;
     margin-top: auto !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav {
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav {
     gap: clamp(5px, .7vh, 8px) !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
     min-height: 48px !important;
     font-size: clamp(16px, 1.15vw, 17.5px) !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav {
     justify-content: space-evenly !important;
     gap: 8px !important;
     padding-block: 6px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
     min-height: 52px !important;
     padding-block: 10px !important;
     font-size: clamp(17px, 1.25vw, 19px) !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button > svg {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button > svg {
     width: 22px !important;
     height: 22px !important;
   }
 
   /* The assistant artwork already has enough detail; omit its small badge in the sidebar. */
-  body.parent-portal-active .pp-noor-avatar .noor-pet-badge,
-  body.parent-portal-active .pp-noor-avatar .noor-pet-brain {
+  body.role-portal-active .pp-noor-avatar .noor-pet-badge,
+  body.role-portal-active .pp-noor-avatar .noor-pet-brain {
     display: none !important;
   }
 
-  body.parent-portal-active .pp-content {
+  body.role-portal-active .pp-content {
     width: min(1240px, calc(100% - 32px)) !important;
     max-width: 100% !important;
     min-width: 0 !important;
@@ -152,138 +152,138 @@
 }
 
 @media (min-width: 901px) and (max-width: 1100px) {
-  body.parent-portal-active .pp-shell {
+  body.role-portal-active .pp-shell {
     padding-right: 196px !important;
   }
 
-  body.parent-portal-active .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     width: 196px !important;
     padding-inline: 8px !important;
   }
 
-  body.parent-portal-active .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 138px !important;
   }
 
-  body.parent-portal-active .pp-nav button {
+  body.role-portal-active .pp-nav button {
     min-height: 40px !important;
     padding-inline: 8px !important;
     font-size: 15px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
     min-height: 44px !important;
     font-size: 16px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
     min-height: 48px !important;
     font-size: 17px !important;
   }
 
-  body.parent-portal-active .pp-content {
+  body.role-portal-active .pp-content {
     width: min(100% - 24px, 1180px) !important;
   }
 }
 
 @media (min-width: 901px) and (max-height: 760px) {
-  body.parent-portal-active .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     padding-block: 8px !important;
     gap: 4px !important;
   }
 
-  body.parent-portal-active .pp-sidebar-head {
+  body.role-portal-active .pp-sidebar-head {
     min-height: 44px !important;
     padding-block: 1px 6px !important;
   }
 
-  body.parent-portal-active .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 126px !important;
   }
 
-  body.parent-portal-active .pp-nav {
+  body.role-portal-active .pp-nav {
     gap: 1px !important;
   }
 
-  body.parent-portal-active .pp-nav button {
+  body.role-portal-active .pp-nav button {
     min-height: 39px !important;
     padding-block: 5px !important;
     font-size: 15px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
     min-height: 42px !important;
     font-size: 16px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
     min-height: 44px !important;
     font-size: 17px !important;
   }
 
-  body.parent-portal-active .pp-noor-card {
+  body.role-portal-active .pp-noor-card {
     min-height: 88px !important;
     padding: 6px !important;
     grid-template-columns: 60px minmax(0, 1fr) !important;
   }
 
-  body.parent-portal-active .pp-noor-avatar {
+  body.role-portal-active .pp-noor-avatar {
     width: 58px !important;
     height: 58px !important;
   }
 
-  body.parent-portal-active .pp-noor-avatar .noor-pet {
+  body.role-portal-active .pp-noor-avatar .noor-pet {
     width: 64px !important;
     height: 54px !important;
   }
 }
 
 @media (min-width: 901px) and (max-height: 620px) {
-  body.parent-portal-active .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     padding-block: 6px !important;
   }
 
-  body.parent-portal-active .pp-sidebar-head {
+  body.role-portal-active .pp-sidebar-head {
     min-height: 39px !important;
   }
 
-  body.parent-portal-active .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 112px !important;
   }
 
-  body.parent-portal-active .pp-nav button {
+  body.role-portal-active .pp-nav button {
     min-height: 33px !important;
     padding-block: 3px !important;
     font-size: 13.5px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
     min-height: 35px !important;
     font-size: 14.5px !important;
   }
 
-  body.parent-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
     min-height: 39px !important;
     font-size: 15.5px !important;
   }
 
-  body.parent-portal-active .pp-noor-card {
+  body.role-portal-active .pp-noor-card {
     min-height: 64px !important;
     grid-template-columns: 48px minmax(0, 1fr) !important;
   }
 
-  body.parent-portal-active .pp-noor-avatar {
+  body.role-portal-active .pp-noor-avatar {
     width: 46px !important;
     height: 46px !important;
   }
 
-  body.parent-portal-active .pp-noor-avatar .noor-pet {
+  body.role-portal-active .pp-noor-avatar .noor-pet {
     width: 52px !important;
     height: 44px !important;
   }
 
-  body.parent-portal-active .pp-noor-copy small,
-  body.parent-portal-active .pp-noor-copy em {
+  body.role-portal-active .pp-noor-copy small,
+  body.role-portal-active .pp-noor-copy em {
     display: none !important;
   }
 }
