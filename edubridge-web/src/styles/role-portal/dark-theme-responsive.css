@@ -1,0 +1,292 @@
+@media (max-width: 900px) {
+  .pp-sidebar.is-open {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+}
+
+.pp-role-admin .admin-users-head h3 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-users-head p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.pp-role-admin .admin-search-wrap .admin-search {
+  font-size: 14px;
+}
+
+.pp-role-admin .admin-role-heading {
+  min-height: 50px;
+  padding: 8px 12px;
+}
+
+.pp-role-admin .admin-role-heading h4 {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.pp-role-admin .admin-role-heading-icon {
+  width: 36px;
+  height: 36px;
+  font-size: 19px;
+}
+
+.pp-role-admin .admin-role-count {
+  min-width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+.pp-role-admin .admin-role-users,
+.pp-role-admin .admin-children-grid {
+  padding: 8px;
+  gap: 8px;
+}
+
+.pp-role-admin .admin-user-row,
+.pp-role-admin .admin-child-card {
+  min-height: 82px;
+  padding: 9px 11px;
+  border-radius: 16px;
+  gap: 9px;
+}
+
+.pp-role-admin .admin-user-avatar,
+.pp-role-admin .admin-child-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+
+.pp-role-admin .admin-user-title strong,
+.pp-role-admin .admin-child-copy strong {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.pp-role-admin .admin-user-title .role-pill {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.pp-role-admin .admin-user-email,
+.pp-role-admin .admin-user-phone,
+.pp-role-admin .admin-child-copy small {
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.pp-role-admin .admin-user-main .user-verify {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.pp-role-admin .admin-linked-count {
+  min-width: 40px;
+  min-height: 28px;
+  padding-inline: 7px;
+  font-size: 11px;
+}
+
+.pp-role-admin .admin-icon-action {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 10px;
+}
+
+.pp-role-admin .admin-child-card {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "avatar childcopy childactions";
+}
+
+.pp-role-admin .admin-child-actions {
+  grid-area: childactions;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pp-role-admin .admin-child-teacher {
+  color: #169ca8 !important;
+  font-weight: 700;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-teacher .admin-role-heading {
+  background: #15462a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-specialist .admin-role-heading {
+  background: #4d351b;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-parent .admin-role-heading {
+  background: #173b59;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-children .admin-role-heading {
+  background: #493817;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-ministry .admin-role-heading {
+  background: #26395d;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-institution .admin-role-heading {
+  background: #18483e;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-admin .admin-role-heading {
+  background: #2f374a;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-row,
+:root[data-theme="dark"] .pp-role-admin .admin-child-card {
+  border-color: #2b4f6c;
+  background: #102f50;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-avatar,
+:root[data-theme="dark"] .pp-role-admin .admin-child-avatar {
+  background: linear-gradient(145deg, #16465b, #143c59);
+  color: #62d7df;
+}
+
+@media (max-width: 760px) {
+  .pp-role-admin .admin-user-row,
+  .pp-role-admin .admin-child-card {
+    min-height: 86px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pp-role-admin .admin-user-row {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "avatar main count"
+      "avatar main actions";
+    min-height: 86px;
+    padding: 9px;
+  }
+
+  .pp-role-admin .admin-child-card {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    grid-template-areas: "avatar childcopy childactions";
+    min-height: 82px;
+    padding: 9px;
+  }
+
+  .pp-role-admin .admin-user-actions {
+    justify-self: end;
+  }
+
+  .pp-role-admin .admin-linked-count {
+    justify-self: end;
+  }
+}
+
+
+/* ============================================================
+   Admin app-style primary tabs
+   ============================================================ */
+.admin-section-tabs {
+  width: min(720px, 100%);
+  margin: 0 auto 18px;
+  padding: 6px;
+  border: 1px solid var(--pp-line);
+  border-radius: 999px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  background: color-mix(in srgb, var(--pp-card) 94%, transparent);
+  box-shadow: 0 10px 28px rgba(21, 91, 147, .05);
+}
+
+.admin-section-tab {
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--pp-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.admin-section-tab:hover {
+  color: var(--pp-ink);
+  background: color-mix(in srgb, var(--pp-blue) 9%, transparent);
+}
+
+.admin-section-tab.active {
+  background: linear-gradient(135deg, #22c7cb, #169dc9);
+  color: #fff;
+  box-shadow: 0 9px 22px rgba(22, 157, 201, .25);
+}
+
+.admin-section-tab.active:hover {
+  color: #fff;
+}
+
+:root[data-theme="dark"] .admin-section-tabs {
+  border-color: #294e69;
+  background: #102b47;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .14);
+}
+
+:root[data-theme="dark"] .admin-section-tab {
+  color: #a9c0d4;
+}
+
+:root[data-theme="dark"] .admin-section-tab:hover {
+  color: #eef8ff;
+  background: #153754;
+}
+
+:root[data-theme="dark"] .admin-section-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, #20c3c9, #1299c5);
+}
+
+.pp-role-admin .admin-users-head {
+  align-items: center;
+}
+
+@media (max-width: 560px) {
+  .admin-section-tabs {
+    width: 100%;
+    padding: 5px;
+    gap: 2px;
+  }
+
+  .admin-section-tab {
+    min-height: 52px;
+    padding: 7px 5px;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .admin-section-tab svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+
+
