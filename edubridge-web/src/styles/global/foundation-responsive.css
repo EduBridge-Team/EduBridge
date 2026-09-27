@@ -3,10 +3,62 @@
     .topbar {
         gap: 12px;
         padding: 10px 16px;
+        min-height: 64px;
+        justify-content: center;
+        position: sticky;
+    }
+
+    .topbar-brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 61;
+        margin: 0;
+    }
+
+    .topbar-brand-logo {
+        display: block;
     }
 
     .hamburger {
         display: flex;
+        position: absolute;
+        left: 16px;
+        margin: 0;
+        z-index: 61;
+    }
+
+    .mobile-profile-button {
+        display: grid;
+        place-items: center;
+        position: absolute;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        overflow: hidden;
+        border: 1.5px solid var(--line);
+        border-radius: 50%;
+        background: var(--tint-teal);
+        color: var(--teal-deep);
+        font: inherit;
+        font-size: 17px;
+        font-weight: 800;
+        cursor: pointer;
+        z-index: 61;
+    }
+
+    .mobile-profile-button img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .mobile-profile-button:focus-visible,
+    .hamburger:focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--teal) 35%, transparent);
+        outline-offset: 2px;
     }
 
     .topbar-backdrop {
@@ -110,7 +162,21 @@
         min-height: 46px;
         justify-content: center;
     }
+
+    .topbar-guest .topbar-brand {
+        position: static;
+        transform: none;
+        margin-inline-end: auto;
+    }
+
+    .topbar-guest .hamburger {
+        position: static;
+        margin-inline-start: auto;
+    }
 }
 
-
-
+@media (min-width: 1025px) {
+    .mobile-profile-button {
+        display: none;
+    }
+}
