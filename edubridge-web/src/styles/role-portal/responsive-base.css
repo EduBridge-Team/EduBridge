@@ -1,0 +1,363 @@
+.pp-mobile-brand {
+  display: none;
+}
+
+/* Shared portal responsive rules.
+   Desktop geometry lives in final-overrides.css so the sidebar has one source of truth. */
+
+@media (max-width: 900px) {
+  .pp-mobile-brand {
+    display: inline-flex;
+  }
+  .pp-shell {
+    display: block;
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .pp-sidebar {
+    position: fixed;
+    inset: 0 0 0 auto;
+    z-index: 100;
+    width: min(310px, 88vw);
+    height: 100dvh;
+    padding: 18px 14px;
+    transform: translateX(105%);
+    transition: transform .22s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-left: 0;
+    box-shadow: -20px 0 50px rgba(10,56,94,.2);
+    scrollbar-width: none;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pp-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .pp-drawer-close {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #f0f7fb;
+  }
+
+  .pp-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: block;
+    border: 0;
+    background: rgba(9,38,62,.34);
+    backdrop-filter: blur(2px);
+  }
+
+  .pp-body {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pp-toolbar {
+    position: sticky;
+    min-height: 68px;
+    padding: 10px 16px;
+    display: block;
+  }
+
+  .pp-menu-button,
+  .pp-profile {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .pp-menu-button {
+    right: 16px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--pp-line);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    color: var(--pp-blue);
+  }
+
+  .pp-profile {
+    left: 16px;
+    min-width: auto;
+    padding: 0;
+  }
+
+  .pp-profile-copy,
+  .pp-profile > svg,
+  .pp-global-search,
+  .pp-theme-toggle,
+  .pp-notification {
+    display: none;
+  }
+
+  .pp-mobile-brand {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    max-width: calc(100% - 132px);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .pp-mobile-brand .brand-lockup--topbar {
+    min-height: 0;
+    gap: 6px;
+  }
+
+  .pp-mobile-brand .brand-lockup-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .pp-mobile-brand .brand-wordmark {
+    min-height: 38px;
+    font-size: 24px;
+    transform: none;
+  }
+
+  .pp-profile-avatar {
+    overflow: hidden;
+  }
+
+  .pp-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .pp-content {
+    width: min(100% - 24px, 900px);
+    padding: 16px 0 20px;
+  }
+
+  .pc-grid,
+  .parent-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .parent-lessons-page .lessons-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-lessons-page .lessons-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pcv-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .pcv-tabs {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .pp-mobile-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .pp-toolbar {
+    padding-inline: 10px;
+  }
+
+  .pp-menu-button {
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .pp-profile {
+    left: 10px;
+  }
+
+  .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .pp-mobile-brand .brand-lockup-icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .pp-mobile-brand .brand-wordmark {
+    min-height: 34px;
+    font-size: 22px;
+  }
+
+  .pp-content {
+    width: calc(100% - 18px);
+  }
+
+  .pc-heading,
+  .pcv-heading {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .pc-heading-copy,
+  .pcv-heading-copy {
+    align-items: flex-start;
+  }
+
+  .pc-heading h1,
+  .pcv-heading h1 {
+    font-size: 23px;
+  }
+
+  .pc-heading p,
+  .pcv-heading p {
+    font-size: 11px;
+  }
+
+  .pc-add-button,
+  .pcv-new {
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+
+  .pc-tools,
+  .pc-stats,
+  .pc-grid,
+  .parent-lessons-page .lesson-cards-grid,
+  .parent-lessons-page .lessons-side {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-stat {
+    min-height: 78px;
+  }
+
+  .pc-child-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .pc-avatar {
+    width: 68px;
+    height: 68px;
+    font-size: 25px;
+  }
+
+  .pc-child-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pcv-heading {
+    flex-wrap: wrap;
+  }
+
+  .pcv-new {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .parent-conversations-page .chat-layout {
+    min-height: 0;
+  }
+
+  .parent-conversations-page .conversation-list {
+    max-height: 260px;
+  }
+
+  .parent-conversations-page .chat-messages {
+    height: min(380px, 52dvh);
+  }
+
+  .pp-content .page-title {
+    padding: 15px;
+    border-radius: 17px;
+  }
+}
+
+@media (max-width: 420px) {
+  .pp-mobile-brand {
+    max-width: calc(100% - 116px);
+  }
+
+  .pp-mobile-brand .brand-wordmark {
+    font-size: 20px;
+  }
+
+  .pp-mobile-brand .brand-lockup-icon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+}
+
+.pcv-unread {
+  margin-inline-start: auto;
+  min-width: 24px;
+  height: 24px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--pp-blue);
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.parent-conversations-page .conversation-item > span:nth-child(2) small:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pp-nav button {
+  position: relative;
+}
+
+.pp-nav button > em {
+  margin-inline-start: auto;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ef5f6f;
+  color: #fff;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.pp-nav button:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
