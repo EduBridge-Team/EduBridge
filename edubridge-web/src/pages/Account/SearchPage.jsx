@@ -2,8 +2,8 @@
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Search, Baby, User } from 'lucide-react'
-import { getUser, searchByNationalId } from '../api'
-import { ROLE_NAMES } from '../roles'
+import { getUser, searchByNationalId } from '../../api'
+import { ROLE_NAMES } from '../../roles'
 
 const STAFF = ['teacher', 'specialist', 'admin', 'ministry', 'institution']
 

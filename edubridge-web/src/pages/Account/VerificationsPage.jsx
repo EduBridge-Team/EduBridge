@@ -11,9 +11,9 @@ import {
   fetchCertificates,
   reviewCertificate,
   openProtectedFile,
-} from '../api'
-import { ROLE_NAMES } from '../roles'
-import AdminSectionTabs from '../components/AdminSectionTabs'
+} from '../../api'
+import { ROLE_NAMES } from '../../roles'
+import AdminSectionTabs from '../../components/AdminSectionTabs'
 
 function Badge({ status }) {
   const map = {

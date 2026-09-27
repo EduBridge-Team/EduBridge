@@ -11,7 +11,7 @@ import {
   addCertificate,
   deleteCertificate,
   openProtectedFile,
-} from '../api'
+} from '../../api'
 
 function StatusBadge({ status }) {
   const map = {

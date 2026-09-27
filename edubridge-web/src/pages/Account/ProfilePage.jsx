@@ -4,9 +4,9 @@ import {
   BadgeCheck, ChevronLeft, Contrast, KeyRound, LockKeyhole, LogOut, Mail,
   Phone, Shield, ShieldAlert, Trash2, User, UserRound, X,
 } from 'lucide-react'
-import { changeMyPassword, fetchMyProfile, getUser, logout } from '../api'
-import { ROLE_NAMES } from '../roles'
-import { useTheme } from '../theme'
+import { changeMyPassword, fetchMyProfile, getUser, logout } from '../../api'
+import { ROLE_NAMES } from '../../roles'
+import { useTheme } from '../../theme'
 import './ProfilePage.css'
 
 function InfoRow({ Icon, label, value, tone = '' }) {
