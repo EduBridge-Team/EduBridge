@@ -116,9 +116,10 @@ body.parent-portal-active #root {
   width: 100%;
   min-height: 49px;
   padding: 10px 13px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 14px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 21px minmax(0, 1fr) auto;
   align-items: center;
   gap: 11px;
   background: transparent;
@@ -127,28 +128,45 @@ body.parent-portal-active #root {
   font-weight: 800;
   text-align: right;
   cursor: pointer;
-  transition: .18s ease;
+  transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.pp-nav button > svg {
+  width: 21px;
+  height: 21px;
+  justify-self: center;
+  stroke-width: 1.9;
+}
+
+.pp-nav button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pp-nav button:hover {
   color: var(--pp-blue);
   background: #f1f8fd;
-  transform: translateX(-2px);
+  border-color: #e3eff7;
 }
 
 .pp-nav button.active {
   color: var(--pp-blue);
-  background: linear-gradient(135deg, #e9f7ff, #e6fbfb);
+  border-color: #d6eaf6;
+  background: #edf7fc;
+  box-shadow: 0 5px 14px rgba(23,105,194,.055);
 }
 
 .pp-nav button.active::after {
-  content: "";
-  position: absolute;
-  inset-inline-end: -14px;
-  width: 4px;
-  height: 27px;
-  border-radius: 99px;
-  background: linear-gradient(var(--pp-blue), var(--pp-cyan));
+  content: none;
+}
+
+.pp-nav button:focus-visible,
+.pp-brand:focus-visible,
+.pp-drawer-close:focus-visible {
+  outline: 3px solid rgba(37,191,212,.25);
+  outline-offset: 2px;
 }
 
 .pp-noor-card {
@@ -400,4 +418,3 @@ body.parent-portal-active #root {
   border-radius: 18px;
   background: rgba(255,255,255,.78);
 }
-
