@@ -290,17 +290,17 @@
 
 /* Prevent phantom page scroll caused by legacy 100vh root sizing. */
 @supports (height: 100dvh) {
-  html.parent-portal-active,
-  body.parent-portal-active,
-  body.parent-portal-active #root {
+  html.role-portal-active,
+  body.role-portal-active,
+  body.role-portal-active #root {
     min-height: 100dvh !important;
   }
 }
 
 @media (max-width: 900px) {
-  html.parent-portal-active,
-  body.parent-portal-active,
-  body.parent-portal-active #root,
+  html.role-portal-active,
+  body.role-portal-active,
+  body.role-portal-active #root,
   .pp-shell {
     min-height: 100dvh !important;
   }
@@ -327,8 +327,8 @@
   --pp-shadow: 0 16px 42px rgba(0, 0, 0, .24);
 }
 
-:root[data-theme="dark"] body.parent-portal-active,
-:root[data-theme="dark"] html.parent-portal-active {
+:root[data-theme="dark"] body.role-portal-active,
+:root[data-theme="dark"] html.role-portal-active {
   background: #071d35 !important;
 }
 
