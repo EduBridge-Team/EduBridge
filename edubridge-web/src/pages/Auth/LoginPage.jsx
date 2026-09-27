@@ -1,8 +1,8 @@
 // صفحة تسجيل الدخول
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { googleLogin, login, resendEmailVerification } from '../api'
-import { dashboardFor } from '../roleRoutes'
+import { googleLogin, login, resendEmailVerification } from '../../api'
+import { dashboardFor } from '../../roleRoutes'
 
 export default function LoginPage() {
   const navigate = useNavigate()

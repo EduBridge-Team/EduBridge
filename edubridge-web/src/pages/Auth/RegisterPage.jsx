@@ -1,7 +1,7 @@
 // صفحة إنشاء حساب جديد
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { register } from '../api'
+import { register } from '../../api'
 
 export default function RegisterPage() {
   const navigate = useNavigate()

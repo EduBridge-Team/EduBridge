@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { resetPassword } from '../api'
+import { resetPassword } from '../../api'
 
 export default function ResetPasswordPage() {
   const [params] = useSearchParams()
