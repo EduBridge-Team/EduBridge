@@ -182,18 +182,10 @@
     text-align: right;
   }
 
-  .pp-brand img {
-    width: 39px !important;
-    height: 39px !important;
-  }
-
-  .pp-brand > span {
-    display: block !important;
-  }
-
-  .pp-brand strong {
-    font-size: 18px !important;
-    line-height: 1.1;
+  .pp-brand .pp-brand-logo {
+    width: 150px !important;
+    max-width: calc(100% - 4px) !important;
+    height: auto !important;
   }
 
   .pp-drawer-close {
@@ -222,50 +214,35 @@
   }
 
   .pp-noor-card {
-    margin-top: 8px !important;
+    margin-top: auto !important;
     margin-bottom: 0 !important;
     min-height: 0 !important;
-    padding: 12px !important;
-    border-radius: 18px !important;
+    padding: 8px !important;
+    border-radius: 16px !important;
     display: grid !important;
-    grid-template-columns: 72px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "pet title"
-      "button button";
+    grid-template-columns: 62px minmax(0, 1fr) !important;
     align-items: center !important;
-    gap: 4px 10px !important;
+    gap: 8px !important;
     text-align: right !important;
     overflow: hidden;
   }
 
-  .pp-noor-card .noor-pet {
-    grid-area: pet;
-    width: 72px !important;
-    height: 72px !important;
-    margin: 0 !important;
-    transform: none !important;
+  .pp-noor-avatar {
+    width: 60px;
+    height: 60px;
   }
 
-  .pp-noor-card > strong {
-    grid-area: title;
-    align-self: end;
-    font-size: 16px !important;
-    color: var(--pp-blue-deep);
+  .pp-noor-avatar .noor-pet {
+    width: 66px !important;
+    height: 56px !important;
   }
 
-  .pp-noor-card > button {
-    grid-area: button;
-    width: 100%;
-    min-height: 38px;
-    margin-top: 7px;
-    border: 0;
-    border-radius: 12px;
-    background: var(--pp-blue);
-    color: #fff;
-    font: inherit;
-    font-size: 11px;
-    font-weight: 900;
-    cursor: pointer;
+  .pp-noor-copy strong {
+    font-size: 15px;
+  }
+
+  .pp-noor-copy em {
+    margin-top: 3px;
   }
 
   body.role-portal-drawer-open {

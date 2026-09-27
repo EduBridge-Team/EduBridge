@@ -14,6 +14,8 @@ import {
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
+import BrandLogo from './BrandLogo'
+import NoorPet from './NoorPet'
 
 function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'
@@ -100,6 +102,11 @@ export default function RolePortalShell({ children }) {
       body.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
     }
   }, [role])
+
+  const openNoor = () => {
+    setDrawerOpen(false)
+    document.querySelector('.noor-launcher')?.click()
+  }
 
   const goToProgress = useCallback(() => {
     const child = childrenList[0]
@@ -250,10 +257,7 @@ export default function RolePortalShell({ children }) {
       <aside className={`pp-sidebar ${drawerOpen ? 'is-open' : ''}`} aria-label={`قائمة ${roleName}`}>
         <div className="pp-sidebar-head">
           <button className="pp-brand" onClick={() => navigate(homePath)} aria-label="EduBridge">
-            <img src="/edubridge-icon.png" alt="" />
-            <span>
-              <strong>EduBridge</strong>
-            </span>
+            <BrandLogo className="pp-brand-logo" />
           </button>
 
           <button className="pp-drawer-close" onClick={() => setDrawerOpen(false)} aria-label="إغلاق القائمة">
@@ -277,6 +281,17 @@ export default function RolePortalShell({ children }) {
             </button>
           ))}
         </nav>
+
+        <button type="button" className="pp-noor-card" onClick={openNoor} aria-label="فتح المساعد نور">
+          <span className="pp-noor-avatar" aria-hidden="true">
+            <NoorPet size={92} trackMouse />
+          </span>
+          <span className="pp-noor-copy">
+            <strong>نور</strong>
+            <small>مساعدك التعليمي الذكي</small>
+            <em>ابدأ المحادثة</em>
+          </span>
+        </button>
 
       </aside>
 

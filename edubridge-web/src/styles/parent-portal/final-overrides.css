@@ -60,21 +60,18 @@
   }
 
   body.parent-portal-active .pp-brand {
-    flex: 0 1 auto !important;
+    flex: 1 1 auto !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
     text-align: right !important;
   }
 
-  body.parent-portal-active .pp-brand img {
-    width: 38px !important;
-    height: 38px !important;
-  }
-
-  body.parent-portal-active .pp-brand strong {
-    font-size: 17px !important;
-    letter-spacing: -.15px !important;
+  body.parent-portal-active .pp-brand .pp-brand-logo {
+    width: 152px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
   }
 
   body.parent-portal-active .pp-nav {
@@ -104,6 +101,12 @@
   body.parent-portal-active .pp-nav button > svg {
     width: 20px !important;
     height: 20px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    flex: 0 0 auto !important;
+    min-height: 112px !important;
+    margin-top: auto !important;
   }
 
   body.parent-portal-active .pp-content {
@@ -172,6 +175,10 @@
     padding-inline: 8px !important;
   }
 
+  body.parent-portal-active .pp-brand .pp-brand-logo {
+    width: 138px !important;
+  }
+
   body.parent-portal-active .pp-nav button {
     min-height: 38px !important;
     padding-inline: 8px !important;
@@ -194,13 +201,8 @@
     padding-block: 1px 6px !important;
   }
 
-  body.parent-portal-active .pp-brand img {
-    width: 34px !important;
-    height: 34px !important;
-  }
-
-  body.parent-portal-active .pp-brand strong {
-    font-size: 16px !important;
+  body.parent-portal-active .pp-brand .pp-brand-logo {
+    width: 126px !important;
   }
 
   body.parent-portal-active .pp-nav {
@@ -211,6 +213,22 @@
     min-height: 34px !important;
     padding-block: 4px !important;
     font-size: 11px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    min-height: 88px !important;
+    padding: 6px !important;
+    grid-template-columns: 60px minmax(0, 1fr) !important;
+  }
+
+  body.parent-portal-active .pp-noor-avatar {
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  body.parent-portal-active .pp-noor-avatar .noor-pet {
+    width: 64px !important;
+    height: 54px !important;
   }
 }
 
@@ -223,17 +241,32 @@
     min-height: 39px !important;
   }
 
-  body.parent-portal-active .pp-brand img {
-    width: 30px !important;
-    height: 30px !important;
-  }
-
-  body.parent-portal-active .pp-brand strong {
-    font-size: 14px !important;
+  body.parent-portal-active .pp-brand .pp-brand-logo {
+    width: 112px !important;
   }
 
   body.parent-portal-active .pp-nav button {
     min-height: 31px !important;
     padding-block: 3px !important;
+  }
+
+  body.parent-portal-active .pp-noor-card {
+    min-height: 64px !important;
+    grid-template-columns: 48px minmax(0, 1fr) !important;
+  }
+
+  body.parent-portal-active .pp-noor-avatar {
+    width: 46px !important;
+    height: 46px !important;
+  }
+
+  body.parent-portal-active .pp-noor-avatar .noor-pet {
+    width: 52px !important;
+    height: 44px !important;
+  }
+
+  body.parent-portal-active .pp-noor-copy small,
+  body.parent-portal-active .pp-noor-copy em {
+    display: none !important;
   }
 }
