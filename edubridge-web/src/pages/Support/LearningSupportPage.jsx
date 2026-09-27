@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { cancelLearningSupportRequestWeb, completeLearningSupportMeetingWeb, createLearningSupportRequestWeb, fetchChildren, fetchLearningSupportRequests, fetchLearningSupportMeetings, getUser, scheduleLearningSupportRequestWeb } from '../api'
-import '../feature-parity.css'
+import { cancelLearningSupportRequestWeb, completeLearningSupportMeetingWeb, createLearningSupportRequestWeb, fetchChildren, fetchLearningSupportRequests, fetchLearningSupportMeetings, getUser, scheduleLearningSupportRequestWeb } from '../../api'
+import '../../feature-parity.css'
 
 export default function LearningSupportPage(){
   const me=getUser(); const parent=me?.role==='parent'; const specialist=['specialist','admin'].includes(me?.role)

@@ -10,7 +10,7 @@ import {
   updateConsultation,
   addConsultationNote,
   fetchChildren,
-} from '../api'
+} from '../../api'
 
 const STATUS_LABELS = {
   open: 'مفتوحة',

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { createCaseDiscussionWeb, fetchCaseDiscussion, fetchCaseDiscussions, fetchChildren, fetchUsers, getUser, resolveCaseDiscussionWeb, sendCaseDiscussionMessage } from '../api'
-import '../feature-parity.css'
+import { createCaseDiscussionWeb, fetchCaseDiscussion, fetchCaseDiscussions, fetchChildren, fetchUsers, getUser, resolveCaseDiscussionWeb, sendCaseDiscussionMessage } from '../../api'
+import '../../feature-parity.css'
 
 export default function CaseDiscussionsPage(){
   const me=getUser()

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { acceptSpecialistSuggestion, createSpecialistSuggestion, fetchChildren, fetchMyProfile, fetchSpecialistSuggestions, fetchUsers, getUser, rejectSpecialistSuggestion, setMySpecialty } from '../api'
-import '../feature-parity.css'
+import { acceptSpecialistSuggestion, createSpecialistSuggestion, fetchChildren, fetchMyProfile, fetchSpecialistSuggestions, fetchUsers, getUser, rejectSpecialistSuggestion, setMySpecialty } from '../../api'
+import '../../feature-parity.css'
 
 export default function SpecialistWorkflowPage(){
   const me=getUser(); const role=me?.role; const isSpecialist=role==='specialist'

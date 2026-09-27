@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { addCareTeamMember, fetchCareTeam, fetchChildren, fetchUsers, getUser, removeCareTeamMember } from '../api'
-import '../feature-parity.css'
+import { addCareTeamMember, fetchCareTeam, fetchChildren, fetchUsers, getUser, removeCareTeamMember } from '../../api'
+import '../../feature-parity.css'
 
 export default function CareTeamPage(){
   const me=getUser()
