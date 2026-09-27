@@ -96,12 +96,12 @@ export default function RolePortalLayout({ children }) {
     const body = document.body
     const roleClass = `role-portal-${role}`
 
-    root.classList.add('parent-portal-active', 'role-portal-active', roleClass)
-    body.classList.add('parent-portal-active', 'role-portal-active', roleClass)
+    root.classList.add('role-portal-active', roleClass)
+    body.classList.add('role-portal-active', roleClass)
 
     return () => {
-      root.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
-      body.classList.remove('parent-portal-active', 'role-portal-active', roleClass)
+      root.classList.remove('role-portal-active', roleClass)
+      body.classList.remove('role-portal-active', roleClass)
     }
   }, [role])
 

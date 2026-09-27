@@ -516,8 +516,8 @@
 }
 
 @media (min-width: 901px) {
-  html.parent-dashboard-page.parent-portal-active,
-  body.parent-dashboard-page.parent-portal-active {
+  html.parent-dashboard-page.role-portal-active,
+  body.parent-dashboard-page.role-portal-active {
     overflow-y: auto !important;
     overflow-x: clip !important;
   }
