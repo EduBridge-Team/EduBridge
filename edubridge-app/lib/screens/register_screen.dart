@@ -67,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('تم إنشاء الحساب بنجاح — سجّل دخولك الآن'),
+          content: Text('تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول.'),
           backgroundColor: AppColors.green,
         ),
       );
