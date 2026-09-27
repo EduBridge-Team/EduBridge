@@ -4,7 +4,7 @@
 /* ============================================================
    Parent dashboard inside the shared parent shell
    ============================================================ */
-body.parent-portal-active.parent-dashboard-page {
+body.role-portal-active.parent-dashboard-page {
   overflow-x: clip !important;
   overflow-y: auto !important;
 }
