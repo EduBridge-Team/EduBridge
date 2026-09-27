@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Landmark, BookOpen } from 'lucide-react'
-import { getUser, fetchMinistryLessons, reviewLessonCurriculum } from '../api'
+import { getUser, fetchMinistryLessons, reviewLessonCurriculum } from '../../api'
 
 function Badge({ status }) {
   const map = {
