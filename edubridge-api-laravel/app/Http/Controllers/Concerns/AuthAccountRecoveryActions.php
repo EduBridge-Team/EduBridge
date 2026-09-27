@@ -34,12 +34,18 @@ trait AuthAccountRecoveryActions
         $frontend = rtrim((string) (env('FRONTEND_URL') ?: env('APP_URL')), '/');
         $url = $frontend . '/reset-password?email=' . urlencode($email) . '&token=' . urlencode($token);
 
-        Mail::raw(
-            "مرحباً {$user->name},\n\nلاستعادة كلمة المرور في EduBridge افتح الرابط التالي خلال 60 دقيقة:\n{$url}\n\nإذا لم تطلب تغيير كلمة المرور فتجاهل هذه الرسالة.",
-            function ($message) use ($email) {
-                $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
-            }
-        );
+        Mail::send('emails.auth-action', [
+            'subjectLine' => 'استعادة كلمة المرور — EduBridge',
+            'heading' => 'استعادة كلمة المرور',
+            'userName' => $user->name,
+            'intro' => 'وصلنا طلب لتغيير كلمة مرور حسابك في EduBridge. اضغط الزر التالي لإنشاء كلمة مرور جديدة.',
+            'actionUrl' => $url,
+            'actionText' => 'تغيير كلمة المرور',
+            'expiryText' => 'صلاحية هذا الرابط 60 دقيقة فقط.',
+            'ignoreText' => 'إذا لم تطلب تغيير كلمة المرور، يمكنك تجاهل هذه الرسالة بأمان.',
+        ], function ($message) use ($email) {
+            $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
+        });
 
         return response()->json(['message' => 'إذا كان البريد مسجلاً فستصلك رسالة استعادة كلمة المرور.']);
     }
@@ -139,11 +145,17 @@ trait AuthAccountRecoveryActions
         $backend = rtrim((string) env('APP_URL'), '/');
         $url = $backend . '/api/auth/verify-email?email=' . urlencode($user->email) . '&token=' . urlencode($token);
 
-        Mail::raw(
-            "مرحباً {$user->name},\n\nأكد بريدك الإلكتروني في EduBridge عبر الرابط التالي خلال 24 ساعة:\n{$url}",
-            function ($message) use ($user) {
-                $message->to($user->email)->subject('تأكيد البريد الإلكتروني — EduBridge');
-            }
-        );
+        Mail::send('emails.auth-action', [
+            'subjectLine' => 'تأكيد البريد الإلكتروني — EduBridge',
+            'heading' => 'تأكيد بريدك الإلكتروني',
+            'userName' => $user->name,
+            'intro' => 'بقيت خطوة واحدة لإكمال إنشاء حسابك في EduBridge. أكد بريدك الإلكتروني عبر الزر التالي.',
+            'actionUrl' => $url,
+            'actionText' => 'تأكيد البريد الإلكتروني',
+            'expiryText' => 'صلاحية رابط التأكيد 24 ساعة.',
+            'ignoreText' => 'إذا لم تقم بإنشاء هذا الحساب، يمكنك تجاهل هذه الرسالة.',
+        ], function ($message) use ($user) {
+            $message->to($user->email)->subject('تأكيد البريد الإلكتروني — EduBridge');
+        });
     }
 }
