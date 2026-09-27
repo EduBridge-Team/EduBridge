@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { fetchChildWeeklyReports, fetchChildren, getUser, saveWeeklyReport } from '../api'
-import '../feature-parity.css'
+import { fetchChildWeeklyReports, fetchChildren, getUser, saveWeeklyReport } from '../../api'
+import '../../feature-parity.css'
 
 export default function WeeklyReportsPage(){
   const me=getUser(); const staff=['teacher','specialist','admin'].includes(me?.role)

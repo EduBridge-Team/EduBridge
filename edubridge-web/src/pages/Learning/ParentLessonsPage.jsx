@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { fetchParentLessons } from '../api'
-import '../feature-parity.css'
+import { fetchParentLessons } from '../../api'
+import '../../feature-parity.css'
 
 export default function ParentLessonsPage(){
   const [lessons,setLessons]=useState([])

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { createHomeworkWeb, fetchChildren, fetchHomeworks, getUser, gradeHomeworkWeb, submitHomeworkWeb } from '../api'
-import '../feature-parity.css'
+import { createHomeworkWeb, fetchChildren, fetchHomeworks, getUser, gradeHomeworkWeb, submitHomeworkWeb } from '../../api'
+import '../../feature-parity.css'
 
 export default function HomeworkPage() {
   const me = getUser()

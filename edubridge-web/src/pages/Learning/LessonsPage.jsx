@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom'
 import {
   Clock3, Grid2X2, Search, Square, Volume2, X,
 } from 'lucide-react'
-import { fetchLessons, getUser } from '../api'
-import LessonRatings from '../components/LessonRatings'
+import { fetchLessons, getUser } from '../../api'
+import LessonRatings from '../../components/LessonRatings'
 
 const CATEGORIES = ['الكل', 'القراءة', 'الرياضيات', 'مهارات الحياة', 'التواصل', 'الفنون']
 const VISUALS = [
