@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   bool _obscurePassword = true;
   String? _error;
+  String? _notice;
 
   @override
   void dispose() {
@@ -35,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _notice = null;
     });
 
     final error = await ApiService.login(
@@ -53,6 +55,32 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => home),
         (route) => false,
       );
+    } else {
+      setState(() => _error = error);
+    }
+  }
+
+  Future<void> _resendVerification() async {
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty) {
+      setState(() {
+        _error = 'أدخل بريدك الإلكتروني أولاً';
+        _notice = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _error = null;
+      _notice = null;
+    });
+
+    final error = await ApiService.resendEmailVerification(email);
+    if (!mounted) return;
+
+    if (error == null) {
+      setState(() => _notice =
+          'إذا كان الحساب بحاجة للتحقق فستصلك رسالة جديدة على بريدك الإلكتروني.');
     } else {
       setState(() => _error = error);
     }
