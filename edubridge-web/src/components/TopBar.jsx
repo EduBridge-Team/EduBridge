@@ -102,8 +102,8 @@ export default function TopBar() {
             <nav className="topbar-nav guest-nav">
               <NavLink to="/" end>الرئيسية</NavLink>
               <NavLink to="/about">من نحن</NavLink>
-              <a href="/#features">الخدمات</a>
-              <NavLink to="/lessons">الدروس</NavLink>
+              <a href="/#services">الخدمات</a>
+              <a href="/#features">المميزات</a>
               <a href="/#contact">تواصل معنا</a>
             </nav>
             <div className="topbar-actions guest-actions">
