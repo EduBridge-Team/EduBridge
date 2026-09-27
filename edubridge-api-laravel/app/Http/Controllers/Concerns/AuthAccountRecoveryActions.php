@@ -19,8 +19,6 @@ trait AuthAccountRecoveryActions
         }
 
         $user = DB::table('users')->where('email', $email)->first();
-
-        // Keep the response identical whether the account exists or not.
         if (!$user) {
             return response()->json(['message' => 'إذا كان البريد مسجلاً فستصلك رسالة استعادة كلمة المرور.']);
         }
@@ -34,12 +32,9 @@ trait AuthAccountRecoveryActions
         $frontend = rtrim((string) (env('FRONTEND_URL') ?: env('APP_URL')), '/');
         $url = $frontend . '/reset-password?email=' . urlencode($email) . '&token=' . urlencode($token);
 
-        Mail::raw(
-            "مرحباً {$user->name},\n\nلاستعادة كلمة المرور في EduBridge افتح الرابط التالي خلال 60 دقيقة:\n{$url}\n\nإذا لم تطلب تغيير كلمة المرور فتجاهل هذه الرسالة.",
-            function ($message) use ($email) {
-                $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
-            }
-        );
+        Mail::send('emails.reset-password', ['name' => $user->name, 'url' => $url], function ($message) use ($email) {
+            $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
+        });
 
         return response()->json(['message' => 'إذا كان البريد مسجلاً فستصلك رسالة استعادة كلمة المرور.']);
     }
@@ -93,7 +88,6 @@ trait AuthAccountRecoveryActions
         }
 
         $this->sendVerificationEmail($user);
-
         return response()->json(['message' => 'إذا كان الحساب بحاجة للتحقق فستصلك رسالة جديدة.']);
     }
 
@@ -113,14 +107,12 @@ trait AuthAccountRecoveryActions
             && now()->diffInHours($record->created_at) <= 24;
 
         $frontend = rtrim((string) (env('FRONTEND_URL') ?: env('APP_URL')), '/');
-
         if (!$valid) {
             return redirect($frontend . '/login?verified=0');
         }
 
         DB::table('users')->where('email', $email)->update(['email_verified_at' => now()]);
         DB::table('email_verification_tokens')->where('email', $email)->delete();
-
         return redirect($frontend . '/login?verified=1');
     }
 
@@ -139,11 +131,8 @@ trait AuthAccountRecoveryActions
         $backend = rtrim((string) env('APP_URL'), '/');
         $url = $backend . '/api/auth/verify-email?email=' . urlencode($user->email) . '&token=' . urlencode($token);
 
-        Mail::raw(
-            "مرحباً {$user->name},\n\nأكد بريدك الإلكتروني في EduBridge عبر الرابط التالي خلال 24 ساعة:\n{$url}",
-            function ($message) use ($user) {
-                $message->to($user->email)->subject('تأكيد البريد الإلكتروني — EduBridge');
-            }
-        );
+        Mail::send('emails.verify-email', ['name' => $user->name, 'url' => $url], function ($message) use ($user) {
+            $message->to($user->email)->subject('تأكيد البريد الإلكتروني — EduBridge');
+        });
     }
 }
