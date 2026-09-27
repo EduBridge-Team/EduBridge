@@ -116,9 +116,10 @@ body.parent-portal-active #root {
   width: 100%;
   min-height: 49px;
   padding: 10px 13px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 14px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 21px minmax(0, 1fr) auto;
   align-items: center;
   gap: 11px;
   background: transparent;
@@ -127,39 +128,57 @@ body.parent-portal-active #root {
   font-weight: 800;
   text-align: right;
   cursor: pointer;
-  transition: .18s ease;
+  transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.pp-nav button > svg {
+  width: 21px;
+  height: 21px;
+  justify-self: center;
+  stroke-width: 1.9;
+}
+
+.pp-nav button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pp-nav button:hover {
   color: var(--pp-blue);
   background: #f1f8fd;
-  transform: translateX(-2px);
+  border-color: #e3eff7;
 }
 
 .pp-nav button.active {
   color: var(--pp-blue);
-  background: linear-gradient(135deg, #e9f7ff, #e6fbfb);
+  border-color: #d6eaf6;
+  background: #edf7fc;
+  box-shadow: 0 5px 14px rgba(23,105,194,.055);
 }
 
 .pp-nav button.active::after {
-  content: "";
-  position: absolute;
-  inset-inline-end: -14px;
-  width: 4px;
-  height: 27px;
-  border-radius: 99px;
-  background: linear-gradient(var(--pp-blue), var(--pp-cyan));
+  content: none;
+}
+
+.pp-nav button:focus-visible,
+.pp-brand:focus-visible,
+.pp-drawer-close:focus-visible {
+  outline: 3px solid rgba(37,191,212,.25);
+  outline-offset: 2px;
 }
 
 .pp-noor-card {
   margin-top: auto;
   width: 100%;
-  padding: 14px 12px;
+  padding: 10px;
   border: 1px solid #d6ebf6;
   border-radius: 18px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background:
     radial-gradient(circle at 15% 15%, rgba(79,211,196,.2), transparent 5rem),
     linear-gradient(150deg, #f7fcff, #ebf8ff);
@@ -167,32 +186,67 @@ body.parent-portal-active #root {
   font: inherit;
   text-align: right;
   cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(23,105,194,.08);
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 
-.pp-noor-icon {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  border-radius: 13px;
+.pp-noor-card:hover {
+  border-color: #bcdfee;
+  box-shadow: 0 14px 32px rgba(23,105,194,.13);
+  transform: translateY(-1px);
+}
+
+.pp-noor-card:focus-visible {
+  outline: 3px solid rgba(37,191,212,.25);
+  outline-offset: 2px;
+}
+
+.pp-noor-avatar {
+  width: 78px;
+  height: 78px;
+  border: 2px solid rgba(37,191,212,.45);
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #fff;
-  background: linear-gradient(145deg, var(--pp-blue), var(--pp-cyan));
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 8px 20px rgba(37,191,212,.18);
 }
 
-.pp-noor-card > span:last-child {
+.pp-noor-avatar .noor-pet {
+  width: 82px;
+  height: 68px;
+  max-width: none;
+}
+
+.pp-noor-copy {
+  min-width: 0;
   display: grid;
-  gap: 3px;
+  gap: 2px;
 }
 
-.pp-noor-card strong {
-  font-size: 12px;
+.pp-noor-copy strong {
+  color: var(--pp-blue-deep);
+  font-size: 16px;
+  line-height: 1.1;
 }
 
-.pp-noor-card small {
+.pp-noor-copy small {
   color: var(--pp-text);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.pp-noor-copy em {
+  width: fit-content;
+  margin-top: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--pp-blue);
+  color: #fff;
   font-size: 9px;
-  line-height: 1.55;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .pp-body {
@@ -400,4 +454,3 @@ body.parent-portal-active #root {
   border-radius: 18px;
   background: rgba(255,255,255,.78);
 }
-

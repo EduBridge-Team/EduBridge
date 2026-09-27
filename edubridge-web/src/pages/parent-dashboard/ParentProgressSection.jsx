@@ -19,7 +19,7 @@ function RingMetric({ value, label, detail, icon, tone = 'cyan' }) {
   )
 }
 
-export default function ParentProgressSection({ dashboardStats, children }) {
+export default function ParentProgressSection({ dashboardStats, childCount }) {
   return (
     <section className="pd-section pd-progress-section">
       <div className="pd-section-head">
@@ -53,7 +53,7 @@ export default function ParentProgressSection({ dashboardStats, children }) {
         <RingMetric
           value={dashboardStats.supportRate}
           label="تحقيق الأهداف"
-          detail={children.length ? 'جاهزية ملفات الأطفال للمتابعة' : 'أضف طفلاً للبدء'}
+          detail={childCount ? 'جاهزية ملفات الأطفال للمتابعة' : 'أضف طفلاً للبدء'}
           icon={<Target size={20} />}
           tone="mint"
         />

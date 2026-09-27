@@ -1,9 +1,9 @@
 @media (min-width: 901px) {
   body.role-portal-active:not(.role-portal-parent) .pp-sidebar {
-    height: fit-content !important;
+    height: 100dvh !important;
     min-height: 0 !important;
-    max-height: calc(100dvh - 18px) !important;
-    border-bottom-left-radius: 28px;
+    max-height: 100dvh !important;
+    border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -291,5 +291,4 @@
   color: var(--pp-text);
   font-size: 10px;
 }
-
 

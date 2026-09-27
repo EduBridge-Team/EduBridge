@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, BarChart3, Bell, BookOpen, CalendarDays, ChevronDown, Home, MessageCircle,
-  PlayCircle, Plus, Search, Settings, Sparkles, Users,
+  CheckCircle2, PlayCircle, Plus, Search, Settings, Sparkles, Users,
 } from 'lucide-react'
 import {
   fetchChildLessons,
@@ -117,6 +117,9 @@ export default function ParentDashboard() {
   }, [children, summaries])
 
   const normalizedQuery = query.trim().toLowerCase()
+  const todayLabel = useMemo(() => new Intl.DateTimeFormat('ar', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  }).format(new Date()), [])
   const visibleChildren = normalizedQuery
     ? children.filter((child) => [child.name, child.assigned_teacher_name, child.disability_name, child.disability_type]
         .filter(Boolean)
@@ -161,6 +164,7 @@ export default function ParentDashboard() {
               onClick={item.onClick}
               title={item.label}
               aria-label={item.label}
+              aria-current={item.active ? 'page' : undefined}
               disabled={item.label === 'التقدم' && !children[0]}
             >
               {item.icon}
@@ -177,6 +181,7 @@ export default function ParentDashboard() {
           <label className="pd-search">
             <Search size={20} />
             <input
+              aria-label="البحث في لوحة ولي الأمر"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="ابحث عن طفل أو درس..."
@@ -202,6 +207,10 @@ export default function ParentDashboard() {
               <h1>مرحباً {user?.name || 'ولي الأمر'} <b>👋</b></h1>
               <h2>من الرائع رؤيتك مجدداً!</h2>
               <p>هنا نظرة سريعة على رحلة أبنائك التعليمية اليوم.</p>
+              <div className="pd-hero-status" aria-label="ملخص اليوم">
+                <span><CalendarDays size={15} /> {todayLabel}</span>
+                <span><CheckCircle2 size={15} /> تم تحديث بيانات التقدم</span>
+              </div>
             </div>
             <div className="pd-hero-art" aria-hidden="true">
               <img src="/edubridge-hero-child.webp" alt="" />
@@ -213,7 +222,7 @@ export default function ParentDashboard() {
 
           <section className="pd-section pd-children-section">
             <div className="pd-section-head">
-              <div><h2>أطفالي</h2></div>
+              <div className="pd-heading-with-count"><h2>أطفالي</h2><span aria-label={`${children.length} من الأطفال`}>{children.length}</span></div>
               <div className="pd-head-actions">
                 <button className="pd-link-btn" onClick={() => navigate('/children')}>عرض الكل <ArrowLeft size={15} /></button>
                 <button className="pd-primary-mini" onClick={() => navigate('/children/new')}><Plus size={16} /> إضافة طفل</button>
@@ -264,7 +273,8 @@ export default function ParentDashboard() {
                           <span><small>المستوى الحالي</small><b>{child.disability_name || child.disability_type || 'برنامج تعليمي مخصص'}</b></span>
                           <span><small>المعلّم</small><b>{child.assigned_teacher_name || 'بانتظار التعيين'}</b></span>
                         </div>
-                        <div className="pd-child-progress"><i style={{ width: `${childPct}%` }} /></div>
+                        <div className="pd-child-progress-copy"><span>التقدم في الدروس</span><b>{childPct}%</b></div>
+                        <div className="pd-child-progress" role="progressbar" aria-label={`تقدم ${child.name} في الدروس`} aria-valuemin="0" aria-valuemax="100" aria-valuenow={childPct}><i style={{ width: `${childPct}%` }} /></div>
                         <button onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}>عرض التفاصيل <ArrowLeft size={15} /></button>
                       </div>
                     </article>
@@ -274,7 +284,7 @@ export default function ParentDashboard() {
             )}
           </section>
 
-          <ParentProgressSection dashboardStats={dashboardStats} children={children} />
+          <ParentProgressSection dashboardStats={dashboardStats} childCount={children.length} />
 
           <div className="pd-fullwidth-lower">
           <div className="pd-lower-grid">
@@ -357,6 +367,7 @@ export default function ParentDashboard() {
             onClick={item.onClick}
             title={item.label}
             aria-label={item.label}
+            aria-current={item.active ? 'page' : undefined}
           >
             {item.icon}
             <span>{item.label}</span>
