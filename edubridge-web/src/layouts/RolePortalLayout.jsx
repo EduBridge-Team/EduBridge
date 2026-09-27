@@ -14,8 +14,8 @@ import {
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
-import BrandLogo from './BrandLogo'
-import NoorPet from './NoorPet'
+import BrandLogo from '../components/BrandLogo'
+import NoorPet from '../components/NoorPet'
 
 function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'
@@ -43,7 +43,7 @@ function activeSection(pathname, role, homePath) {
   return ''
 }
 
-export default function RolePortalShell({ children }) {
+export default function RolePortalLayout({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()

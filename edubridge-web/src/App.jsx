@@ -3,7 +3,7 @@ import { getToken, getUser } from './api'
 import { dashboardFor } from './roleRoutes'
 import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRole } from './portalRoutes'
 import TopBar from './components/TopBar'
-import RolePortalShell from './components/RolePortalShell'
+import RolePortalLayout from './layouts/RolePortalLayout'
 import AssistantWidget from './components/AssistantWidget'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -78,7 +78,7 @@ function Page({ children }) {
   const useRoleShell = Boolean(user?.role)
     && isPortalPathForRole(location.pathname, user.role)
 
-  if (useRoleShell) return <RolePortalShell>{children}</RolePortalShell>
+  if (useRoleShell) return <RolePortalLayout>{children}</RolePortalLayout>
   return <main className="container">{children}</main>
 }
 
