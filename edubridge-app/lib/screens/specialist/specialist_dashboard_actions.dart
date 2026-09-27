@@ -122,7 +122,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
                   ? AppIcons.specialist
                   : AppIcons.lesson,
               color: _mySpecialty == 'learning_support'
-                  ? AppColors.purple
+                  ? AppColors.brandTealDeep
                   : AppColors.brandBlue,
               size: 28,
             ),
@@ -143,7 +143,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _mySpecialty == 'learning_support'
-                  ? AppColors.purple
+                  ? AppColors.brandTealDeep
                   : AppColors.brandBlue,
             ),
             onPressed: () => Navigator.pop(context, true),
@@ -172,7 +172,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('تمت إضافة ${child['name']} لمتابعتك'),
-            backgroundColor: AppColors.green,
+            backgroundColor: AppColors.brandGreen,
           ),
         );
         await _load();

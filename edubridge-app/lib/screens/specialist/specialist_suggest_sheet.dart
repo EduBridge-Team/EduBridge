@@ -27,7 +27,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
       widget.specialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي';
 
   Color get _color =>
-      widget.specialty == 'learning_support' ? AppColors.purple : AppColors.brandBlue;
+      widget.specialty == 'learning_support' ? AppColors.brandTealDeep : AppColors.brandBlue;
 
   @override
   void dispose() {
@@ -69,7 +69,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم إرسال التوصية لـ$_label'),
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.brandTealDeep,
       ),
     );
     Navigator.pop(context, true);

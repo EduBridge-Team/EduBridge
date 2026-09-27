@@ -21,7 +21,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                 child: Row(
                   children: [
                     const Icon(AppIcons.info,
-                        color: AppColors.orangeDeep),
+                        color: AppColors.brandTeal),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -34,7 +34,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                   ],
                 ),
               ),
-
+               const SizedBox(height: 16),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'اسم الطفل'),
@@ -160,7 +160,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
             ElevatedButton.icon(
               onPressed: _loading ? null : _save,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.brandTealDeep,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               icon: _loading

@@ -35,7 +35,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
         : AppIcons.lesson;
 
     final specColor = _mySpecialty == 'learning_support'
-        ? AppColors.purple
+        ? AppColors.brandTealDeep
         : AppColors.brandBlue;
 
     return Card(
@@ -104,10 +104,10 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
             if (preferredStyle.isNotEmpty)
               _infoRowExt('أسلوب التعلم', preferredStyle, c),
             if (strengths.isNotEmpty)
-              _chipsRowExt('نقاط القوة', strengths, c, AppColors.greenDeep,
+              _chipsRowExt('نقاط القوة', strengths, c, AppColors.brandBlueLight,
                   c.tintGreen),
             if (challenges.isNotEmpty)
-              _chipsRowExt('التحديات', challenges, c, AppColors.orangeDeep,
+              _chipsRowExt('التحديات', challenges, c, AppColors.brandTealDeep,
                   c.tintOrange),
             const SizedBox(height: 12),
 
@@ -117,7 +117,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                 height: 48,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orangeDeep,
+                    backgroundColor: AppColors.brandBlueDeep,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

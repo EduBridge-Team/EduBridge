@@ -29,7 +29,7 @@ extension _UsersTabStateView on _UsersTabState {
           const SizedBox(height: 16),
           _buildUserSection(
             icon: AppIcons.teacher, title: 'المعلّمون',
-            users: _teachers, color: AppColors.greenDeep, bgTint: c.tintGreen,
+            users: _teachers, color: AppColors.brandGreen, bgTint: c.tintGreen,
           ),
           _buildUserSection(
             icon: AppIcons.specialist, title: 'المختصون',

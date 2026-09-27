@@ -67,7 +67,7 @@ Widget buildLessonCard({
                               : AppIcons.lesson,
                   size: AdaptiveHelper.iconSize,
                   color: isDone
-                      ? AppColors.green
+                      ? AppColors.brandTealDeep
                       : AdaptiveHelper.accentColor(context),
                 ),
               ),
@@ -83,19 +83,19 @@ Widget buildLessonCard({
                 _mediaBadge(
                   icon: AppIcons.video,
                   label: 'فيديو',
-                  color: AppColors.pink,
+                  color: AppColors.brandTealLight,
                 )
               else if (hasAudio)
                 _mediaBadge(
                   icon: AppIcons.audio,
                   label: 'صوت',
-                  color: AppColors.green,
+                  color: AppColors.brandTeal,
                 ),
               if (isDone)
                 const Padding(
                   padding: EdgeInsets.only(right: 6),
                   child: Icon(AppIcons.check,
-                      color: AppColors.green, size: 28),
+                      color: AppColors.brandTealDeep, size: 28),
                 ),
             ],
           ),
@@ -126,7 +126,7 @@ Widget buildLessonCard({
                     label: isDone ? 'مكتمل' : 'تمّ',
                     icon: isDone ? AppIcons.check : Icons.check,
                     backgroundColor:
-                        isDone ? AppColors.greenDeep : AppColors.green,
+                        isDone ? AppColors.brandTealDeep : AppColors.brandTeal,
                     fullWidth: true,
                     onPressed: (isDone || isSaving)
                         ? null

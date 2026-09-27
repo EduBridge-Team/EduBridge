@@ -97,7 +97,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
             child: const Text('إلغاء'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTealDeep),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('إغلاق'),
           ),
@@ -112,7 +112,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم إغلاق دراسة الحالة'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.brandTealDeep,
         ),
       );
       _load();

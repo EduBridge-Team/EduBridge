@@ -39,7 +39,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
     switch (targetType) {
       case 'parents':
         targetBadge = 'لأولياء الأمور';
-        targetColor = AppColors.purple;
+        targetColor = AppColors.brandTealDeep;
         targetIcon = AppIcons.parent;
         break;
       case 'byDisability':

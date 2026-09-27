@@ -54,7 +54,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color:
-                _showOnlyMine ? AppColors.brandBlue : AppColors.orangeDeep,
+                _showOnlyMine ? AppColors.brandBlue : AppColors.brandTealDeep,
             width: 1.8,
           ),
         ),
@@ -66,7 +66,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
               decoration: BoxDecoration(
                 color: _showOnlyMine
                     ? AppColors.brandBlue
-                    : AppColors.orangeDeep,
+                    : AppColors.brandTealDeep,
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
@@ -91,7 +91,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                           fontWeight: FontWeight.bold,
                           color: _showOnlyMine
                               ? AppColors.brandBlue
-                              : AppColors.orangeDeep,
+                              : AppColors.brandTealDeep,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -101,7 +101,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                         decoration: BoxDecoration(
                           color: _showOnlyMine
                               ? AppColors.brandBlue
-                              : AppColors.orangeDeep,
+                              : AppColors.brandTealDeep,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -128,9 +128,9 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
             Switch(
               value: _showOnlyMine,
               activeThumbColor: AppColors.brandBlue,
-              inactiveThumbColor: AppColors.orangeDeep,
+              inactiveThumbColor: AppColors.brandTealDeep,
               inactiveTrackColor:
-                  AppColors.orange.withValues(alpha: 0.35),
+                  AppColors.brandTeal.withValues(alpha: 0.35),
               onChanged: (v) => _refreshState(() => _showOnlyMine = v),
             ),
           ],
@@ -180,7 +180,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('تم إضافة الدرس بنجاح'),
-              backgroundColor: AppColors.green,
+              backgroundColor: AppColors.brandGreen,
             ),
           );
         },

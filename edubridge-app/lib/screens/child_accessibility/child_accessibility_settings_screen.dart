@@ -91,7 +91,7 @@ class _ChildAccessibilitySettingsScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم تطبيق التكييف الموصى به لـ "$result"'),
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.brandBlueLight,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -104,7 +104,7 @@ class _ChildAccessibilitySettingsScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('يرجى كتابة اسم الإعاقة'),
-          backgroundColor: AppColors.orange,
+          backgroundColor: AppColors.brandTealDeep,
         ),
       );
       return;
@@ -119,7 +119,7 @@ class _ChildAccessibilitySettingsScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('تم حفظ الإعاقة المخصّصة'),
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.brandBlueLight,
       ),
     );
   }

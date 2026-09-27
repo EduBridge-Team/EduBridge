@@ -253,11 +253,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.orange.withValues(alpha: 0.15),
+                  color: AppColors.brandBlueLight.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(AppIcons.verified,
-                    size: 48, color: AppColors.orange),
+                    size: 48, color: AppColors.brandBlueLight),
               ),
               const SizedBox(height: 20),
               Text(
@@ -285,7 +285,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 height: 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orange,
+                    backgroundColor: AppColors.brandBlueLight,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -330,7 +330,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('يرجى توثيق الهوية أولاً'),
-            backgroundColor: AppColors.orange,
+            backgroundColor: AppColors.brandBlueLight,
           ),
         );
       }
@@ -385,14 +385,14 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         icon: AppIcons.clock,
                         value: '$_pendingCount',
                         label: 'بانتظار التقييم',
-                        color: AppColors.orange,
+                        color: AppColors.blue,
                       ),
                       const SizedBox(width: 8),
                       _StatsCard(
                         icon: AppIcons.check,
                         value: '$_doneToday',
                         label: 'منجز اليوم',
-                        color: AppColors.green,
+                        color: AppColors.brandTealDeep,
                       ),
                       const SizedBox(width: 8),
                       _StatsCard(
@@ -447,7 +447,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               },
               icon: const Icon(AppIcons.add),
               label: const Text('إضافة درس'),
-              backgroundColor: AppColors.green,
+              backgroundColor: AppColors.brandTealDeep,
             )
           : null,
     );

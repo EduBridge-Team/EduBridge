@@ -99,7 +99,7 @@ class _MinistryApprovalCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.brandBlueLight,
                   child: Text(
                     (approval['child_name'] ?? '؟').toString().characters.first,
                     style: const TextStyle(
@@ -131,19 +131,19 @@ class _MinistryApprovalCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withValues(alpha: 0.15),
+                    color: AppColors.brandBlueLight.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(AppIcons.clock, size: 12, color: AppColors.orangeDeep),
+                      Icon(AppIcons.clock, size: 12, color: AppColors.brandTealDeep),
                       SizedBox(width: 4),
                       Text('قيد المراجعة',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.orangeDeep,
+                            color: AppColors.brandBlueLight,
                           )),
                     ],
                   ),
@@ -175,7 +175,7 @@ class _MinistryApprovalCard extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.green,
+                      backgroundColor: AppColors.blue,
                       minimumSize: const Size(0, 44),
                     ),
                     icon: const Icon(AppIcons.check),
@@ -236,7 +236,7 @@ class _MinistryProcessedCard extends StatelessWidget {
     final c = JisrColors.of(context);
     final status = approval['status'] ?? 'pending';
     final isApproved = status == 'approved';
-    final color = isApproved ? AppColors.green : AppColors.red;
+    final color = isApproved ? AppColors.brandBlueLight : AppColors.red;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),

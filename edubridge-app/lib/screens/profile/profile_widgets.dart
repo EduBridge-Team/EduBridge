@@ -84,7 +84,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
             icon: AppIcons.logout,
             title: 'تسجيل الخروج',
             subtitle: 'الخروج من التطبيق',
-            color: AppColors.orangeDeep,
+            color: AppColors.brandTeal,
             onTap: _logout,
           ),
           const SizedBox(height: 30),
@@ -123,7 +123,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
               icon: isVerified ? AppIcons.verified : AppIcons.info,
               label: 'الحالة',
               value: isVerified ? 'موثّق' : 'غير موثّق',
-              valueColor: isVerified ? AppColors.green : AppColors.orange,
+              valueColor: isVerified ? AppColors.brandBlueLight: AppColors.brandBlueLight,
             ),
           ],
         ),
@@ -210,7 +210,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.orange,
+                        color: AppColors.brandTealDeep,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
