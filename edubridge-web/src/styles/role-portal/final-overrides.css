@@ -151,51 +151,6 @@
     box-sizing: border-box !important;
   }
 
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-main,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-content,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-fullwidth-lower,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-lower-grid,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-quick-actions,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-noor-banner {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin-inline: 0 !important;
-    transform: none !important;
-    right: auto !important;
-    left: auto !important;
-    box-sizing: border-box !important;
-  }
-
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 {
-    display: block !important;
-    height: auto !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-    background: transparent !important;
-  }
-
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 > .pd-sidebar,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-toolbar,
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 > .pd-mobile-nav {
-    display: none !important;
-  }
-
-  body.parent-dashboard-page .pp-content .parent-dashboard-v2 .pd-fullwidth-lower::before {
-    display: none !important;
-    content: none !important;
-  }
-
-  body.parent-dashboard-page .pd-today,
-  body.parent-dashboard-page .pd-conversations,
-  body.parent-dashboard-page .pd-schedule-list,
-  body.parent-dashboard-page .pd-schedule-row,
-  body.parent-dashboard-page .pd-schedule-copy {
-    min-width: 0 !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
 }
 
 @media (min-width: 901px) and (max-width: 1100px) {
