@@ -1,0 +1,45 @@
+.pd-content { width: min(1120px, calc(100% - 42px)); margin: 0 auto; padding: 20px 0 44px; display: grid; gap: 16px; }
+
+.pd-hero {
+  position: relative;
+  min-height: 210px;
+  padding: 26px 34px;
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  align-items: center;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 9% 12%, rgba(37,191,212,.16), transparent 14rem),
+    linear-gradient(120deg, #f7fcff, #eaf8ff);
+  border: 1px solid var(--pd-line);
+  box-shadow: var(--pd-shadow);
+}
+.pd-hero-copy { position: relative; z-index: 2; max-width: 610px; }
+.pd-hero-copy > span { color: var(--pd-blue); font-weight: 800; font-size: 13px; }
+.pd-hero h1 { margin: 3px 0 0; font-size: clamp(30px, 3.5vw, 44px); color: #1498d0; line-height: 1.1; }
+.pd-hero h1 b { font-size: .75em; }
+.pd-hero h2 { margin: 3px 0 7px; font-size: clamp(22px, 2.5vw, 32px); color: var(--pd-blue-deep); }
+.pd-hero p { margin: 0; color: var(--pd-text); font-size: 16px; }
+.pd-hero-art { align-self: stretch; min-height: 180px; display: grid; place-items: end center; overflow: hidden; }
+.pd-hero-art img { width: min(430px, 115%); max-height: 220px; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 14px 22px rgba(27,110,168,.08)); }
+.pd-deco { position: absolute; color: rgba(20,104,189,.18); font-size: 24px; }
+.pd-deco-a { inset-inline-start: 44%; top: 20px; }
+.pd-deco-b { inset-inline-end: 24px; bottom: 22px; color: rgba(91,217,207,.35); }
+
+.pd-section {
+  padding: 18px;
+  border: 1px solid var(--pd-line);
+  border-radius: 20px;
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow);
+}
+.pd-section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 13px; }
+.pd-section-head h2 { margin: 0; font-size: 23px; color: var(--pd-blue-deep); }
+.pd-section-head p { margin: 1px 0 0; color: var(--pd-text); font-size: 12px; }
+.pd-head-actions { display: flex; gap: 8px; align-items: center; }
+.pd-link-btn, .pd-primary-mini {
+  min-height: 36px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+}
+.pd-link-btn { border: 1px solid #c8e0ee; background: #fff; color: var(--pd-blue); }
+.pd-primary-mini { border: 0; background: var(--pd-blue); color: #fff; }

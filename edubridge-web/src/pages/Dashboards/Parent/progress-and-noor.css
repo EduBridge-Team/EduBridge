@@ -6,10 +6,6 @@
   }
 
   .pd-hero-art img {
-    width: min(505px, 122%);
-    max-height: 232px;
-    object-fit: contain;
-    object-position: center bottom;
     filter: drop-shadow(0 12px 24px rgba(28, 106, 166, .08));
   }
 
@@ -167,14 +163,7 @@
     font-size: 10px;
   }
 
-  /* Keep Noor balanced with the shorter progress block. */
-  .pd-noor-side {
-    margin-top: 34px !important;
-    min-height: 205px;
-    height: 205px;
-    max-height: 205px;
-  }
-
+  /* Keep Noor content balanced with the shorter progress block. */
   .pd-noor-side .noor-pet {
     transform: scale(.9);
     margin: -18px auto -13px;
@@ -220,72 +209,4 @@
   .pd-progress-section {
     min-height: 188px;
   }
-
-  .pd-noor-side {
-    margin-top: 30px !important;
-    min-height: 188px;
-    height: 188px;
-    max-height: 188px;
-  }
 }
-
-
-/* ============================================================
-   Full-width lower dashboard: expand into the right sidebar area
-   ============================================================ */
-@media (min-width: 901px) {
-  .pd-lower-grid,
-  .pd-quick-actions,
-  .pd-noor-banner {
-    width: calc(100% + 230px);
-    max-width: none;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 30;
-    transform: translateX(230px);
-  }
-
-  .pd-lower-grid {
-    grid-template-columns: 1.55fr .78fr;
-  }
-
-  .pd-quick-actions {
-    grid-template-columns: 150px repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .pd-noor-banner {
-    grid-template-columns: 1.22fr 190px .96fr;
-  }
-}
-
-@media (min-width: 901px) and (max-width: 1120px) {
-  .pd-lower-grid,
-  .pd-quick-actions,
-  .pd-noor-banner {
-    width: calc(100% + 205px);
-    transform: translateX(205px);
-  }
-
-  .pd-lower-grid {
-    grid-template-columns: 1.58fr .76fr;
-  }
-
-  .pd-quick-actions {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .pd-quick-actions h2 {
-    grid-column: 1 / -1 !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .pd-lower-grid,
-  .pd-quick-actions,
-  .pd-noor-banner {
-    width: 100%;
-    transform: none;
-  }
-}
-
-
