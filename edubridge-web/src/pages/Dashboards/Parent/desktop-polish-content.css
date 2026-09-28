@@ -1,0 +1,107 @@
+/* Parent dashboard desktop sections, children, and progress polish. */
+@media (min-width: 901px) {
+.pd-section {
+    padding: 20px 22px;
+    border-radius: 22px;
+  }
+
+  .pd-section-head h2 {
+    font-size: 26px;
+  }
+
+  .pd-section-head p {
+    font-size: 13px;
+  }
+
+  .pd-children-grid {
+    gap: 18px;
+  }
+
+  .pd-child-card {
+    position: relative;
+    min-height: 205px;
+    padding: 18px 20px;
+    gap: 18px;
+    border-radius: 19px;
+  }
+
+  .pd-kid-avatar {
+    width: 104px;
+    height: 104px;
+    flex-basis: 104px;
+    border: 7px solid rgba(255,255,255,.72);
+    box-shadow: 0 14px 28px rgba(29,108,171,.14);
+  }
+
+  .pd-kid-avatar span {
+    font-size: 38px;
+  }
+
+  .pd-child-title h3 {
+    font-size: 24px;
+  }
+
+  .pd-gender-symbol {
+    color: var(--pd-blue);
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .pd-child-card-pink .pd-gender-symbol {
+    color: #c75bd4;
+  }
+
+  .pd-child-arrow {
+    position: absolute;
+    inset-inline-end: 13px;
+    bottom: 14px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.78);
+    color: var(--pd-blue);
+    cursor: pointer;
+  }
+
+  .pd-child-main > button {
+    margin-top: 3px;
+  }
+
+  .pd-progress-section {
+    padding-bottom: 22px;
+  }
+
+  .pd-metric-head {
+    font-size: 14px;
+  }
+
+  .pd-metric-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pd-ring {
+    width: 102px;
+    height: 102px;
+  }
+
+  .pd-metric-blue .pd-ring {
+    background: conic-gradient(#28b8c6 0 var(--pd-progress), #1e7bd0 var(--pd-progress) calc(var(--pd-progress) + 18deg), #e8f1f6 calc(var(--pd-progress) + 18deg) 360deg);
+  }
+
+  .pd-metric-mint .pd-ring {
+    background: conic-gradient(#54cfbe 0 var(--pd-progress), #24b3c8 var(--pd-progress) calc(var(--pd-progress) + 18deg), #e8f1f6 calc(var(--pd-progress) + 18deg) 360deg);
+  }
+
+  .pd-bars {
+    height: 95px;
+    gap: 10px;
+  }
+
+  .pd-bars i {
+    width: 21px;
+  }
+}
