@@ -1,0 +1,128 @@
+/* Parent dashboard desktop schedule, actions, and Noor polish. */
+@media (min-width: 901px) {
+.pd-today,
+  .pd-conversations {
+    min-height: 305px;
+  }
+
+  .pd-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--pd-blue);
+  }
+
+  .pd-title-with-icon h2 {
+    margin: 0;
+  }
+
+  .pd-schedule-list {
+    display: grid;
+    gap: 0;
+  }
+
+  .pd-schedule-row {
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: 92px 46px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-top: 1px solid #e6eff5;
+  }
+
+  .pd-schedule-row:first-child {
+    border-top: 0;
+  }
+
+  .pd-schedule-time {
+    height: 48px;
+    padding-inline: 8px;
+    display: grid;
+    place-items: center;
+    border-inline-end: 1px solid #dceaf3;
+    color: var(--pd-blue-deep);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .pd-schedule-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #efeaff;
+    font-size: 21px;
+  }
+
+  .pd-schedule-icon-1 {
+    background: #e9fbf7;
+  }
+
+  .pd-schedule-icon-2 {
+    background: #eaf6ff;
+  }
+
+  .pd-schedule-copy {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+  }
+
+  .pd-schedule-copy strong {
+    color: var(--pd-blue-deep);
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pd-schedule-copy small {
+    color: var(--pd-text);
+    font-size: 11px;
+  }
+
+  .pd-schedule-row > button {
+    min-width: 92px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: #eaf4fb;
+    color: var(--pd-blue);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .pd-schedule-row:first-child > button {
+    background: linear-gradient(135deg, var(--pd-blue), #1d78ca);
+    color: #fff;
+  }
+
+  .pd-quick-actions button {
+    min-height: 48px;
+    border-radius: 12px;
+  }
+
+  .pd-noor-banner {
+    min-height: 190px;
+    padding: 24px 34px;
+    grid-template-columns: 1.2fr 190px .9fr;
+  }
+
+  .pd-noor-banner > .noor-pet {
+    transform: scale(1.15);
+  }
+
+  .pd-noor-copy h2 {
+    font-size: 30px;
+  }
+
+  .pd-noor-bubbles span {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+}
