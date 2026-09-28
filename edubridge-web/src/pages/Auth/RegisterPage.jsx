@@ -1,7 +1,8 @@
 // صفحة إنشاء حساب جديد
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { register } from '../../api'
+import { RegisterCard, RegisterDecor, RegisterVisual } from './RegisterSections'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -67,96 +68,16 @@ export default function RegisterPage() {
 
   return (
     <div className="center-page auth-page auth-page-register">
-      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-a" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-ring auth-page-decor-ring-b" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-dots" aria-hidden="true" />
-      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-a" aria-hidden="true">✦</div>
-      <div className="auth-page-decor auth-page-decor-spark auth-page-decor-spark-b" aria-hidden="true">✦</div>
+      <RegisterDecor />
       <div className="auth-split">
-        <section className="auth-visual auth-visual-art" aria-label="ابدأ رحلتك مع EduBridge">
-          <img src="/auth-register.avif" alt="ابدأ رحلتك التعليمية مع EduBridge" />
-        </section>
-
-        <div className="auth-card auth-card-branded">
-        <div className="auth-card-corner-dots" aria-hidden="true" />
-        <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
-        <h1>EduBridge</h1>
-        <div className="subtitle">جسر تعليمي</div>
-        <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
-        <h2 className="auth-form-title">إنشاء حساب</h2>
-
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name">الاسم</label>
-          <input id="name" value={form.name} onChange={set('name')} required />
-
-          <label htmlFor="email">الإيميل</label>
-          <input
-            id="email"
-            type="email"
-            value={form.email}
-            onChange={set('email')}
-            required
-            autoComplete="email"
-          />
-
-          <label htmlFor="national_id">رقم الهوية (اختياري — للتوثيق لاحقاً)</label>
-          <input
-            id="national_id"
-            value={form.national_id}
-            onChange={set('national_id')}
-            inputMode="numeric"
-          />
-
-          <label htmlFor="role">الدور</label>
-          <select id="role" value={form.role} onChange={set('role')}>
-            <option value="parent">ولي أمر</option>
-            <option value="teacher">معلّم</option>
-            <option value="specialist">مختص</option>
-          </select>
-
-          {form.role === 'specialist' && (
-            <>
-              <label htmlFor="specialty">التخصص</label>
-              <select id="specialty" value={form.specialty} onChange={set('specialty')}>
-                <option value="learning_support">دعم تعليمي</option>
-                <option value="educational">خطط تعلم</option>
-                <option value="communication_support">دعم التواصل التعليمي</option>
-                <option value="learning_behavior">دعم سلوك التعلم</option>
-              </select>
-            </>
-          )}
-
-          <label htmlFor="password">كلمة المرور</label>
-          <input
-            id="password"
-            type="password"
-            value={form.password}
-            onChange={set('password')}
-            required
-            autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-          />
-
-          <label htmlFor="confirm">تأكيد كلمة المرور</label>
-          <input
-            id="confirm"
-            type="password"
-            value={form.confirm}
-            onChange={set('confirm')}
-            required
-            autoComplete="new-password"
-          />
-
-          {error && <div className="error-box">{error}</div>}
-
-          <button className="btn full" type="submit" disabled={loading}>
-            {loading ? 'جارِ الإنشاء...' : 'إنشاء الحساب'}
-          </button>
-        </form>
-
-        <Link className="link-btn" to="/login">لديك حساب؟ سجّل دخولك</Link>
-        </div>
+        <RegisterVisual />
+        <RegisterCard
+          error={error}
+          form={form}
+          loading={loading}
+          onChange={set}
+          onSubmit={handleSubmit}
+        />
       </div>
     </div>
   )
