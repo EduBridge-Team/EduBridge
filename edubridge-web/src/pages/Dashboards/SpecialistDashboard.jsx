@@ -9,26 +9,11 @@ import {
 } from '../../api'
 import { GraduationCap } from 'lucide-react'
 import Footer from '../../components/Footer'
-
-// هل اكتمل الدرس اليوم؟ (مقارنة تاريخ الإتمام باليوم الحالي)
-function isToday(ts) {
-  if (!ts) return false
-  const d = new Date(ts.replace(' ', 'T'))
-  const now = new Date()
-  return d.toDateString() === now.toDateString()
-}
-
-// حساب مؤشرات الطفل من صفوف تقدّمه
-function computeStats(rows) {
-  const total = rows.length
-  const done = rows.filter((r) => r.status === 'done').length
-  const inProgress = rows.filter((r) => r.status === 'in_progress').length
-  const doneToday = rows.filter((r) => r.status === 'done' && isToday(r.completed_at)).length
-  const pct = total ? Math.round((done / total) * 100) : 0
-  // الدرس الحالي = أول درس قيد التنفيذ (هدف زر «اعتماد كمنجز»)
-  const current = rows.find((r) => r.status === 'in_progress') || null
-  return { total, done, inProgress, doneToday, pct, current }
-}
+import {
+  SpecialistChildrenList,
+  SpecialistSummary,
+} from './SpecialistDashboardSections'
+import { computeSpecialistProgressStats } from './specialistDashboardUtils'
 
 export default function SpecialistDashboard() {
   const me = getUser()
@@ -50,7 +35,7 @@ export default function SpecialistDashboard() {
         children.map(async (child) => {
           const p = await fetchChildProgress(child.id)
           const progress = p.progress || []
-          return { child, progress, stats: computeStats(progress) }
+          return { child, progress, stats: computeSpecialistProgressStats(progress) }
         })
       )
       setRows(withProgress)
@@ -100,100 +85,29 @@ export default function SpecialistDashboard() {
           <p className="dash-sub">مرحباً {me.name}، إليك نظرة عامة على تقدّم الأطفال وخططهم التعليمية اليوم.</p>
         </div>
 
-        {/* المؤشّرات */}
-        <div className="summary-grid">
-          <div className="summary-card">
-            <div className="num" style={{ color: 'var(--coral-deep)' }}>{pending}</div>
-            <div className="lbl">مهام قيد الانتظار</div>
-          </div>
-          <div className="summary-card">
-            <div className="num" style={{ color: 'var(--green-deep)' }}>{doneToday}</div>
-            <div className="lbl">مهام منجزة (اليوم)</div>
-          </div>
-          <div className="summary-card">
-            <div className="num" style={{ color: 'var(--navy)' }}>{totalChildren}</div>
-            <div className="lbl">إجمالي الأطفال</div>
-          </div>
-        </div>
+        <SpecialistSummary
+          doneToday={doneToday}
+          pending={pending}
+          totalChildren={totalChildren}
+        />
 
         <div className="page-title" style={{ marginTop: 8 }}>
           <h2>جميع الأطفال والتقدّم</h2>
         </div>
 
-        {loading ? (
-          <div className="state">
-            <div className="spinner" />
-            جارِ تحميل بيانات الأطفال...
-          </div>
-        ) : error ? (
-          <div className="state">
-            <div className="error-box">{error}</div>
-            <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-              إعادة المحاولة
-            </button>
-          </div>
-        ) : rows.length === 0 ? (
-          <div className="state">لا يوجد أطفال بعد</div>
-        ) : (
-          rows.map((row) => {
-            const { child, stats } = row
-            const hasCurrent = !!stats.current
-            return (
-              <div key={child.id} className="progress-row">
-                {/* هوية الطفل — يمين */}
-                <div className="pr-child">
-                  <div className="avatar">🧒</div>
-                  <div>
-                    <h3
-                      className="pr-name clickable"
-                      onClick={() =>
-                        navigate(`/children/${child.id}/progress`, {
-                          state: { childName: child.name },
-                        })
-                      }
-                    >
-                      {child.name}
-                    </h3>
-                    {child.disability_name && (
-                      <div className="meta">احتياج: {child.disability_name}</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* المؤشّرات — وسط */}
-                <div className="pr-mid">
-                  {hasCurrent && (
-                    <span className="status-chip in_progress">
-                      🕒 {stats.current.lesson_title}
-                    </span>
-                  )}
-                  <span className="pr-pct">{stats.pct}% ⭐</span>
-                  {stats.inProgress > 0 && (
-                    <span className="pr-count orange">{stats.inProgress}</span>
-                  )}
-                  {stats.done > 0 && <span className="pr-count green">{stats.done} ✅</span>}
-                </div>
-
-                {/* الإجراء — يسار */}
-                <div className="pr-action">
-                  {hasCurrent ? (
-                    <button
-                      className="btn success small"
-                      disabled={approvingId === child.id}
-                      onClick={() => approve(row)}
-                    >
-                      {approvingId === child.id ? 'جارٍ...' : '✔ اعتماد كمنجز'}
-                    </button>
-                  ) : (
-                    <button className="btn small outline" disabled>
-                      ⏳ بانتظار البدء
-                    </button>
-                  )}
-                </div>
-              </div>
-            )
-          })
-        )}
+        <SpecialistChildrenList
+          approvingId={approvingId}
+          error={error}
+          loading={loading}
+          onApprove={approve}
+          onOpenProgress={(child) =>
+            navigate(`/children/${child.id}/progress`, {
+              state: { childName: child.name },
+            })
+          }
+          onRetry={load}
+          rows={rows}
+        />
       </main>
 
       <Footer />
