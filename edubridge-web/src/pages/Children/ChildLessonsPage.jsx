@@ -1,9 +1,10 @@
 // صفحة دروس الطفل (حسب نوع إعاقته) مع «تمّ» والقراءة الصوتية
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, ChartColumn, BookOpen, CircleCheckBig, Volume2, Square, Check, Gamepad2, Settings } from 'lucide-react'
+import { ArrowRight, ChartColumn, Gamepad2, Settings } from 'lucide-react'
 import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../../api'
 import { applyAccessibilityProfile, getAccessibilityProfile } from '../../accessibility'
+import ChildLessonCard from './ChildLessonCard'
 
 export default function ChildLessonsPage() {
   const { childId } = useParams()
@@ -148,117 +149,18 @@ export default function ChildLessonsPage() {
       {lessons.length === 0 ? (
         <div className="state">لا توجد دروس مناسبة بعد</div>
       ) : (
-        lessons.map((lesson) => {
-          const isDone = doneIds.has(lesson.id)
-          return (
-            <div key={lesson.id} className="card">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {isDone ? (
-                  <CircleCheckBig size={18} color="var(--green-deep)" />
-                ) : (
-                  <BookOpen size={18} />
-                )}{' '}
-                {lesson.title}
-              </h3>
-              {lesson.content && <p className="content">{lesson.content}</p>}
-
-              {(lesson.images || lesson.image_urls || []).length > 0 && (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                    gap: 10,
-                    marginTop: 12,
-                  }}
-                >
-                  {(lesson.images || lesson.image_urls || []).map((url) => (
-                    <img
-                      key={url}
-                      src={url}
-                      alt={lesson.title}
-                      loading="lazy"
-                      style={{
-                        width: '100%',
-                        height: 150,
-                        objectFit: 'cover',
-                        borderRadius: 14,
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {lesson.video_url && (
-                <video
-                  controls
-                  preload="metadata"
-                  style={{ width: '100%', borderRadius: 14, marginTop: 12 }}
-                >
-                  <source src={lesson.video_url} />
-                  {lesson.caption_url && (
-                    <track
-                      kind="captions"
-                      src={lesson.caption_url}
-                      srcLang="ar"
-                      label="العربية"
-                      default
-                    />
-                  )}
-                </video>
-              )}
-
-              {lesson.audio_url && (
-                <audio controls preload="metadata" style={{ width: '100%', marginTop: 12 }}>
-                  <source src={lesson.audio_url} />
-                </audio>
-              )}
-
-              {lesson.sign_language_url && (
-                <details style={{ marginTop: 12 }}>
-                  <summary>🤟 فيديو لغة الإشارة</summary>
-                  <video
-                    controls
-                    preload="metadata"
-                    style={{ width: '100%', borderRadius: 14, marginTop: 8 }}
-                  >
-                    <source src={lesson.sign_language_url} />
-                  </video>
-                </details>
-              )}
-
-              {lesson.audio_description && (
-                <p className="content" style={{ marginTop: 10 }}>
-                  🔊 الوصف الصوتي: {lesson.audio_description}
-                </p>
-              )}
-
-              <div className="actions">
-                <button className="btn small outline" onClick={() => toggleSpeak(lesson)}>
-                  {speakingId === lesson.id ? (
-                    <><Square size={16} /> إيقاف</>
-                  ) : (
-                    <><Volume2 size={16} /> استمع</>
-                  )}
-                </button>
-                {canMarkDone && (
-                  <button
-                    className={`btn small ${isDone ? 'success' : ''}`}
-                    disabled={isDone || savingId === lesson.id}
-                    onClick={() => handleDone(lesson.id)}
-                  >
-                    {isDone ? (
-                      <><Check size={16} /> مكتمل</>
-                    ) : savingId === lesson.id ? (
-                      'جارِ الحفظ...'
-                    ) : (
-                      'تمّ'
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-          )
-        })
+        lessons.map((lesson) => (
+          <ChildLessonCard
+            key={lesson.id}
+            canMarkDone={canMarkDone}
+            isDone={doneIds.has(lesson.id)}
+            lesson={lesson}
+            onDone={handleDone}
+            onToggleSpeak={toggleSpeak}
+            saving={savingId === lesson.id}
+            speaking={speakingId === lesson.id}
+          />
+        ))
       )}
     </div>
   )

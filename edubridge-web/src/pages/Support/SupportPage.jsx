@@ -2,21 +2,11 @@
 // المستخدم ينشئ تذكرة ويتابعها؛ الأدمن يستعرض الكل ويرد ويغيّر الحالة.
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { LifeBuoy, TriangleAlert } from 'lucide-react'
+import { LifeBuoy } from 'lucide-react'
 import { getUser, fetchTickets, createTicket, updateTicket } from '../../api'
 import AdminSectionTabs from '../../components/AdminSectionTabs'
+import { SupportRequestForm, SupportTicketsList } from './SupportSections'
 
-const STATUS_LABELS = {
-  open: 'مفتوحة',
-  in_progress: 'قيد المعالجة',
-  resolved: 'تم الحل',
-  closed: 'مغلقة',
-}
-
-function StatusBadge({ status }) {
-  const c = { open: 'orange', in_progress: 'blue', resolved: 'green', closed: 'gray' }[status] || 'gray'
-  return <span className={`vbadge ${c}`}>{STATUS_LABELS[status] || status}</span>
-}
 
 export default function SupportPage() {
   const me = getUser()
@@ -103,37 +93,14 @@ export default function SupportPage() {
       {isAdmin && <AdminSectionTabs />}
 
       {!isAdmin && (
-        <form onSubmit={submit} className="card">
-          <h3>طلب جديد</h3>
-          <label>التصنيف</label>
-          <select
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            <option value="support">دعم فني</option>
-            <option value="complaint">شكوى</option>
-          </select>
-
-          <label>العنوان</label>
-          <input
-            value={form.subject}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-          />
-
-          <label>الرسالة</label>
-          <textarea
-            rows={4}
-            value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-          />
-
-          {msg && <div className="success-box">{msg}</div>}
-          {error && <div className="error-box">{error}</div>}
-
-          <button className="btn" type="submit" disabled={sending}>
-            {sending ? 'جارٍ الإرسال...' : 'إرسال'}
-          </button>
-        </form>
+        <SupportRequestForm
+          error={error}
+          form={form}
+          message={msg}
+          onChange={setForm}
+          onSubmit={submit}
+          sending={sending}
+        />
       )}
 
       <div className="page-title" style={{ marginTop: 8 }}>
@@ -142,45 +109,13 @@ export default function SupportPage() {
 
       {error && isAdmin && <div className="error-box">{error}</div>}
 
-      {loading ? (
-        <div className="state"><div className="spinner" />جارِ التحميل...</div>
-      ) : tickets.length === 0 ? (
-        <div className="state">لا توجد طلبات</div>
-      ) : (
-        tickets.map((t) => (
-          <div key={t.id} className="card ticket">
-            <div className="ticket-head">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {t.category === 'complaint' ? (
-                  <TriangleAlert size={17} />
-                ) : (
-                  <LifeBuoy size={17} />
-                )}
-                {t.subject}
-              </h3>
-              <StatusBadge status={t.status} />
-            </div>
-            <p className="content">{t.message}</p>
-            {isAdmin && (
-              <div className="meta">
-                من: {t.user_name} ({t.user_email})
-              </div>
-            )}
-            {t.admin_reply && (
-              <div className="admin-reply">
-                <strong>ردّ الإدارة:</strong> {t.admin_reply}
-              </div>
-            )}
-            {isAdmin && (
-              <div className="actions">
-                <button className="btn small" onClick={() => reply(t)}>ردّ</button>
-                <button className="btn small outline" onClick={() => changeStatus(t, 'in_progress')}>قيد المعالجة</button>
-                <button className="btn small outline" onClick={() => changeStatus(t, 'closed')}>إغلاق</button>
-              </div>
-            )}
-          </div>
-        ))
-      )}
+      <SupportTicketsList
+        isAdmin={isAdmin}
+        loading={loading}
+        onReply={reply}
+        onStatusChange={changeStatus}
+        tickets={tickets}
+      />
     </div>
   )
 }

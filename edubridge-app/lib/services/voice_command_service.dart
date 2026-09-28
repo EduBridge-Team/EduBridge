@@ -23,7 +23,6 @@ import '../games/visual_words_game.dart';
 import '../games/word_builder_game.dart';
 
 // ─── الشاشات ───
-import '../screens/aac_communication_screen.dart';
 import '../screens/add_child/add_child_screen.dart';
 import '../screens/assistant_screen.dart';
 import '../screens/care_team_screen.dart';

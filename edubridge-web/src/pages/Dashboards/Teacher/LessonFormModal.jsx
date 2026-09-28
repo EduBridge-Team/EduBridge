@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { Pencil, Plus, X } from 'lucide-react'
 import { createLesson, updateLesson } from '../../../api'
+import {
+  LessonAudienceFields,
+  LessonMediaFields,
+  LessonModalActions,
+} from './LessonFormSections'
 
 export default function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
   const isEditing = Boolean(lesson)
@@ -76,63 +81,33 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
           <label>المحتوى</label>
           <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} placeholder="اكتب محتوى الدرس..." />
 
-          <label>الفئة المستهدفة</label>
-          <select value={audience} onChange={(e) => setAudience(e.target.value)}>
-            <option value="children">الأطفال</option>
-            <option value="parents">أولياء الأمور</option>
-          </select>
-
-          {audience === 'children' && (
-            <>
-              <label>نوع الإعاقة المستهدَف</label>
-              <select value={typeId} onChange={(e) => setTypeId(e.target.value)}>
-                <option value="">— عام (كل الأنواع) —</option>
-                {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-              </select>
-            </>
-          )}
-
-          {isEditing && existingMedia.length > 0 && (
-            <div className="meta" style={{ margin: '10px 0' }}>
-              الوسائط الحالية: {existingMedia.join('، ')}. اختيار ملف جديد يستبدل الوسائط من النوع نفسه.
-            </div>
-          )}
-
-          <label>{isEditing ? 'استبدال صور الدرس' : 'صور الدرس (يمكن اختيار عدة صور)'}</label>
-          <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => setImages(Array.from(e.target.files || []))} />
-
-          <label>{isEditing ? 'استبدال فيديو الدرس' : 'فيديو الدرس'}</label>
-          <input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(e) => setVideo(e.target.files?.[0] || null)} />
-
-          <label>{isEditing ? 'استبدال التسجيل الصوتي' : 'تسجيل صوتي'}</label>
-          <input type="file" accept="audio/mpeg,audio/mp4,audio/aac,audio/wav,audio/ogg" onChange={(e) => setAudio(e.target.files?.[0] || null)} />
-
-          <label>{isEditing ? 'استبدال ملف الترجمة' : 'ملف الترجمة (.vtt أو .srt)'}</label>
-          <input type="file" accept=".vtt,.srt,text/vtt" onChange={(e) => setCaption(e.target.files?.[0] || null)} />
-
-          <label>{isEditing ? 'استبدال فيديو لغة الإشارة' : 'فيديو لغة الإشارة'}</label>
-          <input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(e) => setSignLanguage(e.target.files?.[0] || null)} />
-
-          <label>الوصف الصوتي</label>
-          <textarea
-            value={audioDescription}
-            onChange={(e) => setAudioDescription(e.target.value)}
-            rows={3}
-            placeholder="صف ما يحدث في الفيديو ليستفيد المستخدم الكفيف..."
+          <LessonAudienceFields
+            audience={audience}
+            onAudienceChange={setAudience}
+            onTypeIdChange={setTypeId}
+            typeId={typeId}
+            types={types}
           />
 
-          <small style={{ display: 'block', marginTop: 8, opacity: 0.7 }}>
-            الصور حتى 10MB للصورة، الصوت حتى 50MB، والفيديو حتى 150MB.
-          </small>
+          <LessonMediaFields
+            audioDescription={audioDescription}
+            existingMedia={existingMedia}
+            isEditing={isEditing}
+            onAudioChange={setAudio}
+            onAudioDescriptionChange={setAudioDescription}
+            onCaptionChange={setCaption}
+            onImagesChange={setImages}
+            onSignLanguageChange={setSignLanguage}
+            onVideoChange={setVideo}
+          />
 
           {error && <div className="error-box">{error}</div>}
 
-          <div className="modal-actions">
-            <button type="button" className="btn outline" onClick={onClose}>إلغاء</button>
-            <button type="submit" className="btn success" disabled={saving}>
-              {saving ? 'جارِ الحفظ...' : isEditing ? 'حفظ التعديلات' : 'حفظ الدرس'}
-            </button>
-          </div>
+          <LessonModalActions
+            isEditing={isEditing}
+            onClose={onClose}
+            saving={saving}
+          />
         </form>
       </div>
     </div>

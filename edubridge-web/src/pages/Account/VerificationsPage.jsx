@@ -1,7 +1,7 @@
 // مراجعة التوثيق (أدمن) — المستخدمون والأطفال والشهادات (البطاقات 1، 4، 9)
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { ShieldCheck, Paperclip, Baby } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import {
   getUser,
   fetchVerificationUsers,
@@ -12,18 +12,12 @@ import {
   reviewCertificate,
   openProtectedFile,
 } from '../../api'
-import { ROLE_NAMES } from '../../roles'
 import AdminSectionTabs from '../../components/AdminSectionTabs'
-
-function Badge({ status }) {
-  const map = {
-    verified: { t: 'موثّق ✓', c: 'green' },
-    pending: { t: 'معلّق', c: 'orange' },
-    rejected: { t: 'مرفوض', c: 'red' },
-  }
-  const s = map[status] || map.pending
-  return <span className={`vbadge ${s.c}`}>{s.t}</span>
-}
+import {
+  VerificationCertificatesList,
+  VerificationChildrenList,
+  VerificationUsersList,
+} from './VerificationLists'
 
 export default function VerificationsPage() {
   const viewFile = async (url) => {
@@ -143,88 +137,23 @@ export default function VerificationsPage() {
       {loading ? (
         <div className="state"><div className="spinner" />جارِ التحميل...</div>
       ) : tab === 'users' ? (
-        users.length === 0 ? (
-          <div className="state">لا توجد طلبات توثيق ضمن هذا الفلتر</div>
-        ) : (
-          users.map((u) => (
-            <div key={u.id} className="card verify-row">
-              <div>
-                <h3>{u.name} <span className="role-badge">{ROLE_NAMES[u.role] || u.role}</span></h3>
-                <div className="meta">{u.email} · هوية: {u.national_id || '—'}</div>
-                {u.id_document_url && (
-                  <button type="button" className="file-link" onClick={() => viewFile(u.id_document_url)}>
-                    <Paperclip size={14} /> صورة الهوية
-                  </button>
-                )}
-              </div>
-              <div className="verify-actions">
-                {u.verification_status !== 'verified' && (
-                  <button className="btn small success" onClick={() => decideUser(u.id, 'verified')}>اعتماد</button>
-                )}
-                {u.verification_status !== 'rejected' && (
-                  <button className="btn small danger" onClick={() => decideUser(u.id, 'rejected')}>رفض</button>
-                )}
-                <Badge status={u.verification_status} />
-              </div>
-            </div>
-          ))
-        )
+        <VerificationUsersList
+          onDecide={decideUser}
+          onViewFile={viewFile}
+          users={users}
+        />
       ) : tab === 'children' ? (
-        children.length === 0 ? (
-          <div className="state">لا توجد بيانات أطفال ضمن هذا الفلتر</div>
-        ) : (
-          children.map((c) => (
-            <div key={c.id} className="card verify-row">
-              <div>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Baby size={18} /> {c.name}
-                </h3>
-                <div className="meta">
-                  هوية الطفل: {c.child_national_id || '—'} · هوية ولي الأمر: {c.guardian_national_id || '—'}
-                </div>
-                <div className="file-links">
-                  {c.guardian_id_document_url && (
-                    <button type="button" className="file-link" onClick={() => viewFile(c.guardian_id_document_url)}><Paperclip size={14} /> هوية ولي الأمر</button>
-                  )}
-                  {c.kinship_document_url && (
-                    <button type="button" className="file-link" onClick={() => viewFile(c.kinship_document_url)}><Paperclip size={14} /> مستند القرابة</button>
-                  )}
-                </div>
-              </div>
-              <div className="verify-actions">
-                {c.doc_verification_status !== 'verified' && (
-                  <button className="btn small success" onClick={() => decideChild(c.id, 'verified')}>اعتماد</button>
-                )}
-                {c.doc_verification_status !== 'rejected' && (
-                  <button className="btn small danger" onClick={() => decideChild(c.id, 'rejected')}>رفض</button>
-                )}
-                <Badge status={c.doc_verification_status} />
-              </div>
-            </div>
-          ))
-        )
+        <VerificationChildrenList
+          children={children}
+          onDecide={decideChild}
+          onViewFile={viewFile}
+        />
       ) : (
-        certs.length === 0 ? (
-          <div className="state">لا توجد شهادات</div>
-        ) : (
-          certs.map((c) => (
-            <div key={c.id} className="card verify-row">
-              <div>
-                <h3>{c.title} <Badge status={c.status} /></h3>
-                {c.user_name && <div className="meta">مقدّم من: {c.user_name} ({ROLE_NAMES[c.user_role] || c.user_role})</div>}
-                <button type="button" className="file-link" onClick={() => viewFile(c.url)}><Paperclip size={14} /> عرض الشهادة</button>
-              </div>
-              <div className="verify-actions">
-                {c.status !== 'verified' && (
-                  <button className="btn small success" onClick={() => decideCert(c.id, 'verified')}>اعتماد</button>
-                )}
-                {c.status !== 'rejected' && (
-                  <button className="btn small danger" onClick={() => decideCert(c.id, 'rejected')}>رفض</button>
-                )}
-              </div>
-            </div>
-          ))
-        )
+        <VerificationCertificatesList
+          certificates={certs}
+          onDecide={decideCert}
+          onViewFile={viewFile}
+        />
       )}
     </div>
   )
