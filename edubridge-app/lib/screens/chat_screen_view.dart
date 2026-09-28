@@ -16,143 +16,132 @@ extension _ChatScreenStateView on _ChatScreenState {
       ),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: c.tintTeal,
-              border: Border(bottom: BorderSide(color: c.line)),
-            ),
-            child: Row(
-              children: [
-                const Icon(AppIcons.child, color: AppColors.brandBlue),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    widget.childName.isNotEmpty
-                        ? 'مناقشة حالة: ${widget.childName}'
-                        : 'محادثة عامة',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: c.heading,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(_error!,
-                                style:
-                                    const TextStyle(color: AppColors.red)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _loadMessages,
-                              child: const Text('إعادة المحاولة'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : _messages.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(AppIcons.chat, size: 64, color: c.muted),
-                                const SizedBox(height: 16),
-                                Text('لا توجد رسائل بعد',
-                                    style: TextStyle(color: c.muted)),
-                                const SizedBox(height: 8),
-                                Text('ابدأ المحادثة الآن',
-                                    style: TextStyle(
-                                        fontSize: 14, color: c.muted)),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.all(12),
-                            itemCount: _messages.length,
-                            itemBuilder: (context, i) {
-                              final msg = _messages[i];
-                              final isMe = msg['is_mine'] ?? false;
-                              final date = msg['created_at'] != null
-                                  ? DateTime.parse(msg['created_at'])
-                                  : null;
+          // ═══ شريط معلومات المحادثة ═══
+          _buildConversationHeader(c),
 
-                              return _ChatBubble(
-                                message: msg['content'] ?? '',
-                                isMe: isMe,
-                                senderName:
-                                    isMe ? 'أنا' : widget.otherUserName,
-                                time: date != null
-                                    ? '${date.hour}:${date.minute.toString().padLeft(2, '0')}'
-                                    : '',
-                                color: isMe ? AppColors.brandBlue : c.card,
-                                textColor: isMe ? Colors.white : c.body,
-                              );
-                            },
-                          ),
+          // ═══ الرسائل ═══
+          Expanded(child: _buildMessagesArea(c)),
+
+          // ═══ Composer الجديد — يستبدل الصندوق القديم ═══
+          ChatComposer(
+            controller: _messageCtrl,
+            isSending: _sending,
+            onSend: (text) => _sendMessage(contentOverride: text),
           ),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: c.card,
-              border: Border(top: BorderSide(color: c.line)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageCtrl,
-                    maxLines: 3,
-                    minLines: 1,
-                    decoration: InputDecoration(
-                      hintText: 'اكتب رسالتك...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: c.card,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.brandBlue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: _sending
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(AppIcons.send, color: Colors.white),
-                    onPressed: _sending ? null : _sendMessage,
-                  ),
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  شريط المعلومات العلوي
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildConversationHeader(JisrColors c) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: c.tintTeal,
+        border: Border(bottom: BorderSide(color: c.line)),
+      ),
+      child: Row(
+        children: [
+          const Icon(AppIcons.child, color: AppColors.brandBlue),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              widget.childName.isNotEmpty
+                  ? 'مناقشة حالة: ${widget.childName}'
+                  : 'محادثة عامة',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: c.heading,
+              ),
             ),
           ),
         ],
       ),
     );
-  
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  منطقة الرسائل (Loading / Error / Empty / List)
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildMessagesArea(JisrColors c) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _buildErrorState();
+    }
+    if (_messages.isEmpty) {
+      return _buildEmptyState(c);
+    }
+    return _buildMessagesList(c);
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            _error!,
+            style: const TextStyle(color: AppColors.red),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _loadMessages,
+            child: const Text('إعادة المحاولة'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(JisrColors c) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(AppIcons.chat, size: 64, color: c.muted),
+          const SizedBox(height: 16),
+          Text(
+            'لا توجد رسائل بعد',
+            style: TextStyle(color: c.muted),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'ابدأ المحادثة الآن',
+            style: TextStyle(fontSize: 14, color: c.muted),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessagesList(JisrColors c) {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.all(12),
+      itemCount: _messages.length,
+      itemBuilder: (context, i) {
+        final msg = _messages[i];
+        final isMe = msg['is_mine'] ?? false;
+        final date = msg['created_at'] != null
+            ? DateTime.parse(msg['created_at'])
+            : null;
+
+        return _ChatBubble(
+          message: msg['content'] ?? '',
+          isMe: isMe,
+          senderName: isMe ? 'أنا' : widget.otherUserName,
+          time: date != null
+              ? '${date.hour}:${date.minute.toString().padLeft(2, '0')}'
+              : '',
+          color: isMe ? AppColors.brandBlue : c.card,
+          textColor: isMe ? Colors.white : c.body,
+        );
+      },
+    );
   }
 }

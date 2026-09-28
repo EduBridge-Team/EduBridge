@@ -7,19 +7,24 @@ import '../../services/api_service.dart';
 import '../../services/notification_listener_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
+import '../../widgets/accessibility/profile_avatar_button.dart';
+import '../../widgets/dashboard_menu.dart';
+import '../../widgets/legal_links_button.dart';
+import '../add_certificate_sheet.dart';
 import '../add_lesson/add_lesson_sheet.dart';
 import '../case_discussion/case_discussion_screen.dart';
+import '../chat_screen.dart';
 import '../child_progress_screen.dart';
+import '../chats_screen.dart';
 import '../choose_specialty_screen.dart';
 import '../create_specialist_progress_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
 import '../learning_support_requests/learning_support_requests_screen.dart';
 import '../notifications_screen.dart';
 import '../plan_evaluation_screen.dart';
+import '../support_sheet.dart';
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
-import '../../widgets/accessibility/profile_avatar_button.dart';
-import '../../widgets/dashboard_menu.dart';
 
 part 'specialist_header.dart';
 part 'specialist_progress_tab.dart';
@@ -47,6 +52,9 @@ class SpecialistDashboardScreen extends StatefulWidget {
 class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
+  // ═══════════════════════════════════════════════════════════
+  //  State
+  // ═══════════════════════════════════════════════════════════
   int _tabIndex = 0;
 
   List<Map<String, dynamic>> _rows = [];
@@ -339,6 +347,93 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return true;
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  القائمة الموحّدة (نفس المعلم)
+  // ═══════════════════════════════════════════════════════════
+  List<DashboardMenuAction> _buildMenuActions() {
+    return [
+      DashboardMenuAction(
+        id: 'case_discussion',
+        label: 'دراسات الحالة',
+        icon: AppIcons.forum,
+        onSelected: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CaseDiscussionScreen()),
+        ),
+      ),
+      DashboardMenuAction(
+        id: 'support_requests',
+        label: 'طلبات الدعم',
+        icon: AppIcons.specialist,
+        onSelected: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const LearningSupportRequestsScreen(),
+          ),
+        ),
+      ),
+      DashboardMenuAction(
+        id: 'add_certificate',
+        label: 'إضافة شهادة',
+        icon: AppIcons.certificate,
+        onSelected: _openAddCertificate,
+      ),
+      DashboardMenuAction(
+        id: 'chats',
+        label: 'المحادثات',
+        icon: AppIcons.chat,
+        onSelected: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ChatsScreen()),
+        ),
+      ),
+      DashboardMenuAction(
+        id: 'support',
+        label: 'الدعم الفني',
+        icon: AppIcons.support,
+        onSelected: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const SupportSheet(),
+        ),
+      ),
+      DashboardMenuAction(
+        id: 'legal',
+        label: 'الخصوصية والحساب',
+        icon: AppIcons.privacy,
+        onSelected: () => const LegalLinksButton().show(context),
+      ),
+      DashboardMenuAction(
+        id: 'logout',
+        label: 'تسجيل الخروج',
+        icon: AppIcons.logout,
+        destructive: true,
+        onSelected: _logoutSpecialist,
+      ),
+    ];
+  }
+
+  Future<void> _openAddCertificate() async {
+    if (!await _checkVerification()) return;
+    if (!mounted) return;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AddCertificateSheet(onSaved: _load),
+    );
+  }
+
+  Future<void> _logoutSpecialist() async {
+    await ApiService.logout();
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Build
+  // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
@@ -348,7 +443,13 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         children: [
           Column(
             children: [
-              _buildHeader(context, c, _tabIndex, _mySpecialty),
+              _buildHeader(
+                context: context,
+                c: c,
+                tabIndex: _tabIndex,
+                specialty: _mySpecialty,
+                menuActions: _buildMenuActions(),
+              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -452,6 +553,4 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           : null,
     );
   }
-
-
 }
