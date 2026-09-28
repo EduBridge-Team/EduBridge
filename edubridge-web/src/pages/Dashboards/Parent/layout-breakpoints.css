@@ -1,0 +1,129 @@
+/* Narrow desktop-site views still keep the four metric cards like the reference. */
+@media (min-width: 901px) and (max-width: 1120px) {
+  .pd-profile {
+    min-width: 150px;
+  }
+
+  .pd-hero-note {
+    font-size: 13px;
+  }
+
+  .pd-hero-badge {
+    min-width: 135px;
+    padding: 10px 11px;
+  }
+
+  .pd-section {
+    padding: 17px;
+  }
+
+  .pd-child-card {
+    gap: 12px;
+  }
+
+  .pd-kid-avatar {
+    border-width: 5px;
+  }
+
+  .pd-kid-avatar span {
+    font-size: 30px;
+  }
+
+  .pd-metrics-grid {
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+    gap: 9px;
+  }
+
+  .pd-metric-head {
+    font-size: 12px;
+  }
+
+  .pd-schedule-row {
+    grid-template-columns: 76px 40px minmax(0,1fr) auto;
+    gap: 8px;
+  }
+
+  .pd-schedule-row > button {
+    min-width: 78px;
+    padding-inline: 8px;
+  }
+
+}
+
+@media (max-width: 900px) {
+  .pd-hero-note,
+  .pd-hero-badge,
+  .pd-child-arrow,
+  .pd-deco-c {
+    display: none;
+  }
+
+  .pd-title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pd-schedule-list {
+    display: grid;
+  }
+
+  .pd-schedule-row {
+    min-height: 68px;
+    display: grid;
+    grid-template-columns: auto 42px minmax(0,1fr);
+    gap: 8px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #e6eff5;
+  }
+
+  .pd-schedule-row:first-child {
+    border-top: 0;
+  }
+
+  .pd-schedule-time {
+    grid-column: 1;
+    grid-row: 1;
+    color: var(--pd-blue);
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .pd-schedule-icon {
+    grid-column: 2;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #eef7fc;
+  }
+
+  .pd-schedule-copy {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+    display: grid;
+  }
+
+  .pd-schedule-copy strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pd-schedule-row > button {
+    grid-column: 1 / -1;
+    justify-self: end;
+    border: 0;
+    border-radius: 9px;
+    padding: 7px 10px;
+    background: #eaf4fb;
+    color: var(--pd-blue);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+  }
+}
