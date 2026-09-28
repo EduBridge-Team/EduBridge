@@ -6,10 +6,6 @@
   }
 
   .pd-hero-art img {
-    width: min(505px, 122%);
-    max-height: 232px;
-    object-fit: contain;
-    object-position: center bottom;
     filter: drop-shadow(0 12px 24px rgba(28, 106, 166, .08));
   }
 
@@ -167,14 +163,7 @@
     font-size: 10px;
   }
 
-  /* Keep Noor balanced with the shorter progress block. */
-  .pd-noor-side {
-    margin-top: 34px !important;
-    min-height: 205px;
-    height: 205px;
-    max-height: 205px;
-  }
-
+  /* Keep Noor content balanced with the shorter progress block. */
   .pd-noor-side .noor-pet {
     transform: scale(.9);
     margin: -18px auto -13px;
@@ -219,12 +208,5 @@
 
   .pd-progress-section {
     min-height: 188px;
-  }
-
-  .pd-noor-side {
-    margin-top: 30px !important;
-    min-height: 188px;
-    height: 188px;
-    max-height: 188px;
   }
 }
