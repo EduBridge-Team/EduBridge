@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MessageCircle, Plus, RefreshCw, Search, Send, X } from 'lucide-react'
+import { MessageCircle, Plus, Search } from 'lucide-react'
 import {
   createConversation,
   fetchConversationMessages,
@@ -9,6 +9,9 @@ import {
   sendConversationMessage,
 } from '../../api'
 import { ROLE_NAMES } from '../../roles'
+import ConversationList from './ConversationList'
+import ConversationPanel from './ConversationPanel'
+import ConversationPicker from './ConversationPicker'
 
 const FILTERS = [
   { id: 'all', label: 'الكل' },
@@ -154,88 +157,31 @@ export default function ConversationsPage() {
       {error && <div className="error-box">{error}</div>}
 
       <div className="chat-layout">
-        <aside className="conversation-list">
-          {visibleConversations.length === 0 ? (
-            <div className="state">{conversations.length ? 'لا توجد نتائج مطابقة' : 'لا توجد محادثات بعد'}</div>
-          ) : visibleConversations.map((conversation) => (
-            <button
-              key={conversation.id}
-              className={`conversation-item ${active?.id === conversation.id ? 'active' : ''}`}
-              onClick={() => setActive(conversation)}
-            >
-              <span className="avatar">{(conversation.other_user_name || 'م').charAt(0)}</span>
-              <span>
-                <strong>{conversation.other_user_name}</strong>
-                <small>{ROLE_NAMES[conversation.other_user_role] || conversation.other_user_role}</small>
-                <small>{conversation.last_message || 'ابدأ المحادثة'}</small>
-              </span>
-              {Number(conversation.unread_count || 0) > 0 && (
-                <em className="pcv-unread">{Math.min(Number(conversation.unread_count), 99)}</em>
-              )}
-            </button>
-          ))}
-        </aside>
+        <ConversationList
+          active={active}
+          conversations={conversations}
+          onSelect={setActive}
+          visibleConversations={visibleConversations}
+        />
 
-        <section className="chat-panel">
-          {!active ? (
-            <div className="state">
-              <MessageCircle size={48} />
-              <p>اختر محادثة لعرض الرسائل</p>
-            </div>
-          ) : (
-            <>
-              <div className="chat-panel-head">
-                <div>
-                  <strong>{active.other_user_name}</strong>
-                  <small>{ROLE_NAMES[active.other_user_role] || active.other_user_role}</small>
-                </div>
-                <button className="icon-btn" onClick={() => loadMessages(active.id)} aria-label="تحديث الرسائل">
-                  <RefreshCw size={17} />
-                </button>
-              </div>
-
-              <div className="chat-messages">
-                {messages.length === 0 ? (
-                  <div className="state">ابدأ المحادثة الآن</div>
-                ) : messages.map((message) => (
-                  <div key={message.id} className={`chat-bubble ${message.is_mine ? 'mine' : ''}`}>
-                    <span>{message.content}</span>
-                    <small>{new Date(message.created_at).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })}</small>
-                  </div>
-                ))}
-                <div ref={bottomRef} />
-              </div>
-
-              <form className="chat-compose" onSubmit={send}>
-                <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="اكتب رسالتك هنا..." maxLength={4000} />
-                <button className="btn" disabled={sending || !draft.trim()} aria-label="إرسال">
-                  <Send size={18} />
-                </button>
-              </form>
-            </>
-          )}
-        </section>
+        <ConversationPanel
+          active={active}
+          bottomRef={bottomRef}
+          draft={draft}
+          messages={messages}
+          onDraftChange={setDraft}
+          onRefresh={() => active && loadMessages(active.id)}
+          onSend={send}
+          sending={sending}
+        />
       </div>
 
       {picker && (
-        <div className="modal-overlay" onClick={() => setPicker(false)}>
-          <div className="modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head">
-              <h3>اختر مستخدماً للتواصل</h3>
-              <button className="modal-close" onClick={() => setPicker(false)}><X size={20} /></button>
-            </div>
-            <div className="user-picker-list">
-              {users.length === 0 ? (
-                <div className="state">لا توجد جهات اتصال متاحة لحسابك</div>
-              ) : users.map((user) => (
-                <button key={user.id} onClick={() => start(user)}>
-                  <span className="avatar">{user.name.charAt(0)}</span>
-                  <span><strong>{user.name}</strong><small>{ROLE_NAMES[user.role] || user.role}</small></span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <ConversationPicker
+          onClose={() => setPicker(false)}
+          onStart={start}
+          users={users}
+        />
       )}
     </div>
   )
