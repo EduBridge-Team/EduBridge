@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { createHomeworkWeb, fetchChildren, fetchHomeworks, getUser, gradeHomeworkWeb, submitHomeworkWeb } from '../../api'
+import {
+  createHomeworkWeb,
+  fetchChildren,
+  fetchHomeworks,
+  getUser,
+  gradeHomeworkWeb,
+  submitHomeworkWeb,
+} from '../../api'
 import {
   HomeworkCreateForm,
   HomeworkGrid,
@@ -7,56 +14,135 @@ import {
 } from './HomeworkSections'
 import '../../feature-parity.css'
 
+const EMPTY_SUBMISSION = {
+  homework_id: null,
+  child_id: '',
+  text_answer: '',
+  files: [],
+}
+
 export default function HomeworkPage() {
   const me = getUser()
-  const staff = ['teacher','specialist','admin'].includes(me?.role)
-  const [children,setChildren]=useState([])
-  const [items,setItems]=useState([])
-  const [error,setError]=useState('')
-  const [busy,setBusy]=useState(false)
-  const [draft,setDraft]=useState({title:'',description:'',subject:'',due_date:'',assigned_child_ids:[]})
-  const [attachments,setAttachments]=useState([])
-  const [submission,setSubmission]=useState({homework_id:null,child_id:'',text_answer:'',files:[]})
-  const [grades,setGrades]=useState({})
+  const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
 
-  const load=useCallback(async()=>{
-    try{
-      const [c,h]=await Promise.all([fetchChildren(),fetchHomeworks()])
-      setChildren(c.children||[])
-      setItems(h.homeworks||[])
+  const [children, setChildren] = useState([])
+  const [items, setItems] = useState([])
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [draft, setDraft] = useState({
+    title: '',
+    description: '',
+    subject: '',
+    due_date: '',
+    assigned_child_ids: [],
+  })
+  const [attachments, setAttachments] = useState([])
+  const [submission, setSubmission] = useState(EMPTY_SUBMISSION)
+  const [grades, setGrades] = useState({})
+
+  const load = useCallback(async () => {
+    try {
+      const [childrenData, homeworkData] = await Promise.all([
+        fetchChildren(),
+        fetchHomeworks(),
+      ])
+
+      setChildren(childrenData.children || [])
+      setItems(homeworkData.homeworks || [])
       setError('')
-    }catch(e){setError(e.message)}
-  },[])
-  useEffect(()=>{load()},[load])
+    } catch (err) {
+      setError(err.message)
+    }
+  }, [])
 
-  const dueDefault=useMemo(()=>{
-    const d=new Date(Date.now()+7*86400000)
-    return d.toISOString().slice(0,16)
-  },[])
+  useEffect(() => {
+    load()
+  }, [load])
 
-  const create=async(e)=>{
-    e.preventDefault(); setBusy(true); setError('')
-    try{
-      await createHomeworkWeb({...draft,due_date:draft.due_date||dueDefault},attachments)
-      setDraft({title:'',description:'',subject:'',due_date:'',assigned_child_ids:[]}); setAttachments([])
+  const defaultDueDate = useMemo(() => {
+    const date = new Date(Date.now() + 7 * 86_400_000)
+    return date.toISOString().slice(0, 16)
+  }, [])
+
+  const create = async (event) => {
+    event.preventDefault()
+    setBusy(true)
+    setError('')
+
+    try {
+      await createHomeworkWeb(
+        {
+          ...draft,
+          due_date: draft.due_date || defaultDueDate,
+        },
+        attachments,
+      )
+      setDraft({
+        title: '',
+        description: '',
+        subject: '',
+        due_date: '',
+        assigned_child_ids: [],
+      })
+      setAttachments([])
       await load()
-    }catch(e){setError(e.message)} finally{setBusy(false)}
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
-  const submit=async(e)=>{
-    e.preventDefault(); if(!submission.homework_id)return
-    setBusy(true); setError('')
-    try{
-      await submitHomeworkWeb(submission.homework_id,{child_id:Number(submission.child_id),text_answer:submission.text_answer},submission.files)
-      setSubmission({homework_id:null,child_id:'',text_answer:'',files:[]}); await load()
-    }catch(e){setError(e.message)} finally{setBusy(false)}
+  const submit = async (event) => {
+    event.preventDefault()
+    if (!submission.homework_id) return
+
+    setBusy(true)
+    setError('')
+
+    try {
+      await submitHomeworkWeb(
+        submission.homework_id,
+        {
+          child_id: Number(submission.child_id),
+          text_answer: submission.text_answer,
+        },
+        submission.files,
+      )
+      setSubmission(EMPTY_SUBMISSION)
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
-  const grade=async(id)=>{
-    const g=grades[id]||{}
-    setBusy(true); setError('')
-    try{await gradeHomeworkWeb(id,Number(g.grade),g.feedback||''); await load()}
-    catch(e){setError(e.message)} finally{setBusy(false)}
+  const grade = async (id) => {
+    const currentGrade = grades[id] || {}
+    setBusy(true)
+    setError('')
+
+    try {
+      await gradeHomeworkWeb(
+        id,
+        Number(currentGrade.grade),
+        currentGrade.feedback || '',
+      )
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const openSubmission = (homeworkId, childId) => {
+    setSubmission((current) => ({
+      ...current,
+      homework_id: homeworkId,
+      child_id: childId,
+    }))
   }
 
   return (
@@ -71,7 +157,7 @@ export default function HomeworkPage() {
 
       {error && <div className="fp-error">{error}</div>}
 
-      {staff && (
+      {isStaff && (
         <HomeworkCreateForm
           attachments={attachments}
           busy={busy}
@@ -91,29 +177,16 @@ export default function HomeworkPage() {
           items={items}
           onGrade={grade}
           onGradesChange={setGrades}
-          onOpenSubmission={(homeworkId, childId) =>
-            setSubmission({
-              ...submission,
-              homework_id: homeworkId,
-              child_id: childId,
-            })
-          }
+          onOpenSubmission={openSubmission}
           role={me?.role}
-          staff={staff}
+          staff={isStaff}
         />
       </section>
 
       <HomeworkSubmissionForm
         busy={busy}
         children={children}
-        onCancel={() =>
-          setSubmission({
-            homework_id: null,
-            child_id: '',
-            text_answer: '',
-            files: [],
-          })
-        }
+        onCancel={() => setSubmission(EMPTY_SUBMISSION)}
         onChange={setSubmission}
         onSubmit={submit}
         submission={submission}
