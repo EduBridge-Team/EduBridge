@@ -155,7 +155,6 @@ export default function VerificationsPage() {
           onViewFile={viewFile}
         />
       )}
-      )}
     </div>
   )
 }
