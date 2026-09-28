@@ -35,7 +35,6 @@ export default function ParentNavigation({ navItems, onHome }) {
             title={item.label}
             aria-label={item.label}
             aria-current={item.active ? 'page' : undefined}
-            disabled={item.disabled}
           >
             {item.icon}
             <span>{item.label}</span>
