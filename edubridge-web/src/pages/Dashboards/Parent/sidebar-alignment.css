@@ -1,0 +1,79 @@
+/* ============================================================
+   Sidebar cleanup + exact bottom alignment with progress section
+   ============================================================ */
+
+/* Keep the dashboard scrollable while hiding the browser scrollbar
+   that visually sits inside the right-hand sidebar in desktop RTL mode. */
+html.parent-dashboard-page,
+body.parent-dashboard-page {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html.parent-dashboard-page::-webkit-scrollbar,
+body.parent-dashboard-page::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .pd-sidebar {
+    align-self: start;
+    height: var(--pd-sidebar-target-height, auto) !important;
+    min-height: 0;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+  }
+
+  .pd-brand,
+  .pd-side-nav {
+    flex: 0 0 auto;
+  }
+
+  /* No nested scrolling/borders in the menu itself. */
+  .pd-side-nav {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    border: 0 !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pd-side-nav::-webkit-scrollbar,
+  .pd-sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+}
+
+
+/* ============================================================
+   Match Noor card exactly to the progress section
+   ============================================================ */
+@media (min-width: 901px) {
+  .pd-sidebar {
+    position: sticky;
+  }
+
+  .pd-noor-side {
+    position: absolute !important;
+    top: var(--pd-noor-top, auto) !important;
+    inset-inline: 16px;
+    box-sizing: border-box;
+    flex: none !important;
+    width: auto;
+    height: var(--pd-noor-height, 205px) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 14px 12px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
