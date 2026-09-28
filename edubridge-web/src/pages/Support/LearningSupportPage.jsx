@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { cancelLearningSupportRequestWeb, completeLearningSupportMeetingWeb, createLearningSupportRequestWeb, fetchChildren, fetchLearningSupportRequests, fetchLearningSupportMeetings, getUser, scheduleLearningSupportRequestWeb } from '../../api'
+import {
+  cancelLearningSupportRequestWeb,
+  completeLearningSupportMeetingWeb,
+  createLearningSupportRequestWeb,
+  fetchChildren,
+  fetchLearningSupportMeetings,
+  fetchLearningSupportRequests,
+  getUser,
+  scheduleLearningSupportRequestWeb,
+} from '../../api'
 import {
   LearningSupportRequestForm,
   LearningSupportRequests,
@@ -7,25 +16,117 @@ import {
 } from './LearningSupportSections'
 import '../../feature-parity.css'
 
-export default function LearningSupportPage(){
-  const me=getUser(); const parent=me?.role==='parent'; const specialist=['specialist','admin'].includes(me?.role)
-  const [children,setChildren]=useState([]);const [requests,setRequests]=useState([]);const [sessions,setSessions]=useState([]);const [error,setError]=useState('');const [busy,setBusy]=useState(false)
-  const [req,setReq]=useState({child_id:'',reason:'',description:'',urgency:'medium'})
-  const [schedule,setSchedule]=useState({}); const [complete,setComplete]=useState({})
+export default function LearningSupportPage() {
+  const me = getUser()
+  const isParent = me?.role === 'parent'
+  const isSpecialist = ['specialist', 'admin'].includes(me?.role)
 
-  const load=useCallback(async()=>{try{const [c,r,s]=await Promise.all([fetchChildren(),fetchLearningSupportRequests(),fetchLearningSupportMeetings()]);const kids=c.children||[];setChildren(kids);setRequests(r.requests||[]);setSessions(s.sessions||[]);setReq(current=>current.child_id||!kids[0]?current:{...current,child_id:String(kids[0].id)});setError('')}catch(e){setError(e.message)}},[])
-  useEffect(()=>{load()},[load])
+  const [children, setChildren] = useState([])
+  const [requests, setRequests] = useState([])
+  const [sessions, setSessions] = useState([])
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [request, setRequest] = useState({
+    child_id: '',
+    reason: '',
+    description: '',
+    urgency: 'medium',
+  })
+  const [schedule, setSchedule] = useState({})
+  const [complete, setComplete] = useState({})
 
-  const create=async(e)=>{e.preventDefault();setBusy(true);try{await createLearningSupportRequestWeb({...req,child_id:Number(req.child_id)});setReq({...req,reason:'',description:''});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
-  const scheduleOne=async(id)=>{const x=schedule[id]||{};setBusy(true);try{await scheduleLearningSupportRequestWeb(id,{scheduled_at:x.scheduled_at,meeting_link:x.meeting_link,specialist_notes:x.notes});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
-  const finish=async(id)=>{const x=complete[id]||{};setBusy(true);try{await completeLearningSupportMeetingWeb(id,{notes:x.notes||'',recommendations:x.recommendations||'',mood_rating:x.mood?Number(x.mood):null,tags:[]});await load()}catch(e){setError(e.message)}finally{setBusy(false)}}
+  const load = useCallback(async () => {
+    try {
+      const [childrenData, requestsData, meetingsData] = await Promise.all([
+        fetchChildren(),
+        fetchLearningSupportRequests(),
+        fetchLearningSupportMeetings(),
+      ])
+      const childList = childrenData.children || []
+
+      setChildren(childList)
+      setRequests(requestsData.requests || [])
+      setSessions(meetingsData.sessions || [])
+      setRequest((current) => (
+        current.child_id || !childList[0]
+          ? current
+          : { ...current, child_id: String(childList[0].id) }
+      ))
+      setError('')
+    } catch (err) {
+      setError(err.message)
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const create = async (event) => {
+    event.preventDefault()
+    setBusy(true)
+
+    try {
+      await createLearningSupportRequestWeb({
+        ...request,
+        child_id: Number(request.child_id),
+      })
+      setRequest((current) => ({
+        ...current,
+        reason: '',
+        description: '',
+      }))
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const scheduleOne = async (id) => {
+    const draft = schedule[id] || {}
+    setBusy(true)
+
+    try {
+      await scheduleLearningSupportRequestWeb(id, {
+        scheduled_at: draft.scheduled_at,
+        meeting_link: draft.meeting_link,
+        specialist_notes: draft.notes,
+      })
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const finish = async (id) => {
+    const draft = complete[id] || {}
+    setBusy(true)
+
+    try {
+      await completeLearningSupportMeetingWeb(id, {
+        notes: draft.notes || '',
+        recommendations: draft.recommendations || '',
+        mood_rating: draft.mood ? Number(draft.mood) : null,
+        tags: [],
+      })
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
 
   const cancelOne = async (id) => {
     try {
       await cancelLearningSupportRequestWeb(id)
       await load()
-    } catch (e) {
-      setError(e.message)
+    } catch (err) {
+      setError(err.message)
     }
   }
 
@@ -41,13 +142,13 @@ export default function LearningSupportPage(){
 
       {error && <div className="fp-error">{error}</div>}
 
-      {parent && (
+      {isParent && (
         <LearningSupportRequestForm
           busy={busy}
           children={children}
-          onChange={setReq}
+          onChange={setRequest}
           onSubmit={create}
-          request={req}
+          request={request}
         />
       )}
 
@@ -58,7 +159,7 @@ export default function LearningSupportPage(){
         onScheduleChange={setSchedule}
         requests={requests}
         schedule={schedule}
-        specialist={specialist}
+        specialist={isSpecialist}
       />
 
       <LearningSupportSessions
@@ -66,7 +167,7 @@ export default function LearningSupportPage(){
         onComplete={finish}
         onCompleteChange={setComplete}
         sessions={sessions}
-        specialist={specialist}
+        specialist={isSpecialist}
       />
     </div>
   )
