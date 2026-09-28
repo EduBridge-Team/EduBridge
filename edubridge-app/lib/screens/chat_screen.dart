@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'chat/chat_composer.dart';
+
 part 'chat_screen_view.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -52,12 +54,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
     try {
       final messages = await ApiService.getMessages(widget.conversationId);
+      if (!mounted) return;
       setState(() {
         _messages = messages;
         _loading = false;
       });
       _scrollToBottom();
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر تحميل الرسائل';
         _loading = false;
@@ -65,13 +69,15 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _sendMessage() async {
-    final content = _messageCtrl.text.trim();
+  // ═══════════════════════════════════════════════════════════
+  //  يقبل نصاً مباشراً من ChatComposer أو من الحقل
+  // ═══════════════════════════════════════════════════════════
+  Future<void> _sendMessage({String? contentOverride}) async {
+    final content = (contentOverride ?? _messageCtrl.text).trim();
     if (content.isEmpty || _sending) return;
 
-    setState(() {
-      _sending = true;
-    });
+    _messageCtrl.clear();
+    setState(() => _sending = true);
 
     try {
       await ApiService.sendMessage(
@@ -79,7 +85,6 @@ class _ChatScreenState extends State<ChatScreen> {
         content: content,
       );
 
-      _messageCtrl.clear();
       await _loadMessages();
     } catch (e) {
       if (!mounted) return;
@@ -95,13 +100,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
