@@ -1,0 +1,83 @@
+/* Keep Noor directly below the sidebar navigation like the reference. */
+.pd-noor-side {
+  margin-top: 10px !important;
+  flex: 0 0 auto;
+}
+
+@media (min-width: 901px) {
+  .pd-sidebar {
+    justify-content: flex-start;
+  }
+
+  .pd-side-nav {
+    flex: 0 0 auto;
+  }
+
+  .pd-noor-side {
+    min-height: 218px;
+    max-height: 238px;
+    padding-top: 10px;
+  }
+
+  .pd-noor-side .noor-pet {
+    margin: -12px auto -7px;
+  }
+
+  /* The dashboard already has its own Noor card, so avoid the duplicate floating launcher. */
+  .noor-assistant.parent-dashboard-assistant > .noor-launcher {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   Parent dashboard screenshot cleanup
+   ============================================================ */
+@media (min-width: 901px) {
+  /* The hero WebP already includes the note + badges; show it cleanly without overlays. */
+  .pd-hero-art {
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .pd-hero-art img {
+    transform: none;
+  }
+
+  .pd-hero-note,
+  .pd-hero-badge {
+    display: none !important;
+  }
+
+  /* Keep section headings clean like the annotated reference. */
+  .pd-children-section .pd-section-head,
+  .pd-progress-section .pd-section-head {
+    margin-bottom: 12px;
+    min-height: 38px;
+  }
+
+  .pd-children-section .pd-section-head > div:first-child,
+  .pd-progress-section .pd-section-head > div:first-child {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Reduce the large vertical breaks marked in red. */
+  .pd-section {
+    box-shadow: 0 10px 28px rgba(24, 99, 159, .055);
+  }
+
+  .pd-mini-empty {
+    display: grid;
+    place-items: center;
+  }
+
+  .pd-quick-actions {
+    padding-block: 10px;
+  }
+
+  .pd-noor-banner {
+    margin-top: 0;
+    min-height: 174px;
+  }
+}
