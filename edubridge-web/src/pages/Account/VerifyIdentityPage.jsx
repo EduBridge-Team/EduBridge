@@ -1,7 +1,6 @@
 // توثيق هويتي + شهاداتي (البطاقات 4 و 9) — لكل مستخدم
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { IdCard, Paperclip, Award, Check } from 'lucide-react'
 import {
   getUser,
   uploadFile,
@@ -13,15 +12,10 @@ import {
   openProtectedFile,
 } from '../../api'
 
-function StatusBadge({ status }) {
-  const map = {
-    verified: { t: 'موثّق ✓', c: 'green' },
-    pending: { t: 'بانتظار المراجعة', c: 'orange' },
-    rejected: { t: 'مرفوض', c: 'red' },
-  }
-  const s = map[status] || map.pending
-  return <span className={`vbadge ${s.c}`}>{s.t}</span>
-}
+import {
+  CertificatesCard,
+  IdentityVerificationCard,
+} from './VerifyIdentitySections'
 
 export default function VerifyIdentityPage() {
   const me = getUser()
@@ -139,96 +133,31 @@ export default function VerifyIdentityPage() {
 
   return (
     <div>
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IdCard size={20} /> توثيق الهوية
-        </h2>
-      </div>
-
-      <div className="card">
-        <h3>
-          حالة التوثيق: <StatusBadge status={verification?.verification_status} />
-        </h3>
-        {verification?.verification_note && (
-          <p className="meta">ملاحظة الإدارة: {verification.verification_note}</p>
-        )}
-
-        <label>رقم الهوية</label>
-        <input
-          value={nationalId}
-          inputMode="numeric"
-          onChange={(e) => setNationalId(e.target.value)}
-        />
-
-        <label>صورة الهوية (jpg, png, webp, pdf — حتى 5 ميغابايت)</label>
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp,.pdf"
-          onChange={(e) => upload(e.target.files[0], setIdUrl)}
-        />
-        {idUrl && (
-          <button type="button" className="file-link" onClick={() => viewFile(idUrl)}>
-            <Paperclip size={14} /> عرض الملف المرفوع
-          </button>
-        )}
-
-        {msg && <div className="success-box">{msg}</div>}
-        {error && <div className="error-box">{error}</div>}
-
-        <button className="btn" onClick={saveIdentity} disabled={busy}>
-          {busy ? 'جارٍ الإرسال...' : 'حفظ وإرسال للتوثيق'}
-        </button>
-      </div>
+      <IdentityVerificationCard
+        busy={busy}
+        error={error}
+        idUrl={idUrl}
+        message={msg}
+        nationalId={nationalId}
+        onNationalIdChange={setNationalId}
+        onSave={saveIdentity}
+        onUpload={(file) => upload(file, setIdUrl)}
+        onViewFile={viewFile}
+        verification={verification}
+      />
 
       {isProfessional && (
-        <div className="card">
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Award size={18} /> شهاداتي (إثبات الأهلية)
-          </h3>
-          <p className="dash-sub">
-            أضف شهاداتك العلمية/المهنية؛ يعتمد الحساب بعد التحقق من الشهادات والهوية.
-          </p>
-
-          {certs.length === 0 ? (
-            <div className="state">لا توجد شهادات مرفوعة بعد</div>
-          ) : (
-            <div className="cert-list">
-              {certs.map((c) => (
-                <div key={c.id} className="cert-item">
-                  <div>
-                    <strong>{c.title}</strong> <StatusBadge status={c.status} />
-                    {c.note && <div className="meta">ملاحظة: {c.note}</div>}
-                    <button type="button" className="file-link" onClick={() => viewFile(c.url)}>
-                      <Paperclip size={14} /> عرض الشهادة
-                    </button>
-                  </div>
-                  <button className="btn small danger" onClick={() => removeCert(c.id)}>
-                    حذف
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="cert-add">
-            <label>عنوان الشهادة</label>
-            <input value={certTitle} onChange={(e) => setCertTitle(e.target.value)} />
-            <label>ملف الشهادة</label>
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp,.pdf"
-              onChange={(e) => upload(e.target.files[0], setCertUrl)}
-            />
-            {certUrl && (
-              <span className="file-link">
-                <Check size={14} /> تم رفع الملف
-              </span>
-            )}
-            <button className="btn" onClick={submitCert} disabled={busy}>
-              إضافة شهادة
-            </button>
-          </div>
-        </div>
+        <CertificatesCard
+          busy={busy}
+          certTitle={certTitle}
+          certUrl={certUrl}
+          certificates={certs}
+          onRemove={removeCert}
+          onSubmit={submitCert}
+          onTitleChange={setCertTitle}
+          onUpload={(file) => upload(file, setCertUrl)}
+          onViewFile={viewFile}
+        />
       )}
     </div>
   )
