@@ -17,14 +17,14 @@
   display: none !important;
 }
 
-html.parent-portal-active,
-body.parent-portal-active {
+html.role-portal-active,
+body.role-portal-active {
   min-height: 100dvh !important;
   background: #f7fbfe;
   overflow-x: clip;
 }
 
-body.parent-portal-active #root {
+body.role-portal-active #root {
   min-height: 100dvh !important;
   overflow-x: clip;
 }
@@ -453,4 +453,12 @@ body.parent-portal-active #root {
   border: 1px dashed #cfe2ee;
   border-radius: 18px;
   background: rgba(255,255,255,.78);
+}
+
+
+/* Desktop portal shell behavior. The sidebar already includes Noor. */
+@media (min-width: 901px) {
+  body.role-portal-active .noor-launcher {
+    display: none !important;
+  }
 }
