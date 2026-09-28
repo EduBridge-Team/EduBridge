@@ -1,8 +1,10 @@
 // نموذج إضافة/تعديل طفل — يُستخدم للحالتين (مطابق لنموذج التطبيق)
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, IdCard } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { addChild, updateChild, uploadFile } from '../../api'
+import ChildIdentityFields from './ChildIdentityFields'
+import ChildLearningFields from './ChildLearningFields'
 
 // تحويل نص مفصول بفواصل إلى قائمة (أو null إن كان فارغاً)
 function toList(text) {
@@ -136,105 +138,14 @@ export default function ChildFormPage() {
             required
           />
 
-          {/* توثيق الهوية وصلة القرابة — البطاقة 1 */}
-          <fieldset className="id-fieldset">
-            <legend><IdCard size={16} /> توثيق الهوية وصلة القرابة</legend>
-
-            <label htmlFor="child_national_id">رقم هوية الطفل</label>
-            <input
-              id="child_national_id"
-              value={form.child_national_id}
-              inputMode="numeric"
-              onChange={set('child_national_id')}
-            />
-
-            <label htmlFor="guardian_national_id">رقم هوية ولي الأمر</label>
-            <input
-              id="guardian_national_id"
-              value={form.guardian_national_id}
-              inputMode="numeric"
-              onChange={set('guardian_national_id')}
-            />
-
-            <label>صورة هوية ولي الأمر</label>
-            <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" onChange={upload('guardian_id_document_url')} />
-            {uploading === 'guardian_id_document_url' && <span className="meta">جارٍ الرفع...</span>}
-            {form.guardian_id_document_url && <span className="file-link">✓ تم رفع صورة الهوية</span>}
-
-            <label>مستند صلة القرابة (السجل/الكفالة)</label>
-            <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" onChange={upload('kinship_document_url')} />
-            {uploading === 'kinship_document_url' && <span className="meta">جارٍ الرفع...</span>}
-            {form.kinship_document_url && <span className="file-link">✓ تم رفع مستند القرابة</span>}
-
-            <p className="meta">
-              يبقى التسجيل «بانتظار التوثيق» حتى تُراجع الإدارة المستندات.
-            </p>
-          </fieldset>
-
-          <label htmlFor="disability_type">نوع الإعاقة (اختياري)</label>
-          <input
-            id="disability_type"
-            value={form.disability_type}
-            onChange={set('disability_type')}
-            placeholder="مثال: إعاقة حركية، إعاقة سمعية، ..."
+          <ChildIdentityFields
+            form={form}
+            onChange={set}
+            onUpload={upload}
+            uploading={uploading}
           />
 
-          <label htmlFor="disability_description">وصف الإعاقة (اختياري)</label>
-          <textarea
-            id="disability_description"
-            rows={3}
-            value={form.disability_description}
-            onChange={set('disability_description')}
-          />
-
-          <label htmlFor="medical_history">التاريخ الطبي (اختياري)</label>
-          <textarea
-            id="medical_history"
-            rows={3}
-            value={form.medical_history}
-            onChange={set('medical_history')}
-          />
-
-          <label htmlFor="psychologist_notes">ملاحظات مختص الدعم التعليمي (اختياري)</label>
-          <textarea
-            id="psychologist_notes"
-            rows={3}
-            value={form.psychologist_notes}
-            onChange={set('psychologist_notes')}
-          />
-
-          <label htmlFor="special_needs">احتياجات خاصة (اختياري)</label>
-          <textarea
-            id="special_needs"
-            rows={2}
-            value={form.special_needs}
-            onChange={set('special_needs')}
-            placeholder="مثال: يحتاج إلى دعم إضافي في القراءة"
-          />
-
-          <label htmlFor="preferred_learning_style">أسلوب التعلم المفضل (اختياري)</label>
-          <input
-            id="preferred_learning_style"
-            value={form.preferred_learning_style}
-            onChange={set('preferred_learning_style')}
-            placeholder="مثال: بصري، سمعي، حركي"
-          />
-
-          <label htmlFor="strengths">نقاط القوة (اختياري)</label>
-          <input
-            id="strengths"
-            value={form.strengths}
-            onChange={set('strengths')}
-            placeholder="أدخل النقاط مفصولة بفواصل، مثال: قراءة، رسم"
-          />
-
-          <label htmlFor="challenges">التحديات (اختياري)</label>
-          <input
-            id="challenges"
-            value={form.challenges}
-            onChange={set('challenges')}
-            placeholder="أدخل التحديات مفصولة بفواصل، مثال: صعوبة في الكتابة"
-          />
+          <ChildLearningFields form={form} onChange={set} />
 
           {error && <div className="error-box">{error}</div>}
 
