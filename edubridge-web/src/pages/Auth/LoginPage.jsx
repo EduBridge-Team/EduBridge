@@ -1,8 +1,10 @@
 // صفحة تسجيل الدخول
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { googleLogin, login, resendEmailVerification } from '../../api'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { login, resendEmailVerification } from '../../api'
 import { dashboardFor } from '../../roleRoutes'
+import { LoginCard, LoginVisual } from './LoginSections'
+import { useGoogleSignIn } from './useGoogleSignIn'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -13,7 +15,6 @@ export default function LoginPage() {
   const [error, setError] = useState(null)
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(false)
-  const [googleReady, setGoogleReady] = useState(false)
 
   const successMsg = useMemo(() => {
     if (location.state?.message) return location.state.message
@@ -33,58 +34,7 @@ export default function LoginPage() {
     }
   }, [])
 
-  useEffect(() => {
-    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    if (!googleClientId) return
-
-    let cancelled = false
-    let pollId
-
-    const setupGoogle = () => {
-      if (cancelled || !window.google?.accounts?.id) return false
-
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: async (response) => {
-          setError(null)
-          setLoading(true)
-          try {
-            const u = await googleLogin(response.credential)
-            navigate(dashboardFor(u))
-          } catch (err) {
-            setError(err.message)
-          } finally {
-            setLoading(false)
-          }
-        },
-      })
-
-      const container = document.getElementById('google-signin-button')
-      if (container) {
-        window.google.accounts.id.renderButton(container, {
-          theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          width: 320,
-          locale: 'ar',
-        })
-        setGoogleReady(true)
-      }
-      return true
-    }
-
-    if (!setupGoogle()) {
-      pollId = setInterval(() => {
-        if (setupGoogle()) clearInterval(pollId)
-      }, 200)
-    }
-
-    return () => {
-      cancelled = true
-      if (pollId) clearInterval(pollId)
-    }
-  }, [navigate])
+  const googleReady = useGoogleSignIn({ navigate, setError, setLoading })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -119,61 +69,21 @@ export default function LoginPage() {
   return (
     <div className="center-page auth-page auth-page-login">
       <div className="auth-split">
-        <section className="auth-visual auth-visual-art" aria-label="مرحباً بعودتك إلى EduBridge">
-          <img src="/auth-login.avif" alt="مرحباً بعودتك إلى EduBridge" />
-        </section>
-
-        <div className="auth-card auth-card-branded">
-          <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
-          <h1>EduBridge</h1>
-          <div className="subtitle">جسر تعليمي</div>
-          <div className="tagline">فرص تعلم متساوية للجميع</div>
-          <h2 className="auth-form-title">تسجيل الدخول</h2>
-
-          {successMsg && <div className={params.get('verified') === '0' ? 'error-box' : 'success-box'}>{successMsg}</div>}
-          {notice && <div className="success-box">{notice}</div>}
-
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="email">البريد الإلكتروني</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-
-            <div className="auth-label-row">
-              <label htmlFor="password">كلمة المرور</label>
-              <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
-            </div>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-
-            {error && <div className="error-box">{error}</div>}
-
-            <button className="btn full" type="submit" disabled={loading}>
-              {loading ? 'جارِ الدخول...' : 'دخول'}
-            </button>
-          </form>
-
-          <button type="button" className="auth-secondary-action" onClick={resendVerification}>
-            لم تصلك رسالة تأكيد البريد؟
-          </button>
-
-          <div className="auth-divider">أو</div>
-          <div id="google-signin-button" className="google-btn-shell" />
-          {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && <div className="muted">جارِ تحميل Google…</div>}
-
-          <Link className="link-btn" to="/register">ليس لديك حساب؟ أنشئ حساباً جديداً</Link>
-        </div>
+        <LoginVisual />
+        <LoginCard
+          email={email}
+          error={error}
+          googleReady={googleReady}
+          loading={loading}
+          notice={notice}
+          onEmailChange={setEmail}
+          onPasswordChange={setPassword}
+          onResendVerification={resendVerification}
+          onSubmit={handleSubmit}
+          password={password}
+          successIsError={params.get('verified') === '0'}
+          successMsg={successMsg}
+        />
       </div>
     </div>
   )
