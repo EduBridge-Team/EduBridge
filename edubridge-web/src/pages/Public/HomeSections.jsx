@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   BadgeCheck,
   BookOpen,
+  CheckCircle2,
   Heart,
   Quote,
   Star,
@@ -27,7 +28,7 @@ export default function HomeSections({ loggedIn, navigate, user }) {
               <div className="audience-icon">{item.icon}</div>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
-              <ul>{item.points.map((point) => <li key={point}><span aria-hidden="true">✓</span>{point}</li>)}</ul>
+              <ul>{item.points.map((point) => <li key={point}><CheckCircle2 size={16} />{point}</li>)}</ul>
               <Link to="/about">معرفة المزيد <ArrowLeft size={15} /></Link>
             </article>
           ))}
