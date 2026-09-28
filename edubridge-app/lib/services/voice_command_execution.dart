@@ -204,14 +204,12 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     }
 
     if (_matches(text, [
-      'تواصل', 'التواصل', 'تواصل بالصور', 'aac',
-    ])) {
-      await _reply('سأفتح التواصل بالصور');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const AACCommunicationScreen(childName: 'بطل'),
-      ));
-      return;
-    }
+  'تواصل', 'التواصل', 'تواصل بالصور', 'aac',
+]    )) {
+  await _reply('سأفتح المحادثات');
+  nav.push(MaterialPageRoute(builder: (_) => const ChatsScreen()));
+  return;
+}
 
     if (_matches(text, [
       'اضف طفل', 'اضافه طفل', 'ضيف طفل', 'طفل جديد',

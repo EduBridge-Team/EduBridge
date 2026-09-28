@@ -11,15 +11,18 @@ class _NewDiscussionSheet extends StatefulWidget {
 class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   final _topicCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+
+  List _myChildren = []; // الأطفال الذين أتابعهم فقط
+  List _allUsers = []; // كل المعلّمين والمختصين
+  List _childTeam = []; // فريق الطفل المختار
+
   int? _selectedChildId;
-  List _children = [];
   final Set<int> _selectedParticipants = {};
-  List _availableParticipants = [];
+  int? _myUserId;
+
   bool _loading = true;
   bool _saving = false;
   String? _error;
-
-  int? _myUserId;
 
   @override
   void initState() {
@@ -34,8 +37,14 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     super.dispose();
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  تحميل البيانات — مع فلترة الأطفال حسب متابعة المستخدم
+  // ═══════════════════════════════════════════════════════
   Future<void> _load() async {
     try {
+      final role = await ApiService.getRole();
+      final meId = await ApiService.getUserId();
+
       final responses = await Future.wait([
         ApiService.authGet('/children'),
         ApiService.authGet('/users'),
@@ -43,24 +52,31 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
       if (!mounted) return;
 
-      final children = ApiService.extractList(responses[0].body, 'children');
-      final users = ApiService.extractList(responses[1].body, 'users');
+      final allChildren =
+          ApiService.extractList(responses[0].body, 'children');
+      final allUsers = ApiService.extractList(responses[1].body, 'users');
 
-      final meId = await ApiService.getUserId();
+      // ✅ فلترة الأطفال: فقط الذين أتابعهم
+      final myChildren = allChildren.where((c) {
+        if (role == 'teacher') {
+          return c['assigned_teacher_id']?.toString() == meId?.toString();
+        }
+        if (role == 'specialist') {
+          return _specialistIdsOf(c).contains(meId);
+        }
+        if (role == 'admin') return true; // الأدمن يرى الكل
+        return false;
+      }).toList();
 
       if (!mounted) return;
-
       setState(() {
-        _children = children;
-        _availableParticipants = users
+        _myChildren = myChildren;
+        _allUsers = allUsers
             .where((u) =>
                 u['role'] == 'teacher' || u['role'] == 'specialist')
             .toList();
         _myUserId = meId;
-
-        if (meId != null) {
-          _selectedParticipants.add(meId);
-        }
+        if (meId != null) _selectedParticipants.add(meId);
         _loading = false;
       });
     } catch (_) {
@@ -72,6 +88,87 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     }
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  عند اختيار طفل → فلترة الفريق
+  // ═══════════════════════════════════════════════════════
+  void _onChildSelected(int? childId) {
+    if (childId == null) return;
+
+    final child = _myChildren.firstWhere(
+      (c) => c['id'] == childId,
+      orElse: () => <String, dynamic>{},
+    );
+
+    final teamIds = _teamIdsOf(child);
+    final team = _allUsers
+        .where((u) =>
+            teamIds.contains(u['id']) &&
+            (u['role'] == 'teacher' || u['role'] == 'specialist'))
+        .toList();
+
+    setState(() {
+      _selectedChildId = childId;
+      _selectedParticipants
+        ..clear()
+        ..add(_myUserId!); // أنا مشارك دائماً
+      _childTeam = team;
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  استخراج مُعرّفات المختصين من بيانات الطفل
+  // ═══════════════════════════════════════════════════════
+  Set<int> _specialistIdsOf(Map child) {
+    final ids = <int>{};
+    void add(dynamic v) {
+      if (v is int) ids.add(v);
+      if (v is String) {
+        final p = int.tryParse(v);
+        if (p != null) ids.add(p);
+      }
+    }
+
+    add(child['specialist_id']);
+    add(child['assigned_specialist_id']);
+    for (final key in ['specialist_ids', 'assigned_specialist_ids']) {
+      final list = child[key];
+      if (list is List) list.forEach(add);
+    }
+    return ids;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  استخراج فريق الطفل (معلم + مختصين)
+  // ═══════════════════════════════════════════════════════
+  Set<int> _teamIdsOf(Map child) {
+    final ids = <int>{};
+    void add(dynamic v) {
+      if (v is int) ids.add(v);
+      if (v is String) {
+        final p = int.tryParse(v);
+        if (p != null) ids.add(p);
+      }
+    }
+
+    add(child['assigned_teacher_id']);
+    add(child['specialist_id']);
+    add(child['assigned_specialist_id']);
+
+    for (final key in [
+      'teacher_ids',
+      'assigned_teacher_ids',
+      'specialist_ids',
+      'assigned_specialist_ids',
+    ]) {
+      final list = child[key];
+      if (list is List) list.forEach(add);
+    }
+    return ids;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  حفظ
+  // ═══════════════════════════════════════════════════════
   Future<void> _save() async {
     if (_selectedChildId == null) {
       setState(() => _error = 'اختر الطفل');
@@ -82,11 +179,11 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
       return;
     }
 
-    final participantIds = Set<int>.from(_selectedParticipants);
-    if (_myUserId != null) participantIds.add(_myUserId!);
+    final participants = Set<int>.from(_selectedParticipants);
+    if (_myUserId != null) participants.add(_myUserId!);
 
-    if (participantIds.isEmpty) {
-      setState(() => _error = 'اختر مشاركاً واحداً على الأقل');
+    if (participants.length < 2) {
+      setState(() => _error = 'اختر مشاركاً واحداً على الأقل من الفريق');
       return;
     }
 
@@ -102,11 +199,12 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         description: _descCtrl.text.trim().isEmpty
             ? null
             : _descCtrl.text.trim(),
-        participantIds: participantIds.toList(),
+        participantIds: participants.toList(),
       );
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _saving = false;
@@ -114,6 +212,9 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     }
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  Build
+  // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
@@ -190,19 +291,47 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   }
 
   Widget _buildChildDropdown() {
+    if (_myChildren.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.orange.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.orange.withValues(alpha: 0.3),
+          ),
+        ),
+        child: const Row(
+          children: [
+            Icon(AppIcons.info, color: AppColors.orangeDeep, size: 22),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'لا يوجد أطفال معيّنون لك حالياً — لا يمكن بدء دراسة حالة.',
+                style: TextStyle(fontSize: 13, height: 1.4),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return DropdownButtonFormField<int>(
       initialValue: _selectedChildId,
       decoration: const InputDecoration(
         labelText: 'الطفل *',
         prefixIcon: Icon(AppIcons.child),
       ),
-      items: _children.map<DropdownMenuItem<int>>((ch) {
+      items: _myChildren.map<DropdownMenuItem<int>>((ch) {
         return DropdownMenuItem(
           value: ch['id'] as int,
-          child: Text('${ch['name']} — ${ch['disability_type'] ?? ''}'),
+          child: Text(
+            '${ch['name']} — ${ch['disability_type'] ?? ''}',
+            overflow: TextOverflow.ellipsis,
+          ),
         );
       }).toList(),
-      onChanged: (v) => setState(() => _selectedChildId = v),
+      onChanged: _onChildSelected,
     );
   }
 
@@ -233,7 +362,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     return Row(
       children: [
         Text(
-          'المشاركون (${_selectedParticipants.length}):',
+          'المشاركون من الفريق (${_selectedParticipants.length}):',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 15,
@@ -261,14 +390,49 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   }
 
   List<Widget> _buildParticipantTiles(JisrColors c) {
-    return _availableParticipants.map<Widget>((u) {
+    if (_selectedChildId == null) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: c.tintTeal,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'اختر طفلاً أولاً لعرض أعضاء فريقه',
+            style: TextStyle(fontSize: 13, color: c.onTint),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ];
+    }
+
+    if (_childTeam.isEmpty) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.orange.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Text(
+            'لا يوجد أعضاء آخرون في فريق هذا الطفل حالياً',
+            style: TextStyle(fontSize: 13, color: AppColors.orangeDeep),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ];
+    }
+
+    return _childTeam.map<Widget>((u) {
       final id = u['id'] as int;
       final name = u['name']?.toString() ?? '';
       final role = u['role']?.toString() ?? '';
       final isMe = id == _myUserId;
       final selected = _selectedParticipants.contains(id);
 
-      final roleIcon = role == 'teacher' ? AppIcons.teacher : AppIcons.specialist;
+      final roleIcon =
+          role == 'teacher' ? AppIcons.teacher : AppIcons.specialist;
       final roleLabel = role == 'teacher' ? 'معلّم' : 'مختص';
 
       return CheckboxListTile(
