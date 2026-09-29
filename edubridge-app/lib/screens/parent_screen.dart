@@ -232,6 +232,8 @@ class _ParentScreenState extends State<ParentScreen> {
         child: Center(
           child: DashboardMenu(
             showMicrophoneToggle: true,
+            iconSize: 26,
+            iconColor: Colors.white,
             actions: [
               DashboardMenuAction(
                 id: 'notifications',
@@ -317,14 +319,21 @@ class _ParentScreenState extends State<ParentScreen> {
       title: const SizedBox.shrink(),
       actions: [
         Padding(
-          padding: const EdgeInsetsDirectional.only(end: 16),
+          padding: const EdgeInsetsDirectional.only(end: 14),
           child: Center(
-            child: Image.asset(
-              'assets/brand_logo.png',
-              height: 32,
-              width: 150,
-              fit: BoxFit.contain,
-              alignment: AlignmentDirectional.centerEnd,
+            child: Container(
+              height: 38,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .94),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Image.asset(
+                'assets/brand_logo.png',
+                width: 128,
+                fit: BoxFit.contain,
+                alignment: AlignmentDirectional.centerEnd,
+              ),
             ),
           ),
         ),
