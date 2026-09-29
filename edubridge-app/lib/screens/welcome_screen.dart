@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../theme.dart';
+import '../services/onboarding_service.dart';
 import 'login_screen.dart';
 
 part 'welcome_page_content.dart';
@@ -87,7 +88,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     }
   }
 
-  void _goToLogin() {
+  Future<void> _goToLogin() async {
+    await OnboardingService.markSeen();
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),

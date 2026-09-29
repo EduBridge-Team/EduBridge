@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// شعار EduBridge الموحد: الأيقونة الرسمية + الاسم بدون مسافة.
+/// شعار EduBridge الأفقي الرسمي.
+///
+/// نستخدم ملف الهوية نفسه بدلاً من إعادة رسم كلمة EduBridge بخط النظام؛
+/// هذا يمنع اختلاف شكل الحروف، خصوصاً حرف g، بين الأجهزة والخطوط.
 class BrandLockup extends StatelessWidget {
   final double iconSize;
   final double fontSize;
@@ -15,41 +18,16 @@ class BrandLockup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/brand_icon.png',
-            width: iconSize,
-            height: iconSize,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: gap),
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [
-                Color(0xFF1769C2),
-                Color(0xFF54CED0),
-                Color(0xFF1769C2),
-              ],
-            ).createShader(bounds),
-            child: Text(
-              'EduBridge',
-              maxLines: 1,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: fontSize,
-                height: 1,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1.1,
-              ),
-            ),
-          ),
-        ],
-      ),
+    final height = iconSize.clamp(34.0, 72.0);
+    final width = (fontSize * 5.75 + iconSize + gap).clamp(150.0, 280.0);
+
+    return Image.asset(
+      'assets/brand_logo.png',
+      width: width,
+      height: height,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      semanticLabel: 'EduBridge',
     );
   }
 }

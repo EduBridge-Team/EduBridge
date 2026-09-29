@@ -159,6 +159,148 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'غير متوفر';
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '${date.day}/${date.month}/${date.year} • ${date.hour}:$minute';
+  }
+
+  Future<void> _openNotificationDetails(Map n, JisrColors c) async {
+    final id = n['id'];
+    if (id is int) {
+      await _markRead(id);
+    }
+    if (!mounted) return;
+
+    final title = (n['title'] ?? 'تفاصيل الإشعار').toString();
+    final body = (n['body'] ?? '').toString();
+    final type = n['type']?.toString() ?? '';
+    final date = n['created_at'] != null
+        ? DateTime.tryParse(n['created_at'].toString())
+        : null;
+    final canOpenSuggestion = type == 'specialist_suggestion' ||
+        type == 'suggestion_accepted' ||
+        type == 'suggestion_rejected';
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => SafeArea(
+        child: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+          decoration: BoxDecoration(
+            color: c.card,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: c.line),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 42,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    color: c.line,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: _getIconColor(type).withValues(alpha: .12),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Icon(
+                      _getIcon(type),
+                      color: _getIconColor(type),
+                      size: 23,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 19,
+                        height: 1.35,
+                        fontWeight: FontWeight.w800,
+                        color: c.heading,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'إغلاق',
+                    onPressed: () => Navigator.pop(sheetContext),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              if (body.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: c.tintTeal.withValues(alpha: .35),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    body,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      height: 1.65,
+                      color: c.body,
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Icon(Icons.schedule_rounded, size: 17, color: c.muted),
+                  const SizedBox(width: 6),
+                  Text(
+                    _formatDate(date),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: c.muted,
+                    ),
+                  ),
+                ],
+              ),
+              if (canOpenSuggestion) ...[
+                const SizedBox(height: 18),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SpecialistSuggestionsScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.open_in_new_rounded),
+                  label: const Text('فتح التفاصيل المرتبطة'),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => buildView(context);
 
@@ -271,19 +413,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {
-            _markRead(n['id']);
-            if (type == 'specialist_suggestion' ||
-                type == 'suggestion_accepted' ||
-                type == 'suggestion_rejected') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const SpecialistSuggestionsScreen(),
-                ),
-              );
-            }
-          },
+          onTap: () => _openNotificationDetails(n, c),
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Row(
@@ -340,11 +470,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ],
                       if (date != null) ...[
-                        const SizedBox(height: 7),
-                        Text(
-                          '${date.day}/${date.month}/${date.year} • '
-                          '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
-                          style: TextStyle(fontSize: 11, color: c.muted),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.schedule_rounded, size: 14, color: c.muted),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatDate(date),
+                              style: TextStyle(fontSize: 11, color: c.muted),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              Icons.chevron_left_rounded,
+                              size: 18,
+                              color: c.muted,
+                            ),
+                          ],
                         ),
                       ],
                     ],

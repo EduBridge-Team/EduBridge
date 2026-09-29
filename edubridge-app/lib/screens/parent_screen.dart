@@ -319,20 +319,20 @@ class _ParentScreenState extends State<ParentScreen> {
       title: const SizedBox.shrink(),
       actions: [
         Padding(
-          padding: const EdgeInsetsDirectional.only(end: 14),
+          padding: const EdgeInsetsDirectional.only(end: 16),
           child: Center(
-            child: Container(
-              height: 38,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .94),
-                borderRadius: BorderRadius.circular(12),
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
               ),
               child: Image.asset(
                 'assets/brand_logo.png',
-                width: 128,
+                width: 136,
+                height: 38,
                 fit: BoxFit.contain,
                 alignment: AlignmentDirectional.centerEnd,
+                filterQuality: FilterQuality.high,
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 // lib/screens/add_certificate_sheet.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -20,12 +20,17 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
   File? _file;
   bool _saving = false;
   String? _error;
-  final ImagePicker _picker = ImagePicker();
-
   Future<void> _pickFile() async {
-    final XFile? file = await _picker.pickMedia();
-    if (file != null) {
-      setState(() => _file = File(file.path));
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf', 'png', 'jpg', 'jpeg'],
+    );
+    final path = result?.files.single.path;
+    if (path != null && mounted) {
+      setState(() {
+        _file = File(path);
+        _error = null;
+      });
     }
   }
 
@@ -102,7 +107,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                     child: Text(
                       'إضافة شهادة (إثبات أهلية)',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 19,
                         fontWeight: FontWeight.w800,
                         color: c.heading,
                       ),
@@ -114,7 +119,12 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
+              Text(
+                'أضف اسم الوثيقة وارفق صورة واضحة أو ملف PDF لإرسالها للمراجعة.',
+                style: TextStyle(fontSize: 13, height: 1.5, color: c.muted),
+              ),
+              const SizedBox(height: 14),
               TextField(
                 controller: _titleCtrl,
                 decoration: const InputDecoration(
@@ -138,11 +148,15 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                         const Icon(AppIcons.attach,
                             size: 20, color: AppColors.greenDeep),
                         const SizedBox(width: 6),
-                        Text(
-                          'ملف الشهادة (اختياري صورة أو PDF)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: c.onTint,
+                        Expanded(
+                          child: Text(
+                            'ملف الشهادة (صورة أو PDF)',
+                            softWrap: true,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              height: 1.35,
+                              color: c.onTint,
+                            ),
                           ),
                         ),
                       ],
@@ -151,10 +165,13 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                     if (_file == null)
                       SizedBox(
                         width: double.infinity,
-                        height: 44,
+                        height: 50,
                         child: FilledButton.icon(
                           icon: const Icon(AppIcons.upload),
-                          label: const Text('اختر ملف الشهادة'),
+                          label: const Text(
+                            'اختيار صورة أو ملف PDF',
+                            textAlign: TextAlign.center,
+                          ),
                           onPressed: _pickFile,
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.green,
