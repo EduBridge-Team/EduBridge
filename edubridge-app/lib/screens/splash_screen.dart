@@ -23,7 +23,7 @@ const _glowColor = Color(0xFFB8DCFF);
 const _canvasW = 1080.0;
 const _canvasH = 1920.0;
 const _assetScale = 0.571;
-const _totalSeconds = 5.2;
+const _totalSeconds = 4.6;
 
 // Timeline
 const _fallEnd = 0.533;
@@ -230,11 +230,11 @@ class _LogoIntroState extends State<LogoIntro>
           if (_sprites == null && _error == null)
             const Center(
               child: SizedBox(
-                width: 34,
-                height: 34,
+                width: 30,
+                height: 30,
                 child: CircularProgressIndicator(
                   color: Colors.white,
-                  strokeWidth: 2.5,
+                  strokeWidth: 2.2,
                 ),
               ),
             ),
