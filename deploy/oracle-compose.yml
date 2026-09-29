@@ -35,7 +35,7 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: https://api.edubridge.win
-      GIT_SHA: ${GIT_SHA:?GIT_SHA is required}
+      GIT_SHA: ${GIT_SHA:-unknown}
       DB_CONNECTION: pgsql
       DB_HOST: edubridge-postgres
       DB_PORT: "5432"
