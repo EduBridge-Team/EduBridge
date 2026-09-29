@@ -12,12 +12,12 @@ Widget _buildHeader({
     width: double.infinity,
     decoration: const BoxDecoration(
       gradient: AppColors.headerGradient,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
     ),
     child: SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,8 +35,8 @@ Widget _buildHeader({
                     const Text(
                       'EduBridge',
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                     ),
@@ -45,7 +45,7 @@ Widget _buildHeader({
                 DashboardMenu(actions: menuActions),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 18),
 
             // ═══ الترحيب + التخصص ═══
             FutureBuilder<String?>(
@@ -58,8 +58,8 @@ Widget _buildHeader({
                     Text(
                       'مرحباً $name',
                       style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                     ),
@@ -67,7 +67,7 @@ Widget _buildHeader({
                     Text(
                       _subtitleFor(tabIndex, specialty),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 13.5,
                         color: Colors.white.withValues(alpha: 0.85),
                       ),
                     ),
