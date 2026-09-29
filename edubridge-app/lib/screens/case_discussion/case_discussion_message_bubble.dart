@@ -45,7 +45,7 @@ class _MessageBubble extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: c.line),
         ),
         child: Column(
@@ -53,10 +53,14 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 14,
-                  backgroundColor: iconColor.withValues(alpha: 0.15),
-                  child: Icon(typeIcon, size: 14, color: iconColor),
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(typeIcon, size: 15, color: iconColor),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -64,7 +68,7 @@ class _MessageBubble extends StatelessWidget {
                     message.senderName,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: c.heading,
                     ),
                   ),
@@ -75,13 +79,13 @@ class _MessageBubble extends StatelessWidget {
                         horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: iconColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       typeLabel,
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: iconColor,
                       ),
                     ),
