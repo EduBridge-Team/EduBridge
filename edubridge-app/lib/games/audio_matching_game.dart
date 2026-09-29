@@ -1,6 +1,7 @@
 // لعبة مطابقة الأصوات — للأطفال المكفوفين
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/encouragement_service.dart';
 import '../services/tts_service.dart';
@@ -101,6 +102,8 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     HapticFeedback.heavyImpact();
     await Future.delayed(const Duration(milliseconds: 150));
     HapticFeedback.heavyImpact();
+
+    await GameProgressService.instance.record(100);
 
     await TtsService.instance.speakLine(
       'مذهل يا ${widget.childName}! أكملت اللعبة بنجاح',
