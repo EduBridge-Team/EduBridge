@@ -84,7 +84,7 @@ extension _WelcomePageContentExtension on _WelcomeScreenState {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
 
                 // ─── الشريط ───
                 AnimatedOpacity(
@@ -111,7 +111,7 @@ extension _WelcomePageContentExtension on _WelcomeScreenState {
                     page.title,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.w800,
                       color: AppColors.ink,
                       height: 1.3,
@@ -120,7 +120,7 @@ extension _WelcomePageContentExtension on _WelcomeScreenState {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // ─── الوصف ───
                 AnimatedOpacity(
@@ -132,9 +132,9 @@ extension _WelcomePageContentExtension on _WelcomeScreenState {
                       page.subtitle,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 14.5,
                         color: AppColors.muted,
-                        height: 1.9,
+                        height: 1.75,
                       ),
                     ),
                   ),
