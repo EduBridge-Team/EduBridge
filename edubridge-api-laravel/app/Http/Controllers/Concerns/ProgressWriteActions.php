@@ -30,24 +30,72 @@ trait ProgressWriteActions
         $completedAt = $status === 'done' ? now() : null;
 
         try {
-            DB::table('progress')->upsert(
-                [[
-                    'child_id' => $childId,
-                    'lesson_id' => $lessonId,
-                    'status' => $status ?: 'in_progress',
-                    'score' => $score,
-                    'completed_at' => $completedAt,
-                ]],
-                ['child_id', 'lesson_id'],
-                ['status', 'score', 'completed_at']
-            );
+            $result = DB::transaction(function () use (
+                $childId,
+                $lessonId,
+                $status,
+                $score,
+                $completedAt
+            ) {
+                $existing = DB::table('progress')
+                    ->where('child_id', $childId)
+                    ->where('lesson_id', $lessonId)
+                    ->lockForUpdate()
+                    ->first();
 
-            $progress = DB::table('progress')
-                ->where('child_id', $childId)
-                ->where('lesson_id', $lessonId)
-                ->first();
+                $firstCompletion = $status === 'done'
+                    && (!$existing || $existing->status !== 'done');
 
-            return response()->json(['progress' => $progress], 201);
+                DB::table('progress')->upsert(
+                    [[
+                        'child_id' => $childId,
+                        'lesson_id' => $lessonId,
+                        'status' => $status ?: 'in_progress',
+                        'score' => $score,
+                        'completed_at' => $completedAt,
+                    ]],
+                    ['child_id', 'lesson_id'],
+                    ['status', 'score', 'completed_at']
+                );
+
+                if ($firstCompletion) {
+                    $reward = DB::table('child_rewards')
+                        ->where('child_id', $childId)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($reward) {
+                        DB::table('child_rewards')
+                            ->where('child_id', $childId)
+                            ->update([
+                                'stars' => (int) $reward->stars + 1,
+                                'updated_at' => now(),
+                            ]);
+                    } else {
+                        DB::table('child_rewards')->insert([
+                            'child_id' => $childId,
+                            'stars' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+
+                return [
+                    'progress' => DB::table('progress')
+                        ->where('child_id', $childId)
+                        ->where('lesson_id', $lessonId)
+                        ->first(),
+                    'rewarded_star' => $firstCompletion,
+                    'stars' => (int) (
+                        DB::table('child_rewards')
+                            ->where('child_id', $childId)
+                            ->value('stars') ?? 0
+                    ),
+                ];
+            });
+
+            return response()->json($result, 201);
         } catch (\Exception $e) {
             report($e);
 
