@@ -25,12 +25,16 @@ class DashboardMenu extends StatelessWidget {
   final List<DashboardMenuAction> actions;
   final bool showMicrophoneToggle;
   final int badgeCount;
+  final double iconSize;
+  final Color iconColor;
 
   const DashboardMenu({
     super.key,
     required this.actions,
     this.showMicrophoneToggle = false,
     this.badgeCount = 0,
+    this.iconSize = 27,
+    this.iconColor = Colors.white,
   });
 
   @override
@@ -67,9 +71,10 @@ class DashboardMenu extends StatelessWidget {
                       icon: Badge(
                         isLabelVisible: count > 0,
                         label: Text('$count'),
-                        child: const Icon(
+                        child: Icon(
                           Icons.menu_rounded,
-                          color: Colors.white,
+                          color: iconColor,
+                          size: iconSize,
                         ),
                       ),
                       onSelected: (value) async {
