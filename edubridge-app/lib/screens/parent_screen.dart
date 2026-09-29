@@ -206,120 +206,128 @@ class _ParentScreenState extends State<ParentScreen> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _openAddChild,
           icon: const Icon(AppIcons.add),
-          label: const Text('إضافة طفل'),
-          backgroundColor: AppColors.brandBlue,
+          label: const Text(
+            'إضافة طفل',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       ),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      toolbarHeight: 72,
+      titleSpacing: 0,
+      centerTitle: false,
       flexibleSpace: Container(
-        decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+        decoration: const BoxDecoration(
+          gradient: AppColors.headerGradient,
+        ),
       ),
-      leadingWidth: 70,
-      leading: const Center(child: ProfileAvatarButton(size: 44)),
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset('assets/brand_icon.png', width: 32, height: 32),
-          const SizedBox(width: 8),
-          const Text(
-            'EduBridge',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+      leadingWidth: 72,
+      leading: Padding(
+        padding: const EdgeInsetsDirectional.only(start: 8),
+        child: Center(
+          child: DashboardMenu(
+            showMicrophoneToggle: true,
+            actions: [
+              DashboardMenuAction(
+                id: 'notifications',
+                label: 'الإشعارات',
+                icon: AppIcons.notifications,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationsScreen(),
+                  ),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'parent_lessons',
+                label: 'دروس ولي الأمر',
+                icon: AppIcons.parent,
+                onSelected: _openParentLessons,
+              ),
+              DashboardMenuAction(
+                id: 'accessibility',
+                label: 'احتياجات الأبناء',
+                icon: Icons.accessibility_new,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const ChildrenAccessibilityOverviewScreen(),
+                  ),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'support',
+                label: 'الدعم الفني',
+                icon: AppIcons.support,
+                onSelected: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => const SupportSheet(),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'chats',
+                label: 'المحادثات',
+                icon: AppIcons.chat,
+                onSelected: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatsScreen()),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'certificate',
+                label: 'إضافة شهادة',
+                icon: AppIcons.certificate,
+                onSelected: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => AddCertificateSheet(onSaved: _loadData),
+                ),
+              ),
+              DashboardMenuAction(
+                id: 'legal',
+                label: 'الخصوصية والحساب',
+                icon: AppIcons.privacy,
+                onSelected: () => const LegalLinksButton().show(context),
+              ),
+              DashboardMenuAction(
+                id: 'logout',
+                label: 'تسجيل الخروج',
+                icon: AppIcons.logout,
+                destructive: true,
+                onSelected: () async {
+                  final navigator = Navigator.of(context);
+                  await ApiService.logout();
+                  navigator.pushReplacementNamed('/home');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      title: const SizedBox.shrink(),
+      actions: [
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 16),
+          child: Center(
+            child: Image.asset(
+              'assets/brand_logo.png',
+              height: 32,
+              width: 150,
+              fit: BoxFit.contain,
+              alignment: AlignmentDirectional.centerEnd,
             ),
           ),
-        ],
-      ),
-      centerTitle: true,
-      actions: [
-        DashboardMenu(
-          showMicrophoneToggle: true,
-          actions: [
-            DashboardMenuAction(
-              id: 'notifications',
-              label: 'الإشعارات',
-              icon: AppIcons.notifications,
-              onSelected: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
-              ),
-            ),
-            DashboardMenuAction(
-              id: 'parent_lessons',
-              label: 'دروس لولي الأمر',
-              icon: AppIcons.parent,
-              onSelected: _openParentLessons,
-            ),
-            DashboardMenuAction(
-              id: 'accessibility',
-              label: 'احتياجات الأبناء',
-              icon: Icons.accessibility_new,
-              onSelected: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      const ChildrenAccessibilityOverviewScreen(),
-                ),
-              ),
-            ),
-            DashboardMenuAction(
-              id: 'support',
-              label: 'الدعم الفني',
-              icon: AppIcons.support,
-              onSelected: () => showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (_) => const SupportSheet(),
-              ),
-            ),
-            DashboardMenuAction(
-              id: 'chats',
-              label: 'المحادثات',
-              icon: AppIcons.chat,
-              onSelected: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ChatsScreen()),
-              ),
-            ),
-            DashboardMenuAction(
-              id: 'certificate',
-              label: 'إضافة شهادة',
-              icon: AppIcons.certificate,
-              onSelected: () => showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (_) => AddCertificateSheet(onSaved: _loadData),
-              ),
-            ),
-            DashboardMenuAction(
-              id: 'legal',
-              label: 'الخصوصية والحساب',
-              icon: AppIcons.privacy,
-              onSelected: () => const LegalLinksButton().show(context),
-            ),
-            DashboardMenuAction(
-              id: 'logout',
-              label: 'تسجيل الخروج',
-              icon: AppIcons.logout,
-              destructive: true,
-              onSelected: () async {
-                final navigator = Navigator.of(context);
-                await ApiService.logout();
-                navigator.pushReplacementNamed('/home');
-              },
-            ),
-          ],
         ),
-        const SizedBox(width: 8),
       ],
     );
   }

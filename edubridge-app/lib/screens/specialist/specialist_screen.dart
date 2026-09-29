@@ -451,8 +451,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 menuActions: _buildMenuActions(),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
                 child: Row(
                   children: [
                     if (_tabIndex == 0)
@@ -461,9 +460,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                           decoration: const InputDecoration(
                             hintText: 'ابحث عن طفل...',
                             prefixIcon: Icon(AppIcons.search),
-                            border: InputBorder.none,
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 8),
                           ),
                           onChanged: (v) =>
                               setState(() => _searchQuery = v),
@@ -477,7 +473,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
               if (_tabIndex == 0 && !_loading) ...[
                 _buildFilterCard(c),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -547,8 +543,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(AppIcons.add),
-              label: const Text('إضافة درس'),
-              backgroundColor: AppColors.brandTealDeep,
+              label: const Text(
+                'إضافة درس',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
             )
           : null,
     );

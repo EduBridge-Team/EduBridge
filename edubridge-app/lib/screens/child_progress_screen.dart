@@ -101,8 +101,8 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                 child: Text(
                   'تقدّم ${widget.childName}',
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -117,7 +117,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
                 children: [

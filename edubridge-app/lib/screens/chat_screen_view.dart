@@ -6,7 +6,7 @@ extension _ChatScreenStateView on _ChatScreenState {
 
     return Scaffold(
       appBar: JisrAppBar(
-        title: '${widget.otherUserName} (${widget.otherUserRole})',
+        title: widget.otherUserName,
         actions: [
           IconButton(
             icon: const Icon(AppIcons.refresh),
@@ -38,24 +38,53 @@ extension _ChatScreenStateView on _ChatScreenState {
   // ═══════════════════════════════════════════════════════════
   Widget _buildConversationHeader(JisrColors c) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: c.tintTeal,
-        border: Border(bottom: BorderSide(color: c.line)),
+        color: c.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
       ),
       child: Row(
         children: [
-          const Icon(AppIcons.child, color: AppColors.brandBlue),
-          const SizedBox(width: 8),
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              widget.childName.isNotEmpty ? AppIcons.child : AppIcons.chat,
+              color: AppColors.brandBlue,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              widget.childName.isNotEmpty
-                  ? 'مناقشة حالة: ${widget.childName}'
-                  : 'محادثة عامة',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: c.heading,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.childName.isNotEmpty
+                      ? 'مناقشة حالة: ${widget.childName}'
+                      : 'محادثة عامة',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: c.heading,
+                  ),
+                ),
+                if (widget.otherUserRole.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    widget.otherUserRole,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: c.muted,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
@@ -80,49 +109,76 @@ extension _ChatScreenStateView on _ChatScreenState {
   }
 
   Widget _buildErrorState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            _error!,
-            style: const TextStyle(color: AppColors.red),
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 90),
+        const Icon(AppIcons.error, size: 54, color: AppColors.red),
+        const SizedBox(height: 14),
+        Text(
+          _error!,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppColors.red,
+            fontWeight: FontWeight.w700,
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
+        ),
+        const SizedBox(height: 18),
+        Center(
+          child: FilledButton.icon(
             onPressed: _loadMessages,
-            child: const Text('إعادة المحاولة'),
+            icon: const Icon(AppIcons.refresh),
+            label: const Text('إعادة المحاولة'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildEmptyState(JisrColors c) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(AppIcons.chat, size: 64, color: c.muted),
-          const SizedBox(height: 16),
-          Text(
-            'لا توجد رسائل بعد',
-            style: TextStyle(color: c.muted),
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 100),
+        Center(
+          child: Container(
+            width: 82,
+            height: 82,
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              AppIcons.chat,
+              size: 38,
+              color: AppColors.brandBlue,
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'ابدأ المحادثة الآن',
-            style: TextStyle(fontSize: 14, color: c.muted),
+        ),
+        const SizedBox(height: 18),
+        Text(
+          'ابدأ المحادثة',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: c.heading,
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'أرسل أول رسالة وابدأ التواصل مباشرة.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: c.muted),
+        ),
+      ],
     );
   }
 
   Widget _buildMessagesList(JisrColors c) {
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 16),
       itemCount: _messages.length,
       itemBuilder: (context, i) {
         final msg = _messages[i];

@@ -38,7 +38,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
           _buildHeaderCard(name: name, role: role, isVerified: isVerified),
           const SizedBox(height: 20),
           _sectionTitle('معلومات الحساب', c),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildInfoCard(name, email, phone, role, isVerified),
           const SizedBox(height: 20),
           _sectionTitle('الأمان', c),
@@ -145,12 +145,12 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: AppColors.headerGradient,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
             color: AppColors.brandBlue.withValues(alpha: 0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
@@ -189,7 +189,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                                 initial,
                                 style: const TextStyle(
                                   fontSize: 42,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w800,
                                   color: AppColors.brandBlue,
                                 ),
                               ),
@@ -198,7 +198,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                               initial,
                               style: const TextStyle(
                                 fontSize: 42,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                                 color: AppColors.brandBlue,
                               ),
                             ),
@@ -225,8 +225,8 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
           Text(
             name.isEmpty ? 'مستخدم' : name,
             style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
               color: Colors.white,
             ),
             textAlign: TextAlign.center,
@@ -265,7 +265,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
@@ -280,13 +280,26 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
   Widget _sectionTitle(String title, JisrColors c) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: c.heading,
-        ),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: AppColors.brandTeal,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(width: 9),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: c.heading,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -337,14 +350,14 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
       margin: EdgeInsets.zero,
       color: isDanger ? AppColors.red.withValues(alpha: 0.05) : c.card,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(22),
         side: BorderSide(
           color: isDanger ? AppColors.red.withValues(alpha: 0.3) : c.line,
         ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(22),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -354,7 +367,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                 height: 44,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(icon, color: color, size: 24),
               ),
@@ -367,7 +380,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
                       title,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: isDanger ? AppColors.red : c.heading,
                       ),
                     ),
