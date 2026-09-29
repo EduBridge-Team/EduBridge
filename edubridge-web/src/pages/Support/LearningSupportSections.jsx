@@ -6,7 +6,7 @@ export function LearningSupportRequestForm({
   request,
 }) {
   return (
-    <section className="fp-card">
+    <section className="fp-card fp-form-card learning-support-form-card">
       <h3>طلب جلسة دعم</h3>
       <form className="fp-form" onSubmit={onSubmit}>
         <select
@@ -41,7 +41,7 @@ export function LearningSupportRequestForm({
           <option value="high">مرتفع</option>
         </select>
 
-        <button className="btn success" disabled={busy}>إرسال الطلب</button>
+        <button className="btn" disabled={busy}>إرسال الطلب</button>
       </form>
     </section>
   )
@@ -64,7 +64,7 @@ export function LearningSupportRequests({
           <div className="fp-empty">لا توجد طلبات</div>
         ) : (
           requests.map((request) => (
-            <article className="fp-card" key={request.id}>
+            <article className="fp-card learning-support-card" key={request.id}>
               <div className="fp-head">
                 <h3>{request.child_name || 'طفل'}</h3>
                 <span className="fp-badge">{request.status}</span>
@@ -145,7 +145,7 @@ export function LearningSupportSessions({
           <div className="fp-empty">لا توجد جلسات</div>
         ) : (
           sessions.map((session) => (
-            <article className="fp-card" key={session.id}>
+            <article className="fp-card learning-support-card" key={session.id}>
               <div className="fp-head">
                 <h3>{session.child_name}</h3>
                 <span className="fp-badge">{session.status}</span>
@@ -197,7 +197,7 @@ export function LearningSupportSessions({
                       },
                     })}
                   />
-                  <button className="btn success" onClick={() => onComplete(session.id)}>
+                  <button className="btn" onClick={() => onComplete(session.id)}>
                     إنهاء الجلسة
                   </button>
                 </div>
