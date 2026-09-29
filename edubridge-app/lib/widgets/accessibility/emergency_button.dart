@@ -124,7 +124,10 @@ class _EmergencyButtonState extends State<EmergencyButton> {
     } catch (_) {}
   }
 
-  void _showInstructions({required bool serverSuccess, int notifiedRecipients = 0}) {
+  void _showInstructions({
+    required bool serverSuccess,
+    int notifiedRecipients = 0,
+  }) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -166,7 +169,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
-                  '⚠️ تعذّر إرسال التنبيه للسيرفر — تم الاتصال هاتفياً فقط.',
+                  '⚠️ تعذّر إرسال التنبيه للسيرفر. استخدم خيارات الاتصال المباشر أدناه عند الحاجة.',
                   style: TextStyle(fontSize: 13),
                 ),
               ),
@@ -193,6 +196,19 @@ class _EmergencyButtonState extends State<EmergencyButton> {
           ],
         ),
         actions: [
+          if (widget.parentPhone != null && widget.parentPhone!.isNotEmpty)
+            TextButton.icon(
+              onPressed: () => _callNumber(widget.parentPhone!),
+              icon: const Icon(Icons.call),
+              label: const Text('اتصال بولي الأمر'),
+            ),
+          if (widget.specialistPhone != null &&
+              widget.specialistPhone!.isNotEmpty)
+            TextButton.icon(
+              onPressed: () => _callNumber(widget.specialistPhone!),
+              icon: const Icon(Icons.medical_services_outlined),
+              label: const Text('اتصال بالمختص'),
+            ),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
