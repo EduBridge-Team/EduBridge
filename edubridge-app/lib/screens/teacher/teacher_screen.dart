@@ -158,7 +158,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 onLoadData: _loadData,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                 child: Row(
                   children: [
                     const Spacer(),
@@ -266,8 +266,10 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(AppIcons.add),
-              label: const Text('إضافة درس'),
-              backgroundColor: AppColors.green,
+              label: const Text(
+                'إضافة درس',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
             )
           : null,
     );
