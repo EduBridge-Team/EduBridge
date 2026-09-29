@@ -1,11 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BarChart3, BookOpen, Home, MessageCircle, Settings, Users } from 'lucide-react'
 import { getUser } from '../../../api'
 import ParentChildrenSection from './ParentChildrenSection'
 import ParentDashboardHeader from './ParentDashboardHeader'
 import ParentLowerSections from './ParentLowerSections'
-import ParentNavigation from './ParentNavigation'
 import ParentProgressSection from './ParentProgressSection'
 import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from './hooks'
 import useParentDashboardData from './useParentDashboardData'
@@ -56,31 +54,9 @@ export default function ParentDashboard() {
     navigate('/support')
   }
 
-  const navItems = [
-    { label: 'الرئيسية', icon: <Home size={21} />, onClick: () => navigate('/parent'), active: true },
-    { label: 'أطفالي', icon: <Users size={21} />, onClick: () => navigate('/children') },
-    { label: 'الدروس', icon: <BookOpen size={21} />, onClick: () => navigate('/lessons') },
-    {
-      label: 'التقدم',
-      icon: <BarChart3 size={21} />,
-      onClick: () => children[0] && navigate(`/children/${children[0].id}/progress`, { state: { childName: children[0].name } }),
-      disabled: !children[0],
-    },
-    {
-      label: 'المحادثات',
-      icon: <MessageCircle size={21} />,
-      onClick: () => navigate('/conversations'),
-      badge: conversations.length,
-    },
-    { label: 'الإعدادات', icon: <Settings size={21} />, onClick: () => navigate('/accessibility') },
-  ]
-
   return (
     <div className="parent-dashboard-v2" dir="rtl">
-      <ParentNavigation navItems={navItems} onHome={() => navigate('/parent')} />
-
-      <div className="pd-main">
-        <ParentDashboardHeader
+      <ParentDashboardHeader
           navigate={navigate}
           query={query}
           setQuery={setQuery}
@@ -111,7 +87,6 @@ export default function ParentDashboard() {
             visibleLessons={visibleLessons}
           />
         </main>
-      </div>
     </div>
   )
 }
