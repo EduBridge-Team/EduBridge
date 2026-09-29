@@ -129,10 +129,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                     value: e.key,
                                     child: Align(
                                       alignment: AlignmentDirectional.centerStart,
-                                      child: Align(
-                                        alignment: AlignmentDirectional.centerStart,
-                                        child: Text(e.value),
-                                      ),
+                                      child: Text(e.value),
                                     ),
                                   ),
                                 )
@@ -166,7 +163,10 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                   .map(
                                     (e) => DropdownMenuItem(
                                       value: e.key,
-                                      child: Text(e.value),
+                                      child: Align(
+                                        alignment: AlignmentDirectional.centerStart,
+                                        child: Text(e.value),
+                                      ),
                                     ),
                                   )
                                   .toList(),
