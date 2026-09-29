@@ -418,7 +418,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: c.surfaceSoft,
+        color: c.tintTeal.withValues(alpha: .55),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
