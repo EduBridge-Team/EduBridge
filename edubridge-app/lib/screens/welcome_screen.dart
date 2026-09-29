@@ -150,7 +150,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                 // ─── النقاط ───
                 Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 20),
+                  padding: const EdgeInsets.only(top: 2, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(_pages.length, (i) {
@@ -184,7 +184,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                 // ─── زر ابدأ ───
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   child: FadeTransition(
                     opacity: _fadeController,
                     child: ScaleTransition(
@@ -197,9 +197,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       child: SizedBox(
                         width: double.infinity,
                         height: 56,
-                        child: ElevatedButton(
+                        child: FilledButton(
                           onPressed: _isLastPage ? _goToLogin : null,
-                          style: ElevatedButton.styleFrom(
+                          style: FilledButton.styleFrom(
                             backgroundColor: AppColors.brandBlue,
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.transparent,
