@@ -1,5 +1,13 @@
 // lib/utils/adaptive_theme.dart
 // محوّل البروفايل إلى خصائص بصرية ملموسة
+//
+// ═══════════════════════════════════════════════════════════
+//  🎨 مبدأ التصميم:
+//  - كل الإعاقات تستخدم ألوان هوية الشعار (أزرق + تركوازي)
+//  - الاستثناء الوحيد: التباين العالي (للكفيف) — إلزامي للقراءة
+//  - الأحجام والحركات تتغير حسب الإعاقة (وظيفي)
+//  - الألوان ثابتة (هوية بصرية)
+// ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../theme.dart';
@@ -33,274 +41,245 @@ class AdaptiveVisuals {
     required this.profileBadgeColor,
   });
 
+  // ═══════════════════════════════════════════════════════════
+  //  من البروفايل → إلى خصائص بصرية
+  // ═══════════════════════════════════════════════════════════
   static AdaptiveVisuals fromProfile(AccessibilityProfile p) {
-    switch (p.type) {
-      // ═══════════════════════════════════════════════════
-      // 1. ADHD
-      // ═══════════════════════════════════════════════════
-      case DisabilityType.adhd:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFFF2842B),
-          surfaceColor: Color(0xFFFFF8EE),
-          cardRadius: 24,
-          buttonHeight: 60,
-          iconSize: 30,
-          titleFontSize: 20,
-          bodyFontSize: 16,
-          spacing: 14,
-          animationSpeed: Duration(milliseconds: 250),
-          profileLabel: 'وضع فرط الحركة',
-          profileEmoji: '⚡',
-          profileBadgeColor: Color(0xFFF2842B),
-        );
+    // ─── 1. حالة الكفيف: تباين عالٍ إلزامي (استثناء وحيد) ───
+    if (p.highContrast || p.type == DisabilityType.blind) {
+      return const AdaptiveVisuals(
+        accentColor: Color(0xFFFFD400),        // أصفر — إلزامي للقراءة
+        surfaceColor: Color(0xFF000000),       // أسود
+        cardRadius: 12,
+        buttonHeight: 80,
+        iconSize: 48,
+        titleFontSize: 28,
+        bodyFontSize: 22,
+        spacing: 20,
+        animationSpeed: Duration(milliseconds: 100),
+        profileLabel: 'وضع التباين العالي',
+        profileEmoji: '👁️',
+        profileBadgeColor: Color(0xFFFFD400),
+      );
+    }
 
-      // ═══════════════════════════════════════════════════
-      // 2. التوحّد
-      // ═══════════════════════════════════════════════════
+    // ─── 2. جميع الإعاقات الأخرى: ألوان هوية الشعار ───
+    return AdaptiveVisuals(
+      // ═══ الألوان من هوية EduBridge ═══
+      accentColor: _accentFor(p),
+      surfaceColor: _surfaceFor(p),
+      profileBadgeColor: _accentFor(p),
+
+      // ═══ الأحجام تتغير حسب الإعاقة (وظيفي) ═══
+      cardRadius: _radiusFor(p),
+      buttonHeight: _buttonHeightFor(p),
+      iconSize: _iconSizeFor(p),
+      titleFontSize: _titleFontFor(p),
+      bodyFontSize: _bodyFontFor(p),
+      spacing: _spacingFor(p),
+      animationSpeed: _animationFor(p),
+
+      // ═══ التسمية والرمز ═══
+      profileLabel: _labelFor(p),
+      profileEmoji: disabilityEmojis[p.type] ?? '⚪',
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  🎨 الألوان — من هوية الشعار
+  // ═══════════════════════════════════════════════════════════
+  static Color _accentFor(AccessibilityProfile p) {
+    // وضع الهدوء الحسي: تركوازي فاتح (ناعم للعين)
+    if (p.sensoryCalmMode) return AppColors.brandTealLight;
+
+    // الإعاقات السمعية والنطقية: تركوازي الشعار
+    if (p.type == DisabilityType.deaf ||
+        p.type == DisabilityType.stuttering ||
+        p.type == DisabilityType.speechDisorders) {
+      return AppColors.brandTealDeep;
+    }
+
+    // ADHD: تركوازي (دافئ ومحفّز — من الهوية)
+    if (p.type == DisabilityType.adhd) return AppColors.brandTeal;
+
+    // الباقي: أزرق الشعار
+    return AppColors.brandBlue;
+  }
+
+  static Color _surfaceFor(AccessibilityProfile p) {
+    // وضع الهدوء الحسي (توحد): أزرق فاتح جداً
+    if (p.sensoryCalmMode) return AppColors.tintTeal;
+
+    // الداون: أخضر فاتح من الهوية
+    if (p.type == DisabilityType.downSyndrome) return AppColors.tintGreen;
+
+    // التوحد: أزرق فاتح
+    if (p.type == DisabilityType.autismMild ||
+        p.type == DisabilityType.autismSevere) {
+      return AppColors.tintTeal;
+    }
+
+    // الباقي: الكريمي الرسمي
+    return AppColors.cream;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  📐 الأحجام — تتغير حسب الإعاقة
+  // ═══════════════════════════════════════════════════════════
+  static double _buttonHeightFor(AccessibilityProfile p) {
+    // أزرار ضخمة جداً: داون، إعاقات متعددة، إعاقة ذهنية
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.downSyndrome ||
+        p.type == DisabilityType.multipleDisabilities ||
+        p.type == DisabilityType.mildIntellectual) {
+      return 88;
+    }
+    // أزرار كبيرة: إعاقات حركية، توحد شديد
+    if (p.type == DisabilityType.motorDisability ||
+        p.type == DisabilityType.autismSevere) {
+      return 80;
+    }
+    // ADHD: متوسطة (حركة نشطة)
+    if (p.type == DisabilityType.adhd) return 60;
+    // الافتراضي
+    return 56;
+  }
+
+  static double _iconSizeFor(AccessibilityProfile p) {
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.downSyndrome ||
+        p.type == DisabilityType.multipleDisabilities) {
+      return 44;
+    }
+    if (p.type == DisabilityType.motorDisability ||
+        p.type == DisabilityType.mildIntellectual) {
+      return 40;
+    }
+    if (p.type == DisabilityType.autismSevere ||
+        p.type == DisabilityType.deaf) {
+      return 36;
+    }
+    return 28;
+  }
+
+  static double _titleFontFor(AccessibilityProfile p) {
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.downSyndrome) {
+      return 26;
+    }
+    if (p.type == DisabilityType.autismSevere ||
+        p.type == DisabilityType.mildIntellectual ||
+        p.type == DisabilityType.multipleDisabilities) {
+      return 24;
+    }
+    if (p.type == DisabilityType.deaf ||
+        p.type == DisabilityType.motorDisability) {
+      return 22;
+    }
+    return 20;
+  }
+
+  static double _bodyFontFor(AccessibilityProfile p) {
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.downSyndrome) {
+      return 22;
+    }
+    if (p.type == DisabilityType.autismSevere ||
+        p.type == DisabilityType.mildIntellectual ||
+        p.type == DisabilityType.multipleDisabilities) {
+      return 20;
+    }
+    if (p.type == DisabilityType.deaf ||
+        p.type == DisabilityType.motorDisability) {
+      return 18;
+    }
+    return 16;
+  }
+
+  static double _radiusFor(AccessibilityProfile p) {
+    if (p.type == DisabilityType.downSyndrome) return 32;
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.mildIntellectual) {
+      return 28;
+    }
+    if (p.type == DisabilityType.motorDisability ||
+        p.type == DisabilityType.multipleDisabilities) {
+      return 24;
+    }
+    if (p.type == DisabilityType.adhd) return 24;
+    return 20;
+  }
+
+  static double _spacingFor(AccessibilityProfile p) {
+    if (p.extraLargeTouchTargets ||
+        p.type == DisabilityType.downSyndrome ||
+        p.type == DisabilityType.motorDisability ||
+        p.type == DisabilityType.mildIntellectual) {
+      return 20;
+    }
+    if (p.type == DisabilityType.autismMild ||
+        p.type == DisabilityType.autismSevere) {
+      return 16;
+    }
+    return 14;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ⚡ الحركة — تتغير حسب الإعاقة
+  // ═══════════════════════════════════════════════════════════
+  static Duration _animationFor(AccessibilityProfile p) {
+    // حركة هادئة جداً: توحد، داون، صرع
+    if (p.reducedAnimations ||
+        p.type == DisabilityType.downSyndrome ||
+        p.type == DisabilityType.multipleDisabilities) {
+      return const Duration(milliseconds: 180);
+    }
+    // حركة هادئة: توحد، صرع
+    if (p.type == DisabilityType.autismMild ||
+        p.type == DisabilityType.autismSevere) {
+      return const Duration(milliseconds: 500);
+    }
+    if (p.type == DisabilityType.epilepsy) {
+      return const Duration(milliseconds: 400);
+    }
+    // الافتراضي
+    return const Duration(milliseconds: 250);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  🏷️ التسمية العربية لكل حالة
+  // ═══════════════════════════════════════════════════════════
+  static String _labelFor(AccessibilityProfile p) {
+    switch (p.type) {
+      case DisabilityType.adhd:
+        return 'وضع التركيز';
       case DisabilityType.autismMild:
       case DisabilityType.autismSevere:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF1AA9B2),
-          surfaceColor: Color(0xFFF0F9FA),
-          cardRadius: 16,
-          buttonHeight: 56,
-          iconSize: 26,
-          titleFontSize: 18,
-          bodyFontSize: 15,
-          spacing: 16,
-          animationSpeed: Duration(milliseconds: 500),
-          profileLabel: 'وضع هادئ',
-          profileEmoji: '🧩',
-          profileBadgeColor: Color(0xFF1AA9B2),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 3. متلازمة داون
-      // ═══════════════════════════════════════════════════
+        return 'وضع هادئ';
       case DisabilityType.downSyndrome:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF57B25A),
-          surfaceColor: Color(0xFFF1FAF1),
-          cardRadius: 32,
-          buttonHeight: 88,
-          iconSize: 44,
-          titleFontSize: 26,
-          bodyFontSize: 22,
-          spacing: 20,
-          animationSpeed: Duration(milliseconds: 180),
-          profileLabel: 'وضع مبسّط',
-          profileEmoji: '💙',
-          profileBadgeColor: Color(0xFF57B25A),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 4. كفيف
-      // ═══════════════════════════════════════════════════
+        return 'وضع مبسّط';
       case DisabilityType.blind:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFFFFD400),
-          surfaceColor: Color(0xFF000000),
-          cardRadius: 12,
-          buttonHeight: 80,
-          iconSize: 48,
-          titleFontSize: 28,
-          bodyFontSize: 22,
-          spacing: 20,
-          animationSpeed: Duration(milliseconds: 100),
-          profileLabel: 'وضع التباين العالي',
-          profileEmoji: '👁️',
-          profileBadgeColor: Color(0xFFFFD400),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 5. أصمّ
-      // ═══════════════════════════════════════════════════
+        return 'تباين عالٍ';
       case DisabilityType.deaf:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFFF06C8B),
-          surfaceColor: Color(0xFFFFF0F4),
-          cardRadius: 22,
-          buttonHeight: 70,
-          iconSize: 36,
-          titleFontSize: 22,
-          bodyFontSize: 18,
-          spacing: 18,
-          animationSpeed: Duration(milliseconds: 200),
-          profileLabel: 'وضع التنبيهات البصرية',
-          profileEmoji: '👂',
-          profileBadgeColor: Color(0xFFF06C8B),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 6. تأتأة
-      // ═══════════════════════════════════════════════════
+        return 'تنبيهات بصرية';
       case DisabilityType.stuttering:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF8B6DD4),
-          surfaceColor: Color(0xFFF5F1FF),
-          cardRadius: 20,
-          buttonHeight: 68,
-          iconSize: 30,
-          titleFontSize: 20,
-          bodyFontSize: 17,
-          spacing: 18,
-          animationSpeed: Duration(milliseconds: 350),
-          profileLabel: 'وضع النطق البطيء',
-          profileEmoji: '🗣️',
-          profileBadgeColor: Color(0xFF8B6DD4),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 7. اضطرابات النطق
-      // ═══════════════════════════════════════════════════
+        return 'نطق بطيء';
       case DisabilityType.speechDisorders:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF4A90A4),
-          surfaceColor: Color(0xFFF0F6F8),
-          cardRadius: 20,
-          buttonHeight: 64,
-          iconSize: 30,
-          titleFontSize: 20,
-          bodyFontSize: 17,
-          spacing: 16,
-          animationSpeed: Duration(milliseconds: 300),
-          profileLabel: 'وضع النطق',
-          profileEmoji: '💬',
-          profileBadgeColor: Color(0xFF4A90A4),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 8. إعاقة ذهنية بسيطة
-      // ═══════════════════════════════════════════════════
+        return 'دعم النطق';
       case DisabilityType.mildIntellectual:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFFD98B2B),
-          surfaceColor: Color(0xFFFDF6E3),
-          cardRadius: 26,
-          buttonHeight: 80,
-          iconSize: 40,
-          titleFontSize: 24,
-          bodyFontSize: 20,
-          spacing: 20,
-          animationSpeed: Duration(milliseconds: 200),
-          profileLabel: 'وضع خطوة بخطوة',
-          profileEmoji: '🧠',
-          profileBadgeColor: Color(0xFFD98B2B),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 9. عمى الألوان
-      // ═══════════════════════════════════════════════════
+        return 'خطوة بخطوة';
       case DisabilityType.colorBlindness:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF3A6EA5),
-          surfaceColor: Color(0xFFF2F4F7),
-          cardRadius: 18,
-          buttonHeight: 60,
-          iconSize: 30,
-          titleFontSize: 19,
-          bodyFontSize: 16,
-          spacing: 14,
-          animationSpeed: Duration(milliseconds: 220),
-          profileLabel: 'وضع الرموز',
-          profileEmoji: '🌈',
-          profileBadgeColor: Color(0xFF3A6EA5),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 10. الصرع
-      // ═══════════════════════════════════════════════════
+        return 'رموز مميزة';
       case DisabilityType.epilepsy:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF6B7C93),
-          surfaceColor: Color(0xFFF7F8FA),
-          cardRadius: 16,
-          buttonHeight: 66,
-          iconSize: 32,
-          titleFontSize: 20,
-          bodyFontSize: 17,
-          spacing: 16,
-          animationSpeed: Duration(milliseconds: 400),
-          profileLabel: 'وضع آمن (بدون وميض)',
-          profileEmoji: '⚕️',
-          profileBadgeColor: Color(0xFF6B7C93),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 11. ✅ جديد — إعاقة حركية
-      // ═══════════════════════════════════════════════════
+        return 'وضع آمن';
       case DisabilityType.motorDisability:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF5C6BC0),       // نيلي
-          surfaceColor: Color(0xFFF3F4FB),
-          cardRadius: 22,
-          buttonHeight: 80,                     // أزرار كبيرة للحركة
-          iconSize: 40,
-          titleFontSize: 22,
-          bodyFontSize: 18,
-          spacing: 20,                           // فواصل كبيرة
-          animationSpeed: Duration(milliseconds: 250),
-          profileLabel: 'وضع التحكم المساعد',
-          profileEmoji: '🦽',
-          profileBadgeColor: Color(0xFF5C6BC0),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 12. ✅ جديد — إعاقات متعددة
-      // ═══════════════════════════════════════════════════
+        return 'تحكم مساعد';
       case DisabilityType.multipleDisabilities:
-        return const AdaptiveVisuals(
-          accentColor: Color(0xFF8B5A2B),       // بني ذهبي
-          surfaceColor: Color(0xFFFAF6F0),
-          cardRadius: 24,
-          buttonHeight: 88,                     // أزرار كبرى
-          iconSize: 44,
-          titleFontSize: 24,
-          bodyFontSize: 20,
-          spacing: 20,
-          animationSpeed: Duration(milliseconds: 180),
-          profileLabel: 'وضع شامل',
-          profileEmoji: '♿',
-          profileBadgeColor: Color(0xFF8B5A2B),
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 13. أخرى
-      // ═══════════════════════════════════════════════════
+        return 'وضع شامل';
       case DisabilityType.other:
-        return AdaptiveVisuals(
-          accentColor: AppColors.teal,
-          surfaceColor: AppColors.cream,
-          cardRadius: 20,
-          buttonHeight: 64,
-          iconSize: 32,
-          titleFontSize: 20,
-          bodyFontSize: 17,
-          spacing: 16,
-          animationSpeed: const Duration(milliseconds: 250),
-          profileLabel: p.customDisabilityName ?? 'وضع مخصّص',
-          profileEmoji: '✏️',
-          profileBadgeColor: AppColors.teal,
-        );
-
-      // ═══════════════════════════════════════════════════
-      // 14. بدون تكييف
-      // ═══════════════════════════════════════════════════
+        return p.customDisabilityName ?? 'وضع مخصّص';
       case DisabilityType.none:
-        return const AdaptiveVisuals(
-          accentColor: AppColors.tealDeep,
-          surfaceColor: Colors.white,
-          cardRadius: 20,
-          buttonHeight: 56,
-          iconSize: 28,
-          titleFontSize: 18,
-          bodyFontSize: 16,
-          spacing: 12,
-          animationSpeed: Duration(milliseconds: 250),
-          profileLabel: 'الوضع العادي',
-          profileEmoji: '⚪',
-          profileBadgeColor: AppColors.tealDeep,
-        );
+        return 'الوضع العادي';
     }
   }
 }

@@ -9,6 +9,7 @@ import '../../services/api_service.dart';
 import '../../services/notification_listener_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
+import '../../widgets/skeletons.dart';   // ← جديد: Skeleton Loaders
 import '../add_certificate_sheet.dart';
 import '../add_lesson/add_lesson_sheet.dart';
 import '../case_discussion/case_discussion_screen.dart';
@@ -19,7 +20,8 @@ import '../create_weekly_report_screen.dart';
 import '../educational_plan_sheet.dart';
 import '../notifications_screen.dart';
 import '../support_sheet.dart';
-import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
+import '../teacher_child_details/teacher_child_details_screen.dart'
+    show TeacherChildDetailsScreen;
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
 import '../welcome_screen.dart';
@@ -53,6 +55,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
 
   void _refreshTeacherState(VoidCallback callback) => setState(callback);
 
+  // ═══════════════════════════════════════════════════════════
+  //  Lifecycle
+  // ═══════════════════════════════════════════════════════════
   @override
   void initState() {
     super.initState();
@@ -77,6 +82,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
     setState(() => _viewingLesson = lesson);
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  تحميل البيانات
+  // ═══════════════════════════════════════════════════════════
   Future<void> _loadData() async {
     setState(() {
       _loading = true;
@@ -105,9 +113,15 @@ class _TeacherScreenState extends State<TeacherScreen> {
         final myChildren = allChildren.where((child) {
           if (child['assigned_teacher_id']?.toString() == myId) return true;
           final ids = child['assigned_teacher_ids'] as List?;
-          if (ids != null && ids.map((e) => e.toString()).contains(myId)) return true;
+          if (ids != null &&
+              ids.map((e) => e.toString()).contains(myId)) {
+            return true;
+          }
           final tIds = child['teacher_ids'] as List?;
-          if (tIds != null && tIds.map((e) => e.toString()).contains(myId)) return true;
+          if (tIds != null &&
+              tIds.map((e) => e.toString()).contains(myId)) {
+            return true;
+          }
           return false;
         }).toList();
 
@@ -137,6 +151,38 @@ class _TeacherScreenState extends State<TeacherScreen> {
     }
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  Skeleton Loader — للأطفال
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildChildrenSkeleton() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        ChildCardSkeleton(),
+        ChildCardSkeleton(),
+        ChildCardSkeleton(),
+      ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Skeleton Loader — للدروس
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildLessonsSkeleton() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+      ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Build
+  // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
@@ -147,6 +193,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
         children: [
           Column(
             children: [
+              // ═══ الهيدر ═══
               _buildTeacherHeader(
                 context: context,
                 c: c,
@@ -157,13 +204,17 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 onVerify: _checkVerification,
                 onLoadData: _loadData,
               ),
+
+              // ═══ شريط الإشعارات ═══
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     const Spacer(),
                     ValueListenableBuilder<int>(
-                      valueListenable: NotificationListenerService.instance.unreadCount,
+                      valueListenable:
+                          NotificationListenerService.instance.unreadCount,
                       builder: (context, count, _) {
                         return Stack(
                           children: [
@@ -182,15 +233,19 @@ class _TeacherScreenState extends State<TeacherScreen> {
                                     color: AppColors.red,
                                     shape: BoxShape.circle,
                                   ),
-                                  constraints:
-                                      const BoxConstraints(minWidth: 16, minHeight: 16),
-                                  child: Text('$count',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Text(
+                                    '$count',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ),
                           ],
@@ -200,26 +255,52 @@ class _TeacherScreenState extends State<TeacherScreen> {
                   ],
                 ),
               ),
+
+              // ═══ المحتوى الرئيسي ═══
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _loadData,
                   child: _loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? (_tabIndex == 0
+                          ? _buildChildrenSkeleton()
+                          : _buildLessonsSkeleton())
                       : _error != null
                           ? _buildTeacherError(_error!, _loadData)
                           : (_tabIndex == 0
-                              ? _buildChildrenTab(context, c, _children, _query,
-                                  (v) => setState(() => _query = v), _typeName, _loadData)
-                              : _buildLessonsTab(context, c, _lessons, _types, _query,
+                              ? _buildChildrenTab(
+                                  context,
+                                  c,
+                                  _children,
+                                  _query,
                                   (v) => setState(() => _query = v),
-                                  (lesson) => _setViewingLesson(lesson))),
+                                  _typeName,
+                                  _loadData,
+                                )
+                              : _buildLessonsTab(
+                                  context,
+                                  c,
+                                  _lessons,
+                                  _types,
+                                  _query,
+                                  (v) => setState(() => _query = v),
+                                  (lesson) => _setViewingLesson(lesson),
+                                )),
                 ),
               ),
             ],
           ),
+
+          // ═══ نافذة عرض درس ═══
           if (_viewingLesson != null)
-            _buildLessonViewModal(context, c, _viewingLesson!, _typeName,
-                () => _setViewingLesson(null)),
+            _buildLessonViewModal(
+              context,
+              c,
+              _viewingLesson!,
+              _typeName,
+              () => _setViewingLesson(null),
+            ),
+
+          // ═══ نافذة إضافة درس ═══
           if (_adding)
             Positioned.fill(
               child: AddLessonSheet(

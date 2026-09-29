@@ -21,6 +21,7 @@ import '../../widgets/accessibility/emergency_button.dart';
 import '../../widgets/accessibility/visual_celebration.dart';
 import '../../widgets/accessibility/visual_timeline.dart';
 import '../../widgets/accessibility/visual_timer.dart';
+import '../../widgets/skeletons.dart';   // ← جديد
 import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../child_progress_screen.dart';
 import '../educational_games_screen.dart';
@@ -116,7 +117,18 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   }
 
   Widget _buildBody() {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    // ═══ Skeleton Loader ═══
+    if (_loading) {
+      return ListView(
+        padding: EdgeInsets.all(AdaptiveHelper.spacing),
+        children: const [
+          LessonCardSkeleton(),
+          LessonCardSkeleton(),
+          LessonCardSkeleton(),
+          LessonCardSkeleton(),
+        ],
+      );
+    }
 
     if (_error != null) {
       return Center(

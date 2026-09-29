@@ -8,6 +8,7 @@ import '../../services/api_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 import '../../model/homework_model.dart';
+import '../../widgets/skeletons.dart';   // ← جديد
 
 part 'child_homework_card.dart';
 part 'child_homework_submit_sheet.dart';
@@ -86,9 +87,18 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
   }
 
   Widget _buildBody() {
+    // ═══ Skeleton Loader ═══
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return ListView(
+        padding: const EdgeInsets.all(12),
+        children: const [
+          HomeworkCardSkeleton(),
+          HomeworkCardSkeleton(),
+          HomeworkCardSkeleton(),
+        ],
+      );
     }
+
     if (_error != null) {
       return ListView(
         children: [
@@ -115,6 +125,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
         ],
       );
     }
+
     if (_homeworks.isEmpty) {
       return ListView(
         children: [

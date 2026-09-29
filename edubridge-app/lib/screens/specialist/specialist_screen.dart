@@ -10,6 +10,7 @@ import '../../utils/navigation.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/legal_links_button.dart';
+import '../../widgets/skeletons.dart';   // ← جديد: Skeleton Loaders
 import '../add_certificate_sheet.dart';
 import '../add_lesson/add_lesson_sheet.dart';
 import '../case_discussion/case_discussion_screen.dart';
@@ -432,6 +433,35 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   }
 
   // ═══════════════════════════════════════════════════════════
+  //  Skeleton Loader — للتقدم (بطاقات الأطفال)
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildChildrenSkeleton() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        ChildCardSkeleton(),
+        ChildCardSkeleton(),
+        ChildCardSkeleton(),
+      ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Skeleton Loader — للدروس
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildLessonsSkeleton() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+        LessonCardSkeleton(),
+      ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
   //  Build
   // ═══════════════════════════════════════════════════════════
   @override
@@ -443,6 +473,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         children: [
           Column(
             children: [
+              // ═══ الهيدر ═══
               _buildHeader(
                 context: context,
                 c: c,
@@ -450,6 +481,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 specialty: _mySpecialty,
                 menuActions: _buildMenuActions(),
               ),
+
+              // ═══ شريط البحث + الإشعارات ═══
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -475,6 +508,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ],
                 ),
               ),
+
+              // ═══ فلتر + إحصائيات (للتبويب الأول فقط) ═══
               if (_tabIndex == 0 && !_loading) ...[
                 _buildFilterCard(c),
                 const SizedBox(height: 8),
@@ -506,11 +541,15 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ),
                 ),
               ],
+
+              // ═══ المحتوى الرئيسي ═══
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _load,
                   child: _loading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? (_tabIndex == 0
+                          ? _buildChildrenSkeleton()
+                          : _buildLessonsSkeleton())
                       : _error != null
                           ? _buildError()
                           : (_tabIndex == 0
@@ -520,6 +559,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
             ],
           ),
+
+          // ═══ نافذة إضافة درس ═══
           if (_adding) _buildAddModal(),
         ],
       ),

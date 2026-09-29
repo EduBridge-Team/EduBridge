@@ -2,6 +2,9 @@
 part of 'parent_screen.dart';
 
 extension _ParentScreenWidgetsExtension on _ParentScreenState {
+  // ═══════════════════════════════════════════════════════════
+  //  الهيدر
+  // ═══════════════════════════════════════════════════════════
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
@@ -40,6 +43,9 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  الجسم الرئيسي
+  // ═══════════════════════════════════════════════════════════
   Widget _buildBody() {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
@@ -51,17 +57,33 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
       return _buildEmptyState();
     }
 
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
     return ListView.builder(
-      padding: EdgeInsets.all(AdaptiveHelper.spacing),
+      padding: EdgeInsets.fromLTRB(
+        AdaptiveHelper.spacing,
+        AdaptiveHelper.spacing,
+        AdaptiveHelper.spacing,
+        AdaptiveHelper.spacing + bottomInset + 100,
+      ),
       itemCount: _children.length,
       itemBuilder: (context, i) => _buildChildCard(_children[i], i),
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  حالات الخطأ
+  // ═══════════════════════════════════════════════════════════
   Widget _buildErrorState() {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
+        padding: EdgeInsets.fromLTRB(
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2 + bottomInset + 100,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -88,10 +110,19 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  حالة الفراغ
+  // ═══════════════════════════════════════════════════════════
   Widget _buildEmptyState() {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
+        padding: EdgeInsets.fromLTRB(
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2,
+          AdaptiveHelper.spacing * 2 + bottomInset + 100,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -118,6 +149,9 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  بطاقة الطفل — تصميم مُحسّن (3 أزرار + قائمة)
+  // ═══════════════════════════════════════════════════════════
   Widget _buildChildCard(Map child, int index) {
     final name = (child['name'] ?? '').toString();
     final age = child['age'] ?? '?';
@@ -171,12 +205,12 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
 
             SizedBox(height: AdaptiveHelper.spacing),
 
-            // ─── الصف 1 ───
+            // ═══ الإجراءات الأساسية — 3 فقط ═══
             Row(
               children: [
                 Expanded(
                   child: AdaptiveButton(
-                    label: 'الواجي',
+                    label: 'الواجب',
                     icon: AppIcons.homework,
                     style: AdaptiveButtonStyle.outlined,
                     backgroundColor: AppColors.blue,
@@ -188,13 +222,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                 SizedBox(width: AdaptiveHelper.spacing / 2),
                 Expanded(
                   child: AdaptiveButton(
-                    label: 'التقرير',
-                    icon: AppIcons.report,
+                    label: 'التقدّم',
+                    icon: AppIcons.progress,
                     style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.brandTeal,
+                    backgroundColor: AppColors.brandTealDeep,
                     fullWidth: true,
                     fontSize: 10,
-                    onPressed: () => _openWeeklyReport(child),
+                    onPressed: () => _openChildProgress(child),
                   ),
                 ),
                 SizedBox(width: AdaptiveHelper.spacing / 2),
@@ -211,51 +245,16 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                 ),
               ],
             ),
+
             SizedBox(height: AdaptiveHelper.spacing / 2),
 
-            // ─── الصف 2 ───
-            Row(
-              children: [
-                Expanded(
-                  child: AdaptiveButton(
-                    label: 'التقدّم',
-                    icon: AppIcons.progress,
-                    style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.brandTealDeep,
-                    fullWidth: true,
-                    onPressed: () => _openChildProgress(child),
-                  ),
-                ),
-                SizedBox(width: AdaptiveHelper.spacing / 2),
-                Expanded(
-                  child: AdaptiveButton(
-                    label: 'تعديل',
-                    icon: AppIcons.edit,
-                    style: AdaptiveButtonStyle.outlined,
-                    backgroundColor: AppColors.brandBlueDeep,
-                    fullWidth: true,
-                    onPressed: () => _openEditChild(child),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: AdaptiveHelper.spacing / 2),
-
-            // ─── دروس لولي الأمر ───
+            // ═══ زر "أفعال أخرى" — Bottom Sheet ═══
             AdaptiveButton(
-              label: 'دروس لولي الأمر',
-              icon: AppIcons.parent,
-              backgroundColor: AppColors.brandTealDeep,
-              onPressed: _openParentLessons,
-            ),
-            SizedBox(height: AdaptiveHelper.spacing / 2),
-
-            // ─── طلب جلسة دعم تعليمي ───
-            AdaptiveButton(
-              label: 'طلب جلسة دعم تعليمي',
-              icon: AppIcons.specialist,
-              backgroundColor: AppColors.brandTealDeep,
-              onPressed: () => _openLearningSupportRequest(child),
+              label: 'أفعال أخرى',
+              icon: Icons.more_horiz,
+              style: AdaptiveButtonStyle.outlined,
+              backgroundColor: AppColors.muted,
+              onPressed: () => _openMoreActionsSheet(child),
             ),
           ],
         ),
@@ -263,6 +262,9 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  Avatar
+  // ═══════════════════════════════════════════════════════════
   Widget _buildAvatar(String name, Color color) {
     final size = AdaptiveHelper.avatarSize;
     return Container(
@@ -284,6 +286,9 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  شارة الحالة
+  // ═══════════════════════════════════════════════════════════
   Widget _buildStatusBadge(String? status) {
     final (text, color, icon) = switch (status) {
       'evaluated' => ('تم التقييم', AppColors.brandTealDeep, AppIcons.check),
@@ -312,6 +317,202 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Bottom Sheet — "أفعال أخرى"
+  // ═══════════════════════════════════════════════════════════
+  Future<void> _openMoreActionsSheet(Map child) async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _ChildActionsSheet(
+        childName: (child['name'] ?? '').toString(),
+      ),
+    );
+
+    if (!mounted || action == null) return;
+
+    switch (action) {
+      case 'report':
+        _openWeeklyReport(child);
+        break;
+      case 'edit':
+        _openEditChild(child);
+        break;
+      case 'parent_lessons':
+        _openParentLessons();
+        break;
+      case 'support_request':
+        _openLearningSupportRequest(child);
+        break;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Bottom Sheet — قائمة الأفعال الثانوية
+// ═══════════════════════════════════════════════════════════
+class _ChildActionsSheet extends StatelessWidget {
+  final String childName;
+  const _ChildActionsSheet({required this.childName});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+
+    final actions =
+        <({String id, IconData icon, String label, Color color})>[
+      (
+        id: 'report',
+        icon: AppIcons.report,
+        label: 'التقرير الأسبوعي',
+        color: AppColors.brandTeal,
+      ),
+      (
+        id: 'edit',
+        icon: AppIcons.edit,
+        label: 'تعديل البيانات',
+        color: AppColors.brandBlueDeep,
+      ),
+      (
+        id: 'parent_lessons',
+        icon: AppIcons.parent,
+        label: 'دروس لولي الأمر',
+        color: AppColors.brandTealDeep,
+      ),
+      (
+        id: 'support_request',
+        icon: AppIcons.specialist,
+        label: 'طلب جلسة دعم تعليمي',
+        color: AppColors.purple,
+      ),
+    ];
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ─── المقبض ───
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: c.line,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+
+            // ─── العنوان ───
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.more_horiz,
+                    color: AppColors.brandBlue,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'أفعال أخرى',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: c.heading,
+                        ),
+                      ),
+                      Text(
+                        childName,
+                        style: TextStyle(fontSize: 13, color: c.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ─── الإجراءات ───
+            ...actions.map(
+              (a) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => Navigator.pop(context, a.id),
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: c.line),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: a.color.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(a.icon, color: a.color, size: 22),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              a.label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: c.heading,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_left,
+                            color: c.muted,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

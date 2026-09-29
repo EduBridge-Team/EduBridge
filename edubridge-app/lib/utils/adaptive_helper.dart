@@ -1,9 +1,17 @@
 // lib/utils/adaptive_helper.dart
 // المساعد الموحّد — يقرأ بروفايل الطفل ويعطيك كل الإعدادات الفعلية
+//
+// ═══════════════════════════════════════════════════════════
+//  🎨 مبدأ التصميم:
+//  - الألوان: من هوية الشعار (أزرق + تركوازي)
+//  - الاستثناء: التباين العالي (للكفيف) — أصفر + أسود
+//  - الأحجام والحركات: تتغير حسب الإعاقة (وظيفي)
+// ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
+import '../theme.dart';
 
 class AdaptiveHelper {
   AdaptiveHelper._();
@@ -11,6 +19,10 @@ class AdaptiveHelper {
   /// البروفايل النشط حالياً
   static AccessibilityProfile get profile =>
       AccessibilityService.instance.profile.value;
+
+  // ═══════════════════════════════════════════════════════════
+  //  📐 الأحجام — تتغير حسب الإعاقة
+  // ═══════════════════════════════════════════════════════════
 
   /// حجم النص الأساسي
   static double get bodyFontSize {
@@ -49,46 +61,51 @@ class AdaptiveHelper {
 
   /// ارتفاع الزر
   static double get buttonHeight {
-    if (profile.extraLargeTouchTargets) return 88;
-    if (profile.type == DisabilityType.blind) return 80;
-    if (profile.type == DisabilityType.downSyndrome) return 88;
-    if (profile.type == DisabilityType.motorDisability) return 80;
-    if (profile.type == DisabilityType.mildIntellectual) return 72;
-    if (profile.type == DisabilityType.autismSevere) return 72;
+    final p = profile;
+    if (p.extraLargeTouchTargets) return 88;
+    if (p.type == DisabilityType.blind) return 80;
+    if (p.type == DisabilityType.downSyndrome) return 88;
+    if (p.type == DisabilityType.motorDisability) return 80;
+    if (p.type == DisabilityType.mildIntellectual) return 72;
+    if (p.type == DisabilityType.autismSevere) return 72;
     return 56;
   }
 
   /// حجم الأيقونة
   static double get iconSize {
-    if (profile.extraLargeTouchTargets) return 44;
-    if (profile.type == DisabilityType.blind) return 48;
-    if (profile.type == DisabilityType.downSyndrome) return 44;
-    if (profile.type == DisabilityType.mildIntellectual) return 40;
+    final p = profile;
+    if (p.extraLargeTouchTargets) return 44;
+    if (p.type == DisabilityType.blind) return 48;
+    if (p.type == DisabilityType.downSyndrome) return 44;
+    if (p.type == DisabilityType.mildIntellectual) return 40;
     return 28;
   }
 
   /// حجم الأفاتار
   static double get avatarSize {
-    if (profile.extraLargeTouchTargets) return 72;
-    if (profile.type == DisabilityType.downSyndrome) return 72;
-    if (profile.type == DisabilityType.blind) return 68;
+    final p = profile;
+    if (p.extraLargeTouchTargets) return 72;
+    if (p.type == DisabilityType.downSyndrome) return 72;
+    if (p.type == DisabilityType.blind) return 68;
     return 56;
   }
 
   /// المسافة بين العناصر
   static double get spacing {
-    if (profile.extraLargeTouchTargets) return 20;
-    if (profile.type == DisabilityType.blind) return 20;
-    if (profile.type == DisabilityType.downSyndrome) return 20;
-    if (profile.type == DisabilityType.motorDisability) return 20;
+    final p = profile;
+    if (p.extraLargeTouchTargets) return 20;
+    if (p.type == DisabilityType.blind) return 20;
+    if (p.type == DisabilityType.downSyndrome) return 20;
+    if (p.type == DisabilityType.motorDisability) return 20;
     return 12;
   }
 
   /// حواف الكروت
   static double get cardRadius {
-    if (profile.type == DisabilityType.downSyndrome) return 32;
-    if (profile.extraLargeTouchTargets) return 24;
-    if (profile.type == DisabilityType.autismMild) return 16;
+    final p = profile;
+    if (p.type == DisabilityType.downSyndrome) return 32;
+    if (p.extraLargeTouchTargets) return 24;
+    if (p.type == DisabilityType.autismMild) return 16;
     return 20;
   }
 
@@ -98,57 +115,87 @@ class AdaptiveHelper {
     return 1.5;
   }
 
+  // ═══════════════════════════════════════════════════════════
+  //  🎨 الألوان — من هوية الشعار (استثناء واحد للكفيف)
+  // ═══════════════════════════════════════════════════════════
 
-  /// لون الخلفية الرئيسي
+  /// لون التمييز — ثابت من هوية الشعار
+  /// الاستثناء الوحيد: التباين العالي (للكفيف) — أصفر للقراءة
+  static Color accentColor(BuildContext context) {
+    final p = profile;
+
+    // ═══ استثناء إلزامي: الكفيف (أصفر على أسود)
+    if (p.highContrast || p.type == DisabilityType.blind) {
+      return const Color(0xFFFFD400);
+    }
+
+    // ═══ الباقي: ألوان الشعار الموحّدة ═══
+    // وضع الهدوء الحسي: تركوازي فاتح
+    if (p.sensoryCalmMode) return AppColors.brandTealLight;
+
+    // ADHD: تركوازي (محفّز وهادئ)
+    if (p.type == DisabilityType.adhd) return AppColors.brandTeal;
+
+    // إعاقات سمعية/نطقية/حركية: تركوازي داكن
+    if (p.type == DisabilityType.deaf ||
+        p.type == DisabilityType.stuttering ||
+        p.type == DisabilityType.speechDisorders ||
+        p.type == DisabilityType.motorDisability) {
+      return AppColors.brandTealDeep;
+    }
+
+    // الباقي: أزرق الشعار
+    return AppColors.brandBlue;
+  }
+
+  /// لون الخلفية — خلفيات فاتحة من الهوية
   static Color surfaceColor(BuildContext context) {
-    if (profile.highContrast) return Colors.black;
-    if (profile.type == DisabilityType.blind) return Colors.black;
-    if (profile.sensoryCalmMode) return const Color(0xFFF0F9FA);
-    if (profile.type == DisabilityType.autismMild) {
-      return const Color(0xFFF0F9FA);
+    final p = profile;
+
+    // ═══ استثناء إلزامي: الكفيف (أسود)
+    if (p.highContrast || p.type == DisabilityType.blind) {
+      return Colors.black;
     }
-    if (profile.type == DisabilityType.downSyndrome) {
-      return const Color(0xFFF1FAF1);
+
+    // ═══ الباقي: خلفيات فاتحة من الهوية ═══
+    // وضع الهدوء الحسي (توحد): أزرق فاتح جداً
+    if (p.sensoryCalmMode) return AppColors.tintTeal;
+
+    // الداون: أخضر فاتح
+    if (p.type == DisabilityType.downSyndrome) return AppColors.tintGreen;
+
+    // التوحد: أزرق فاتح
+    if (p.type == DisabilityType.autismMild ||
+        p.type == DisabilityType.autismSevere) {
+      return AppColors.tintTeal;
     }
-    return Theme.of(context).scaffoldBackgroundColor;
+
+    // الباقي: كريمي الشعار
+    return AppColors.cream;
   }
 
   /// لون النص الرئيسي
   static Color textColor(BuildContext context) {
-    if (profile.highContrast) return Colors.white;
-    if (profile.type == DisabilityType.blind) return Colors.white;
-    return Theme.of(context).colorScheme.onSurface;
-  }
+    final p = profile;
 
-  /// لون التمييز
-  static Color accentColor(BuildContext context) {
-    if (profile.highContrast) return const Color(0xFFFFD400);
-    if (profile.type == DisabilityType.blind) return const Color(0xFFFFD400);
-    if (profile.type == DisabilityType.downSyndrome) {
-      return const Color(0xFF57B25A);
+    if (p.highContrast || p.type == DisabilityType.blind) {
+      return Colors.white;
     }
-    if (profile.type == DisabilityType.adhd) return const Color(0xFFF2842B);
-    if (profile.type == DisabilityType.autismMild) {
-      return const Color(0xFF1AA9B2);
-    }
-    if (profile.type == DisabilityType.deaf) return const Color(0xFFF06C8B);
-    if (profile.type == DisabilityType.stuttering) {
-      return const Color(0xFF8B6DD4);
-    }
-    if (profile.type == DisabilityType.mildIntellectual) {
-      return const Color(0xFFD98B2B);
-    }
-    if (profile.type == DisabilityType.motorDisability) {
-      return const Color(0xFF5C6BC0);
-    }
-    return Theme.of(context).colorScheme.primary;
+
+    return Theme.of(context).colorScheme.onSurface;
   }
 
   /// لون الكارت
   static Color cardColor(BuildContext context) {
-    if (profile.highContrast) return Colors.black;
-    if (profile.type == DisabilityType.blind) return const Color(0xFF1A1A1A);
-    return Theme.of(context).cardColor;
+    final p = profile;
+
+    // ═══ استثناء إلزامي: الكفيف ═══
+    if (p.highContrast || p.type == DisabilityType.blind) {
+      return const Color(0xFF1A1A1A);
+    }
+
+    // الباقي: أبيض
+    return Colors.white;
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -156,12 +203,13 @@ class AdaptiveHelper {
   // ═══════════════════════════════════════════════════════════
 
   static Duration get animationDuration {
-    if (profile.reducedAnimations) return const Duration(milliseconds: 80);
-    if (profile.type == DisabilityType.blind) {
+    final p = profile;
+    if (p.reducedAnimations) return const Duration(milliseconds: 80);
+    if (p.type == DisabilityType.blind) {
       return const Duration(milliseconds: 100);
     }
-    if (profile.type == DisabilityType.autismMild ||
-        profile.type == DisabilityType.autismSevere) {
+    if (p.type == DisabilityType.autismMild ||
+        p.type == DisabilityType.autismSevere) {
       return const Duration(milliseconds: 500);
     }
     return const Duration(milliseconds: 250);
@@ -192,11 +240,12 @@ class AdaptiveHelper {
     }
   }
 
-  /// اهتزاز عند اللمس (للصمّ)
+  /// اهتزاز عند اللمس (للصمّ والكفيف)
   static Future<void> hapticFeedback() async {
-    if (profile.vibrationAlerts ||
-        profile.type == DisabilityType.deaf ||
-        profile.type == DisabilityType.blind) {
+    final p = profile;
+    if (p.vibrationAlerts ||
+        p.type == DisabilityType.deaf ||
+        p.type == DisabilityType.blind) {
       await HapticFeedback.mediumImpact();
     }
   }

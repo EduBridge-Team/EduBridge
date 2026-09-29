@@ -7,7 +7,14 @@ extension _AddChildScreenStateView on _AddChildScreenState {
     return Scaffold(
       appBar: JisrAppBar(title: 'إضافة طفل جديد'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(
+    20,                                       // يسار
+    20,                                       // أعلى
+    20,                                       // يمين
+    20 +                                      // أساسي
+    MediaQuery.of(context).padding.bottom +   // شريط التنقل
+    80,                                       // مساحة إضافية للزر والـ FAB
+  ),
         child: Form(
           key: _formKey,
           child: Column(

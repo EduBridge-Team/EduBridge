@@ -127,14 +127,14 @@ class _AacQuickBarState extends State<AacQuickBar> {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: AppColors.orange.withValues(alpha: 0.15),
+              color: AppColors.brandTealDeep.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             alignment: Alignment.center,
             child: const Icon(
               Icons.grid_view_rounded,
               size: 18,
-              color: AppColors.orange,
+              color: AppColors.brandTeal,
             ),
           ),
           const SizedBox(width: 8),
@@ -205,11 +205,11 @@ class _AacQuickBarState extends State<AacQuickBar> {
                 ),
                 decoration: BoxDecoration(
                   color: selected
-                      ? AppColors.orange
+                      ? AppColors.brandTealDeep
                       : c.tintTeal.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: selected ? AppColors.orange : c.line,
+                    color: selected ? AppColors.brandTeal : c.line,
                     width: selected ? 1.5 : 1,
                   ),
                 ),
@@ -282,12 +282,12 @@ class _AacCard extends StatelessWidget {
           color: c.card,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: AppColors.orange.withValues(alpha: 0.4),
+            color: AppColors.brandTealDeep.withValues(alpha: 0.4),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.orange.withValues(alpha: 0.08),
+              color: AppColors.brandTealDeep.withValues(alpha: 0.08),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -301,14 +301,14 @@ class _AacCard extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.12),
+                color: AppColors.brandTealDeep.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
               child: Icon(
                 item.icon,
                 size: 22,
-                color: AppColors.orangeDeep,
+                color: AppColors.brandTeal,
               ),
             ),
             const SizedBox(height: 4),
