@@ -64,6 +64,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
 
   int _timerCycle = 0;
   int _stars = 0;
+  String? _specialistPhone;
 
   int? _speakingLessonId;
   final AudioPlayer _lessonAudioPlayer = AudioPlayer();
@@ -77,6 +78,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     _loadRole();
     _loadLessons();
     _loadStars();
+    _loadEmergencyContacts();
 
     AccessibilityService.instance.setActiveChild(
       widget.childId,
@@ -155,6 +157,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             childId: widget.childId,
             childName: widget.childName,
             parentPhone: widget.parentPhone,
+            specialistPhone: _specialistPhone,
             canMarkDone: _canMarkDone,
             timerCycle: _timerCycle,
             onOpenGames: _openGames,
