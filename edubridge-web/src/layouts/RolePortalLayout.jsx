@@ -10,6 +10,7 @@ import {
 import { ROLE_NAMES } from '../roles'
 import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
+import { useUserSettings } from '../userSettings'
 import BrandLogo from '../components/BrandLogo/BrandLogo'
 import NoorPet from '../components/Noor/NoorPet'
 import { activeSection, createRoleNavItems } from './rolePortalNavigation'
@@ -22,6 +23,7 @@ export default function RolePortalLayout({ children }) {
   const roleName = ROLE_NAMES[role] || role
   const homePath = dashboardFor(user)
   const { dark, toggleTheme } = useTheme()
+  const { settings, updateSettings } = useUserSettings()
   const profileImage = user?.avatar_url || user?.avatar || user?.photo_url || user?.profile_photo_url || ''
   const profileInitial = String(user?.name || roleName || '؟').trim().charAt(0) || '؟'
 
@@ -36,7 +38,9 @@ export default function RolePortalLayout({ children }) {
       : Promise.resolve({ children: [] })
 
     Promise.all([
-      fetchUnreadNotificationsCount().catch(() => ({ count: 0 })),
+      settings.notifications_enabled
+        ? fetchUnreadNotificationsCount().catch(() => ({ count: 0 }))
+        : Promise.resolve({ count: 0 }),
       childrenRequest,
       fetchConversations().catch(() => ({ conversations: [] })),
     ]).then(([notificationData, childrenData, conversationData]) => {
@@ -44,7 +48,7 @@ export default function RolePortalLayout({ children }) {
       setChildrenList(childrenData?.children || [])
       setConversationCount((conversationData?.conversations || []).length)
     })
-  }, [location.pathname, role])
+  }, [location.pathname, role, settings.notifications_enabled])
 
   useEffect(() => {
     setDrawerOpen(false)
@@ -199,7 +203,11 @@ export default function RolePortalLayout({ children }) {
 
           <button
             className="pp-theme-toggle"
-            onClick={toggleTheme}
+            onClick={() => {
+              const next = dark ? 'light' : 'dark'
+              toggleTheme()
+              updateSettings({ theme_mode: next }).catch(() => {})
+            }}
             title={dark ? 'الوضع الفاتح' : 'الوضع الليلي'}
             aria-label={dark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الليلي'}
           >
