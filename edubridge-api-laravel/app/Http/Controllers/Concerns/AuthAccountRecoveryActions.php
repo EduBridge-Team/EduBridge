@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -25,27 +26,56 @@ trait AuthAccountRecoveryActions
             return response()->json(['message' => 'إذا كان البريد مسجلاً فستصلك رسالة استعادة كلمة المرور.']);
         }
 
+        if (!Schema::hasTable('password_reset_tokens')) {
+            Log::error('Password reset requested but password_reset_tokens table is missing.');
+            return response()->json([
+                'error' => 'خدمة استعادة كلمة المرور غير جاهزة حالياً. حاول مرة أخرى بعد قليل.',
+                'code' => 'PASSWORD_RESET_STORAGE_UNAVAILABLE',
+            ], 503);
+        }
+
         $token = Str::random(64);
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $email],
-            ['token' => hash('sha256', $token), 'created_at' => now()]
-        );
 
-        $frontend = rtrim((string) (env('FRONTEND_URL') ?: env('APP_URL')), '/');
-        $url = $frontend . '/reset-password?email=' . urlencode($email) . '&token=' . urlencode($token);
+        try {
+            DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $email],
+                ['token' => hash('sha256', $token), 'created_at' => now()]
+            );
 
-        Mail::send('emails.auth-action', [
-            'subjectLine' => 'استعادة كلمة المرور — EduBridge',
-            'heading' => 'استعادة كلمة المرور',
-            'userName' => $user->name,
-            'intro' => 'وصلنا طلب لتغيير كلمة مرور حسابك في EduBridge. اضغط الزر التالي لإنشاء كلمة مرور جديدة.',
-            'actionUrl' => $url,
-            'actionText' => 'تغيير كلمة المرور',
-            'expiryText' => 'صلاحية هذا الرابط 60 دقيقة فقط.',
-            'ignoreText' => 'إذا لم تطلب تغيير كلمة المرور، يمكنك تجاهل هذه الرسالة بأمان.',
-        ], function ($message) use ($email) {
-            $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
-        });
+            $frontend = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+            $url = $frontend . '/reset-password?email=' . urlencode($email) . '&token=' . urlencode($token);
+
+            Mail::send('emails.auth-action', [
+                'subjectLine' => 'استعادة كلمة المرور — EduBridge',
+                'heading' => 'استعادة كلمة المرور',
+                'userName' => $user->name,
+                'intro' => 'وصلنا طلب لتغيير كلمة مرور حسابك في EduBridge. اضغط الزر التالي لإنشاء كلمة مرور جديدة.',
+                'actionUrl' => $url,
+                'actionText' => 'تغيير كلمة المرور',
+                'expiryText' => 'صلاحية هذا الرابط 60 دقيقة فقط.',
+                'ignoreText' => 'إذا لم تطلب تغيير كلمة المرور، يمكنك تجاهل هذه الرسالة بأمان.',
+            ], function ($message) use ($email) {
+                $message->to($email)->subject('استعادة كلمة المرور — EduBridge');
+            });
+        } catch (\Throwable $e) {
+            // Do not leak SMTP/database internals to the client, but keep enough
+            // context in production logs to diagnose delivery failures.
+            Log::error('Failed to send password reset email.', [
+                'email_domain' => str_contains($email, '@')
+                    ? substr(strrchr($email, '@'), 1)
+                    : null,
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
+
+            // Remove a token that the user could never receive.
+            DB::table('password_reset_tokens')->where('email', $email)->delete();
+
+            return response()->json([
+                'error' => 'تعذّر إرسال رسالة الاستعادة حالياً. حاول مرة أخرى بعد قليل.',
+                'code' => 'PASSWORD_RESET_DELIVERY_FAILED',
+            ], 503);
+        }
 
         return response()->json(['message' => 'إذا كان البريد مسجلاً فستصلك رسالة استعادة كلمة المرور.']);
     }
@@ -118,7 +148,7 @@ trait AuthAccountRecoveryActions
             && $record->created_at
             && now()->diffInHours($record->created_at) <= 24;
 
-        $frontend = rtrim((string) (env('FRONTEND_URL') ?: env('APP_URL')), '/');
+        $frontend = rtrim((string) config('app.frontend_url', config('app.url')), '/');
 
         if (!$valid) {
             return redirect($frontend . '/login?verified=0');
@@ -142,7 +172,7 @@ trait AuthAccountRecoveryActions
             ['token' => hash('sha256', $token), 'created_at' => now()]
         );
 
-        $backend = rtrim((string) env('APP_URL'), '/');
+        $backend = rtrim((string) config('app.url'), '/');
         $url = $backend . '/api/auth/verify-email?email=' . urlencode($user->email) . '&token=' . urlencode($token);
 
         Mail::send('emails.auth-action', [
