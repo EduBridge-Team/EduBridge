@@ -5,7 +5,7 @@ export function WeeklyReportForm({
   onSubmit,
 }) {
   return (
-    <section className="fp-card">
+    <section className="fp-card fp-form-card weekly-report-form-card">
       <h3>إضافة/تحديث تقرير</h3>
 
       <form className="fp-form" onSubmit={onSubmit}>
@@ -60,7 +60,7 @@ export function WeeklyReportForm({
           onChange={(event) => onChange({ ...draft, concerns: event.target.value })}
         />
 
-        <button className="btn success" disabled={busy}>حفظ التقرير</button>
+        <button className="btn" disabled={busy}>حفظ التقرير</button>
       </form>
     </section>
   )
@@ -73,7 +73,7 @@ export function WeeklyReportsGrid({ reports }) {
         <div className="fp-empty">لا توجد تقارير لهذا الطفل</div>
       ) : (
         reports.map((report) => (
-          <article className="fp-card" key={report.id}>
+          <article className="fp-card weekly-report-card" key={report.id}>
             <div className="fp-head">
               <h3>
                 {new Date(report.week_start).toLocaleDateString('ar')}

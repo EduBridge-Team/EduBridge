@@ -83,12 +83,14 @@ export default function SupportPage() {
   }
 
   return (
-    <div>
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <LifeBuoy size={20} /> الدعم الفني والشكاوى
-        </h2>
-      </div>
+    <div className="support-page-v2">
+      <section className="support-hero">
+        <div>
+          <span className="role-eyebrow"><LifeBuoy size={18} /> مركز المساعدة</span>
+          <h1>الدعم الفني والشكاوى</h1>
+          <p>أرسل طلبك وتابع حالته ورد الإدارة من نفس الصفحة.</p>
+        </div>
+      </section>
 
       {isAdmin && <AdminSectionTabs />}
 
@@ -103,8 +105,8 @@ export default function SupportPage() {
         />
       )}
 
-      <div className="page-title" style={{ marginTop: 8 }}>
-        <h3>{isAdmin ? 'كل الطلبات' : 'طلباتي'}</h3>
+      <div className="support-section-head">
+        <h2>{isAdmin ? 'كل الطلبات' : 'طلباتي'}</h2>
       </div>
 
       {error && isAdmin && <div className="error-box">{error}</div>}

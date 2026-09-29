@@ -112,7 +112,7 @@ export default function CareTeamPage() {
   )
 
   return (
-    <div className="fp-page">
+    <div className="fp-page care-team-page-v2">
       <CareTeamHeader
         childId={childId}
         children={children}

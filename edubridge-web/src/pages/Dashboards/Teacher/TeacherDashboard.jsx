@@ -8,8 +8,7 @@ import {
   fetchDisabilityTypes,
   deleteLesson,
 } from '../../../api'
-import { Plus } from 'lucide-react'
-import Footer from '../../../components/Footer'
+import { BookOpen, Plus, Users } from 'lucide-react'
 import LessonFormModal from './LessonFormModal'
 import TeacherChildrenSection from './TeacherChildrenSection'
 import TeacherLessonsSection from './TeacherLessonsSection'
@@ -118,16 +117,32 @@ export default function TeacherDashboard() {
 
   return (
     <div className="role-page role-teacher">
-      <main className="container container-wide role-dashboard">
-        <div className="dash-head dash-head-row">
-          <div>
-            <h2>مرحباً {me.name}،</h2>
-            <p className="dash-sub">إليك نظرة عامة على تقدّم طلابك والدروس المتاحة.</p>
+      <main className="container container-wide role-dashboard teacher-dashboard-v2">
+        <section className="teacher-hero">
+          <div className="teacher-hero-copy">
+            <span className="role-eyebrow">لوحة المعلّم</span>
+            <h1>مرحباً {me.name}</h1>
+            <p>تابع طلابك، نظّم دروسك، وابدأ المحتوى الجديد من مكان واحد.</p>
+            <div className="teacher-hero-actions">
+              <button className="btn" onClick={() => setAdding(true)}>
+                <Plus size={18} /> إضافة درس جديد
+              </button>
+            </div>
           </div>
-          <button className="btn success" onClick={() => setAdding(true)}>
-            <Plus size={18} /> إضافة درس جديد
-          </button>
-        </div>
+
+          <div className="teacher-overview" aria-label="ملخص لوحة المعلّم">
+            <article>
+              <span><BookOpen size={21} /></span>
+              <strong>{lessons.length}</strong>
+              <small>درس متاح</small>
+            </article>
+            <article>
+              <span><Users size={21} /></span>
+              <strong>{children.length}</strong>
+              <small>طفل متابع</small>
+            </article>
+          </div>
+        </section>
 
         {loading ? (
           <div className="state">
@@ -166,7 +181,6 @@ export default function TeacherDashboard() {
         )}
       </main>
 
-      <Footer />
 
       {adding && (
         <LessonFormModal

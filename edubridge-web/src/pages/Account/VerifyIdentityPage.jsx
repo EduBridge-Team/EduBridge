@@ -132,7 +132,7 @@ export default function VerifyIdentityPage() {
   }
 
   return (
-    <div>
+    <div className="verify-identity-page-v2">
       <IdentityVerificationCard
         busy={busy}
         error={error}

@@ -16,7 +16,7 @@
 }
 
 .summary-card .num {
-    font-family: "Baloo Bhaijaan 2", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     font-size: 28px;
     font-weight: 800;
     color: var(--navy);
@@ -273,7 +273,7 @@
 }
 
 .stats-card .num {
-    font-family: "Baloo Bhaijaan 2", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     font-size: 32px;
     font-weight: 800;
     color: var(--navy);

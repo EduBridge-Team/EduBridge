@@ -27,7 +27,7 @@ export function SupportRequestForm({
   sending,
 }) {
   return (
-    <form onSubmit={onSubmit} className="card">
+    <form onSubmit={onSubmit} className="card support-request-card">
       <h3>طلب جديد</h3>
 
       <label>التصنيف</label>
@@ -78,7 +78,7 @@ export function SupportTicketsList({
   }
 
   return tickets.map((ticket) => (
-    <div key={ticket.id} className="card ticket">
+    <div key={ticket.id} className="card ticket support-ticket-card">
       <div className="ticket-head">
         <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {ticket.category === 'complaint' ? (

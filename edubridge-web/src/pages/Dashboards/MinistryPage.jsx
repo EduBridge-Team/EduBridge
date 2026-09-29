@@ -111,7 +111,7 @@ export default function MinistryPage() {
   }
 
   const statusFilters = (
-    <div className="tabs">
+    <div className="tabs ministry-status-tabs">
       {['pending', 'approved', 'rejected'].map((status) => (
         <button
           key={status}
@@ -125,17 +125,16 @@ export default function MinistryPage() {
   )
 
   return (
-    <div className="container role-dashboard role-ministry">
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Landmark size={21} /> بوابة الوزارة
-        </h2>
-      </div>
-      <p className="dash-sub">
-        إدارة مراجعة المناهج والخطط، متابعة المستخدمين والأطفال، وقراءة مؤشرات التقدّم من مصدر واحد.
-      </p>
+    <div className="container container-wide role-dashboard role-ministry ministry-dashboard-v2">
+      <section className="ministry-hero">
+        <div>
+          <span className="role-eyebrow"><Landmark size={18} /> بوابة الوزارة</span>
+          <h1>لوحة المتابعة المركزية</h1>
+          <p>راجع المناهج والخطط، تابع المستخدمين والأطفال، واقرأ مؤشرات التقدّم من مصدر واحد.</p>
+        </div>
+      </section>
 
-      <div className="tabs">
+      <div className="tabs ministry-main-tabs">
         {TABS.map(([key, label, Icon]) => (
           <button key={key} className={tab === key ? 'tab on' : 'tab'} onClick={() => setTab(key)}>
             <Icon size={16} /> {label}

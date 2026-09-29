@@ -1,15 +1,15 @@
 export function SpecialistSummary({ doneToday, pending, totalChildren }) {
   return (
-    <div className="summary-grid">
-      <div className="summary-card">
+    <div className="summary-grid specialist-summary-grid">
+      <div className="summary-card specialist-summary-card">
         <div className="num" style={{ color: 'var(--coral-deep)' }}>{pending}</div>
         <div className="lbl">مهام قيد الانتظار</div>
       </div>
-      <div className="summary-card">
+      <div className="summary-card specialist-summary-card">
         <div className="num" style={{ color: 'var(--green-deep)' }}>{doneToday}</div>
         <div className="lbl">مهام منجزة (اليوم)</div>
       </div>
-      <div className="summary-card">
+      <div className="summary-card specialist-summary-card">
         <div className="num" style={{ color: 'var(--navy)' }}>{totalChildren}</div>
         <div className="lbl">إجمالي الأطفال</div>
       </div>
@@ -22,9 +22,9 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
   const hasCurrent = Boolean(stats.current)
 
   return (
-    <div className="progress-row">
+    <div className="progress-row specialist-progress-card">
       <div className="pr-child">
-        <div className="avatar">🧒</div>
+        <div className="avatar specialist-child-avatar">{(child.name || '؟').trim().charAt(0)}</div>
         <div>
           <h3
             className="pr-name clickable"
@@ -54,7 +54,7 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
       <div className="pr-action">
         {hasCurrent ? (
           <button
-            className="btn success small"
+            className="btn small specialist-approve-btn"
             disabled={approvingId === child.id}
             onClick={() => onApprove(row)}
           >

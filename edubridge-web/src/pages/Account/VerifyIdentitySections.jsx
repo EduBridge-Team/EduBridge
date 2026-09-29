@@ -24,13 +24,15 @@ export function IdentityVerificationCard({
 }) {
   return (
     <>
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IdCard size={20} /> توثيق الهوية
-        </h2>
-      </div>
+      <section className="verify-hero">
+        <div>
+          <span className="role-eyebrow"><IdCard size={18} /> الأمان والثقة</span>
+          <h1>توثيق الهوية</h1>
+          <p>أكمل بيانات الهوية وأرفق المستندات المطلوبة لمراجعة الحساب.</p>
+        </div>
+      </section>
 
-      <div className="card">
+      <div className="card verify-card">
         <h3>
           حالة التوثيق: <VerificationStatusBadge status={verification?.verification_status} />
         </h3>
@@ -81,7 +83,7 @@ export function CertificatesCard({
   onViewFile,
 }) {
   return (
-    <div className="card">
+    <div className="card verify-card certificates-card-v2">
       <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Award size={18} /> شهاداتي (إثبات الأهلية)
       </h3>

@@ -9,16 +9,16 @@
   --pd-surface: rgba(255,255,255,.96);
   --pd-shadow: 0 14px 36px rgba(24, 99, 159, .07);
 
-  width: 100vw;
-  min-height: 100vh;
-  margin-inline: calc(50% - 50vw);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
+  width: 100%;
+  min-height: 0;
+  margin-inline: 0;
+  display: block;
   background:
     radial-gradient(circle at 18% 10%, rgba(71, 206, 222, .08), transparent 24rem),
     linear-gradient(#fafdff, #f7fbff);
   color: var(--pd-ink);
-  overflow-x: hidden;
+  overflow-x: clip;
+  border-radius: 28px;
 }
 
 .pd-sidebar {
@@ -115,7 +115,7 @@
   width: 100%; min-height: 38px; border: 0; border-radius: 11px; background: var(--pd-blue); color: #fff; font: inherit; font-weight: 800; cursor: pointer;
 }
 
-.pd-main { grid-column: 1; grid-row: 1; min-width: 0; }
+.pd-main { min-width: 0; }
 .pd-toolbar {
   min-height: 76px;
   padding: 14px 28px;

@@ -9,7 +9,6 @@ import {
   Search,
 } from 'lucide-react'
 import { getUser } from '../../api'
-import Footer from '../../components/Footer'
 
 const QUICK_ACTIONS = [
   { Icon: Search, title: 'البحث عن طالب', text: 'البحث في الملفات المسموح بعرضها باستخدام رقم الهوية', to: '/search' },
@@ -25,7 +24,7 @@ export default function InstitutionDashboard() {
 
   return (
     <div className="role-page role-institution">
-      <main className="container container-wide role-dashboard">
+      <main className="container container-wide role-dashboard institution-dashboard-v2">
         <section className="role-hero">
           <div className="role-hero-copy">
             <span className="role-eyebrow"><Building2 size={17} /> لوحة المؤسسة التعليمية</span>
@@ -69,7 +68,6 @@ export default function InstitutionDashboard() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   )
 }

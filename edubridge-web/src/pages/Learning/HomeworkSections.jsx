@@ -8,7 +8,7 @@ export function HomeworkCreateForm({
   onSubmit,
 }) {
   return (
-    <section className="fp-card">
+    <section className="fp-card fp-form-card">
       <h3>واجب جديد</h3>
       <form className="fp-form" onSubmit={onSubmit}>
         <input
@@ -59,7 +59,7 @@ export function HomeworkCreateForm({
           onChange={(e) => onAttachmentsChange(Array.from(e.target.files || []))}
         />
         <button
-          className="btn success"
+          className="btn"
           disabled={busy || draft.assigned_child_ids.length === 0}
         >
           حفظ الواجب
@@ -138,7 +138,7 @@ export function HomeworkGrid({
   if (items.length === 0) return <div className="fp-empty">لا توجد واجبات بعد</div>
 
   return items.map((homework) => (
-    <article className="fp-card" key={homework.id}>
+    <article className="fp-card homework-card" key={homework.id}>
       <h3>{homework.title}</h3>
       <p>{homework.description}</p>
       <div className="fp-meta">
@@ -200,7 +200,7 @@ export function HomeworkSubmissionForm({
   if (!submission.homework_id) return null
 
   return (
-    <section className="fp-card">
+    <section className="fp-card homework-card">
       <h3>تسليم الواجب</h3>
       <form className="fp-form" onSubmit={onSubmit}>
         <select
@@ -227,7 +227,7 @@ export function HomeworkSubmissionForm({
           })}
         />
         <div className="fp-actions">
-          <button className="btn success" disabled={busy}>إرسال</button>
+          <button className="btn" disabled={busy}>إرسال</button>
           <button type="button" className="btn outline" onClick={onCancel}>إلغاء</button>
         </div>
       </form>

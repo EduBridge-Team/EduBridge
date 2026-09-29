@@ -13,11 +13,13 @@ export default function TeacherLessonsSection({
   typeName,
 }) {
   return (
-    <section className="teacher-lessons-column">
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <BookOpen size={20} /> البحث في الدروس
-        </h2>
+    <section className="teacher-lessons-column teacher-panel">
+      <div className="teacher-panel-head">
+        <span><BookOpen size={20} /></span>
+        <div>
+          <h2>مكتبة الدروس</h2>
+          <p>ابحث في المحتوى وعدّل دروسك المنشورة.</p>
+        </div>
       </div>
 
       <input
@@ -25,7 +27,7 @@ export default function TeacherLessonsSection({
         placeholder="ابحث عن درس..."
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        style={{ marginBottom: 18 }}
+        className="teacher-search-input"
       />
 
       {filtered.length === 0 ? (
@@ -39,7 +41,7 @@ export default function TeacherLessonsSection({
             const mine = ownsLesson(lesson)
 
             return (
-              <div key={lesson.id} className="card lesson-card">
+              <div key={lesson.id} className="card lesson-card teacher-lesson-card">
                 <div className="lesson-card-top">
                   <div className="feature-icon"><BookOpen size={20} /></div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>

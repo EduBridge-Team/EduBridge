@@ -1,17 +1,21 @@
 export function CareTeamHeader({ childId, children, onChildChange }) {
   return (
-    <div className="fp-head">
+    <section className="fp-hero care-team-hero">
       <div>
-        <h2>👥 فريق الدعم التعليمي</h2>
-        <div className="meta">المعلمون والمختصون المرتبطون بالطفل</div>
+        <span className="fp-eyebrow">الدعم المشترك</span>
+        <h1>فريق الدعم التعليمي</h1>
+        <p>المعلمون والمختصون المرتبطون بالطفل في خطة دعم واحدة.</p>
       </div>
 
-      <select value={childId} onChange={(event) => onChildChange(event.target.value)}>
-        {children.map((child) => (
-          <option key={child.id} value={child.id}>{child.name}</option>
-        ))}
-      </select>
-    </div>
+      <label className="reports-child-select">
+        <span>الطفل</span>
+        <select value={childId} onChange={(event) => onChildChange(event.target.value)}>
+          {children.map((child) => (
+            <option key={child.id} value={child.id}>{child.name}</option>
+          ))}
+        </select>
+      </label>
+    </section>
   )
 }
 
@@ -23,7 +27,7 @@ export function CareTeamMemberForm({
   onSubmit,
 }) {
   return (
-    <section className="fp-card">
+    <section className="fp-card fp-form-card care-team-form-card">
       <h3>إضافة عضو</h3>
 
       <form className="fp-form" onSubmit={onSubmit}>
@@ -70,7 +74,7 @@ export function CareTeamMemberForm({
           </select>
         )}
 
-        <button className="btn success" disabled={busy}>إضافة للفريق</button>
+        <button className="btn" disabled={busy}>إضافة للفريق</button>
       </form>
     </section>
   )
@@ -88,7 +92,7 @@ export function CareTeamMembers({
         <div className="fp-empty">لم يتم تعيين فريق بعد</div>
       ) : (
         members.map((member) => (
-          <article className="fp-card" key={member.user_id}>
+          <article className="fp-card care-team-member-card" key={member.user_id}>
             <div className="fp-head">
               <h3>{member.name}</h3>
               <span className="fp-badge">

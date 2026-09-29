@@ -7,8 +7,7 @@ import {
   fetchChildProgress,
   markLessonDone,
 } from '../../api'
-import { GraduationCap } from 'lucide-react'
-import Footer from '../../components/Footer'
+import { CheckCircle2, Clock3, GraduationCap, Users } from 'lucide-react'
 import {
   SpecialistChildrenList,
   SpecialistSummary,
@@ -77,13 +76,20 @@ export default function SpecialistDashboard() {
 
   return (
     <div className="role-page role-specialist">
-      <main className="container container-wide role-dashboard">
-        <div className="dash-head">
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <GraduationCap size={22} /> لوحة المختص — متابعة وتقييم خطط الدعم التعليمية
-          </h2>
-          <p className="dash-sub">مرحباً {me.name}، إليك نظرة عامة على تقدّم الأطفال وخططهم التعليمية اليوم.</p>
-        </div>
+      <main className="container container-wide role-dashboard specialist-dashboard-v2">
+        <section className="specialist-hero">
+          <div>
+            <span className="role-eyebrow"><GraduationCap size={18} /> لوحة المختص</span>
+            <h1>مرحباً {me.name}</h1>
+            <p>تابع خطط الدعم التعليمية، راجع تقدّم الأطفال، واعتمد الإنجازات اليومية.</p>
+          </div>
+
+          <div className="specialist-hero-stats" aria-label="ملخص المختص">
+            <article><Users size={20} /><strong>{totalChildren}</strong><small>طفل متابع</small></article>
+            <article><CheckCircle2 size={20} /><strong>{doneToday}</strong><small>منجز اليوم</small></article>
+            <article><Clock3 size={20} /><strong>{pending}</strong><small>قيد المتابعة</small></article>
+          </div>
+        </section>
 
         <SpecialistSummary
           doneToday={doneToday}
@@ -91,8 +97,11 @@ export default function SpecialistDashboard() {
           totalChildren={totalChildren}
         />
 
-        <div className="page-title" style={{ marginTop: 8 }}>
-          <h2>جميع الأطفال والتقدّم</h2>
+        <div className="specialist-section-head">
+          <div>
+            <h2>الأطفال والتقدّم</h2>
+            <p>راجع الحالة الحالية لكل طفل وافتح سجل التقدّم للتفاصيل.</p>
+          </div>
         </div>
 
         <SpecialistChildrenList
@@ -110,7 +119,6 @@ export default function SpecialistDashboard() {
         />
       </main>
 
-      <Footer />
     </div>
   )
 }

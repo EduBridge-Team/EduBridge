@@ -7,60 +7,64 @@
    ============================================================ */
 
 :root {
-    /* ===== لوحة الألوان الأساسية (نظام التصميم الجديد) ===== */
-    --navy: oklch(30% 0.07 250);
-    --navy-deep: oklch(22% 0.06 250);
-    --teal: oklch(58% 0.1 200);
-    --teal-deep: oklch(45% 0.1 200);
-    --green: oklch(58% 0.12 150);
-    --green-deep: oklch(45% 0.11 150);
-    --coral: oklch(66% 0.15 35);
-    --coral-deep: oklch(55% 0.15 35);
+    /* EduBridge unified brand tokens */
+    --brand-blue: #1769c2;
+    --brand-blue-deep: #0d55aa;
+    --brand-blue-light: #2a8ad5;
+    --brand-teal: #21bfd0;
+    --brand-cyan: #21bfd0;
+    --brand-teal-deep: #119eae;
+    --brand-teal-light: #69d4ca;
+    --brand-green: #7be49a;
+    --brand-green-deep: #57b25a;
 
-    /* خلفيات وأسطح */
-    --bg: oklch(96% 0.012 75);
-    --surface: oklch(99% 0.003 75);
-    --tint-teal: oklch(94% 0.025 200);
-    --tint-green: oklch(94% 0.04 150);
-    --tint-coral: oklch(94% 0.035 35);
+    --navy: #123f70;
+    --navy-deep: #0b3159;
+    --teal: var(--brand-teal);
+    --teal-deep: var(--brand-teal-deep);
+    --green: var(--brand-green);
+    --green-deep: var(--brand-green-deep);
+    --coral: #f2842b;
+    --coral-deep: #d86d16;
 
-    /* نصوص وحدود */
-    --ink: oklch(24% 0.03 250);
-    --muted: oklch(50% 0.02 250);
-    --line: oklch(88% 0.015 75);
+    --bg: #f6fbff;
+    --surface: #ffffff;
+    --surface-soft: #f1f8fc;
+    --tint-teal: #eaf9fb;
+    --tint-green: #effbf2;
+    --tint-coral: #fff4e9;
 
-    /* حالات */
-    --danger: oklch(55% 0.2 25);
-    --danger-deep: oklch(48% 0.2 25);
-    --success: var(--green-deep);
+    --ink: #17324d;
+    --muted: #6f86a0;
+    --line: #dceaf4;
+
+    --danger: #d84c5b;
+    --danger-deep: #b93545;
+    --success: var(--brand-green-deep);
     --warning: var(--coral-deep);
 
-    /* ===== توافق خلفي مع الأسماء القديمة ===== */
     --orange: var(--coral);
     --orange-deep: var(--coral-deep);
     --tint-orange: var(--tint-coral);
-    --yellow: oklch(80% 0.13 85);
+    --yellow: #f1c75b;
     --pink: var(--coral);
     --cream: var(--bg);
     --card: var(--surface);
     --text: var(--ink);
     --line-cool: var(--line);
-    --primary: var(--teal-deep);
-    --primary-dark: var(--teal-deep);
-    --accent: var(--teal);
+    --primary: var(--brand-blue);
+    --primary-dark: var(--brand-blue-deep);
+    --accent: var(--brand-teal);
     --border: var(--line);
 
-    /* حواف — مقياس أصغر وأنعم */
-    --r-lg: 18px;
-    --r-md: 14px;
-    --r-sm: 10px;
+    --r-xl: 28px;
+    --r-lg: 22px;
+    --r-md: 18px;
+    --r-sm: 14px;
 
-    /* ظلال خفيفة جداً — تُستخدم بحذر فقط للعناصر العائمة */
-    --shadow: 0 12px 30px -18px oklch(30% 0.07 250 / 0.28);
-    --shadow-soft: 0 6px 18px -14px oklch(30% 0.07 250 / 0.22);
-
-    /* قوس قزح الشعار — لمسة الهوية */
-    --rainbow: linear-gradient(90deg, #2f7fc9 0%, #1aa9b2 34%, #57b25a 66%, #f2842b 100%);
+    --shadow: 0 18px 44px rgba(23, 105, 194, .10);
+    --shadow-soft: 0 10px 28px rgba(23, 105, 194, .07);
+    --rainbow: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-teal) 44%, var(--brand-green-deep) 100%);
 }
 
 :root[data-theme="dark"] {
@@ -85,7 +89,7 @@
 
 body {
     margin: 0;
-    font-family: "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
@@ -102,7 +106,7 @@ h1,
 h2,
 h3,
 h4 {
-    font-family: "Baloo Bhaijaan 2", "Tajawal", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     font-weight: 700;
     color: var(--navy);
     line-height: 1.35;
@@ -152,7 +156,7 @@ h4 {
 }
 
 .wordmark .main {
-    font-family: "Baloo Bhaijaan 2", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--navy);
@@ -313,7 +317,7 @@ h4 {
     padding: 0 18px;
     font-size: 14.5px;
     font-weight: 700;
-    font-family: "Baloo Bhaijaan 2", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     background: var(--surface);
     color: var(--navy);
     border: 1.5px solid var(--line);
