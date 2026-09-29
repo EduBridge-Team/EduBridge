@@ -61,7 +61,9 @@ trait ChildReadActions
             }
 
             $child = $this->hideIdentityFieldsForStaff(
-                $this->attachSpecialists($this->decodeChild($child)),
+                $this->attachCurrentPlan(
+                    $this->attachSpecialists($this->decodeChild($child))
+                ),
                 $user
             );
 
