@@ -68,6 +68,7 @@ PreferredSizeWidget buildChildLessonsAppBar({
 
 Widget buildAdaptiveHeader({
   required BuildContext context,
+  required int childId,
   required String childName,
   required String? parentPhone,
   required bool canMarkDone,
@@ -183,6 +184,7 @@ Widget buildAdaptiveHeader({
   if (profile.emergencyButton) {
     items.add(
       EmergencyButton(
+        childId: childId,
         childName: childName,
         parentPhone: parentPhone,
       ),
