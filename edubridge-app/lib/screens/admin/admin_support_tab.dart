@@ -128,16 +128,42 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
     return RefreshIndicator(
       onRefresh: _loadTickets,
       child: _tickets.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: c.muted),
-                  const SizedBox(height: 12),
-                  Text('لا توجد شكاوى حالياً',
-                      style: TextStyle(fontSize: 16, color: c.muted)),
-                ],
-              ),
+          ? ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                const SizedBox(height: 90),
+                Center(
+                  child: Container(
+                    width: 82,
+                    height: 82,
+                    decoration: BoxDecoration(
+                      color: c.tintTeal,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      AppIcons.support,
+                      size: 38,
+                      color: AppColors.brandBlue,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'لا توجد شكاوى حالياً',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    color: c.heading,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'عند وصول طلب دعم جديد سيظهر هنا للمراجعة.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13.5, color: c.muted),
+                ),
+              ],
             )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -145,32 +171,80 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
               itemBuilder: (context, index) {
                 final ticket = _tickets[index];
                 final user = ticket['user'] ?? {};
-                return Card(
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    leading: const Icon(AppIcons.support, color: AppColors.orange),
-                    title: Text(ticket['subject']?.toString() ?? 'بدون موضوع'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ticket['message']?.toString() ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: c.body),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: c.card,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: c.line),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: c.tintOrange,
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        if (user['name'] != null)
-                          Text(
-                            'من: ${user['name']}',
-                            style: TextStyle(fontSize: 12, color: c.muted),
-                          ),
-                      ],
-                    ),
-                    trailing: TextButton(
-                      onPressed: () => _resolveTicket(ticket),
-                      child: const Text('تم الحل',
-                          style: TextStyle(color: AppColors.brandGreen)),
-                    ),
+                        child: const Icon(
+                          AppIcons.support,
+                          color: AppColors.orangeDeep,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ticket['subject']?.toString() ?? 'بدون موضوع',
+                              style: TextStyle(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w800,
+                                color: c.heading,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              ticket['message']?.toString() ?? '',
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                height: 1.45,
+                                color: c.body,
+                              ),
+                            ),
+                            if (user['name'] != null) ...[
+                              const SizedBox(height: 7),
+                              Text(
+                                'من: ${user['name']}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: c.muted,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      FilledButton(
+                        onPressed: () => _resolveTicket(ticket),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.green,
+                          minimumSize: const Size(82, 42),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                        ),
+                        child: const Text(
+                          'تم الحل',
+                          style: TextStyle(fontSize: 12.5),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
