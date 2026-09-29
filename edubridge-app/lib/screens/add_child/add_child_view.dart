@@ -7,16 +7,37 @@ extension _AddChildScreenStateView on _AddChildScreenState {
     return Scaffold(
       appBar: JisrAppBar(title: 'إضافة طفل جديد'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildAvatarHeader(c),
-              const SizedBox(height: 20),
-              _buildInfoBanner(c),
-              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: c.card,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: c.line),
+                ),
+                child: Column(
+                  children: [
+                    _buildAvatarHeader(c),
+                    const SizedBox(height: 14),
+                    _buildInfoBanner(c),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'بيانات الطفل',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(height: 12),
 
               TextFormField(
                 controller: _nameCtrl,
@@ -158,13 +179,8 @@ extension _AddChildScreenStateView on _AddChildScreenState {
 
               if (_error != null) _buildErrorBox(_error!),
 
-              SizedBox(
-                height: 56,
-                child: ElevatedButton.icon(
+              FilledButton.icon(
                   onPressed: _loading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandBlue,
-                  ),
                   icon: _loading
                       ? const SizedBox(
                           width: 22,
@@ -176,9 +192,10 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                   label: Text(
                     _loading ? 'جارٍ الإرسال...' : 'إرسال للمراجعة',
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
               ),
             ],
           ),
