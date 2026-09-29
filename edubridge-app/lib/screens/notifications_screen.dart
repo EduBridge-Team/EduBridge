@@ -167,20 +167,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_error!,
-                style: const TextStyle(color: AppColors.red, fontSize: 16)),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 100),
+          const Icon(AppIcons.error, size: 56, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -188,25 +198,49 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       valueListenable: NotificationListenerService.instance.notifications,
       builder: (context, list, _) {
         if (list.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(AppIcons.notifications, size: 64, color: c.muted),
-                const SizedBox(height: 16),
-                Text(
-                  'لا توجد إشعارات',
-                  style: TextStyle(fontSize: 18, color: c.muted),
+          return ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              const SizedBox(height: 110),
+              Center(
+                child: Container(
+                  width: 84,
+                  height: 84,
+                  decoration: BoxDecoration(
+                    color: c.tintTeal,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    AppIcons.notifications,
+                    size: 40,
+                    color: AppColors.brandBlue,
+                  ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'لا توجد إشعارات',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'ستظهر التحديثات المهمة هنا عند وصولها.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13.5, color: c.muted),
+              ),
+            ],
           );
         }
 
         return RefreshIndicator(
           onRefresh: _load,
           child: ListView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
             itemCount: list.length,
             itemBuilder: (context, i) => _buildTile(list[i] as Map, c),
           ),
@@ -229,53 +263,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Speakable(
       text: '$title: $body',
       onTap: () => _markRead(n['id']),
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 8),
-        color: isRead ? null : c.tintTeal.withValues(alpha: 0.3),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
-          leading: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Icon(icon, size: 24, color: iconColor),
-          ),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-              color: c.heading,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(body, style: TextStyle(color: c.body)),
-              if (date != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    '${date.day}/${date.month}/${date.year} '
-                    '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(fontSize: 11, color: c.muted),
-                  ),
-                ),
-            ],
-          ),
-          trailing: isRead
-              ? null
-              : Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    color: AppColors.brandBlue,
-                    shape: BoxShape.circle,
-                  ),
-                ),
+      child: Material(
+        color: isRead ? c.card : c.tintTeal.withValues(alpha: .35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: BorderSide(color: c.line),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
           onTap: () {
             _markRead(n['id']);
             if (type == 'specialist_suggestion' ||
@@ -289,6 +284,75 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               );
             }
           },
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.13),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(icon, size: 23, color: iconColor),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: isRead
+                                    ? FontWeight.w700
+                                    : FontWeight.w800,
+                                color: c.heading,
+                              ),
+                            ),
+                          ),
+                          if (!isRead)
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: AppColors.brandBlue,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                        ],
+                      ),
+                      if (body.isNotEmpty) ...[
+                        const SizedBox(height: 5),
+                        Text(
+                          body,
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            height: 1.45,
+                            color: c.body,
+                          ),
+                        ),
+                      ],
+                      if (date != null) ...[
+                        const SizedBox(height: 7),
+                        Text(
+                          '${date.day}/${date.month}/${date.year} • '
+                          '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(fontSize: 11, color: c.muted),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
