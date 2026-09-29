@@ -19,17 +19,20 @@ import '../games/visual_words_game.dart';
 import '../games/word_builder_game.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
+import '../services/game_progress_service.dart';
 import '../theme.dart';
 import '../utils/game_catalog.dart';
 
 class EducationalGamesScreen extends StatelessWidget {
   final String childName;
   final int age;
+  final int? childId;
 
   const EducationalGamesScreen({
     super.key,
     required this.childName,
     this.age = 8,
+    this.childId,
   });
 
   @override
@@ -134,8 +137,8 @@ class EducationalGamesScreen extends StatelessWidget {
     );
   }
 
-  void _openGame(
-      BuildContext context, GameInfo game, AccessibilityProfile profile) {
+  Future<void> _openGame(
+      BuildContext context, GameInfo game, AccessibilityProfile profile) async {
     Widget? screen;
 
     switch (game.id) {
@@ -191,10 +194,17 @@ class EducationalGamesScreen extends StatelessWidget {
     }
 
     if (screen != null) {
-      Navigator.push(
+      GameProgressService.instance.begin(
+        childId: childId,
+        gameKey: game.id,
+      );
+      await GameProgressService.instance.flushPending();
+      if (!context.mounted) return;
+      await Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => screen!),
       );
+      GameProgressService.instance.end();
     }
   }
 }
