@@ -123,14 +123,43 @@ class _LessonsScreenState extends State<LessonsScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: TextField(
-              style: const TextStyle(fontSize: 17),
-              decoration: const InputDecoration(
-                hintText: 'ابحث عن درس...',
-                prefixIcon: Icon(AppIcons.search),
-              ),
-              onChanged: (v) => setState(() => _query = v),
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'استكشف المحتوى',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: JisrColors.of(context).heading,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'ابحث عن درس واستمع إليه أو اطلب مساعدة نور.',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    color: JisrColors.of(context).muted,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  style: const TextStyle(fontSize: 16),
+                  decoration: InputDecoration(
+                    hintText: 'ابحث عن درس...',
+                    prefixIcon: const Icon(AppIcons.search),
+                    suffixIcon: _query.isNotEmpty
+                        ? IconButton(
+                            tooltip: 'مسح البحث',
+                            onPressed: () => setState(() => _query = ''),
+                            icon: const Icon(Icons.close_rounded),
+                          )
+                        : null,
+                  ),
+                  onChanged: (v) => setState(() => _query = v),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -190,7 +219,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
       itemCount: lessons.length,
       itemBuilder: (context, i) => _buildLessonCard(lessons[i]),
     );
@@ -203,12 +232,12 @@ class _LessonsScreenState extends State<LessonsScreen> {
 
     return Speakable(
       text: _buildLessonSpeech(lesson),
-      radius: 16,
+      radius: 24,
       onTap: null,
       child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        margin: const EdgeInsets.only(bottom: 14),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -244,58 +273,54 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   style: const TextStyle(fontSize: 15, height: 1.5),
                 ),
               ],
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton.icon(
-                  icon: Icon(
-                    isSpeaking
-                        ? Icons.stop_circle_outlined
-                        : AppIcons.volumeUp,
-                    size: 28,
-                  ),
-                  label: Text(
-                    isSpeaking ? 'إيقاف' : 'استمع',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  onPressed: () => _toggleSpeak(lesson),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                icon: Icon(
+                  isSpeaking
+                      ? Icons.stop_circle_outlined
+                      : AppIcons.volumeUp,
                 ),
+                label: Text(isSpeaking ? 'إيقاف الاستماع' : 'استمع للدرس'),
+                onPressed: () => _toggleSpeak(lesson),
               ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.star_outline, size: 24),
-                  label: const Text('تقييم الدرس'),
-                  onPressed: () {
-                    final lessonId = lesson['id'];
-                    if (lessonId is int) {
-                      showLessonRatingSheet(context, lessonId: lessonId);
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  icon: const Icon(AppIcons.speech, size: 24),
-                  label: const Text('اسأل نور عن الدرس'),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AssistantScreen(
-                        lessonContext: [
-                          'عنوان الدرس: ${lesson['title'] ?? ''}',
-                          if (content.isNotEmpty) 'محتوى الدرس: $content',
-                        ].join('\n'),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.star_outline_rounded),
+                      label: const Text('تقييم'),
+                      onPressed: () {
+                        final lessonId = lesson['id'];
+                        if (lessonId is int) {
+                          showLessonRatingSheet(
+                            context,
+                            lessonId: lessonId,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(AppIcons.speech),
+                      label: const Text('اسأل نور'),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AssistantScreen(
+                            lessonContext: [
+                              'عنوان الدرس: ${lesson['title'] ?? ''}',
+                              if (content.isNotEmpty)
+                                'محتوى الدرس: $content',
+                            ].join('\n'),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
