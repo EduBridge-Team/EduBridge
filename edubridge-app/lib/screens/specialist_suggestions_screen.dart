@@ -73,9 +73,9 @@ class _SpecialistSuggestionsScreenState
             onPressed: () => Navigator.pop(context, false),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
+          FilledButton(
             style:
-                ElevatedButton.styleFrom(backgroundColor: AppColors.green),
+                FilledButton.styleFrom(backgroundColor: AppColors.green),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('قبول'),
           ),
@@ -123,7 +123,7 @@ class _SpecialistSuggestionsScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('رفض متابعة "${s['child_name']}"',
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+                style: const TextStyle(fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
             TextField(
               controller: reasonCtrl,
@@ -140,8 +140,8 @@ class _SpecialistSuggestionsScreenState
             onPressed: () => Navigator.pop(context, false),
             child: const Text('إلغاء'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('رفض'),
           ),
@@ -190,7 +190,7 @@ class _SpecialistSuggestionsScreenState
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: Row(
               children: [
                 _filterChip('معلقة', 'pending', AppColors.orange),
@@ -228,9 +228,9 @@ class _SpecialistSuggestionsScreenState
             color: selected
                 ? color.withValues(alpha: 0.15)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: selected ? color : Colors.grey.shade300,
+              color: selected ? color : JisrColors.of(context).line,
               width: selected ? 2 : 1,
             ),
           ),
@@ -239,8 +239,8 @@ class _SpecialistSuggestionsScreenState
             label,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: selected ? color : Colors.grey.shade600,
+              fontWeight: FontWeight.w800,
+              color: selected ? color : JisrColors.of(context).muted,
             ),
           ),
         ),
