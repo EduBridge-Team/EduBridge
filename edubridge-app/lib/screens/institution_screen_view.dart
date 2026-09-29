@@ -22,28 +22,9 @@ extension _InstitutionScreenView on InstitutionScreen {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 42,
-                          height: 42,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(13),
-                          ),
-                          child: Image.asset('assets/brand_icon.png'),
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'لوحة المؤسسة التعليمية',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 19,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
                         DashboardMenu(
+                          iconSize: 26,
+                          iconColor: Colors.white,
                           actions: [
                             DashboardMenuAction(
                               id: 'theme',
@@ -67,24 +48,58 @@ extension _InstitutionScreenView on InstitutionScreen {
                             ),
                           ],
                         ),
+                        const Spacer(),
+                        ColorFiltered(
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/brand_logo.png',
+                            width: 136,
+                            height: 38,
+                            fit: BoxFit.contain,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
                     FutureBuilder<String?>(
                       future: ApiService.getName(),
-                      builder: (context, snapshot) => Text(
-                        'أهلاً، ${snapshot.data?.isNotEmpty == true ? snapshot.data : 'فريق المؤسسة'}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      builder: (context, snapshot) => Row(
+                        children: [
+                          const ProfileAvatarButton(
+                            size: 54,
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppColors.brandTealDeep,
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'مرحباً، ${snapshot.data?.isNotEmpty == true ? snapshot.data : 'فريق المؤسسة'}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  'أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    color: Colors.white.withValues(alpha: .86),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      'أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.',
-                      style: TextStyle(color: Color(0xFFDDF7FF), fontSize: 15),
                     ),
                   ],
                 ),

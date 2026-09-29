@@ -25,46 +25,9 @@ extension _HomeScreenView on HomeScreen {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            padding: const EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: .08),
-                                  blurRadius: 18,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Image.asset('assets/brand_icon.png'),
-                          ),
-                          const SizedBox(width: 11),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'EduBridge',
-                                style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                'نتعلّم معًا، بطريقتك',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
                           DashboardMenu(
+                            iconSize: 26,
+                            iconColor: Colors.white,
                             actions: [
                               DashboardMenuAction(
                                 id: 'legal',
@@ -82,9 +45,23 @@ extension _HomeScreenView on HomeScreen {
                               ),
                             ],
                           ),
+                          const Spacer(),
+                          ColorFiltered(
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                            child: Image.asset(
+                              'assets/brand_logo.png',
+                              width: 136,
+                              height: 38,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 22),
                       FutureBuilder(
                         future: Future.wait(
                           [ApiService.getName(), ApiService.getRole()],
@@ -92,23 +69,32 @@ extension _HomeScreenView on HomeScreen {
                         builder: (context, snapshot) {
                           final name = snapshot.data?[0];
                           final role = HomeScreen._roleNames[snapshot.data?[1]];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          return Row(
                             children: [
-                              Text(
-                                name != null && name.isNotEmpty
-                                    ? 'أهلاً، $name'
-                                    : 'أهلاً بك في EduBridge',
-                                style: const TextStyle(
-                                  fontSize: 27,
-                                  height: 1.2,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
+                              const ProfileAvatarButton(
+                                size: 54,
+                                backgroundColor: Colors.white,
+                                foregroundColor: AppColors.brandTealDeep,
                               ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      name != null && name.isNotEmpty
+                                          ? 'مرحباً، $name'
+                                          : 'مرحباً بك في EduBridge',
+                                      style: const TextStyle(
+                                        fontSize: 23,
+                                        height: 1.2,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
                                   if (role != null)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -142,7 +128,10 @@ extension _HomeScreenView on HomeScreen {
                                       ),
                                     ),
                                   ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           );

@@ -4,6 +4,7 @@ import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/dashboard_menu.dart';
+import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import 'chats_screen.dart';
 import 'children_screen.dart';

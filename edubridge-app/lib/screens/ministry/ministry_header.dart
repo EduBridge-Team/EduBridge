@@ -32,28 +32,9 @@ class _MinistryHeader extends StatelessWidget {
   Widget _buildTopRow(BuildContext context) {
     return Row(
       children: [
-        Image.asset('assets/brand_icon.png', width: 32, height: 32),
-        const SizedBox(width: 8),
-        const Expanded(
-          child: Text(
-            'EduBridge · وزارة/مؤسسة',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
-          child: Center(
-            child: ProfileAvatarButton(
-              size: 38,
-              backgroundColor: Colors.white,
-            ),
-          ),
-        ),
         DashboardMenu(
+          iconSize: 26,
+          iconColor: Colors.white,
           actions: [
             DashboardMenuAction(
               id: 'support',
@@ -94,6 +75,20 @@ class _MinistryHeader extends StatelessWidget {
             ),
           ],
         ),
+        const Spacer(),
+        ColorFiltered(
+          colorFilter: const ColorFilter.mode(
+            Colors.white,
+            BlendMode.srcIn,
+          ),
+          child: Image.asset(
+            'assets/brand_logo.png',
+            width: 136,
+            height: 38,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
       ],
     );
   }
@@ -103,22 +98,35 @@ class _MinistryHeader extends StatelessWidget {
       future: ApiService.getName(),
       builder: (context, snap) {
         final name = snap.data ?? 'الوزارة';
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return Row(
           children: [
-            Text(
-              'مرحباً $name',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            const ProfileAvatarButton(
+              size: 54,
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.brandTealDeep,
             ),
-            Text(
-              'إدارة شاملة للمؤسسات والموافقات',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.white.withValues(alpha: 0.85),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'مرحباً، $name',
+                    style: const TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'إدارة شاملة للمؤسسات والموافقات',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      color: Colors.white.withValues(alpha: 0.86),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
