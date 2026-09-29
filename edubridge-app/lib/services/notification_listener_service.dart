@@ -1,4 +1,6 @@
 // services/notification_listener_service.dart
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
 import 'websocket_service.dart';
@@ -16,6 +18,8 @@ class NotificationListenerService {
       ValueNotifier<List<dynamic>>([]);
 
   bool _initialized = false;
+  Timer? _pollTimer;
+  int? _latestKnownId;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -24,9 +28,65 @@ class NotificationListenerService {
     try {
       unreadCount.value = await ApiService.getUnreadNotificationsCount();
       notifications.value = await ApiService.getNotifications();
+      _latestKnownId = _newestNotificationId(notifications.value);
     } catch (_) {}
 
     WebSocketService().addListener(_onWebSocketMessage);
+
+    // Production may temporarily run without a WebSocket endpoint.
+    // Keep a lightweight foreground fallback so urgent notifications are
+    // surfaced within seconds instead of waiting for a manual refresh.
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => _pollForNotifications(),
+    );
+  }
+
+  int? _notificationId(dynamic item) {
+    if (item is! Map) return null;
+    final value = item['id'];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  int? _newestNotificationId(List<dynamic> items) {
+    int? latest;
+    for (final item in items) {
+      final id = _notificationId(item);
+      if (id != null && (latest == null || id > latest)) latest = id;
+    }
+    return latest;
+  }
+
+  Future<void> _pollForNotifications() async {
+    if (!_initialized) return;
+
+    try {
+      final fetched = await ApiService.getNotifications();
+      final newest = _newestNotificationId(fetched);
+      final previous = _latestKnownId;
+
+      notifications.value = fetched;
+      unreadCount.value = await ApiService.getUnreadNotificationsCount();
+
+      if (newest != null && previous != null && newest > previous) {
+        final fresh = fetched.where((item) {
+          final id = _notificationId(item);
+          return id != null && id > previous;
+        }).toList();
+
+        if (fresh.isNotEmpty && fresh.first is Map) {
+          latestNotification.value =
+              Map<String, dynamic>.from(fresh.first as Map);
+        }
+      }
+
+      if (newest != null) _latestKnownId = newest;
+    } catch (_) {
+      // Offline/background transition: next polling cycle will retry.
+    }
   }
 
   void _onWebSocketMessage(Map<String, dynamic> data) {
@@ -40,6 +100,10 @@ class NotificationListenerService {
     }
 
     notifications.value = [payload, ...notifications.value];
+    final id = _notificationId(payload);
+    if (id != null && (_latestKnownId == null || id > _latestKnownId!)) {
+      _latestKnownId = id;
+    }
     latestNotification.value = payload;
   }
 
@@ -57,7 +121,10 @@ class NotificationListenerService {
   }
 
   void dispose() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
     WebSocketService().removeListener(_onWebSocketMessage);
+    _latestKnownId = null;
     _initialized = false;
   }
 }
