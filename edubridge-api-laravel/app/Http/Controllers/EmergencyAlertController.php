@@ -68,18 +68,22 @@ class EmergencyAlertController extends Controller
             ->unique()
             ->values();
 
+        $notifiedRecipients = 0;
         foreach ($recipientIds as $userId) {
-            Notify::toUser(
+            if (Notify::toUser(
                 $userId,
                 '🚨 تنبيه طوارئ: ' . $child->name,
                 $message,
                 'emergency'
-            );
+            )) {
+                $notifiedRecipients++;
+            }
         }
 
         return response()->json([
             'alert' => DB::table('emergency_alerts')->find($id),
-            'notified_recipients' => $recipientIds->count(),
+            'notified_recipients' => $notifiedRecipients,
+            'intended_recipients' => $recipientIds->count(),
         ], 201);
     }
 
