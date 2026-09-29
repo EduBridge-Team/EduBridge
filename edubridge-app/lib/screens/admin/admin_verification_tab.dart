@@ -78,25 +78,36 @@ class _VerificationTabState extends State<_VerificationTab> {
 
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_error!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadRequests,
-              child: const Text('إعادة المحاولة'),
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 90),
+          const Icon(AppIcons.error, size: 54, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.red,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
+              onPressed: _loadRequests,
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+            ),
+          ),
+        ],
       );
     }
 
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: Row(
             children: [
               _FilterChip(
@@ -121,21 +132,45 @@ class _VerificationTabState extends State<_VerificationTab> {
         ),
         Expanded(
           child: _filteredRequests.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.inbox_outlined, size: 64, color: c.muted),
-                      const SizedBox(height: 12),
-                      Text(
-                        'لا توجد طلبات معلقة',
-                        style: TextStyle(fontSize: 18, color: c.muted),
+              ? ListView(
+                  padding: const EdgeInsets.all(24),
+                  children: [
+                    const SizedBox(height: 80),
+                    Center(
+                      child: Container(
+                        width: 82,
+                        height: 82,
+                        decoration: BoxDecoration(
+                          color: c.tintTeal,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          AppIcons.shield,
+                          size: 38,
+                          color: AppColors.brandBlue,
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'لا توجد طلبات معلقة',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                        color: c.heading,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'ستظهر هنا طلبات التوثيق التي تحتاج إلى مراجعة.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 13.5, color: c.muted),
+                    ),
+                  ],
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
                   itemCount: _filteredRequests.length,
                   itemBuilder: (context, i) {
                     final request = _filteredRequests[i];
@@ -171,7 +206,7 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? AppColors.brandBlue : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected ? AppColors.brandBlue : Colors.grey.shade300,
           ),
@@ -180,7 +215,7 @@ class _FilterChip extends StatelessWidget {
           label,
           style: TextStyle(
             color: selected ? Colors.white : Colors.grey.shade700,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),
@@ -225,17 +260,26 @@ class _VerificationRequestCard extends StatelessWidget {
       }
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: c.tintTeal,
-              child: Icon(getIcon(), color: AppColors.brandBlue),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: c.line),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              borderRadius: BorderRadius.circular(16),
             ),
+            alignment: Alignment.center,
+            child: Icon(getIcon(), color: AppColors.brandBlue),
+          ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -244,7 +288,7 @@ class _VerificationRequestCard extends StatelessWidget {
                   Text(name,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: c.heading,
                       )),
                   Text(email, style: TextStyle(fontSize: 14, color: c.muted)),
@@ -260,7 +304,7 @@ class _VerificationRequestCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: c.onTint,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -272,32 +316,40 @@ class _VerificationRequestCard extends StatelessWidget {
                 ],
               ),
             ),
-            Column(
-              children: [
-                ElevatedButton(
+          const SizedBox(width: 10),
+          Column(
+            children: [
+              SizedBox(
+                width: 92,
+                child: FilledButton(
                   onPressed: onApprove,
-                  style: ElevatedButton.styleFrom(
+                  style: FilledButton.styleFrom(
                     backgroundColor: AppColors.green,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(80, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    minimumSize: const Size.fromHeight(40),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
                   child: const Text('اعتماد'),
                 ),
-                const SizedBox(height: 6),
-                OutlinedButton(
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: 92,
+                child: OutlinedButton(
                   onPressed: onReject,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.red,
-                    minimumSize: const Size(80, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    minimumSize: const Size.fromHeight(40),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    side: BorderSide(
+                      color: AppColors.red.withValues(alpha: .45),
+                    ),
                   ),
                   child: const Text('رفض'),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
