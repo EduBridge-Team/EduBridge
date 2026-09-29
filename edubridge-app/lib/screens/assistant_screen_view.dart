@@ -22,11 +22,16 @@ extension _AssistantScreenStateView on _AssistantScreenState {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-              color: c.tintYellow,
+              margin: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: c.tintYellow,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: c.line),
+              ),
               child: Row(
                 children: [
-                  const PetAvatar(size: 58),
+                  const PetAvatar(size: 54),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -35,7 +40,8 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                           : 'رفيق تعليمي ذكي — لا تشارك معلومات شخصية.',
                       style: TextStyle(
                         color: c.onTint,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
+                        height: 1.45,
                       ),
                     ),
                   ),
@@ -82,15 +88,17 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                 ),
               ),
             Container(
+              margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
               padding: EdgeInsets.fromLTRB(
-                12,
-                8,
-                12,
-                8 + MediaQuery.of(context).padding.bottom,
+                10,
+                10,
+                10,
+                10 + MediaQuery.of(context).padding.bottom,
               ),
               decoration: BoxDecoration(
                 color: c.card,
-                border: Border(top: BorderSide(color: c.line)),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: c.line),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -116,7 +124,7 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                     icon: const Icon(AppIcons.send),
                     style: IconButton.styleFrom(
                       minimumSize: const Size(52, 52),
-                      backgroundColor: AppColors.orange,
+                      backgroundColor: AppColors.brandBlue,
                       foregroundColor: Colors.white,
                     ),
                   ),
