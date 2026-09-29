@@ -467,3 +467,81 @@ body.role-portal-admin .pp-content .admin-panel {
   min-height: 0 !important;
 }
 
+
+
+/* ===== Children and details visual unification ===== */
+.parent-children-page .pc-heading,
+.parent-children-page .pc-tools,
+.parent-children-page .pc-stat,
+.parent-children-page .pc-child-card,
+.child-details-page .child-info-card,
+.child-details-page .child-evaluation-card {
+  border-radius: var(--r-lg);
+}
+
+.parent-children-page .pc-heading {
+  box-shadow: var(--shadow-soft);
+}
+
+.parent-children-page .pc-add-button,
+.parent-children-page .pc-child-actions .primary {
+  background: var(--brand-blue);
+}
+
+.parent-children-page .pc-add-button:hover,
+.parent-children-page .pc-child-actions .primary:hover {
+  background: var(--brand-blue-deep);
+}
+
+.parent-children-page .pc-child-card {
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.parent-children-page .pc-child-card:hover {
+  transform: translateY(-2px);
+  border-color: #bdddeb;
+  box-shadow: 0 12px 28px rgba(23,105,194,.08);
+}
+
+.child-details-page {
+  display: grid;
+  gap: 14px;
+}
+
+.child-details-heading {
+  border-radius: var(--r-lg) !important;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.12), transparent 12rem),
+    var(--surface) !important;
+}
+
+.child-info-card,
+.child-evaluation-card {
+  padding: 20px;
+}
+
+.child-info-card h3,
+.child-evaluation-card strong {
+  color: var(--brand-blue-deep);
+}
+
+.child-details-actions {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.child-details-actions .btn:first-child {
+  background: var(--brand-blue);
+}
+
+:root[data-theme="dark"] .child-details-heading,
+:root[data-theme="dark"] .child-info-card,
+:root[data-theme="dark"] .child-evaluation-card,
+:root[data-theme="dark"] .child-details-actions {
+  border-color: var(--line);
+  background: #0d2947 !important;
+  color: #eef8ff;
+}
