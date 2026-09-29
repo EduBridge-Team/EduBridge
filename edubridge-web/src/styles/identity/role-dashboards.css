@@ -431,3 +431,93 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ===== Institution + Ministry final portal alignment ===== */
+.institution-dashboard-v2 {
+  padding-top: 0;
+}
+
+.institution-dashboard-v2 .role-hero,
+.ministry-hero {
+  border-radius: var(--r-xl);
+}
+
+.ministry-dashboard-v2 {
+  padding-top: 0;
+}
+
+.ministry-hero {
+  margin-bottom: 18px;
+  padding: 28px 30px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #eef9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.ministry-hero h1 {
+  margin: 5px 0 6px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+}
+
+.ministry-hero p {
+  margin: 0;
+  max-width: 760px;
+  color: var(--muted);
+}
+
+.ministry-main-tabs,
+.ministry-status-tabs {
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.ministry-main-tabs .tab,
+.ministry-status-tabs .tab {
+  min-height: 40px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.ministry-main-tabs .tab.on,
+.ministry-status-tabs .tab.on {
+  background: var(--brand-blue);
+  color: #fff;
+}
+
+.ministry-dashboard-v2 > .card,
+.ministry-dashboard-v2 .stats-grid > .card {
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .ministry-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+@media (max-width: 620px) {
+  .ministry-hero {
+    padding: 22px;
+  }
+
+  .ministry-main-tabs,
+  .ministry-status-tabs {
+    overflow-x: auto;
+  }
+
+  .ministry-main-tabs .tab,
+  .ministry-status-tabs .tab {
+    flex: 0 0 auto;
+  }
+}
