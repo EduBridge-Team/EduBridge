@@ -16,7 +16,7 @@ export function CaseDiscussionCreateForm({
   }
 
   return (
-    <section className="fp-card">
+    <section className="fp-card fp-form-card case-create-card">
       <h3>دراسة جديدة</h3>
       <form className="fp-form" onSubmit={onSubmit}>
         <select
@@ -56,7 +56,7 @@ export function CaseDiscussionCreateForm({
         </div>
 
         <button
-          className="btn success"
+          className="btn"
           disabled={busy || draft.participant_ids.length === 0}
         >
           إنشاء الدراسة
@@ -75,7 +75,7 @@ export function CaseDiscussionList({ items, onOpen }) {
         items.map((discussion) => (
           <button
             key={discussion.id}
-            className="fp-card"
+            className="fp-card case-list-card"
             style={{ textAlign: 'right', cursor: 'pointer' }}
             onClick={() => onOpen(discussion.id)}
           >
@@ -104,7 +104,7 @@ export function CaseDiscussionDetail({
 }) {
   if (!selected) {
     return (
-      <section className="fp-card">
+      <section className="fp-card case-detail-card">
         <div className="fp-empty">اختر دراسة لعرض النقاش</div>
       </section>
     )
@@ -158,7 +158,7 @@ export function CaseDiscussionDetail({
             <button className="btn" disabled={busy}>إرسال</button>
             <button
               type="button"
-              className="btn success"
+              className="btn"
               onClick={onResolve}
               disabled={busy}
             >

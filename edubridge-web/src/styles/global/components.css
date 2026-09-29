@@ -155,18 +155,18 @@ textarea::placeholder {
     min-height: 46px;
     font-size: 15.5px;
     font-weight: 700;
-    font-family: "Baloo Bhaijaan 2", "Tajawal", cursive;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
     padding: 0 22px;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--r-sm);
     cursor: pointer;
-    background: var(--coral);
+    background: var(--brand-blue);
     color: #fff;
     transition: background 0.15s, transform 0.12s;
 }
 
 .btn:hover {
-    background: var(--coral-deep);
+    background: var(--brand-blue-deep);
     transform: translateY(-1px);
 }
 

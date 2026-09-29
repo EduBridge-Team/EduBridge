@@ -134,14 +134,15 @@ export default function CaseDiscussionsPage() {
   }
 
   return (
-    <div className="fp-page">
-      <div className="fp-head">
+    <div className="fp-page case-discussions-page-v2">
+      <section className="fp-hero case-discussions-hero">
         <div>
-          <h2>📋 دراسات الحالة</h2>
-          <div className="meta">نقاش تعاوني بين المعلمين والمختصين</div>
+          <span className="fp-eyebrow">التعاون المهني</span>
+          <h1>دراسات الحالة</h1>
+          <p>ناقش حالة الطفل مع المعلمين والمختصين ووثّق القرارات والملاحظات.</p>
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
-      </div>
+      </section>
 
       {error && <div className="fp-error">{error}</div>}
 

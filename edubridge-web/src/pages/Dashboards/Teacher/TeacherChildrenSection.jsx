@@ -2,11 +2,13 @@ import { Users } from 'lucide-react'
 
 export default function TeacherChildrenSection({ children, onOpenChild }) {
   return (
-    <aside className="teacher-children-column">
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Users size={20} /> جميع الأطفال
-        </h2>
+    <aside className="teacher-children-column teacher-panel">
+      <div className="teacher-panel-head">
+        <span><Users size={20} /></span>
+        <div>
+          <h2>الأطفال المتابعون</h2>
+          <p>افتح ملف الطفل لمتابعة الدروس والتقدّم.</p>
+        </div>
       </div>
 
       {children.length === 0 ? (
@@ -15,7 +17,7 @@ export default function TeacherChildrenSection({ children, onOpenChild }) {
         children.map((child) => (
           <div
             key={child.id}
-            className="card clickable"
+            className="card clickable teacher-child-card"
             onClick={() => onOpenChild(child)}
           >
             <div className="card-row">

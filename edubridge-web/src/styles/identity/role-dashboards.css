@@ -250,3 +250,274 @@
 }
 
 
+
+
+/* ===== Teacher dashboard v2 ===== */
+.teacher-dashboard-v2 {
+  padding-top: 0;
+}
+
+.teacher-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  margin-bottom: 20px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #edf9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.teacher-hero-copy {
+  max-width: 660px;
+}
+
+.teacher-hero h1 {
+  margin: 5px 0 6px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+}
+
+.teacher-hero p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.teacher-hero-actions {
+  margin-top: 18px;
+}
+
+.teacher-hero-actions .btn {
+  background: var(--brand-blue);
+}
+
+.teacher-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(118px, 1fr));
+  gap: 12px;
+}
+
+.teacher-overview article {
+  min-width: 128px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(8px);
+}
+
+.teacher-overview article > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--brand-blue);
+  background: var(--tint-teal);
+}
+
+.teacher-overview strong {
+  margin-top: 4px;
+  color: var(--brand-blue-deep);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.teacher-overview small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.teacher-dashboard-grid {
+  align-items: start;
+  gap: 18px;
+}
+
+.teacher-panel {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.teacher-panel-head {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.teacher-panel-head > span {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--brand-blue);
+  background: var(--tint-teal);
+}
+
+.teacher-panel-head h2 {
+  margin: 0;
+  color: var(--brand-blue-deep);
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.teacher-panel-head p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.teacher-search-input {
+  margin-bottom: 16px;
+  min-height: 44px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.teacher-lesson-card,
+.teacher-child-card {
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.teacher-lesson-card:hover,
+.teacher-child-card:hover {
+  border-color: #bdddeb;
+  box-shadow: 0 10px 24px rgba(23,105,194,.07);
+}
+
+:root[data-theme="dark"] .teacher-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+:root[data-theme="dark"] .teacher-overview article,
+:root[data-theme="dark"] .teacher-panel {
+  background: #0d2947;
+}
+
+@media (max-width: 820px) {
+  .teacher-hero {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .teacher-overview {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .teacher-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ===== Institution + Ministry final portal alignment ===== */
+.institution-dashboard-v2 {
+  padding-top: 0;
+}
+
+.institution-dashboard-v2 .role-hero,
+.ministry-hero {
+  border-radius: var(--r-xl);
+}
+
+.ministry-dashboard-v2 {
+  padding-top: 0;
+}
+
+.ministry-hero {
+  margin-bottom: 18px;
+  padding: 28px 30px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #eef9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.ministry-hero h1 {
+  margin: 5px 0 6px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+}
+
+.ministry-hero p {
+  margin: 0;
+  max-width: 760px;
+  color: var(--muted);
+}
+
+.ministry-main-tabs,
+.ministry-status-tabs {
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.ministry-main-tabs .tab,
+.ministry-status-tabs .tab {
+  min-height: 40px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.ministry-main-tabs .tab.on,
+.ministry-status-tabs .tab.on {
+  background: var(--brand-blue);
+  color: #fff;
+}
+
+.ministry-dashboard-v2 > .card,
+.ministry-dashboard-v2 .stats-grid > .card {
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .ministry-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33, 191, 208, .10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+@media (max-width: 620px) {
+  .ministry-hero {
+    padding: 22px;
+  }
+
+  .ministry-main-tabs,
+  .ministry-status-tabs {
+    overflow-x: auto;
+  }
+
+  .ministry-main-tabs .tab,
+  .ministry-status-tabs .tab {
+    flex: 0 0 auto;
+  }
+}

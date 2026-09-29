@@ -39,7 +39,7 @@ function formatDate(value) {
 
 export function ChildDetailsHeader({ name, onBack }) {
   return (
-    <div className="page-title">
+    <div className="page-title child-details-heading">
       <button className="back-btn" onClick={onBack} title="رجوع">
         <ArrowRight size={18} />
       </button>
@@ -50,7 +50,7 @@ export function ChildDetailsHeader({ name, onBack }) {
 
 export function ChildInfoCard({ child }) {
   return (
-    <div className="card">
+    <div className="card child-info-card">
       <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <User size={17} /> معلومات الطفل
       </h3>
@@ -82,7 +82,7 @@ export function ChildEvaluationsSection({ evaluations }) {
         return (
           <div
             key={evaluation.id ?? `${evaluation.evaluation_type}-${evaluation.created_at}`}
-            className="card"
+            className="card child-evaluation-card"
           >
             <div className="card-row" style={{ justifyContent: 'space-between' }}>
               <strong>{evaluation.evaluation_type || 'تقييم'}</strong>
@@ -105,7 +105,7 @@ export function ChildEvaluationsSection({ evaluations }) {
 
 export function ChildDetailsActions({ childId, name, navigate }) {
   return (
-    <div className="child-actions">
+    <div className="child-actions child-details-actions">
       <button
         className="btn"
         onClick={() => navigate(`/children/${childId}/lessons`, { state: { childName: name } })}

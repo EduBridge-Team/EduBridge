@@ -155,3 +155,57 @@
     transition: none;
   }
 }
+
+
+/* Parent dashboard now lives inside RolePortalLayout. */
+.parent-dashboard-v2 .pd-sidebar,
+.parent-dashboard-v2 .pd-mobile-nav,
+.parent-dashboard-v2 .pd-toolbar {
+  display: none !important;
+}
+
+.parent-dashboard-v2 .pd-content {
+  width: 100%;
+  padding: 0 0 28px;
+}
+
+.pd-hero-search {
+  width: min(520px, 100%);
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(174, 214, 236, .85);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .82);
+  color: var(--pd-blue);
+  backdrop-filter: blur(8px);
+}
+
+.pd-hero-search input {
+  min-height: 42px;
+  padding: 0;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent;
+  color: var(--pd-ink);
+  font: inherit;
+}
+
+:root[data-theme="dark"] .pd-hero-search {
+  border-color: #2b5778;
+  background: rgba(13, 41, 71, .82);
+}
+
+@media (max-width: 720px) {
+  .parent-dashboard-v2 {
+    border-radius: 22px;
+  }
+
+  .pd-hero-search {
+    width: 100%;
+  }
+}

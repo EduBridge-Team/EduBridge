@@ -15,60 +15,6 @@ export function useParentDashboardPageClass() {
   }, [])
 }
 
-export function useDashboardSidebarSync({ loading, childrenCount, summaries }) {
-  useEffect(() => {
-    const dashboard = document.querySelector('.parent-dashboard-v2')
-    const sidebar = dashboard?.querySelector('.pd-sidebar')
-    const progress = dashboard?.querySelector('.pd-progress-section')
-    const main = dashboard?.querySelector('.pd-main')
-
-    if (!dashboard || !sidebar || !progress) return undefined
-
-    let resizeFrame = 0
-
-    const syncSidebarWithProgress = () => {
-      cancelAnimationFrame(resizeFrame)
-      resizeFrame = requestAnimationFrame(() => {
-        if (window.innerWidth <= 900) {
-          sidebar.style.removeProperty('--pd-sidebar-target-height')
-          sidebar.style.removeProperty('--pd-noor-top')
-          sidebar.style.removeProperty('--pd-noor-height')
-          return
-        }
-
-        const dashboardRect = dashboard.getBoundingClientRect()
-        const sidebarRect = sidebar.getBoundingClientRect()
-        const progressRect = progress.getBoundingClientRect()
-
-        sidebar.style.setProperty('--pd-sidebar-target-height', `${Math.max(0, Math.ceil(progressRect.bottom - dashboardRect.top))}px`)
-        sidebar.style.setProperty('--pd-noor-top', `${Math.max(0, Math.round(progressRect.top - sidebarRect.top))}px`)
-        sidebar.style.setProperty('--pd-noor-height', `${Math.max(0, Math.round(progressRect.height))}px`)
-      })
-    }
-
-    syncSidebarWithProgress()
-    window.addEventListener('resize', syncSidebarWithProgress)
-
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(syncSidebarWithProgress)
-      : null
-
-    if (resizeObserver) {
-      resizeObserver.observe(progress)
-      if (main) resizeObserver.observe(main)
-    }
-
-    return () => {
-      cancelAnimationFrame(resizeFrame)
-      window.removeEventListener('resize', syncSidebarWithProgress)
-      resizeObserver?.disconnect()
-      sidebar.style.removeProperty('--pd-sidebar-target-height')
-      sidebar.style.removeProperty('--pd-noor-top')
-      sidebar.style.removeProperty('--pd-noor-height')
-    }
-  }, [loading, childrenCount, summaries])
-}
-
 export function useSharedSidebarSync({ loading, childrenCount, summaries }) {
   useEffect(() => {
     const dashboard = document.querySelector('.parent-dashboard-v2')
