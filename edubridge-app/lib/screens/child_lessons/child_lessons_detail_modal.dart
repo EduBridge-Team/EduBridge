@@ -143,6 +143,18 @@ Widget _buildLessonDetailModal({
 
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveButton(
+              label: 'تقييم الدرس',
+              icon: Icons.star_outline,
+              style: AdaptiveButtonStyle.outlined,
+              onPressed: () {
+                final lessonId = lesson['id'];
+                if (lessonId is int) {
+                  showLessonRatingSheet(context, lessonId: lessonId);
+                }
+              },
+            ),
+            SizedBox(height: AdaptiveHelper.spacing / 2),
+            AdaptiveButton(
               label: 'اسأل نور',
               icon: AppIcons.speech,
               style: AdaptiveButtonStyle.outlined,
