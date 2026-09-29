@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, Settings } from 'lucide-react'
-import { fetchChildDetails, fetchChildEngagement } from '../../api'
+import { fetchChildAccessibilityProfile, fetchChildDetails, fetchChildEngagement } from '../../api'
 import { applyAccessibilityProfile, getAccessibilityProfile, typeFromText } from '../../accessibility'
 import EducationalGamePlayer from './EducationalGamePlayer'
 import { ageGroup, ageLabel, GAMES } from './educationalGamesData'
@@ -18,9 +18,14 @@ export default function EducationalGamesPage() {
   const breakTimer = useRef(null)
 
   useEffect(() => {
-    fetchChildDetails(childId).then((data) => {
+    Promise.all([
+      fetchChildDetails(childId),
+      fetchChildAccessibilityProfile(childId).catch(() => ({ profile: null })),
+    ]).then(([data, profileData]) => {
       const currentChild = data.child || data
-      const currentProfile = getAccessibilityProfile(childId, currentChild.disability_type)
+      const currentProfile = profileData?.profile
+        ? { ...getAccessibilityProfile(childId, currentChild.disability_type), ...profileData.profile }
+        : getAccessibilityProfile(childId, currentChild.disability_type)
       setChild(currentChild)
       setProfile(currentProfile)
       applyAccessibilityProfile(currentProfile)
