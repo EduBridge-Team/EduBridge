@@ -21,28 +21,28 @@ Widget _buildHeader({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ═══ الصف العلوي: أفاتار + الشعار + القائمة ═══
+            // الصف العلوي موحّد: القائمة يميناً والشعار الأبيض يساراً.
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const ProfileAvatarButton(size: 42),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset('assets/brand_icon.png',
-                        width: 40, height: 40),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'EduBridge',
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                DashboardMenu(
+                  actions: menuActions,
+                  iconSize: 26,
+                  iconColor: Colors.white,
                 ),
-                DashboardMenu(actions: menuActions),
+                const Spacer(),
+                ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
+                  child: Image.asset(
+                    'assets/brand_logo.png',
+                    width: 136,
+                    height: 38,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -52,23 +52,35 @@ Widget _buildHeader({
               future: ApiService.getName(),
               builder: (context, snap) {
                 final name = snap.data ?? 'المختص';
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                return Row(
                   children: [
-                    Text(
-                      'مرحباً $name',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
+                    const ProfileAvatarButton(
+                      size: 54,
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.brandTealDeep,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _subtitleFor(tabIndex, specialty),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        color: Colors.white.withValues(alpha: 0.85),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'مرحباً، $name',
+                            style: const TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            _subtitleFor(tabIndex, specialty),
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              color: Colors.white.withValues(alpha: 0.86),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
