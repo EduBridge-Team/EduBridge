@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
@@ -148,6 +149,8 @@ class _QuickActionGameState extends State<QuickActionGame> {
       message = 'بداية جميلة! $_score حركة';
       emoji = '💪';
     }
+
+    await GameProgressService.instance.record((_score * 5).clamp(0, 100).toInt());
 
     await VisualCelebration.show(
       context,

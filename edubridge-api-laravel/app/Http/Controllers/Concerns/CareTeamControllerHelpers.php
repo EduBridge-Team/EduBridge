@@ -76,6 +76,7 @@ trait CareTeamControllerHelpers
                 'u.id as user_id',
                 'u.name',
                 'u.email',
+                'u.phone',
                 DB::raw("'specialist' as role"),
                 'cs.specialty',
                 'cs.assigned_at'

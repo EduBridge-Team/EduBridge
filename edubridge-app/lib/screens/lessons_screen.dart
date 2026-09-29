@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
+import '../widgets/lesson_rating_sheet.dart';
 import 'assistant_screen.dart';
 
 class LessonsScreen extends StatefulWidget {
@@ -259,6 +260,21 @@ class _LessonsScreenState extends State<LessonsScreen> {
                     style: const TextStyle(fontSize: 18),
                   ),
                   onPressed: () => _toggleSpeak(lesson),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.star_outline, size: 24),
+                  label: const Text('تقييم الدرس'),
+                  onPressed: () {
+                    final lessonId = lesson['id'];
+                    if (lessonId is int) {
+                      showLessonRatingSheet(context, lessonId: lessonId);
+                    }
+                  },
                 ),
               ),
               const SizedBox(height: 8),

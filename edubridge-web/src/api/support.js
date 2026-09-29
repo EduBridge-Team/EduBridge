@@ -195,3 +195,26 @@ export function fetchParentLessons() {
   return request('/lessons?target_type=parents');
 }
 
+
+
+// ===== تقييم الخطة التعليمية =====
+export function evaluateEducationalPlan(planId, payload) {
+  return request(`/plans/${planId}/evaluate`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function saveSpecialistWeeklyReport(payload) {
+  return request('/reports/weekly/specialist', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function recommendLearningSupport(payload) {
+  return request('/learning-support/recommendations', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

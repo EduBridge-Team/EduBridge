@@ -13,6 +13,8 @@ export const DISABILITY_TYPES = [
   ['mildIntellectual', '🌱', 'إعاقة ذهنية بسيطة'],
   ['colorBlindness', '🌈', 'عمى الألوان'],
   ['epilepsy', '🕊️', 'الصرع'],
+  ['motorDisability', '🦽', 'إعاقة حركية'],
+  ['multipleDisabilities', '♿', 'إعاقات متعددة'],
   ['other', '✏️', 'أخرى'],
 ]
 
@@ -24,7 +26,10 @@ export const defaultProfile = {
   visualAlertsEnabled: false, slowSpeech: false, rhythmReading: false,
   stepByStepLessons: false, realLifeLinking: false, colorSymbols: false,
   colorPatterns: false, noFlashing: false, calmColors: false, noTimers: false,
-  speechExercises: false,
+  speechExercises: false, emergencyButton: false, rewardSystem: false,
+  verySimpleLanguage: false, shortSentences: false, voiceControl: false,
+  noTimedInteractions: false,
+  screenReaderOptimized: false, videoCaptions: false, signLanguageTranslation: false,
 }
 const recommended = {
   adhd: { brainBreaksEnabled: true, brainBreakIntervalMinutes: 12, visualTimerEnabled: true, reducedAnimations: true },
@@ -37,7 +42,9 @@ const recommended = {
   speechDisorders: { speechExercises: true, slowSpeech: true, noTimers: true, autoReadOnTap: true },
   mildIntellectual: { stepByStepLessons: true, realLifeLinking: true, extraLargeTouchTargets: true, autoReadOnTap: true, slowSpeech: true, noTimers: true, reducedAnimations: true },
   colorBlindness: { colorSymbols: true, colorPatterns: true },
-  epilepsy: { noFlashing: true, calmColors: true, reducedAnimations: true, sensoryCalmMode: true, noTimers: true },
+  epilepsy: { noFlashing: true, calmColors: true, reducedAnimations: true, sensoryCalmMode: true, noTimers: true, emergencyButton: true },
+  motorDisability: { extraLargeTouchTargets: true, voiceControl: true, noTimedInteractions: true },
+  multipleDisabilities: { reducedAnimations: true, extraLargeTouchTargets: true, autoReadOnTap: true, rewardSystem: true },
   other: { reducedAnimations: true, extraLargeTouchTargets: true, autoReadOnTap: true },
 }
 
@@ -53,6 +60,8 @@ export function typeFromText(value = '') {
   if (s.includes('ذهنية') || s.includes('عقلية') || s.includes('intellect')) return 'mildIntellectual'
   if (s.includes('عمى الألوان') || s.includes('عمى ألوان') || s.includes('color blind')) return 'colorBlindness'
   if (s.includes('صرع') || s.includes('epilep')) return 'epilepsy'
+  if (s.includes('حرك') || s.includes('شلل') || s.includes('motor')) return 'motorDisability'
+  if (s.includes('متعدد') || s.includes('multiple')) return 'multipleDisabilities'
   return value ? 'other' : 'none'
 }
 

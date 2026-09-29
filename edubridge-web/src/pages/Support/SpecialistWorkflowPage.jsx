@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   acceptSpecialistSuggestion,
   createSpecialistSuggestion,
+  evaluateEducationalPlan,
   fetchChildren,
   fetchMyProfile,
   fetchSpecialistSuggestions,
@@ -11,6 +12,7 @@ import {
   setMySpecialty,
 } from '../../api'
 import {
+  PlanEvaluationSection,
   SpecialistProfileCard,
   SpecialistSuggestionForm,
   SpecialistSuggestionList,
@@ -38,6 +40,12 @@ export default function SpecialistWorkflowPage() {
   })
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [planDraft, setPlanDraft] = useState({
+    child_id: '',
+    is_plan_appropriate: true,
+    notes_for_teacher: '',
+    recommended_changes: '',
+  })
 
   const load = useCallback(async () => {
     try {
@@ -74,6 +82,19 @@ export default function SpecialistWorkflowPage() {
           current.child_id
             ? current
             : { ...current, child_id: String(childList[0].id) }
+        ))
+      }
+
+      const evaluable = childList.find((child) => {
+        if (!child.current_plan_id) return false
+        if (role === 'admin') return true
+        return (child.assigned_specialist_ids || []).map(Number).includes(Number(me?.id))
+      })
+      if (evaluable) {
+        setPlanDraft((current) => (
+          current.child_id
+            ? current
+            : { ...current, child_id: String(evaluable.id) }
         ))
       }
 
@@ -136,6 +157,38 @@ export default function SpecialistWorkflowPage() {
     }
   }
 
+  const evaluatePlan = async (event) => {
+    event.preventDefault()
+    const child = children.find((item) => String(item.id) === String(planDraft.child_id))
+    if (!child?.current_plan_id) {
+      setError('لا توجد خطة معتمدة لهذا الطفل')
+      return
+    }
+
+    setBusy(true)
+    try {
+      await evaluateEducationalPlan(child.current_plan_id, {
+        child_id: Number(child.id),
+        is_plan_appropriate: Boolean(planDraft.is_plan_appropriate),
+        notes_for_teacher: planDraft.notes_for_teacher.trim() || null,
+        recommended_changes: planDraft.recommended_changes
+          .split('\n')
+          .map((item) => item.trim())
+          .filter(Boolean),
+      })
+      setPlanDraft((current) => ({
+        ...current,
+        notes_for_teacher: '',
+        recommended_changes: '',
+      }))
+      setError('')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const reject = async (id) => {
     const reason = window.prompt('سبب الرفض (اختياري)') || ''
     setBusy(true)
@@ -166,6 +219,20 @@ export default function SpecialistWorkflowPage() {
           specialty={specialty}
           onSave={saveSpecialty}
           onSpecialtyChange={setSpecialty}
+        />
+      )}
+
+      {['specialist', 'admin'].includes(role) && (
+        <PlanEvaluationSection
+          busy={busy}
+          children={children.filter((child) => {
+            if (!child.current_plan_id) return false
+            if (role === 'admin') return true
+            return (child.assigned_specialist_ids || []).map(Number).includes(Number(me?.id))
+          })}
+          draft={planDraft}
+          onChange={setPlanDraft}
+          onSubmit={evaluatePlan}
         />
       )}
 

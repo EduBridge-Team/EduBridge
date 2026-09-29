@@ -51,6 +51,39 @@ trait ChildControllerHelpers
         return $child;
     }
     
+    private function attachCurrentPlan($child)
+    {
+        if (!$child) {
+            return $child;
+        }
+
+        try {
+            $plan = DB::table('ministry_approvals')
+                ->where('child_id', $child->id)
+                ->where('status', 'approved')
+                ->orderByDesc('reviewed_at')
+                ->orderByDesc('created_at')
+                ->first();
+
+            $child->current_plan_id = $plan ? (int) $plan->id : null;
+            $child->current_plan = $plan ? [
+                'id' => (int) $plan->id,
+                'educational_plan' => $plan->educational_plan ?? null,
+                'teaching_methods' => is_string($plan->teaching_methods ?? null)
+                    ? (json_decode($plan->teaching_methods, true) ?: [])
+                    : ($plan->teaching_methods ?? []),
+                'status' => $plan->status,
+                'reviewed_at' => $plan->reviewed_at,
+            ] : null;
+        } catch (\Throwable $e) {
+            report($e);
+            $child->current_plan_id = null;
+            $child->current_plan = null;
+        }
+
+        return $child;
+    }
+
     private function attachSpecialists($child)
     {
         if (!$child) {
