@@ -52,35 +52,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+
     return Scaffold(
       appBar: const JisrAppBar(title: 'استعادة كلمة المرور'),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(22, 28, 22, 32),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: c.card,
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: c.line),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.brandBlue.withValues(alpha: .06),
-                    blurRadius: 28,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
-              ),
-              child:
+            padding: const EdgeInsets.fromLTRB(22, 28, 22, 32),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: c.card,
+                  borderRadius: BorderRadius.circular(26),
+                  border: Border.all(color: c.line),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandBlue.withValues(alpha: .06),
+                      blurRadius: 28,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(Icons.lock_reset_rounded,
-                        size: 58, color: AppColors.brandBlue),
+                    const Icon(
+                      Icons.lock_reset_rounded,
+                      size: 58,
+                      color: AppColors.brandBlue,
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'نسيت كلمة المرور؟',
@@ -95,16 +98,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       'أدخل بريدك وسنرسل رابط استعادة صالحاً لمدة 60 دقيقة.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: c.muted),
+                      style: TextStyle(color: c.muted, height: 1.5),
                     ),
                     const SizedBox(height: 22),
                     TextField(
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.email],
+                      onSubmitted: (_) {
+                        if (!_loading) _send();
+                      },
                       decoration: const InputDecoration(
                         labelText: 'البريد الإلكتروني',
-                        prefixIcon: Icon(Icons.mail_outline),
+                        prefixIcon: Icon(Icons.mail_outline_rounded),
                       ),
                     ),
                     if (_error != null) ...[
@@ -118,8 +125,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.error_outline_rounded,
-                                color: AppColors.red, size: 20),
+                            const Icon(
+                              Icons.error_outline_rounded,
+                              color: AppColors.red,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -146,8 +156,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.mark_email_read_outlined,
-                                color: AppColors.green, size: 20),
+                            const Icon(
+                              Icons.mark_email_read_outlined,
+                              color: AppColors.green,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -171,12 +184,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               width: 18,
                               height: 18,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : const Icon(Icons.forward_to_inbox_outlined),
-                      label: Text(_loading
-                          ? 'جارِ الإرسال...'
-                          : 'إرسال رابط الاستعادة'),
+                      label: Text(
+                        _loading ? 'جارِ الإرسال...' : 'إرسال رابط الاستعادة',
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextButton.icon(
@@ -189,10 +204,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                         ),
                       ),
-                      child: const Text('لدي رابط استعادة'),
+                      label: const Text('لدي رابط استعادة'),
                     ),
                   ],
                 ),
+              ),
             ),
           ),
         ),
