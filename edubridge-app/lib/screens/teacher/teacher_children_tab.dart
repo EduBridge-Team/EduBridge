@@ -118,26 +118,20 @@ class _TeacherChildCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 38),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                icon: const Icon(AppIcons.verified, size: 16),
-                label: const Text('الخطة'),
-                onPressed: () => _openApprovedPlan(context, child),
+              child: _compactAction(
+                icon: AppIcons.verified,
+                label: 'الخطة',
+                color: AppColors.brandBlue,
+                onTap: () => _openApprovedPlan(context, child),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             Expanded(
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 38),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                icon: const Icon(AppIcons.progress, size: 16),
-                label: const Text('التقدّم'),
-                onPressed: () => Navigator.push(
+              child: _compactAction(
+                icon: AppIcons.progress,
+                label: 'التقدّم',
+                color: AppColors.brandTealDeep,
+                onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChildProgressScreen(
@@ -148,46 +142,13 @@ class _TeacherChildCard extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
+            const SizedBox(width: 8),
             Expanded(
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(0, 38),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  backgroundColor: AppColors.brandTeal,
-                  foregroundColor: Colors.white,
-                ),
-                icon: const Icon(AppIcons.edit, size: 16),
-                label: const Text('اكتب تقرير'),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateWeeklyReportScreen(
-                        childId: child['id'],
-                        childName: (child['name'] ?? '').toString(),
-                      ),
-                    ),
-                  );
-                  onReload();
-                },
-              ),
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 38),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  foregroundColor: AppColors.brandBlue,
-                ),
-                icon: const Icon(AppIcons.view, size: 16),
-                label: const Text('التقارير'),
-                onPressed: () => Navigator.push(
+              child: _compactAction(
+                icon: AppIcons.view,
+                label: 'التقارير',
+                color: AppColors.brandBlue,
+                onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => WeeklyReportScreen(
@@ -200,28 +161,91 @@ class _TeacherChildCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(0, 40),
-              foregroundColor: AppColors.purple,
-              side: const BorderSide(color: AppColors.purple, width: 1.5),
-            ),
-            icon: const Icon(AppIcons.forum, size: 18),
-            label: const Text('دراسة الحالة مع المختص',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    CaseDiscussionScreen(filterChildId: child['id'] as int),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CreateWeeklyReportScreen(
+                        childId: child['id'],
+                        childName: (child['name'] ?? '').toString(),
+                      ),
+                    ),
+                  );
+                  onReload();
+                },
+                icon: const Icon(AppIcons.edit, size: 18),
+                label: const Text('كتابة تقرير'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.brandTealDeep,
+                  minimumSize: const Size.fromHeight(48),
+                ),
               ),
             ),
-          ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CaseDiscussionScreen(
+                      filterChildId: child['id'] as int,
+                    ),
+                  ),
+                ),
+                icon: const Icon(AppIcons.forum, size: 18),
+                label: const Text('دراسة الحالة'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.purple,
+                  minimumSize: const Size.fromHeight(48),
+                  side: BorderSide(
+                    color: AppColors.purple.withValues(alpha: .45),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  Widget _compactAction({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: color.withValues(alpha: .08),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            children: [
+              Icon(icon, size: 19, color: color),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
