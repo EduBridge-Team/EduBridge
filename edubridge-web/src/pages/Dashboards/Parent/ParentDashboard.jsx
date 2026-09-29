@@ -23,7 +23,6 @@ export default function ParentDashboard() {
     load,
     loading,
     summaries,
-    unread,
   } = useParentDashboardData()
 
   useParentDashboardPageClass()
@@ -57,13 +56,11 @@ export default function ParentDashboard() {
   return (
     <div className="parent-dashboard-v2" dir="rtl">
       <ParentDashboardHeader
-          navigate={navigate}
-          query={query}
-          setQuery={setQuery}
-          todayLabel={todayLabel}
-          unread={unread}
-          user={user}
-        />
+        query={query}
+        setQuery={setQuery}
+        todayLabel={todayLabel}
+        user={user}
+      />
 
         <main className="pd-content">
           <ParentChildrenSection
