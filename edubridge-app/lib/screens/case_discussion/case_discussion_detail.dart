@@ -136,8 +136,13 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
 
   Widget _buildInfoHeader(CaseDiscussion d, JisrColors c) {
     return Container(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       padding: const EdgeInsets.all(14),
-      color: c.tintTeal,
+      decoration: BoxDecoration(
+        color: c.tintTeal,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -152,7 +157,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                     Text(d.topic,
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: c.heading,
                         )),
                     if (d.disabilityType != null)
@@ -167,13 +172,13 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                   color: d.status == CaseDiscussionStatus.resolved
                       ? AppColors.green.withValues(alpha: 0.15)
                       : AppColors.orange.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   d.statusLabel,
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: d.status == CaseDiscussionStatus.resolved
                         ? AppColors.green
                         : AppColors.orangeDeep,
@@ -226,7 +231,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
     }
     return ListView.builder(
       controller: _scrollCtrl,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       itemCount: d.messages.length,
       itemBuilder: (context, i) => _MessageBubble(message: d.messages[i]),
     );
@@ -234,15 +239,17 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
 
   Widget _buildComposer(JisrColors c) {
     return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
       padding: EdgeInsets.only(
-        left: 12,
-        right: 12,
-        top: 8,
-        bottom: 8 + MediaQuery.of(context).padding.bottom,
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
         color: c.card,
-        border: Border(top: BorderSide(color: c.line)),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: c.line),
       ),
       child: Column(
         children: [
@@ -312,7 +319,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
       selectedColor: AppColors.brandBlue,
       labelStyle: TextStyle(
         color: selected ? Colors.white : null,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w800,
       ),
       onSelected: (_) => setState(() => _msgType = type),
     );
@@ -329,7 +336,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
           const SizedBox(width: 8),
           Text('تم إغلاق هذه الدراسة',
               style:
-                  TextStyle(color: c.onTint, fontWeight: FontWeight.bold)),
+                  TextStyle(color: c.onTint, fontWeight: FontWeight.w800)),
         ],
       ),
     );
