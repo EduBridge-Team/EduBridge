@@ -71,6 +71,7 @@ Widget buildAdaptiveHeader({
   required int childId,
   required String childName,
   required String? parentPhone,
+  required String? specialistPhone,
   required bool canMarkDone,
   required int timerCycle,
   required VoidCallback onOpenGames,
@@ -187,6 +188,7 @@ Widget buildAdaptiveHeader({
         childId: childId,
         childName: childName,
         parentPhone: parentPhone,
+        specialistPhone: specialistPhone,
       ),
     );
   }
