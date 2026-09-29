@@ -9,7 +9,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 36),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Form(
@@ -17,11 +17,11 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                 child: Column(
                   children: [
                     const BrandLockup(
-                      iconSize: 48,
-                      fontSize: 28,
-                      gap: 7,
+                      iconSize: 44,
+                      fontSize: 26,
+                      gap: 6,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Text(
                       'ابدأ رحلتك مع EduBridge',
                       textAlign: TextAlign.center,
@@ -42,7 +42,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                         color: c.muted,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -75,6 +75,10 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             decoration: const InputDecoration(
                               labelText: 'الاسم',
                               prefixIcon: Icon(AppIcons.profile),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 18,
+                              ),
                             ),
                             validator: (v) =>
                                 (v == null || v.trim().isEmpty)
@@ -89,6 +93,10 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             decoration: const InputDecoration(
                               labelText: 'البريد الإلكتروني',
                               prefixIcon: Icon(Icons.mail_outline_rounded),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 18,
+                              ),
                             ),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
@@ -103,15 +111,29 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           const SizedBox(height: 14),
                           DropdownButtonFormField<String>(
                             initialValue: _role,
+                            isExpanded: true,
+                            alignment: AlignmentDirectional.centerStart,
                             decoration: const InputDecoration(
                               labelText: 'نوع الحساب',
                               prefixIcon: Icon(AppIcons.users),
+                              contentPadding: EdgeInsetsDirectional.fromSTEB(
+                                16,
+                                18,
+                                12,
+                                18,
+                              ),
                             ),
                             items: _RegisterScreenState._roles.entries
                                 .map(
                                   (e) => DropdownMenuItem(
                                     value: e.key,
-                                    child: Text(e.value),
+                                    child: Align(
+                                      alignment: AlignmentDirectional.centerStart,
+                                      child: Align(
+                                        alignment: AlignmentDirectional.centerStart,
+                                        child: Text(e.value),
+                                      ),
+                                    ),
                                   ),
                                 )
                                 .toList(),
@@ -128,9 +150,17 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             const SizedBox(height: 14),
                             DropdownButtonFormField<String>(
                               initialValue: _specialty,
+                              isExpanded: true,
+                              alignment: AlignmentDirectional.centerStart,
                               decoration: const InputDecoration(
                                 labelText: 'التخصص',
                                 prefixIcon: Icon(AppIcons.specialist),
+                                contentPadding: EdgeInsetsDirectional.fromSTEB(
+                                  16,
+                                  18,
+                                  12,
+                                  18,
+                                ),
                               ),
                               items: _RegisterScreenState._specialties.entries
                                   .map(
@@ -156,6 +186,10 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                               labelText: 'كلمة المرور',
                               prefixIcon: Icon(AppIcons.lock),
                               helperText: '8 أحرف على الأقل',
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 18,
+                              ),
                             ),
                             validator: (v) {
                               if (v == null || v.isEmpty) {
@@ -177,6 +211,10 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             decoration: const InputDecoration(
                               labelText: 'تأكيد كلمة المرور',
                               prefixIcon: Icon(AppIcons.lock),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 18,
+                              ),
                             ),
                             validator: (v) => v != _passwordCtrl.text
                                 ? 'كلمتا المرور غير متطابقتين'
