@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { changeMyPassword, fetchMyProfile, getUser, logout } from '../../api'
 import { ROLE_NAMES } from '../../roles'
 import { useTheme } from '../../theme'
+import { useUserSettings } from '../../userSettings'
 import {
   ProfileAccountSection,
   ProfileDangerSection,
@@ -24,6 +25,7 @@ export default function ProfilePage() {
   const [passwordBusy, setPasswordBusy] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState('')
   const { dark, toggleTheme } = useTheme()
+  const { settings, updateSettings } = useUserSettings()
 
   useEffect(() => {
     let active = true
@@ -70,6 +72,20 @@ export default function ProfilePage() {
     }
   }
 
+  const handleToggleTheme = () => {
+    const next = dark ? 'light' : 'dark'
+    toggleTheme()
+    updateSettings({ theme_mode: next }).catch((err) => {
+      setError(err.message || 'تعذّرت مزامنة إعداد العرض')
+    })
+  }
+
+  const handleSettingToggle = (key) => {
+    updateSettings({ [key]: !settings[key] }).catch((err) => {
+      setError(err.message || 'تعذّرت مزامنة الإعداد')
+    })
+  }
+
   const handleLogout = () => {
     logout()
     navigate('/login', { replace: true })
@@ -112,7 +128,12 @@ export default function ProfilePage() {
         passwordOpen={passwordOpen}
       />
 
-      <ProfileSettingsSection dark={dark} onToggleTheme={toggleTheme} />
+      <ProfileSettingsSection
+        dark={dark}
+        onToggleSetting={handleSettingToggle}
+        onToggleTheme={handleToggleTheme}
+        settings={settings}
+      />
       <ProfileDangerSection onLogout={handleLogout} />
     </div>
   )
