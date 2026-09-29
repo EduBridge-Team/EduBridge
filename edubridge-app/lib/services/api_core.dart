@@ -117,6 +117,7 @@ Future<int?> _apiCoreGetUserId() async {
 Future<void> _apiCoreLogout() async {
     WebSocketService().disconnect();
     NotificationListenerService.instance.dispose();
+    await GoogleAuthService.signOut();
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
@@ -154,6 +155,81 @@ Future<String?> _apiCoreLogin(String email, String password) async {
       }
       return data['error'] ?? 'فشل تسجيل الدخول';
     } catch (e) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
+Future<String?> _apiCoreGoogleLogin(String idToken) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${Config.baseUrl}/auth/google'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'id_token': idToken}),
+      );
+
+      final data = ApiService._decodeBody(res);
+      if (res.statusCode == 200) {
+        final token = data['token'];
+        if (token is String && token.isNotEmpty) {
+          await ApiService._saveToken(token);
+        }
+
+        final user = ApiService._asStringMap(data['user']);
+        if (user != null) {
+          await ApiService.saveUserData(user);
+        }
+
+        if (token is String && token.isNotEmpty) {
+          WebSocketService().connect(token);
+          await NotificationListenerService.instance.initialize();
+        }
+
+        return null;
+      }
+
+      return data['error'] ?? data['message'] ?? 'فشل تسجيل الدخول عبر Google';
+    } catch (_) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
+Future<String?> _apiCoreForgotPassword(String email) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${Config.baseUrl}/auth/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      final data = ApiService._decodeBody(res);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        return null;
+      }
+      return data['error'] ?? data['message'] ?? 'تعذّر إرسال رابط الاستعادة';
+    } catch (_) {
+      return 'تعذّر الاتصال بالسيرفر';
+    }
+  }
+
+Future<String?> _apiCoreResetPassword(
+    String email, String token, String password) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${Config.baseUrl}/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'token': token,
+          'password': password,
+        }),
+      );
+
+      final data = ApiService._decodeBody(res);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        return null;
+      }
+      return data['error'] ?? data['message'] ?? 'تعذّر تغيير كلمة المرور';
+    } catch (_) {
       return 'تعذّر الاتصال بالسيرفر';
     }
   }
