@@ -1,11 +1,14 @@
 import {
   BadgeCheck,
+  Bell,
+  Bot,
   ChevronLeft,
   Contrast,
   KeyRound,
   LockKeyhole,
   LogOut,
   Mail,
+  Mic,
   Phone,
   Shield,
   ShieldAlert,
@@ -127,7 +130,7 @@ export function ProfileSecuritySection({
   )
 }
 
-export function ProfileSettingsSection({ dark, onToggleTheme }) {
+export function ProfileSettingsSection({ dark, onToggleSetting, onToggleTheme, settings }) {
   return (
     <section className="profile-section">
       <div className="profile-section-title"><Shield size={21} /><h2>الإعدادات</h2></div>
@@ -137,6 +140,24 @@ export function ProfileSettingsSection({ dark, onToggleTheme }) {
           title="تبديل وضع العرض"
           subtitle={dark ? 'ليلي — اضغط للتبديل إلى الفاتح' : 'فاتح — اضغط للتبديل إلى الليلي'}
           onClick={onToggleTheme}
+        />
+        <ActionCard
+          Icon={Bot}
+          title={settings.assistant_visible ? 'نور ظاهر' : 'نور مخفي'}
+          subtitle="إظهار أو إخفاء المساعد التعليمي على كل أجهزتك"
+          onClick={() => onToggleSetting('assistant_visible')}
+        />
+        <ActionCard
+          Icon={Mic}
+          title={settings.microphone_visible ? 'الأوامر الصوتية مفعّلة' : 'الأوامر الصوتية مخفية'}
+          subtitle="مزامنة ظهور ميكروفون الأوامر الصوتية"
+          onClick={() => onToggleSetting('microphone_visible')}
+        />
+        <ActionCard
+          Icon={Bell}
+          title={settings.notifications_enabled ? 'الإشعارات مفعّلة' : 'الإشعارات متوقفة'}
+          subtitle="التحكم بمؤشرات الإشعارات داخل الواجهة"
+          onClick={() => onToggleSetting('notifications_enabled')}
         />
         <ActionCard
           Icon={Shield}
