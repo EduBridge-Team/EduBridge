@@ -156,6 +156,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         if (i == 0) {
           return buildAdaptiveHeader(
             context: context,
+            childId: widget.childId,
             childName: widget.childName,
             parentPhone: widget.parentPhone,
             canMarkDone: _canMarkDone,
