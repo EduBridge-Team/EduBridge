@@ -216,11 +216,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     await _openOutsideChildScope(
       MaterialPageRoute(
         builder: (_) => EducationalGamesScreen(
+          childId: widget.childId,
           childName: widget.childName,
           age: widget.age,
         ),
       ),
     );
+    await _loadStars();
   }
 
   void _openSettings() async {
