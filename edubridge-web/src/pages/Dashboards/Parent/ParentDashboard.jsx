@@ -5,7 +5,7 @@ import ParentChildrenSection from './ParentChildrenSection'
 import ParentDashboardHeader from './ParentDashboardHeader'
 import ParentLowerSections from './ParentLowerSections'
 import ParentProgressSection from './ParentProgressSection'
-import { useDashboardSidebarSync, useParentDashboardPageClass, useSharedSidebarSync } from './hooks'
+import { useParentDashboardPageClass, useSharedSidebarSync } from './hooks'
 import useParentDashboardData from './useParentDashboardData'
 import './ParentDashboard.css'
 
@@ -26,7 +26,6 @@ export default function ParentDashboard() {
   } = useParentDashboardData()
 
   useParentDashboardPageClass()
-  useDashboardSidebarSync({ loading, childrenCount: children.length, summaries })
   useSharedSidebarSync({ loading, childrenCount: children.length, summaries })
 
   const normalizedQuery = query.trim().toLowerCase()
