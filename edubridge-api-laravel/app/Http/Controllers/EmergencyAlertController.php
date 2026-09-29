@@ -32,7 +32,7 @@ class EmergencyAlertController extends Controller
         $me = $request->attributes->get('jwt_user');
         $childId = (int) $childId;
 
-        if (!ChildAccess::allowed($me, $childId)) {
+        if (!ChildAccess::allowed($me, $childId) || $me->role === 'ministry') {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -92,7 +92,7 @@ class EmergencyAlertController extends Controller
             return response()->json(['error' => 'التنبيه غير موجود'], 404);
         }
 
-        if (!ChildAccess::allowed($me, (int) $alert->child_id)) {
+        if (!ChildAccess::allowed($me, (int) $alert->child_id) || $me->role === 'ministry') {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
