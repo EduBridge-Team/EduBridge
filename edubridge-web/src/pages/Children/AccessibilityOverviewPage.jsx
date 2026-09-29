@@ -35,8 +35,12 @@ export default function AccessibilityOverviewPage() {
   if (loading) return <div className="state"><div className="spinner" />جارِ تحميل الأطفال...</div>
   if (error) return <div className="error-box">{error}</div>
 
-  return <div>
-    <div className="page-title"><Accessibility /><div><h2>إعدادات وصول الأطفال</h2><p className="meta">تكييف تجربة الموقع والألعاب لكل طفل بصورة مستقلة.</p></div></div>
+  return <div className="accessibility-overview-v2">
+    <section className="accessibility-overview-hero">
+      <span className="role-eyebrow"><Accessibility size={18} /> إمكانية الوصول</span>
+      <h1>إعدادات وصول الأطفال</h1>
+      <p>خصّص تجربة الموقع والألعاب لكل طفل بحسب احتياجاته التعليمية والحسية.</p>
+    </section>
     {children.length === 0 ? <div className="state">لا يوجد أطفال مرتبطون بحسابك.</div> : <div className="access-children-grid">
       {children.map((child) => {
         const p = profiles[String(child.id)] || getAccessibilityProfile(child.id, child.disability_type)
