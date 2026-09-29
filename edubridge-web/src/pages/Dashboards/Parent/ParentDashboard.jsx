@@ -61,28 +61,28 @@ export default function ParentDashboard() {
         user={user}
       />
 
-        <main className="pd-content">
-          <ParentChildrenSection
-            childrenCount={children.length}
-            error={error}
-            load={load}
-            loading={loading}
-            navigate={navigate}
-            normalizedQuery={normalizedQuery}
-            summaries={summaries}
-            visibleChildren={visibleChildren}
-          />
+      <main className="pd-content">
+        <ParentChildrenSection
+          childrenCount={children.length}
+          error={error}
+          load={load}
+          loading={loading}
+          navigate={navigate}
+          normalizedQuery={normalizedQuery}
+          summaries={summaries}
+          visibleChildren={visibleChildren}
+        />
 
-          <ParentProgressSection dashboardStats={dashboardStats} childCount={children.length} />
+        <ParentProgressSection dashboardStats={dashboardStats} childCount={children.length} />
 
-          <ParentLowerSections
-            children={children}
-            conversations={conversations}
-            navigate={navigate}
-            openNoor={openNoor}
-            visibleLessons={visibleLessons}
-          />
-        </main>
+        <ParentLowerSections
+          children={children}
+          conversations={conversations}
+          navigate={navigate}
+          openNoor={openNoor}
+          visibleLessons={visibleLessons}
+        />
+      </main>
     </div>
   )
 }
