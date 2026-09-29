@@ -46,8 +46,7 @@ class _HomeworkCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: c.line),
       ),
-      child:
-        child: Column(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
