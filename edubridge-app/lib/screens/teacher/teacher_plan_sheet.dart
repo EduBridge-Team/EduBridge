@@ -11,11 +11,19 @@ class _ApprovedPlanSheet extends StatelessWidget {
     final c = JisrColors.of(context);
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
+      padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
       decoration: BoxDecoration(
         color: c.card,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: c.line),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .10),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -30,8 +38,8 @@ class _ApprovedPlanSheet extends StatelessWidget {
                   child: Text(
                     'الخطة المعتمدة - ${plan['child_name'] ?? ''}',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
                       color: c.heading,
                     ),
                   ),
@@ -47,7 +55,7 @@ class _ApprovedPlanSheet extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: AppColors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
@@ -71,9 +79,13 @@ class _ApprovedPlanSheet extends StatelessWidget {
             _planSection('التوصيات', plan['recommendations'], c),
             if (plan['teaching_methods'] != null) ...[
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'طرق التدريس المقترحة',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: c.heading,
+                ),
               ),
               const SizedBox(height: 6),
               Wrap(
@@ -103,7 +115,7 @@ class _ApprovedPlanSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
           const SizedBox(height: 4),
           Text(value.toString(),
               style: TextStyle(fontSize: 14, height: 1.5, color: c.body)),
