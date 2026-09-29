@@ -74,10 +74,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
 
       if (!mounted) return;
       if (res.statusCode == 201) {
-        _updateChildLessonsState(() => _doneLessonIds.add(lessonId));
+        final data = ApiService.decodeMap(res.body);
+        final stars = (data['stars'] as num?)?.toInt();
 
-        await RewardService.instance.addStar(widget.childId);
-        await _loadStars();
+        _updateChildLessonsState(() {
+          _doneLessonIds.add(lessonId);
+          if (stars != null) _stars = stars;
+        });
 
         if (!mounted) return;
 
