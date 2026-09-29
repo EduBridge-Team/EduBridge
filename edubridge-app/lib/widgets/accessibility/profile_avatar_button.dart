@@ -80,7 +80,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
         alignment: Alignment.center,
         clipBehavior: Clip.antiAlias,
         child: _loading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
@@ -112,7 +112,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
         style: TextStyle(
           fontSize: widget.size * 0.45,
           fontWeight: FontWeight.bold,
-          color: AppColors.navyDeep,
+          color: widget.foregroundColor ?? AppColors.brandTealDeep,
         ),
       ),
     );
