@@ -42,9 +42,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) => buildView(context);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  بطاقة قائمة موحّدة بألوان الهوية
-// ═══════════════════════════════════════════════════════════
 class _MenuTile extends StatelessWidget {
   final IconData icon;
   final Color tint;
@@ -64,53 +61,73 @@ class _MenuTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide.none,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: tint,
-                  borderRadius: BorderRadius.circular(16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: c.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: c.line),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
+            child: Row(
+              children: [
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: tint,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(icon, size: 26, color: AppColors.brandBlue),
                 ),
-                alignment: Alignment.center,
-                child: Icon(icon,
-                    size: 26, color: AppColors.brandBlue),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: c.heading,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 17,
+                          height: 1.25,
+                          fontWeight: FontWeight.w800,
+                          color: c.heading,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(fontSize: 13.5, color: c.muted),
-                    ),
-                  ],
+                      const SizedBox(height: 5),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          height: 1.45,
+                          color: c.muted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Icon(Icons.chevron_left, color: c.muted),
-            ],
+                const SizedBox(width: 10),
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: tint.withValues(alpha: .72),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: c.heading,
+                    size: 19,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
