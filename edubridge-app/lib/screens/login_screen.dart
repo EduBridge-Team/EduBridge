@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/google_auth_service.dart';
 import '../theme.dart';
 import '../utils/home_router.dart';
 import '../widgets/brand_lockup.dart';
 import 'register_screen.dart';
+import 'password_recovery_screen.dart';
 part 'login_screen_view.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -57,6 +59,42 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       setState(() => _error = error);
+    }
+  }
+
+  Future<void> _googleLogin() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+      _notice = null;
+    });
+
+    try {
+      final idToken = await GoogleAuthService.authenticate();
+      final error = await ApiService.googleLogin(idToken);
+
+      if (!mounted) return;
+      if (error != null) {
+        setState(() {
+          _loading = false;
+          _error = error;
+        });
+        return;
+      }
+
+      final home = await homeScreenForRole();
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => home),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString().replaceFirst('Bad state: ', '');
+      });
     }
   }
 
