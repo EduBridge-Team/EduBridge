@@ -145,14 +145,9 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       );
     }
 
-    final profile = AccessibilityService.instance.profile.value;
-    final lessonsToShow =
-        _lessons.isEmpty ? getSampleLessons(profile.type) : _lessons;
-    final showSampleBanner = _lessons.isEmpty;
-
     return ListView.builder(
       padding: EdgeInsets.all(AdaptiveHelper.spacing),
-      itemCount: lessonsToShow.length + (showSampleBanner ? 2 : 1),
+      itemCount: _lessons.length + (_lessons.isEmpty ? 2 : 1),
       itemBuilder: (context, i) {
         if (i == 0) {
           return buildAdaptiveHeader(
@@ -167,14 +162,30 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           );
         }
 
-        if (showSampleBanner && i == 1) {
-          return buildSampleBanner();
+        if (_lessons.isEmpty) {
+          return Padding(
+            padding: EdgeInsets.only(top: AdaptiveHelper.spacing * 2),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(AppIcons.lesson,
+                      size: 64, color: JisrColors.of(context).muted),
+                  SizedBox(height: AdaptiveHelper.spacing),
+                  AdaptiveText(
+                    'لا توجد دروس مخصصة لهذا الطفل بعد',
+                    textAlign: TextAlign.center,
+                    color: JisrColors.of(context).muted,
+                  ),
+                ],
+              ),
+            ),
+          );
         }
 
-        final lessonIndex = i - (showSampleBanner ? 2 : 1);
+        final lessonIndex = i - 1;
         return buildLessonCard(
           context: context,
-          lesson: lessonsToShow[lessonIndex],
+          lesson: _lessons[lessonIndex],
           doneLessonIds: _doneLessonIds,
           speakingLessonId: _speakingLessonId,
           savingLessonId: _savingLessonId,
