@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\DB;
 class Notify
 {
     // إشعار مستخدم واحد
-    public static function toUser($userId, string $title, string $message, ?string $type = null): void
+    public static function toUser($userId, string $title, string $message, ?string $type = null): bool
     {
         if (!$userId) {
-            return;
+            return false;
         }
         try {
             DB::table('notifications')->insert([
@@ -20,9 +20,12 @@ class Notify
                 'message' => $message,
                 'type' => $type,
             ]);
+
+            return true;
         } catch (\Exception $e) {
             report($e);
             // الإشعار ثانوي — لا نُفشل الطلب الأساسي بسببه
+            return false;
         }
     }
 
