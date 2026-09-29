@@ -54,14 +54,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final c = JisrColors.of(context);
     return Scaffold(
       appBar: const JisrAppBar(title: 'استعادة كلمة المرور'),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(22),
+      body: SafeArea(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(22, 28, 22, 32),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(22),
+            child: Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: c.line),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandBlue.withValues(alpha: .06),
+                    blurRadius: 28,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child:
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -95,13 +109,59 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
-                      Text(_error!,
-                          style: const TextStyle(color: AppColors.red)),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.red.withValues(alpha: .08),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.error_outline_rounded,
+                                color: AppColors.red, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                style: const TextStyle(
+                                  color: AppColors.red,
+                                  height: 1.45,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                     if (_notice != null) ...[
                       const SizedBox(height: 12),
-                      Text(_notice!,
-                          style: const TextStyle(color: AppColors.green)),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.green.withValues(alpha: .08),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.mark_email_read_outlined,
+                                color: AppColors.green, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _notice!,
+                                style: const TextStyle(
+                                  color: AppColors.green,
+                                  height: 1.45,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                     const SizedBox(height: 18),
                     FilledButton.icon(
@@ -118,8 +178,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ? 'جارِ الإرسال...'
                           : 'إرسال رابط الاستعادة'),
                     ),
-                    const SizedBox(height: 8),
-                    TextButton(
+                    const SizedBox(height: 10),
+                    TextButton.icon(
+                      icon: const Icon(Icons.link_rounded, size: 18),
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -132,7 +193,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ],
                 ),
-              ),
             ),
           ),
         ),
