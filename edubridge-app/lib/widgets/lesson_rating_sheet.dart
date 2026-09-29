@@ -234,7 +234,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                         subtitle: (row['comment'] ?? '').toString().isEmpty
                             ? null
                             : Text(row['comment'].toString()),
-                        trailing: Text('★' * stars),
+                        trailing: Text(List.filled(stars, '★').join()),
                       );
                     }),
                   ],
