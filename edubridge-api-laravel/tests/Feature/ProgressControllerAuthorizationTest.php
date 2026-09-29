@@ -45,6 +45,12 @@ class ProgressControllerAuthorizationTest extends TestCase
             $table->unique(['child_id', 'lesson_id']);
         });
 
+        Schema::create('child_rewards', function (Blueprint $table) {
+            $table->unsignedBigInteger('child_id')->primary();
+            $table->unsignedInteger('stars')->default(0);
+            $table->timestamps();
+        });
+
         DB::table('children')->insert([
             ['id' => 10, 'assigned_teacher_id' => null],
             ['id' => 20, 'assigned_teacher_id' => null],
@@ -58,6 +64,7 @@ class ProgressControllerAuthorizationTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('child_rewards');
         Schema::dropIfExists('progress');
         Schema::dropIfExists('child_parent');
         Schema::dropIfExists('child_teacher');
@@ -84,6 +91,25 @@ class ProgressControllerAuthorizationTest extends TestCase
             'lesson_id' => 100,
             'status' => 'done',
             'score' => 90,
+        ]);
+        $this->assertDatabaseHas('child_rewards', [
+            'child_id' => 10,
+            'stars' => 1,
+        ]);
+
+        $secondResponse = app(ProgressController::class)->store(
+            $this->request(3, 'specialist', [
+                'child_id' => 10,
+                'lesson_id' => 100,
+                'status' => 'done',
+                'score' => 95,
+            ])
+        );
+
+        $this->assertSame(201, $secondResponse->getStatusCode());
+        $this->assertDatabaseHas('child_rewards', [
+            'child_id' => 10,
+            'stars' => 1,
         ]);
     }
 
