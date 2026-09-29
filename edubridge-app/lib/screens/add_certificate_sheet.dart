@@ -74,11 +74,19 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: Container(
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.card,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .10),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -95,7 +103,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                       'إضافة شهادة (إثبات أهلية)',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: c.heading,
                       ),
                     ),
@@ -133,7 +141,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                         Text(
                           'ملف الشهادة (اختياري صورة أو PDF)',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                             color: c.onTint,
                           ),
                         ),
@@ -144,13 +152,12 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                       SizedBox(
                         width: double.infinity,
                         height: 44,
-                        child: ElevatedButton.icon(
+                        child: FilledButton.icon(
                           icon: const Icon(AppIcons.upload),
                           label: const Text('اختر ملف الشهادة'),
                           onPressed: _pickFile,
-                          style: ElevatedButton.styleFrom(
+                          style: FilledButton.styleFrom(
                             backgroundColor: AppColors.green,
-                            foregroundColor: Colors.white,
                           ),
                         ),
                       )
@@ -209,10 +216,9 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.orange,
-                        foregroundColor: Colors.white,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.brandBlue,
                       ),
                       icon: _saving
                           ? const SizedBox(
