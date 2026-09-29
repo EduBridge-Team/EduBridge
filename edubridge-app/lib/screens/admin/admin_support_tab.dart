@@ -108,20 +108,30 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
 
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
-      return _StateBox(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadTickets,
-              child: const Text('إعادة المحاولة'),
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 90),
+          const Icon(AppIcons.error, size: 54, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
+              onPressed: _loadTickets,
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+            ),
+          ),
+        ],
       );
     }
 
