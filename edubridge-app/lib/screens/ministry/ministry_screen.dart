@@ -19,6 +19,7 @@ part 'ministry_approvals_tab.dart';
 part 'ministry_approval_widgets.dart';
 part 'ministry_users_tab.dart';
 part 'ministry_users_tab_view.dart';
+part 'ministry_lessons_tab.dart';
 
 class MinistryScreen extends StatefulWidget {
   const MinistryScreen({super.key});
@@ -44,11 +45,12 @@ class _MinistryScreenState extends State<MinistryScreen> {
             ),
           ),
           Expanded(
-            child: _tabIndex == 0
-                ? const _MinistryOverviewTab()
-                : _tabIndex == 1
-                    ? const _MinistryApprovalsTab()
-                    : const _MinistryUsersTab(),
+            child: switch (_tabIndex) {
+              0 => const _MinistryOverviewTab(),
+              1 => const _MinistryApprovalsTab(),
+              2 => const _MinistryUsersTab(),
+              _ => const _MinistryLessonsTab(),
+            },
           ),
         ],
       ),

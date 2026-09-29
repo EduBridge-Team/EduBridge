@@ -8,9 +8,10 @@ class _MinistryTabBar extends StatelessWidget {
   const _MinistryTabBar({required this.index, required this.onChanged});
 
   static const _tabs = [
-    (AppIcons.report,    'نظرة عامة'),
-    (AppIcons.upload,    'الطلبات'),
-    (AppIcons.users,     'المستخدمون'),
+    (AppIcons.report, 'نظرة عامة'),
+    (AppIcons.upload, 'الطلبات'),
+    (AppIcons.users, 'المستخدمون'),
+    (AppIcons.lesson, 'المناهج'),
   ];
 
   @override

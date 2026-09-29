@@ -186,6 +186,27 @@ extension _LoginScreenStateView on _LoginScreenState {
                                     : 'تسجيل الدخول'),
                               ),
                               const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: _loading
+                                    ? null
+                                    : () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const ForgotPasswordScreen(),
+                                          ),
+                                        ),
+                                child: const Text('نسيت كلمة المرور؟'),
+                              ),
+                              if (GoogleAuthService.isConfigured) ...[
+                                const SizedBox(height: 4),
+                                OutlinedButton.icon(
+                                  onPressed: _loading ? null : _googleLogin,
+                                  icon: const Icon(Icons.account_circle_outlined),
+                                  label: const Text('المتابعة باستخدام Google'),
+                                ),
+                              ],
+                              const SizedBox(height: 4),
                               TextButton.icon(
                                 onPressed: _loading ? null : _resendVerification,
                                 icon: const Icon(Icons.forward_to_inbox_outlined),

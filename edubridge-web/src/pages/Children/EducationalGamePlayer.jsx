@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RotateCcw, Volume2, X } from 'lucide-react'
 import { speakArabic } from '../../accessibility'
+import { recordGameAttempt } from '../../api'
 import { questionFor, shuffle } from './educationalGamesData'
 
 function MemoryGame({ profile, onScore }) {
@@ -136,10 +137,25 @@ function RhythmGame({ onScore }) {
   </div>
 }
 
-export default function GamePlayer({ game, age, profile, close }) {
+export default function GamePlayer({ game, childId, age, profile, close, onRecorded }) {
   const [result, setResult] = useState(null)
   const [key, setKey] = useState(0)
-  const finish = (score) => setResult(Math.min(100, score))
+  const startedAt = useRef(Date.now())
+  const recorded = useRef(false)
+
+  const finish = (score) => {
+    const normalized = Math.max(0, Math.min(100, Math.round(score)))
+    setResult(normalized)
+
+    if (recorded.current || !childId) return
+    recorded.current = true
+
+    const starsEarned = normalized >= 90 ? 3 : normalized >= 70 ? 2 : normalized >= 50 ? 1 : 0
+    const durationSeconds = Math.max(1, Math.round((Date.now() - startedAt.current) / 1000))
+    recordGameAttempt(childId, game[0], normalized, starsEarned, durationSeconds)
+      .then((data) => onRecorded?.(data))
+      .catch(() => {})
+  }
 
   let content
   if (game[6] === 'matching') content = <MemoryGame key={key} profile={profile} onScore={finish} />
@@ -159,7 +175,7 @@ export default function GamePlayer({ game, age, profile, close }) {
           <span>🏆</span><h2>أحسنت!</h2><p>نتيجتك <strong>{result}%</strong></p>
           <div>
             <button className="btn outline" onClick={close}>العودة للألعاب</button>
-            <button className="btn" onClick={() => { setResult(null); setKey((value) => value + 1) }}>
+            <button className="btn" onClick={() => { recorded.current = false; startedAt.current = Date.now(); setResult(null); setKey((value) => value + 1) }}>
               <RotateCcw size={17} /> العب مرة أخرى
             </button>
           </div>

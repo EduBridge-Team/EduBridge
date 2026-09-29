@@ -2,6 +2,7 @@
 // الطفل ينقر مع الكلمات بإيقاع بطيء — يقلّل التأتأة ويساعد على الطلاقة
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
@@ -148,13 +149,15 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   //  إنهاء اللعبة
   // ═══════════════════════════════════════════════════════
-  void _finish() {
+  void _finish() async {
     _beatTimer?.cancel();
     setState(() => _isPlaying = false);
 
     TtsService.instance.speakLineSlow(
       'أحسنت يا ${widget.childName}! أتممت التمرين',
     );
+
+    await GameProgressService.instance.record(100);
 
     VisualCelebration.show(
       context,

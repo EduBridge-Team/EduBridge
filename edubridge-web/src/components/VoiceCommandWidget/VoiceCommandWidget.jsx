@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getToken, getUser } from '../../api'
 import './VoiceCommandWidget.css'
+import { useUserSettings } from '../../userSettings'
 
 const MAP=[
   [['الرئيسية','الرئيسيه','هوم'],'/dashboard'],
@@ -24,6 +25,7 @@ const MAP=[
 
 export default function VoiceCommandWidget(){
   const navigate=useNavigate()
+  const { settings } = useUserSettings()
   const [hidden,setHidden]=useState(()=>localStorage.getItem('edubridge_voice_hidden')==='1')
   const [listening,setListening]=useState(false)
   const [status,setStatus]=useState('')
@@ -31,7 +33,7 @@ export default function VoiceCommandWidget(){
 
   useEffect(()=>()=>recognitionRef.current?.abort?.(),[])
 
-  if(!getToken())return null
+  if(!getToken() || !settings.microphone_visible)return null
   const me=getUser()
   if(hidden)return <button className="vc-restore" onClick={()=>{localStorage.removeItem('edubridge_voice_hidden');setHidden(false)}} aria-label="إظهار التحكم الصوتي">🎙️</button>
 

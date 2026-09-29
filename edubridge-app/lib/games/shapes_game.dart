@@ -1,6 +1,7 @@
 // لعبة الأشكال — للأعمار 4-8
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
@@ -68,6 +69,7 @@ class _ShapesGameState extends State<ShapesGame> {
   }
 
   void _onWin() async {
+    await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',

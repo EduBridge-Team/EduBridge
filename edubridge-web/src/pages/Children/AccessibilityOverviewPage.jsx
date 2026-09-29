@@ -1,18 +1,35 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Accessibility, ChevronLeft, SlidersHorizontal } from 'lucide-react'
-import { fetchChildren } from '../../api'
+import { fetchChildAccessibilityProfile, fetchChildren } from '../../api'
 import { DISABILITY_TYPES, getAccessibilityProfile } from '../../accessibility'
 
 export default function AccessibilityOverviewPage() {
   const navigate = useNavigate()
   const [children, setChildren] = useState([])
   const [loading, setLoading] = useState(true)
+  const [profiles, setProfiles] = useState({})
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetchChildren().then((data) => setChildren(data.children || []))
-      .catch((e) => setError(e.message)).finally(() => setLoading(false))
+    fetchChildren()
+      .then(async (data) => {
+        const list = data.children || []
+        setChildren(list)
+        const pairs = await Promise.all(
+          list.map(async (child) => {
+            const remote = await fetchChildAccessibilityProfile(child.id)
+              .catch(() => ({ profile: null }))
+            return [
+              String(child.id),
+              remote?.profile || getAccessibilityProfile(child.id, child.disability_type),
+            ]
+          }),
+        )
+        setProfiles(Object.fromEntries(pairs))
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading) return <div className="state"><div className="spinner" />جارِ تحميل الأطفال...</div>
@@ -22,7 +39,7 @@ export default function AccessibilityOverviewPage() {
     <div className="page-title"><Accessibility /><div><h2>إعدادات وصول الأطفال</h2><p className="meta">تكييف تجربة الموقع والألعاب لكل طفل بصورة مستقلة.</p></div></div>
     {children.length === 0 ? <div className="state">لا يوجد أطفال مرتبطون بحسابك.</div> : <div className="access-children-grid">
       {children.map((child) => {
-        const p = getAccessibilityProfile(child.id, child.disability_type)
+        const p = profiles[String(child.id)] || getAccessibilityProfile(child.id, child.disability_type)
         const type = DISABILITY_TYPES.find(([id]) => id === p.type)
         return <button className="access-child-card" key={child.id} onClick={() => navigate(`/children/${child.id}/accessibility`)}>
           <span className="avatar">{type?.[1] || '👧'}</span>

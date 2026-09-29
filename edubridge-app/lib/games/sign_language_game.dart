@@ -2,6 +2,7 @@
 // تعلّم الطفل ربط الحرف بإشارته
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
@@ -80,6 +81,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
 
   Future<void> _onWin() async {
     final scorePercent = ((_score / _totalRounds) * 100).round();
+    await GameProgressService.instance.record(scorePercent);
 
     // 🎉 احتفال بصري ضخم (بدون صوت — للأصمّ)
     await VisualCelebration.show(

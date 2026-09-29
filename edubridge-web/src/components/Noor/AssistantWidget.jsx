@@ -3,6 +3,7 @@ import { Send, Trash2, X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
+import { useUserSettings } from '../../userSettings'
 
 const WELCOME = {
   id: 'welcome',
@@ -31,6 +32,7 @@ export default function AssistantWidget() {
   const location = useLocation()
   const user = getUser()
   const signedIn = Boolean(getToken() && user)
+  const { settings } = useUserSettings()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState(() => [WELCOME, ...loadHistory(user)])
   const [input, setInput] = useState('')
@@ -52,7 +54,7 @@ export default function AssistantWidget() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [open, messages, sending])
 
-  if (!signedIn) return null
+  if (!signedIn || !settings.assistant_visible) return null
 
   const saveHistory = (next) => {
     const stored = next

@@ -170,3 +170,85 @@ export function SpecialistSuggestionList({
     </section>
   )
 }
+
+
+export function PlanEvaluationSection({
+  busy,
+  children,
+  draft,
+  onChange,
+  onSubmit,
+}) {
+  if (children.length === 0) return null
+
+  const selected = children.find(
+    (child) => String(child.id) === String(draft.child_id),
+  )
+
+  return (
+    <section className="fp-card">
+      <h3>تقييم الخطة التعليمية الحالية</h3>
+      <div className="meta">
+        التقييم متاح فقط للخطط المعتمدة للأطفال المرتبطين بفريقك.
+      </div>
+
+      <form className="fp-form" onSubmit={onSubmit}>
+        <select
+          value={draft.child_id}
+          onChange={(event) => onChange({ ...draft, child_id: event.target.value })}
+          required
+        >
+          <option value="">اختر الطفل</option>
+          {children.map((child) => (
+            <option key={child.id} value={child.id}>{child.name}</option>
+          ))}
+        </select>
+
+        {selected?.current_plan?.educational_plan && (
+          <div className="fp-meta">
+            <strong>الخطة الحالية:</strong>
+            <span>{selected.current_plan.educational_plan}</span>
+          </div>
+        )}
+
+        <label>
+          ملاءمة الخطة
+          <select
+            value={draft.is_plan_appropriate ? 'yes' : 'no'}
+            onChange={(event) => onChange({
+              ...draft,
+              is_plan_appropriate: event.target.value === 'yes',
+            })}
+          >
+            <option value="yes">مناسبة</option>
+            <option value="no">تحتاج تعديل</option>
+          </select>
+        </label>
+
+        <textarea
+          rows={3}
+          placeholder="ملاحظات للمعلم (اختياري)"
+          value={draft.notes_for_teacher}
+          onChange={(event) => onChange({
+            ...draft,
+            notes_for_teacher: event.target.value,
+          })}
+        />
+
+        <textarea
+          rows={4}
+          placeholder="التغييرات المقترحة — كل سطر تغيير مستقل"
+          value={draft.recommended_changes}
+          onChange={(event) => onChange({
+            ...draft,
+            recommended_changes: event.target.value,
+          })}
+        />
+
+        <button className="btn success" disabled={busy || !draft.child_id}>
+          {busy ? 'جارِ الحفظ...' : 'حفظ تقييم الخطة'}
+        </button>
+      </form>
+    </section>
+  )
+}

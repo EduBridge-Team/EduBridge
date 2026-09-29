@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
@@ -112,6 +113,9 @@ class _MathRaceGameState extends State<MathRaceGame> {
   }
 
   void _onFinish() async {
+    final totalAnswers = _score + _wrong;
+    final scorePercent = totalAnswers == 0 ? 0 : ((_score / totalAnswers) * 100).round();
+    await GameProgressService.instance.record(scorePercent);
     await VisualCelebration.show(
       context,
       message: '$_score صحيحة!',

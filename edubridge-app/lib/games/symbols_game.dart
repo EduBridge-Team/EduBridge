@@ -2,6 +2,7 @@
 // الطفل يتعلّم الألوان بالاعتماد على الرموز والأنماط بدلاً من الألوان فقط
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
@@ -113,6 +114,7 @@ class _SymbolsGameState extends State<SymbolsGame> {
   //  عند الفوز
   // ═══════════════════════════════════════════════════════
   void _onWin() async {
+    await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',

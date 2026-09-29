@@ -207,3 +207,42 @@ export function sendConversationMessage(id, content) {
 }
 
 
+
+
+// ===== إعدادات المستخدم المتزامنة =====
+export function fetchUserSettings() {
+  return request('/settings');
+}
+export function updateUserSettings(payload) {
+  return request('/settings', { method: 'PUT', body: JSON.stringify(payload) });
+}
+
+// ===== لوحة الوزارة الكاملة =====
+export function fetchMinistryUsers() {
+  return request('/ministry/users');
+}
+export function fetchMinistryChildren() {
+  return request('/ministry/children');
+}
+export function fetchMinistryStats() {
+  return request('/ministry/stats');
+}
+export function fetchMinistryStatistics() {
+  return request('/ministry/statistics');
+}
+export function fetchMinistryProgressStatistics() {
+  return request('/ministry/statistics/progress');
+}
+export function fetchMinistryApprovals(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : '';
+  return request(`/ministry/approvals${q}`);
+}
+export function approveMinistryApproval(id) {
+  return request(`/ministry/approvals/${id}/approve`, { method: 'POST', body: '{}' });
+}
+export function rejectMinistryApproval(id, reason = '') {
+  return request(`/ministry/approvals/${id}/reject`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  });
+}

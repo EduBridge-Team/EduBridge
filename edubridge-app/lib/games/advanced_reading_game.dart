@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
@@ -27,6 +28,7 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
     Future.delayed(const Duration(milliseconds: 900), () async {
       if (!mounted) return;
       if (_index == _items.length - 1) {
+        await GameProgressService.instance.record(((_score / _items.length) * 100).round());
         await VisualCelebration.show(context, message: 'فهم قرائي رائع! $_score من ${_items.length}', emoji: '📚', childName: widget.childName, duration: const Duration(seconds: 3));
         if (mounted) Navigator.pop(context);
       } else {

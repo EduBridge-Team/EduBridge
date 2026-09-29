@@ -1,5 +1,7 @@
 // زر الطوارئ — للصرع والحالات الحرجة
 // يُرسل تنبيهاً فورياً للأهل والمختص + يعرض تعليمات
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -73,32 +75,44 @@ class _EmergencyButtonState extends State<EmergencyButton> {
 
     setState(() => _sending = true);
 
-    // ✅ إصلاح: إرسال فعلي للسيرفر عبر /support بأولوية عاجلة
     bool serverSuccess = false;
-    try {
-      final res = await ApiService.authPost('/support', {
-        'subject': '🚨 طوارئ: ${widget.childName}',
-        'message':
-            'تم تفعيل زر الطوارئ للطفل ${widget.childName}'
-            '${widget.childId != null ? ' (ID: ${widget.childId})' : ''}. '
-            'يُرجى التواصل فوراً.',
-        'priority': 'urgent',
-        'type': 'emergency',
-      });
-      serverSuccess = res.statusCode == 200 || res.statusCode == 201;
-    } catch (_) {
-      // نستمر بالاتصال الهاتفي حتى لو فشل الإرسال
+    int notifiedRecipients = 0;
+    if (widget.childId != null) {
+      try {
+        final res = await ApiService.authPost(
+          '/children/${widget.childId}/emergency-alerts',
+          {
+            'source': 'app',
+            'message':
+                'تم تفعيل زر الطوارئ للطفل ${widget.childName}. '
+                'يُرجى التواصل فوراً.',
+          },
+        );
+        serverSuccess = res.statusCode == 201;
+        if (serverSuccess && res.body.isNotEmpty) {
+          final body = jsonDecode(res.body) as Map<String, dynamic>;
+          notifiedRecipients =
+              (body['notified_recipients'] as num?)?.toInt() ?? 0;
+        }
+      } catch (_) {
+        // نستمر بخيارات الاتصال المحلي حتى لو فشل إرسال التنبيه.
+      }
     }
 
-    // ✅ اتصال هاتفي بالأهل
     if (widget.parentPhone != null && widget.parentPhone!.isNotEmpty) {
       await _callNumber(widget.parentPhone!);
+    } else if (widget.specialistPhone != null &&
+        widget.specialistPhone!.isNotEmpty) {
+      await _callNumber(widget.specialistPhone!);
     }
 
     if (!mounted) return;
     setState(() => _sending = false);
 
-    _showInstructions(serverSuccess: serverSuccess);
+    _showInstructions(
+      serverSuccess: serverSuccess,
+      notifiedRecipients: notifiedRecipients,
+    );
   }
 
   Future<void> _callNumber(String phone) async {
@@ -110,7 +124,10 @@ class _EmergencyButtonState extends State<EmergencyButton> {
     } catch (_) {}
   }
 
-  void _showInstructions({required bool serverSuccess}) {
+  void _showInstructions({
+    required bool serverSuccess,
+    int notifiedRecipients = 0,
+  }) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -132,6 +149,17 @@ class _EmergencyButtonState extends State<EmergencyButton> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (serverSuccess && notifiedRecipients > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'تم إشعار $notifiedRecipients من أولياء الأمر/المختصين داخل EduBridge.',
+                  style: const TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             if (!serverSuccess)
               Container(
                 padding: const EdgeInsets.all(10),
@@ -141,7 +169,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
-                  '⚠️ تعذّر إرسال التنبيه للسيرفر — تم الاتصال هاتفياً فقط.',
+                  '⚠️ تعذّر إرسال التنبيه للسيرفر. استخدم خيارات الاتصال المباشر أدناه عند الحاجة.',
                   style: TextStyle(fontSize: 13),
                 ),
               ),
@@ -168,6 +196,19 @@ class _EmergencyButtonState extends State<EmergencyButton> {
           ],
         ),
         actions: [
+          if (widget.parentPhone != null && widget.parentPhone!.isNotEmpty)
+            TextButton.icon(
+              onPressed: () => _callNumber(widget.parentPhone!),
+              icon: const Icon(Icons.call),
+              label: const Text('اتصال بولي الأمر'),
+            ),
+          if (widget.specialistPhone != null &&
+              widget.specialistPhone!.isNotEmpty)
+            TextButton.icon(
+              onPressed: () => _callNumber(widget.specialistPhone!),
+              icon: const Icon(Icons.medical_services_outlined),
+              label: const Text('اتصال بالمختص'),
+            ),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

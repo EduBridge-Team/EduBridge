@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { fetchChildDetails } from '../../api'
 import {
-  applyAccessibilityProfile, defaultProfile,
-  getAccessibilityProfile, recommendedProfile, saveAccessibilityProfile,
+  fetchChildAccessibilityProfile,
+  fetchChildDetails,
+  saveChildAccessibilityProfile,
+} from '../../api'
+import {
+  applyAccessibilityProfile,
+  defaultProfile,
+  getAccessibilityProfile,
+  recommendedProfile,
+  saveAccessibilityProfile,
 } from '../../accessibility'
 
 import {
@@ -20,19 +27,42 @@ export default function AccessibilityPage() {
   const [profile, setProfile] = useState(defaultProfile)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    fetchChildDetails(childId).then((data) => {
-      const value = data.child || data
+    let active = true
+
+    Promise.all([
+      fetchChildDetails(childId),
+      fetchChildAccessibilityProfile(childId).catch(() => ({ profile: null })),
+    ]).then(([childData, profileData]) => {
+      if (!active) return
+      const value = childData.child || childData
       setChild(value)
-      const next = getAccessibilityProfile(childId, value.disability_type)
+
+      const fallback = getAccessibilityProfile(childId, value.disability_type)
+      const next = profileData?.profile
+        ? { ...defaultProfile, ...profileData.profile }
+        : fallback
+
       setProfile(next)
+      saveAccessibilityProfile(childId, next)
       applyAccessibilityProfile(next)
-    }).finally(() => setLoading(false))
+    }).catch((err) => {
+      if (active) setError(err.message || 'تعذّر تحميل إعدادات الوصول')
+    }).finally(() => {
+      if (active) setLoading(false)
+    })
+
+    return () => { active = false }
   }, [childId])
 
   const chooseType = (type) => {
-    const next = recommendedProfile(type, type === 'other' ? profile.customDisabilityName : '')
+    const next = recommendedProfile(
+      type,
+      type === 'other' ? profile.customDisabilityName : '',
+    )
     setProfile(next)
     applyAccessibilityProfile(next)
     setSaved(false)
@@ -45,12 +75,28 @@ export default function AccessibilityPage() {
     setSaved(false)
   }
 
-  const save = () => {
-    saveAccessibilityProfile(childId, profile)
-    setSaved(true)
+  const save = async () => {
+    setSaving(true)
+    setError('')
+    try {
+      const data = await saveChildAccessibilityProfile(childId, profile)
+      const next = { ...defaultProfile, ...(data.profile || profile) }
+      saveAccessibilityProfile(childId, next)
+      applyAccessibilityProfile(next)
+      setProfile(next)
+      setSaved(true)
+    } catch (err) {
+      // نبقي النسخة المحلية كـ offline fallback، لكن لا ندّعي نجاح المزامنة.
+      saveAccessibilityProfile(childId, profile)
+      setError(err.message || 'تم الحفظ محلياً لكن تعذّرت المزامنة مع السيرفر')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  if (loading) return <div className="state"><div className="spinner" />جارِ تحميل الإعدادات...</div>
+  if (loading) {
+    return <div className="state"><div className="spinner" />جارِ تحميل الإعدادات...</div>
+  }
 
   return (
     <div className="accessibility-page">
@@ -58,6 +104,8 @@ export default function AccessibilityPage() {
         childName={child?.name}
         onBack={() => navigate(-1)}
       />
+
+      {error && <div className="error-box">{error}</div>}
 
       <AccessibilityTypeCard
         onChooseType={chooseType}
@@ -74,6 +122,7 @@ export default function AccessibilityPage() {
         onReset={() => chooseType('none')}
         onSave={save}
         saved={saved}
+        saving={saving}
       />
     </div>
   )

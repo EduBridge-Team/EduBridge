@@ -2,6 +2,7 @@
 // الطفل يرى صوراً مبعثرة ويجب أن يرتّبها حسب ترتيب الأحداث
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
@@ -200,6 +201,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
   //  عند الفوز
   // ═══════════════════════════════════════════════════════
   void _onWin() async {
+    await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds قصص',

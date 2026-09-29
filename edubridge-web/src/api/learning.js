@@ -148,3 +148,60 @@ export function markLessonDone(childId, lessonId) {
   });
 }
 
+
+
+// إعدادات الوصول المشتركة بين الويب والموبايل
+export function fetchChildAccessibilityProfile(childId) {
+  return request(`/children/${childId}/accessibility-profile`);
+}
+
+export function saveChildAccessibilityProfile(childId, profile) {
+  return request(`/children/${childId}/accessibility-profile`, {
+    method: "PUT",
+    body: JSON.stringify({ profile }),
+  });
+}
+
+// النجوم ونتائج الألعاب
+export function fetchChildEngagement(childId) {
+  return request(`/children/${childId}/engagement`);
+}
+
+export function addChildStars(childId, count = 1) {
+  return request(`/children/${childId}/rewards/stars`, {
+    method: "POST",
+    body: JSON.stringify({ count }),
+  });
+}
+
+export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, durationSeconds = null) {
+  return request(`/children/${childId}/game-attempts`, {
+    method: "POST",
+    body: JSON.stringify({
+      game_key: gameKey,
+      score,
+      stars_earned: starsEarned,
+      ...(durationSeconds == null ? {} : { duration_seconds: durationSeconds }),
+    }),
+  });
+}
+
+
+// تنبيهات الطوارئ الخاصة بالطفل
+export function fetchChildEmergencyAlerts(childId) {
+  return request(`/children/${childId}/emergency-alerts`);
+}
+
+export function sendChildEmergencyAlert(childId, message = '') {
+  return request(`/children/${childId}/emergency-alerts`, {
+    method: "POST",
+    body: JSON.stringify({ source: "web", ...(message ? { message } : {}) }),
+  });
+}
+
+export function resolveEmergencyAlert(id) {
+  return request(`/emergency-alerts/${id}/resolve`, {
+    method: "PUT",
+    body: "{}",
+  });
+}

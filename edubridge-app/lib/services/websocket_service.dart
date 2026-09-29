@@ -51,6 +51,13 @@ class WebSocketService {
 
   // ===== الاتصال بالـ WebSocket =====
   void connect(String token) {
+    if (Config.wsUrl.trim().isEmpty) {
+      debugPrint('[WS] endpoint not configured; using polling fallback');
+      _token = token;
+      _manuallyClosed = true;
+      return;
+    }
+
     if (_channel != null && _isConnected) {
       debugPrint('[WS] already connected');
       return;
