@@ -140,7 +140,7 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   Future<void> _onWin() async {
-    final score = ((4 / _attempts) * 100).round().clamp(0, 100);
+    final score = ((4 / _attempts) * 100).round().clamp(0, 100).toInt();
     await GameProgressService.instance.record(score);
 
     await VisualCelebration.show(
