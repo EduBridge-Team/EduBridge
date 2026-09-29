@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, Settings } from 'lucide-react'
-import { fetchChildDetails } from '../../api'
+import { fetchChildDetails, fetchChildEngagement } from '../../api'
 import { applyAccessibilityProfile, getAccessibilityProfile, typeFromText } from '../../accessibility'
 import EducationalGamePlayer from './EducationalGamePlayer'
 import { ageGroup, ageLabel, GAMES } from './educationalGamesData'
@@ -14,6 +14,7 @@ export default function EducationalGamesPage() {
   const [profile, setProfile] = useState(null)
   const [active, setActive] = useState(null)
   const [error, setError] = useState('')
+  const [engagement, setEngagement] = useState({ stars: 0, game_attempts_count: 0 })
   const breakTimer = useRef(null)
 
   useEffect(() => {
@@ -24,6 +25,10 @@ export default function EducationalGamesPage() {
       setProfile(currentProfile)
       applyAccessibilityProfile(currentProfile)
     }).catch((err) => setError(err.message))
+
+    fetchChildEngagement(childId)
+      .then((data) => setEngagement(data))
+      .catch(() => {})
 
     return () => clearTimeout(breakTimer.current)
   }, [childId])
@@ -75,7 +80,7 @@ export default function EducationalGamesPage() {
       <span>{type === 'blind' ? '🎧' : type === 'deaf' ? '🤟' : '🎉'}</span>
       <div>
         <h2>وقت المرح يا {child.name}!</h2>
-        <p>{games.length} ألعاب مناسبة لعمرك — {ageLabel(group)}</p>
+        <p>{games.length} ألعاب مناسبة لعمرك — {ageLabel(group)} · ⭐ {engagement.stars || 0} نجمة</p>
       </div>
     </section>
 
@@ -92,9 +97,11 @@ export default function EducationalGamesPage() {
     {active && (
       <EducationalGamePlayer
         game={active}
+        childId={childId}
         age={Number(child.age) || 8}
         profile={profile}
         close={closeGame}
+        onRecorded={(data) => setEngagement((current) => ({ ...current, stars: data.stars ?? current.stars, game_attempts_count: (current.game_attempts_count || 0) + 1 }))}
       />
     )}
   </div>
