@@ -92,19 +92,23 @@ export default function WeeklyReportsPage() {
   }
 
   return (
-    <div className="fp-page">
-      <div className="fp-head">
+    <div className="fp-page weekly-reports-page-v2">
+      <section className="fp-hero reports-hero">
         <div>
-          <h2>📊 التقارير الأسبوعية</h2>
-          <div className="meta">ملخص التقدم والدروس والواجبات والجلسات</div>
+          <span className="fp-eyebrow">متابعة التقدّم</span>
+          <h1>التقارير الأسبوعية</h1>
+          <p>ملخص واضح للدروس والواجبات واجتماعات الدعم والإنجازات الأسبوعية.</p>
         </div>
 
-        <select value={childId} onChange={(event) => setChildId(event.target.value)}>
-          {children.map((child) => (
-            <option key={child.id} value={child.id}>{child.name}</option>
-          ))}
-        </select>
-      </div>
+        <label className="reports-child-select">
+          <span>الطفل</span>
+          <select value={childId} onChange={(event) => setChildId(event.target.value)}>
+            {children.map((child) => (
+              <option key={child.id} value={child.id}>{child.name}</option>
+            ))}
+          </select>
+        </label>
+      </section>
 
       {error && <div className="fp-error">{error}</div>}
 
