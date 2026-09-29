@@ -117,11 +117,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           horizontal: 16,
                           vertical: 10,
                         ),
+                        backgroundColor:
+                            Colors.white.withValues(alpha: .82),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22),
+                          borderRadius: BorderRadius.circular(18),
                           side: BorderSide(
-                            color: AppColors.brandBlue.withValues(alpha: 0.25),
-                            width: 1.2,
+                            color: AppColors.brandBlue.withValues(alpha: .14),
                           ),
                         ),
                       ),
@@ -149,7 +150,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                 // ─── النقاط ───
                 Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 20),
+                  padding: const EdgeInsets.only(top: 2, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(_pages.length, (i) {
@@ -158,7 +159,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeOut,
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: active ? 32 : 8,
+                        width: active ? 28 : 8,
                         height: 8,
                         decoration: BoxDecoration(
                           color: active
@@ -183,7 +184,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                 // ─── زر ابدأ ───
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   child: FadeTransition(
                     opacity: _fadeController,
                     child: ScaleTransition(
@@ -195,19 +196,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 60,
-                        child: ElevatedButton(
+                        height: 56,
+                        child: FilledButton(
                           onPressed: _isLastPage ? _goToLogin : null,
-                          style: ElevatedButton.styleFrom(
+                          style: FilledButton.styleFrom(
                             backgroundColor: AppColors.brandBlue,
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.transparent,
                             disabledForegroundColor: Colors.transparent,
-                            elevation: 8,
+                            elevation: 2,
                             shadowColor:
-                                AppColors.brandBlue.withValues(alpha: 0.4),
+                                AppColors.brandBlue.withValues(alpha: 0.16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(18),
                             ),
                           ),
                           child: const Row(
@@ -216,9 +217,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               Text(
                                 'ابدأ',
                                 style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                               SizedBox(width: 8),

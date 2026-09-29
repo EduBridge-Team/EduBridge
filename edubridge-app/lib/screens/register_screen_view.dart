@@ -16,8 +16,12 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const BrandLockup(iconSize: 58, fontSize: 32, gap: 9),
-                    const SizedBox(height: 18),
+                    const BrandLockup(
+                      iconSize: 48,
+                      fontSize: 28,
+                      gap: 7,
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       'ابدأ رحلتك مع EduBridge',
                       textAlign: TextAlign.center,

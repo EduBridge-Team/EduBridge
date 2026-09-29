@@ -22,34 +22,87 @@ Widget _buildLessonsTab(
   return Column(
     children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: TextField(
-          style: const TextStyle(fontSize: 17),
-          decoration: const InputDecoration(
-            hintText: 'ابحث عن درس...',
-            prefixIcon: Icon(AppIcons.search),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          ),
-          onChanged: onQueryChanged,
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'مكتبة الدروس',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w800,
+                color: c.heading,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'استعرض الدروس الحالية أو ابحث عن محتوى محدد.',
+              style: TextStyle(fontSize: 13, color: c.muted),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              style: const TextStyle(fontSize: 16),
+              decoration: InputDecoration(
+                hintText: 'ابحث عن درس...',
+                prefixIcon: const Icon(AppIcons.search),
+                suffixIcon: query.isNotEmpty
+                    ? IconButton(
+                        tooltip: 'مسح البحث',
+                        onPressed: () => onQueryChanged(''),
+                        icon: const Icon(Icons.close_rounded),
+                      )
+                    : null,
+              ),
+              onChanged: onQueryChanged,
+            ),
+          ],
         ),
       ),
       Expanded(
         child: filtered.isEmpty
             ? ListView(
+                padding: const EdgeInsets.all(24),
                 children: [
                   const SizedBox(height: 80),
-                  Icon(AppIcons.lesson, size: 72, color: c.muted),
-                  const SizedBox(height: 16),
                   Center(
-                    child: Text(
-                      lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
-                      style: TextStyle(fontSize: 18, color: c.muted),
+                    child: Container(
+                      width: 84,
+                      height: 84,
+                      decoration: BoxDecoration(
+                        color: c.tintTeal,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        AppIcons.lesson,
+                        size: 40,
+                        color: AppColors.brandBlue,
+                      ),
                     ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    lessons.isEmpty
+                        ? 'لا توجد دروس بعد'
+                        : 'لا نتائج مطابقة لبحثك',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                      color: c.heading,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    lessons.isEmpty
+                        ? 'ابدأ بإضافة أول درس إلى مكتبتك.'
+                        : 'جرّب كلمة بحث مختلفة.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13.5, color: c.muted),
                   ),
                 ],
               )
             : ListView.builder(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
                 itemCount: filtered.length,
                 itemBuilder: (context, i) =>
                     _buildTeacherLessonCard(filtered[i], c, types, onViewLesson),
@@ -105,11 +158,23 @@ Widget _buildTeacherLessonCard(
   final hasVideo = (lesson['video_url']?.toString().isNotEmpty ?? false);
   final hasAudio = (lesson['audio_url']?.toString().isNotEmpty ?? false);
 
-  return Card(
-    margin: const EdgeInsets.symmetric(vertical: 6),
-    child: ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Container(
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Material(
+      color: c.card,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: c.line),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => onViewLesson(lesson),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
         width: 46,
         height: 46,
         decoration: BoxDecoration(
@@ -126,41 +191,63 @@ Widget _buildTeacherLessonCard(
           color: targetColor,
         ),
       ),
-      title: Text(title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: c.heading,
-          )),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (tag != null) Text(tag, style: const TextStyle(fontSize: 12)),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: targetColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(targetIcon, size: 11, color: targetColor),
-                const SizedBox(width: 4),
-                Text(targetBadge,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: targetColor,
-                    )),
-              ],
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: c.heading,
+                      ),
+                    ),
+                    if (tag != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        tag,
+                        style: TextStyle(fontSize: 12, color: c.muted),
+                      ),
+                    ],
+                    const SizedBox(height: 7),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: targetColor.withValues(alpha: .10),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(targetIcon, size: 12, color: targetColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            targetBadge,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: targetColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(Icons.arrow_back_rounded, color: c.muted, size: 20),
+            ],
           ),
-        ],
+        ),
       ),
-      trailing: const Icon(Icons.chevron_left),
-      onTap: () => onViewLesson(lesson),
     ),
   );
 }
@@ -194,7 +281,7 @@ Widget _buildLessonViewModal(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: c.card,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(28),
             ),
             constraints: const BoxConstraints(maxHeight: 600),
             child: SingleChildScrollView(
@@ -208,7 +295,7 @@ Widget _buildLessonViewModal(
                         child: Text(title,
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: c.heading,
                             )),
                       ),
@@ -225,7 +312,7 @@ Widget _buildLessonViewModal(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.brandTeal.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                       ),
                       child: Text(tag,
                           style: const TextStyle(

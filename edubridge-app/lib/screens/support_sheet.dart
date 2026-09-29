@@ -84,10 +84,19 @@ class _SupportSheetState extends State<SupportSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: safeModalBottom(context)),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.card,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .10),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -115,7 +124,7 @@ class _SupportSheetState extends State<SupportSheet> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: c.heading,
                   ),
                 ),
@@ -164,12 +173,8 @@ class _SupportSheetState extends State<SupportSheet> {
               ),
             ],
             const SizedBox(height: 20),
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: _sending ? null : _sendTicket,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandBlue,
-                minimumSize: const Size(0, 52),
-              ),
               icon: _sending
                   ? const SizedBox(
                       width: 20,

@@ -11,7 +11,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
             'تسليم: ${widget.homework.title}',
             style: TextStyle(
               fontSize: large ? 20 : 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: c.heading,
             ),
           ),
@@ -35,7 +35,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         alignLabelWithHint: true,
         prefixIcon: const Icon(AppIcons.edit),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(18),
         ),
       ),
     );
@@ -50,7 +50,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           'أضف صوراً أو ملفات للحل:',
           style: TextStyle(
             fontSize: large ? 18 : 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: c.heading,
           ),
         ),
@@ -62,8 +62,8 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
     return SizedBox(
       width: double.infinity,
       height: large ? 70 : 56,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
+      child: FilledButton.icon(
+        style: FilledButton.styleFrom(
           backgroundColor: AppColors.brandTeal,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -75,7 +75,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           'اختر صوراً من المعرض',
           style: TextStyle(
             fontSize: large ? 18 : 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
           ),
         ),
         onPressed: _pickFromGallery,
@@ -89,12 +89,12 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         Expanded(
           child: SizedBox(
             height: large ? 60 : 52,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
                 backgroundColor: AppColors.orange,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(18),
                 ),
               ),
               icon: Icon(AppIcons.camera, size: large ? 26 : 22),
@@ -115,7 +115,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
                 foregroundColor: AppColors.brandBlue,
                 side: const BorderSide(color: AppColors.brandBlue, width: 2),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(18),
                 ),
               ),
               icon: Icon(AppIcons.attach, size: large ? 26 : 22),
@@ -142,7 +142,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
             Text(
               'الملفات المرفوعة (${_files.length}):',
               style: TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 fontSize: large ? 17 : 15,
                 color: c.heading,
               ),
@@ -196,8 +196,8 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
   Widget _buildSubmitButton(bool large) {
     return SizedBox(
       height: large ? 70 : 56,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
+      child: FilledButton.icon(
+        style: FilledButton.styleFrom(
           backgroundColor: AppColors.green,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -218,7 +218,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           _saving ? 'جارِ الإرسال...' : 'إرسال التسليم',
           style: TextStyle(
             fontSize: large ? 20 : 17,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
           ),
         ),
         onPressed: _saving ? null : _submit,
@@ -251,7 +251,7 @@ class _FilePreview extends StatelessWidget {
           width: 100,
           height: 100,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(color: c.line, width: 2),
             color: c.card,
           ),
