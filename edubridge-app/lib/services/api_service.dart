@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
+import 'google_auth_service.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
@@ -71,6 +72,16 @@ class ApiService {
   // ===== دوال المصادقة (Auth) =====
 
   static Future<String?> login(String email, String password) => _apiCoreLogin(email, password);
+
+  static Future<String?> googleLogin(String idToken) =>
+      _apiCoreGoogleLogin(idToken);
+
+  static Future<String?> forgotPassword(String email) =>
+      _apiCoreForgotPassword(email);
+
+  static Future<String?> resetPassword(
+          String email, String token, String password) =>
+      _apiCoreResetPassword(email, token, password);
 
   static Future<String?> register(
       String name, String email, String password, String role,
