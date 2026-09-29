@@ -12,21 +12,46 @@ Widget _buildChildrenTab(
 ) {
   if (children.isEmpty) {
     return ListView(
+      padding: const EdgeInsets.all(24),
       children: [
-        const SizedBox(height: 80),
-        Icon(Icons.people_outline, size: 72, color: c.muted),
-        const SizedBox(height: 16),
+        const SizedBox(height: 90),
         Center(
-          child: Text('لا يوجد أطفال موزّعين عليك حالياً',
-              style: TextStyle(fontSize: 18, color: c.muted),
-              textAlign: TextAlign.center),
+          child: Container(
+            width: 84,
+            height: 84,
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.people_outline_rounded,
+              size: 40,
+              color: AppColors.brandBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        Text(
+          'لا يوجد أطفال موزّعون عليك حالياً',
+          style: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: c.heading,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'سيظهر الأطفال هنا فور إسنادهم إلى حسابك.',
+          style: TextStyle(fontSize: 13.5, color: c.muted),
+          textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
   return ListView.builder(
-    padding: const EdgeInsets.all(12),
+    padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
     itemCount: children.length,
     itemBuilder: (context, i) => _TeacherChildCard(
       child: children[i],
