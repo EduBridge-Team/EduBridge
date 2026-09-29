@@ -94,16 +94,16 @@ export default function VerificationsPage() {
   }
 
   return (
-    <div className="container">
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ShieldCheck size={20} /> مراجعة التوثيق
-        </h2>
-      </div>
+    <div className="container verification-admin-page-v2">
+      <section className="verification-admin-hero">
+        <span className="role-eyebrow"><ShieldCheck size={18} /> التحقق والمراجعة</span>
+        <h1>مراجعة التوثيق</h1>
+        <p>راجع هويات المستخدمين وبيانات الأطفال والشهادات المهنية من مكان واحد.</p>
+      </section>
 
       <AdminSectionTabs />
 
-      <div className="tabs">
+      <div className="tabs verification-tabs">
         <button className={tab === 'users' ? 'tab on' : 'tab'} onClick={() => setTab('users')}>
           المستخدمون ({users.length})
         </button>
@@ -115,7 +115,7 @@ export default function VerificationsPage() {
         </button>
       </div>
 
-      <div className="tabs" style={{ marginTop: 10 }}>
+      <div className="tabs verification-status-tabs">
         {[
           ['pending', 'المعلّقة'],
           ['verified', 'المعتمدة'],
