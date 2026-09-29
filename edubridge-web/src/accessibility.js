@@ -28,6 +28,7 @@ export const defaultProfile = {
   colorPatterns: false, noFlashing: false, calmColors: false, noTimers: false,
   speechExercises: false, emergencyButton: false, rewardSystem: false,
   verySimpleLanguage: false, shortSentences: false, voiceControl: false,
+  noTimedInteractions: false,
   screenReaderOptimized: false, videoCaptions: false, signLanguageTranslation: false,
 }
 const recommended = {
