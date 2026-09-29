@@ -38,10 +38,15 @@ class _HomeworkCard extends StatelessWidget {
       statusText = 'لم يُسلَّم';
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: c.line),
+      ),
+      child:
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -52,7 +57,7 @@ class _HomeworkCard extends StatelessWidget {
                     homework.title,
                     style: TextStyle(
                       fontSize: large ? 20 : 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: c.heading,
                     ),
                   ),
@@ -62,13 +67,13 @@ class _HomeworkCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     statusText,
                     style: TextStyle(
                       color: statusColor,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: large ? 14 : 12,
                     ),
                   ),
@@ -114,20 +119,16 @@ class _HomeworkCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: large ? 64 : 52,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
                     backgroundColor: AppColors.brandTealDeep,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
                   ),
                   icon: Icon(AppIcons.upload, size: large ? 28 : 24),
                   label: Text(
                     'تسليم الواجب',
                     style: TextStyle(
                       fontSize: large ? 18 : 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   onPressed: onSubmit,
@@ -135,7 +136,6 @@ class _HomeworkCard extends StatelessWidget {
               ),
           ],
         ),
-      ),
     );
   }
 
@@ -161,7 +161,7 @@ class _HomeworkCard extends StatelessWidget {
               Text(
                 'سلّمت هذا الواجب',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   fontSize: large ? 17 : 15,
                   color: c.onTint,
                 ),
@@ -189,7 +189,7 @@ class _HomeworkCard extends StatelessWidget {
                 Text(
                   'الدرجة: ${submission.grade}',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     fontSize: large ? 17 : 15,
                     color: AppColors.greenDeep,
                   ),
