@@ -185,3 +185,23 @@ export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, dura
     }),
   });
 }
+
+
+// تنبيهات الطوارئ الخاصة بالطفل
+export function fetchChildEmergencyAlerts(childId) {
+  return request(`/children/${childId}/emergency-alerts`);
+}
+
+export function sendChildEmergencyAlert(childId, message = '') {
+  return request(`/children/${childId}/emergency-alerts`, {
+    method: "POST",
+    body: JSON.stringify({ source: "web", ...(message ? { message } : {}) }),
+  });
+}
+
+export function resolveEmergencyAlert(id) {
+  return request(`/emergency-alerts/${id}/resolve`, {
+    method: "PUT",
+    body: "{}",
+  });
+}
