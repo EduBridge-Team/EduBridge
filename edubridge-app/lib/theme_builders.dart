@@ -5,42 +5,55 @@ TextTheme _brandTextTheme(TextTheme base, {required bool dark}) {
   final heading = dark ? JisrColors.darkHeading : AppColors.ink;
   final body = dark ? JisrColors.darkBody : const Color(0xFF294861);
   final muted = dark ? const Color(0xFF91A8BA) : AppColors.muted;
+  final cairo = GoogleFonts.cairoTextTheme(base);
 
-  return base.copyWith(
-    displaySmall: TextStyle(
+  return cairo.copyWith(
+    displaySmall: cairo.displaySmall?.copyWith(
       fontSize: 32,
       height: 1.2,
       fontWeight: FontWeight.w800,
       color: heading,
     ),
-    headlineMedium: TextStyle(
+    headlineMedium: cairo.headlineMedium?.copyWith(
       fontSize: 26,
       height: 1.25,
       fontWeight: FontWeight.w800,
       color: heading,
     ),
-    headlineSmall: TextStyle(
+    headlineSmall: cairo.headlineSmall?.copyWith(
       fontSize: 22,
       height: 1.3,
       fontWeight: FontWeight.w800,
       color: heading,
     ),
-    titleLarge: TextStyle(
+    titleLarge: cairo.titleLarge?.copyWith(
       fontSize: 20,
       height: 1.3,
       fontWeight: FontWeight.w700,
       color: heading,
     ),
-    titleMedium: TextStyle(
+    titleMedium: cairo.titleMedium?.copyWith(
       fontSize: 17,
       height: 1.35,
       fontWeight: FontWeight.w700,
       color: heading,
     ),
-    bodyLarge: TextStyle(fontSize: 17, height: 1.55, color: body),
-    bodyMedium: TextStyle(fontSize: 15.5, height: 1.5, color: body),
-    bodySmall: TextStyle(fontSize: 13.5, height: 1.45, color: muted),
-    labelLarge: TextStyle(
+    bodyLarge: cairo.bodyLarge?.copyWith(
+      fontSize: 17,
+      height: 1.55,
+      color: body,
+    ),
+    bodyMedium: cairo.bodyMedium?.copyWith(
+      fontSize: 15.5,
+      height: 1.5,
+      color: body,
+    ),
+    bodySmall: cairo.bodySmall?.copyWith(
+      fontSize: 13.5,
+      height: 1.45,
+      color: muted,
+    ),
+    labelLarge: cairo.labelLarge?.copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: heading,
@@ -57,10 +70,12 @@ ThemeData buildJisrTheme() {
     tertiary: AppColors.brandGreen,
     surface: AppColors.surface,
   );
+  final cairoFamily = GoogleFonts.cairo().fontFamily;
   final base = ThemeData(
     useMaterial3: true,
     colorScheme: scheme,
     scaffoldBackgroundColor: AppColors.cream,
+    fontFamily: cairoFamily,
   );
 
   return base.copyWith(
@@ -228,11 +243,13 @@ ThemeData buildJisrDarkTheme() {
     tertiary: AppColors.brandGreen,
     surface: surface,
   );
+  final cairoFamily = GoogleFonts.cairo().fontFamily;
   final base = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: scheme,
     scaffoldBackgroundColor: bg,
+    fontFamily: cairoFamily,
   );
 
   return base.copyWith(

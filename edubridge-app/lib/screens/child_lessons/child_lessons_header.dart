@@ -9,14 +9,21 @@ PreferredSizeWidget buildChildLessonsAppBar({
   required VoidCallback onOpenProgress,
 }) {
   return AppBar(
+    toolbarHeight: 72,
     flexibleSpace: Container(
-      decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+      decoration: const BoxDecoration(
+        gradient: AppColors.headerGradient,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
+      ),
+    ),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
     ),
     title: Text(
       'دروس $childName',
       style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
+        fontSize: 19,
+        fontWeight: FontWeight.w800,
         color: Colors.white,
       ),
       overflow: TextOverflow.ellipsis,
@@ -29,7 +36,7 @@ PreferredSizeWidget buildChildLessonsAppBar({
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

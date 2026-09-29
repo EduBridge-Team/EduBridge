@@ -206,17 +206,23 @@ class _ParentScreenState extends State<ParentScreen> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _openAddChild,
           icon: const Icon(AppIcons.add),
-          label: const Text('إضافة طفل'),
-          backgroundColor: AppColors.brandBlue,
+          label: const Text(
+            'إضافة طفل',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       ),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      toolbarHeight: 68,
       flexibleSpace: Container(
-        decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+        decoration: const BoxDecoration(
+          gradient: AppColors.headerGradient,
+        ),
       ),
       leadingWidth: 70,
       leading: const Center(child: ProfileAvatarButton(size: 44)),
@@ -253,7 +259,7 @@ class _ParentScreenState extends State<ParentScreen> {
             ),
             DashboardMenuAction(
               id: 'parent_lessons',
-              label: 'دروس لولي الأمر',
+              label: 'دروس ولي الأمر',
               icon: AppIcons.parent,
               onSelected: _openParentLessons,
             ),

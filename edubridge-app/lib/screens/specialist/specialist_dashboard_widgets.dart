@@ -30,7 +30,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 9,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -46,16 +46,16 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: _showOnlyMine
               ? AppColors.brandBlue.withValues(alpha: 0.1)
               : AppColors.orange.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color:
                 _showOnlyMine ? AppColors.brandBlue : AppColors.brandTealDeep,
-            width: 1.8,
+            width: 1.2,
           ),
         ),
         child: Row(
@@ -67,7 +67,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                 color: _showOnlyMine
                     ? AppColors.brandBlue
                     : AppColors.brandTealDeep,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
               ),
               alignment: Alignment.center,
               child: Icon(
@@ -88,7 +88,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                         _showOnlyMine ? 'أطفالي فقط' : 'قائمة الانتظار',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: _showOnlyMine
                               ? AppColors.brandBlue
                               : AppColors.brandTealDeep,
@@ -108,7 +108,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                           '${_filteredChildren.length}',
                           style: const TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),

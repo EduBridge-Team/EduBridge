@@ -132,53 +132,58 @@ class _ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final initial = senderName.trim().isNotEmpty
+        ? senderName.trim().characters.first
+        : '؟';
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!isMe)
+          if (!isMe) ...[
             Container(
+              width: 34,
+              height: 34,
               margin: const EdgeInsets.only(right: 8),
-              decoration: const BoxDecoration(
-                color: AppColors.orange,
-                shape: BoxShape.circle,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.orange,
-                child: Text(
-                  senderName.characters.first,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+              alignment: Alignment.center,
+              child: Text(
+                initial,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.brandBlue,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
+          ],
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 10),
+                  horizontal: 15, vertical: 11),
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
                   bottomLeft: isMe
-                      ? const Radius.circular(16)
-                      : const Radius.circular(4),
+                      ? const Radius.circular(20)
+                      : const Radius.circular(6),
                   bottomRight: isMe
-                      ? const Radius.circular(4)
-                      : const Radius.circular(16),
+                      ? const Radius.circular(6)
+                      : const Radius.circular(20),
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -189,15 +194,19 @@ class _ChatBubble extends StatelessWidget {
                     Text(
                       senderName,
                       style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.orangeDeep,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.brandBlue,
                       ),
                     ),
                   const SizedBox(height: 2),
                   Text(
                     message,
-                    style: TextStyle(color: textColor),
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 15,
+                      height: 1.45,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -213,19 +222,17 @@ class _ChatBubble extends StatelessWidget {
           ),
           if (isMe)
             Container(
+              width: 34,
+              height: 34,
               margin: const EdgeInsets.only(left: 8),
-              decoration: const BoxDecoration(
-                color: AppColors.brandBlue,
-                shape: BoxShape.circle,
+              decoration: BoxDecoration(
+                color: AppColors.brandBlue.withValues(alpha: .12),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.brandBlue,
-                child: Icon(
-                  AppIcons.profile,
-                  size: 16,
-                  color: Colors.white,
-                ),
+              child: const Icon(
+                AppIcons.profile,
+                size: 17,
+                color: AppColors.brandBlue,
               ),
             ),
         ],
