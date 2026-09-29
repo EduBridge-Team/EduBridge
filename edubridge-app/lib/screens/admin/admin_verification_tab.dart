@@ -208,13 +208,17 @@ class _FilterChip extends StatelessWidget {
           color: selected ? AppColors.brandBlue : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? AppColors.brandBlue : Colors.grey.shade300,
+            color: selected
+                ? AppColors.brandBlue
+                : JisrColors.of(context).line,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : Colors.grey.shade700,
+            color: selected
+                ? Colors.white
+                : JisrColors.of(context).muted,
             fontWeight: FontWeight.w800,
           ),
         ),
