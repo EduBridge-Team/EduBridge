@@ -64,7 +64,7 @@ export default function ChildDetailsPage() {
   }
 
   return (
-    <div>
+    <div className="child-details-page">
       <ChildDetailsHeader name={name} onBack={() => navigate(-1)} />
       <ChildInfoCard child={child} />
       <ChildEvaluationsSection evaluations={evaluations} />
