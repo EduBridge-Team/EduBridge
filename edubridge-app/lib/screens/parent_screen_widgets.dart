@@ -5,7 +5,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
+      padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
       decoration: const BoxDecoration(
         gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
@@ -14,20 +14,30 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         future: ApiService.getName(),
         builder: (context, snap) {
           final name = snap.data ?? 'ولي الأمر';
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              AdaptiveText(
-                'مرحباً، $name',
-                type: AdaptiveTextType.title,
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
-              const SizedBox(height: 4),
-              AdaptiveText(
-                'تابع أطفالك وتقدّمهم التعليمي من مكان واحد',
-                type: AdaptiveTextType.caption,
-                color: Colors.white.withValues(alpha: 0.86),
+              const ProfileAvatarButton(size: 56),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AdaptiveText(
+                      'مرحباً، $name',
+                      type: AdaptiveTextType.title,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    const SizedBox(height: 4),
+                    AdaptiveText(
+                      'تابع أطفالك وتقدّمهم التعليمي من مكان واحد',
+                      type: AdaptiveTextType.caption,
+                      color: Colors.white.withValues(alpha: 0.88),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
