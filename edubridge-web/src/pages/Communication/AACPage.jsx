@@ -86,12 +86,13 @@ export default function AACPage() {
 
   return (
     <div className="fp-page aac-page">
-      <div className="fp-head">
+      <section className="fp-hero aac-hero">
         <div>
-          <h2>🗣️ تواصل بالصور</h2>
-          <div className="meta">اختر الصور لبناء جملة ثم اضغط «قلها»</div>
+          <span className="fp-eyebrow">التواصل البديل والمعزز</span>
+          <h1>تواصل بالصور</h1>
+          <p>اختر الرموز لبناء جملة واضحة ثم استخدم القراءة الصوتية للتعبير عنها.</p>
         </div>
-      </div>
+      </section>
 
       <AACSentencePanel
         sentence={sentence}

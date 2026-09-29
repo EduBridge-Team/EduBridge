@@ -204,7 +204,7 @@ export default function SpecialistWorkflowPage() {
   }
 
   return (
-    <div className="fp-page">
+    <div className="fp-page specialist-workflow-page-v2">
       <SpecialistWorkflowHeader
         filter={filter}
         onFilterChange={setFilter}

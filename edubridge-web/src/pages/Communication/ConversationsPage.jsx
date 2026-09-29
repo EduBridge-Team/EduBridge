@@ -117,7 +117,7 @@ export default function ConversationsPage() {
   }
 
   return (
-    <div className={isParent ? 'parent-conversations-page' : ''}>
+    <div className={isParent ? 'parent-conversations-page' : 'conversations-page-v2'}>
       {isParent ? (
         <>
           <section className="pcv-heading">
@@ -146,12 +146,14 @@ export default function ConversationsPage() {
           </section>
         </>
       ) : (
-        <div className="page-title">
-          <MessageCircle size={22} />
-          <h2>المحادثات</h2>
-          <span style={{ flex: 1 }} />
-          <button className="btn small" onClick={openPicker}><Plus size={17} /> محادثة جديدة</button>
-        </div>
+        <section className="conversations-hero">
+          <div>
+            <span className="role-eyebrow"><MessageCircle size={18} /> التواصل</span>
+            <h1>المحادثات</h1>
+            <p>تواصل مع الفريق التعليمي والإدارة ضمن مساحة منظمة وآمنة.</p>
+          </div>
+          <button className="btn" onClick={openPicker}><Plus size={17} /> محادثة جديدة</button>
+        </section>
       )}
 
       {error && <div className="error-box">{error}</div>}

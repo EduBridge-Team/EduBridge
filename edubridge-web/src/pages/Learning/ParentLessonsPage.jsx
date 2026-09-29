@@ -58,16 +58,18 @@ export default function ParentLessonsPage() {
   }
 
   return (
-    <div className="fp-page">
-      <div className="fp-head">
+    <div className="fp-page parent-lessons-page-v2">
+      <section className="fp-hero parent-lessons-hero">
         <div>
-          <h2>👪 دروس لولي الأمر</h2>
-          <div className="meta">نصائح وإرشادات مخصصة لمساعدتك في دعم طفلك</div>
+          <span className="fp-eyebrow">دعم الأسرة</span>
+          <h1>دروس لولي الأمر</h1>
+          <p>نصائح وإرشادات مخصصة تساعدك على دعم طفلك ومتابعة رحلته التعليمية.</p>
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
-      </div>
+      </section>
 
       <input
+        className="parent-lessons-search"
         type="search"
         placeholder="ابحث في دروس ولي الأمر..."
         value={query}

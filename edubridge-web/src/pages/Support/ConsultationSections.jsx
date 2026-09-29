@@ -14,7 +14,7 @@ function ConsultationBadge({ status }) {
 
 export function ConsultationRequestForm({ children, error, form, onChange, onSubmit, sending }) {
   return (
-    <form onSubmit={onSubmit} className="card">
+    <form onSubmit={onSubmit} className="card consultation-request-card">
       <h3>طلب دراسة حالة جديد</h3>
       <label>الطفل</label>
       <select
@@ -66,7 +66,7 @@ export function ConsultationList({
   if (items.length === 0) return <div className="state">لا توجد طلبات</div>
 
   return items.map((consultation) => (
-    <div key={consultation.id} className="card">
+    <div key={consultation.id} className="card consultation-card-v2">
       <div className="ticket-head">
         <h3
           className="clickable"

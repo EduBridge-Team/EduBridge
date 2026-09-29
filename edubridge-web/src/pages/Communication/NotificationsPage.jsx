@@ -90,19 +90,22 @@ export default function NotificationsPage() {
   const hasUnread = items.some((n) => !n.is_read)
 
   return (
-    <div>
-      <div className="page-title">
-        <button className="back-btn" onClick={() => navigate(-1)} title="رجوع">
-          <ArrowRight size={18} />
-        </button>
-        <h2>الإشعارات</h2>
-        <div className="topbar-spacer" />
-        {hasUnread && (
-          <button className="btn small outline" onClick={readAll}>
-            تعليم الكل كمقروء
+    <div className="notifications-page-v2">
+      <section className="notifications-hero">
+        <div className="notifications-hero-copy">
+          <span className="role-eyebrow"><Bell size={18} /> مركز الإشعارات</span>
+          <h1>الإشعارات</h1>
+          <p>تابع آخر التحديثات المتعلقة بالأطفال والدروس والتقييمات.</p>
+        </div>
+        <div className="notifications-hero-actions">
+          <button className="btn outline" onClick={() => navigate(-1)}>
+            <ArrowRight size={17} /> رجوع
           </button>
-        )}
-      </div>
+          {hasUnread && (
+            <button className="btn" onClick={readAll}>قراءة الكل</button>
+          )}
+        </div>
+      </section>
 
       {loading ? (
         <div className="state">
@@ -127,7 +130,7 @@ export default function NotificationsPage() {
         items.map((n) => (
           <div
             key={n.id}
-            className={`card notif-card clickable ${n.is_read ? '' : 'unread'}`}
+            className={`card notif-card notification-card-v2 clickable ${n.is_read ? '' : 'unread'}`}
             onClick={() => readOne(n)}
           >
             <div className="notif-icon">{iconFor(n.type)}</div>

@@ -121,12 +121,12 @@ export default function ConsultationsPage() {
   }
 
   return (
-    <div>
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Stethoscope size={20} /> دراسة الحالة مع المختصين
-        </h2>
-      </div>
+    <div className="consultations-page-v2">
+      <section className="consultations-hero">
+        <span className="role-eyebrow"><Stethoscope size={18} /> الاستشارات</span>
+        <h1>دراسة الحالة مع المختصين</h1>
+        <p>أنشئ طلب دراسة حالة، تابع التوصيات، وسجّل تطورات المتابعة المهنية.</p>
+      </section>
 
       {!isSpecialist && (
         <ConsultationRequestForm
@@ -139,8 +139,8 @@ export default function ConsultationsPage() {
         />
       )}
 
-      <div className="page-title" style={{ marginTop: 8 }}>
-        <h3>{isSpecialist ? 'طلبات دراسة الحالة' : 'طلباتي'}</h3>
+      <div className="consultations-section-head">
+        <h2>{isSpecialist ? 'طلبات دراسة الحالة' : 'طلباتي'}</h2>
       </div>
 
       {error && isSpecialist && <div className="error-box">{error}</div>}

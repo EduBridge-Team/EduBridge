@@ -1,18 +1,22 @@
 export function SpecialistWorkflowHeader({ filter, onFilterChange }) {
   return (
-    <div className="fp-head">
+    <section className="fp-hero specialist-workflow-hero">
       <div>
-        <h2>🤝 متابعة المختصين</h2>
-        <div className="meta">التخصص واقتراحات متابعة الأطفال</div>
+        <span className="fp-eyebrow">إدارة المتابعة</span>
+        <h1>متابعة المختصين</h1>
+        <p>أدر التخصصات، الاقتراحات، وتقييم الخطط التعليمية من مكان واحد.</p>
       </div>
 
-      <select value={filter} onChange={(event) => onFilterChange(event.target.value)}>
-        <option value="pending">معلقة</option>
-        <option value="accepted">مقبولة</option>
-        <option value="rejected">مرفوضة</option>
-        <option value="all">الكل</option>
-      </select>
-    </div>
+      <label className="reports-child-select">
+        <span>الحالة</span>
+        <select value={filter} onChange={(event) => onFilterChange(event.target.value)}>
+          <option value="pending">معلقة</option>
+          <option value="accepted">مقبولة</option>
+          <option value="rejected">مرفوضة</option>
+          <option value="all">الكل</option>
+        </select>
+      </label>
+    </section>
   )
 }
 
@@ -24,7 +28,7 @@ export function SpecialistProfileCard({
   onSpecialtyChange,
 }) {
   return (
-    <section className="fp-card">
+    <section className="fp-card specialist-workflow-card">
       <h3>تخصصي</h3>
 
       <div className="fp-row">
@@ -64,7 +68,7 @@ export function SpecialistSuggestionForm({
   )
 
   return (
-    <section className="fp-card">
+    <section className="fp-card specialist-workflow-card">
       <h3>اقتراح مختص لطفل</h3>
 
       <form className="fp-form" onSubmit={onSubmit}>
@@ -110,7 +114,7 @@ export function SpecialistSuggestionForm({
           required
         />
 
-        <button className="btn success" disabled={busy}>إرسال الاقتراح</button>
+        <button className="btn" disabled={busy}>إرسال الاقتراح</button>
       </form>
     </section>
   )
@@ -129,7 +133,7 @@ export function SpecialistSuggestionList({
         <div className="fp-empty">لا توجد اقتراحات</div>
       ) : (
         items.map((suggestion) => (
-          <article className="fp-card" key={suggestion.id}>
+          <article className="fp-card specialist-workflow-card" key={suggestion.id}>
             <div className="fp-head">
               <h3>{suggestion.child_name}</h3>
               <span className="fp-badge">{suggestion.status}</span>
@@ -149,7 +153,7 @@ export function SpecialistSuggestionList({
             {isSpecialist && suggestion.status === 'pending' && (
               <div className="fp-actions">
                 <button
-                  className="btn success"
+                  className="btn"
                   onClick={() => onAccept(suggestion.id)}
                   disabled={busy}
                 >
@@ -186,7 +190,7 @@ export function PlanEvaluationSection({
   )
 
   return (
-    <section className="fp-card">
+    <section className="fp-card specialist-workflow-card">
       <h3>تقييم الخطة التعليمية الحالية</h3>
       <div className="meta">
         التقييم متاح فقط للخطط المعتمدة للأطفال المرتبطين بفريقك.
@@ -245,7 +249,7 @@ export function PlanEvaluationSection({
           })}
         />
 
-        <button className="btn success" disabled={busy || !draft.child_id}>
+        <button className="btn" disabled={busy || !draft.child_id}>
           {busy ? 'جارِ الحفظ...' : 'حفظ تقييم الخطة'}
         </button>
       </form>
