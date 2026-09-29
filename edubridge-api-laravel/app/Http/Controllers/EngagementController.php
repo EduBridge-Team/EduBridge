@@ -36,7 +36,7 @@ class EngagementController extends Controller
         $me = $request->attributes->get('jwt_user');
         $childId = (int) $childId;
 
-        if (!ChildAccess::allowed($me, $childId)) {
+        if (!ChildAccess::allowed($me, $childId) || $me->role === 'ministry') {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -73,13 +73,12 @@ class EngagementController extends Controller
         $me = $request->attributes->get('jwt_user');
         $childId = (int) $childId;
 
-        if (!ChildAccess::allowed($me, $childId)) {
+        if (!ChildAccess::allowed($me, $childId) || $me->role === 'ministry') {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
         $gameKey = trim((string) $request->input('game_key', ''));
         $score = (int) $request->input('score', -1);
-        $starsEarned = (int) $request->input('stars_earned', 0);
         $duration = $request->input('duration_seconds');
 
         if ($gameKey === '' || mb_strlen($gameKey) > 80) {
@@ -88,12 +87,11 @@ class EngagementController extends Controller
         if ($score < 0 || $score > 100) {
             return response()->json(['error' => 'النتيجة يجب أن تكون بين 0 و100'], 422);
         }
-        if ($starsEarned < 0 || $starsEarned > 10) {
-            return response()->json(['error' => 'عدد النجوم المكتسبة غير صالح'], 422);
-        }
         if ($duration !== null && ((int) $duration < 0 || (int) $duration > 86400)) {
             return response()->json(['error' => 'مدة اللعب غير صالحة'], 422);
         }
+
+        $starsEarned = $score >= 90 ? 3 : ($score >= 70 ? 2 : ($score >= 50 ? 1 : 0));
 
         $result = DB::transaction(function () use ($childId, $me, $gameKey, $score, $starsEarned, $duration) {
             $attemptId = DB::table('game_attempts')->insertGetId([
