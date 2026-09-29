@@ -4,92 +4,76 @@ part of 'theme.dart';
 class AppColors {
   AppColors._();
 
-  // ═══════════════════════════════════════════════════════════
-  //  🎨 ألوان الهوية البصرية الرسمية — EduBridge
-  // ═══════════════════════════════════════════════════════════
+  // Brand identity — kept unchanged.
+  static const brandBlue = Color(0xFF1769C2);
+  static const brandBlueDeep = Color(0xFF0D55AA);
+  static const brandBlueLight = Color(0xFF2A8AD5);
+  static const brandTeal = Color(0xFF21BFD0);
+  static const brandTealDeep = Color(0xFF119EAE);
+  static const brandTealLight = Color(0xFF69D4CA);
+  static const brandGreen = Color(0xFF7BE49A);
+  static const brandGreenDeep = Color(0xFF57B25A);
 
-  /// اللون الأساسي — أزرق ملكي (Edu)
-  static const brandBlue       = Color(0xFF1769C2);
-  static const brandBlueDeep   = Color(0xFF0D55AA);
-  static const brandBlueLight  = Color(0xFF2A8AD5);
+  // Compatibility aliases.
+  static const navy = brandBlue;
+  static const navyDeep = brandBlueDeep;
+  static const blue = brandBlueLight;
+  static const teal = brandTeal;
+  static const tealDeep = brandTealDeep;
+  static const lightTeal = brandTealLight;
 
-  /// اللون الثانوي — تركوازي (الأيقونة)
-  static const brandTeal       = Color(0xFF21BFD0);
-  static const brandTealDeep   = Color(0xFF119EAE);
-  static const brandTealLight  = Color(0xFF69D4CA);
-
-  /// لون التمييز — أخضر فاتح (Bridge)
-  static const brandGreen      = Color(0xFF7BE49A);
-  static const brandGreenDeep  = Color(0xFF57B25A);
-
-  // ═══════════════════════════════════════════════════════════
-  //  Aliases — للتوافق مع الكود القديم (لا تكسر شيئاً)
-  // ═══════════════════════════════════════════════════════════
-  static const navy       = brandBlue;
-  static const navyDeep   = brandBlueDeep;
-  static const blue       = brandBlueLight;
-  static const teal       = brandTeal;
-  static const tealDeep   = brandTealDeep;
-  static const lightTeal  = brandTealLight;
-
-  static const green      = brandGreenDeep;  // للنجاح (مقروء)
-  static const greenDeep  = Color(0xFF3F9142);
-  static const orange     = Color(0xFFF2842B);
+  static const green = brandGreenDeep;
+  static const greenDeep = Color(0xFF3F9142);
+  static const orange = Color(0xFFF2842B);
   static const orangeDeep = Color(0xFFD96E17);
-  static const yellow     = Color(0xFFFFC23C);
-  static const pink       = Color(0xFFF06C8B);
-  static const red        = Color(0xFFE53935);
-  static const purple     = Color(0xFF8B6DD4);
+  static const yellow = Color(0xFFFFC23C);
+  static const pink = Color(0xFFF06C8B);
+  static const red = Color(0xFFE53935);
+  static const purple = Color(0xFF8B6DD4);
 
-  static const cream      = Color(0xFFF8FCFF);
+  // New neutral system: the brand has more room to breathe.
+  static const cream = Color(0xFFF6F9FC);
+  static const surface = Color(0xFFFFFFFF);
+  static const surfaceSoft = Color(0xFFF0F6FB);
+  static const surfaceStrong = Color(0xFFEAF2F8);
+  static const ink = Color(0xFF102A43);
+  static const muted = Color(0xFF637B92);
+  static const lineCool = Color(0xFFDCE8F1);
 
-  // خلفيات خفيفة من الهوية
-  static const tintBlue   = Color(0xFFE9F5FF);
-  static const tintTeal   = Color(0xFFE4F9FB);
-  static const tintGreen  = Color(0xFFE6F8EC);   // ← فاتح ليتناسب مع brandGreen
-  static const tintOrange = Color(0xFFFFF0E0);
-  static const tintYellow = Color(0xFFFFF8E1);
+  static const tintBlue = Color(0xFFEAF4FF);
+  static const tintTeal = Color(0xFFE7F9FB);
+  static const tintGreen = Color(0xFFEAF9EE);
+  static const tintOrange = Color(0xFFFFF1E5);
+  static const tintYellow = Color(0xFFFFF8E4);
 
-  static const ink   = Color(0xFF183F6B);
-  static const muted = Color(0xFF6884A4);
-
-  static const lineCool = Color(0xFFD9EBF7);
-
-  /// لوحة الألوان للأطفال — من الهوية
   static const kidPalette = [
-    Color(0xFF1769C2), // أزرق ملكي
-    Color(0xFF21BFD0), // تركوازي
-    Color(0xFF7BE49A), // أخضر الهوية
-    Color(0xFF2A8AD5), // أزرق متوسط
-    Color(0xFF69D4CA), // تركوازي فاتح
+    brandBlue,
+    brandTeal,
+    brandGreen,
+    brandBlueLight,
+    brandTealLight,
   ];
 
-  /// التدرّج الرئيسي — من أعلى اليمين (أزرق) إلى أسفل اليسار (تركوازي)
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
-    colors: [
-      brandBlue,       // #1769C2
-      brandBlueDeep,   // #0D55AA
-      brandTeal,       // #21BFD0
-    ],
-    stops: [0.0, 0.5, 1.0],
+    colors: [brandBlue, brandBlueDeep, brandTeal],
+    stops: [0.0, 0.55, 1.0],
   );
 
-  /// تدرّج التمييز — أزرق → تركوازي (بدون الأخضر لتجنّب الإزعاج البصري)
   static const accentGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
     colors: [brandBlueLight, brandTeal],
   );
 
-  /// تدرّج خاص للأزرار الرئيسية
   static const primaryGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     colors: [brandBlue, brandBlueDeep],
   );
 }
+
 class JisrColors {
   final Color heading;
   final Color body;
@@ -118,11 +102,11 @@ class JisrColors {
   });
 
   static const light = JisrColors(
-    heading: AppColors.navy,
-    body: AppColors.ink,
+    heading: AppColors.ink,
+    body: Color(0xFF294861),
     muted: AppColors.muted,
     line: AppColors.lineCool,
-    card: Colors.white,
+    card: AppColors.surface,
     tintTeal: AppColors.tintTeal,
     tintGreen: AppColors.tintGreen,
     tintOrange: AppColors.tintOrange,
@@ -131,21 +115,21 @@ class JisrColors {
     success: AppColors.greenDeep,
   );
 
-  static const darkHeading = Color(0xFFDCE8F7);
-  static const darkBody = Color(0xFFC6D6E8);
+  static const darkHeading = Color(0xFFF1F7FC);
+  static const darkBody = Color(0xFFD2DFEA);
 
   static const dark = JisrColors(
     heading: darkHeading,
     body: darkBody,
-    muted: Color(0xFF8FA6B8),
-    line: Color(0xFF243D5C),
-    card: Color(0xFF152B45),
-    tintTeal: Color(0xFF0E3A3E),
-    tintGreen: Color(0xFF173A22),
-    tintOrange: Color(0xFF43301A),
-    tintYellow: Color(0xFF3F3418),
-    onTint: Color(0xFFE8F1F8),
-    success: Color(0xFF7BCF7E),
+    muted: Color(0xFF91A8BA),
+    line: Color(0xFF263E54),
+    card: Color(0xFF142A3C),
+    tintTeal: Color(0xFF103A40),
+    tintGreen: Color(0xFF183B26),
+    tintOrange: Color(0xFF45311E),
+    tintYellow: Color(0xFF42371D),
+    onTint: Color(0xFFF0F6FA),
+    success: Color(0xFF81D38A),
   );
 
   static JisrColors of(BuildContext context) =>
