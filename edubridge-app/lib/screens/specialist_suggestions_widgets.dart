@@ -107,8 +107,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: c.line),
       ),
-      child:
-        child: Column(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -229,8 +228,8 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 44),
                         backgroundColor: AppColors.green,
                       ),
