@@ -36,11 +36,11 @@ extension _LoginScreenStateView on _LoginScreenState {
                     children: [
                       const SizedBox(height: 20),
                       const BrandLockup(
-                        iconSize: 70,
-                        fontSize: 39,
-                        gap: 11,
+                        iconSize: 54,
+                        fontSize: 31,
+                        gap: 8,
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 16),
                       Text(
                         'أهلاً بعودتك',
                         style: TextStyle(
