@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Search, UsersRound } from 'lucide-react'
 import { deleteChild, deleteUser, fetchChildren, fetchUsers, getUser } from '../../../api'
 import AdminChildrenSection from './AdminChildrenSection'
 import AdminRoleSection from './AdminRoleSection'
@@ -100,11 +101,15 @@ export default function UsersTab() {
   return (
     <section className="admin-panel admin-users-panel">
       <div className="admin-panel-head admin-users-head">
-        <div>
-          <h3>👥 إدارة المستخدمين</h3>
+        <div className="admin-panel-title">
+          <span><UsersRound size={20} /></span>
+          <div>
+            <h3>إدارة المستخدمين</h3>
+            <p>استعرض الحسابات والأطفال المرتبطين وعدّل البيانات من نفس الصفحة.</p>
+          </div>
         </div>
         <label className="admin-search-wrap">
-          <span aria-hidden="true">⌕</span>
+          <Search size={17} aria-hidden="true" />
           <input
             className="admin-search"
             type="search"
