@@ -146,14 +146,15 @@ export default function HomeworkPage() {
   }
 
   return (
-    <div className="fp-page">
-      <div className="fp-head">
+    <div className="fp-page homework-page-v2">
+      <section className="fp-hero homework-hero">
         <div>
-          <h2>📝 الواجبات</h2>
-          <div className="meta">إنشاء الواجبات، التسليم، والتقييم</div>
+          <span className="fp-eyebrow">التعلّم والمتابعة</span>
+          <h1>الواجبات</h1>
+          <p>أنشئ الواجبات، تابع التسليم، وراجع التقييمات من مكان واحد.</p>
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
-      </div>
+      </section>
 
       {error && <div className="fp-error">{error}</div>}
 
