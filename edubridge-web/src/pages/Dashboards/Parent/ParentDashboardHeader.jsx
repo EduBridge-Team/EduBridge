@@ -1,11 +1,9 @@
 import { CalendarDays, CheckCircle2, Search } from 'lucide-react'
 
 export default function ParentDashboardHeader({
-  navigate,
   query,
   setQuery,
   todayLabel,
-  unread,
   user,
 }) {
   return (
