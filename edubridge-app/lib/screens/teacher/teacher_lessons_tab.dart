@@ -42,9 +42,16 @@ Widget _buildLessonsTab(
             const SizedBox(height: 12),
             TextField(
               style: const TextStyle(fontSize: 16),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'ابحث عن درس...',
-                prefixIcon: Icon(AppIcons.search),
+                prefixIcon: const Icon(AppIcons.search),
+                suffixIcon: query.isNotEmpty
+                    ? IconButton(
+                        tooltip: 'مسح البحث',
+                        onPressed: () => onQueryChanged(''),
+                        icon: const Icon(Icons.close_rounded),
+                      )
+                    : null,
               ),
               onChanged: onQueryChanged,
             ),
@@ -95,7 +102,7 @@ Widget _buildLessonsTab(
                 ],
               )
             : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
                 itemCount: filtered.length,
                 itemBuilder: (context, i) =>
                     _buildTeacherLessonCard(filtered[i], c, types, onViewLesson),
@@ -274,7 +281,7 @@ Widget _buildLessonViewModal(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: c.card,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(28),
             ),
             constraints: const BoxConstraints(maxHeight: 600),
             child: SingleChildScrollView(
