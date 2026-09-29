@@ -545,3 +545,111 @@ body.role-portal-admin .pp-content .admin-panel {
   background: #0d2947 !important;
   color: #eef8ff;
 }
+
+
+/* ===== Support + identity verification ===== */
+.support-page-v2,
+.verify-identity-page-v2 {
+  display: grid;
+  gap: 14px;
+}
+
+.support-hero,
+.verify-hero {
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #eef9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.support-hero h1,
+.verify-hero h1 {
+  margin: 5px 0 6px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+}
+
+.support-hero p,
+.verify-hero p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.support-section-head {
+  padding: 2px 2px 0;
+}
+
+.support-section-head h2 {
+  margin: 0;
+  color: var(--brand-blue-deep);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.support-request-card,
+.support-ticket-card,
+.verify-card {
+  padding: 20px;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+.support-request-card h3,
+.support-ticket-card h3,
+.verify-card h3 {
+  color: var(--brand-blue-deep);
+  font-weight: 800;
+}
+
+.support-ticket-card {
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.support-ticket-card:hover {
+  transform: translateY(-1px);
+  border-color: #bdddeb;
+  box-shadow: 0 12px 28px rgba(23,105,194,.08);
+}
+
+.verify-card .file-link {
+  border-radius: 12px;
+}
+
+.verify-card .cert-add {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-soft);
+}
+
+.verify-card .cert-item {
+  border-radius: 16px;
+}
+
+:root[data-theme="dark"] .support-hero,
+:root[data-theme="dark"] .verify-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+:root[data-theme="dark"] .support-request-card,
+:root[data-theme="dark"] .support-ticket-card,
+:root[data-theme="dark"] .verify-card,
+:root[data-theme="dark"] .verify-card .cert-add {
+  border-color: var(--line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+@media (max-width: 620px) {
+  .support-hero,
+  .verify-hero {
+    padding: 22px;
+  }
+}
