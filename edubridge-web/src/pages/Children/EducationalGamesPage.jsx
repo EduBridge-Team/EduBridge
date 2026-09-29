@@ -71,8 +71,8 @@ export default function EducationalGamesPage() {
     return <div className="state"><div className="spinner" />جارِ تجهيز الألعاب...</div>
   }
 
-  return <div className="games-page">
-    <div className="page-title">
+  return <div className="games-page games-page-v2">
+    <div className="page-title games-page-toolbar">
       <button className="back-btn" onClick={() => navigate(-1)}><ArrowRight size={18} /></button>
       <h2>الألعاب التعليمية</h2>
       <span style={{ flex: 1 }} />

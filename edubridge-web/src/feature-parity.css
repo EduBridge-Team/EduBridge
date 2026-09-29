@@ -378,3 +378,63 @@
 :root[data-theme="dark"] .case-list-card {
   color: #eef8ff;
 }
+
+
+/* ===== Phase 2 utility pages ===== */
+.aac-hero,
+.parent-lessons-hero,
+.learning-support-hero,
+.specialist-workflow-hero {
+  margin-bottom: 2px;
+}
+
+.parent-lessons-search {
+  min-height: 46px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.learning-support-card,
+.specialist-workflow-card {
+  border-radius: var(--r-lg);
+}
+
+.learning-support-card,
+.specialist-workflow-card {
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.learning-support-card:hover,
+.specialist-workflow-card:hover {
+  transform: translateY(-1px);
+  border-color: #bdddeb;
+  box-shadow: 0 10px 24px rgba(23,105,194,.07);
+}
+
+.learning-support-page-v2 section > h3,
+.specialist-workflow-page-v2 section > h3 {
+  color: var(--brand-blue-deep);
+  font-weight: 800;
+}
+
+.aac-page .aac-sentence,
+.aac-page .aac-tile {
+  border-radius: 20px;
+}
+
+.aac-page .aac-tile {
+  box-shadow: var(--shadow-soft);
+  transition: transform .16s ease, border-color .16s ease;
+}
+
+.aac-page .aac-tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-teal);
+}
+
+:root[data-theme="dark"] .learning-support-card,
+:root[data-theme="dark"] .specialist-workflow-card {
+  border-color: var(--line);
+  background: #0d2947;
+  color: #eef8ff;
+}

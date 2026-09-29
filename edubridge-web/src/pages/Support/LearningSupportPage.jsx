@@ -131,14 +131,15 @@ export default function LearningSupportPage() {
   }
 
   return (
-    <div className="fp-page">
-      <div className="fp-head">
+    <div className="fp-page learning-support-page-v2">
+      <section className="fp-hero learning-support-hero">
         <div>
-          <h2>📘 الدعم والاجتماعات التعليمية</h2>
-          <div className="meta">طلبات الدعم، المواعيد، وسجل الجلسات</div>
+          <span className="fp-eyebrow">الدعم التعليمي</span>
+          <h1>الدعم والاجتماعات التعليمية</h1>
+          <p>تابع طلبات الدعم والمواعيد وسجل الجلسات من مساحة واحدة.</p>
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
-      </div>
+      </section>
 
       {error && <div className="fp-error">{error}</div>}
 
