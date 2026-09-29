@@ -5,47 +5,77 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     if (_loading) return const Center(child: CircularProgressIndicator());
 
     if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(AppIcons.error, size: 60, color: AppColors.red),
-              SizedBox(height: AdaptiveHelper.spacing),
-              AdaptiveText(
-                _error!,
-                textAlign: TextAlign.center,
-                color: AppColors.red,
-              ),
-            ],
+      return ListView(
+        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
+        children: [
+          SizedBox(height: AdaptiveHelper.spacing * 6),
+          const Icon(AppIcons.error, size: 58, color: AppColors.red),
+          SizedBox(height: AdaptiveHelper.spacing),
+          AdaptiveText(
+            _error!,
+            textAlign: TextAlign.center,
+            color: AppColors.red,
+            fontWeight: FontWeight.w700,
           ),
-        ),
+          SizedBox(height: AdaptiveHelper.spacing),
+          Center(
+            child: FilledButton.icon(
+              onPressed: _loadProgress,
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+            ),
+          ),
+        ],
       );
     }
 
     if (_progress.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              AppIcons.progress,
-              size: AdaptiveHelper.iconSize * 2,
-              color: AppColors.muted,
+      final c = JisrColors.of(context);
+      return ListView(
+        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
+        children: [
+          SizedBox(height: AdaptiveHelper.spacing * 5),
+          Center(
+            child: Container(
+              width: 86,
+              height: 86,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                AppIcons.progress,
+                size: 42,
+                color: AppColors.brandBlue,
+              ),
             ),
-            SizedBox(height: AdaptiveHelper.spacing),
-            const AdaptiveText(
-              'لا يوجد تقدّم مسجّل بعد',
-              type: AdaptiveTextType.subtitle,
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: AdaptiveHelper.spacing),
+          AdaptiveText(
+            'لا يوجد تقدّم مسجّل بعد',
+            type: AdaptiveTextType.subtitle,
+            textAlign: TextAlign.center,
+            fontWeight: FontWeight.w800,
+            color: c.heading,
+          ),
+          SizedBox(height: AdaptiveHelper.spacing / 3),
+          AdaptiveText(
+            'ستظهر هنا نسبة الإنجاز والنتائج والمكافآت بعد بدء الدروس.',
+            type: AdaptiveTextType.caption,
+            textAlign: TextAlign.center,
+            color: c.muted,
+          ),
+        ],
       );
     }
 
     return ListView(
-      padding: EdgeInsets.all(AdaptiveHelper.spacing),
+      padding: EdgeInsets.fromLTRB(
+        AdaptiveHelper.spacing,
+        AdaptiveHelper.spacing * 1.25,
+        AdaptiveHelper.spacing,
+        AdaptiveHelper.spacing * 2,
+      ),
       children: [
         _buildSummaryCards(),
         SizedBox(height: AdaptiveHelper.spacing * 2),
@@ -72,7 +102,14 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
 
     return Column(
       children: [
-        SizedBox(
+        Container(
+          padding: EdgeInsets.all(AdaptiveHelper.spacing),
+          decoration: BoxDecoration(
+            color: JisrColors.of(context).card,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: JisrColors.of(context).line),
+          ),
+          child: SizedBox(
           width: 160,
           height: 160,
           child: Stack(
@@ -96,7 +133,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                     '${(percent * 100).round()}%',
                     style: TextStyle(
                       fontSize: AdaptiveHelper.titleFontSize + 10,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: AdaptiveHelper.textColor(context),
                     ),
                   ),
@@ -108,6 +145,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
               ),
             ],
           ),
+        ),
         ),
         SizedBox(height: AdaptiveHelper.spacing),
         Row(
@@ -148,7 +186,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
               value,
               style: TextStyle(
                 fontSize: AdaptiveHelper.titleFontSize,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: color,
               ),
             ),
@@ -202,7 +240,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                 child: AdaptiveText(
                   'جمع ${widget.childName} $_stars نجمة',
                   type: AdaptiveTextType.body,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
@@ -241,7 +279,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           AdaptiveText(
             badge.title,
             type: AdaptiveTextType.caption,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             textAlign: TextAlign.center,
             color: badge.earned ? AppColors.green : null,
           ),
@@ -280,7 +318,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                   AdaptiveText(
                     title,
                     type: AdaptiveTextType.body,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                   ),
                   AdaptiveText(
                     statusInfo.label +
