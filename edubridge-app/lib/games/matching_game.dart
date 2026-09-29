@@ -1,6 +1,7 @@
 // لعبة مطابقة الأزواج
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/game_progress_service.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
 import '../theme.dart';
@@ -140,6 +141,7 @@ class _MatchingGameState extends State<MatchingGame> {
 
   Future<void> _onWin() async {
     final score = ((4 / _attempts) * 100).round().clamp(0, 100);
+    await GameProgressService.instance.record(score);
 
     await VisualCelebration.show(
       context,
