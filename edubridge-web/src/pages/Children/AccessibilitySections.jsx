@@ -9,7 +9,7 @@ export function AccessibilityHeader({ childName, onBack }) {
         <button className="back-btn" onClick={onBack}><ArrowRight size={18} /></button>
         <div>
           <h2>إعدادات الوصول — {childName || 'الطفل'}</h2>
-          <p className="meta">تُحفظ لهذا الطفل على هذا الجهاز وتُطبّق على ألعابه.</p>
+          <p className="meta">تُزامن لهذا الطفل بين الويب والتطبيق، مع نسخة محلية للعمل عند انقطاع الشبكة.</p>
         </div>
       </div>
 
@@ -102,16 +102,16 @@ export function AccessibilityOptionsCard({ onUpdate, profile }) {
   )
 }
 
-export function AccessibilitySaveBar({ onReset, onSave, saved }) {
+export function AccessibilitySaveBar({ onReset, onSave, saved, saving = false }) {
   return (
     <>
       {saved && <div className="success-box">تم حفظ الإعدادات وتطبيقها بنجاح ✓</div>}
       <div className="access-save-bar">
-        <button className="btn outline" onClick={onReset}>
+        <button className="btn outline" onClick={onReset} disabled={saving}>
           <RotateCcw size={17} /> إعادة الضبط
         </button>
-        <button className="btn" onClick={onSave}>
-          <Save size={17} /> حفظ الإعدادات
+        <button className="btn" onClick={onSave} disabled={saving}>
+          <Save size={17} /> {saving ? 'جارِ المزامنة...' : 'حفظ الإعدادات'}
         </button>
       </div>
     </>
