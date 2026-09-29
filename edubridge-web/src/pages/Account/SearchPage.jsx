@@ -50,17 +50,14 @@ export default function SearchPage() {
   }
 
   return (
-    <div>
-      <div className="page-title">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Search size={20} /> البحث عن طريق رقم الهوية
-        </h2>
-      </div>
-      <p className="dash-sub">
-        ابحث عن طالب أو ولي أمر أو موظف باستخدام رقم الهوية الكامل.
-      </p>
+    <div className="identity-search-page-v2">
+      <section className="identity-search-hero">
+        <span className="role-eyebrow"><Search size={18} /> البحث الموحّد</span>
+        <h1>البحث برقم الهوية</h1>
+        <p>ابحث عن طالب أو ولي أمر أو موظف باستخدام رقم الهوية الكامل.</p>
+      </section>
 
-      <form onSubmit={run} className="search-row">
+      <form onSubmit={run} className="search-row identity-search-form">
         <input
           type="search"
           placeholder="أدخل رقم الهوية الكامل..."
@@ -81,7 +78,7 @@ export default function SearchPage() {
         ) : (
           <div style={{ marginTop: 16 }}>
             {results.map((r) => (
-              <div key={`${r.kind}-${r.id}`} className="card search-result">
+              <div key={`${r.kind}-${r.id}`} className="card search-result identity-search-result">
                 <div>
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {r.kind === 'child' ? <Baby size={18} /> : <User size={18} />}
