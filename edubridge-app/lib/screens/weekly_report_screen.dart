@@ -56,48 +56,69 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   Widget build(BuildContext context) => buildView(context);
 
   Widget _buildError() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(AppIcons.error, size: 64, color: AppColors.red),
-          const SizedBox(height: 16),
-          Text(_error!,
-              style: const TextStyle(fontSize: 16, color: AppColors.red)),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 100),
+        const Icon(AppIcons.error, size: 56, color: AppColors.red),
+        const SizedBox(height: 14),
+        Text(
+          _error!,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            color: AppColors.red,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 18),
+        Center(
+          child: FilledButton.icon(
             icon: const Icon(AppIcons.refresh),
             label: const Text('إعادة المحاولة'),
             onPressed: _load,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildEmpty() {
     final c = JisrColors.of(context);
     return ListView(
+      padding: const EdgeInsets.all(24),
       children: [
-        const SizedBox(height: 120),
-        Icon(AppIcons.homework, size: 80, color: c.muted),
-        const SizedBox(height: 16),
+        const SizedBox(height: 110),
         Center(
-          child: Text(
-            'لا يوجد تقرير أسبوعي',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: c.muted,
+          child: Container(
+            width: 86,
+            height: 86,
+            decoration: BoxDecoration(
+              color: c.tintTeal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              AppIcons.report,
+              size: 40,
+              color: AppColors.brandBlue,
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Center(
-          child: Text(
-            'سيظهر هنا التقرير الذي يكتبه المعلم',
-            style: TextStyle(fontSize: 14, color: c.muted),
+        const SizedBox(height: 18),
+        Text(
+          'لا يوجد تقرير أسبوعي',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: c.heading,
           ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'سيظهر هنا التقرير الذي يكتبه المعلم.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 13.5, color: c.muted),
         ),
       ],
     );
@@ -114,7 +135,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(26),
           ),
           child: Column(
             children: [
@@ -134,7 +155,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 52,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               const Text(
@@ -212,19 +233,29 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const SizedBox(width: 8),
               const Text(
                 'الإنجازات',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ...r.achievements.map((a) => Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: const Icon(AppIcons.starFilled,
-                      color: AppColors.yellow),
-                  title: Text(a),
-                ),
-              )),
+          ...r.achievements.map(
+            (a) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: c.line),
+              ),
+              child: Row(
+                children: [
+                  const Icon(AppIcons.starFilled, color: AppColors.yellow),
+                  const SizedBox(width: 9),
+                  Expanded(child: Text(a)),
+                ],
+              ),
+            ),
+          ),
         ],
 
         if (r.concerns.isNotEmpty) ...[
@@ -236,20 +267,31 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const SizedBox(width: 8),
               const Text(
                 'نقاط للانتباه',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ...r.concerns.map((cn) => Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                color: AppColors.red.withValues(alpha: 0.05),
-                child: ListTile(
-                  leading: const Icon(AppIcons.warning,
-                      color: AppColors.red),
-                  title: Text(cn),
+          ...r.concerns.map(
+            (cn) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                color: AppColors.red.withValues(alpha: .05),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.red.withValues(alpha: .18),
                 ),
-              )),
+              ),
+              child: Row(
+                children: [
+                  const Icon(AppIcons.warning, color: AppColors.red),
+                  const SizedBox(width: 9),
+                  Expanded(child: Text(cn)),
+                ],
+              ),
+            ),
+          ),
         ],
 
         const SizedBox(height: 24),
@@ -279,7 +321,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               value,
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: color,
               ),
             ),
@@ -312,7 +354,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               Text(
                 title,
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   fontSize: 15,
                 ),
               ),
