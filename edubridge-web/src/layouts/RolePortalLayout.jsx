@@ -51,6 +51,32 @@ export default function RolePortalLayout({ children }) {
   }, [location.pathname, role, settings.notifications_enabled])
 
   useEffect(() => {
+    if (!settings.notifications_enabled) return undefined
+
+    let active = true
+    const refreshUnread = () => {
+      if (document.visibilityState === 'hidden') return
+      fetchUnreadNotificationsCount()
+        .then((data) => {
+          if (active) setUnread(Number(data?.count || 0))
+        })
+        .catch(() => {})
+    }
+
+    const timer = window.setInterval(refreshUnread, 10000)
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshUnread()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      active = false
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [settings.notifications_enabled])
+
+  useEffect(() => {
     setDrawerOpen(false)
   }, [location.pathname])
 
