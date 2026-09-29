@@ -15,6 +15,26 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     _updateChildLessonsState(() => _stars = stars);
   }
 
+  Future<void> _loadEmergencyContacts() async {
+    final careTeam = await ApiService.getCareTeam(widget.childId);
+    final members = careTeam?['members'];
+    String? specialistPhone;
+
+    if (members is List) {
+      for (final member in members) {
+        if (member is! Map || member['role'] != 'specialist') continue;
+        final phone = member['phone']?.toString().trim();
+        if (phone != null && phone.isNotEmpty) {
+          specialistPhone = phone;
+          break;
+        }
+      }
+    }
+
+    if (!mounted) return;
+    _updateChildLessonsState(() => _specialistPhone = specialistPhone);
+  }
+
   Future<void> _loadLessons() async {
     _updateChildLessonsState(() {
       _loading = true;
