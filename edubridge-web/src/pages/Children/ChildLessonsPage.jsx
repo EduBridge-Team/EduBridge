@@ -1,9 +1,18 @@
 // صفحة دروس الطفل (حسب نوع إعاقته) مع «تمّ» والقراءة الصوتية
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, ChartColumn, Gamepad2, Settings } from 'lucide-react'
-import { fetchChildLessons, fetchChildProgress, getUser, markLessonDone } from '../../api'
-import { applyAccessibilityProfile, getAccessibilityProfile } from '../../accessibility'
+import { AlertTriangle, ArrowRight, ChartColumn, Gamepad2, Settings, Star } from 'lucide-react'
+import {
+  fetchChildAccessibilityProfile,
+  fetchChildDetails,
+  fetchChildEngagement,
+  fetchChildLessons,
+  fetchChildProgress,
+  getUser,
+  markLessonDone,
+  sendChildEmergencyAlert,
+} from '../../api'
+import { applyAccessibilityProfile, defaultProfile, getAccessibilityProfile, saveAccessibilityProfile } from '../../accessibility'
 import ChildLessonCard from './ChildLessonCard'
 
 export default function ChildLessonsPage() {
@@ -19,6 +28,9 @@ export default function ChildLessonsPage() {
   const [savingId, setSavingId] = useState(null)
   const [message, setMessage] = useState(null)
   const [speakingId, setSpeakingId] = useState(null)
+  const [profile, setProfile] = useState(defaultProfile)
+  const [stars, setStars] = useState(0)
+  const [emergencyBusy, setEmergencyBusy] = useState(false)
   const utterRef = useRef(null)
 
   // ولي الأمر يعرض فقط — لا يسجّل إتماماً
@@ -30,10 +42,30 @@ export default function ChildLessonsPage() {
     setError(null)
     try {
       // الدروس وسجلّ التقدّم معاً لمعرفة المكتمل منها
-      const [lessonsData, progressData] = await Promise.all([
+      const [
+        lessonsData,
+        progressData,
+        childData,
+        accessibilityData,
+        engagementData,
+      ] = await Promise.all([
         fetchChildLessons(childId),
         fetchChildProgress(childId).catch(() => ({ progress: [] })),
+        fetchChildDetails(childId).catch(() => ({ child: {} })),
+        fetchChildAccessibilityProfile(childId).catch(() => ({ profile: null })),
+        fetchChildEngagement(childId).catch(() => ({ stars: 0 })),
       ])
+
+      const child = childData.child || childData || {}
+      const fallback = getAccessibilityProfile(childId, child.disability_type)
+      const nextProfile = accessibilityData?.profile
+        ? { ...defaultProfile, ...accessibilityData.profile }
+        : fallback
+
+      setProfile(nextProfile)
+      setStars(Number(engagementData?.stars || 0))
+      saveAccessibilityProfile(childId, nextProfile)
+      applyAccessibilityProfile(nextProfile)
       setLessons(lessonsData.lessons || [])
       setDoneIds(
         new Set(
@@ -50,7 +82,6 @@ export default function ChildLessonsPage() {
   }, [childId])
 
   useEffect(() => {
-    applyAccessibilityProfile(getAccessibilityProfile(childId))
     load()
     // إيقاف أي قراءة صوتية عند مغادرة الصفحة
     return () => window.speechSynthesis?.cancel()
@@ -62,7 +93,9 @@ export default function ChildLessonsPage() {
     setMessage(null)
     try {
       await markLessonDone(Number(childId), lessonId)
-      setDoneIds(new Set([...doneIds, lessonId]))
+      setDoneIds((current) => new Set([...current, lessonId]))
+      const engagement = await fetchChildEngagement(childId).catch(() => null)
+      if (engagement) setStars(Number(engagement.stars || 0))
       setMessage({ type: 'success', text: 'أحسنت! تم تسجيل إتمام الدرس 🎉' })
     } catch (err) {
       setMessage({ type: 'error', text: err.message })
@@ -88,11 +121,38 @@ export default function ChildLessonsPage() {
       [lesson.title, lesson.content].filter(Boolean).join('. '),
     )
     utter.lang = 'ar' // قراءة بالعربية
-    utter.rate = 0.85 // أبطأ قليلاً ليناسب الأطفال
+    utter.rate = profile.slowSpeech ? 0.65 : 0.85
     utter.onend = () => setSpeakingId(null)
     utterRef.current = utter
     setSpeakingId(lesson.id)
     synth.speak(utter)
+  }
+
+  const triggerEmergency = async () => {
+    const confirmed = window.confirm(
+      `هل تريد إرسال تنبيه طوارئ فوري لفريق الطفل؟\n\nالطفل: ${childName}`,
+    )
+    if (!confirmed) return
+
+    setEmergencyBusy(true)
+    setMessage(null)
+    try {
+      const data = await sendChildEmergencyAlert(
+        childId,
+        `تم تفعيل زر الطوارئ للطفل ${childName}. يُرجى التواصل فوراً.`,
+      )
+      const count = Number(data.notified_recipients || 0)
+      setMessage({
+        type: 'success',
+        text: count > 0
+          ? `تم إرسال تنبيه الطوارئ وإشعار ${count} من أولياء الأمر/المختصين.`
+          : 'تم تسجيل تنبيه الطوارئ.',
+      })
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message || 'تعذّر إرسال تنبيه الطوارئ' })
+    } finally {
+      setEmergencyBusy(false)
+    }
   }
 
   if (loading) {
@@ -122,6 +182,9 @@ export default function ChildLessonsPage() {
         </button>
         <h2>دروس {childName}</h2>
         <span className="spacer" style={{ flex: 1 }} />
+        <span className="vbadge green" title="النجوم المتزامنة">
+          <Star size={15} /> {stars}
+        </span>
         <button
           className="btn small outline"
           onClick={() =>
@@ -139,6 +202,26 @@ export default function ChildLessonsPage() {
           <Settings size={16} /> التكييف
         </button>
       </div>
+
+      {profile.emergencyButton && (
+        <div className="card" style={{ borderColor: 'var(--danger, #dc2626)' }}>
+          <div className="ticket-head">
+            <div>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertTriangle size={20} /> زر الطوارئ
+              </h3>
+              <div className="meta">للحالات الطارئة فقط — يرسل تنبيهاً فورياً لفريق الطفل داخل EduBridge.</div>
+            </div>
+            <button
+              className="btn danger"
+              disabled={emergencyBusy}
+              onClick={triggerEmergency}
+            >
+              {emergencyBusy ? 'جارِ الإرسال...' : 'إرسال تنبيه طوارئ'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {message && (
         <div className={message.type === 'success' ? 'success-box' : 'error-box'}>
