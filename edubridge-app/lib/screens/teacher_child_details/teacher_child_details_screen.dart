@@ -46,14 +46,21 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 72,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
         ),
         title: Text(
           widget.childName,
           style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
             color: Colors.white,
           ),
           overflow: TextOverflow.ellipsis,
@@ -66,7 +73,7 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           labelStyle:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           tabs: const [
             Tab(icon: Icon(AppIcons.homework, size: 22), text: 'الواجبات'),
             Tab(icon: Icon(AppIcons.lesson, size: 22), text: 'الدروس'),

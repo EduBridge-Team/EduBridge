@@ -27,14 +27,22 @@ class _UserChildrenSheet extends StatelessWidget {
             : AppIcons.parent;
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
+      padding: const EdgeInsets.all(18),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.75,
       ),
       decoration: BoxDecoration(
         color: c.card,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: c.line),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .10),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -49,7 +57,7 @@ class _UserChildrenSheet extends StatelessWidget {
                   'أطفال $roleLabel ${user['name'] ?? ''}',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: c.heading,
                   ),
                 ),
@@ -65,7 +73,7 @@ class _UserChildrenSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: c.tintTeal,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(999),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -76,7 +84,7 @@ class _UserChildrenSheet extends StatelessWidget {
                   '${children.length} ${children.length == 1 ? 'طفل' : 'أطفال'}',
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.brandBlue,
                   ),
                 ),
@@ -110,26 +118,75 @@ class _UserChildrenSheet extends StatelessWidget {
                   final age = child['age'] ?? '?';
                   final status = (child['status'] ?? 'pending').toString();
 
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor:
-                          AppColors.kidPalette[i % AppColors.kidPalette.length],
-                      child: Text(
-                        name.isNotEmpty ? name.characters.first : '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  final color =
+                      AppColors.kidPalette[i % AppColors.kidPalette.length];
+                  return Material(
+                    color: c.card,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: BorderSide(color: c.line),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        onEditChild(child);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: .14),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                name.isNotEmpty ? name.characters.first : '؟',
+                                style: TextStyle(
+                                  color: color,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 11),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: c.heading,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    'العمر: $age سنة',
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: c.muted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            _StatusBadge(status: status),
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.arrow_back_rounded,
+                              size: 18,
+                              color: c.muted,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    title: Text(name,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('العمر: $age سنة'),
-                    trailing: _StatusBadge(status: status),
-                    onTap: () {
-                      Navigator.pop(context);
-                      onEditChild(child);
-                    },
                   );
                 },
               ),

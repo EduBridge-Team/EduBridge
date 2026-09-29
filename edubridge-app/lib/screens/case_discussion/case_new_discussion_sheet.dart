@@ -220,14 +220,22 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     final c = JisrColors.of(context);
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(12, 56, 12, 12),
+      padding: const EdgeInsets.all(18),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
       decoration: BoxDecoration(
         color: c.card,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: c.line),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .10),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -277,7 +285,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             'دراسة حالة جديدة',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: c.heading,
             ),
           ),
@@ -296,7 +304,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.orange.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: AppColors.orange.withValues(alpha: 0.3),
           ),
@@ -364,7 +372,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         Text(
           'المشاركون من الفريق (${_selectedParticipants.length}):',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             fontSize: 15,
             color: c.heading,
           ),
@@ -380,7 +388,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             'أنت مشارك تلقائياً',
             style: TextStyle(
               fontSize: 10,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: AppColors.brandBlue,
             ),
           ),
@@ -396,7 +404,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: c.tintTeal,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
             'اختر طفلاً أولاً لعرض أعضاء فريقه',
@@ -413,7 +421,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppColors.orange.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: const Text(
             'لا يوجد أعضاء آخرون في فريق هذا الطفل حالياً',
@@ -477,10 +485,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.green,
-            ),
+          child: FilledButton(
             onPressed: _saving ? null : _save,
             child: Text(_saving ? '...' : 'إنشاء'),
           ),

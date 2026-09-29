@@ -195,18 +195,34 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
           onTap: () {},
           child: SingleChildScrollView(
             child: Container(
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.fromLTRB(12, 52, 12, 12),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: c.card,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: c.line),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .10),
+                    blurRadius: 28,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
+                  Text(
+                    'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      color: c.muted,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _titleCtrl,
                     decoration: const InputDecoration(

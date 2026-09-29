@@ -42,12 +42,23 @@ class _AdminScreenState extends State<AdminScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 72,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
         ),
         title: const Text(
-          'لوحة التحكم الإدارية',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          'الإدارة',
+          style: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
@@ -96,16 +107,54 @@ class _AdminScreenState extends State<AdminScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Row(
-              children: [
-                Icon(AppIcons.settings, size: 24, color: c.heading),
-                const SizedBox(width: 8),
-                Text(
-                  'لوحة التحكم الإدارية',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: c.heading),
-                ),
-              ],
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: c.line),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: c.tintTeal,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Icon(
+                      AppIcons.settings,
+                      color: AppColors.brandBlue,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'لوحة التحكم الإدارية',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: c.heading,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'إدارة المستخدمين والتوثيق وطلبات الدعم.',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: c.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 14),
@@ -150,7 +199,7 @@ class _AdminTabBar extends StatelessWidget {
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: c.card,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: c.line),
         boxShadow: [
           BoxShadow(
@@ -172,11 +221,11 @@ class _AdminTabBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                 decoration: BoxDecoration(
                   color: active ? AppColors.brandBlue : Colors.transparent,
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(17),
                   boxShadow: active
                       ? [
                           BoxShadow(
-                            color: AppColors.brandBlue.withValues(alpha: 0.45),
+                            color: AppColors.brandBlue.withValues(alpha: 0.18),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -195,7 +244,7 @@ class _AdminTabBar extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: active ? Colors.white : c.muted,
                         ),
                       ),

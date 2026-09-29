@@ -10,11 +10,13 @@ import '../../theme.dart';
 /// عند الضغط → يفتح الملف الشخصي
 class ProfileAvatarButton extends StatefulWidget {
   final Color? backgroundColor;
+  final Color? foregroundColor;
   final double size;
 
   const ProfileAvatarButton({
     super.key,
     this.backgroundColor,
+    this.foregroundColor,
     this.size = 42,
   });
 
@@ -78,12 +80,12 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
         alignment: Alignment.center,
         clipBehavior: Clip.antiAlias,
         child: _loading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.navyDeep,
+                  color: widget.foregroundColor ?? AppColors.brandTealDeep,
                 ),
               )
             : (_avatarUrl != null && _avatarUrl!.isNotEmpty)
@@ -110,7 +112,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
         style: TextStyle(
           fontSize: widget.size * 0.45,
           fontWeight: FontWeight.bold,
-          color: AppColors.navyDeep,
+          color: widget.foregroundColor ?? AppColors.brandTealDeep,
         ),
       ),
     );

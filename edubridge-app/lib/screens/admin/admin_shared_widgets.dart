@@ -32,10 +32,10 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: bgTint,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
@@ -45,7 +45,7 @@ class _SectionHeader extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 17,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: c.heading,
             ),
           ),
@@ -60,7 +60,7 @@ class _SectionHeader extends StatelessWidget {
               '$count',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: color,
               ),
             ),
@@ -82,7 +82,7 @@ class _EmptyBox extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: c.card,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: c.line),
       ),
       child: Center(
@@ -124,7 +124,7 @@ class _StatusBadge extends StatelessWidget {
         label,
         style: TextStyle(
           fontSize: 10.5,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: color,
         ),
       ),

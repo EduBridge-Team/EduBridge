@@ -132,11 +132,19 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.fromLTRB(12, 56, 12, 12),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: c.card,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .10),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: SingleChildScrollView(
           child: Column(

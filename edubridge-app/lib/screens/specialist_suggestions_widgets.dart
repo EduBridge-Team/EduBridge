@@ -6,33 +6,61 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
       return const Center(child: CircularProgressIndicator());
     }
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_error!,
-                style: const TextStyle(color: AppColors.red)),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _load,
-              child: const Text('إعادة المحاولة'),
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 90),
+          const Icon(AppIcons.error, size: 54, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.red,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
+              onPressed: _load,
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+            ),
+          ),
+        ],
       );
     }
     if (_suggestions.isEmpty) {
       return ListView(
+        padding: const EdgeInsets.all(24),
         children: [
-          const SizedBox(height: 100),
-          Icon(Icons.inbox_outlined, size: 72, color: c.muted),
-          const SizedBox(height: 16),
+          const SizedBox(height: 90),
           Center(
-            child: Text(
-              _filter == 'pending'
-                  ? 'لا توجد اقتراحات معلقة'
-                  : 'لا توجد اقتراحات',
-              style: TextStyle(fontSize: 16, color: c.muted),
+            child: Container(
+              width: 84,
+              height: 84,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                AppIcons.specialist,
+                size: 40,
+                color: AppColors.brandBlue,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            _filter == 'pending'
+                ? 'لا توجد اقتراحات معلقة'
+                : 'لا توجد اقتراحات',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: c.heading,
             ),
           ),
         ],
@@ -40,7 +68,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
       itemCount: _suggestions.length,
       itemBuilder: (context, i) =>
           _buildSuggestionCard(_suggestions[i], c),
@@ -71,11 +99,15 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
         statusIcon = AppIcons.clock;
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: c.line),
+      ),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -89,7 +121,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                     (s['child_name'] ?? '؟').toString().characters.first,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: 18,
                     ),
                   ),
@@ -103,7 +135,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                         s['child_name'] ?? '',
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: c.heading,
                         ),
                       ),
@@ -130,7 +162,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                         statusLabel,
                         style: TextStyle(
                           fontSize: 11,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: statusColor,
                         ),
                       ),
@@ -162,7 +194,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                     isLearningSupport ? 'مختص دعم تعليمي' : 'مختص تعليمي',
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: isLearningSupport
                           ? AppColors.brandTealDeep
                           : AppColors.brandBlue,
@@ -196,8 +228,8 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 44),
                         backgroundColor: AppColors.green,
                       ),
@@ -211,7 +243,6 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
             ],
           ],
         ),
-      ),
     );
   }
 }

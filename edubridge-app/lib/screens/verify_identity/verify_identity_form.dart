@@ -22,7 +22,7 @@ Widget buildFormState({
   return Scaffold(
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -34,7 +34,7 @@ Widget buildFormState({
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               labelText: 'رقم الهوية *',
-              prefixIcon: Icon(Icons.credit_card),
+              prefixIcon: Icon(Icons.badge_outlined),
               hintText: 'مثال: 1234567890',
             ),
           ),
@@ -83,7 +83,7 @@ Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: c.tintOrange,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
     ),
     child: Row(
       children: [
@@ -96,7 +96,7 @@ Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
                 : 'لا يمكنك استخدام الصلاحيات الكاملة قبل توثيق هويتك.',
             style: TextStyle(
               color: c.onTint,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               height: 1.5,
             ),
           ),
@@ -118,7 +118,7 @@ Widget _buildCertificateSection({
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: c.tintYellow,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(
         color: AppColors.orange.withValues(alpha: 0.4),
         width: 1.5,
@@ -137,7 +137,7 @@ Widget _buildCertificateSection({
                 'الشهادة العلمية *',
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: c.heading,
                 ),
               ),
@@ -152,7 +152,7 @@ Widget _buildCertificateSection({
                 'إلزامي',
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.orangeDeep,
                 ),
               ),
@@ -177,8 +177,8 @@ Widget _buildCertificateSection({
               Expanded(
                 child: SizedBox(
                   height: 46,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
                       backgroundColor: AppColors.orange,
                       foregroundColor: Colors.white,
                     ),
@@ -262,7 +262,7 @@ Widget _buildFileCard({
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: hasFile ? color.withValues(alpha: 0.08) : c.tintTeal,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(
         color: hasFile ? color : c.line,
         width: hasFile ? 2 : 1.2,
@@ -280,7 +280,7 @@ Widget _buildFileCard({
                 title,
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: c.heading,
                 ),
               ),
@@ -299,8 +299,8 @@ Widget _buildFileCard({
               Expanded(
                 child: SizedBox(
                   height: 44,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
                       backgroundColor: color,
                       foregroundColor: Colors.white,
                     ),
@@ -410,8 +410,8 @@ Widget _buildSubmitButton({
 }) {
   return SizedBox(
     height: 56,
-    child: ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
+    child: FilledButton.icon(
+      style: FilledButton.styleFrom(
         backgroundColor: AppColors.tealDeep,
       ),
       onPressed: loading ? null : onSubmit,
@@ -425,7 +425,7 @@ Widget _buildSubmitButton({
           : const Icon(Icons.send),
       label: Text(
         loading ? 'جارٍ الإرسال...' : 'حفظ وإرسال للتوثيق',
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
       ),
     ),
   );

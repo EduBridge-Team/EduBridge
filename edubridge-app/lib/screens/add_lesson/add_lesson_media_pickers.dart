@@ -12,7 +12,7 @@ Widget buildImagesPicker({
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: AppColors.orange.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
     ),
     child: Column(
@@ -27,7 +27,7 @@ Widget buildImagesPicker({
                 'صور الدرس (اختياري)',
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: c.onTint,
                 ),
               ),
@@ -86,8 +86,8 @@ Widget buildImagesPicker({
         SizedBox(
           width: double.infinity,
           height: 38,
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
               backgroundColor: AppColors.orange,
               foregroundColor: Colors.white,
             ),
@@ -115,7 +115,7 @@ Widget buildFilePicker({
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(color: color.withValues(alpha: 0.3)),
     ),
     child: Column(
@@ -130,7 +130,7 @@ Widget buildFilePicker({
                 label,
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: c.onTint,
                 ),
               ),
@@ -144,8 +144,8 @@ Widget buildFilePicker({
           SizedBox(
             width: double.infinity,
             height: 38,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
                 backgroundColor: color,
                 foregroundColor: Colors.white,
               ),

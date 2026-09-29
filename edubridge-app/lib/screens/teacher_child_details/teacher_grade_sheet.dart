@@ -96,8 +96,8 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.fromLTRB(12, 56, 12, 12),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: c.card,
           borderRadius: BorderRadius.circular(24),
@@ -116,7 +116,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                       'تصحيح: ${widget.homework.title}',
                       style: TextStyle(
                         fontSize: 17,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: c.heading,
                       ),
                     ),
@@ -179,8 +179,8 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
                         backgroundColor: AppColors.green,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(0, 48),
@@ -199,7 +199,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                         _saving ? 'جارٍ الحفظ...' : 'حفظ التصحيح',
                         style: const TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       onPressed: _saving ? null : _save,
@@ -228,7 +228,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
             'إجابة الطالب:',
             style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: c.onTint,
             ),
           ),

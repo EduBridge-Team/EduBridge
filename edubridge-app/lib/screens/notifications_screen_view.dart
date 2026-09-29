@@ -29,8 +29,12 @@ extension _NotificationsScreenStateView on _NotificationsScreenState {
                         ),
                       )
                     : const Text(
-                        'تحديد الكل',
-                        style: TextStyle(color: Colors.white, fontSize: 13),
+                        'قراءة الكل',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
               );
             },

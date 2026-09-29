@@ -17,8 +17,9 @@ Widget buildTargetSelector({
   return Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
-      color: c.tintTeal,
-      borderRadius: BorderRadius.circular(14),
+      color: c.card,
+      borderRadius: BorderRadius.circular(22),
+      border: Border.all(color: c.line),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +32,7 @@ Widget buildTargetSelector({
               'من سيستفيد من الدرس؟',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: c.onTint,
               ),
             ),
@@ -95,7 +96,7 @@ Widget buildTargetSelector({
               constraints: const BoxConstraints(maxHeight: 200),
               decoration: BoxDecoration(
                 color: c.card,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(18),
               ),
               child: ListView.builder(
                 shrinkWrap: true,

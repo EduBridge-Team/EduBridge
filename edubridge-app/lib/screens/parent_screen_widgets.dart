@@ -18,7 +18,11 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const ProfileAvatarButton(size: 56),
+              const ProfileAvatarButton(
+                size: 52,
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.brandTealDeep,
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

@@ -85,11 +85,19 @@ class _EditUserSheetState extends State<_EditUserSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: c.card,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .10),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -103,7 +111,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                       'تعديل المستخدم',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                         color: c.heading,
                       ),
                     ),
@@ -117,19 +125,28 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               const SizedBox(height: 8),
               TextField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'الاسم'),
+                decoration: const InputDecoration(
+                  labelText: 'الاسم',
+                  prefixIcon: Icon(AppIcons.profile),
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
+                decoration: const InputDecoration(
+                  labelText: 'البريد الإلكتروني',
+                  prefixIcon: Icon(Icons.mail_outline_rounded),
+                ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 key: ValueKey(_role),
                 initialValue: _role,
-                decoration: const InputDecoration(labelText: 'الدور'),
+                decoration: const InputDecoration(
+                  labelText: 'الدور',
+                  prefixIcon: Icon(AppIcons.users),
+                ),
                 items: _roleNames.entries
                     .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
                     .toList(),
@@ -144,11 +161,33 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 decoration: const InputDecoration(
                   labelText: 'رقم الهاتف',
                   hintText: 'اختياري',
+                  prefixIcon: Icon(Icons.phone_outlined),
                 ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: Colors.red)),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.red.withValues(alpha: .08),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(AppIcons.error, color: AppColors.red, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(
+                            color: AppColors.red,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
               const SizedBox(height: 20),
               Row(
@@ -161,11 +200,19 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: FilledButton.icon(
                       onPressed: _saving ? null : _save,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.green),
-                      child: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(AppIcons.check),
+                      label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
                     ),
                   ),
                 ],

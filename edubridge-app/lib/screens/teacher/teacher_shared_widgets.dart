@@ -15,32 +15,18 @@ Widget _buildTeacherHeader({
     width: double.infinity,
     decoration: const BoxDecoration(
       gradient: AppColors.headerGradient,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
     ),
     child: SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const ProfileAvatarButton(size: 42),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset('assets/brand_icon.png', width: 40, height: 40),
-                    const SizedBox(width: 6),
-                    const Text('EduBridge',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        )),
-                  ],
-                ),
                 DashboardMenu(
                   actions: [
                     DashboardMenuAction(
@@ -111,29 +97,44 @@ Widget _buildTeacherHeader({
                     ),
                   ],
                 ),
+                Image.asset(
+                  'assets/brand_logo.png',
+                  height: 30,
+                  width: 145,
+                  fit: BoxFit.contain,
+                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 18),
             FutureBuilder<String?>(
               future: ApiService.getName(),
               builder: (context, snap) {
                 final name = snap.data ?? 'المعلم';
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                return Row(
                   children: [
-                    Text('مرحباً $name',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        )),
-                    Text(
+                    const ProfileAvatarButton(size: 54),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('مرحباً، $name',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              )),
+                          const SizedBox(height: 3),
+                          Text(
                       tabIndex == 0
                           ? 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك'
                           : 'أضف دروساً جديدة أو صفّح الدروس الموجودة',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.85),
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              color: Colors.white.withValues(alpha: 0.86),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

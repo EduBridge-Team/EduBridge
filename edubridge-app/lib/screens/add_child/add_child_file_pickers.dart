@@ -16,7 +16,7 @@ Widget buildDocumentsSection({
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: c.card,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(24),
       border: Border.all(
         color: AppColors.brandBlue.withValues(alpha: 0.4),
         width: 2,
@@ -34,7 +34,7 @@ Widget buildDocumentsSection({
               'المستندات الرسمية',
               style: TextStyle(
                 fontSize: 17,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
@@ -49,7 +49,7 @@ Widget buildDocumentsSection({
                 'مطلوب',
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.brandBlue,
                 ),
               ),
@@ -104,7 +104,7 @@ Widget _buildFilePicker({
       color: hasFile
           ? color.withValues(alpha: 0.08)
           : c.tintTeal.withValues(alpha: 0.5),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(
         color: hasFile ? color : c.line,
         width: hasFile ? 2 : 1.2,
@@ -122,7 +122,7 @@ Widget _buildFilePicker({
                 label,
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: c.heading,
                 ),
               ),
@@ -139,8 +139,8 @@ Widget _buildFilePicker({
               Expanded(
                 child: SizedBox(
                   height: 42,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
                       backgroundColor: color,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(

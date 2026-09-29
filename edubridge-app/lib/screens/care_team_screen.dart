@@ -71,22 +71,30 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     );
   }
 
-  Widget _buildError() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(AppIcons.error, size: 64, color: AppColors.red),
-            const SizedBox(height: 12),
-            Text(_error!,
-                style: const TextStyle(color: AppColors.red, fontSize: 16)),
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
+  Widget _buildError() => ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 100),
+          const Icon(AppIcons.error, size: 56, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
-          ],
-        ),
+          ),
+        ],
       );
 
   Widget _buildBody() {
@@ -100,7 +108,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
             children: [
@@ -111,7 +119,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 4),
@@ -161,15 +169,28 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         if (_teachers.isEmpty && totalSpecialists == 0) ...[
           const SizedBox(height: 40),
           Center(
-            child: Column(
-              children: [
-                Icon(Icons.people_outline, size: 72, color: c.muted),
-                const SizedBox(height: 12),
-                Text(
-                  'لم يتم تعيين فريق بعد',
-                  style: TextStyle(fontSize: 16, color: c.muted),
-                ),
-              ],
+            child: Container(
+              width: 82,
+              height: 82,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.people_outline_rounded,
+                size: 40,
+                color: AppColors.brandBlue,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            'لم يتم تعيين فريق بعد',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: c.heading,
             ),
           ),
         ],
@@ -193,7 +214,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
       title,
       style: TextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w800,
         color: c.heading,
       ),
     );
@@ -204,22 +225,34 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     final name = (t['name'] ?? '').toString();
     final subject = t['subject']?.toString();
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
+      ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppColors.green,
+        contentPadding: const EdgeInsets.all(12),
+        leading: Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: AppColors.green.withValues(alpha: .12),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          alignment: Alignment.center,
           child: Text(
             name.isNotEmpty ? name.characters.first : '؟',
             style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+              color: AppColors.greenDeep,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
         title: Text(
           name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
           subject != null && subject.isNotEmpty
@@ -252,22 +285,34 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     final name = (data['name'] ?? '').toString();
     final specialty = data['specialty']?.toString();
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.line),
+      ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color,
+        contentPadding: const EdgeInsets.all(12),
+        leading: Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: .12),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          alignment: Alignment.center,
           child: Text(
             name.isNotEmpty ? name.characters.first : '؟',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
         title: Text(
           name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
           roleLabel + (specialty != null ? ' — $specialty' : ''),

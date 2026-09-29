@@ -67,8 +67,10 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openNewDiscussion,
         icon: const Icon(AppIcons.add),
-        label: const Text('دراسة جديدة'),
-        backgroundColor: AppColors.brandTeal,
+        label: const Text(
+          'دراسة جديدة',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -83,41 +85,66 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     );
   }
 
-  Widget _buildError() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(AppIcons.error, size: 64, color: AppColors.red),
-            const SizedBox(height: 12),
-            const Text('تعذّر التحميل',
-                style: TextStyle(fontSize: 16, color: AppColors.red)),
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
+  Widget _buildError() => ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 100),
+          const Icon(AppIcons.error, size: 56, color: AppColors.red),
+          const SizedBox(height: 14),
+          const Text(
+            'تعذّر التحميل',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.red,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
               label: const Text('إعادة المحاولة'),
               onPressed: _load,
             ),
-          ],
-        ),
+          ),
+        ],
       );
 
   Widget _buildEmpty(JisrColors c) => ListView(
+        padding: const EdgeInsets.all(24),
         children: [
-          const SizedBox(height: 120),
-          Icon(AppIcons.forum, size: 80, color: c.muted),
-          const SizedBox(height: 16),
+          const SizedBox(height: 100),
           Center(
-            child: Text('لا توجد دراسات حالة بعد',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: c.muted,
-                )),
+            child: Container(
+              width: 84,
+              height: 84,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                AppIcons.forum,
+                size: 40,
+                color: AppColors.brandBlue,
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text('اضغط + لبدء دراسة حالة جديدة',
-                style: TextStyle(fontSize: 13, color: c.muted)),
+          const SizedBox(height: 18),
+          Text(
+            'لا توجد دراسات حالة بعد',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: c.heading,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'ابدأ دراسة جديدة للتعاون مع المختصين حول حالة الطفل.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13.5, color: c.muted),
           ),
         ],
       );
@@ -129,7 +156,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
         _items.where((d) => d.status == CaseDiscussionStatus.resolved).toList();
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
       children: [
         if (open.isNotEmpty) ...[
           _sectionHeader('نشطة', open.length, AppColors.brandBlue),
@@ -150,7 +177,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       child: Row(
         children: [
           Text(title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -161,7 +188,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
             child: Text('$count',
                 style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: color)),
           ),
         ],
@@ -179,10 +206,15 @@ class _DiscussionTile extends StatelessWidget {
     final c = JisrColors.of(context);
     final isResolved = discussion.status == CaseDiscussionStatus.resolved;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: c.line),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(22),
         onTap: () async {
           await Navigator.push(
             context,
@@ -198,14 +230,21 @@ class _DiscussionTile extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: isResolved
-                        ? AppColors.blue.withValues(alpha: 0.15)
-                        : AppColors.brandTealDeep.withValues(alpha: 0.15),
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: (isResolved
+                              ? AppColors.brandBlue
+                              : AppColors.brandTealDeep)
+                          .withValues(alpha: .12),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     child: Icon(
                       AppIcons.child,
-                      color: isResolved ? AppColors.brandBlue : AppColors.brandTealDeep,
+                      color: isResolved
+                          ? AppColors.brandBlue
+                          : AppColors.brandTealDeep,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -216,7 +255,7 @@ class _DiscussionTile extends StatelessWidget {
                         Text(discussion.childName,
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: c.heading,
                             )),
                         Text(discussion.topic,
@@ -238,7 +277,7 @@ class _DiscussionTile extends StatelessWidget {
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                           )),
                     ),
                 ],

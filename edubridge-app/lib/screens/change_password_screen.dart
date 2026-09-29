@@ -72,32 +72,49 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
           children: [
-            Center(
-              child: Container(
-                width: 90,
-                height: 90,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: c.card,
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: c.line),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                width: 82,
+                height: 82,
                 decoration: BoxDecoration(
                   color: AppColors.brandTeal.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   AppIcons.lock,
-                  size: 48,
+                  size: 42,
                   color: AppColors.brandBlue,
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const Center(
-              child: Text(
-                'أنشئ كلمة مرور قوية لحماية حسابك',
-                style: TextStyle(fontSize: 15),
-                textAlign: TextAlign.center,
+                  const SizedBox(height: 14),
+                  Text(
+                    'حماية حسابك',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: c.heading,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'اختر كلمة مرور قوية ومختلفة عن الحالية.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13.5, color: c.muted),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 18),
 
             TextFormField(
               controller: _currentCtrl,
@@ -172,7 +189,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Row(
                   children: [
@@ -195,7 +212,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: c.tintYellow,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
@@ -216,13 +233,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
             SizedBox(
               height: 56,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.brandBlue,
                 ),
                 icon: _saving
                     ? const SizedBox(
@@ -237,7 +250,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 label: Text(
                   _saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور',
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                      fontSize: 18, fontWeight: FontWeight.w800),
                 ),
                 onPressed: _saving ? null : _save,
               ),

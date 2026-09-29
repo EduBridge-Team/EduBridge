@@ -12,8 +12,14 @@ Widget buildVerifiedState({
   return Scaffold(
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.all(24),
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -27,7 +33,7 @@ Widget buildVerifiedState({
               'تم توثيق حسابك',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
@@ -47,7 +53,7 @@ Widget buildVerifiedState({
             SizedBox(
               width: double.infinity,
               height: 56,
-              child: ElevatedButton.icon(
+              child: FilledButton.icon(
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('العودة'),
                 onPressed: () => Navigator.maybePop(context),
@@ -84,7 +90,7 @@ Widget buildPendingState({
               'طلبك قيد المراجعة',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
@@ -100,7 +106,7 @@ Widget buildPendingState({
             SizedBox(
               width: double.infinity,
               height: 56,
-              child: ElevatedButton.icon(
+              child: FilledButton.icon(
                 icon: const Icon(Icons.refresh),
                 label: const Text('تحديث الحالة'),
                 onPressed: loading ? null : onRefresh,
@@ -140,7 +146,7 @@ Widget buildRejectedState({
               'تم رفض طلب التوثيق',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
@@ -154,7 +160,7 @@ Widget buildRejectedState({
             SizedBox(
               width: double.infinity,
               height: 56,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: onRetry,
                 child: const Text('إعادة المحاولة'),
               ),
