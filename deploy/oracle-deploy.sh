@@ -11,7 +11,7 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-for command in docker curl; do
+for command in docker curl git; do
   if ! command -v "$command" >/dev/null 2>&1; then
     echo "ERROR: required command not found: $command" >&2
     exit 1
@@ -22,6 +22,10 @@ if ! docker compose version >/dev/null 2>&1; then
   echo "ERROR: Docker Compose v2 is required." >&2
   exit 1
 fi
+
+GIT_SHA="$(git -C "$ROOT" rev-parse HEAD)"
+export GIT_SHA
+echo "==> Deploying Git commit: $GIT_SHA"
 
 compose() {
   docker compose \
@@ -116,6 +120,14 @@ for url in http://127.0.0.1:8081/ http://127.0.0.1:8082/; do
   fi
 done
 
+api_health="$(curl -fsS http://127.0.0.1:8081/api/health)"
+if ! grep -Fq "\"git_sha\":\"$GIT_SHA\"" <<<"$api_health"; then
+  echo "ERROR: API health does not report deployed Git SHA $GIT_SHA." >&2
+  echo "Health response: $api_health" >&2
+  exit 1
+fi
+
+echo "==> Verified API Git SHA: $GIT_SHA"
 echo "==> EduBridge Oracle deployment is healthy."
 compose ps
 
