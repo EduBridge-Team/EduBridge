@@ -91,63 +91,74 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     }
     if (_error != null) {
       return ListView(
+        padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 100),
+          const Icon(AppIcons.error, size: 56, color: AppColors.red),
+          const SizedBox(height: 14),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              color: AppColors.red,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 18),
           Center(
-            child: Column(
-              children: [
-                Icon(AppIcons.error,
-                    size: 64, color: JisrColors.of(context).muted),
-                const SizedBox(height: 16),
-                Text(
-                  _error!,
-                  style: const TextStyle(fontSize: 16, color: AppColors.red),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  icon: const Icon(AppIcons.refresh),
-                  label: const Text('إعادة المحاولة'),
-                  onPressed: _load,
-                ),
-              ],
+            child: FilledButton.icon(
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+              onPressed: _load,
             ),
           ),
         ],
       );
     }
     if (_homeworks.isEmpty) {
+      final c = JisrColors.of(context);
       return ListView(
+        padding: const EdgeInsets.all(24),
         children: [
-          const SizedBox(height: 120),
-          Icon(AppIcons.homework,
-              size: 80, color: JisrColors.of(context).muted),
-          const SizedBox(height: 16),
+          const SizedBox(height: 110),
           Center(
-            child: Text(
-              'لا توجد واجبات',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: JisrColors.of(context).muted,
+            child: Container(
+              width: 86,
+              height: 86,
+              decoration: BoxDecoration(
+                color: c.tintTeal,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                AppIcons.homework,
+                size: 40,
+                color: AppColors.brandBlue,
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'سيظهر هنا أي واجب يضيفه معلمك',
-              style: TextStyle(
-                fontSize: 14,
-                color: JisrColors.of(context).muted,
-              ),
+          const SizedBox(height: 18),
+          Text(
+            'لا توجد واجبات',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: c.heading,
             ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'سيظهر هنا أي واجب يضيفه المعلم.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13.5, color: c.muted),
           ),
         ],
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
       itemCount: _homeworks.length,
       itemBuilder: (context, i) => _HomeworkCard(
         homework: _homeworks[i],
