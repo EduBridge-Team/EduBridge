@@ -10,10 +10,23 @@ extension _UsersTabStateView on _UsersTabState {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+            const Icon(AppIcons.error, color: AppColors.red, size: 52),
+            const SizedBox(height: 12),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.red,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            FilledButton.icon(
+              onPressed: _load,
+              icon: const Icon(AppIcons.refresh),
+              label: const Text('إعادة المحاولة'),
+            ),
           ],
         ),
       );
@@ -23,7 +36,7 @@ extension _UsersTabStateView on _UsersTabState {
       onRefresh: _load,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
         children: [
           _buildSearchBar(c),
           const SizedBox(height: 16),
