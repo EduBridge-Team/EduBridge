@@ -54,7 +54,7 @@ Widget buildLessonCard({
                       : AdaptiveHelper.accentColor(context)
                           .withValues(alpha: 0.1),
                   borderRadius:
-                      BorderRadius.circular(AdaptiveHelper.cardRadius - 8),
+                      BorderRadius.circular(AdaptiveHelper.cardRadius),
                 ),
                 alignment: Alignment.center,
                 child: Icon(
@@ -76,7 +76,7 @@ Widget buildLessonCard({
                 child: AdaptiveText(
                   title,
                   type: AdaptiveTextType.subtitle,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               if (hasVideo)
@@ -108,6 +108,39 @@ Widget buildLessonCard({
             ),
           ],
           SizedBox(height: AdaptiveHelper.spacing),
+          if (!isSample)
+            Container(
+              margin: EdgeInsets.only(bottom: AdaptiveHelper.spacing / 2),
+              padding: EdgeInsets.symmetric(
+                horizontal: AdaptiveHelper.spacing / 2,
+                vertical: AdaptiveHelper.spacing / 3,
+              ),
+              decoration: BoxDecoration(
+                color: isDone
+                    ? AppColors.green.withValues(alpha: .10)
+                    : JisrColors.of(context).tintTeal,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    isDone ? AppIcons.check : AppIcons.lesson,
+                    size: 16,
+                    color: isDone
+                        ? AppColors.brandTealDeep
+                        : AppColors.brandBlue,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: AdaptiveText(
+                      isDone ? 'تم إكمال هذا الدرس' : 'جاهز للبدء',
+                      type: AdaptiveTextType.caption,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Row(
             children: [
               Expanded(
