@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Accessibility, ArrowLeft, Heart, Play, Users } from 'lucide-react'
+import { Accessibility, ArrowLeft, Heart, Users } from 'lucide-react'
 import { getToken, getUser } from '../../api'
 import Footer from '../../components/Footer'
-import EduBridgeAnimatedBackground from '../../components/EduBridgeAnimatedBackground/EduBridgeAnimatedBackground'
 import { dashboardFor } from '../../roleRoutes'
 import HomeSections from './HomeSections'
 import '../../homepage-reference.css'
@@ -16,61 +14,15 @@ export default function HomePage() {
   const navigate = useNavigate()
   const loggedIn = Boolean(getToken())
   const user = getUser()
-  const [heroTitleLength, setHeroTitleLength] = useState(0)
-  const [heroDeleting, setHeroDeleting] = useState(false)
-
-  useEffect(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-      setHeroTitleLength(HERO_TITLE.length)
-      setHeroDeleting(false)
-      return undefined
-    }
-
-    let timeout
-
-    if (!heroDeleting && heroTitleLength < HERO_TITLE.length) {
-      timeout = window.setTimeout(
-        () => setHeroTitleLength((length) => Math.min(length + 1, HERO_TITLE.length)),
-        82,
-      )
-    } else if (!heroDeleting && heroTitleLength === HERO_TITLE.length) {
-      timeout = window.setTimeout(() => setHeroDeleting(true), 1800)
-    } else if (heroDeleting && heroTitleLength > 0) {
-      timeout = window.setTimeout(
-        () => setHeroTitleLength((length) => Math.max(length - 1, 0)),
-        44,
-      )
-    } else {
-      timeout = window.setTimeout(() => setHeroDeleting(false), 420)
-    }
-
-    return () => window.clearTimeout(timeout)
-  }, [heroDeleting, heroTitleLength])
-
-  const visibleHeroTitle = HERO_TITLE.slice(0, heroTitleLength)
-  const typedHeroLineOne = visibleHeroTitle.slice(0, HERO_TITLE_LINE_ONE.length)
-  const typedHeroLineTwo = visibleHeroTitle.length > HERO_TITLE_LINE_ONE.length
-    ? visibleHeroTitle.slice(HERO_TITLE_LINE_ONE.length + 1)
-    : ''
-  const cursorOnFirstLine = heroTitleLength <= HERO_TITLE_LINE_ONE.length
-
   return (
-    <div className="landing new-landing reference-home">
+    <div className="landing new-landing reference-home" dir="rtl">
       <section className="home-hero reference-hero">
-        <EduBridgeAnimatedBackground />
 
         <div className="home-hero-copy">
           <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
-          <h1 className="hero-typewriter" aria-label={HERO_TITLE}>
-            <span className="hero-type-line hero-type-line-one">
-              {typedHeroLineOne}
-              {cursorOnFirstLine && <i className="hero-type-cursor" aria-hidden="true" />}
-            </span>
-            <br />
-            <span className="hero-type-line hero-type-accent">
-              {typedHeroLineTwo}
-              {!cursorOnFirstLine && <i className="hero-type-cursor" aria-hidden="true" />}
-            </span>
+          <h1 className="hero-static-title" aria-label={HERO_TITLE}>
+            {HERO_TITLE_LINE_ONE}<br />
+            <span>{HERO_TITLE_LINE_TWO}</span>
           </h1>
           <p>
             في EduBridge نبني تجربة تعليمية مرنة تراعي اختلاف القدرات والاحتياجات، وتجمع الأسرة والمعلم والمختص حول رحلة تعلم أوضح وأكثر تكافؤاً.
@@ -80,7 +32,7 @@ export default function HomePage() {
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/register')}>
               ابدأ رحلتك الآن <ArrowLeft size={18} />
             </button>
-            <a className="btn outline" href="#services"><Play size={18} /> شاهد ما نقدمه</a>
+            <a className="btn outline" href="#services">استكشف الخدمات <ArrowLeft size={18} /></a>
           </div>
 
           <div className="hero-promises">
