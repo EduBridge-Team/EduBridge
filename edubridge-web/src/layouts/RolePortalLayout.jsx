@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Bell, ChevronDown, Menu, Moon, Search, Sun, X } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, Menu, Moon, Search, Sun, X } from 'lucide-react'
 import {
   fetchChildren,
   fetchConversations,
@@ -240,19 +240,34 @@ export default function RolePortalLayout({ children }) {
               {dark ? <Sun size={19} /> : <Moon size={19} />}
               <span>{dark ? 'الوضع الفاتح' : 'الوضع الليلي'}</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const next = !settings.assistant_visible
+                setDrawerOpen(false)
+                updateSettings({ assistant_visible: next }).catch(() => {})
+              }}
+              aria-label={settings.assistant_visible ? 'إخفاء نور' : 'إظهار نور'}
+            >
+              {settings.assistant_visible ? <EyeOff size={19} /> : <Eye size={19} />}
+              <span>{settings.assistant_visible ? 'إخفاء نور' : 'إظهار نور'}</span>
+            </button>
           </div>
         </div>
 
-        <button type="button" className="pp-noor-card" onClick={openNoor} aria-label="فتح المساعد نور">
-          <span className="pp-noor-avatar" aria-hidden="true">
-            <NoorPet size={92} trackMouse />
-          </span>
-          <span className="pp-noor-copy">
-            <strong>نور</strong>
-            <small>مساعدك التعليمي الذكي</small>
-            <em>ابدأ المحادثة</em>
-          </span>
-        </button>
+        {settings.assistant_visible && (
+          <button type="button" className="pp-noor-card" onClick={openNoor} aria-label="فتح المساعد نور">
+            <span className="pp-noor-avatar" aria-hidden="true">
+              <NoorPet size={92} trackMouse />
+            </span>
+            <span className="pp-noor-copy">
+              <strong>نور</strong>
+              <small>مساعدك التعليمي الذكي</small>
+              <em>ابدأ المحادثة</em>
+            </span>
+          </button>
+        )}
 
       </aside>
 
