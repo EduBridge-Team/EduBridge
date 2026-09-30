@@ -7,13 +7,6 @@
 .role-ministry { --role-accent: #087b7c; }
 .role-institution { --role-accent: #0a8fa1; }
 
-.topbar-parent { border-bottom-color: color-mix(in srgb, #1f78d1 32%, var(--line)); }
-.topbar-teacher { border-bottom-color: color-mix(in srgb, #168a95 32%, var(--line)); }
-.topbar-specialist { border-bottom-color: color-mix(in srgb, #7557bd 30%, var(--line)); }
-.topbar-admin { border-bottom-color: color-mix(in srgb, #164f8e 34%, var(--line)); }
-.topbar-ministry { border-bottom-color: color-mix(in srgb, #087b7c 32%, var(--line)); }
-.topbar-institution { border-bottom-color: color-mix(in srgb, #0a8fa1 32%, var(--line)); }
-
 .role-page { min-height: calc(100vh - 78px); }
 .role-dashboard { padding-block: 28px 58px; }
 .role-dashboard > .dash-head,
@@ -121,20 +114,8 @@
 
 /* Explicit dark surfaces keep contrast across branded and role-aware pages. */
 :root[data-theme="dark"] .home-hero-visual { background: linear-gradient(145deg, #0d3153, #103b55 48%, #0d4c52); }
-:root[data-theme="dark"] .topbar-brand {
-  padding: 3px 10px;
-  border-radius: 14px;
-  background: #102f4e;
-  border: 1px solid #214663;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-}
-
-:root[data-theme="dark"] .topbar-brand .brand-wordmark {
-  color: #dff3ff;
-}
 :root[data-theme="dark"] .hero-product-frame { border-color: #1b4c6a; background: #0b2945; }
 :root[data-theme="dark"] .hero-window-bar { background: #123552; color: #9dbbd0; }
-:root[data-theme="dark"] .hero-note { background: rgba(13, 41, 71, .94); color: #76dce5; }
 :root[data-theme="dark"] .audience-card,
 :root[data-theme="dark"] .audience-card.tone-2,
 :root[data-theme="dark"] .audience-card.tone-3 { border-color: var(--line); background: linear-gradient(145deg, #102f4e, #0d2947); }
@@ -176,10 +157,7 @@
 
 @media (max-width: 780px) {
   .container { padding-inline: 16px; }
-  .topbar { min-height: 67px; padding: 7px 16px; }
-  .topbar-brand { min-width: 0; }
-  .topbar-brand .brand-logo { width: 135px; height: 48px; }
-  .home-hero, .home-section, .home-stats { width: min(100% - 28px, 620px); }
+  .home-hero, .home-section { width: min(100% - 28px, 620px); }
   .home-hero { grid-template-columns: 1fr; min-height: auto; padding-block: 42px 24px; text-align: center; }
   .home-hero-copy { max-width: none; }
   .home-hero h1 { font-size: 44px; }
@@ -187,9 +165,6 @@
   .hero-actions, .hero-promises { justify-content: center; }
   .home-hero-visual { min-height: 390px; order: -1; }
   .hero-product-frame { height: 330px; width: min(88%, 430px); }
-  .hero-note { min-width: 155px; font-size: 13px; }
-  .hero-note.progress { top: 25px; right: 0; }
-  .hero-note.future { bottom: 30px; }
   .home-section { padding: 22px; border-radius: 21px; }
   .section-heading { align-items: flex-start; flex-direction: column; }
   .section-heading h2 { font-size: 26px; }
@@ -201,7 +176,6 @@
   .noor-bubbles { display: none; }
   .noor-figure { order: 2; }
   .noor-copy { order: 1; }
-  .home-stats { grid-template-columns: repeat(2, 1fr); }
   .product-showcase { width: min(100% - 28px, 620px); padding: 25px; border-radius: 24px; }
   .product-view-grid { grid-template-columns: 1fr; }
   .product-view-card { display: grid; grid-template-columns: 42% 1fr; }
@@ -229,11 +203,7 @@
   .home-hero h1 { font-size: 38px; }
   .home-hero-visual { min-height: 320px; }
   .hero-product-frame { height: 270px; border-width: 5px; border-radius: 19px; }
-  .hero-note.future { left: -5px; bottom: 22px; }
-  .hero-note.progress { right: -5px; }
-  .hero-note { min-width: 140px; padding: 10px; }
   .audience-card { padding: 19px; }
-  .home-stats { grid-template-columns: 1fr; }
   .product-showcase-heading h2 { font-size: 29px; }
   .product-view-card { display: block; }
   .product-view-image { height: 230px; }

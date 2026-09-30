@@ -1,0 +1,77 @@
+.topbar.topbar {
+  box-sizing: border-box;
+  height: var(--site-header-height);
+  min-height: var(--site-header-height);
+  max-height: var(--site-header-height);
+  padding-block: 8px;
+  align-items: center;
+}
+.topbar.topbar {
+  padding-inline: max(20px, calc((100vw - 1240px) / 2));
+  gap: 24px;
+}
+.topbar.topbar .topbar-brand {
+  width: var(--site-header-logo-width);
+  min-width: var(--site-header-logo-width);
+  max-width: var(--site-header-logo-width);
+  height: var(--site-header-logo-height);
+  flex: 0 0 var(--site-header-logo-width);
+  padding: 0;
+  margin-block: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topbar.topbar .topbar-brand .topbar-brand-logo {
+  display: block;
+  width: var(--site-header-logo-width);
+  max-width: var(--site-header-logo-width);
+  height: var(--site-header-logo-height);
+  max-height: var(--site-header-logo-height);
+  object-fit: contain;
+  border-radius: 0;
+}
+.topbar.topbar .topbar-menu { align-items: center; }
+.topbar.topbar .guest-actions .topbar-btn,
+.topbar.topbar .guest-actions .theme-toggle {
+  height: 42px;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+.pp-toolbar.pp-toolbar {
+  box-sizing: border-box;
+  height: var(--site-header-height) !important;
+  min-height: var(--site-header-height) !important;
+  max-height: var(--site-header-height);
+  padding-block: 8px !important;
+  align-items: center;
+}
+@media (max-width: 1024px) {
+  .topbar.topbar { padding-inline: 16px; gap: 12px; }
+}
+@media (max-width: 1024px) {
+  :root {
+    --site-header-height: 64px;
+    --site-header-logo-width: 144px;
+    --site-header-logo-height: 40px;
+  }
+}
+@media (max-width: 900px) {
+  .pp-toolbar.pp-toolbar { padding-block: 0 !important; }
+  .pp-toolbar .pp-mobile-brand {
+    width: var(--site-header-logo-width) !important;
+    max-width: var(--site-header-logo-width) !important;
+    height: var(--site-header-logo-height);
+  }
+  .pp-toolbar .pp-mobile-brand .pp-mobile-brand-logo {
+    width: var(--site-header-logo-width) !important;
+    max-width: var(--site-header-logo-width) !important;
+    height: var(--site-header-logo-height) !important;
+    max-height: var(--site-header-logo-height) !important;
+    object-fit: contain;
+  }
+}

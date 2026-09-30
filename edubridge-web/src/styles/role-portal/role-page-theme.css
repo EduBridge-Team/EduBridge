@@ -1,0 +1,120 @@
+/* Children / conversations */
+:root[data-theme="dark"] .pc-heading,
+:root[data-theme="dark"] .pc-tools,
+:root[data-theme="dark"] .pc-stat,
+:root[data-theme="dark"] .pc-child-card,
+:root[data-theme="dark"] .pc-empty,
+:root[data-theme="dark"] .pcv-heading,
+:root[data-theme="dark"] .pcv-controls,
+:root[data-theme="dark"] .parent-conversations-page .chat-layout,
+:root[data-theme="dark"] .parent-conversations-page .conversation-list,
+:root[data-theme="dark"] .parent-conversations-page .chat-panel-head,
+:root[data-theme="dark"] .parent-conversations-page .chat-compose {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pc-search,
+:root[data-theme="dark"] .pc-filter,
+:root[data-theme="dark"] .pc-meta-box,
+:root[data-theme="dark"] .pcv-search {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pc-progress-track {
+  background: #24435c;
+}
+
+:root[data-theme="dark"] .parent-conversations-page .conversation-item.active {
+  border-color: #326584;
+  background: linear-gradient(135deg, #103a5d, #103b4e);
+}
+
+:root[data-theme="dark"] .parent-conversations-page .chat-messages {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(79,211,196,.05), transparent 14rem),
+    #09233c;
+}
+
+:root[data-theme="dark"] .parent-conversations-page .chat-bubble.mine {
+  background: linear-gradient(135deg, #12415f, #104c52);
+  color: #eef8ff;
+}
+
+/* Lessons */
+:root[data-theme="dark"] .portal-lessons-page .lessons-hero,
+:root[data-theme="dark"] .portal-lessons-page .lesson-card-new,
+:root[data-theme="dark"] .portal-lessons-page .daily-picks,
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.purple,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.green,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.aqua,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.violet,
+:root[data-theme="dark"] .portal-lessons-page .lesson-visual.peach {
+  background: #123552;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item {
+  background: #102f4e;
+}
+
+:root[data-theme="dark"] .portal-lessons-page .daily-pick-item b {
+  color: #eef8ff;
+}
+
+/* Role dashboards and utility pages */
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+:root[data-theme="dark"] .pp-content .search-row,
+:root[data-theme="dark"] .pp-content .search-result,
+:root[data-theme="dark"] .pp-content .ticket,
+:root[data-theme="dark"] .pp-content .verify-row,
+:root[data-theme="dark"] .pp-content .cert-item,
+:root[data-theme="dark"] .pp-content .note-item {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.14);
+}
+
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .tabs,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-content .consult-detail,
+:root[data-theme="dark"] .pp-content .admin-reply,
+:root[data-theme="dark"] .pp-content .cert-add {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-drawer-backdrop {
+  background: rgba(2, 12, 23, .64);
+}
+
+/* Ensure native form controls and browser chrome follow the selected mode. */
+:root[data-theme="dark"] .pp-content,
+:root[data-theme="dark"] .pp-sidebar,
+:root[data-theme="dark"] .pp-toolbar {
+  color-scheme: dark;
+}

@@ -52,16 +52,6 @@
         overflow: hidden !important;
     }
 
-    body.auth-page-active .topbar {
-        position: relative;
-        top: auto;
-        grid-row: 1;
-        height: 78px;
-        min-height: 78px;
-        max-height: 78px;
-        overflow: visible;
-    }
-
     body.auth-page-active .auth-page {
         grid-row: 2;
         width: 100%;
@@ -152,5 +142,3 @@
         display: none !important;
     }
 }
-
-
