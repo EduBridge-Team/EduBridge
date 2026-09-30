@@ -189,25 +189,6 @@ export default function RolePortalLayout({ children }) {
         </nav>
 
         <div className="pp-mobile-sidebar-tools">
-          <button
-            type="button"
-            className="pp-mobile-account-card"
-            onClick={() => {
-              setDrawerOpen(false)
-              navigate('/profile')
-            }}
-            aria-label="فتح الملف الشخصي"
-          >
-            <span className="pp-profile-avatar">
-              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
-            </span>
-            <span className="pp-mobile-account-copy">
-              <strong>{user?.name || roleName}</strong>
-              <small>{roleName}</small>
-            </span>
-            <ChevronDown size={16} />
-          </button>
-
           <div className="pp-mobile-quick-actions" aria-label="إجراءات سريعة">
             <button
               type="button"
