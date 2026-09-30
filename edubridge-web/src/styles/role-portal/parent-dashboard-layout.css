@@ -53,27 +53,11 @@ body.role-portal-active.parent-dashboard-page {
 
 
 /* ============================================================
-   Parent dashboard: sidebar ends with progress + lower area fills freed space
+   Parent dashboard desktop geometry
+   Keep every section inside the shared portal content column.
+   The fixed role sidebar owns its own reserved space.
    ============================================================ */
 @media (min-width: 901px) {
-  body.parent-dashboard-page .pp-shell {
-    --pp-sidebar-reserved: 230px;
-    --pp-sidebar-offset: -230px;
-  }
-
-  body.parent-dashboard-page .pp-sidebar {
-    height: var(--pp-dashboard-sidebar-height, fit-content) !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    border-bottom-left-radius: 28px;
-    border-bottom-right-radius: 0;
-    overflow-y: auto;
-  }
-
-  body.parent-dashboard-page .pp-noor-card {
-    margin-bottom: 0 !important;
-  }
-
   body.parent-dashboard-page .pd-today,
   body.parent-dashboard-page .pd-conversations,
   body.parent-dashboard-page .pd-schedule-list,
@@ -85,25 +69,18 @@ body.role-portal-active.parent-dashboard-page {
   }
 
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower {
-    width: calc(100% + var(--pp-sidebar-reserved)) !important;
-    max-width: none !important;
-    margin-right: var(--pp-sidebar-offset) !important;
-    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
   }
 
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower > .pd-lower-grid,
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower > .pd-quick-actions,
   .pp-content .parent-dashboard-v2 .pd-fullwidth-lower > .pd-noor-banner {
     width: 100% !important;
-    max-width: none !important;
+    max-width: 100% !important;
+    margin-inline: 0 !important;
     transform: none !important;
-  }
-}
-
-@media (min-width: 901px) and (max-width: 1120px) {
-  body.parent-dashboard-page .pp-shell {
-    --pp-sidebar-reserved: 205px;
-    --pp-sidebar-offset: -205px;
   }
 }
 

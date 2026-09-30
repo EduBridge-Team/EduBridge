@@ -11,7 +11,7 @@ const WELCOME = {
   content: 'مرحباً! أنا نور ✨\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟',
 }
 
-const POSITION_VERSION = 'v2'
+const POSITION_VERSION = 'v3'
 const DESKTOP_LAUNCHER_SIZE = 72
 const MOBILE_LAUNCHER_SIZE = 64
 const SCREEN_MARGIN = 14
@@ -47,7 +47,7 @@ function positionBounds() {
 
 function positionFromFractions(saved) {
   const bounds = positionBounds()
-  const xFraction = Number.isFinite(saved?.xFraction) ? clamp(saved.xFraction, 0, 1) : 1
+  const xFraction = Number.isFinite(saved?.xFraction) ? clamp(saved.xFraction, 0, 1) : 0
   const yFraction = Number.isFinite(saved?.yFraction) ? clamp(saved.yFraction, 0, 1) : 1
   return {
     x: bounds.minX + (bounds.maxX - bounds.minX) * xFraction,
