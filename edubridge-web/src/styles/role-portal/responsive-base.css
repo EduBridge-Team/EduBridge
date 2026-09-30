@@ -370,8 +370,8 @@
   }
 
   .pp-content .page-title {
-    padding: 15px;
-    border-radius: 17px;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
   }
 }
 
