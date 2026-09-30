@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PasswordField from './PasswordField'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export function LoginVisual() {
@@ -41,6 +42,8 @@ export function LoginCard({
         <input
           id="email"
           type="email"
+          dir="ltr"
+          placeholder="name@example.com"
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
           required
@@ -52,16 +55,15 @@ export function LoginCard({
           <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
         </div>
 
-        <input
+        <PasswordField
           id="password"
-          type="password"
           value={password}
           onChange={(e) => onPasswordChange(e.target.value)}
           required
           autoComplete="current-password"
         />
 
-        {error && <div className="error-box">{error}</div>}
+        {error && <div className="error-box" role="alert">{error}</div>}
 
         <button className="btn full" type="submit" disabled={loading}>
           {loading ? 'جارِ الدخول...' : 'دخول'}
@@ -76,8 +78,12 @@ export function LoginCard({
         لم تصلك رسالة تأكيد البريد؟
       </button>
 
-      <div className="auth-divider">أو</div>
-      <div id="google-signin-button" className="google-btn-shell" />
+      {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+        <>
+          <div className="auth-divider">أو تابع باستخدام</div>
+          <div id="google-signin-button" className="google-btn-shell" />
+        </>
+      )}
       {!googleReady && import.meta.env.VITE_GOOGLE_CLIENT_ID && (
         <div className="muted">جارِ تحميل Google…</div>
       )}
