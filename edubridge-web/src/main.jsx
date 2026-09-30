@@ -7,6 +7,7 @@ import './identity.css'
 import './brand-wordmark.css'
 import App from './App.jsx'
 import './styles/identity/dark-refinements.css'
+import './styles/identity/shared-shell.css'
 import { applyTheme, getTheme } from './theme'
 
 applyTheme(getTheme(), { persist: false, notify: false })
