@@ -1,17 +1,6 @@
 /* Preserve the brand's button colors while using readable accents on dark surfaces. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --surface-soft: #102f4e;
-  --brand-line: #315775;
-  --line: #315775;
-  --border: var(--line);
-  --line-cool: var(--line);
-  --dark-accent: #8bd3ff;
-  --teal-deep: #7ce1dc;
-  --brand-teal-deep: #7ce1dc;
-  --success: #8ae0a8;
-  --danger: #ff99a5;
-  --warning: #ffd08a;
 }
 :root[data-theme="dark"] .reference-home {
   --home-blue: var(--dark-accent);
@@ -71,12 +60,6 @@
 }
 :root[data-theme="dark"] .reference-home .noor-copy h2 em { color: #70d7e2; }
 :root[data-theme="dark"] .reference-home .home-feature { background: #102f4e; }
-:root[data-theme="dark"] .topbar-guest .topbar-brand {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-}
-:root[data-theme="dark"] .topbar-brand img { filter: brightness(1.3); }
 :root[data-theme="dark"] :is(.lesson-visual, .daily-picks .purple,
   .daily-picks .green, .daily-picks .aqua, .daily-picks .violet, .daily-picks .peach) {
   background: #183b58;
@@ -98,16 +81,4 @@
 :root[data-theme="dark"] :is(a, button, input, select, textarea):focus-visible {
   outline: 2px solid var(--dark-accent);
   outline-offset: 3px;
-}
-:root[data-theme="dark"] .site-footer {
-  background: linear-gradient(120deg, #08243f, #10354e);
-  border-top: 1px solid #315775;
-}
-:root[data-theme="dark"] .site-footer :is(.footer-identity p, .footer-contact,
-  .footer-column > a:not(.footer-download-btn), .footer-copy, .footer-legal a) {
-  color: #c8ddeb;
-}
-:root[data-theme="dark"] .site-footer .footer-socials a {
-  background: #153b58;
-  border-color: #588bb0;
 }

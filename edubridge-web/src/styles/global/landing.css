@@ -505,89 +505,10 @@
 
 /* التذييل */
 
-.site-footer {
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-    padding: 36px 24px 20px;
-    margin-top: 30px;
-}
-
-.footer-grid {
-    max-width: 1160px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.2fr;
-    gap: 28px;
-}
-
-.footer-brand {
-    color: var(--navy);
-    margin: 0 0 8px;
-    font-size: 17px;
-}
-
-.site-footer h4 {
-    margin: 0 0 10px;
-    font-size: 14.5px;
-}
-
-.site-footer p.muted {
-    max-width: 340px;
-}
-
-.site-footer a {
-    display: block;
-    color: var(--muted);
-    text-decoration: none;
-    margin-bottom: 8px;
-    font-size: 14.5px;
-}
-
-.site-footer a:hover {
-    color: var(--teal-deep);
-}
-
-.site-footer .muted {
-    color: var(--muted);
-    line-height: 1.7;
-    font-size: 14.5px;
-}
-
-.footer-contact {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-    font-size: 14.5px;
-    margin-bottom: 6px;
-}
-
-.footer-copy {
-    max-width: 1160px;
-    margin: 26px auto 0;
-    border-top: 1px solid var(--line);
-    padding-top: 14px;
-    text-align: center;
-    font-size: 13.5px;
-    color: var(--muted);
-}
-
 
 /* خط قوس قزح فوق سطر الحقوق — لمسة الهوية */
-
-.footer-copy::before {
-    content: "";
-    display: block;
-    height: 5px;
-    border-radius: 999px;
-    background: var(--rainbow);
-    max-width: 200px;
-    margin: 0 auto 14px;
-}
 
 
 /* ============================================================
    لوحة التحكم الإدارية
    ============================================================ */
-
-

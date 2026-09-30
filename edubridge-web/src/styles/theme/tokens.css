@@ -1,0 +1,93 @@
+/* Global color and surface tokens. Component tokens remain scoped to their owner. */
+
+
+:root {
+    --brand-blue-deep: #0d55aa;
+    --brand-blue-light: #2a8ad5;
+    --brand-teal: #21bfd0;
+    --brand-teal-deep: #119eae;
+    --brand-teal-light: #69d4ca;
+    --brand-green: #7be49a;
+    --brand-green-deep: #57b25a;
+    --green: var(--brand-green);
+    --green-deep: var(--brand-green-deep);
+    --coral: #f2842b;
+    --coral-deep: #d86d16;
+    --surface-soft: #f1f8fc;
+    --tint-teal: #eaf9fb;
+    --tint-green: #effbf2;
+    --tint-coral: #fff4e9;
+
+    --danger: #d84c5b;
+    --danger-deep: #b93545;
+    --success: var(--brand-green-deep);
+    --warning: var(--coral-deep);
+
+    --orange: var(--coral);
+    --orange-deep: var(--coral-deep);
+    --tint-orange: var(--tint-coral);
+    --yellow: #f1c75b;
+    --pink: var(--coral);
+    --cream: var(--bg);
+    --card: var(--surface);
+    --text: var(--ink);
+    --line-cool: var(--line);
+    --accent: var(--brand-teal);
+    --border: var(--line);
+
+    --r-xl: 28px;
+
+    --shadow: 0 18px 44px rgba(23, 105, 194, .10);
+    --shadow-soft: 0 10px 28px rgba(23, 105, 194, .07);
+    --rainbow: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-teal) 44%, var(--brand-green-deep) 100%);
+  --brand-blue: #1769c2;
+  --brand-blue-dark: #0d55aa;
+  --brand-cyan: #21bfd0;
+  --brand-mint: #69d4ca;
+  --brand-ice: #eef9ff;
+  --brand-ink: #104d92;
+  --brand-text: #31577f;
+  --brand-line: #d9ebf7;
+  --brand-shadow: 0 18px 55px rgba(24, 105, 181, .1);
+  --bg: #f8fcff;
+  --surface: #fff;
+  --ink: #183f6b;
+  --muted: #6884a4;
+  --line: #dcecf7;
+  --navy: var(--brand-ink);
+  --navy-deep: #0c417d;
+  --teal: var(--brand-cyan);
+  --teal-deep: #119eae;
+  --primary: var(--brand-blue);
+  --primary-dark: var(--brand-blue-dark);
+  --r-lg: 22px;
+  --r-md: 16px;
+  --r-sm: 12px;
+}
+
+:root[data-theme="dark"] {
+    --tint-teal: oklch(29% 0.05 200);
+    --tint-green: oklch(29% 0.05 150);
+    --tint-coral: oklch(30% 0.05 35);
+  --bg: #071d35;
+  --surface: #0d2947;
+  --ink: #f4fbff;
+  --muted: #aac4da;
+  --brand-ice: #102f4e;
+  --brand-text: #c1d9ec;
+  --brand-ink: #edf9ff;
+  --navy: #edf9ff;
+  --navy-deep: #fff;
+  --brand-shadow: 0 18px 55px rgba(0, 0, 0, .22);
+  --surface-soft: #102f4e;
+  --brand-line: #315775;
+  --line: #315775;
+  --border: var(--line);
+  --line-cool: var(--line);
+  --dark-accent: #8bd3ff;
+  --teal-deep: #7ce1dc;
+  --brand-teal-deep: #7ce1dc;
+  --success: #8ae0a8;
+  --danger: #ff99a5;
+  --warning: #ffd08a;
+}
