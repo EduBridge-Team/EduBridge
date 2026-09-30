@@ -354,11 +354,9 @@
     }
 }
 
-/* Noor launcher movement parity with the mobile app. */
-.noor-assistant {
-    will-change: transform;
-}
-
+/* Noor launcher movement parity with the mobile app.
+   Do not create a transformed containing block here: the launcher is positioned
+   against the viewport so its saved coordinates stay correct on mobile browsers. */
 .noor-launcher {
     touch-action: none;
     user-select: none;
