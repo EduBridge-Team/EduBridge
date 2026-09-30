@@ -177,6 +177,7 @@ export default function RolePortalLayout({ children }) {
               key={navItem.key}
               className={current === navItem.key ? 'active' : ''}
               onClick={navItem.onClick}
+              aria-current={current === navItem.key ? 'page' : undefined}
               title={navItem.label}
               aria-label={navItem.label}
               disabled={navItem.disabled}
