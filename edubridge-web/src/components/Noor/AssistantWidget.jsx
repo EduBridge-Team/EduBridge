@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Send, Trash2, X } from 'lucide-react'
+import { EyeOff, Send, Trash2, X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
@@ -11,8 +11,66 @@ const WELCOME = {
   content: 'مرحباً! أنا نور ✨\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟',
 }
 
+const POSITION_VERSION = 'v2'
+const DESKTOP_LAUNCHER_SIZE = 72
+const MOBILE_LAUNCHER_SIZE = 64
+const SCREEN_MARGIN = 14
+const MOVE_THRESHOLD = 8
+
 function historyKey(user) {
   return `noor_assistant_history_v1_${user?.id || 0}`
+}
+
+function positionKey(user) {
+  return `noor_assistant_position_${POSITION_VERSION}_${user?.id || 0}`
+}
+
+function launcherSize() {
+  return window.matchMedia('(max-width: 520px)').matches
+    ? MOBILE_LAUNCHER_SIZE
+    : DESKTOP_LAUNCHER_SIZE
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function positionBounds() {
+  const size = launcherSize()
+  return {
+    minX: SCREEN_MARGIN,
+    minY: SCREEN_MARGIN,
+    maxX: Math.max(SCREEN_MARGIN, window.innerWidth - size - SCREEN_MARGIN),
+    maxY: Math.max(SCREEN_MARGIN, window.innerHeight - size - SCREEN_MARGIN),
+  }
+}
+
+function positionFromFractions(saved) {
+  const bounds = positionBounds()
+  const xFraction = Number.isFinite(saved?.xFraction) ? clamp(saved.xFraction, 0, 1) : 1
+  const yFraction = Number.isFinite(saved?.yFraction) ? clamp(saved.yFraction, 0, 1) : 1
+  return {
+    x: bounds.minX + (bounds.maxX - bounds.minX) * xFraction,
+    y: bounds.minY + (bounds.maxY - bounds.minY) * yFraction,
+  }
+}
+
+function loadPosition(user) {
+  try {
+    return positionFromFractions(JSON.parse(localStorage.getItem(positionKey(user)) || '{}'))
+  } catch {
+    return positionFromFractions({})
+  }
+}
+
+function savePosition(user, position) {
+  const bounds = positionBounds()
+  const width = Math.max(1, bounds.maxX - bounds.minX)
+  const height = Math.max(1, bounds.maxY - bounds.minY)
+  localStorage.setItem(positionKey(user), JSON.stringify({
+    xFraction: clamp((position.x - bounds.minX) / width, 0, 1),
+    yFraction: clamp((position.y - bounds.minY) / height, 0, 1),
+  }))
 }
 
 function loadHistory(user) {
@@ -32,14 +90,18 @@ export default function AssistantWidget() {
   const location = useLocation()
   const user = getUser()
   const signedIn = Boolean(getToken() && user)
-  const { settings } = useUserSettings()
+  const { settings, updateSettings } = useUserSettings()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState(() => [WELCOME, ...loadHistory(user)])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [launcherPosition, setLauncherPosition] = useState(null)
+  const [dragging, setDragging] = useState(false)
   const endRef = useRef(null)
   const inputRef = useRef(null)
+  const dragRef = useRef(null)
+  const suppressClickRef = useRef(false)
 
   useEffect(() => {
     setOpen(false)
@@ -47,6 +109,26 @@ export default function AssistantWidget() {
     setInput('')
     setError('')
   }, [location.pathname, user?.id])
+
+  useEffect(() => {
+    if (!signedIn || typeof window === 'undefined') return undefined
+
+    setLauncherPosition(loadPosition(user))
+
+    const keepInsideViewport = () => {
+      setLauncherPosition((current) => {
+        if (!current) return loadPosition(user)
+        const bounds = positionBounds()
+        return {
+          x: clamp(current.x, bounds.minX, bounds.maxX),
+          y: clamp(current.y, bounds.minY, bounds.maxY),
+        }
+      })
+    }
+
+    window.addEventListener('resize', keepInsideViewport)
+    return () => window.removeEventListener('resize', keepInsideViewport)
+  }, [signedIn, user?.id])
 
   useEffect(() => {
     if (!open) return
@@ -68,6 +150,72 @@ export default function AssistantWidget() {
     localStorage.removeItem(historyKey(user))
     setMessages([WELCOME])
     setError('')
+  }
+
+  const hideAssistant = () => {
+    setOpen(false)
+    updateSettings({ assistant_visible: false }).catch(() => {})
+  }
+
+  const startDrag = (event) => {
+    if (!launcherPosition || (typeof event.button === 'number' && event.button !== 0)) return
+
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+    dragRef.current = {
+      pointerId: event.pointerId,
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      startX: launcherPosition.x,
+      startY: launcherPosition.y,
+      lastPosition: launcherPosition,
+      moved: false,
+    }
+  }
+
+  const moveDrag = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    const dx = event.clientX - drag.pointerX
+    const dy = event.clientY - drag.pointerY
+
+    if (!drag.moved && Math.hypot(dx, dy) < MOVE_THRESHOLD) return
+
+    const bounds = positionBounds()
+    const next = {
+      x: clamp(drag.startX + dx, bounds.minX, bounds.maxX),
+      y: clamp(drag.startY + dy, bounds.minY, bounds.maxY),
+    }
+
+    drag.moved = true
+    drag.lastPosition = next
+    setDragging(true)
+    setLauncherPosition(next)
+  }
+
+  const finishDrag = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId)
+    suppressClickRef.current = drag.moved
+    if (drag.moved) savePosition(user, drag.lastPosition)
+    dragRef.current = null
+    setDragging(false)
+  }
+
+  const cancelDrag = () => {
+    dragRef.current = null
+    setDragging(false)
+  }
+
+  const activateLauncher = (event) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false
+      event.preventDefault()
+      return
+    }
+    setOpen(true)
   }
 
   const sendMessage = async (event) => {
@@ -103,7 +251,7 @@ export default function AssistantWidget() {
   }
 
   return (
-    <aside className="noor-assistant" aria-label="نور — المساعد التعليمي">
+    <aside className={`noor-assistant${dragging ? ' is-dragging' : ''}`} aria-label="نور — المساعد التعليمي">
       {open && (
         <section className="noor-panel" role="dialog" aria-label="محادثة نور">
           <header className="noor-header">
@@ -114,6 +262,9 @@ export default function AssistantWidget() {
             </span>
             <button type="button" className="noor-icon-btn" onClick={clearHistory} title="مسح المحادثة" aria-label="مسح المحادثة">
               <Trash2 size={18} />
+            </button>
+            <button type="button" className="noor-icon-btn" onClick={hideAssistant} title="إخفاء نور" aria-label="إخفاء نور">
+              <EyeOff size={18} />
             </button>
             <button type="button" className="noor-icon-btn" onClick={() => setOpen(false)} title="إغلاق" aria-label="إغلاق المساعد">
               <X size={20} />
@@ -153,16 +304,26 @@ export default function AssistantWidget() {
         </section>
       )}
 
-      <button
-        type="button"
-        className="noor-launcher"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-label={open ? 'إغلاق المساعد نور' : 'فتح المساعد نور'}
-        title="فتح نور"
-      >
-        <NoorPet size={64} />
-      </button>
+      {!open && (
+        <button
+          type="button"
+          className="noor-launcher"
+          style={launcherPosition ? {
+            left: `${launcherPosition.x}px`,
+            top: `${launcherPosition.y}px`,
+          } : undefined}
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={finishDrag}
+          onPointerCancel={cancelDrag}
+          onClick={activateLauncher}
+          aria-expanded="false"
+          aria-label="نور، المساعد الذكي. اضغط لفتحه أو اسحبه لتحريكه"
+          title="اضغط لفتح نور أو اسحبها لتحريكها"
+        >
+          <NoorPet size={64} />
+        </button>
+      )}
     </aside>
   )
 }
