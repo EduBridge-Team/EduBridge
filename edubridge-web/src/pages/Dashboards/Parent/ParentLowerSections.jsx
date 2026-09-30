@@ -94,21 +94,6 @@ export default function ParentLowerSections({
         </button>
       </section>
 
-      <section className="pd-noor-banner">
-        <div className="pd-noor-copy">
-          <span>مساعدك الذكي</span>
-          <h2><b>نور</b> معك في كل خطوة</h2>
-          <p>اسأل عن تقدم طفلك، أو احصل على نصائح تعليمية مخصصة لدعم تعلمه.</p>
-          <button onClick={openNoor}>
-            ابدأ المحادثة الآن <ArrowLeft size={16} />
-          </button>
-        </div>
-        <div className="pd-noor-bubbles" aria-hidden="true">
-          <span>ما هي أنشطة اليوم؟ 💡</span>
-          <span>كيف يمكنني دعم طفلي في المنزل؟ 💬</span>
-          <span>أريد تقريراً عن تقدم عمر 📊</span>
-        </div>
-      </section>
     </div>
   )
 }
