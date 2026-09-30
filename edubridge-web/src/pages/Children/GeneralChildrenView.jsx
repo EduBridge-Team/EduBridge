@@ -29,6 +29,10 @@ export default function GeneralChildrenView({ canAddChild, children, navigate })
         <div
           key={child.id}
           className="card clickable"
+          role="link"
+          tabIndex={0}
+          aria-label={`دروس ${child.name}`}
+          onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/children/${child.id}/lessons`, { state: { childName: child.name } }) }}
           onClick={() => navigate(`/children/${child.id}/lessons`, { state: { childName: child.name } })}
         >
           <div className="card-row">

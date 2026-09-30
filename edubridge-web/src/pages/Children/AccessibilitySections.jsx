@@ -6,7 +6,7 @@ export function AccessibilityHeader({ childName, onBack }) {
   return (
     <>
       <div className="page-title">
-        <button className="back-btn" onClick={onBack}><ArrowRight size={18} /></button>
+        <button className="back-btn" aria-label="رجوع" onClick={onBack}><ArrowRight size={18} /></button>
         <div>
           <h2>إعدادات الوصول — {childName || 'الطفل'}</h2>
           <p className="meta">تُزامن لهذا الطفل بين الويب والتطبيق، مع نسخة محلية للعمل عند انقطاع الشبكة.</p>

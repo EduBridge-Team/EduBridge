@@ -82,3 +82,23 @@
   outline: 2px solid var(--dark-accent);
   outline-offset: 3px;
 }
+
+/* Workflow headings use a foreground accent, never the button fill color. */
+:root[data-theme="dark"] .pp-content :is(.fp-page h1, .fp-page h3,
+  .fp-eyebrow, .notifications-hero h1, .identity-search-hero h1,
+  .consultations-hero h1, .verification-admin-hero h1) {
+  color: var(--dark-accent);
+}
+:root[data-theme="dark"] .pp-content .fp-badge {
+  color: var(--dark-accent);
+  background: #183b58;
+}
+:root[data-theme="dark"] .pp-content .form-field { color: var(--pp-ink); }
+:root[data-theme="dark"] .about-page :is(.about-kicker, .about-section-heading > span,
+  .about-mission-card > span) { color: var(--dark-accent); }
+:root[data-theme="dark"] .topbar.topbar-guest .guest-nav a { color: var(--brand-text); }
+:root[data-theme="dark"] .topbar.topbar-guest .guest-nav a.active { color: var(--dark-accent); }
+:root[data-theme="dark"] .topbar.topbar-guest .topbar-btn.login-btn {
+  color: var(--dark-accent);
+  background: var(--surface-soft);
+}

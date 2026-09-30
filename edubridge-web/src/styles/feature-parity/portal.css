@@ -26,7 +26,7 @@ body.role-portal-active .fp-hero {
   box-shadow: none;
 }
 
-body.role-portal-active .fp-form input,
+body.role-portal-active .fp-form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 body.role-portal-active .fp-form select {
   min-height: var(--pp-control-height);
   padding-inline: 18px;

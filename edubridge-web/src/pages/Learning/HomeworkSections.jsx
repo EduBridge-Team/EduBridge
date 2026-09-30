@@ -1,3 +1,4 @@
+import FormField from '../../components/FormField'
 export function HomeworkCreateForm({
   attachments,
   busy,
@@ -11,30 +12,38 @@ export function HomeworkCreateForm({
     <section className="fp-card fp-form-card">
       <h3>واجب جديد</h3>
       <form className="fp-form" onSubmit={onSubmit}>
-        <input
-          placeholder="عنوان الواجب"
-          value={draft.title}
-          onChange={(e) => onDraftChange({ ...draft, title: e.target.value })}
-          required
-        />
-        <textarea
-          rows={3}
-          placeholder="الوصف"
-          value={draft.description}
-          onChange={(e) => onDraftChange({ ...draft, description: e.target.value })}
-          required
-        />
+        <FormField label="عنوان الواجب">
+          <input
+            placeholder="عنوان الواجب"
+            value={draft.title}
+            onChange={(e) => onDraftChange({ ...draft, title: e.target.value })}
+            required
+          />
+        </FormField>
+        <FormField label="الوصف">
+          <textarea
+            rows={3}
+            placeholder="الوصف"
+            value={draft.description}
+            onChange={(e) => onDraftChange({ ...draft, description: e.target.value })}
+            required
+          />
+        </FormField>
         <div className="fp-row">
-          <input
-            placeholder="المادة"
-            value={draft.subject}
-            onChange={(e) => onDraftChange({ ...draft, subject: e.target.value })}
-          />
-          <input
-            type="datetime-local"
-            value={draft.due_date}
-            onChange={(e) => onDraftChange({ ...draft, due_date: e.target.value })}
-          />
+          <FormField label="المادة">
+            <input
+              placeholder="المادة"
+              value={draft.subject}
+              onChange={(e) => onDraftChange({ ...draft, subject: e.target.value })}
+            />
+          </FormField>
+          <FormField label="موعد التسليم">
+            <input
+              type="datetime-local"
+              value={draft.due_date}
+              onChange={(e) => onDraftChange({ ...draft, due_date: e.target.value })}
+            />
+          </FormField>
         </div>
         <div className="fp-checks">
           {children.map((child) => (
@@ -53,11 +62,13 @@ export function HomeworkCreateForm({
             </label>
           ))}
         </div>
-        <input
-          type="file"
-          multiple
-          onChange={(e) => onAttachmentsChange(Array.from(e.target.files || []))}
-        />
+        <FormField label="المرفقات">
+          <input
+            type="file"
+            multiple
+            onChange={(e) => onAttachmentsChange(Array.from(e.target.files || []))}
+          />
+        </FormField>
         <button
           className="btn"
           disabled={busy || draft.assigned_child_ids.length === 0}
@@ -85,31 +96,35 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
             <a href={submission.file_url} target="_blank" rel="noreferrer">فتح الملف</a>
           )}
           <div className="fp-row" style={{ marginTop: 8 }}>
-            <input
-              type="number"
-              min="0"
-              max="100"
-              placeholder="الدرجة"
-              value={grades[submission.id]?.grade ?? submission.grade ?? ''}
-              onChange={(e) => onGradesChange({
-                ...grades,
-                [submission.id]: {
-                  ...grades[submission.id],
-                  grade: e.target.value,
-                },
-              })}
-            />
-            <input
-              placeholder="ملاحظات"
-              value={grades[submission.id]?.feedback ?? submission.feedback ?? ''}
-              onChange={(e) => onGradesChange({
-                ...grades,
-                [submission.id]: {
-                  ...grades[submission.id],
-                  feedback: e.target.value,
-                },
-              })}
-            />
+            <FormField label="الدرجة">
+              <input
+                type="number"
+                min="0"
+                max="100"
+                placeholder="الدرجة"
+                value={grades[submission.id]?.grade ?? submission.grade ?? ''}
+                onChange={(e) => onGradesChange({
+                  ...grades,
+                  [submission.id]: {
+                    ...grades[submission.id],
+                    grade: e.target.value,
+                  },
+                })}
+              />
+            </FormField>
+            <FormField label="ملاحظات">
+              <input
+                placeholder="ملاحظات"
+                value={grades[submission.id]?.feedback ?? submission.feedback ?? ''}
+                onChange={(e) => onGradesChange({
+                  ...grades,
+                  [submission.id]: {
+                    ...grades[submission.id],
+                    feedback: e.target.value,
+                  },
+                })}
+              />
+            </FormField>
             <button
               className="btn small"
               onClick={() => onGrade(submission.id)}
@@ -203,29 +218,35 @@ export function HomeworkSubmissionForm({
     <section className="fp-card homework-card">
       <h3>تسليم الواجب</h3>
       <form className="fp-form" onSubmit={onSubmit}>
-        <select
-          value={submission.child_id}
-          onChange={(e) => onChange({ ...submission, child_id: e.target.value })}
-          required
-        >
-          {children.map((child) => (
-            <option key={child.id} value={child.id}>{child.name}</option>
-          ))}
-        </select>
-        <textarea
-          rows={3}
-          placeholder="إجابة نصية"
-          value={submission.text_answer}
-          onChange={(e) => onChange({ ...submission, text_answer: e.target.value })}
-        />
-        <input
-          type="file"
-          multiple
-          onChange={(e) => onChange({
-            ...submission,
-            files: Array.from(e.target.files || []),
-          })}
-        />
+        <FormField label="الطفل">
+          <select
+            value={submission.child_id}
+            onChange={(e) => onChange({ ...submission, child_id: e.target.value })}
+            required
+          >
+            {children.map((child) => (
+              <option key={child.id} value={child.id}>{child.name}</option>
+            ))}
+          </select>
+        </FormField>
+        <FormField label="إجابة نصية">
+          <textarea
+            rows={3}
+            placeholder="إجابة نصية"
+            value={submission.text_answer}
+            onChange={(e) => onChange({ ...submission, text_answer: e.target.value })}
+          />
+        </FormField>
+        <FormField label="المرفقات">
+          <input
+            type="file"
+            multiple
+            onChange={(e) => onChange({
+              ...submission,
+              files: Array.from(e.target.files || []),
+            })}
+          />
+        </FormField>
         <div className="fp-actions">
           <button className="btn" disabled={busy}>إرسال</button>
           <button type="button" className="btn outline" onClick={onCancel}>إلغاء</button>

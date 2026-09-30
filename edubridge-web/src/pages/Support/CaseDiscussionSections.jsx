@@ -1,3 +1,5 @@
+import { workflowLabel } from '../../utils/workflowLabels'
+import FormField from '../../components/FormField'
 export function CaseDiscussionCreateForm({
   busy,
   children,
@@ -19,28 +21,34 @@ export function CaseDiscussionCreateForm({
     <section className="fp-card fp-form-card case-create-card">
       <h3>دراسة جديدة</h3>
       <form className="fp-form" onSubmit={onSubmit}>
-        <select
-          value={draft.child_id}
-          onChange={(event) => onChange({ ...draft, child_id: event.target.value })}
-        >
-          {children.map((child) => (
-            <option key={child.id} value={child.id}>{child.name}</option>
-          ))}
-        </select>
+        <FormField label="الطفل">
+          <select
+            value={draft.child_id}
+            onChange={(event) => onChange({ ...draft, child_id: event.target.value })}
+          >
+            {children.map((child) => (
+              <option key={child.id} value={child.id}>{child.name}</option>
+            ))}
+          </select>
+        </FormField>
 
-        <input
-          placeholder="موضوع الدراسة"
-          value={draft.topic}
-          onChange={(event) => onChange({ ...draft, topic: event.target.value })}
-          required
-        />
+        <FormField label="موضوع الدراسة">
+          <input
+            placeholder="موضوع الدراسة"
+            value={draft.topic}
+            onChange={(event) => onChange({ ...draft, topic: event.target.value })}
+            required
+          />
+        </FormField>
 
-        <textarea
-          rows={3}
-          placeholder="وصف الحالة"
-          value={draft.description}
-          onChange={(event) => onChange({ ...draft, description: event.target.value })}
-        />
+        <FormField label="وصف الحالة">
+          <textarea
+            rows={3}
+            placeholder="وصف الحالة"
+            value={draft.description}
+            onChange={(event) => onChange({ ...draft, description: event.target.value })}
+          />
+        </FormField>
 
         <div className="fp-checks">
           {users.map((user) => (
@@ -81,7 +89,7 @@ export function CaseDiscussionList({ items, onOpen }) {
           >
             <div className="fp-head">
               <h3>{discussion.child_name}</h3>
-              <span className="fp-badge">{discussion.status}</span>
+              <span className="fp-badge">{workflowLabel(discussion.status)}</span>
             </div>
             <div>{discussion.topic}</div>
             <div className="fp-meta">
@@ -117,7 +125,7 @@ export function CaseDiscussionDetail({
           <h3>{selected.topic}</h3>
           <div className="meta">{selected.child_name}</div>
         </div>
-        <span className="fp-badge">{selected.status}</span>
+        <span className="fp-badge">{workflowLabel(selected.status)}</span>
       </div>
 
       {selected.description && <p>{selected.description}</p>}
@@ -126,8 +134,8 @@ export function CaseDiscussionDetail({
         {(selected.messages || []).map((item) => (
           <div className="fp-message" key={item.id}>
             <small>
-              {item.sender_name} • {item.sender_role} •{' '}
-              {new Date(item.created_at).toLocaleString('ar')} • {item.type}
+              {item.sender_name} • {workflowLabel(item.sender_role)} •{' '}
+              {new Date(item.created_at).toLocaleString('ar')} • {workflowLabel(item.type)}
             </small>
             <div>{item.content}</div>
           </div>
@@ -136,23 +144,27 @@ export function CaseDiscussionDetail({
 
       {selected.status !== 'resolved' && (
         <form className="fp-form" onSubmit={onSend} style={{ marginTop: 12 }}>
-          <select
-            value={message.type}
-            onChange={(event) => onMessageChange({ ...message, type: event.target.value })}
-          >
-            <option value="text">رسالة</option>
-            <option value="observation">ملاحظة</option>
-            <option value="question">سؤال</option>
-            <option value="decision">قرار</option>
-          </select>
+          <FormField label="نوع الرسالة">
+            <select
+              value={message.type}
+              onChange={(event) => onMessageChange({ ...message, type: event.target.value })}
+            >
+              <option value="text">رسالة</option>
+              <option value="observation">ملاحظة</option>
+              <option value="question">سؤال</option>
+              <option value="decision">قرار</option>
+            </select>
+          </FormField>
 
-          <textarea
-            rows={3}
-            value={message.content}
-            onChange={(event) => onMessageChange({ ...message, content: event.target.value })}
-            placeholder="اكتب الرسالة..."
-            required
-          />
+          <FormField label="اكتب الرسالة...">
+            <textarea
+              rows={3}
+              value={message.content}
+              onChange={(event) => onMessageChange({ ...message, content: event.target.value })}
+              placeholder="اكتب الرسالة..."
+              required
+            />
+          </FormField>
 
           <div className="fp-actions">
             <button className="btn" disabled={busy}>إرسال</button>

@@ -20,7 +20,7 @@ export default function TeacherLessonViewer({
       <div className="modal" onClick={(event) => event.stopPropagation()}>
         <div className="modal-head">
           <h3>{lesson.title}</h3>
-          <button className="modal-close" onClick={onClose}>
+          <button className="modal-close" aria-label="إغلاق عرض الدرس" onClick={onClose}>
             <X size={20} />
           </button>
         </div>

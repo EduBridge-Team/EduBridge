@@ -1,12 +1,12 @@
-/* Shared parent navigation: identical on the dashboard and every inner route. */
+/* Shared role navigation: identical on the dashboard and every inner route. */
 @media (min-width: 901px) {
   /* Shell: reserve the sidebar once, never paint content underneath it. */
-  body.role-portal-parent .pp-shell {
+  body.role-portal-active .pp-shell {
     padding-right: 278px !important;
     padding-left: 0 !important;
   }
 
-  body.role-portal-parent .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     width: 278px !important;
     height: 100dvh !important;
     max-height: 100dvh !important;
@@ -16,7 +16,7 @@
     border-bottom-left-radius: 0 !important;
   }
 
-  body.role-portal-parent .pp-sidebar-head {
+  body.role-portal-active .pp-sidebar-head {
     min-height: 64px !important;
     padding: 8px 10px 12px !important;
     margin-bottom: 4px !important;
@@ -25,11 +25,11 @@
     border-radius: 16px;
   }
 
-  body.role-portal-parent .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 158px !important;
   }
 
-  body.role-portal-parent .pp-nav {
+  body.role-portal-active .pp-nav {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     justify-content: flex-start !important;
@@ -41,13 +41,14 @@
     scrollbar-width: none !important;
   }
 
-  body.role-portal-parent .pp-nav::-webkit-scrollbar {
+  body.role-portal-active .pp-nav::-webkit-scrollbar {
     display: none !important;
   }
 
-  body.role-portal-parent .pp-nav button,
-  body.role-portal-parent .pp-sidebar[data-nav-density="compact"] .pp-nav button,
-  body.role-portal-parent .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
+  body.role-portal-active .pp-nav button,
+  body.role-portal-active .pp-sidebar[data-nav-density="compact"] .pp-nav button,
+  body.role-portal-active .pp-sidebar[data-nav-density="comfortable"] .pp-nav button,
+  body.role-portal-active .pp-sidebar[data-nav-density="relaxed"] .pp-nav button {
     min-height: 46px !important;
     padding: 7px 10px !important;
     border-radius: 14px !important;
@@ -56,7 +57,7 @@
     font-size: 14.5px !important;
   }
 
-  body.role-portal-parent .pp-nav button > svg {
+  body.role-portal-active .pp-nav button > svg {
     width: 20px !important;
     height: 20px !important;
     padding: 5px !important;
@@ -66,64 +67,64 @@
     color: #4e7898 !important;
   }
 
-  body.role-portal-parent .pp-nav button > span {
+  body.role-portal-active .pp-nav button > span {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
-  body.role-portal-parent .pp-nav button.active {
+  body.role-portal-active .pp-nav button.active {
     border-color: #c9e5f2 !important;
     background: linear-gradient(135deg, #eaf8fd, #f7fbfe) !important;
     box-shadow: 0 8px 20px rgba(23,105,194,.07), inset 3px 0 0 var(--pp-cyan) !important;
   }
 
-  body.role-portal-parent .pp-nav button.active > svg {
+  body.role-portal-active .pp-nav button.active > svg {
     background: linear-gradient(135deg, var(--pp-blue), var(--pp-cyan)) !important;
     color: #fff !important;
   }
 
-  body.role-portal-parent .pp-nav button { flex-shrink: 0; }
-  body.role-portal-parent .pp-brand { justify-content: center !important; }
+  body.role-portal-active .pp-nav button { flex-shrink: 0; }
+  body.role-portal-active .pp-brand { justify-content: center !important; }
 }
 
 @media (min-width: 901px) and (max-width: 1180px) {
-  body.role-portal-parent .pp-shell {
+  body.role-portal-active .pp-shell {
     padding-right: 244px !important;
   }
 
-  body.role-portal-parent .pp-sidebar {
+  body.role-portal-active .pp-sidebar {
     width: 244px !important;
   }
 
-  body.role-portal-parent .pp-brand .pp-brand-logo {
+  body.role-portal-active .pp-brand .pp-brand-logo {
     width: 140px !important;
   }
 
-  body.role-portal-parent .pp-nav button {
+  body.role-portal-active .pp-nav button {
     font-size: 14px !important;
   }
 
 }
 
 @media (min-width: 901px) {
-:root[data-theme="dark"] body.role-portal-parent .pp-nav button.active {
+:root[data-theme="dark"] body.role-portal-active .pp-nav button.active {
   border-color: #31536d !important;
   background: linear-gradient(135deg, #103a5d, #0f334d) !important;
 }
 
-:root[data-theme="dark"] body.role-portal-parent .pp-sidebar-head {
+:root[data-theme="dark"] body.role-portal-active .pp-sidebar-head {
   border-color: #294961 !important;
   background: rgba(15,47,71,.82) !important;
 }
 
-:root[data-theme="dark"] body.role-portal-parent .pp-nav button > svg {
+:root[data-theme="dark"] body.role-portal-active .pp-nav button > svg {
   background: #12324b !important;
   color: #9fd8e2 !important;
 }
 
 
-  :root[data-theme="dark"] body.role-portal-parent .pp-nav button.active > svg {
+  :root[data-theme="dark"] body.role-portal-active .pp-nav button.active > svg {
     background: linear-gradient(135deg, var(--pp-blue), var(--pp-cyan)) !important;
     color: #fff !important;
   }

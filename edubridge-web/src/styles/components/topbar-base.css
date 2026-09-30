@@ -305,9 +305,9 @@
         position: relative;
         top: auto;
         grid-row: 1;
-        height: 78px;
-        min-height: 78px;
-        max-height: 78px;
+        height: var(--site-header-height);
+        min-height: var(--site-header-height);
+        max-height: var(--site-header-height);
         overflow: visible;
     }
 }

@@ -1,3 +1,4 @@
+import FormField from '../../components/FormField'
 export function WeeklyReportForm({
   busy,
   draft,
@@ -10,55 +11,67 @@ export function WeeklyReportForm({
 
       <form className="fp-form" onSubmit={onSubmit}>
         <div className="fp-row">
-          <input
-            type="date"
-            value={draft.week_start}
-            onChange={(event) => onChange({ ...draft, week_start: event.target.value })}
-          />
-          <input
-            type="number"
-            min="0"
-            placeholder="الدروس المكتملة"
-            value={draft.lessons_completed}
-            onChange={(event) => onChange({
-              ...draft,
-              lessons_completed: event.target.value,
-            })}
-          />
+          <FormField label="بداية الأسبوع">
+            <input
+              type="date"
+              value={draft.week_start}
+              onChange={(event) => onChange({ ...draft, week_start: event.target.value })}
+            />
+          </FormField>
+          <FormField label="الدروس المكتملة">
+            <input
+              type="number"
+              min="0"
+              placeholder="الدروس المكتملة"
+              value={draft.lessons_completed}
+              onChange={(event) => onChange({
+                ...draft,
+                lessons_completed: event.target.value,
+              })}
+            />
+          </FormField>
         </div>
 
-        <label>نسبة التقدم: {draft.progress_percentage}%</label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={draft.progress_percentage}
-          onChange={(event) => onChange({
-            ...draft,
-            progress_percentage: event.target.value,
-          })}
-        />
+        <div className="meta">القيمة الحالية: {draft.progress_percentage}%</div>
+        <FormField label="نسبة التقدم">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={draft.progress_percentage}
+            onChange={(event) => onChange({
+              ...draft,
+              progress_percentage: event.target.value,
+            })}
+          />
+        </FormField>
 
-        <textarea
-          rows={3}
-          placeholder="ملاحظات المعلم"
-          value={draft.teacher_notes}
-          onChange={(event) => onChange({ ...draft, teacher_notes: event.target.value })}
-        />
+        <FormField label="ملاحظات المعلم">
+          <textarea
+            rows={3}
+            placeholder="ملاحظات المعلم"
+            value={draft.teacher_notes}
+            onChange={(event) => onChange({ ...draft, teacher_notes: event.target.value })}
+          />
+        </FormField>
 
-        <textarea
-          rows={3}
-          placeholder="الإنجازات — كل إنجاز في سطر"
-          value={draft.achievements}
-          onChange={(event) => onChange({ ...draft, achievements: event.target.value })}
-        />
+        <FormField label="الإنجازات — كل إنجاز في سطر">
+          <textarea
+            rows={3}
+            placeholder="الإنجازات — كل إنجاز في سطر"
+            value={draft.achievements}
+            onChange={(event) => onChange({ ...draft, achievements: event.target.value })}
+          />
+        </FormField>
 
-        <textarea
-          rows={3}
-          placeholder="نقاط للانتباه — كل نقطة في سطر"
-          value={draft.concerns}
-          onChange={(event) => onChange({ ...draft, concerns: event.target.value })}
-        />
+        <FormField label="نقاط للانتباه — كل نقطة في سطر">
+          <textarea
+            rows={3}
+            placeholder="نقاط للانتباه — كل نقطة في سطر"
+            value={draft.concerns}
+            onChange={(event) => onChange({ ...draft, concerns: event.target.value })}
+          />
+        </FormField>
 
         <button className="btn" disabled={busy}>حفظ التقرير</button>
       </form>

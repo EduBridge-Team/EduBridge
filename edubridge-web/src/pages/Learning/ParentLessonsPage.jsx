@@ -70,7 +70,7 @@ export default function ParentLessonsPage() {
       <input
         className="parent-lessons-search"
         type="search"
-        placeholder="ابحث في دروس ولي الأمر..."
+        placeholder="ابحث في دروس ولي الأمر..." aria-label="ابحث في دروس ولي الأمر"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
