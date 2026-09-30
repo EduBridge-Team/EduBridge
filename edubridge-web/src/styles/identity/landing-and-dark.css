@@ -94,11 +94,11 @@
   isolation: isolate;
   overflow: hidden;
   margin-top: 22px;
-  padding: 48px 28px 22px;
+  padding: 32px 24px 18px;
   border-top: 0;
   background:
     radial-gradient(circle at 88% 118%, rgba(87, 223, 219, .34), transparent 20rem),
-    linear-gradient(120deg, #0f5db9 0%, #1769c2 48%, #1ebbc6 100%);
+    linear-gradient(120deg, #0f5db9 0%, #1769c2 48%, #117b93 100%);
   color: #fff;
 }
 
@@ -147,9 +147,9 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.45fr .85fr 1.1fr 1fr;
-  gap: 34px;
+  gap: 24px;
   align-items: start;
-  direction: ltr;
+  direction: rtl;
 }
 
 .site-footer .footer-grid > * {
@@ -162,7 +162,7 @@
 
 .site-footer .footer-brand-logo {
   display: block;
-  width: 250px;
+  width: 210px;
   height: auto;
   margin-bottom: 14px;
   overflow: visible;
@@ -319,3 +319,18 @@
   }
 }
 
+
+.site-footer .footer-copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.site-footer .footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.site-footer .footer-contact { overflow-wrap: anywhere; }
+.site-footer a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
