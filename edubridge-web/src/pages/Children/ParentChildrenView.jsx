@@ -1,3 +1,4 @@
+import { childAssignment } from '../../utils/childPresentation'
 import {
   ArrowLeft,
   BookOpen,
@@ -10,11 +11,6 @@ import {
   Users,
 } from 'lucide-react'
 
-const STATUS_LABELS = {
-  evaluated: 'خطة نشطة',
-  assigned: 'تم تعيين معلّم',
-  pending: 'بانتظار المتابعة',
-}
 
 function clamp(value) {
   const n = Number(value)
@@ -59,7 +55,7 @@ export default function ParentChildrenView({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="ابحث عن طفل أو معلّم..."
+            placeholder="ابحث عن طفل أو معلّم..." aria-label="ابحث عن طفل أو معلّم"
           />
         </label>
         <button className={`pc-filter ${activeOnly ? 'active' : ''}`} onClick={onToggleActive}>
@@ -99,7 +95,7 @@ export default function ParentChildrenView({
             const summary = summaries[child.id] || {}
             const total = Number(summary.done || 0) + Number(summary.in_progress || 0) + Number(summary.not_started || 0)
             const progress = total ? clamp((Number(summary.done || 0) / total) * 100) : 0
-            const status = STATUS_LABELS[child.status] || STATUS_LABELS.pending
+            const status = childAssignment(child).label
 
             return (
               <article className="pc-child-card" key={child.id}>
@@ -124,7 +120,7 @@ export default function ParentChildrenView({
                 <div className="pc-child-meta">
                   <div className="pc-meta-box">
                     <UserRound size={18} />
-                    <span><small>المعلّم المعيّن</small><b>{child.assigned_teacher_name || 'بانتظار التعيين'}</b></span>
+                    <span><small>المعلّم المعيّن</small><b>{childAssignment(child).teacher}</b></span>
                   </div>
                   <div className="pc-meta-box">
                     <GraduationCap size={18} />

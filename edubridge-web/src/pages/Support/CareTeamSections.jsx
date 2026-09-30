@@ -1,3 +1,5 @@
+import { workflowLabel } from '../../utils/workflowLabels'
+import FormField from '../../components/FormField'
 export function CareTeamHeader({ childId, children, onChildChange }) {
   return (
     <section className="fp-hero care-team-hero">
@@ -32,46 +34,54 @@ export function CareTeamMemberForm({
 
       <form className="fp-form" onSubmit={onSubmit}>
         <div className="fp-row">
-          <select
-            value={draft.role}
-            onChange={(event) => onChange({
-              ...draft,
-              role: event.target.value,
-              user_id: '',
-            })}
-          >
-            <option value="teacher">معلم</option>
-            <option value="specialist">مختص</option>
-          </select>
+          <FormField label="الدور">
+            <select
+              value={draft.role}
+              onChange={(event) => onChange({
+                ...draft,
+                role: event.target.value,
+                user_id: '',
+              })}
+            >
+              <option value="teacher">معلم</option>
+              <option value="specialist">مختص</option>
+            </select>
+          </FormField>
 
-          <select
-            value={draft.user_id}
-            onChange={(event) => onChange({ ...draft, user_id: event.target.value })}
-            required
-          >
-            <option value="">اختر المستخدم</option>
-            {availableUsers.map((user) => (
-              <option key={user.id} value={user.id}>{user.name}</option>
-            ))}
-          </select>
+          <FormField label="عضو الفريق">
+            <select
+              value={draft.user_id}
+              onChange={(event) => onChange({ ...draft, user_id: event.target.value })}
+              required
+            >
+              <option value="">اختر المستخدم</option>
+              {availableUsers.map((user) => (
+                <option key={user.id} value={user.id}>{user.name}</option>
+              ))}
+            </select>
+          </FormField>
         </div>
 
         {draft.role === 'teacher' ? (
-          <input
-            placeholder="المادة/التخصص التعليمي"
-            value={draft.subject}
-            onChange={(event) => onChange({ ...draft, subject: event.target.value })}
-          />
+          <FormField label="المادة/التخصص التعليمي">
+            <input
+              placeholder="المادة/التخصص التعليمي"
+              value={draft.subject}
+              onChange={(event) => onChange({ ...draft, subject: event.target.value })}
+            />
+          </FormField>
         ) : (
-          <select
-            value={draft.specialty}
-            onChange={(event) => onChange({ ...draft, specialty: event.target.value })}
-          >
-            <option value="learning_support">دعم تعليمي</option>
-            <option value="educational">تعليمي</option>
-            <option value="communication_support">تخاطب</option>
-            <option value="learning_behavior">دعم سلوك التعلم</option>
-          </select>
+          <FormField label="التخصص">
+            <select
+              value={draft.specialty}
+              onChange={(event) => onChange({ ...draft, specialty: event.target.value })}
+            >
+              <option value="learning_support">دعم تعليمي</option>
+              <option value="educational">تعليمي</option>
+              <option value="communication_support">تخاطب</option>
+              <option value="learning_behavior">دعم سلوك التعلم</option>
+            </select>
+          </FormField>
         )}
 
         <button className="btn" disabled={busy}>إضافة للفريق</button>
@@ -101,7 +111,7 @@ export function CareTeamMembers({
             </div>
 
             <div className="fp-meta">
-              <span>{member.subject || member.specialty || 'عام'}</span>
+              <span>{member.subject || workflowLabel(member.specialty || 'عام')}</span>
               <span>
                 منذ {new Date(member.assigned_at).toLocaleDateString('ar')}
               </span>

@@ -23,7 +23,7 @@ export default function TeacherLessonsSection({
       </div>
 
       <input
-        type="search"
+        type="search" aria-label="البحث في مكتبة الدروس"
         placeholder="ابحث عن درس..."
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}

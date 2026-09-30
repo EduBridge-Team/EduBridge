@@ -224,7 +224,7 @@
 @media (min-width: 781px) {
     /* Keep auth pages centered while still allowing short viewports to scroll safely. */
     .auth-page {
-        min-height: calc(100dvh - 78px);
+        min-height: calc(100dvh - var(--site-header-height));
         height: auto;
         padding: clamp(14px, 2.4vh, 26px) 24px;
         overflow-x: hidden;

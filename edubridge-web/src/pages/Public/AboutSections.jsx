@@ -26,7 +26,13 @@ export function AboutHero() {
 
       <div className="about-hero-art" aria-label="تعليم دامج في EduBridge">
         <img
-          src="/edubridge-hero-inclusive.webp"
+          src="/edubridge-hero-classroom-hq.webp"
+          srcSet="/edubridge-hero-classroom-mobile.webp 836w, /edubridge-hero-classroom-hq.webp 1672w"
+          sizes="(max-width: 780px) calc(100vw - 64px), 560px"
+          width="1672"
+          height="941"
+          decoding="async"
+          fetchPriority="high"
           alt="طلاب يتعلمون مع دعم تربوي في بيئة دامجة"
         />
       </div>

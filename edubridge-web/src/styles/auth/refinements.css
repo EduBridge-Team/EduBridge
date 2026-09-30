@@ -80,7 +80,7 @@
 
 @media (min-width: 821px) {
   .center-page.auth-page {
-    min-height: calc(100dvh - 78px);
+    min-height: calc(100dvh - var(--site-header-height));
     height: auto;
     padding: 22px 24px;
     box-sizing: border-box;

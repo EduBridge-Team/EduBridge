@@ -1,3 +1,5 @@
+import { childAssignment } from '../../utils/childPresentation'
+import { workflowLabel } from '../../utils/workflowLabels'
 import {
   Accessibility,
   ArrowRight,
@@ -8,11 +10,6 @@ import {
   User,
 } from 'lucide-react'
 
-const STATUS_TEXT = {
-  evaluated: 'تم التقييم ✓',
-  assigned: 'تم التعيين ✓',
-  pending: 'قيد الانتظار ⏳',
-}
 
 function asText(value) {
   if (Array.isArray(value)) return value.join('، ')
@@ -62,8 +59,8 @@ export function ChildInfoCard({ child }) {
       <InfoRow label="أسلوب التعلم المفضل" value={child?.preferred_learning_style} />
       <InfoRow label="نقاط القوة" value={child?.strengths} />
       <InfoRow label="التحديات" value={child?.challenges} />
-      <InfoRow label="المعلم المسؤول" value={child?.assigned_teacher_name} />
-      <InfoRow label="الحالة" value={STATUS_TEXT[child?.status] || STATUS_TEXT.pending} />
+      <InfoRow label="المعلم المسؤول" value={childAssignment(child).teacher} />
+      <InfoRow label="الحالة" value={childAssignment(child).label} />
     </div>
   )
 }
@@ -85,7 +82,7 @@ export function ChildEvaluationsSection({ evaluations }) {
             className="card child-evaluation-card"
           >
             <div className="card-row" style={{ justifyContent: 'space-between' }}>
-              <strong>{evaluation.evaluation_type || 'تقييم'}</strong>
+              <strong>{workflowLabel(evaluation.evaluation_type || 'تقييم')}</strong>
               {date && <span className="meta">{date}</span>}
             </div>
             {evaluation.recommendations && (
