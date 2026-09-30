@@ -147,3 +147,6 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+.reference-home .reference-noor { column-gap: 32px; }
+

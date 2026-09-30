@@ -150,7 +150,7 @@ export default function HomeworkPage() {
         <div>
           <span className="fp-eyebrow">التعلّم والمتابعة</span>
           <h1>الواجبات</h1>
-          <p>أنشئ الواجبات، تابع التسليم، وراجع التقييمات من مكان واحد.</p>
+          <p>{isStaff ? 'أنشئ الواجبات، تابع التسليم، وراجع التقييمات من مكان واحد.' : 'تابع واجبات أبنائك، سلّم الإجابات، وراجع تقييمات المعلّم.'}</p>
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
       </section>

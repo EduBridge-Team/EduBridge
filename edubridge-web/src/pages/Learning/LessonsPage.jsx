@@ -1,8 +1,8 @@
+import { filterLessons } from '../../utils/lessonCategories'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { fetchLessons, getUser } from '../../api'
 import {
-  LESSON_CATEGORIES,
   LessonsHero,
   LessonsList,
   LessonsRecommendations,
@@ -58,12 +58,7 @@ export default function LessonsPage() {
     synth.speak(utter)
   }
 
-  const filtered = useMemo(() => lessons.filter((lesson) => {
-    const text = `${lesson.title || ''} ${lesson.content || ''} ${lesson.category || ''}`
-    const matchesQuery = !query.trim() || text.includes(query.trim())
-    const matchesCategory = category === 'الكل' || text.includes(category)
-    return matchesQuery && matchesCategory
-  }), [lessons, query, category])
+  const filtered = useMemo(() => filterLessons(lessons, query, category), [lessons, query, category])
 
   return (
     <div className={`lessons-redesign portal-lessons-page ${isParent ? 'parent-lessons-page' : ''}`}>

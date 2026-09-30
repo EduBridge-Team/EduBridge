@@ -1,4 +1,16 @@
 /* Children / conversations */
+:root[data-theme="dark"] .pcv-tabs button {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pcv-tabs button.active {
+  border-color: #8bd3ff;
+  background: #8bd3ff;
+  color: #09233c;
+}
+
 :root[data-theme="dark"] .pc-heading,
 :root[data-theme="dark"] .pc-tools,
 :root[data-theme="dark"] .pc-stat,

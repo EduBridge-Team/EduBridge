@@ -88,6 +88,8 @@
 
 .pcv-tabs {
   display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
   gap: 7px;
 }
 

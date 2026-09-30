@@ -1,5 +1,6 @@
+import { childAssignment } from '../../../utils/childPresentation'
 import { ArrowLeft, Plus, Users } from 'lucide-react'
-import { KID_COLORS, STATUS, clampPercent } from './utils'
+import { KID_COLORS, clampPercent } from './utils'
 
 export default function ParentChildrenSection({
   childrenCount,
@@ -49,7 +50,7 @@ export default function ParentChildrenSection({
       ) : (
         <div className="pd-children-grid">
           {visibleChildren.slice(0, 2).map((child, index) => {
-            const status = STATUS[child.status] || STATUS.pending
+            const status = childAssignment(child)
             const summary = summaries[child.id] || {}
             const childTotal = Number(summary.done || 0) + Number(summary.in_progress || 0) + Number(summary.not_started || 0)
             const childPct = childTotal ? clampPercent((Number(summary.done || 0) / childTotal) * 100) : 0
@@ -82,7 +83,7 @@ export default function ParentChildrenSection({
                     </span>
                     <span>
                       <small>المعلّم</small>
-                      <b>{child.assigned_teacher_name || 'بانتظار التعيين'}</b>
+                      <b>{childAssignment(child).teacher}</b>
                     </span>
                   </div>
                   <div className="pd-child-progress-copy">

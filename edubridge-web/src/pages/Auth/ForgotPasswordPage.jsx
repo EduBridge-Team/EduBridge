@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { forgotPassword } from '../../api'
+import AuthVisual from './AuthVisual'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export default function ForgotPasswordPage() {
@@ -27,13 +28,10 @@ export default function ForgotPasswordPage() {
   return (
     <div className="center-page auth-page auth-page-login">
       <div className="auth-split">
-        <div className="auth-visual" aria-hidden="true">
-          <img src="/brand-homepage.webp" alt="" />
-          <div><strong>EduBridge</strong><span>تعلم يناسب قدرات كل طفل</span></div>
-        </div>
+        <AuthVisual />
         <div className="auth-card auth-card-branded">
           <BrandLogo className="auth-brand-logo" />
-          <h2 className="auth-form-title">استعادة كلمة المرور</h2>
+          <h1 className="auth-form-title">استعادة كلمة المرور</h1>
           <p className="muted">أدخل بريدك وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.</p>
           {message && <div className="success-box">{message}</div>}
           {error && <div className="error-box">{error}</div>}

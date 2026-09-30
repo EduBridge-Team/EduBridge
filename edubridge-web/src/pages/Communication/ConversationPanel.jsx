@@ -51,7 +51,7 @@ export default function ConversationPanel({
             <input
               value={draft}
               onChange={(event) => onDraftChange(event.target.value)}
-              placeholder="اكتب رسالتك هنا..."
+              placeholder="اكتب رسالتك هنا..." aria-label="اكتب رسالتك هنا..."
               maxLength={4000}
             />
             <button className="btn" disabled={sending || !draft.trim()} aria-label="إرسال">

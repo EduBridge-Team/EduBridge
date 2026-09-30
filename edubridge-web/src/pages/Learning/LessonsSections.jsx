@@ -1,3 +1,4 @@
+import { LESSON_CATEGORIES, lessonCategory } from '../../utils/lessonCategories'
 import {
   Clock3,
   Grid2X2,
@@ -8,13 +9,11 @@ import {
 } from 'lucide-react'
 import LessonRatings from '../../components/LessonRatings'
 
-export const LESSON_CATEGORIES = ['الكل', 'القراءة', 'الرياضيات', 'مهارات الحياة', 'التواصل', 'الفنون']
 export const LESSON_VISUALS = [
   { icon: '📖', cls: 'blue' },
   { icon: '🔢', cls: 'purple' },
   { icon: '🌱', cls: 'green' },
   { icon: '🧑‍🤝‍🧑', cls: 'aqua' },
-  { icon: '🎧', cls: 'violet' },
   { icon: '🎨', cls: 'peach' },
 ]
 
@@ -36,6 +35,7 @@ export function LessonsHero({
         <input
           ref={searchRef}
           type="search"
+          aria-label="البحث في الدروس"
           placeholder="ابحث عن درس أو مهارة..."
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
@@ -61,8 +61,10 @@ export function LessonsHero({
   )
 }
 
-function LessonCard({ index, lesson, onToggleSpeak, speakingId }) {
-  const visual = LESSON_VISUALS[index % LESSON_VISUALS.length]
+function LessonCard({ lesson, onToggleSpeak, speakingId }) {
+  const category = lessonCategory(lesson)
+  const categoryIndex = LESSON_CATEGORIES.indexOf(category) - 1
+  const visual = categoryIndex >= 0 && categoryIndex < 5 ? LESSON_VISUALS[categoryIndex] : { icon: '📚', cls: 'blue' }
   const images = lesson.images || lesson.image_urls || []
 
   return (
@@ -81,7 +83,7 @@ function LessonCard({ index, lesson, onToggleSpeak, speakingId }) {
       </div>
       <div className="lesson-body">
         <span className="lesson-tag">
-          {lesson.category || LESSON_CATEGORIES[(index % (LESSON_CATEGORIES.length - 1)) + 1]}
+          {category}
         </span>
         <h3>{lesson.title}</h3>
         {lesson.content && <p>{lesson.content}</p>}
@@ -126,10 +128,9 @@ export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, 
 
   return (
     <div className="lesson-cards-grid">
-      {filtered.map((lesson, index) => (
+      {filtered.map((lesson) => (
         <LessonCard
           key={lesson.id}
-          index={index}
           lesson={lesson}
           onToggleSpeak={onToggleSpeak}
           speakingId={speakingId}

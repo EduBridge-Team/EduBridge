@@ -60,7 +60,7 @@ export default function SearchPage() {
       <form onSubmit={run} className="search-row identity-search-form">
         <input
           type="search"
-          placeholder="أدخل رقم الهوية الكامل..."
+          placeholder="أدخل رقم الهوية الكامل..." aria-label="أدخل رقم الهوية الكامل..."
           value={q}
           inputMode="numeric"
           onChange={(e) => setQ(e.target.value)}
