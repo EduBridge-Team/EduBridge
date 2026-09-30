@@ -1,3 +1,4 @@
+import HashNavigation from './components/HashNavigation'
 import TopBar from './components/TopBar/TopBar'
 import AssistantWidget from './components/Noor/AssistantWidget'
 import VoiceCommandWidget from './components/VoiceCommandWidget/VoiceCommandWidget'
@@ -8,6 +9,7 @@ export default function App() {
   return (
     <div>
       <TopBar />
+      <HashNavigation />
       <AppRoutes />
       <AssistantWidget />
       <VoiceCommandWidget />

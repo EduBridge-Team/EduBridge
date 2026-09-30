@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Accessibility, ArrowLeft, Heart, Users } from 'lucide-react'
 import { getToken, getUser } from '../../api'
 import Footer from '../../components/Footer'
@@ -32,7 +32,7 @@ export default function HomePage() {
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/register')}>
               ابدأ رحلتك الآن <ArrowLeft size={18} />
             </button>
-            <a className="btn outline" href="#services">استكشف الخدمات <ArrowLeft size={18} /></a>
+            <Link className="btn outline" to="/#services">استكشف الخدمات <ArrowLeft size={18} /></Link>
           </div>
 
           <div className="hero-promises">

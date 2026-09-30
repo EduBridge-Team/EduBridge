@@ -15,7 +15,7 @@ export default function TopBar() {
   const [open, setOpen] = useState(false)
   const { dark, toggleTheme } = useTheme()
 
-  useEffect(() => setOpen(false), [location.pathname])
+  useEffect(() => setOpen(false), [location.pathname, location.hash, location.key])
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
