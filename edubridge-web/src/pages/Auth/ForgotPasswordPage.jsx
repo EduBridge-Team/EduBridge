@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { forgotPassword } from '../../api'
+import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -31,7 +32,7 @@ export default function ForgotPasswordPage() {
           <div><strong>EduBridge</strong><span>تعلم يناسب قدرات كل طفل</span></div>
         </div>
         <div className="auth-card auth-card-branded">
-          <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
+          <BrandLogo className="auth-brand-logo" />
           <h2 className="auth-form-title">استعادة كلمة المرور</h2>
           <p className="muted">أدخل بريدك وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.</p>
           {message && <div className="success-box">{message}</div>}
