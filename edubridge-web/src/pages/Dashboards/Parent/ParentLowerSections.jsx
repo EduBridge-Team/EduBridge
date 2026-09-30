@@ -1,5 +1,4 @@
 import { ArrowLeft, BarChart3, CalendarDays, MessageCircle, PlayCircle, Sparkles } from 'lucide-react'
-import NoorPet from '../../../components/Noor/NoorPet'
 import { lessonTimeLabel } from './utils'
 
 export default function ParentLowerSections({
@@ -104,7 +103,6 @@ export default function ParentLowerSections({
             ابدأ المحادثة الآن <ArrowLeft size={16} />
           </button>
         </div>
-        <NoorPet size={150} trackMouse />
         <div className="pd-noor-bubbles" aria-hidden="true">
           <span>ما هي أنشطة اليوم؟ 💡</span>
           <span>كيف يمكنني دعم طفلي في المنزل؟ 💬</span>

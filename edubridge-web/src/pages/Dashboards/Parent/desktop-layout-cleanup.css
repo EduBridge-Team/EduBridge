@@ -6,34 +6,34 @@
 @media (min-width: 901px) {
   /* Shell: reserve the sidebar once, never paint content underneath it. */
   body.parent-dashboard-page .pp-shell {
-    padding-right: 252px !important;
+    padding-right: 264px !important;
     padding-left: 0 !important;
   }
 
   body.parent-dashboard-page .pp-sidebar {
-    width: 252px !important;
+    width: 264px !important;
     height: 100dvh !important;
     max-height: 100dvh !important;
-    padding: 14px 12px 16px !important;
-    gap: 8px !important;
+    padding: 12px 14px 14px !important;
+    gap: 7px !important;
     overflow: hidden !important;
     border-bottom-left-radius: 0 !important;
   }
 
   body.parent-dashboard-page .pp-sidebar-head {
-    min-height: 58px !important;
-    padding: 4px 8px 10px !important;
+    min-height: 56px !important;
+    padding: 4px 8px 9px !important;
   }
 
   body.parent-dashboard-page .pp-brand .pp-brand-logo {
-    width: 154px !important;
+    width: 158px !important;
   }
 
   body.parent-dashboard-page .pp-nav {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     justify-content: flex-start !important;
-    gap: 3px !important;
+    gap: 2px !important;
     padding-inline-end: 2px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -48,11 +48,17 @@
   body.parent-dashboard-page .pp-nav button,
   body.parent-dashboard-page .pp-sidebar[data-nav-density="compact"] .pp-nav button,
   body.parent-dashboard-page .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
-    min-height: 43px !important;
-    padding: 7px 10px !important;
+    min-height: 42px !important;
+    padding: 6px 10px !important;
     border-radius: 12px !important;
     gap: 9px !important;
-    font-size: 15px !important;
+    font-size: 14.5px !important;
+  }
+
+  body.parent-dashboard-page .pp-nav button > span {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
   }
 
   body.parent-dashboard-page .pp-nav button.active {
@@ -105,18 +111,18 @@
     padding-top: 18px !important;
   }
 
-  /* Hero: no duplicate search on desktop; keep it short and purposeful. */
+  /* Hero: compact desktop hierarchy with the content anchored to the RTL edge. */
   body.parent-dashboard-page .pd-hero {
     min-height: 0 !important;
-    padding: 24px 28px !important;
+    padding: 18px 24px !important;
     border-radius: 24px !important;
     grid-template-columns: 1fr !important;
     align-items: start !important;
   }
 
   body.parent-dashboard-page .pd-hero-copy {
-    width: min(760px, 100%) !important;
-    max-width: 760px !important;
+    width: min(720px, 100%) !important;
+    max-width: 720px !important;
     margin-inline-start: auto !important;
     margin-inline-end: 0 !important;
   }
@@ -126,22 +132,22 @@
   }
 
   body.parent-dashboard-page .pd-hero h1 {
-    margin-top: 4px !important;
-    font-size: clamp(34px, 3vw, 44px) !important;
+    margin-top: 2px !important;
+    font-size: clamp(32px, 2.7vw, 40px) !important;
   }
 
   body.parent-dashboard-page .pd-hero h2 {
-    margin-top: 2px !important;
-    font-size: clamp(22px, 2.2vw, 30px) !important;
+    margin-top: 1px !important;
+    font-size: clamp(21px, 2vw, 27px) !important;
   }
 
   body.parent-dashboard-page .pd-hero p {
-    max-width: 650px;
-    font-size: 15px !important;
+    max-width: 620px;
+    font-size: 14px !important;
   }
 
   body.parent-dashboard-page .pd-hero-status {
-    margin-top: 12px !important;
+    margin-top: 9px !important;
   }
 
   /* Children + progress keep their visual strength, but align heights. */
@@ -150,8 +156,22 @@
   }
 
   body.parent-dashboard-page .pd-metric-card {
-    min-height: 174px !important;
-    padding: 14px !important;
+    min-height: 170px !important;
+    padding: 13px !important;
+  }
+
+  body.parent-dashboard-page .pd-metric-head {
+    font-size: 12px !important;
+  }
+
+  body.parent-dashboard-page .pd-metric-card > small {
+    font-size: 10.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  body.parent-dashboard-page .pd-bars-value,
+  body.parent-dashboard-page .pd-ring-center b {
+    font-size: 12.5px !important;
   }
 
   /* Lower area: balanced columns and compact empty states. */
@@ -179,45 +199,45 @@
     min-height: 58px !important;
   }
 
-  /* Quick actions: real action cards instead of one long flat strip. */
+  /* Quick actions: keep them prominent without dominating the lower dashboard. */
   body.parent-dashboard-page .pd-quick-actions {
-    padding: 14px !important;
+    padding: 12px !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    gap: 9px !important;
     border-radius: 22px !important;
     box-shadow: none !important;
   }
 
   body.parent-dashboard-page .pd-quick-actions h2 {
     grid-column: 1 / -1 !important;
-    margin: 0 2px 2px !important;
-    font-size: 17px !important;
+    margin: 0 2px 1px !important;
+    font-size: 16px !important;
   }
 
   body.parent-dashboard-page .pd-quick-actions button {
-    min-height: 64px !important;
-    padding: 10px 14px !important;
-    border-radius: 16px !important;
-    flex-direction: column !important;
-    gap: 6px !important;
+    min-height: 56px !important;
+    padding: 8px 12px !important;
+    border-radius: 14px !important;
+    flex-direction: row !important;
+    gap: 8px !important;
     background: #f8fbfd !important;
   }
 
   body.parent-dashboard-page .pd-quick-actions button svg {
-    width: 23px !important;
-    height: 23px !important;
+    width: 21px !important;
+    height: 21px !important;
   }
 
   body.parent-dashboard-page .pd-quick-actions button.primary {
     background: linear-gradient(135deg, var(--pd-blue), #1d78ca) !important;
   }
 
-  /* Noor: keep one strong floating entry point; banner becomes a compact secondary CTA. */
+  /* Noor: floating Noor is the visual entry point; the banner stays a compact CTA. */
   body.parent-dashboard-page .pd-noor-banner {
-    min-height: 118px !important;
-    padding: 14px 20px !important;
-    grid-template-columns: minmax(0, 1fr) 96px !important;
-    gap: 16px !important;
+    min-height: 92px !important;
+    padding: 12px 18px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
     border-radius: 22px !important;
   }
 
@@ -226,46 +246,44 @@
   }
 
   body.parent-dashboard-page .pd-noor-copy h2 {
-    margin: 1px 0 3px !important;
-    font-size: 21px !important;
+    margin: 1px 0 2px !important;
+    font-size: 19px !important;
   }
 
   body.parent-dashboard-page .pd-noor-copy p {
     max-width: 620px;
-    margin-bottom: 8px !important;
-    font-size: 12px !important;
+    margin-bottom: 7px !important;
+    font-size: 11.5px !important;
   }
 
   body.parent-dashboard-page .pd-noor-copy button {
-    min-height: 38px !important;
-    padding: 7px 13px !important;
+    min-height: 36px !important;
+    padding: 6px 12px !important;
     border-radius: 12px !important;
     font-size: 11px !important;
   }
 
-  body.parent-dashboard-page .pd-noor-banner > .noor-pet {
-    width: 96px !important;
-    height: 86px !important;
-    transform: none !important;
-  }
-
+  body.parent-dashboard-page .pd-noor-banner > .noor-pet,
   body.parent-dashboard-page .pd-noor-bubbles {
     display: none !important;
   }
 
-  /* Floating Noor defaults away from the fixed RTL sidebar. */
   body.parent-dashboard-page .noor-launcher {
     z-index: 70 !important;
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
   }
 }
 
 @media (min-width: 901px) and (max-width: 1180px) {
   body.parent-dashboard-page .pp-shell {
-    padding-right: 220px !important;
+    padding-right: 232px !important;
   }
 
   body.parent-dashboard-page .pp-sidebar {
-    width: 220px !important;
+    width: 232px !important;
   }
 
   body.parent-dashboard-page .pp-brand .pp-brand-logo {
