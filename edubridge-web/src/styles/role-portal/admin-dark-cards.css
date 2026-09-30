@@ -1,0 +1,96 @@
+/* Role portal dark theme.
+   Consolidated from dark-theme-core.css and dark-theme-responsive.css.
+   Rule order is preserved to avoid visual changes. */
+
+/* Dark theme */
+:root[data-theme="dark"] .pp-role-admin .admin-users-head,
+:root[data-theme="dark"] .pp-role-admin .admin-role-section,
+:root[data-theme="dark"] .pp-role-admin .admin-user-row,
+:root[data-theme="dark"] .pp-role-admin .admin-child-card {
+  border-color: var(--pp-line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-search-wrap,
+:root[data-theme="dark"] .pp-role-admin .admin-linked-count {
+  border-color: #28506c;
+  background: #102f4e;
+  color: #bcd9eb;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-role-heading-icon,
+:root[data-theme="dark"] .pp-role-admin .admin-role-count {
+  background: rgba(255,255,255,.08);
+  color: #dceffc;
+}
+
+:root[data-theme="dark"] .pp-role-admin .tone-teacher .admin-role-heading {
+  background: #16372e;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-specialist .admin-role-heading {
+  background: #3a2b20;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-parent .admin-role-heading {
+  background: #173650;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-children .admin-role-heading {
+  background: #153c43;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-ministry .admin-role-heading {
+  background: #202f50;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-institution .admin-role-heading {
+  background: #173b35;
+}
+:root[data-theme="dark"] .pp-role-admin .tone-admin .admin-role-heading {
+  background: #263143;
+}
+
+:root[data-theme="dark"] .pp-role-admin .admin-user-avatar,
+:root[data-theme="dark"] .pp-role-admin .admin-child-avatar {
+  background: linear-gradient(145deg, #123f4a, #183954);
+  color: #65d4df;
+}
+
+:root[data-theme="dark"] .pp-role-admin .role-pill.role-ministry,
+:root[data-theme="dark"] .pp-role-admin .role-pill.role-institution {
+  background: #183954;
+  color: #cde8f8;
+}
+
+@media (max-width: 760px) {
+  .pp-role-admin .admin-users-head {
+    align-items: stretch;
+  }
+
+  .pp-role-admin .admin-search-wrap {
+    width: 100%;
+  }
+
+  .pp-role-admin .admin-role-users,
+  .pp-role-admin .admin-children-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-role-admin .admin-user-row {
+    min-height: 104px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pp-role-admin .admin-user-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "avatar main"
+      "count actions";
+  }
+
+  .pp-role-admin .admin-linked-count {
+    justify-self: start;
+  }
+
+  .pp-role-admin .admin-user-actions {
+    justify-self: end;
+  }
+}

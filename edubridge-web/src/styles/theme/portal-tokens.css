@@ -1,0 +1,41 @@
+/* Portal light/dark palette and control geometry. */
+
+:root {
+  /* Flutter parity tokens — mirror AppColors + Material 3 component geometry. */
+  --pp-blue: #1769c2;
+  --pp-blue-deep: #0d55aa;
+  --pp-cyan: #21bfd0;
+  --pp-teal: #69d4ca;
+  --pp-green: #7be49a;
+  --pp-bg: #f6f9fc;
+  --pp-surface: #ffffff;
+  --pp-soft: #f0f6fb;
+  --pp-ink: #102a43;
+  --pp-body: #294861;
+  --pp-text: #637b92;
+  --pp-line: #dce8f1;
+  --pp-card: #ffffff;
+  --pp-radius-card: 24px;
+  --pp-radius-control: 18px;
+  --pp-radius-compact: 14px;
+  --pp-control-height: 56px;
+  --pp-touch-target: 44px;
+  --pp-shadow: 0 10px 28px rgba(23,105,194,.07);
+}
+:root[data-theme="dark"] {
+  /* Flutter dark theme parity — buildJisrDarkTheme(). */
+  --pp-blue: #21bfd0;
+  --pp-blue-deep: #69d4ca;
+  --pp-cyan: #21bfd0;
+  --pp-teal: #69d4ca;
+  --pp-green: #7be49a;
+  --pp-bg: #091a28;
+  --pp-surface: #142a3c;
+  --pp-soft: #102b3f;
+  --pp-ink: #f1f7fc;
+  --pp-body: #d2dfea;
+  --pp-text: #91a8ba;
+  --pp-line: #263e54;
+  --pp-card: #142a3c;
+  --pp-shadow: none;
+}

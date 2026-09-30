@@ -12,7 +12,6 @@ import {
   HomeworkGrid,
   HomeworkSubmissionForm,
 } from './HomeworkSections'
-import '../../feature-parity.css'
 
 const EMPTY_SUBMISSION = {
   homework_id: null,

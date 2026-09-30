@@ -11,7 +11,6 @@ import {
   ProfileSecuritySection,
   ProfileSettingsSection,
 } from './ProfileSections'
-import './ProfilePage.css'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
