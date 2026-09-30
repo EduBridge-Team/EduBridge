@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
   Bell,
   Home,
@@ -78,14 +78,16 @@ export function SignedInTopBarMenu({
 }
 
 export function GuestTopBarMenu({ dark, onLogin, onRegister, toggleTheme }) {
+  const { pathname, hash } = useLocation()
+  const sectionActive = (anchor) => pathname === '/' && hash === anchor
   return (
     <>
       <nav className="topbar-nav guest-nav">
-        <NavLink to="/" end>الرئيسية</NavLink>
+        <Link to="/" className={pathname === '/' && !hash ? 'active' : undefined} aria-current={pathname === '/' && !hash ? 'page' : undefined}>الرئيسية</Link>
         <NavLink to="/about">من نحن</NavLink>
-        <a href="/#services">الخدمات</a>
-        <a href="/#features">المميزات</a>
-        <a href="/#contact">تواصل معنا</a>
+        <Link to="/#services" className={sectionActive('#services') ? 'active' : undefined} aria-current={sectionActive('#services') ? 'location' : undefined}>الخدمات</Link>
+        <Link to="/#features" className={sectionActive('#features') ? 'active' : undefined} aria-current={sectionActive('#features') ? 'location' : undefined}>المميزات</Link>
+        <Link to="/#contact" className={sectionActive('#contact') ? 'active' : undefined} aria-current={sectionActive('#contact') ? 'location' : undefined}>تواصل معنا</Link>
       </nav>
       <div className="topbar-actions guest-actions">
         <button

@@ -10,7 +10,7 @@ export default function HomeSections({ loggedIn, navigate, user }) {
       <section className="home-section audience-section">
         <div className="section-heading compact">
           <div><h2>لمن صُممت EduBridge؟</h2><p>حلول مخصصة لكل من يشارك في رحلة التعلّم</p></div>
-          <a href="#services" className="soft-link">اكتشف المزيد <ArrowLeft size={16} /></a>
+          <Link to="/#services" className="soft-link">اكتشف المزيد <ArrowLeft size={16} /></Link>
         </div>
         <div className="audience-grid">
           {AUDIENCES.map((item) => (
@@ -80,8 +80,10 @@ export default function HomeSections({ loggedIn, navigate, user }) {
         <ol className="getting-started-grid">
           {GETTING_STARTED.map(({ Icon, title, text }, index) => (
             <li className="getting-started-card" key={title}>
-              <span className="step-number" dir="ltr">{index + 1}</span>
-              <Icon size={26} aria-hidden="true" />
+              <div className="step-header">
+                <Icon size={26} aria-hidden="true" />
+                <span className="step-number" dir="ltr">{index + 1}</span>
+              </div>
               <h3>{title}</h3><p>{text}</p>
             </li>
           ))}

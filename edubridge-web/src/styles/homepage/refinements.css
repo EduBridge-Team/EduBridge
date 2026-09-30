@@ -64,9 +64,6 @@
   min-width: 0;
 }
 .reference-home .step-number {
-  position: absolute;
-  inset-inline-end: 20px;
-  top: 20px;
   display: grid;
   place-items: center;
   width: 32px;
@@ -133,4 +130,20 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .reference-home .home-hero .hero-static-title { animation: none; }
+}
+
+.reference-home .step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.reference-home a.btn { text-decoration: none; }
+:root[data-theme="dark"] .reference-home .home-section {
+  border-color: var(--brand-line);
+}
+:root[data-theme="dark"] .reference-home .step-header > svg { color: var(--dark-accent); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
