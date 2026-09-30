@@ -16,7 +16,7 @@ export function RegisterDecor() {
 }
 
 export function RegisterVisual() {
-  return <AuthVisual registration />
+  return <AuthVisual />
 }
 
 export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
@@ -57,6 +57,7 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             dir="ltr"
             aria-describedby="national-id-hint"
           />
+          <p id="national-id-hint" className="auth-field-hint">يمكنك إضافة الهوية لاحقاً لتوثيق حسابك.</p>
         </div>
 
         <div className="auth-field">
@@ -90,9 +91,11 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             onChange={onChange('password')}
             required
             autoComplete="new-password"
+            aria-describedby="password-hint"
             minLength={8}
             maxLength={128}
           />
+          <p id="password-hint" className="auth-field-hint">8 أحرف على الأقل.</p>
         </div>
 
         <div className="auth-field">
@@ -105,8 +108,6 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             autoComplete="new-password"
           />
         </div>
-
-        <p id="national-id-hint" className="auth-field-hint">يمكنك إضافة الهوية لاحقاً لتوثيق حسابك.</p>
 
         {error && <div className="error-box" role="alert">{error}</div>}
 
