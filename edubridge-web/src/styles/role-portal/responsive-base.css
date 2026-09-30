@@ -200,14 +200,14 @@
 
   .pp-mobile-quick-actions {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 7px;
   }
 
   .pp-mobile-quick-actions > button {
     position: relative;
-    min-height: 42px;
-    padding: 7px 9px;
+    min-height: 44px;
+    padding: 7px;
     border: 1px solid var(--pp-line);
     border-radius: 12px;
     display: flex;
@@ -376,6 +376,14 @@
 }
 
 @media (max-width: 420px) {
+  .pp-mobile-quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pp-mobile-quick-actions > button:last-child {
+    grid-column: 1 / -1;
+  }
+
   .pp-mobile-brand {
     left: 8px;
     max-width: 136px;
