@@ -7,7 +7,7 @@
 .pc-heading {
   padding: 20px 22px;
   border: 1px solid var(--pp-line);
-  border-radius: 22px;
+  border-radius: var(--pp-radius-card);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,10 +45,10 @@
 }
 
 .pc-add-button {
-  min-height: 44px;
-  padding: 10px 17px;
+  min-height: var(--pp-control-height);
+  padding: 0 22px;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--pp-radius-control);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -67,10 +67,10 @@
 }
 
 .pc-search {
-  min-height: 48px;
-  padding: 0 15px;
+  min-height: var(--pp-control-height);
+  padding: 0 18px;
   border: 1px solid var(--pp-line);
-  border-radius: 15px;
+  border-radius: var(--pp-radius-control);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -89,10 +89,10 @@
 }
 
 .pc-filter {
-  min-height: 48px;
-  padding: 0 15px;
-  border: 1px solid #cfe2ef;
-  border-radius: 15px;
+  min-height: var(--pp-control-height);
+  padding: 0 18px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-control);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -117,11 +117,11 @@
   min-height: 94px;
   padding: 16px;
   border: 1px solid var(--pp-line);
-  border-radius: 18px;
+  border-radius: var(--pp-radius-card);
   display: flex;
   align-items: center;
   gap: 13px;
-  background: #fff;
+  background: var(--pp-surface);
 }
 
 .pc-stat-icon {
@@ -165,14 +165,14 @@
   min-height: 226px;
   padding: 18px;
   border: 1px solid var(--pp-line);
-  border-radius: 20px;
+  border-radius: var(--pp-radius-card);
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 15px;
   background:
     radial-gradient(circle at 95% 4%, rgba(37,191,212,.11), transparent 8rem),
     #fff;
-  box-shadow: var(--pp-shadow);
+  box-shadow: none;
 }
 
 .pc-avatar {
@@ -292,10 +292,10 @@
 }
 
 .pc-child-actions button {
-  min-height: 38px;
-  padding: 8px 12px;
-  border: 1px solid #d4e6f1;
-  border-radius: 12px;
+  min-height: var(--pp-touch-target);
+  padding: 8px 14px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-compact);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -315,8 +315,8 @@
 
 .pc-empty {
   padding: 46px 20px;
-  border: 1px dashed #cbdfe9;
-  border-radius: 20px;
+  border: 1px dashed var(--pp-line);
+  border-radius: var(--pp-radius-card);
   text-align: center;
   background: rgba(255,255,255,.76);
 }
@@ -370,8 +370,8 @@
 .parent-lessons-page .noor-lessons-card,
 .parent-lessons-page .daily-picks {
   border-color: var(--pp-line);
-  border-radius: 18px;
-  box-shadow: 0 10px 28px rgba(21,91,147,.05);
+  border-radius: var(--pp-radius-card);
+  box-shadow: none;
 }
 
 .parent-lessons-page .lesson-card-new {
@@ -392,7 +392,7 @@
 .pcv-heading {
   padding: 18px 20px;
   border: 1px solid var(--pp-line);
-  border-radius: 22px;
+  border-radius: var(--pp-radius-card);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -430,10 +430,10 @@
 }
 
 .pcv-new {
-  min-height: 42px;
-  padding: 9px 14px;
+  min-height: var(--pp-control-height);
+  padding: 0 22px;
   border: 0;
-  border-radius: 13px;
+  border-radius: var(--pp-radius-control);
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -451,10 +451,10 @@
 }
 
 .pcv-search {
-  min-height: 47px;
-  padding: 0 14px;
+  min-height: var(--pp-control-height);
+  padding: 0 18px;
   border: 1px solid var(--pp-line);
-  border-radius: 14px;
+  border-radius: var(--pp-radius-control);
   display: flex;
   align-items: center;
   gap: 9px;
@@ -477,10 +477,10 @@
 }
 
 .pcv-tabs button {
-  min-height: 47px;
-  padding: 0 13px;
-  border: 1px solid #d5e6f1;
-  border-radius: 14px;
+  min-height: var(--pp-control-height);
+  padding: 0 16px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-control);
   background: #fff;
   color: #557390;
   font: inherit;
@@ -498,10 +498,10 @@
 .parent-conversations-page .chat-layout {
   min-height: 590px;
   border: 1px solid var(--pp-line);
-  border-radius: 20px;
+  border-radius: var(--pp-radius-card);
   overflow: hidden;
-  background: #fff;
-  box-shadow: var(--pp-shadow);
+  background: var(--pp-surface);
+  box-shadow: none;
 }
 
 .parent-conversations-page .conversation-list {

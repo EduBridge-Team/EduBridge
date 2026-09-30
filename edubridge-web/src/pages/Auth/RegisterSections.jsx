@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export function RegisterDecor() {
   return (
@@ -24,11 +25,10 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
   return (
     <div className="auth-card auth-card-branded">
       <div className="auth-card-corner-dots" aria-hidden="true" />
-      <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
-      <h1>EduBridge</h1>
-      <div className="subtitle">جسر تعليمي</div>
-      <div className="tagline">تعلم بلا حدود .. فرص متساوية للجميع</div>
-      <h2 className="auth-form-title">إنشاء حساب</h2>
+      <BrandLogo className="auth-brand-logo" />
+      <h1 className="auth-welcome-title">ابدأ رحلتك مع EduBridge</h1>
+      <p className="auth-welcome-copy">أنشئ حسابك خلال دقيقة، ويمكنك استكمال بياناتك لاحقًا.</p>
+      <h2 className="auth-form-title">بيانات الحساب</h2>
 
       <form onSubmit={onSubmit}>
         <label htmlFor="name">الاسم</label>
@@ -52,7 +52,7 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
           inputMode="numeric"
         />
 
-        <label htmlFor="role">الدور</label>
+        <label htmlFor="role">نوع الحساب</label>
         <select id="role" value={form.role} onChange={onChange('role')}>
           <option value="parent">ولي أمر</option>
           <option value="teacher">معلّم</option>

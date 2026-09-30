@@ -557,12 +557,12 @@ body.role-portal-admin .pp-content .admin-panel {
 .support-hero,
 .verify-hero {
   padding: 26px 28px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-xl);
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
   background:
-    radial-gradient(circle at 8% 12%, rgba(33,191,208,.14), transparent 15rem),
-    linear-gradient(135deg, #f8fdff, #eef9fc);
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.12), transparent 15rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
 }
 
 .support-hero h1,
@@ -719,15 +719,17 @@ body.role-portal-admin .pp-content .admin-panel {
 
 .notification-card-v2 {
   padding: 16px 18px;
-  border-radius: 18px !important;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card) !important;
+  background: var(--pp-surface);
   box-shadow: none;
 }
 
 .notification-card-v2.unread {
   border-color: #b7dceb;
   background:
-    linear-gradient(90deg, rgba(33,191,208,.06), transparent),
-    var(--surface);
+    linear-gradient(90deg, rgba(33,191,208,.07), transparent),
+    var(--pp-surface);
 }
 
 .identity-search-form {
@@ -856,7 +858,27 @@ body.role-portal-admin .pp-content .admin-panel {
   .consultations-hero,
   .conversations-hero,
   .accessibility-overview-hero {
-    padding: 22px;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .notifications-hero h1,
+  .identity-search-hero h1,
+  .verification-admin-hero h1,
+  .consultations-hero h1,
+  .conversations-hero h1,
+  .accessibility-overview-hero h1 {
+    font-size: 24px;
+  }
+
+  .notifications-hero p,
+  .identity-search-hero p,
+  .verification-admin-hero p,
+  .consultations-hero p,
+  .conversations-hero p,
+  .accessibility-overview-hero p {
+    font-size: 13px;
+    line-height: 1.55;
   }
 
   .verification-tabs,
