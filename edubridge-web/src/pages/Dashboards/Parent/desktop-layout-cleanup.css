@@ -196,9 +196,6 @@
     font-size: 14px !important;
   }
 
-  body.parent-dashboard-page .pd-hero-status {
-    margin-top: 9px !important;
-  }
 
   /* Children + progress keep their visual strength, but align heights. */
   body.parent-dashboard-page .pd-child-card {
