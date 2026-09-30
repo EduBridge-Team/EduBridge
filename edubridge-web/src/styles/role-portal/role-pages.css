@@ -1173,3 +1173,139 @@ body.role-portal-admin .pp-content .admin-panel {
     padding: 14px;
   }
 }
+
+
+/* ============================================================
+   Final role-dashboard parity — preserve desktop density while
+   using the same card hierarchy and palette as the Flutter app.
+   ============================================================ */
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background:
+    radial-gradient(circle at 8% 10%, rgba(33,191,208,.11), transparent 15rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero {
+  padding: 24px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero h1 {
+  color: var(--pp-blue-deep);
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero p {
+  color: var(--pp-text);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-eyebrow {
+  color: var(--pp-blue);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+.pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .user-card,
+.pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero-stats article {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: rgba(255,255,255,.72);
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
+.pp-shell:not(.pp-role-parent) .pp-content .tabs {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tab,
+.pp-shell:not(.pp-role-parent) .pp-content .tab {
+  min-height: var(--pp-touch-target);
+  border-radius: var(--pp-radius-compact);
+}
+
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero-stats article {
+  border-color: var(--pp-line);
+  background: var(--pp-surface);
+  color: var(--pp-ink);
+}
+
+@media (max-width: 680px) {
+  .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head {
+    min-height: 0;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero h1 {
+    font-size: 25px;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+  .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+    border-radius: var(--pp-radius-card);
+  }
+}
