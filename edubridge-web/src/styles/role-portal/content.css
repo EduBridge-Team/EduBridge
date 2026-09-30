@@ -392,7 +392,7 @@
 .pcv-heading {
   padding: 18px 20px;
   border: 1px solid var(--pp-line);
-  border-radius: 22px;
+  border-radius: var(--pp-radius-card);
   display: flex;
   justify-content: space-between;
   align-items: center;
