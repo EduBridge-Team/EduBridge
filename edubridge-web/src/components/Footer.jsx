@@ -59,8 +59,8 @@ export default function Footer() {
         <div className="footer-column">
           <h4>تواصل معنا</h4>
           <div className="footer-contact"><MapPin size={16} /> فلسطين</div>
-          <div className="footer-contact"><Headphones size={16} /> دعم متاح على مدار الساعة</div>
-          <a className="footer-contact" href="mailto:ibrahimgandeel@gmail.com">ibrahimgandeel@gmail.com</a>
+          <div className="footer-contact"><Headphones size={16} /> راسل فريق الدعم عبر البريد</div>
+          <a className="footer-contact" href="mailto:support@edubridge.win"><bdi>support@edubridge.win</bdi></a>
         </div>
 
         <div className="footer-column footer-follow">
@@ -89,7 +89,12 @@ export default function Footer() {
       </div>
 
       <div className="footer-copy">
-        EduBridge © 2026
+        <span><bdi>EduBridge © 2026</bdi></span>
+        <nav className="footer-legal" aria-label="سياسات المنصة">
+          <a href="/privacy.html">سياسة الخصوصية</a>
+          <a href="/terms.html">شروط الاستخدام</a>
+          <a href="/delete-account.html">حذف الحساب</a>
+        </nav>
       </div>
     </footer>
   )

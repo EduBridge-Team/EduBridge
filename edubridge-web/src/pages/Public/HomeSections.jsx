@@ -1,18 +1,8 @@
 import { Link } from 'react-router-dom'
-import {
-  ArrowLeft,
-  BadgeCheck,
-  BookOpen,
-  CheckCircle2,
-  Heart,
-  Quote,
-  Star,
-  Users,
-  Volume2,
-} from 'lucide-react'
+import { ArrowLeft, BadgeCheck, CheckCircle2, Mail, MessageCircle } from 'lucide-react'
 import NoorPet from '../../components/Noor/NoorPet'
 import { dashboardFor } from '../../roleRoutes'
-import { AUDIENCES, COMMUNITY_EXPERIENCES, FEATURES, IMPACT, SERVICES } from './homeData'
+import { AUDIENCES, FEATURES, GETTING_STARTED, SERVICES } from './homeData'
 
 export default function HomeSections({ loggedIn, navigate, user }) {
   return (
@@ -25,7 +15,7 @@ export default function HomeSections({ loggedIn, navigate, user }) {
         <div className="audience-grid">
           {AUDIENCES.map((item) => (
             <article className={'audience-card ' + item.tone} key={item.title}>
-              <div className="audience-icon">{item.icon}</div>
+              <div className="audience-icon"><item.Icon size={28} aria-hidden="true" /></div>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
               <ul>{item.points.map((point) => <li key={point}><CheckCircle2 size={16} />{point}</li>)}</ul>
@@ -70,7 +60,7 @@ export default function HomeSections({ loggedIn, navigate, user }) {
 
       <section className="home-section noor-showcase reference-noor">
         <div className="noor-bubbles">
-          <span>👋 كيف أساعد طفلك اليوم؟</span>
+          <span>كيف أساعد طفلك اليوم؟</span>
           <span>أريد أن أتعلم بطريقة أسهل</span>
           <span>يمكنني اقتراح أنشطة مناسبة لك</span>
         </div>
@@ -83,66 +73,38 @@ export default function HomeSections({ loggedIn, navigate, user }) {
         </div>
       </section>
 
-      <section className="home-stats" aria-label="أرقام EduBridge">
-        <div><Users /><b>+50,000</b><span>طفل مستفيد</span></div>
-        <div><BookOpen /><b>+3,000</b><span>معلم ومختص</span></div>
-        <div><Heart /><b>95%</b><span>معدل رضا الأسر</span></div>
-        <div><Volume2 /><b>12+</b><span>دولة حول العالم</span></div>
-      </section>
-
-      <section className="home-section impact-section" aria-labelledby="impact-title">
+      <section className="home-section getting-started-section" aria-labelledby="getting-started-title">
         <div className="section-heading">
-          <div><h2 id="impact-title">تجربة تصنع فرقاً</h2><p>كل جزء في EduBridge مصمم ليجعل رحلة التعلّم أبسط وأكثر ترابطاً</p></div>
+          <div><h2 id="getting-started-title">كيف تبدأ؟</h2><p>ثلاث خطوات للتعرّف على EduBridge واستخدام أدواتها</p></div>
         </div>
-        <div className="impact-grid">
-          {IMPACT.map((item) => (
-            <article className="impact-card" key={item.title}>
-              <span>{item.icon}</span>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
+        <ol className="getting-started-grid">
+          {GETTING_STARTED.map(({ Icon, title, text }, index) => (
+            <li className="getting-started-card" key={title}>
+              <span className="step-number" dir="ltr">{index + 1}</span>
+              <Icon size={26} aria-hidden="true" />
+              <h3>{title}</h3><p>{text}</p>
+            </li>
           ))}
-        </div>
+        </ol>
+        <Link className="btn" to={loggedIn ? dashboardFor(user) : '/register'}>
+          {loggedIn ? 'افتح لوحة حسابك' : 'أنشئ حسابك الآن'} <ArrowLeft size={17} />
+        </Link>
       </section>
 
-      <section className="home-section success-stories-section" aria-labelledby="success-stories-title">
-        <div className="section-heading success-heading">
-          <div>
-            <span className="hero-kicker">تجارب المجتمع</span>
-            <h2 id="success-stories-title">آراء وتقييمات المستخدمين</h2>
-            <p>نعرض التقييمات الحقيقية فقط بعد التحقق منها. لا نستخدم أرقام رضا أو مراجعات مصطنعة.</p>
-          </div>
+      <section className="home-section community-reviews-section" aria-labelledby="community-reviews-title">
+        <div className="section-heading">
+          <div><h2 id="community-reviews-title">آراء المجتمع</h2><p>مساحة لتجارب المستخدمين بعد التحقق منها والحصول على موافقتهم على النشر</p></div>
         </div>
-
-        <div className="reviews-trust-panel">
-          <div className="reviews-stars" aria-label="التقييم العام غير متوفر بعد">
-            {[0, 1, 2, 3, 4].map((star) => <Star key={star} size={22} aria-hidden="true" />)}
-          </div>
+        <div className="reviews-empty-state">
+          <MessageCircle size={32} aria-hidden="true" />
           <div>
-            <b>التقييم العام سيظهر بعد جمع تقييمات موثقة</b>
-            <span><BadgeCheck size={15} /> سيتم تمييز المراجعات الموثقة بوضوح</span>
+            <h3>لم تُنشر تقييمات موثقة بعد</h3>
+            <p>يسعدنا سماع تجربتك. أرسل ملاحظاتك إلى فريق الدعم عبر البريد الإلكتروني.</p>
+            <span className="review-verification-note"><BadgeCheck size={16} aria-hidden="true" /> لا ننشر تجربتك أو اسمك دون موافقتك.</span>
           </div>
-          <a className="btn outline reviews-cta" href="#contact">شاركنا تجربتك</a>
-        </div>
-
-        <div className="success-stories-grid">
-          {COMMUNITY_EXPERIENCES.map((story) => (
-            <article className="success-story-card" key={story.title}>
-              <div className="story-card-topline">
-                <Quote className="story-quote" size={24} aria-hidden="true" />
-                <span className="story-sample-badge">نموذج تجربة</span>
-              </div>
-              <h3>{story.title}</h3>
-              <p>{story.text}</p>
-              <div className="story-person">
-                <span className="story-avatar" aria-hidden="true">{story.avatar}</span>
-                <div>
-                  <b>{story.role}</b>
-                  <small>مثال توضيحي — ليس مراجعة منشورة</small>
-                </div>
-              </div>
-            </article>
-          ))}
+          <a className="btn outline" href={'mailto:support@edubridge.win?subject=' + encodeURIComponent('مشاركة تجربتي مع EduBridge')}>
+            <Mail size={18} /> شاركنا تجربتك عبر البريد
+          </a>
         </div>
       </section>
     </>
