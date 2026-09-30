@@ -28,9 +28,6 @@ export default function ParentDashboardHeader({
             <span><CheckCircle2 size={15} /> تم تحديث بيانات التقدم</span>
           </div>
         </div>
-        <div className="pd-hero-art" aria-hidden="true">
-          <img src="/edubridge-hero-child.webp" alt="" />
-        </div>
         <span className="pd-deco pd-deco-a" aria-hidden="true">✦</span>
         <span className="pd-deco pd-deco-b" aria-hidden="true">✦</span>
         <span className="pd-deco pd-deco-c" aria-hidden="true">+</span>

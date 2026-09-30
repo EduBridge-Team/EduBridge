@@ -209,3 +209,39 @@
     width: 100%;
   }
 }
+
+
+/* Parent hero without decorative child artwork. Keep the copy/search as the sole focus. */
+.pd-hero {
+  min-height: 0;
+  grid-template-columns: 1fr !important;
+  padding: 24px 28px !important;
+}
+
+.pd-hero-copy {
+  width: 100%;
+  max-width: none !important;
+  padding-inline: 0 !important;
+}
+
+.pd-hero-search {
+  width: min(680px, 100%);
+}
+
+@media (max-width: 720px) {
+  .pd-hero {
+    padding: 18px 16px !important;
+  }
+
+  .pd-hero h1 {
+    font-size: clamp(28px, 8vw, 36px);
+  }
+
+  .pd-hero h2 {
+    font-size: clamp(20px, 5.8vw, 25px);
+  }
+
+  .pd-hero p {
+    font-size: 13.5px;
+  }
+}
