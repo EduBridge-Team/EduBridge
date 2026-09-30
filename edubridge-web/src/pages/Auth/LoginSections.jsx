@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export function LoginVisual() {
   return (
@@ -24,11 +25,9 @@ export function LoginCard({
 }) {
   return (
     <div className="auth-card auth-card-branded">
-      <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
-      <h1>EduBridge</h1>
-      <div className="subtitle">جسر تعليمي</div>
-      <div className="tagline">فرص تعلم متساوية للجميع</div>
-      <h2 className="auth-form-title">تسجيل الدخول</h2>
+      <BrandLogo className="auth-brand-logo" />
+      <h1 className="auth-welcome-title">أهلاً بعودتك</h1>
+      <p className="auth-welcome-copy">سجّل الدخول لمتابعة رحلة التعلّم</p>
 
       {successMsg && (
         <div className={successIsError ? 'error-box' : 'success-box'}>
