@@ -495,10 +495,3 @@ body.role-portal-active #root {
   background: rgba(255,255,255,.82);
 }
 
-
-/* Desktop portal shell behavior. The sidebar already includes Noor. */
-@media (min-width: 901px) {
-  body.role-portal-active .noor-launcher {
-    display: none !important;
-  }
-}
