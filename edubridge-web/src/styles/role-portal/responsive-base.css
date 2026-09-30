@@ -1,6 +1,15 @@
 .pp-mobile-brand,
+.pp-mobile-profile,
 .pp-mobile-sidebar-tools {
   display: none;
+}
+
+.pp-shell,
+.pp-sidebar,
+.pp-toolbar,
+.pp-content {
+  direction: rtl;
+  text-align: right;
 }
 
 /* Shared portal responsive rules.
@@ -9,6 +18,10 @@
 @media (max-width: 900px) {
   .pp-mobile-brand {
     display: inline-flex;
+  }
+
+  .pp-mobile-profile {
+    display: grid;
   }
   .pp-shell {
     display: block;
@@ -25,8 +38,7 @@
     padding: 18px 14px;
     transform: translateX(105%);
     transition: transform .22s ease;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     border-left: 0;
     box-shadow: -20px 0 50px rgba(10,56,94,.2);
     scrollbar-width: none;
@@ -84,7 +96,7 @@
   .pp-menu-button {
     position: absolute;
     top: 50%;
-    right: 16px;
+    inset-inline-start: 16px;
     z-index: 2;
     width: 48px;
     height: 48px;
@@ -113,7 +125,7 @@
   .pp-mobile-brand {
     position: absolute;
     top: 50%;
-    left: 16px;
+    inset-inline-end: 16px;
     z-index: 2;
     max-width: 156px;
     padding: 0;
@@ -135,6 +147,38 @@
     object-fit: contain;
     object-position: left center;
     filter: brightness(0) invert(1);
+  }
+
+  .pp-mobile-profile {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 162px;
+    z-index: 3;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    place-items: center;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .pp-mobile-profile .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border: 2px solid #fff;
+    background: #fff;
+    color: var(--brand-teal-deep);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, .16);
+    font-size: 16px;
+  }
+
+  .pp-mobile-profile:focus-visible {
+    outline: 3px solid rgba(255,255,255,.7);
+    outline-offset: 2px;
   }
 
   .pp-profile-avatar {
@@ -275,13 +319,13 @@
   }
 
   .pp-menu-button {
-    right: 10px;
+    inset-inline-start: 10px;
     width: 44px;
     height: 44px;
   }
 
   .pp-mobile-brand {
-    left: 10px;
+    inset-inline-end: 10px;
   }
 
   .pp-mobile-brand-logo {
@@ -289,6 +333,18 @@
     max-width: 132px !important;
     height: 37px !important;
     max-height: 37px !important;
+  }
+
+  .pp-mobile-profile {
+    inset-inline-end: 152px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .pp-mobile-profile .pp-profile-avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
   }
 
   .pp-content {
@@ -385,15 +441,28 @@
   }
 
   .pp-mobile-brand {
-    left: 8px;
-    max-width: 136px;
+    inset-inline-end: 8px;
+    max-width: 126px;
   }
 
   .pp-mobile-brand-logo {
-    width: 128px !important;
-    max-width: 128px !important;
-    height: 36px !important;
-    max-height: 36px !important;
+    width: 118px !important;
+    max-width: 118px !important;
+    height: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .pp-mobile-profile {
+    inset-inline-end: 132px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .pp-mobile-profile .pp-profile-avatar {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    font-size: 15px;
   }
 }
 

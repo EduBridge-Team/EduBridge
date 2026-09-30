@@ -1,11 +1,9 @@
-/* Screenshot polish: keep the desktop dashboard physically aligned like the reference. */
-.parent-dashboard-v2 {
-  direction: ltr;
-}
-
+/* Keep the parent dashboard semantically RTL on every viewport. */
+.parent-dashboard-v2,
 .parent-dashboard-v2 .pd-sidebar,
 .parent-dashboard-v2 .pd-main {
   direction: rtl;
+  text-align: right;
 }
 
 /* Slightly widen the desktop content and keep the hero/cards balanced on narrow desktop-site viewports. */
