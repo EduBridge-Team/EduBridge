@@ -1,13 +1,10 @@
+import AuthVisual from './AuthVisual'
 import { Link } from 'react-router-dom'
 import PasswordField from './PasswordField'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export function LoginVisual() {
-  return (
-    <section className="auth-visual auth-visual-art" aria-label="مرحباً بعودتك إلى EduBridge">
-      <img src="/auth-login.avif" alt="مرحباً بعودتك إلى EduBridge" />
-    </section>
-  )
+  return <AuthVisual />
 }
 
 export function LoginCard({

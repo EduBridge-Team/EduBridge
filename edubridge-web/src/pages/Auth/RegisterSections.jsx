@@ -1,3 +1,4 @@
+import AuthVisual from './AuthVisual'
 import { Link } from 'react-router-dom'
 import PasswordField from './PasswordField'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
@@ -15,11 +16,7 @@ export function RegisterDecor() {
 }
 
 export function RegisterVisual() {
-  return (
-    <section className="auth-visual auth-visual-art" aria-label="ابدأ رحلتك مع EduBridge">
-      <img src="/auth-register.avif" alt="ابدأ رحلتك التعليمية مع EduBridge" />
-    </section>
-  )
+  return <AuthVisual registration />
 }
 
 export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
@@ -29,7 +26,6 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
       <BrandLogo className="auth-brand-logo" />
       <h1 className="auth-welcome-title">ابدأ رحلتك مع EduBridge</h1>
       <p className="auth-welcome-copy">أنشئ حسابك خلال دقيقة، ويمكنك استكمال بياناتك لاحقًا.</p>
-      <h2 className="auth-form-title">بيانات الحساب</h2>
 
       <form className="auth-register-form" onSubmit={onSubmit}>
         <div className="auth-field">
