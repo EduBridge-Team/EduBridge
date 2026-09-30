@@ -1,3 +1,4 @@
+@import "./styles/theme/portal-tokens.css";
 @import "./styles/role-portal/shell.css";
 @import "./styles/role-portal/content.css";
 @import "./styles/role-portal/responsive-base.css";

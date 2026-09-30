@@ -5,7 +5,6 @@ import {
   AboutMissionSection,
   AboutValuesSection,
 } from './AboutSections'
-import './about-page.css'
 
 export default function AboutPage() {
   return (

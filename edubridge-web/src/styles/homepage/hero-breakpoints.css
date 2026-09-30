@@ -1,0 +1,48 @@
+/* HQ transparent hero: give the artwork more visual weight without affecting mobile text. */
+@media (min-width: 1025px) {
+  .reference-home .reference-hero {
+    grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr);
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .reference-hero-art {
+    width: 100%;
+    max-width: 760px;
+    justify-self: center;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 760px;
+    filter: drop-shadow(0 20px 44px rgba(25, 111, 173, .10));
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1024px) {
+  .reference-home .reference-hero {
+    grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr);
+    gap: 18px;
+  }
+
+  .reference-hero-art {
+    width: 100%;
+    max-width: 700px;
+    justify-self: center;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 780px) {
+  .reference-hero-art {
+    width: 100%;
+  }
+
+  .reference-hero-image {
+    width: 100%;
+    max-width: 680px;
+  }
+}

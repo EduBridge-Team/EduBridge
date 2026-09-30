@@ -1,0 +1,159 @@
+/* المسارات التعليمية */
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.program-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.12s, border-color 0.12s;
+}
+
+.program-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--teal);
+}
+
+.program-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.program-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+}
+
+.program-card:nth-child(2) .program-icon {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.program-card:nth-child(3) .program-icon {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.program-tag {
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+    border-radius: 999px;
+    padding: 4px 13px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.program-card:nth-child(2) .program-tag {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.program-card:nth-child(3) .program-tag {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.program-card h3 {
+    margin: 2px 0 0;
+    font-size: 19px;
+}
+
+.program-card p {
+    color: var(--muted);
+    flex: 1;
+    line-height: 1.75;
+    margin: 0;
+    font-size: 15px;
+}
+
+
+/* شريط ميزات الوصول */
+
+.access-band {
+    background: var(--navy);
+    color: #fff;
+    padding: 52px 32px;
+    margin: 0 24px 44px;
+    border-radius: 22px;
+    max-width: 1112px;
+    margin-inline: auto;
+}
+
+.access-band h2 {
+    color: #fff;
+    font-size: 26px;
+    margin: 0 0 28px;
+}
+
+.access-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 28px;
+}
+
+.access-icon {
+    display: flex;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.access-item h3 {
+    color: #fff;
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.access-item p {
+    opacity: 0.82;
+    line-height: 1.75;
+    margin: 0;
+    font-size: 14.5px;
+}
+
+
+/* النشرة البريدية */
+
+.newsletter {
+    text-align: center;
+}
+
+.newsletter .muted {
+    color: var(--muted);
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.newsletter-form input {
+    max-width: 340px;
+}
+
+
+/* التذييل */
+
+
+/* خط قوس قزح فوق سطر الحقوق — لمسة الهوية */
+
+
+/* ============================================================
+   لوحة التحكم الإدارية
+   ============================================================ */

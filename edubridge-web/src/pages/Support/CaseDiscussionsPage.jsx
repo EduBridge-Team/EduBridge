@@ -14,7 +14,6 @@ import {
   CaseDiscussionDetail,
   CaseDiscussionList,
 } from './CaseDiscussionSections'
-import '../../feature-parity.css'
 
 export default function CaseDiscussionsPage() {
   const me = getUser()

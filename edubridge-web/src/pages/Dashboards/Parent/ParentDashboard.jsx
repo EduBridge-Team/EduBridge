@@ -7,7 +7,6 @@ import ParentLowerSections from './ParentLowerSections'
 import ParentProgressSection from './ParentProgressSection'
 import { useParentDashboardPageClass, useSharedSidebarSync } from './hooks'
 import useParentDashboardData from './useParentDashboardData'
-import './ParentDashboard.css'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()

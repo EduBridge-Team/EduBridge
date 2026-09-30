@@ -9,7 +9,6 @@ import {
   WeeklyReportForm,
   WeeklyReportsGrid,
 } from './WeeklyReportSections'
-import '../../feature-parity.css'
 
 function currentMonday() {
   const date = new Date()

@@ -1,0 +1,33 @@
+/* Care team + case discussions */
+.care-team-form-card,
+.case-create-card,
+.case-detail-card {
+  padding: 20px;
+}
+
+.care-team-member-card,
+.case-list-card,
+.case-detail-card {
+  border-radius: var(--r-lg);
+}
+
+.case-list-card {
+  width: 100%;
+  color: var(--ink);
+  font: inherit;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.case-list-card:hover {
+  transform: translateY(-1px);
+  border-color: #bdddeb;
+  box-shadow: 0 10px 24px rgba(23,105,194,.07);
+}
+
+.case-detail-card .fp-message {
+  border-radius: 16px;
+}
+
+:root[data-theme="dark"] .case-list-card {
+  color: #eef8ff;
+}

@@ -1,0 +1,141 @@
+/* Search / consultations / support / notifications / verification pages */
+.pp-content .search-row {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--pp-line);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(21,91,147,.04);
+}
+
+.pp-content .search-row input {
+  margin: 0;
+  min-height: 48px;
+}
+
+.pp-content .search-row .btn {
+  min-width: 112px;
+}
+
+.pp-content .search-result,
+.pp-content .ticket,
+.pp-content .verify-row,
+.pp-content .cert-item,
+.pp-content .note-item {
+  border-color: var(--pp-line);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(21,91,147,.045);
+}
+
+.pp-content .search-result,
+.pp-content .verify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.pp-content .search-result-side,
+.pp-content .verify-actions,
+.pp-content .actions,
+.pp-content .consult-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pp-content .consult-detail,
+.pp-content .admin-reply,
+.pp-content .cert-add {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #dceaf4;
+  border-radius: 14px;
+  background: #f7fbfe;
+}
+
+.pp-content .notes-list,
+.pp-content .cert-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pp-content .note-add {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.pp-content .note-add textarea {
+  margin: 0;
+}
+
+.pp-content .tabs {
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+@media (min-width: 681px) and (max-width: 1120px) {
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .pp-content .portal-lessons-page .daily-picks > .daily-picks-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .pp-content .portal-lessons-page {
+    padding-bottom: 20px;
+  }
+
+  .pp-content .portal-lessons-page .lessons-hero {
+    padding: 22px 14px 18px;
+    border-radius: 20px;
+  }
+
+  .pp-content .portal-lessons-page .lesson-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pp-content .portal-lessons-page .lesson-card-actions,
+  .pp-content .search-row,
+  .pp-content .note-add {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-content .portal-lessons-page .lesson-card-actions > .btn,
+  .pp-content .portal-lessons-page .lesson-ratings > button,
+  .pp-content .search-row .btn {
+    width: 100%;
+  }
+
+  .pp-content .portal-lessons-page .daily-picks > .daily-picks-head,
+  .pp-content .search-result,
+  .pp-content .verify-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pp-content .search-result-side,
+  .pp-content .verify-actions {
+    width: 100%;
+  }
+}

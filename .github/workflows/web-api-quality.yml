@@ -280,6 +280,9 @@ jobs:
       - name: Lint website
         if: needs.changes.outputs.web == 'true'
         run: npm run lint
+      - name: Test website navigation and lazy routes
+        if: needs.changes.outputs.web == 'true'
+        run: npm test
       - name: Build website
         if: needs.changes.outputs.web == 'true'
         env:

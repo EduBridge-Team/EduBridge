@@ -4,7 +4,7 @@ Keep styles with their owner instead of adding page-specific overrides to global
 
 | Owner | Location | Responsibility |
 | --- | --- | --- |
-| Shared theme | `theme/tokens.css` | Global light/dark color and surface tokens |
+| Shared theme | `theme/tokens.css`, `theme/portal-tokens.css` | Global and portal light/dark tokens |
 | Header | `components/topbar.css` | Entry point for base, guest navigation, and shared dimensions |
 | Footer | `components/footer.css` | Footer layout, colors, links, and responsive rules |
 | Authentication | `auth/` | Forms, split layout, artwork, and interaction refinements |
@@ -27,4 +27,9 @@ Keep media queries with their component. Check asset references across the repos
 before removing public files; the homepage fallback and About image are intentional.
 
 After a structural change, run `npm run build`, `npm run lint`, and
-`node --test tests/hash-navigation.test.mjs` from `edubridge-web`.
+`node --test tests/*.test.mjs` from `edubridge-web`.
+
+`styles/routes.css` eagerly loads shared page CSS in a fixed order. Route components
+use `React.lazy` in `AppRoutes.jsx`; keep shared CSS here when adding a lazy route
+to prevent navigation order from changing the cascade. The homepage remains eager
+so section links can find their targets immediately.
