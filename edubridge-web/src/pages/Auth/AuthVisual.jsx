@@ -1,11 +1,8 @@
-import BrandLogo from '../../components/BrandLogo/BrandLogo'
-
-export default function AuthVisual({ registration = false }) {
+export default function AuthVisual() {
   return (
     <section className="auth-visual auth-visual-art" aria-label="رحلة التعلم مع EduBridge">
       <div className="auth-art-heading">
-        <BrandLogo className="auth-art-logo" />
-        <h2>{registration ? 'ابدأ رحلتك معنا' : 'مرحباً بعودتك'}</h2>
+        <h2>معاً، خطوة نحو تعلّم أفضل</h2>
         <p>تعلّم ودعم لكل طفل، خطوة بخطوة.</p>
       </div>
       <img

@@ -101,7 +101,7 @@
   }
   .auth-page .auth-visual-art {
     min-height: 0;
-    padding: 24px 20px 0;
+    padding: 24px 20px;
     flex-direction: column;
     gap: 16px;
     border-inline-end: 1px solid var(--line);
@@ -109,10 +109,11 @@
   .auth-page .auth-visual-art > img {
     width: min(100%, 340px);
     height: auto;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1;
     min-height: 0;
     max-height: 420px;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center bottom;
     background: transparent;
     border-radius: 16px;
   }
@@ -137,16 +138,9 @@
 
 
 .auth-art-heading { position: relative; z-index: 1; text-align: center; }
-.auth-visual .auth-art-logo {
-  width: 152px;
-  height: 38px;
-  object-fit: contain;
-  margin: 0 auto 10px;
-  display: block;
-}
 .auth-art-heading h2 { margin: 0; color: var(--navy); font-size: 26px; line-height: 1.4; }
 .auth-art-heading p { margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
-.auth-page-decor { opacity: .45; }
+.auth-page-decor { opacity: .16; }
 .auth-page-register .auth-card-branded .auth-welcome-title { font-size: 24px; }
 .auth-page-register .auth-card-branded .auth-welcome-copy { font-size: 13px; }
 .auth-page-register .auth-card-branded > .link-btn { margin-top: 12px; }
@@ -158,3 +152,20 @@
 }
 :root[data-theme="dark"] .auth-art-heading h2 { color: #f1f7fc; }
 :root[data-theme="dark"] .auth-art-heading p { color: #91a8ba; }
+
+/* Keep the illustration comfortably inside the card and focus its people. */
+.auth-art-heading { flex-shrink: 0; }
+.auth-art-heading h2 { max-width: 340px; font-size: 24px; line-height: 1.5; }
+.auth-page .auth-visual-art > img { flex-shrink: 0; }
+.auth-card-branded .auth-field .auth-field-hint { margin-top: 6px; font-size: 11.5px; }
+.auth-page-login .auth-card-branded > :not(.auth-brand-logo) {
+  width: min(100%, 420px);
+  margin-inline: auto;
+}
+.auth-page-login .auth-card-branded > .auth-secondary-action,
+.auth-page-login .auth-card-branded > .link-btn { width: fit-content; max-width: 420px; }
+@media (min-width: 821px) {
+  .auth-page {
+    background: radial-gradient(circle at 12% 18%, rgba(37,185,218,.045), transparent 24rem);
+  }
+}
