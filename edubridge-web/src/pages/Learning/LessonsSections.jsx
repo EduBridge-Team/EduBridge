@@ -14,7 +14,6 @@ export const LESSON_VISUALS = [
   { icon: '🔢', cls: 'purple' },
   { icon: '🌱', cls: 'green' },
   { icon: '🧑‍🤝‍🧑', cls: 'aqua' },
-  { icon: '🎧', cls: 'violet' },
   { icon: '🎨', cls: 'peach' },
 ]
 

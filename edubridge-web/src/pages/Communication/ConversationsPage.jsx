@@ -134,7 +134,7 @@ export default function ConversationsPage() {
           <section className="pcv-controls">
             <label className="pcv-search">
               <Search size={18} />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث في المحادثات..." />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث في المحادثات..." aria-label="البحث في المحادثات" />
             </label>
             <div className="pcv-tabs">
               {FILTERS.map((item) => (
