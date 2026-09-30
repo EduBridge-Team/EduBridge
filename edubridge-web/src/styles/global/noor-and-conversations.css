@@ -62,6 +62,8 @@
 
 .noor-panel {
     width: min(390px, calc(100vw - 28px));
+    direction: rtl;
+    text-align: right;
     height: min(590px, calc(100vh - 100px));
     min-height: 390px;
     background: var(--surface);
@@ -309,6 +311,8 @@
 
 .noor-form textarea {
     flex: 1;
+    direction: rtl;
+    text-align: right;
     min-height: 44px;
     max-height: 110px;
     resize: vertical;
