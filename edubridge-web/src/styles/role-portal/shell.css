@@ -1,15 +1,25 @@
 /* Parent portal shared web shell */
 :root {
-  --pp-blue: var(--brand-blue);
-  --pp-blue-deep: var(--brand-blue-deep);
-  --pp-cyan: var(--brand-teal);
-  --pp-teal: var(--brand-teal-light);
-  --pp-ink: var(--navy);
-  --pp-text: var(--muted);
-  --pp-line: var(--line);
-  --pp-soft: var(--surface-soft);
-  --pp-card: rgba(255,255,255,.96);
-  --pp-shadow: var(--shadow-soft);
+  /* Flutter parity tokens — mirror AppColors + Material 3 component geometry. */
+  --pp-blue: #1769c2;
+  --pp-blue-deep: #0d55aa;
+  --pp-cyan: #21bfd0;
+  --pp-teal: #69d4ca;
+  --pp-green: #7be49a;
+  --pp-bg: #f6f9fc;
+  --pp-surface: #ffffff;
+  --pp-soft: #f0f6fb;
+  --pp-ink: #102a43;
+  --pp-body: #294861;
+  --pp-text: #637b92;
+  --pp-line: #dce8f1;
+  --pp-card: #ffffff;
+  --pp-radius-card: 24px;
+  --pp-radius-control: 18px;
+  --pp-radius-compact: 14px;
+  --pp-control-height: 56px;
+  --pp-touch-target: 44px;
+  --pp-shadow: 0 10px 28px rgba(23,105,194,.07);
 }
 
 .topbar.parent-portal-global-topbar,
@@ -20,7 +30,7 @@
 html.role-portal-active,
 body.role-portal-active {
   min-height: 100dvh !important;
-  background: #f7fbfe;
+  background: var(--pp-bg);
   overflow-x: clip;
 }
 
@@ -36,8 +46,8 @@ body.role-portal-active #root {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 236px;
   background:
-    radial-gradient(circle at 12% 5%, rgba(37,191,212,.09), transparent 26rem),
-    linear-gradient(180deg, #fbfdff 0%, #f5fbff 100%);
+    radial-gradient(circle at 12% 5%, rgba(33,191,208,.08), transparent 26rem),
+    linear-gradient(180deg, #f9fbfd 0%, var(--pp-bg) 100%);
   color: var(--pp-ink);
 }
 
@@ -405,7 +415,7 @@ body.role-portal-active #root {
   margin: 0 0 6px;
   padding: 18px 20px;
   border: 1px solid var(--pp-line);
-  border-radius: 20px;
+  border-radius: var(--pp-radius-card);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -434,25 +444,55 @@ body.role-portal-active #root {
 .pp-content .consultation-card,
 .pp-content .access-child-card {
   border-color: var(--pp-line);
-  border-radius: 18px;
-  box-shadow: 0 10px 28px rgba(21,91,147,.05);
+  border-radius: var(--pp-radius-card);
+  background-color: var(--pp-surface);
+  box-shadow: none;
 }
 
-.pp-content .btn {
-  border-radius: 12px;
+.pp-content .btn:not(.small) {
+  min-height: var(--pp-control-height);
+  padding-inline: 22px;
+  border-radius: var(--pp-radius-control);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.pp-content .btn.small {
+  min-height: var(--pp-touch-target);
+  border-radius: var(--pp-radius-compact);
 }
 
 .pp-content input,
 .pp-content select,
 .pp-content textarea {
-  border-radius: 12px;
-  border-color: #d9e8f2;
+  border-radius: var(--pp-radius-control);
+  border-color: var(--pp-line);
+  background-color: var(--pp-surface);
+}
+
+.pp-content input:not([type="checkbox"]):not([type="radio"]),
+.pp-content select {
+  min-height: var(--pp-control-height);
+  padding-inline: 18px;
+}
+
+.pp-content textarea {
+  min-height: 112px;
+  padding: 16px 18px;
+}
+
+.pp-content input:focus,
+.pp-content select:focus,
+.pp-content textarea:focus {
+  border-color: var(--pp-cyan);
+  box-shadow: 0 0 0 3px rgba(33,191,208,.14);
+  outline: 0;
 }
 
 .pp-content .state {
-  border: 1px dashed #cfe2ee;
-  border-radius: 18px;
-  background: rgba(255,255,255,.78);
+  border: 1px dashed var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: rgba(255,255,255,.82);
 }
 
 

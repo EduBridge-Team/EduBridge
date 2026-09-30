@@ -557,12 +557,12 @@ body.role-portal-admin .pp-content .admin-panel {
 .support-hero,
 .verify-hero {
   padding: 26px 28px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-xl);
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
   background:
-    radial-gradient(circle at 8% 12%, rgba(33,191,208,.14), transparent 15rem),
-    linear-gradient(135deg, #f8fdff, #eef9fc);
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.12), transparent 15rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
 }
 
 .support-hero h1,
@@ -719,15 +719,17 @@ body.role-portal-admin .pp-content .admin-panel {
 
 .notification-card-v2 {
   padding: 16px 18px;
-  border-radius: 18px !important;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card) !important;
+  background: var(--pp-surface);
   box-shadow: none;
 }
 
 .notification-card-v2.unread {
   border-color: #b7dceb;
   background:
-    linear-gradient(90deg, rgba(33,191,208,.06), transparent),
-    var(--surface);
+    linear-gradient(90deg, rgba(33,191,208,.07), transparent),
+    var(--pp-surface);
 }
 
 .identity-search-form {
@@ -856,7 +858,27 @@ body.role-portal-admin .pp-content .admin-panel {
   .consultations-hero,
   .conversations-hero,
   .accessibility-overview-hero {
-    padding: 22px;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .notifications-hero h1,
+  .identity-search-hero h1,
+  .verification-admin-hero h1,
+  .consultations-hero h1,
+  .conversations-hero h1,
+  .accessibility-overview-hero h1 {
+    font-size: 24px;
+  }
+
+  .notifications-hero p,
+  .identity-search-hero p,
+  .verification-admin-hero p,
+  .consultations-hero p,
+  .conversations-hero p,
+  .accessibility-overview-hero p {
+    font-size: 13px;
+    line-height: 1.55;
   }
 
   .verification-tabs,
@@ -867,5 +889,423 @@ body.role-portal-admin .pp-content .admin-panel {
   .verification-tabs .tab,
   .verification-status-tabs .tab {
     flex: 0 0 auto;
+  }
+}
+
+
+/* ============================================================
+   Final Flutter parity pass — shared portal utility surfaces
+   Scoped to the role portal so public/desktop marketing UI stays intact.
+   ============================================================ */
+.pp-content .identity-search-hero,
+.pp-content .verification-admin-hero,
+.pp-content .consultations-hero,
+.pp-content .accessibility-overview-hero,
+.pp-content .verify-hero {
+  padding: 22px 24px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.11), transparent 14rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
+}
+
+.pp-content .identity-search-hero h1,
+.pp-content .verification-admin-hero h1,
+.pp-content .consultations-hero h1,
+.pp-content .accessibility-overview-hero h1,
+.pp-content .verify-hero h1 {
+  color: var(--pp-blue-deep);
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.pp-content .identity-search-hero p,
+.pp-content .verification-admin-hero p,
+.pp-content .consultations-hero p,
+.pp-content .accessibility-overview-hero p,
+.pp-content .verify-hero p {
+  color: var(--pp-text);
+}
+
+.pp-content .identity-search-form,
+.pp-content .identity-search-result,
+.pp-content .verify-card,
+.pp-content .consultation-request-card,
+.pp-content .consultation-card-v2 {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card) !important;
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.pp-content .identity-search-form {
+  padding: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.pp-content .identity-search-form input {
+  min-height: var(--pp-control-height);
+  border-radius: var(--pp-radius-control);
+}
+
+.pp-content .identity-search-form .btn {
+  min-width: 116px;
+}
+
+.pp-content .identity-search-result {
+  min-height: 82px;
+  padding: 16px 18px;
+}
+
+.pp-content .verification-tabs,
+.pp-content .verification-status-tabs {
+  padding: 5px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+.pp-content .verification-tabs .tab,
+.pp-content .verification-status-tabs .tab {
+  min-height: var(--pp-touch-target);
+  border-radius: var(--pp-radius-compact);
+}
+
+.pp-content .verify-card,
+.pp-content .consultation-request-card,
+.pp-content .consultation-card-v2 {
+  padding: 20px;
+}
+
+.pp-content .verify-card input[type="file"] {
+  min-height: var(--pp-control-height);
+  padding: 7px;
+  border: 1px dashed var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-soft);
+}
+
+.pp-content .verify-card input[type="file"]::file-selector-button {
+  min-height: 40px;
+  margin-inline-end: 10px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--pp-radius-compact);
+  background: var(--pp-blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pp-content .verify-card .file-link {
+  min-height: var(--pp-touch-target);
+  padding: 8px 12px;
+  border-radius: var(--pp-radius-compact);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pp-content .verify-card .cert-add,
+.pp-content .consult-detail {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-soft);
+}
+
+.pp-content .consultation-request-card label,
+.pp-content .verify-card label {
+  color: var(--pp-body);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.pp-content .consultation-card-v2 .consult-detail {
+  margin-top: 14px;
+  padding: 16px;
+}
+
+.pp-content .accessibility-overview-v2 .access-children-grid {
+  gap: 12px;
+}
+
+.pp-content .accessibility-overview-v2 .access-child-card {
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.pp-content .accessibility-overview-v2 .access-child-card:hover {
+  border-color: rgba(33,191,208,.65);
+  box-shadow: 0 10px 24px rgba(23,105,194,.06);
+}
+
+.pp-content .accessibility-overview-v2 .access-child-card .avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border-radius: var(--pp-radius-control);
+  display: grid;
+  place-items: center;
+  background: rgba(33,191,208,.10);
+  font-size: 27px;
+}
+
+.pp-content .accessibility-overview-v2 .access-card-action {
+  min-height: var(--pp-touch-target);
+  padding: 0 10px;
+  border-radius: var(--pp-radius-compact);
+  color: var(--pp-blue);
+  background: rgba(23,105,194,.06);
+}
+
+.pp-content .games-page-v2 .games-page-toolbar {
+  border-radius: var(--pp-radius-card);
+}
+
+.pp-content .games-page-v2 .games-hero {
+  padding: 22px 24px;
+  border-radius: var(--pp-radius-card);
+  background: linear-gradient(135deg, #1769c2 0%, #0d55aa 55%, #21bfd0 100%);
+  box-shadow: none;
+}
+
+.pp-content .games-page-v2 .game-card {
+  min-height: 96px;
+  padding: 16px;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.pp-content .games-page-v2 .game-card:hover {
+  border-color: rgba(33,191,208,.65);
+  box-shadow: 0 10px 24px rgba(23,105,194,.06);
+}
+
+.pp-content .games-page-v2 .game-emoji {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--pp-radius-control);
+}
+
+:root[data-theme="dark"] .pp-content .identity-search-hero,
+:root[data-theme="dark"] .pp-content .verification-admin-hero,
+:root[data-theme="dark"] .pp-content .consultations-hero,
+:root[data-theme="dark"] .pp-content .accessibility-overview-hero,
+:root[data-theme="dark"] .pp-content .verify-hero,
+:root[data-theme="dark"] .pp-content .identity-search-form,
+:root[data-theme="dark"] .pp-content .identity-search-result,
+:root[data-theme="dark"] .pp-content .verify-card,
+:root[data-theme="dark"] .pp-content .consultation-request-card,
+:root[data-theme="dark"] .pp-content .consultation-card-v2,
+:root[data-theme="dark"] .pp-content .accessibility-overview-v2 .access-child-card,
+:root[data-theme="dark"] .pp-content .games-page-v2 .game-card {
+  border-color: var(--pp-line);
+  background: var(--pp-surface);
+  color: var(--pp-ink);
+}
+
+:root[data-theme="dark"] .pp-content .verify-card input[type="file"],
+:root[data-theme="dark"] .pp-content .verify-card .cert-add,
+:root[data-theme="dark"] .pp-content .consult-detail {
+  border-color: var(--pp-line);
+  background: var(--pp-soft);
+}
+
+@media (max-width: 680px) {
+  .pp-content .identity-search-hero,
+  .pp-content .verification-admin-hero,
+  .pp-content .consultations-hero,
+  .pp-content .accessibility-overview-hero,
+  .pp-content .verify-hero {
+    padding: 16px;
+  }
+
+  .pp-content .identity-search-hero h1,
+  .pp-content .verification-admin-hero h1,
+  .pp-content .consultations-hero h1,
+  .pp-content .accessibility-overview-hero h1,
+  .pp-content .verify-hero h1 {
+    font-size: 24px;
+  }
+
+  .pp-content .identity-search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-content .identity-search-form .btn {
+    width: 100%;
+  }
+
+  .pp-content .identity-search-result {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pp-content .accessibility-overview-v2 .access-child-card {
+    min-height: 84px;
+    padding: 14px;
+  }
+
+  .pp-content .accessibility-overview-v2 .access-card-action {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pp-content .games-page-v2 .games-hero {
+    padding: 18px 16px;
+  }
+
+  .pp-content .games-page-v2 .games-hero > span {
+    font-size: 44px;
+  }
+
+  .pp-content .games-page-v2 .game-card {
+    min-height: 88px;
+    padding: 14px;
+  }
+}
+
+
+/* ============================================================
+   Final role-dashboard parity — preserve desktop density while
+   using the same card hierarchy and palette as the Flutter app.
+   ============================================================ */
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background:
+    radial-gradient(circle at 8% 10%, rgba(33,191,208,.11), transparent 15rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero {
+  padding: 24px;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero h1,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero h1 {
+  color: var(--pp-blue-deep);
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .teacher-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .ministry-hero p,
+.pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero p {
+  color: var(--pp-text);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .role-eyebrow {
+  color: var(--pp-blue);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+.pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+.pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+.pp-shell:not(.pp-role-parent) .pp-content .user-card,
+.pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+.pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .specialist-hero-stats article {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: rgba(255,255,255,.72);
+  box-shadow: none;
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tabs,
+.pp-shell:not(.pp-role-parent) .pp-content .tabs {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+.pp-shell:not(.pp-role-parent) .pp-content .admin-tab,
+.pp-shell:not(.pp-role-parent) .pp-content .tab {
+  min-height: var(--pp-touch-target);
+  border-radius: var(--pp-radius-compact);
+}
+
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button,
+:root[data-theme="dark"] .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero-stats article {
+  border-color: var(--pp-line);
+  background: var(--pp-surface);
+  color: var(--pp-ink);
+}
+
+@media (max-width: 680px) {
+  .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .dash-head {
+    min-height: 0;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .teacher-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .ministry-hero h1,
+  .pp-shell:not(.pp-role-parent) .pp-content .role-dashboard .role-hero h1 {
+    font-size: 25px;
+  }
+
+  .pp-shell:not(.pp-role-parent) .pp-content .summary-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .specialist-summary-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .progress-row,
+  .pp-shell:not(.pp-role-parent) .pp-content .admin-panel,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-panel,
+  .pp-shell:not(.pp-role-parent) .pp-content .user-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .lesson-card,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-metrics article,
+  .pp-shell:not(.pp-role-parent) .pp-content .institution-actions button {
+    border-radius: var(--pp-radius-card);
   }
 }

@@ -266,7 +266,6 @@
     gap: 8px;
   }
 
-  .pp-menu-button,
   .pp-notification,
   .pp-profile-avatar {
     width: 40px;
@@ -315,27 +314,32 @@
    Complete dark theme for the shared role portal
    ============================================================ */
 :root[data-theme="dark"] {
-  --pp-blue: #59b8ff;
-  --pp-blue-deep: #d8efff;
-  --pp-cyan: #42cde0;
-  --pp-teal: #55d7c8;
-  --pp-ink: #eef8ff;
-  --pp-text: #a9c0d4;
-  --pp-line: #214663;
-  --pp-soft: #0b2945;
-  --pp-card: rgba(13, 41, 71, .96);
-  --pp-shadow: 0 16px 42px rgba(0, 0, 0, .24);
+  /* Flutter dark theme parity — buildJisrDarkTheme(). */
+  --pp-blue: #21bfd0;
+  --pp-blue-deep: #69d4ca;
+  --pp-cyan: #21bfd0;
+  --pp-teal: #69d4ca;
+  --pp-green: #7be49a;
+  --pp-bg: #091a28;
+  --pp-surface: #142a3c;
+  --pp-soft: #102b3f;
+  --pp-ink: #f1f7fc;
+  --pp-body: #d2dfea;
+  --pp-text: #91a8ba;
+  --pp-line: #263e54;
+  --pp-card: #142a3c;
+  --pp-shadow: none;
 }
 
 :root[data-theme="dark"] body.role-portal-active,
 :root[data-theme="dark"] html.role-portal-active {
-  background: #071d35 !important;
+  background: var(--pp-bg) !important;
 }
 
 :root[data-theme="dark"] .pp-shell {
   background:
-    radial-gradient(circle at 12% 5%, rgba(37,191,212,.08), transparent 26rem),
-    linear-gradient(180deg, #071d35 0%, #09243f 100%);
+    radial-gradient(circle at 12% 5%, rgba(33,191,208,.08), transparent 26rem),
+    linear-gradient(180deg, var(--pp-bg) 0%, #0d2232 100%);
   color: var(--pp-ink);
 }
 
@@ -387,6 +391,31 @@
 
 :root[data-theme="dark"] .pp-global-search button {
   color: #9db7cb;
+}
+
+@media (max-width: 900px) {
+  :root[data-theme="dark"] .pp-toolbar {
+    border-bottom-color: transparent;
+    background: linear-gradient(
+      to bottom left,
+      var(--brand-blue) 0%,
+      var(--brand-blue-deep) 55%,
+      var(--brand-teal) 100%
+    );
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+  }
+
+  :root[data-theme="dark"] .pp-menu-button {
+    border-color: transparent;
+    background: transparent;
+    color: #fff;
+  }
+
+  :root[data-theme="dark"] .pp-menu-button:hover,
+  :root[data-theme="dark"] .pp-menu-button:focus-visible {
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+  }
 }
 
 :root[data-theme="dark"] .pp-profile {

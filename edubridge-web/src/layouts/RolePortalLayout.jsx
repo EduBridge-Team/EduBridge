@@ -194,6 +194,55 @@ export default function RolePortalLayout({ children }) {
           ))}
         </nav>
 
+        <div className="pp-mobile-sidebar-tools">
+          <button
+            type="button"
+            className="pp-mobile-account-card"
+            onClick={() => {
+              setDrawerOpen(false)
+              navigate('/profile')
+            }}
+            aria-label="فتح الملف الشخصي"
+          >
+            <span className="pp-profile-avatar">
+              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+            </span>
+            <span className="pp-mobile-account-copy">
+              <strong>{user?.name || roleName}</strong>
+              <small>{roleName}</small>
+            </span>
+            <ChevronDown size={16} />
+          </button>
+
+          <div className="pp-mobile-quick-actions" aria-label="إجراءات سريعة">
+            <button
+              type="button"
+              onClick={() => {
+                setDrawerOpen(false)
+                navigate('/notifications')
+              }}
+              aria-label="الإشعارات"
+            >
+              <Bell size={19} />
+              <span>الإشعارات</span>
+              {unread > 0 && <em>{Math.min(unread, 99)}</em>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const next = dark ? 'light' : 'dark'
+                toggleTheme()
+                updateSettings({ theme_mode: next }).catch(() => {})
+              }}
+              aria-label={dark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الليلي'}
+            >
+              {dark ? <Sun size={19} /> : <Moon size={19} />}
+              <span>{dark ? 'الوضع الفاتح' : 'الوضع الليلي'}</span>
+            </button>
+          </div>
+        </div>
+
         <button type="button" className="pp-noor-card" onClick={openNoor} aria-label="فتح المساعد نور">
           <span className="pp-noor-avatar" aria-hidden="true">
             <NoorPet size={92} trackMouse />

@@ -1,4 +1,5 @@
-.pp-mobile-brand {
+.pp-mobile-brand,
+.pp-mobile-sidebar-tools {
   display: none;
 }
 
@@ -65,39 +66,44 @@
 
   .pp-toolbar {
     position: sticky;
-    min-height: 68px;
-    padding: 10px 16px;
+    min-height: 72px;
+    height: 72px;
+    padding: 0 16px;
     display: block;
-  }
-
-  .pp-menu-button,
-  .pp-profile {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
+    border-bottom: 0;
+    background: linear-gradient(
+      to bottom left,
+      var(--brand-blue) 0%,
+      var(--brand-blue-deep) 55%,
+      var(--brand-teal) 100%
+    );
+    box-shadow: 0 8px 22px rgba(13, 85, 170, .18);
+    backdrop-filter: none;
   }
 
   .pp-menu-button {
+    position: absolute;
+    top: 50%;
     right: 16px;
-    width: 42px;
-    height: 42px;
-    border: 1px solid var(--pp-line);
-    border-radius: 12px;
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 14px;
     display: grid;
     place-items: center;
-    background: #fff;
-    color: var(--pp-blue);
+    background: transparent;
+    color: #fff;
   }
 
-  .pp-profile {
-    left: 16px;
-    min-width: auto;
-    padding: 0;
+  .pp-menu-button:hover,
+  .pp-menu-button:focus-visible {
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
   }
 
-  .pp-profile-copy,
-  .pp-profile > svg,
+  .pp-profile,
   .pp-global-search,
   .pp-theme-toggle,
   .pp-notification {
@@ -107,23 +113,28 @@
   .pp-mobile-brand {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    max-width: calc(100% - 132px);
+    left: 16px;
+    z-index: 2;
+    max-width: 156px;
     padding: 0;
+    transform: translateY(-50%);
     border: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
     background: transparent;
     cursor: pointer;
   }
 
   .pp-mobile-brand-logo {
     display: block;
-    width: 128px !important;
-    max-width: 128px !important;
+    width: 136px !important;
+    max-width: 136px !important;
     height: 38px !important;
     max-height: 38px !important;
     object-fit: contain;
+    object-position: left center;
+    filter: brightness(0) invert(1);
   }
 
   .pp-profile-avatar {
@@ -135,6 +146,94 @@
     height: 100%;
     display: block;
     object-fit: cover;
+  }
+
+  .pp-mobile-sidebar-tools {
+    display: grid;
+    gap: 8px;
+    margin-top: 2px;
+    padding-top: 8px;
+    border-top: 1px solid var(--pp-line);
+  }
+
+  .pp-mobile-account-card {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px 10px;
+    border: 1px solid var(--pp-line);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(23, 105, 194, .055);
+    color: var(--pp-ink);
+    font: inherit;
+    text-align: right;
+    cursor: pointer;
+  }
+
+  .pp-mobile-account-card .pp-profile-avatar {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .pp-mobile-account-copy {
+    min-width: 0;
+    flex: 1;
+    display: grid;
+    gap: 2px;
+  }
+
+  .pp-mobile-account-copy strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .pp-mobile-account-copy small {
+    color: var(--pp-text);
+    font-size: 10px;
+  }
+
+  .pp-mobile-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .pp-mobile-quick-actions > button {
+    position: relative;
+    min-height: 42px;
+    padding: 7px 9px;
+    border: 1px solid var(--pp-line);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: rgba(23, 105, 194, .045);
+    color: var(--pp-blue);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .pp-mobile-quick-actions > button > em {
+    min-width: 18px;
+    height: 18px;
+    padding-inline: 4px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: #ff5968;
+    color: #fff;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 900;
   }
 
   .pp-content {
@@ -177,25 +276,19 @@
 
   .pp-menu-button {
     right: 10px;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
 
-  .pp-profile {
+  .pp-mobile-brand {
     left: 10px;
   }
 
-  .pp-profile-avatar {
-    width: 40px;
-    height: 40px;
-    flex-basis: 40px;
-  }
-
   .pp-mobile-brand-logo {
-    width: 118px !important;
-    max-width: 118px !important;
-    height: 34px !important;
-    max-height: 34px !important;
+    width: 132px !important;
+    max-width: 132px !important;
+    height: 37px !important;
+    max-height: 37px !important;
   }
 
   .pp-content {
@@ -277,24 +370,22 @@
   }
 
   .pp-content .page-title {
-    padding: 15px;
-    border-radius: 17px;
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
   }
 }
 
 @media (max-width: 420px) {
   .pp-mobile-brand {
-    max-width: calc(100% - 116px);
+    left: 8px;
+    max-width: 136px;
   }
 
-  .pp-mobile-brand .brand-wordmark {
-    font-size: 20px;
-  }
-
-  .pp-mobile-brand .brand-lockup-icon {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
+  .pp-mobile-brand-logo {
+    width: 128px !important;
+    max-width: 128px !important;
+    height: 36px !important;
+    max-height: 36px !important;
   }
 }
 

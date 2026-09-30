@@ -35,7 +35,7 @@
 }
 
 .pp-content .portal-lessons-page .lesson-search {
-  min-height: 50px;
+  min-height: var(--pp-control-height);
 }
 
 .pp-content .portal-lessons-page .lessons-layout {
@@ -62,9 +62,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
+  border-radius: var(--pp-radius-card);
   border-color: var(--pp-line);
-  box-shadow: 0 12px 30px rgba(21,91,147,.06);
+  box-shadow: none;
 }
 
 .pp-content .portal-lessons-page .lesson-visual {
@@ -126,9 +126,9 @@
 
 .pp-content .portal-lessons-page .daily-picks {
   padding: 18px 20px;
-  border-radius: 20px;
+  border-radius: var(--pp-radius-card);
   border-color: var(--pp-line);
-  box-shadow: 0 10px 28px rgba(21,91,147,.05);
+  box-shadow: none;
 }
 
 .pp-content .portal-lessons-page .daily-picks > .daily-picks-head {
@@ -170,7 +170,7 @@
   min-width: 0;
   padding: 11px 12px;
   border: 1px solid #e2eef5;
-  border-radius: 14px;
+  border-radius: var(--pp-radius-compact);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -203,4 +203,47 @@
 .pp-content .portal-lessons-page .daily-pick-item small {
   color: var(--pp-text);
   font-size: 10px;
+}
+
+
+/* Final lesson parity with Flutter card/control geometry. */
+.pp-content .portal-lessons-page .lesson-search {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+.pp-content .portal-lessons-page .lesson-card-new,
+.pp-content .portal-lessons-page .daily-picks {
+  background: var(--pp-surface);
+}
+
+.pp-content .portal-lessons-page .lesson-card-actions > .btn {
+  min-height: var(--pp-touch-target);
+  border-radius: var(--pp-radius-compact);
+}
+
+.pp-content .portal-lessons-page .daily-picks-grid > .daily-pick-item {
+  border-color: var(--pp-line);
+  background: var(--pp-soft);
+}
+
+@media (max-width: 680px) {
+  .pp-content .portal-lessons-page .lessons-hero {
+    padding: 20px 16px 18px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .pp-content .portal-lessons-page .lessons-hero h1 {
+    font-size: 26px;
+  }
+
+  .pp-content .portal-lessons-page .lesson-card-new,
+  .pp-content .portal-lessons-page .daily-picks {
+    border-radius: var(--pp-radius-card);
+  }
+
+  .pp-content .portal-lessons-page .lesson-visual {
+    height: 132px;
+  }
 }

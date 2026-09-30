@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { resetPassword } from '../../api'
+import BrandLogo from '../../components/BrandLogo/BrandLogo'
 
 export default function ResetPasswordPage() {
   const [params] = useSearchParams()
@@ -40,7 +41,7 @@ export default function ResetPasswordPage() {
           <div><strong>EduBridge</strong><span>فرص تعلم أوضح وأكثر شمولاً</span></div>
         </div>
         <div className="auth-card auth-card-branded">
-          <img className="auth-brand-icon" src="/edubridge-icon.png" alt="شعار EduBridge" />
+          <BrandLogo className="auth-brand-logo" />
           <h2 className="auth-form-title">تعيين كلمة مرور جديدة</h2>
           {invalidLink ? (
             <>

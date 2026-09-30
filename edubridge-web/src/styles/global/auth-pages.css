@@ -675,3 +675,252 @@
         min-height: 0;
     }
 }
+
+
+/* ============================================================
+   Flutter parity — authentication controls and mobile layout
+   Desktop keeps the richer split composition; compact screens
+   follow the app's logo + form-card hierarchy.
+   ============================================================ */
+.auth-card-branded {
+    border-radius: 24px;
+}
+
+.auth-card-branded input,
+.auth-card-branded select {
+    min-height: 56px;
+    padding: 0 18px;
+    border-radius: 18px;
+    border-color: #dce8f1;
+    font-size: 15.5px;
+}
+
+.auth-card-branded input:focus,
+.auth-card-branded select:focus {
+    border-color: #21bfd0;
+    box-shadow: 0 0 0 3px rgba(33, 191, 208, .14);
+    outline: none;
+}
+
+.auth-card-branded .btn.full {
+    min-height: 56px;
+    padding-inline: 22px;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.auth-card-branded .error-box,
+.auth-card-branded .success-box {
+    border-radius: 12px;
+}
+
+@media (max-width: 820px) {
+    .auth-page {
+        min-height: 100dvh;
+        padding: 22px;
+        align-items: flex-start;
+        overflow-y: auto;
+        background:
+            radial-gradient(circle at 0 0, rgba(33,191,208,.14), transparent 18rem),
+            radial-gradient(circle at 100% 100%, rgba(23,105,194,.10), transparent 20rem),
+            #f6f9fc;
+    }
+
+    .auth-page-decor,
+    .auth-visual {
+        display: none !important;
+    }
+
+    .auth-split,
+    .auth-page-register .auth-split {
+        width: min(100%, 480px);
+        min-height: 0;
+        margin: auto;
+        display: block;
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .auth-page-register .auth-split {
+        width: min(100%, 560px);
+    }
+
+    .auth-split .auth-card-branded {
+        width: 100%;
+        min-height: auto;
+        padding: 22px;
+        border: 1px solid #dce8f1;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 14px 36px rgba(23,105,194,.08);
+    }
+
+    .auth-page-register .auth-split .auth-card-branded {
+        padding: 20px;
+        border-radius: 26px;
+    }
+
+    .auth-card-branded .auth-brand-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 4px;
+    }
+
+    .auth-page-register .auth-card-branded .auth-brand-icon {
+        width: 54px;
+        height: 54px;
+    }
+
+    .auth-card-branded h1 {
+        font-size: 30px;
+        line-height: 1.2;
+    }
+
+    .auth-card-branded .subtitle {
+        font-size: 15.5px;
+    }
+
+    .auth-card-branded .tagline {
+        margin-bottom: 16px;
+        font-size: 13.5px;
+    }
+
+    .auth-form-title {
+        margin-bottom: 18px;
+        font-size: 24px;
+    }
+
+    .auth-page-register .auth-form-title {
+        font-size: 22px;
+    }
+
+    .auth-card-branded label,
+    .auth-page-register label {
+        margin: 10px 0 5px;
+        font-size: 13.5px;
+    }
+
+    .auth-page-register input,
+    .auth-page-register select,
+    .auth-card-branded input,
+    .auth-card-branded select {
+        min-height: 56px;
+        padding: 0 18px;
+        border-radius: 18px;
+        font-size: 15px;
+    }
+
+    .auth-page-register .btn.full,
+    .auth-card-branded .btn.full {
+        min-height: 56px;
+        margin-top: 16px;
+        border-radius: 18px;
+        font-size: 16px;
+    }
+}
+
+:root[data-theme="dark"] .auth-card-branded input,
+:root[data-theme="dark"] .auth-card-branded select {
+    border-color: #263e54;
+    background: #142a3c;
+    color: #f1f7fc;
+}
+
+:root[data-theme="dark"] .auth-card-branded input:focus,
+:root[data-theme="dark"] .auth-card-branded select:focus {
+    border-color: #21bfd0;
+    box-shadow: 0 0 0 3px rgba(33,191,208,.14);
+}
+
+@media (max-width: 820px) {
+    :root[data-theme="dark"] .auth-page {
+        background:
+            radial-gradient(circle at 0 0, rgba(33,191,208,.10), transparent 18rem),
+            radial-gradient(circle at 100% 100%, rgba(23,105,194,.10), transparent 20rem),
+            #091a28;
+    }
+
+    :root[data-theme="dark"] .auth-split .auth-card-branded {
+        border-color: #263e54;
+        background: #142a3c;
+        box-shadow: none;
+    }
+}
+
+
+/* Shared auth brand lockup — same asset hierarchy used by Flutter BrandLockup. */
+.auth-brand-logo {
+    display: block;
+    width: 182px;
+    max-width: 72%;
+    height: 52px;
+    margin: 0 auto 12px;
+    object-fit: contain;
+    object-position: center;
+}
+
+.auth-welcome-title {
+    margin: 0;
+    color: #102a43;
+    font-size: 30px;
+    line-height: 1.2;
+    font-weight: 800;
+    text-align: center;
+}
+
+.auth-welcome-copy {
+    margin: 6px 0 22px;
+    color: #637b92;
+    font-size: 15.5px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.auth-card-branded > .muted {
+    text-align: center;
+}
+
+:root[data-theme="dark"] .auth-welcome-title {
+    color: #f1f7fc;
+}
+
+:root[data-theme="dark"] .auth-welcome-copy {
+    color: #91a8ba;
+}
+
+@media (max-width: 820px) {
+    .auth-brand-logo {
+        width: 168px;
+        max-width: 76%;
+        height: 48px;
+        margin-bottom: 12px;
+    }
+
+    .auth-welcome-title {
+        font-size: 28px;
+    }
+
+    .auth-welcome-copy {
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .auth-page-register .auth-brand-logo {
+        width: 156px;
+        height: 44px;
+        margin-bottom: 10px;
+    }
+
+    .auth-page-register .auth-welcome-title {
+        font-size: 25px;
+    }
+
+    .auth-page-register .auth-welcome-copy {
+        margin-bottom: 16px;
+        font-size: 14.5px;
+    }
+}
