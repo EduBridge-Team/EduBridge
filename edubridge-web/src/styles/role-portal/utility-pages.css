@@ -266,7 +266,6 @@
     gap: 8px;
   }
 
-  .pp-menu-button,
   .pp-notification,
   .pp-profile-avatar {
     width: 40px;
@@ -387,6 +386,31 @@
 
 :root[data-theme="dark"] .pp-global-search button {
   color: #9db7cb;
+}
+
+@media (max-width: 900px) {
+  :root[data-theme="dark"] .pp-toolbar {
+    border-bottom-color: transparent;
+    background: linear-gradient(
+      to bottom left,
+      var(--brand-blue) 0%,
+      var(--brand-blue-deep) 55%,
+      var(--brand-teal) 100%
+    );
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+  }
+
+  :root[data-theme="dark"] .pp-menu-button {
+    border-color: transparent;
+    background: transparent;
+    color: #fff;
+  }
+
+  :root[data-theme="dark"] .pp-menu-button:hover,
+  :root[data-theme="dark"] .pp-menu-button:focus-visible {
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+  }
 }
 
 :root[data-theme="dark"] .pp-profile {
