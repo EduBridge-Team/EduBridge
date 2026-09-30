@@ -1,0 +1,236 @@
+/* ===== Phase 2 shared portal pages ===== */
+.notifications-page-v2,
+.identity-search-page-v2,
+.verification-admin-page-v2,
+.consultations-page-v2,
+.conversations-page-v2,
+.accessibility-overview-v2 {
+  display: grid;
+  gap: 14px;
+}
+
+.notifications-hero,
+.identity-search-hero,
+.verification-admin-hero,
+.consultations-hero,
+.conversations-hero,
+.accessibility-overview-hero {
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #eef9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.notifications-hero,
+.conversations-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.notifications-hero h1,
+.identity-search-hero h1,
+.verification-admin-hero h1,
+.consultations-hero h1,
+.conversations-hero h1,
+.accessibility-overview-hero h1 {
+  margin: 5px 0 6px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+}
+
+.notifications-hero p,
+.identity-search-hero p,
+.verification-admin-hero p,
+.consultations-hero p,
+.conversations-hero p,
+.accessibility-overview-hero p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.notifications-hero-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notification-card-v2 {
+  padding: 16px 18px;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card) !important;
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+.notification-card-v2.unread {
+  border-color: #b7dceb;
+  background:
+    linear-gradient(90deg, rgba(33,191,208,.07), transparent),
+    var(--pp-surface);
+}
+
+.identity-search-form {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.identity-search-result {
+  border-radius: 18px !important;
+  box-shadow: none;
+}
+
+.verification-tabs,
+.verification-status-tabs {
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.verification-tabs .tab,
+.verification-status-tabs .tab {
+  min-height: 40px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.verification-tabs .tab.on,
+.verification-status-tabs .tab.on {
+  color: #fff;
+  background: var(--brand-blue);
+}
+
+.verification-status-tabs {
+  margin-top: 0 !important;
+}
+
+.consultations-section-head {
+  padding: 2px;
+}
+
+.consultations-section-head h2 {
+  margin: 0;
+  color: var(--brand-blue-deep);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.consultation-request-card,
+.consultation-card-v2 {
+  padding: 20px;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+.conversations-page-v2 .chat-layout {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.accessibility-overview-v2 .access-children-grid {
+  gap: 12px;
+}
+
+.accessibility-overview-v2 .access-child-card {
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.games-page-v2 .games-page-toolbar {
+  border-radius: var(--r-lg);
+}
+
+.games-page-v2 .games-hero {
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--brand-blue), var(--brand-teal-deep));
+}
+
+.games-page-v2 .game-card {
+  border-radius: 18px;
+}
+
+:root[data-theme="dark"] .notifications-hero,
+:root[data-theme="dark"] .identity-search-hero,
+:root[data-theme="dark"] .verification-admin-hero,
+:root[data-theme="dark"] .consultations-hero,
+:root[data-theme="dark"] .conversations-hero,
+:root[data-theme="dark"] .accessibility-overview-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+:root[data-theme="dark"] .notification-card-v2,
+:root[data-theme="dark"] .identity-search-form,
+:root[data-theme="dark"] .identity-search-result,
+:root[data-theme="dark"] .verification-tabs,
+:root[data-theme="dark"] .verification-status-tabs,
+:root[data-theme="dark"] .consultation-request-card,
+:root[data-theme="dark"] .consultation-card-v2,
+:root[data-theme="dark"] .conversations-page-v2 .chat-layout {
+  border-color: var(--line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+@media (max-width: 680px) {
+  .notifications-hero,
+  .conversations-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .notifications-hero,
+  .identity-search-hero,
+  .verification-admin-hero,
+  .consultations-hero,
+  .conversations-hero,
+  .accessibility-overview-hero {
+    padding: 16px;
+    border-radius: var(--pp-radius-card);
+  }
+
+  .notifications-hero h1,
+  .identity-search-hero h1,
+  .verification-admin-hero h1,
+  .consultations-hero h1,
+  .conversations-hero h1,
+  .accessibility-overview-hero h1 {
+    font-size: 24px;
+  }
+
+  .notifications-hero p,
+  .identity-search-hero p,
+  .verification-admin-hero p,
+  .consultations-hero p,
+  .conversations-hero p,
+  .accessibility-overview-hero p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .verification-tabs,
+  .verification-status-tabs {
+    overflow-x: auto;
+  }
+
+  .verification-tabs .tab,
+  .verification-status-tabs .tab {
+    flex: 0 0 auto;
+  }
+}

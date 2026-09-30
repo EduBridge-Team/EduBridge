@@ -16,13 +16,11 @@
 /* Small brand-colored side accents shared by cards */
 .reference-home .audience-card,
 .reference-home .home-feature,
-.reference-home .impact-card,
 .reference-home .success-story-card {
   position: relative;
 }
 
 .reference-home .audience-card::after,
-.reference-home .impact-card::after,
 .reference-home .success-story-card::after {
   content: "";
   position: absolute;
@@ -38,8 +36,7 @@
 
 :root[data-theme="dark"] .reference-home .audience-section::before,
 :root[data-theme="dark"] .reference-home .features-section::after,
-:root[data-theme="dark"] .reference-home .reference-noor::before,
-:root[data-theme="dark"] .reference-home .impact-section::after {
+:root[data-theme="dark"] .reference-home .reference-noor::before {
   opacity: .58;
 }
 
@@ -54,9 +51,7 @@
     opacity: .7;
   }
 
-  .reference-home .audience-section::after,
-  .reference-home .home-stats::before,
-  .reference-home .impact-section::after {
+  .reference-home .audience-section::after {
     opacity: .16;
   }
 
@@ -74,64 +69,4 @@
 }
 
 
-:root[data-theme="dark"] .topbar-guest .guest-actions .login-btn {
-  background: #102f4e;
-  color: #dff3ff;
-  border-color: #326584;
-}
-
-:root[data-theme="dark"] .topbar-guest .guest-actions .theme-toggle {
-  background: #102f4e;
-  color: #7fd2ff;
-  border-color: #326584;
-}
-
-:root[data-theme="dark"] .topbar-guest .guest-actions .theme-toggle:hover,
-:root[data-theme="dark"] .topbar-guest .guest-actions .login-btn:hover {
-  background: #143a5b;
-  border-color: #4b83a3;
-}
-
-
 /* Dark mode should include the public navigation, not only page content. */
-:root[data-theme="dark"] .topbar-guest {
-  border-bottom-color: #214663;
-  background: rgba(7, 29, 53, .96);
-  box-shadow: 0 8px 26px rgba(0,0,0,.18);
-}
-
-:root[data-theme="dark"] .topbar-guest .guest-nav a {
-  color: #b7ccdc;
-}
-
-:root[data-theme="dark"] .topbar-guest .guest-nav a:hover,
-:root[data-theme="dark"] .topbar-guest .guest-nav a.active {
-  color: #7bc8ff;
-}
-
-:root[data-theme="dark"] .topbar-guest .hamburger {
-  border-color: #28506c;
-  background: #102f4e;
-}
-
-:root[data-theme="dark"] .topbar-guest .hamburger span {
-  background: #dff3ff;
-}
-
-@media (max-width: 780px) {
-  :root[data-theme="dark"] .topbar-guest .topbar-menu {
-    border-color: #214663;
-    background: #0b2945;
-    box-shadow: 0 20px 44px rgba(0,0,0,.28);
-  }
-
-  :root[data-theme="dark"] .topbar-guest .guest-nav a {
-    background: transparent;
-  }
-
-  :root[data-theme="dark"] .topbar-guest .guest-nav a:hover,
-  :root[data-theme="dark"] .topbar-guest .guest-nav a.active {
-    background: #102f4e;
-  }
-}
-

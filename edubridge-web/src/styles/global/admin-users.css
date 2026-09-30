@@ -1,0 +1,266 @@
+/* شريط التبويبات — كتلة مقسّمة بحواف ناعمة */
+
+.admin-tabs {
+    display: inline-flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 5px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    min-height: 42px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-tab:hover {
+    color: var(--navy);
+}
+
+.admin-tab.active {
+    background: var(--navy);
+    color: #fff;
+}
+
+
+/* لوحة المحتوى داخل التبويب */
+
+.admin-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.admin-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.admin-panel-head h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.admin-search {
+    width: auto;
+    min-width: 220px;
+    background: var(--bg);
+}
+
+
+/* شبكة بطاقات المستخدمين */
+
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.user-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.12s, border-color 0.12s;
+}
+
+.user-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--teal);
+}
+
+.user-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+    display: grid;
+    place-items: center;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.user-name {
+    margin: 0 0 2px;
+    font-size: 16px;
+}
+
+.user-email {
+    color: var(--muted);
+    font-size: 12.5px;
+    word-break: break-all;
+}
+
+.user-phone {
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-top: 4px;
+}
+
+.user-card .btn {
+    margin-top: 12px;
+}
+
+
+/* شارات الأدوار — بألوان مختلفة */
+
+.role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 999px;
+    padding: 3px 11px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.role-admin {
+    background: oklch(92% 0.02 250);
+    color: var(--navy);
+}
+
+.role-teacher {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.role-specialist {
+    background: var(--tint-coral);
+    color: var(--coral-deep);
+}
+
+.role-parent {
+    background: oklch(92% 0.01 250);
+    color: var(--muted);
+}
+
+
+/* نافذة منبثقة (تعديل مستخدم) */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: oklch(22% 0.06 250 / 0.5);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.modal {
+    background: var(--surface);
+    border-radius: var(--r-lg);
+    padding: 26px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: var(--shadow);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.modal-head h3 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.modal-close:hover {
+    color: var(--danger);
+    background: var(--tint-coral);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+}
+
+
+/* ============================================================
+   لوحات الأدوار (المعلّم / المختص)
+   ============================================================ */
+
+.dash-head {
+    margin-bottom: 22px;
+}
+
+.dash-head h2 {
+    margin: 0;
+    font-size: 23px;
+}
+
+.dash-sub {
+    color: var(--muted);
+    margin: 6px 0 0;
+    font-size: 14.5px;
+}
+
+.dash-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--navy);
+    font-size: 18px;
+    margin: 0 0 14px;
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+}

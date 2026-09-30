@@ -249,74 +249,6 @@
   font-style: normal;
 }
 
-.reference-home .home-stats {
-  width: min(1040px, calc(100% - 44px));
-  margin: 28px auto;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.reference-home .home-stats > div {
-  min-height: 92px;
-  border: 1px solid #e1edf5;
-  border-radius: 16px;
-  background: rgba(255,255,255,.9);
-  box-shadow: none;
-}
-
-.reference-home .home-stats b {
-  color: var(--home-blue);
-}
-
-.reference-home .impact-section {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  padding: 22px 0 38px;
-}
-
-.impact-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-
-.impact-card {
-  min-height: 180px;
-  padding: 22px;
-  border: 1px solid #e3eef6;
-  border-radius: 18px;
-  background: rgba(255,255,255,.94);
-  box-shadow: 0 10px 34px rgba(30, 105, 166, .05);
-}
-
-.impact-card > span {
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 10px;
-  border-radius: 14px;
-  background: #eef8ff;
-  font-size: 22px;
-}
-
-.impact-card h3 {
-  margin: 0 0 7px;
-  color: var(--home-ink);
-  font-size: 19px;
-}
-
-.impact-card p {
-  margin: 0;
-  color: var(--home-text);
-  line-height: 1.75;
-}
-
-.reference-home .site-footer {
-  margin-top: 0;
-}
-
 :root[data-theme="dark"] .reference-home {
   --home-ink: #eef9ff;
   --home-text: #b5ccdf;
@@ -331,10 +263,6 @@
   border-color: #214b6e;
 }
 
-:root[data-theme="dark"] .hero-image-shell {
-  background: #0d2947;
-}
-
 :root[data-theme="dark"] .reference-home .audience-section,
 :root[data-theme="dark"] .reference-home .reference-noor {
   background: linear-gradient(135deg, #0d2947, #10374d);
@@ -344,9 +272,7 @@
 :root[data-theme="dark"] .reference-home .audience-card.tone-parent,
 :root[data-theme="dark"] .reference-home .audience-card.tone-teacher,
 :root[data-theme="dark"] .reference-home .audience-card.tone-specialist,
-:root[data-theme="dark"] .service-card,
-:root[data-theme="dark"] .impact-card,
-:root[data-theme="dark"] .reference-home .home-stats > div {
+:root[data-theme="dark"] .service-card {
   background: #0d2947;
   border-color: #214566;
 }
@@ -359,14 +285,6 @@
 
   .reference-hero-art {
     min-height: 420px;
-  }
-
-  .hero-image-shell {
-    height: 360px;
-  }
-
-  .hero-hand-note {
-    display: none;
   }
 
   .services-grid {
@@ -385,8 +303,7 @@
 
 @media (max-width: 780px) {
   .reference-home .reference-hero,
-  .reference-home .home-section,
-  .reference-home .home-stats {
+  .reference-home .home-section {
     width: min(100% - 28px, 620px);
   }
 
@@ -410,24 +327,8 @@
     min-height: 390px;
   }
 
-  .hero-image-shell {
-    width: min(72%, 390px);
-    height: 340px;
-  }
-
-  .reference-hero-art .hero-note.progress {
-    left: 0;
-    top: 54px;
-  }
-
-  .reference-hero-art .hero-note.future {
-    right: 0;
-    bottom: 58px;
-  }
-
   .reference-home .audience-grid,
-  .services-grid,
-  .impact-grid {
+  .services-grid {
     grid-template-columns: 1fr;
   }
 
@@ -456,10 +357,6 @@
     grid-template-columns: 1fr;
     text-align: center;
   }
-
-  .reference-home .home-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 520px) {
@@ -469,11 +366,6 @@
 
   .reference-hero-art {
     min-height: 320px;
-  }
-
-  .hero-image-shell {
-    width: 76%;
-    height: 285px;
   }
 
   .reference-hero-art .hero-loop {
@@ -490,18 +382,8 @@
     height: 70px;
   }
 
-  .reference-hero-art .hero-note {
-    min-width: 135px;
-    padding: 9px 10px;
-    font-size: 12px;
-  }
-
   .reference-home .audience-section {
     padding: 20px;
-  }
-
-  .reference-home .home-stats {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -514,7 +396,6 @@
 }
 
 .reference-home .home-section,
-.reference-home .home-stats,
 .reference-home .reference-hero {
   scroll-margin-top: 88px;
 }
@@ -525,15 +406,13 @@
 
 .reference-home .audience-card,
 .reference-home .home-feature,
-.reference-home .impact-card,
 .reference-home .success-story-card {
   min-width: 0;
 }
 
 @media (max-width: 780px) {
   .reference-home .reference-hero,
-  .reference-home .home-section,
-  .reference-home .home-stats {
+  .reference-home .home-section {
     width: min(100% - 28px, 680px);
   }
 
@@ -545,8 +424,7 @@
 
 @media (max-width: 480px) {
   .reference-home .reference-hero,
-  .reference-home .home-section,
-  .reference-home .home-stats {
+  .reference-home .home-section {
     width: calc(100% - 20px);
   }
 
