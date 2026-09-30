@@ -267,6 +267,18 @@ export default function RolePortalLayout({ children }) {
             <BrandLogo className="pp-mobile-brand-logo" />
           </button>
 
+          <button
+            type="button"
+            className="pp-mobile-profile"
+            onClick={() => navigate('/profile')}
+            aria-label="فتح الملف الشخصي"
+            title="الملف الشخصي"
+          >
+            <span className="pp-profile-avatar">
+              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+            </span>
+          </button>
+
           <form className="pp-global-search" onSubmit={submitSearch}>
             <Search size={19} />
             <button type="submit">{searchPlaceholder}</button>

@@ -62,6 +62,8 @@
 
 .noor-panel {
     width: min(390px, calc(100vw - 28px));
+    direction: rtl;
+    text-align: right;
     height: min(590px, calc(100vh - 100px));
     min-height: 390px;
     background: var(--surface);
@@ -309,6 +311,8 @@
 
 .noor-form textarea {
     flex: 1;
+    direction: rtl;
+    text-align: right;
     min-height: 44px;
     max-height: 110px;
     resize: vertical;
@@ -354,11 +358,9 @@
     }
 }
 
-/* Noor launcher movement parity with the mobile app. */
-.noor-assistant {
-    will-change: transform;
-}
-
+/* Noor launcher movement parity with the mobile app.
+   Do not create a transformed containing block here: the launcher is positioned
+   against the viewport so its saved coordinates stay correct on mobile browsers. */
 .noor-launcher {
     touch-action: none;
     user-select: none;
