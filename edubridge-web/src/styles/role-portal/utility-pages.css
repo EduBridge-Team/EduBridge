@@ -151,15 +151,16 @@
 
   .pp-sidebar {
     width: min(320px, 88vw) !important;
-    padding: max(14px, env(safe-area-inset-top)) 12px max(16px, env(safe-area-inset-bottom)) !important;
-    gap: 10px !important;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)) !important;
+    gap: 8px !important;
     border-radius: 0 0 0 20px;
     background: rgba(255,255,255,.99);
     box-shadow: -18px 0 46px rgba(10,56,94,.18);
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
     overscroll-behavior: contain;
     scrollbar-width: none !important;
+    direction: rtl;
+    text-align: right;
   }
 
   .pp-sidebar::-webkit-scrollbar {
@@ -168,6 +169,7 @@
 
   .pp-sidebar-head {
     min-height: 50px;
+    flex: 0 0 auto;
     padding-bottom: 8px;
     gap: 10px;
     justify-content: space-between;
@@ -196,21 +198,59 @@
   }
 
   .pp-nav {
-    gap: 4px;
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 2px;
+    padding-inline-end: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    direction: rtl;
+  }
+
+  .pp-nav::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
   }
 
   .pp-nav button {
-    min-height: 45px;
-    padding: 8px 10px;
+    min-height: 41px;
+    padding: 6px 10px;
     border-radius: 12px;
     grid-template-columns: 20px minmax(0, 1fr) auto;
-    gap: 10px;
-    font-size: 13px;
+    gap: 9px;
+    font-size: 13.5px;
+    line-height: 1.25;
+    text-align: right;
   }
 
   .pp-nav button.active::after {
     inset-inline-end: -14px;
     height: 26px;
+  }
+
+  .pp-mobile-sidebar-tools {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding-top: 8px;
+    background: inherit;
+    border-top: 1px solid var(--pp-line);
+  }
+
+  .pp-mobile-account-card,
+  .pp-mobile-quick-actions {
+    direction: rtl;
+  }
+
+  .pp-mobile-account-card {
+    min-height: 58px;
+  }
+
+  .pp-mobile-quick-actions > button {
+    min-height: 42px;
+    font-size: 11.5px;
   }
 
   .pp-noor-card {
@@ -366,6 +406,39 @@
   border-color: #28506c;
   background: linear-gradient(135deg, #103a5d, #0e4557);
   color: #eef9ff;
+}
+
+@media (max-width: 900px) {
+  :root[data-theme="dark"] .pp-nav button {
+    color: #d2e2ed;
+  }
+
+  :root[data-theme="dark"] .pp-mobile-account-card {
+    border-color: #31536d;
+    background: #12324d;
+    color: #f1f7fc;
+  }
+
+  :root[data-theme="dark"] .pp-mobile-account-copy small {
+    color: #afc3d2;
+  }
+
+  :root[data-theme="dark"] .pp-mobile-quick-actions > button {
+    border-color: #31536d;
+    background: #11314b;
+    color: #7de0e6;
+  }
+
+  :root[data-theme="dark"] .pp-drawer-close {
+    border-color: #31536d;
+    background: #12324d;
+    color: #86dce5;
+  }
+}
+
+:root[data-theme="dark"] .pd-search input::placeholder {
+  color: #a9becc;
+  opacity: 1;
 }
 
 :root[data-theme="dark"] .pp-toolbar {
