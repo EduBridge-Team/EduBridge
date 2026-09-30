@@ -12,7 +12,6 @@ import { dashboardFor } from '../roleRoutes'
 import { useTheme } from '../theme'
 import { useUserSettings } from '../userSettings'
 import BrandLogo from '../components/BrandLogo/BrandLogo'
-import NoorPet from '../components/Noor/NoorPet'
 import { activeSection, createRoleNavItems } from './rolePortalNavigation'
 
 export default function RolePortalLayout({ children }) {
@@ -105,11 +104,6 @@ export default function RolePortalLayout({ children }) {
       body.classList.remove('role-portal-active', roleClass)
     }
   }, [role])
-
-  const openNoor = () => {
-    setDrawerOpen(false)
-    document.querySelector('.noor-launcher')?.click()
-  }
 
   const goToProgress = useCallback(() => {
     const child = childrenList[0]
@@ -255,19 +249,6 @@ export default function RolePortalLayout({ children }) {
             </button>
           </div>
         </div>
-
-        {settings.assistant_visible && (
-          <button type="button" className="pp-noor-card" onClick={openNoor} aria-label="فتح المساعد نور">
-            <span className="pp-noor-avatar" aria-hidden="true">
-              <NoorPet size={92} trackMouse />
-            </span>
-            <span className="pp-noor-copy">
-              <strong>نور</strong>
-              <small>مساعدك التعليمي الذكي</small>
-              <em>ابدأ المحادثة</em>
-            </span>
-          </button>
-        )}
 
       </aside>
 
