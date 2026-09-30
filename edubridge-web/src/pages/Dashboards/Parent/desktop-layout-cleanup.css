@@ -4,88 +4,6 @@
    ============================================================ */
 
 @media (min-width: 901px) {
-  /* Shell: reserve the sidebar once, never paint content underneath it. */
-  body.parent-dashboard-page .pp-shell {
-    padding-right: 278px !important;
-    padding-left: 0 !important;
-  }
-
-  body.parent-dashboard-page .pp-sidebar {
-    width: 278px !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    padding: 14px 16px 16px !important;
-    gap: 7px !important;
-    overflow: hidden !important;
-    border-bottom-left-radius: 0 !important;
-  }
-
-  body.parent-dashboard-page .pp-sidebar-head {
-    min-height: 64px !important;
-    padding: 8px 10px 12px !important;
-    margin-bottom: 4px !important;
-    border-bottom: 1px solid #e4eef5 !important;
-    background: linear-gradient(135deg, rgba(33,191,208,.05), rgba(23,105,194,.03));
-    border-radius: 16px;
-  }
-
-  body.parent-dashboard-page .pp-brand .pp-brand-logo {
-    width: 158px !important;
-  }
-
-  body.parent-dashboard-page .pp-nav {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    justify-content: flex-start !important;
-    gap: 2px !important;
-    padding-inline-end: 2px !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    overscroll-behavior: contain;
-    scrollbar-width: none !important;
-  }
-
-  body.parent-dashboard-page .pp-nav::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button,
-  body.parent-dashboard-page .pp-sidebar[data-nav-density="compact"] .pp-nav button,
-  body.parent-dashboard-page .pp-sidebar[data-nav-density="comfortable"] .pp-nav button {
-    min-height: 46px !important;
-    padding: 7px 10px !important;
-    border-radius: 14px !important;
-    gap: 10px !important;
-    font-size: 14.5px !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button > svg {
-    width: 20px !important;
-    height: 20px !important;
-    padding: 5px !important;
-    box-sizing: content-box !important;
-    border-radius: 10px !important;
-    background: #f2f8fc !important;
-    color: #4e7898 !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button > span {
-    overflow: visible !important;
-    text-overflow: clip !important;
-    white-space: nowrap !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button.active {
-    border-color: #c9e5f2 !important;
-    background: linear-gradient(135deg, #eaf8fd, #f7fbfe) !important;
-    box-shadow: 0 8px 20px rgba(23,105,194,.07), inset 3px 0 0 var(--pp-cyan) !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button.active > svg {
-    background: linear-gradient(135deg, var(--pp-blue), var(--pp-cyan)) !important;
-    color: #fff !important;
-  }
-
   /* Topbar: compact hierarchy and one search surface on desktop. */
   body.parent-dashboard-page .pp-toolbar {
     min-height: 72px !important;
@@ -130,13 +48,15 @@
     padding-top: 18px !important;
   }
 
-  /* Hero: horizontal desktop composition — message right, status summary left. */
+  /* One compact RTL message with a separate daily summary. */
   body.parent-dashboard-page .pd-hero {
-    min-height: 168px !important;
-    padding: 22px 28px !important;
+    min-height: 154px !important;
+    padding: 24px 28px !important;
     border-radius: 24px !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 250px) !important;
+    gap: clamp(20px, 3vw, 48px) !important;
     align-items: center !important;
+    text-align: start !important;
   }
 
   body.parent-dashboard-page .pd-hero-copy {
@@ -144,58 +64,48 @@
     max-width: none !important;
     margin: 0 !important;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 280px !important;
-    grid-template-areas:
-      "eyebrow status"
-      "title status"
-      "subtitle status"
-      "desc status" !important;
-    column-gap: 42px !important;
-    align-items: center !important;
+    gap: 8px !important;
   }
 
-  body.parent-dashboard-page .pd-hero-copy > span:first-child { grid-area: eyebrow; }
-  body.parent-dashboard-page .pd-hero h1 { grid-area: title; }
-  body.parent-dashboard-page .pd-hero h2 { grid-area: subtitle; }
-  body.parent-dashboard-page .pd-hero p { grid-area: desc; }
-  body.parent-dashboard-page .pd-hero-status {
-    grid-area: status;
+  body.parent-dashboard-page .pd-hero h1 {
     margin: 0 !important;
-    padding: 14px !important;
-    border: 1px solid #d8e9f3;
-    border-radius: 18px;
+    font-size: clamp(28px, 2.3vw, 36px) !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere;
+  }
+
+  body.parent-dashboard-page .pd-hero p {
+    margin: 0 !important;
+    max-width: 580px;
+    font-size: 14px !important;
+    line-height: 1.8 !important;
+  }
+
+  body.parent-dashboard-page .pd-hero-status {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    border-inline-start: 1px solid var(--pd-line);
+    padding-inline-start: 24px !important;
+    border-radius: 0;
     display: grid !important;
-    gap: 8px !important;
-    background: rgba(255,255,255,.72);
+    gap: 10px !important;
+    background: transparent !important;
+    align-content: center;
   }
 
   body.parent-dashboard-page .pd-hero-status > span {
     width: 100% !important;
-    min-height: 42px;
-    padding: 8px 10px !important;
+    min-height: 40px;
+    padding: 8px 12px !important;
     border-radius: 12px !important;
     justify-content: flex-start !important;
+    line-height: 1.6;
   }
 
-  body.parent-dashboard-page .pd-hero-search {
-    display: none !important;
-  }
-
-  body.parent-dashboard-page .pd-hero h1 {
-    margin-top: 2px !important;
-    font-size: clamp(30px, 2.5vw, 38px) !important;
-  }
-
-  body.parent-dashboard-page .pd-hero h2 {
-    margin-top: 1px !important;
-    font-size: clamp(20px, 1.9vw, 25px) !important;
-  }
-
-  body.parent-dashboard-page .pd-hero p {
-    max-width: 620px;
-    font-size: 14px !important;
-  }
-
+  body.parent-dashboard-page .pd-hero-status svg { flex-shrink: 0; }
+  body.parent-dashboard-page .pd-hero-search { display: none !important; }
+  body.parent-dashboard-page .pd-deco { display: none; }
 
   /* Children + progress keep their visual strength, but align heights. */
   body.parent-dashboard-page .pd-child-card {
@@ -291,41 +201,15 @@
 }
 
 @media (min-width: 901px) and (max-width: 1180px) {
-  body.parent-dashboard-page .pp-shell {
-    padding-right: 244px !important;
-  }
-
-  body.parent-dashboard-page .pp-sidebar {
-    width: 244px !important;
-  }
-
-  body.parent-dashboard-page .pp-brand .pp-brand-logo {
-    width: 140px !important;
-  }
-
-  body.parent-dashboard-page .pp-nav button {
-    font-size: 14px !important;
+  body.parent-dashboard-page .pd-hero {
+    grid-template-columns: minmax(0, 1fr) 220px !important;
+    padding: 20px !important;
+    gap: 20px !important;
   }
 
   body.parent-dashboard-page .pd-lower-grid {
     grid-template-columns: 1fr !important;
   }
-}
-
-:root[data-theme="dark"] body.parent-dashboard-page .pp-nav button.active {
-  border-color: #31536d !important;
-  background: linear-gradient(135deg, #103a5d, #0f334d) !important;
-}
-
-:root[data-theme="dark"] body.parent-dashboard-page .pp-sidebar-head,
-:root[data-theme="dark"] body.parent-dashboard-page .pd-hero-status {
-  border-color: #294961 !important;
-  background: rgba(15,47,71,.82) !important;
-}
-
-:root[data-theme="dark"] body.parent-dashboard-page .pp-nav button > svg {
-  background: #12324b !important;
-  color: #9fd8e2 !important;
 }
 
 :root[data-theme="dark"] body.parent-dashboard-page .pd-quick-actions button {

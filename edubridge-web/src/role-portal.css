@@ -10,3 +10,5 @@
 @import "./styles/role-portal/dark-theme.css";
 @import "./styles/role-portal/final-overrides.css";
 @import "./styles/role-portal/scrollbars.css";
+
+@import "./styles/role-portal/parent-sidebar.css";
