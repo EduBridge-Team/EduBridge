@@ -4,7 +4,6 @@ import {
   AACSentencePanel,
   AACSymbolGrid,
 } from './AACSections'
-import '../../feature-parity.css'
 
 const CATEGORIES = {
   'أساسية': [

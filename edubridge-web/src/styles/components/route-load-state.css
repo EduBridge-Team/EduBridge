@@ -1,0 +1,11 @@
+.route-load-state {
+  min-height: 240px;
+  display: grid;
+  place-content: center;
+  gap: 16px;
+  padding-block: 48px;
+  color: var(--ink);
+  text-align: center;
+}
+.route-load-state p { margin: 0; color: var(--muted); }
+.route-load-state .btn { justify-self: center; }

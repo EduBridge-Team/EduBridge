@@ -18,7 +18,6 @@ import {
   SpecialistSuggestionList,
   SpecialistWorkflowHeader,
 } from './SpecialistWorkflowSections'
-import '../../feature-parity.css'
 
 export default function SpecialistWorkflowPage() {
   const me = getUser()

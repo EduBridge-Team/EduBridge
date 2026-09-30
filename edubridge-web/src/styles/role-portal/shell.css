@@ -1,26 +1,4 @@
 /* Parent portal shared web shell */
-:root {
-  /* Flutter parity tokens — mirror AppColors + Material 3 component geometry. */
-  --pp-blue: #1769c2;
-  --pp-blue-deep: #0d55aa;
-  --pp-cyan: #21bfd0;
-  --pp-teal: #69d4ca;
-  --pp-green: #7be49a;
-  --pp-bg: #f6f9fc;
-  --pp-surface: #ffffff;
-  --pp-soft: #f0f6fb;
-  --pp-ink: #102a43;
-  --pp-body: #294861;
-  --pp-text: #637b92;
-  --pp-line: #dce8f1;
-  --pp-card: #ffffff;
-  --pp-radius-card: 24px;
-  --pp-radius-control: 18px;
-  --pp-radius-compact: 14px;
-  --pp-control-height: 56px;
-  --pp-touch-target: 44px;
-  --pp-shadow: 0 10px 28px rgba(23,105,194,.07);
-}
 
 .topbar.parent-portal-global-topbar,
 .topbar.role-portal-global-topbar {
@@ -494,4 +472,3 @@ body.role-portal-active #root {
   border-radius: var(--pp-radius-card);
   background: rgba(255,255,255,.82);
 }
-

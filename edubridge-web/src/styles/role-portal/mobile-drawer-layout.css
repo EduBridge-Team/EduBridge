@@ -1,0 +1,207 @@
+/* ============================================================
+   Mobile portal: hamburger-only navigation and compact drawer
+   ============================================================ */
+@media (max-width: 900px) {
+  .pp-mobile-nav {
+    display: none !important;
+  }
+
+  .pp-sidebar {
+    width: min(320px, 88vw) !important;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)) !important;
+    gap: 8px !important;
+    border-radius: 0 0 0 20px;
+    background: rgba(255,255,255,.99);
+    box-shadow: -18px 0 46px rgba(10,56,94,.18);
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .pp-sidebar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .pp-sidebar-head {
+    min-height: 50px;
+    flex: 0 0 auto;
+    padding-bottom: 8px;
+    gap: 10px;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--pp-line);
+  }
+
+  .pp-brand {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 9px !important;
+    text-align: right;
+  }
+
+  .pp-brand .pp-brand-logo {
+    width: 150px !important;
+    max-width: calc(100% - 4px) !important;
+    height: auto !important;
+  }
+
+  .pp-drawer-close {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 13px;
+  }
+
+  .pp-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 2px;
+    padding-inline-end: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    direction: rtl;
+  }
+
+  .pp-nav::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  .pp-nav button {
+    min-height: 41px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    gap: 9px;
+    font-size: 13.5px;
+    line-height: 1.25;
+    text-align: right;
+  }
+
+  .pp-nav button.active::after {
+    inset-inline-end: -14px;
+    height: 26px;
+  }
+
+  .pp-mobile-sidebar-tools {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding-top: 8px;
+    background: inherit;
+    border-top: 1px solid var(--pp-line);
+  }
+
+  .pp-mobile-account-card,
+  .pp-mobile-quick-actions {
+    direction: rtl;
+  }
+
+  .pp-mobile-account-card {
+    min-height: 58px;
+  }
+
+  .pp-mobile-quick-actions > button {
+    min-height: 42px;
+    font-size: 11.5px;
+  }
+
+  .pp-noor-card {
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-align: right !important;
+    overflow: hidden;
+  }
+
+  .pp-noor-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .pp-noor-avatar .noor-pet {
+    width: 66px !important;
+    height: 56px !important;
+  }
+
+  .pp-noor-copy strong {
+    font-size: 15px;
+  }
+
+  .pp-noor-copy em {
+    margin-top: 3px;
+  }
+
+  body.role-portal-drawer-open {
+    overflow: hidden;
+  }
+
+  body.role-portal-drawer-open .noor-launcher {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-sidebar {
+    width: min(304px, 88vw) !important;
+  }
+
+  .pp-toolbar {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+
+  .pp-notification,
+  .pp-profile-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pp-profile-avatar {
+    flex-basis: 40px;
+  }
+
+  .pp-global-search {
+    min-height: 42px;
+    padding-inline: 10px;
+  }
+
+  .pp-global-search button {
+    font-size: 11px;
+  }
+}
+
+
+/* Prevent phantom page scroll caused by legacy 100vh root sizing. */
+@supports (height: 100dvh) {
+  html.role-portal-active,
+  body.role-portal-active,
+  body.role-portal-active #root {
+    min-height: 100dvh !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.role-portal-active,
+  body.role-portal-active,
+  body.role-portal-active #root,
+  .pp-shell {
+    min-height: 100dvh !important;
+  }
+
+  .pp-body {
+    min-height: 0;
+  }
+}

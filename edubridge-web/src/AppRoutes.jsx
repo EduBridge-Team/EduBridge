@@ -1,45 +1,50 @@
+import { lazy, Suspense } from 'react'
+import RouteLoadBoundary from './components/RouteLoadBoundary'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { getToken, getUser } from './api'
 import { dashboardFor } from './roleRoutes'
 import { CHILD_ROLES, CONSULTATION_ROLES, STAFF_SEARCH_ROLES, isPortalPathForRole } from './portalRoutes'
 import RolePortalLayout from './layouts/RolePortalLayout'
 import HomePage from './pages/Public/HomePage'
-import LoginPage from './pages/Auth/LoginPage'
-import RegisterPage from './pages/Auth/RegisterPage'
-import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage'
-import ResetPasswordPage from './pages/Auth/ResetPasswordPage'
-import ChildrenPage from './pages/Children/ChildrenPage'
-import ChildLessonsPage from './pages/Children/ChildLessonsPage'
-import ChildProgressPage from './pages/Children/ChildProgressPage'
-import LessonsPage from './pages/Learning/LessonsPage'
-import AboutPage from './pages/Public/AboutPage'
-import AdminPage from './pages/Dashboards/Admin/AdminPage'
-import TeacherDashboard from './pages/Dashboards/Teacher/TeacherDashboard'
-import SpecialistDashboard from './pages/Dashboards/SpecialistDashboard'
-import ParentDashboard from './pages/Dashboards/Parent/ParentDashboard'
-import ChildDetailsPage from './pages/Children/ChildDetailsPage'
-import ChildFormPage from './pages/Children/ChildFormPage'
-import NotificationsPage from './pages/Communication/NotificationsPage'
-import SearchPage from './pages/Account/SearchPage'
-import VerifyIdentityPage from './pages/Account/VerifyIdentityPage'
-import ProfilePage from './pages/Account/ProfilePage'
-import VerificationsPage from './pages/Account/VerificationsPage'
-import SupportPage from './pages/Support/SupportPage'
-import MinistryPage from './pages/Dashboards/MinistryPage'
-import ConsultationsPage from './pages/Support/ConsultationsPage'
-import EducationalGamesPage from './pages/Children/EducationalGamesPage'
-import AccessibilityPage from './pages/Children/AccessibilityPage'
-import AccessibilityOverviewPage from './pages/Children/AccessibilityOverviewPage'
-import ConversationsPage from './pages/Communication/ConversationsPage'
-import InstitutionDashboard from './pages/Dashboards/InstitutionDashboard'
-import HomeworkPage from './pages/Learning/HomeworkPage'
-import WeeklyReportsPage from './pages/Learning/WeeklyReportsPage'
-import LearningSupportPage from './pages/Support/LearningSupportPage'
-import CareTeamPage from './pages/Support/CareTeamPage'
-import CaseDiscussionsPage from './pages/Support/CaseDiscussionsPage'
-import SpecialistWorkflowPage from './pages/Support/SpecialistWorkflowPage'
-import ParentLessonsPage from './pages/Learning/ParentLessonsPage'
-import AACPage from './pages/Communication/AACPage'
+
+import './styles/routes.css'
+
+const LoginPage = lazy(() => import('./pages/Auth/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/Auth/RegisterPage'))
+const ForgotPasswordPage = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('./pages/Auth/ResetPasswordPage'))
+const ChildrenPage = lazy(() => import('./pages/Children/ChildrenPage'))
+const ChildLessonsPage = lazy(() => import('./pages/Children/ChildLessonsPage'))
+const ChildProgressPage = lazy(() => import('./pages/Children/ChildProgressPage'))
+const LessonsPage = lazy(() => import('./pages/Learning/LessonsPage'))
+const AboutPage = lazy(() => import('./pages/Public/AboutPage'))
+const AdminPage = lazy(() => import('./pages/Dashboards/Admin/AdminPage'))
+const TeacherDashboard = lazy(() => import('./pages/Dashboards/Teacher/TeacherDashboard'))
+const SpecialistDashboard = lazy(() => import('./pages/Dashboards/SpecialistDashboard'))
+const ParentDashboard = lazy(() => import('./pages/Dashboards/Parent/ParentDashboard'))
+const ChildDetailsPage = lazy(() => import('./pages/Children/ChildDetailsPage'))
+const ChildFormPage = lazy(() => import('./pages/Children/ChildFormPage'))
+const NotificationsPage = lazy(() => import('./pages/Communication/NotificationsPage'))
+const SearchPage = lazy(() => import('./pages/Account/SearchPage'))
+const VerifyIdentityPage = lazy(() => import('./pages/Account/VerifyIdentityPage'))
+const ProfilePage = lazy(() => import('./pages/Account/ProfilePage'))
+const VerificationsPage = lazy(() => import('./pages/Account/VerificationsPage'))
+const SupportPage = lazy(() => import('./pages/Support/SupportPage'))
+const MinistryPage = lazy(() => import('./pages/Dashboards/MinistryPage'))
+const ConsultationsPage = lazy(() => import('./pages/Support/ConsultationsPage'))
+const EducationalGamesPage = lazy(() => import('./pages/Children/EducationalGamesPage'))
+const AccessibilityPage = lazy(() => import('./pages/Children/AccessibilityPage'))
+const AccessibilityOverviewPage = lazy(() => import('./pages/Children/AccessibilityOverviewPage'))
+const ConversationsPage = lazy(() => import('./pages/Communication/ConversationsPage'))
+const InstitutionDashboard = lazy(() => import('./pages/Dashboards/InstitutionDashboard'))
+const HomeworkPage = lazy(() => import('./pages/Learning/HomeworkPage'))
+const WeeklyReportsPage = lazy(() => import('./pages/Learning/WeeklyReportsPage'))
+const LearningSupportPage = lazy(() => import('./pages/Support/LearningSupportPage'))
+const CareTeamPage = lazy(() => import('./pages/Support/CareTeamPage'))
+const CaseDiscussionsPage = lazy(() => import('./pages/Support/CaseDiscussionsPage'))
+const SpecialistWorkflowPage = lazy(() => import('./pages/Support/SpecialistWorkflowPage'))
+const ParentLessonsPage = lazy(() => import('./pages/Learning/ParentLessonsPage'))
+const AACPage = lazy(() => import('./pages/Communication/AACPage'))
 
 function Protected({ children }) {
   if (!getToken()) return <Navigate to="/login" replace />
@@ -83,53 +88,58 @@ function RolePage({ roles, children }) {
 }
 
 export default function AppRoutes() {
+  const location = useLocation()
   return (
-    <Routes>
-      <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
-      <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
-      <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
-      <Route path="/reset-password" element={<GuestOnly><ResetPasswordPage /></GuestOnly>} />
-      <Route path="/dashboard" element={<DashboardRedirect />} />
-      <Route path="/about" element={<Page><AboutPage /></Page>} />
-      <Route path="/" element={<HomeRedirect />} />
+    <RouteLoadBoundary key={location.pathname}>
+      <Suspense fallback={<main className="container route-load-state" role="status" aria-live="polite" dir="rtl">جارِ تحميل الصفحة…</main>}>
+        <Routes>
+          <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
+          <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
+          <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
+          <Route path="/reset-password" element={<GuestOnly><ResetPasswordPage /></GuestOnly>} />
+          <Route path="/dashboard" element={<DashboardRedirect />} />
+          <Route path="/about" element={<Page><AboutPage /></Page>} />
+          <Route path="/" element={<HomeRedirect />} />
 
-      <Route path="/parent" element={<RolePage roles={['parent']}><ParentDashboard /></RolePage>} />
-      <Route path="/teacher" element={<RolePage roles={['teacher']}><TeacherDashboard /></RolePage>} />
-      <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
-      <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
-      <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
-      <Route path="/ministry" element={<RolePage roles={['ministry', 'admin']}><MinistryPage /></RolePage>} />
+          <Route path="/parent" element={<RolePage roles={['parent']}><ParentDashboard /></RolePage>} />
+          <Route path="/teacher" element={<RolePage roles={['teacher']}><TeacherDashboard /></RolePage>} />
+          <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
+          <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
+          <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
+          <Route path="/ministry" element={<RolePage roles={['ministry', 'admin']}><MinistryPage /></RolePage>} />
 
-      <Route path="/notifications" element={<Protected><Page><NotificationsPage /></Page></Protected>} />
-      <Route path="/conversations" element={<Protected><Page><ConversationsPage /></Page></Protected>} />
-      <Route path="/lessons" element={<Protected><Page><LessonsPage /></Page></Protected>} />
-      <Route path="/verify" element={<Protected><Page><VerifyIdentityPage /></Page></Protected>} />
-      <Route path="/profile" element={<Protected><Page><ProfilePage /></Page></Protected>} />
-      <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />
+          <Route path="/notifications" element={<Protected><Page><NotificationsPage /></Page></Protected>} />
+          <Route path="/conversations" element={<Protected><Page><ConversationsPage /></Page></Protected>} />
+          <Route path="/lessons" element={<Protected><Page><LessonsPage /></Page></Protected>} />
+          <Route path="/verify" element={<Protected><Page><VerifyIdentityPage /></Page></Protected>} />
+          <Route path="/profile" element={<Protected><Page><ProfilePage /></Page></Protected>} />
+          <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />
 
-      <Route path="/children" element={<RolePage roles={CHILD_ROLES}><ChildrenPage /></RolePage>} />
-      <Route path="/children/new" element={<RolePage roles={['parent', 'admin']}><ChildFormPage /></RolePage>} />
-      <Route path="/children/:childId" element={<RolePage roles={CHILD_ROLES}><ChildDetailsPage /></RolePage>} />
-      <Route path="/children/:childId/edit" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
-      <Route path="/children/:childId/lessons" element={<RolePage roles={CHILD_ROLES}><ChildLessonsPage /></RolePage>} />
-      <Route path="/children/:childId/progress" element={<RolePage roles={CHILD_ROLES}><ChildProgressPage /></RolePage>} />
-      <Route path="/children/:childId/games" element={<RolePage roles={CHILD_ROLES}><EducationalGamesPage /></RolePage>} />
-      <Route path="/children/:childId/accessibility" element={<RolePage roles={CHILD_ROLES}><AccessibilityPage /></RolePage>} />
-      <Route path="/accessibility" element={<RolePage roles={CHILD_ROLES}><AccessibilityOverviewPage /></RolePage>} />
+          <Route path="/children" element={<RolePage roles={CHILD_ROLES}><ChildrenPage /></RolePage>} />
+          <Route path="/children/new" element={<RolePage roles={['parent', 'admin']}><ChildFormPage /></RolePage>} />
+          <Route path="/children/:childId" element={<RolePage roles={CHILD_ROLES}><ChildDetailsPage /></RolePage>} />
+          <Route path="/children/:childId/edit" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
+          <Route path="/children/:childId/lessons" element={<RolePage roles={CHILD_ROLES}><ChildLessonsPage /></RolePage>} />
+          <Route path="/children/:childId/progress" element={<RolePage roles={CHILD_ROLES}><ChildProgressPage /></RolePage>} />
+          <Route path="/children/:childId/games" element={<RolePage roles={CHILD_ROLES}><EducationalGamesPage /></RolePage>} />
+          <Route path="/children/:childId/accessibility" element={<RolePage roles={CHILD_ROLES}><AccessibilityPage /></RolePage>} />
+          <Route path="/accessibility" element={<RolePage roles={CHILD_ROLES}><AccessibilityOverviewPage /></RolePage>} />
 
-      <Route path="/search" element={<RolePage roles={STAFF_SEARCH_ROLES}><SearchPage /></RolePage>} />
-      <Route path="/consultations" element={<RolePage roles={CONSULTATION_ROLES}><ConsultationsPage /></RolePage>} />
-      <Route path="/homeworks" element={<RolePage roles={['parent','teacher','specialist','admin']}><HomeworkPage /></RolePage>} />
-      <Route path="/weekly-reports" element={<RolePage roles={['parent','teacher','specialist','admin']}><WeeklyReportsPage /></RolePage>} />
-      <Route path="/learning-support" element={<RolePage roles={['parent','specialist','admin']}><LearningSupportPage /></RolePage>} />
-      <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
-      <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
-      <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
-      <Route path="/parent-lessons" element={<RolePage roles={['parent']}><ParentLessonsPage /></RolePage>} />
-      <Route path="/aac" element={<RolePage roles={CHILD_ROLES}><AACPage /></RolePage>} />
-      <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />
+          <Route path="/search" element={<RolePage roles={STAFF_SEARCH_ROLES}><SearchPage /></RolePage>} />
+          <Route path="/consultations" element={<RolePage roles={CONSULTATION_ROLES}><ConsultationsPage /></RolePage>} />
+          <Route path="/homeworks" element={<RolePage roles={['parent','teacher','specialist','admin']}><HomeworkPage /></RolePage>} />
+          <Route path="/weekly-reports" element={<RolePage roles={['parent','teacher','specialist','admin']}><WeeklyReportsPage /></RolePage>} />
+          <Route path="/learning-support" element={<RolePage roles={['parent','specialist','admin']}><LearningSupportPage /></RolePage>} />
+          <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
+          <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
+          <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
+          <Route path="/parent-lessons" element={<RolePage roles={['parent']}><ParentLessonsPage /></RolePage>} />
+          <Route path="/aac" element={<RolePage roles={CHILD_ROLES}><AACPage /></RolePage>} />
+          <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </RouteLoadBoundary>
   )
 }

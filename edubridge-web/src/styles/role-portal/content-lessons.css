@@ -1,0 +1,53 @@
+/* Parent lessons page */
+.parent-lessons-page {
+  padding-block: 0 20px !important;
+}
+
+.parent-lessons-page .lessons-hero {
+  border: 1px solid var(--pp-line);
+  border-radius: 24px;
+  box-shadow: none;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(79,211,196,.17), transparent 13rem),
+    linear-gradient(135deg, #fff, #edf9ff);
+}
+
+.parent-lessons-page .lessons-hero h1 {
+  color: var(--pp-blue-deep);
+}
+
+.parent-lessons-page .lesson-search {
+  border: 1px solid #d8e9f3;
+  box-shadow: none;
+}
+
+.parent-lessons-page .category-chips button {
+  border-color: #d7e7f1;
+}
+
+.parent-lessons-page .category-chips button.active {
+  background: linear-gradient(135deg, var(--pp-blue), #1487dd);
+  color: #fff;
+}
+
+.parent-lessons-page .lessons-layout {
+  grid-template-columns: minmax(0, 1fr) 286px;
+  gap: 16px;
+}
+
+.parent-lessons-page .lesson-card-new,
+.parent-lessons-page .noor-lessons-card,
+.parent-lessons-page .daily-picks {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  box-shadow: none;
+}
+
+.parent-lessons-page .lesson-card-new {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.parent-lessons-page .lesson-card-new:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(21,91,147,.09);
+}

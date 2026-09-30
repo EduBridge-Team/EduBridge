@@ -14,7 +14,6 @@ import {
   LearningSupportRequests,
   LearningSupportSessions,
 } from './LearningSupportSections'
-import '../../feature-parity.css'
 
 export default function LearningSupportPage() {
   const me = getUser()

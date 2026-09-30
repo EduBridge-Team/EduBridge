@@ -1,0 +1,86 @@
+/* ============================================================
+   Role portal Flutter parity layer
+   Keeps utility/workflow pages aligned with the mobile app
+   without changing public/marketing surfaces.
+   ============================================================ */
+body.role-portal-active .fp-card,
+body.role-portal-active .homework-card,
+body.role-portal-active .weekly-report-card,
+body.role-portal-active .care-team-member-card,
+body.role-portal-active .case-list-card,
+body.role-portal-active .case-detail-card,
+body.role-portal-active .learning-support-card,
+body.role-portal-active .specialist-workflow-card {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: var(--pp-surface);
+  box-shadow: none;
+}
+
+body.role-portal-active .fp-hero {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.12), transparent 15rem),
+    linear-gradient(135deg, var(--pp-surface), var(--pp-soft));
+  box-shadow: none;
+}
+
+body.role-portal-active .fp-form input,
+body.role-portal-active .fp-form select {
+  min-height: var(--pp-control-height);
+  padding-inline: 18px;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+body.role-portal-active .fp-form textarea {
+  min-height: 112px;
+  padding: 16px 18px;
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+  background: var(--pp-surface);
+}
+
+body.role-portal-active .fp-form input:focus,
+body.role-portal-active .fp-form select:focus,
+body.role-portal-active .fp-form textarea:focus {
+  border-color: var(--pp-cyan);
+  box-shadow: 0 0 0 3px rgba(33,191,208,.14);
+  outline: 0;
+}
+
+body.role-portal-active .fp-empty {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-card);
+  background: rgba(255,255,255,.82);
+}
+
+body.role-portal-active .reports-child-select,
+body.role-portal-active .fp-message,
+body.role-portal-active .fp-check {
+  border-color: var(--pp-line);
+  border-radius: var(--pp-radius-control);
+}
+
+body.role-portal-active .reports-child-select select,
+body.role-portal-active .parent-lessons-search {
+  min-height: var(--pp-control-height);
+  border-radius: var(--pp-radius-control);
+}
+
+:root[data-theme="dark"] body.role-portal-active .fp-card,
+:root[data-theme="dark"] body.role-portal-active .homework-card,
+:root[data-theme="dark"] body.role-portal-active .weekly-report-card,
+:root[data-theme="dark"] body.role-portal-active .care-team-member-card,
+:root[data-theme="dark"] body.role-portal-active .case-list-card,
+:root[data-theme="dark"] body.role-portal-active .case-detail-card,
+:root[data-theme="dark"] body.role-portal-active .learning-support-card,
+:root[data-theme="dark"] body.role-portal-active .specialist-workflow-card,
+:root[data-theme="dark"] body.role-portal-active .fp-empty,
+:root[data-theme="dark"] body.role-portal-active .reports-child-select {
+  border-color: var(--pp-line);
+  background: var(--pp-surface);
+  color: var(--pp-ink);
+}

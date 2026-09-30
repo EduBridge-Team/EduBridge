@@ -1,0 +1,137 @@
+/* عناوين الأقسام */
+
+.section-label {
+    color: var(--coral-deep);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.section-title {
+    font-size: 27px;
+    margin: 6px 0 22px;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.section-link {
+    color: var(--teal-deep);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+}
+
+
+/* الرسالة: الإحصاءات + الرؤية */
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.4fr;
+    gap: 20px;
+}
+
+.stats-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.stats-card .stat+.stat {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+}
+
+.stats-card .num {
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--navy);
+}
+
+.stats-card .lbl {
+    color: var(--muted);
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.vision-card {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 20px;
+    padding: 36px;
+}
+
+.vision-icon {
+    color: #fff;
+    display: flex;
+}
+
+.vision-card h3 {
+    color: #fff;
+    font-size: 23px;
+    margin: 14px 0 10px;
+}
+
+.vision-card p {
+    line-height: 1.9;
+    opacity: 0.88;
+    margin: 0;
+    font-size: 15.5px;
+}
+
+
+/* بطاقات المزايا */
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.feature-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 24px;
+}
+
+.feature-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: var(--tint-teal);
+    color: var(--teal-deep);
+}
+
+.feature-card:nth-child(2n) .feature-icon {
+    background: var(--tint-green);
+    color: var(--green-deep);
+}
+
+.feature-card h3 {
+    margin: 12px 0 6px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.75;
+}

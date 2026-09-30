@@ -12,7 +12,6 @@ import {
   CareTeamMemberForm,
   CareTeamMembers,
 } from './CareTeamSections'
-import '../../feature-parity.css'
 
 const EMPTY_TEAM = { members: [] }
 

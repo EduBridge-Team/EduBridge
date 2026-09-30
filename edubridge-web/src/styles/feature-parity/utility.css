@@ -1,0 +1,133 @@
+/* ===== Unified utility pages ===== */
+.fp-page {
+  gap: 16px;
+}
+
+.fp-hero {
+  min-height: 176px;
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.14), transparent 15rem),
+    linear-gradient(135deg, #f8fdff, #eef9fc);
+  box-shadow: var(--shadow-soft);
+}
+
+.fp-eyebrow {
+  color: var(--brand-blue);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fp-hero h1 {
+  margin: 4px 0 5px;
+  color: var(--brand-blue-deep);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+}
+
+.fp-hero p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--muted);
+}
+
+.fp-card {
+  border-radius: var(--r-lg);
+  border-color: var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.fp-form-card {
+  padding: 20px;
+}
+
+.fp-form-card h3,
+.homework-card h3,
+.weekly-report-card h3 {
+  color: var(--brand-blue-deep);
+  font-weight: 800;
+}
+
+.homework-card,
+.weekly-report-card {
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.homework-card:hover,
+.weekly-report-card:hover {
+  transform: translateY(-1px);
+  border-color: #bdddeb;
+  box-shadow: 0 12px 28px rgba(23,105,194,.08);
+}
+
+.fp-meta span,
+.fp-badge {
+  border-radius: 999px;
+}
+
+.fp-badge {
+  background: var(--tint-teal);
+  color: var(--brand-blue-deep);
+}
+
+.fp-empty {
+  border: 1px dashed #cfe2ee;
+  border-radius: 18px;
+  background: rgba(255,255,255,.72);
+}
+
+.reports-child-select {
+  min-width: 220px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,.84);
+}
+
+.reports-child-select span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.reports-child-select select {
+  min-height: 40px;
+  border-radius: 12px;
+}
+
+:root[data-theme="dark"] .fp-hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(33,191,208,.10), transparent 15rem),
+    linear-gradient(135deg, #0d2947, #10374d);
+}
+
+:root[data-theme="dark"] .fp-card,
+:root[data-theme="dark"] .fp-empty,
+:root[data-theme="dark"] .reports-child-select {
+  border-color: var(--line);
+  background: #0d2947;
+  color: #eef8ff;
+}
+
+@media (max-width: 680px) {
+  .fp-hero {
+    min-height: 0;
+    padding: 22px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reports-child-select {
+    min-width: 0;
+    width: 100%;
+  }
+}
