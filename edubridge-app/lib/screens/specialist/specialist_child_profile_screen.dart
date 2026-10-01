@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
-import '../../services/accessibility_service.dart';
+import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../child_progress_screen.dart';
 
@@ -21,42 +21,57 @@ class _SpecialistChildProfileScreenState
     extends State<SpecialistChildProfileScreen> {
   late final int _childId;
   late final String _childName;
+  late Map<String, dynamic> _child;
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _childId = widget.child['id'] as int;
     _childName = (widget.child['name'] ?? '').toString();
-    AccessibilityService.instance.setActiveChild(
-      _childId,
-      disabilityTypeHint: widget.child['disability_type']?.toString(),
-      forceReload: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    AccessibilityService.instance.setActiveChild(null);
-    super.dispose();
+    _child = Map<String, dynamic>.from(widget.child);
+    _load();
   }
 
   String _text(dynamic value) => (value ?? '').toString().trim();
 
   List<String> _list(dynamic value) =>
-      (value as List? ?? []).map((e) => e.toString()).toList();
+      value is List ? value.map((e) => e.toString()).toList() : [];
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final response = await ApiService.authGet('/children/$_childId');
+      final data = ApiService.decodeMap(response.body);
+      if (response.statusCode != 200 || data['child'] is! Map) {
+        throw Exception('تعذّر تحميل معلومات الطالب');
+      }
+      if (!mounted) return;
+      setState(() => _child = Map<String, dynamic>.from(data['child'] as Map));
+    } catch (_) {
+      if (mounted) setState(() => _error = 'تعذّر تحديث معلومات الطالب. حاول مرة أخرى.');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final child = widget.child;
+    final child = _child;
 
     final age = child['age'];
     final disability = _text(child['disability_type']);
     final description = _text(child['disability_description']);
-    final medicalHistory = _text(child['medical_history']);
     final specialNeeds = _text(child['special_needs']);
     final preferredStyle = _text(child['preferred_learning_style']);
-    final psychologistNotes = _text(child['psychologist_notes']);
+    final notes = _text(child['notes']);
+    final plan = child['current_plan'];
+    final educationalPlan = plan is Map ? _text(plan['educational_plan']) : '';
     final strengths = _list(child['strengths']);
     final challenges = _list(child['challenges']);
 
@@ -70,6 +85,12 @@ class _SpecialistChildProfileScreenState
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (_loading) const LinearProgressIndicator(),
+          if (_error != null)
+            ListTile(
+              title: Text(_error!),
+              trailing: TextButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            ),
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -121,6 +142,14 @@ class _SpecialistChildProfileScreenState
             c,
             title: 'معلومات الطالب',
             children: [
+              if (_text(child['birth_date']).isNotEmpty)
+                _row(c, 'تاريخ الميلاد', _text(child['birth_date']), Icons.cake_outlined),
+              if (_text(child['gender']).isNotEmpty)
+                _row(c, 'الجنس', switch (_text(child['gender'])) {
+                  'male' => 'ذكر',
+                  'female' => 'أنثى',
+                  final value => value,
+                }, Icons.person_outline),
               if (disability.isNotEmpty)
                 _row(c, 'نوع الإعاقة', disability, Icons.accessibility_new),
               if (description.isNotEmpty)
@@ -131,16 +160,22 @@ class _SpecialistChildProfileScreenState
                 _row(c, 'الاحتياجات الخاصة', specialNeeds, AppIcons.support),
             ],
           ),
-          if (medicalHistory.isNotEmpty || psychologistNotes.isNotEmpty) ...[
+          if (notes.isNotEmpty || educationalPlan.isNotEmpty ||
+              _text(child['assigned_teacher_name']).isNotEmpty ||
+              _text(child['organization_name']).isNotEmpty) ...[
             const SizedBox(height: 14),
             _section(
               c,
-              title: 'معلومات داعمة',
+              title: 'فريق المتابعة والخطة التعليمية',
               children: [
-                if (medicalHistory.isNotEmpty)
-                  _row(c, 'التاريخ الطبي', medicalHistory, AppIcons.certificate),
-                if (psychologistNotes.isNotEmpty)
-                  _row(c, 'ملاحظات نفسية', psychologistNotes, AppIcons.cognitive),
+                if (_text(child['assigned_teacher_name']).isNotEmpty)
+                  _row(c, 'المعلم', _text(child['assigned_teacher_name']), Icons.school_outlined),
+                if (_text(child['organization_name']).isNotEmpty)
+                  _row(c, 'المؤسسة', _text(child['organization_name']), Icons.business_outlined),
+                if (educationalPlan.isNotEmpty)
+                  _row(c, 'الخطة التعليمية', educationalPlan, AppIcons.lesson),
+                if (notes.isNotEmpty)
+                  _row(c, 'ملاحظات', notes, AppIcons.info),
               ],
             ),
           ],

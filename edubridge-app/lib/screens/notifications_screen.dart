@@ -1,5 +1,6 @@
 // lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
+import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/notification_listener_service.dart';

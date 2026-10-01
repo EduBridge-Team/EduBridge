@@ -58,6 +58,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
         title: 'دراسات الحالة',
         actions: [

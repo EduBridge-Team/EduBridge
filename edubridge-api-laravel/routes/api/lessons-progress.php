@@ -30,7 +30,8 @@ Route::get('/lessons/{id}', [\App\Http\Controllers\LessonController::class, 'sho
 
 // تقييمات المادة التعليمية
 Route::get('/lessons/{id}/ratings', [\App\Http\Controllers\RatingController::class, 'index']);
-Route::post('/lessons/{id}/ratings', [\App\Http\Controllers\RatingController::class, 'store']);
+Route::post('/lessons/{id}/ratings', [\App\Http\Controllers\RatingController::class, 'store'])
+    ->middleware('throttle:lesson-ratings');
 Route::delete('/ratings/{id}', [\App\Http\Controllers\RatingController::class, 'destroy']);
 
 // وسائط الدروس

@@ -5,6 +5,7 @@ extension _NotificationsScreenStateView on _NotificationsScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
         title: 'الإشعارات',
         actions: [

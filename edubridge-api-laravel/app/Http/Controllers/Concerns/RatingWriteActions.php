@@ -10,22 +10,14 @@ trait RatingWriteActions
     public function store(Request $request, $lessonId)
     {
         $me = $request->attributes->get('jwt_user');
-        $stars = (int) $request->input('stars');
-
-        if ($stars < 1 || $stars > 5) {
-            return response()->json(['error' => 'التقييم يجب أن يكون بين 1 و 5 نجوم'], 400);
-        }
-
-        $comment = $request->input('comment');
-        if (is_string($comment)) {
-            $comment = trim($comment);
-            if ($comment === '') {
-                $comment = null;
-            } elseif (mb_strlen($comment) > 1000) {
-                return response()->json(['error' => 'التعليق طويل جداً'], 422);
-            }
-        } else {
-            $comment = null;
+        $validated = $request->validate([
+            'stars' => ['required', 'integer', 'between:1,5'],
+            'comment' => ['nullable', 'string', 'max:1000'],
+        ]);
+        $stars = (int) $validated['stars'];
+        $comment = trim($validated['comment'] ?? '') ?: null;
+        if ($comment !== null && \App\Services\RatingCommentPolicy::isAbusive($comment)) {
+            return response()->json(['error' => 'يرجى كتابة تعليق محترم وخالٍ من الإساءة.'], 422);
         }
 
         try {
@@ -33,28 +25,22 @@ trait RatingWriteActions
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
             }
 
-            $existing = DB::table('lesson_ratings')
-                ->where('lesson_id', $lessonId)
-                ->where('user_id', $me->id)
-                ->first();
-
-            if ($existing) {
-                DB::table('lesson_ratings')->where('id', $existing->id)->update([
-                    'stars' => $stars,
-                    'comment' => $comment,
-                ]);
-                $id = $existing->id;
-            } else {
-                $id = DB::table('lesson_ratings')->insertGetId([
+            // The unique (lesson_id, user_id) key also protects concurrent requests.
+            DB::table('lesson_ratings')->upsert([
+                [
                     'lesson_id' => $lessonId,
                     'user_id' => $me->id,
                     'stars' => $stars,
                     'comment' => $comment,
-                ]);
-            }
+                ],
+            ], ['lesson_id', 'user_id'], ['stars', 'comment']);
+            $rating = DB::table('lesson_ratings')
+                ->where('lesson_id', $lessonId)
+                ->where('user_id', $me->id)
+                ->first();
 
             return response()->json([
-                'rating' => DB::table('lesson_ratings')->find($id),
+                'rating' => $rating,
             ], 201);
         } catch (\Exception $e) {
             report($e);
