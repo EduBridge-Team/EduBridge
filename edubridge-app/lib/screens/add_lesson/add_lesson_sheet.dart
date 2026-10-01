@@ -198,9 +198,16 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
         child: GestureDetector(
           onTap: () {},
           child: SingleChildScrollView(
+            padding: widget.fullScreen
+                ? const EdgeInsets.fromLTRB(16, 16, 16, 28)
+                : EdgeInsets.zero,
             child: Container(
-              margin: widget.fullScreen ? EdgeInsets.zero : const EdgeInsets.fromLTRB(12, 52, 12, 12),
-              padding: const EdgeInsets.all(18),
+              margin: widget.fullScreen
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.fromLTRB(12, 52, 12, 12),
+              padding: widget.fullScreen
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: c.card,
                 borderRadius: widget.fullScreen
@@ -222,7 +229,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(),
-                  const SizedBox(height: 6),
+                  if (!widget.fullScreen) const SizedBox(height: 6),
                   Text(
                     'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
                     style: TextStyle(
