@@ -10,7 +10,7 @@ import 'chats_screen.dart';
 import 'children_screen.dart';
 import 'lessons_screen.dart';
 import 'verify_identity/verify_identity_screen.dart';
-import 'welcome_screen.dart';
+import 'login_screen.dart';
 part 'institution_screen_view.dart';
 
 class InstitutionScreen extends StatelessWidget {
@@ -21,7 +21,7 @@ class InstitutionScreen extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
       (_) => false,
     );
   }

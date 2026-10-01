@@ -6,7 +6,8 @@ import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../change_password_screen.dart';
-import '../welcome_screen.dart';
+import '../add_certificate_sheet.dart';
+import '../login_screen.dart';
 
 part 'profile_delete_dialog.dart';
 part 'profile_widgets.dart';
@@ -242,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
         (route) => false,
       );
     } catch (e) {
@@ -283,7 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await ApiService.logout();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
   }

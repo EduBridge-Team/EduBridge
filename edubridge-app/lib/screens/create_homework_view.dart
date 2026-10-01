@@ -178,14 +178,30 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                             color: Colors.white, strokeWidth: 2),
                       )
                     : const Icon(AppIcons.save),
-                label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الواجب'),
+                label: Text(_saving ? 'جارِ النشر...' : 'نشر'),
                 onPressed: _saving ? null : _save,
               ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: 0,
+        onDestinationSelected: (index) => Navigator.pop(context, index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'الأطفال',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.lesson),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'الدروس',
+          ),
+        ],
+      ),
     );
-  
+
   }
 }

@@ -40,6 +40,23 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
           _sectionTitle('معلومات الحساب', c),
           const SizedBox(height: 10),
           _buildInfoCard(name, email, phone, role, isVerified),
+          if (role == 'teacher') ...[
+            const SizedBox(height: 20),
+            _sectionTitle('الملف المهني', c),
+            const SizedBox(height: 8),
+            _actionCard(
+              icon: AppIcons.certificate,
+              title: 'إضافة شهادة',
+              subtitle: 'أضف شهاداتك ومؤهلاتك المهنية',
+              color: AppColors.brandTealDeep,
+              onTap: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => AddCertificateSheet(onSaved: _load),
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
           _sectionTitle('الأمان', c),
           const SizedBox(height: 8),

@@ -117,7 +117,7 @@ extension _TeacherActions on _TeacherScreenState {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
   }
 
@@ -134,6 +134,10 @@ extension _TeacherActions on _TeacherScreenState {
       context,
       MaterialPageRoute(builder: (_) => CreateHomeworkScreen(children: _children)),
     );
-    if (result == true) _loadData();
+    if (result == true) {
+      _loadData();
+    } else if (result is int && mounted) {
+      setState(() => _tabIndex = result < 0 ? 0 : (result > 1 ? 1 : result));
+    }
   }
 }

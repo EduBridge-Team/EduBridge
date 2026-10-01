@@ -59,23 +59,6 @@ Widget _buildTeacherHeader({
                       ),
                     ),
                     DashboardMenuAction(
-                      id: 'certificate',
-                      label: 'إضافة شهادة',
-                      icon: AppIcons.certificate,
-                      onSelected: () async {
-                        if (await onVerify()) {
-                          if (!context.mounted) return;
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (_) =>
-                                AddCertificateSheet(onSaved: onLoadData),
-                          );
-                        }
-                      },
-                    ),
-                    DashboardMenuAction(
                       id: 'chats',
                       label: 'المحادثات',
                       icon: AppIcons.chat,
@@ -99,18 +82,38 @@ Widget _buildTeacherHeader({
                     ),
                   ],
                 ),
-                ColorFiltered(
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
-                  child: Image.asset(
-                    'assets/brand_logo.png',
-                    width: 136,
-                    height: 38,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: 'الإشعارات',
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      ),
+                      icon: const Icon(
+                        AppIcons.notifications,
+                        color: Colors.white,
+                        size: 27,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    ColorFiltered(
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                      child: Image.asset(
+                        'assets/brand_logo.png',
+                        width: 136,
+                        height: 38,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
