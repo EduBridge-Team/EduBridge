@@ -4,6 +4,9 @@ import '../../app_icons.dart';
 import '../../model/homework_model.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../case_discussion/case_discussion_screen.dart';
+import '../create_weekly_report_screen.dart';
+import '../teacher/teacher_screen.dart';
 
 part 'teacher_homework_tab.dart';
 part 'teacher_homework_tab_widgets.dart';
@@ -80,16 +83,94 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _HomeworkTab(
-            childId: widget.childId,
-            childName: widget.childName,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CreateWeeklyReportScreen(
+                          childId: widget.childId,
+                          childName: widget.childName,
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(AppIcons.edit, size: 18),
+                    label: const Text('كتابة تقرير'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.brandTealDeep,
+                      minimumSize: const Size.fromHeight(48),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CaseDiscussionScreen(
+                          filterChildId: widget.childId,
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(AppIcons.forum, size: 18),
+                    label: const Text('دراسة الحالة'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.purple,
+                      minimumSize: const Size.fromHeight(48),
+                      side: BorderSide(
+                        color: AppColors.purple.withValues(alpha: .45),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          _LessonsTab(
-            childId: widget.childId,
-            childName: widget.childName,
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _HomeworkTab(
+                  childId: widget.childId,
+                  childName: widget.childName,
+                ),
+                _LessonsTab(
+                  childId: widget.childId,
+                  childName: widget.childName,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: 0,
+        onDestinationSelected: (index) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TeacherScreen(initialTab: index),
+            ),
+            (route) => false,
+          );
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'الأطفال',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.lesson),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'الدروس',
           ),
         ],
       ),
