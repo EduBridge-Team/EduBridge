@@ -203,7 +203,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       floatingActionButton: _tabIndex == 1
           ? FloatingActionButton.extended(
               onPressed: () async {
-                if (!await _checkVerification() || !mounted) return;
                 final lesson = await Navigator.push<Map>(
                   context,
                   MaterialPageRoute(

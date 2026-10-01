@@ -27,6 +27,7 @@ import 'create_learning_support_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
+import 'login_screen.dart';
 
 part 'parent_screen_widgets.dart';
 
@@ -309,7 +310,10 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: () async {
                   final navigator = Navigator.of(context);
                   await ApiService.logout();
-                  navigator.pushReplacementNamed('/home');
+                  navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (_) => false,
+                  );
                 },
               ),
             ],

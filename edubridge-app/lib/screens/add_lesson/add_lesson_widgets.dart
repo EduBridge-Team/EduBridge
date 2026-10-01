@@ -2,6 +2,8 @@ part of 'add_lesson_sheet.dart';
 
 extension _AddLessonWidgets on _AddLessonSheetState {
   Widget _buildHeader() {
+    if (widget.fullScreen) return const SizedBox.shrink();
+
     return Row(
       children: [
         const Icon(AppIcons.lesson, color: AppColors.brandBlue, size: 26),
@@ -23,7 +25,9 @@ extension _AddLessonWidgets on _AddLessonSheetState {
   Widget _buildForParentsToggle(JisrColors c) {
     return Container(
       decoration: BoxDecoration(
-        color: _forParents ? AppColors.brandTealDeep.withValues(alpha: 0.1) : c.tintTeal,
+        color: _forParents
+            ? AppColors.brandTealDeep.withValues(alpha: 0.1)
+            : c.tintTeal,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: _forParents ? AppColors.brandTeal : c.line,
@@ -36,7 +40,11 @@ extension _AddLessonWidgets on _AddLessonSheetState {
         onChanged: (v) => _updateLessonSheetState(() => _forParents = v),
         title: Row(
           children: [
-            const Icon(AppIcons.parent, color: AppColors.brandTealDeep, size: 22),
+            const Icon(
+              AppIcons.parent,
+              color: AppColors.brandTealDeep,
+              size: 22,
+            ),
             const SizedBox(width: 8),
             Text(
               'درس مخصص لأولياء الأمور',
@@ -80,7 +88,40 @@ extension _AddLessonWidgets on _AddLessonSheetState {
     );
   }
 
+  Widget _buildSaveButton() {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            _forParents ? AppColors.brandTealDeep : AppColors.green,
+        foregroundColor: Colors.white,
+        minimumSize: const Size.fromHeight(54),
+      ),
+      icon: _saving
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : const Icon(AppIcons.save),
+      onPressed: _saving ? null : _save,
+      label: Text(
+        _saving ? 'جارِ الحفظ...' : 'حفظ الدرس',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+      ),
+    );
+  }
+
   Widget _buildActions() {
+    if (widget.fullScreen) {
+      return SizedBox(
+        width: double.infinity,
+        child: _buildSaveButton(),
+      );
+    }
+
     return Row(
       children: [
         Expanded(
@@ -90,28 +131,7 @@ extension _AddLessonWidgets on _AddLessonSheetState {
           ),
         ),
         const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  _forParents ? AppColors.brandTealDeep : AppColors.green,
-              foregroundColor: Colors.white,
-            ),
-            icon: _saving
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(AppIcons.save),
-            onPressed: _saving ? null : _save,
-            label: Text(
-              _saving ? 'جارِ الحفظ...' : 'حفظ الدرس',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ),
+        Expanded(child: _buildSaveButton()),
       ],
     );
   }

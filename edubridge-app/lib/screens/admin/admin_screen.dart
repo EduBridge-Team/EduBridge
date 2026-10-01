@@ -8,6 +8,7 @@ import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/legal_links_button.dart';
 import '../edit_child_screen.dart';
+import '../login_screen.dart';
 
 part 'admin_users_tab.dart';
 part 'admin_user_children_sheet.dart';
@@ -94,7 +95,10 @@ class _AdminScreenState extends State<AdminScreen> {
                 onSelected: () async {
                   await ApiService.logout();
                   if (context.mounted) {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (_) => false,
+                    );
                   }
                 },
               ),
