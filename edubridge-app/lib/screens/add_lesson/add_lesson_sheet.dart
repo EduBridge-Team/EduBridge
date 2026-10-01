@@ -18,12 +18,14 @@ class AddLessonSheet extends StatefulWidget {
   final List types;
   final VoidCallback onClose;
   final void Function(Map lesson) onCreated;
+  final bool fullScreen;
 
   const AddLessonSheet({
     super.key,
     required this.types,
     required this.onClose,
     required this.onCreated,
+    this.fullScreen = false,
   });
 
   @override
@@ -187,27 +189,31 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     final c = JisrColors.of(context);
 
     return GestureDetector(
-      onTap: widget.onClose,
+      onTap: widget.fullScreen ? null : widget.onClose,
       child: Container(
-        color: Colors.black54,
-        alignment: Alignment.center,
+        color: widget.fullScreen ? c.background : Colors.black54,
+        alignment: widget.fullScreen ? Alignment.topCenter : Alignment.center,
         child: GestureDetector(
           onTap: () {},
           child: SingleChildScrollView(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(12, 52, 12, 12),
+              margin: widget.fullScreen ? EdgeInsets.zero : const EdgeInsets.fromLTRB(12, 52, 12, 12),
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: c.card,
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: c.line),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .10),
-                    blurRadius: 28,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
+                borderRadius: widget.fullScreen
+                    ? BorderRadius.zero
+                    : BorderRadius.circular(28),
+                border: widget.fullScreen ? null : Border.all(color: c.line),
+                boxShadow: widget.fullScreen
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: .10),
+                          blurRadius: 28,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
