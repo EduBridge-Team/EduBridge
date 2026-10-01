@@ -16,7 +16,8 @@ trait HomeworkGradeActions
         }
 
         $grade = $request->input('grade');
-        if ($grade === null || !is_numeric($grade) || (int) $grade < 0 || (int) $grade > 100) {
+        if ($grade === null || !is_numeric($grade) || !is_finite((float) $grade)
+            || (float) $grade < 0 || (float) $grade > 100 || floor((float) $grade) !== (float) $grade) {
             return response()->json(['error' => 'العلامة يجب أن تكون بين 0 و100'], 422);
         }
 

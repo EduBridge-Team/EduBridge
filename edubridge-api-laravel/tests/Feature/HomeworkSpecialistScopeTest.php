@@ -158,6 +158,26 @@ class HomeworkSpecialistScopeTest extends TestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function test_teacher_can_grade_own_homework_and_preserve_feedback(): void
+    {
+        $response = app(HomeworkController::class)->grade(
+            $this->request('PUT', ['grade' => 90, 'feedback' => 'أحسنت'], 1, 'teacher'), 500
+        );
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertDatabaseHas('homework_submissions', ['id' => 500, 'grade' => 90, 'feedback' => 'أحسنت', 'graded_by' => 1]);
+    }
+
+    public function test_empty_and_out_of_range_grades_never_overwrite_submission(): void
+    {
+        foreach ([null, '', -1, 101, 100.5, 'not-a-grade'] as $grade) {
+            $response = app(HomeworkController::class)->grade(
+                $this->request('PUT', ['grade' => $grade], 1, 'teacher'), 500
+            );
+            $this->assertSame(422, $response->getStatusCode());
+        }
+        $this->assertDatabaseHas('homework_submissions', ['id' => 500, 'grade' => null]);
+    }
+
     private function request(string $method, array $payload, int $id, string $role): Request
     {
         $request = Request::create('/api/homeworks', $method, $payload);
