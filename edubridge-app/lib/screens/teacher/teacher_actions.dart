@@ -137,7 +137,7 @@ extension _TeacherActions on _TeacherScreenState {
     if (result == true) {
       _loadData();
     } else if (result is int && mounted) {
-      setState(() => _tabIndex = result.clamp(0, 1));
+      setState(() => _tabIndex = result < 0 ? 0 : (result > 1 ? 1 : result));
     }
   }
 }
