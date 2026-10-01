@@ -1,4 +1,20 @@
 /* Shared page hierarchy, preserving the existing role palette. */
+.pp-content .specialist-progress-link {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+}
+.pp-content .specialist-progress-link:focus-visible {
+  outline: 2px solid var(--pp-blue);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
 .pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading) {
   min-height: 144px;
   padding: 24px;
