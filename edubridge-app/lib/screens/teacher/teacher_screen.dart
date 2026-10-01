@@ -8,8 +8,7 @@ import '../../widgets/dashboard_menu.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
-import '../add_certificate_sheet.dart';
-import '../add_lesson/add_lesson_sheet.dart';
+import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../chats_screen.dart';
 import '../child_progress_screen.dart';
@@ -21,7 +20,7 @@ import '../support_sheet.dart';
 import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
-import '../welcome_screen.dart';
+import '../login_screen.dart';
 
 part 'teacher_children_tab.dart';
 part 'teacher_lessons_tab.dart';
@@ -31,14 +30,19 @@ part 'teacher_actions.dart';
 part 'teacher_child_card_view.dart';
 
 class TeacherScreen extends StatefulWidget {
-  const TeacherScreen({super.key});
+  final int initialTab;
+
+  const TeacherScreen({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<TeacherScreen> createState() => _TeacherScreenState();
 }
 
 class _TeacherScreenState extends State<TeacherScreen> {
-  int _tabIndex = 0;
+  late int _tabIndex;
   List _children = [];
   List _lessons = [];
   List _types = [];
@@ -55,6 +59,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   @override
   void initState() {
     super.initState();
+    _tabIndex = widget.initialTab.clamp(0, 1);
     _loadData().then((_) => _checkAndShowVerificationDialog());
   }
 
@@ -139,7 +144,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final inlineModalVisible = _adding || _viewingLesson != null;
 
     return Scaffold(
       body: Stack(
@@ -169,57 +173,49 @@ class _TeacherScreenState extends State<TeacherScreen> {
                               : _buildLessonsTab(context, c, _lessons, _types, _query,
                                   (v) => setState(() => _query = v),
                                   (lesson) => _setViewingLesson(lesson))),
-                ),
+          ),
               ),
             ],
           ),
           if (_viewingLesson != null)
             _buildLessonViewModal(context, c, _viewingLesson!, _typeName,
                 () => _setViewingLesson(null)),
-          if (_adding)
-            Positioned.fill(
-              child: AddLessonSheet(
-                types: _types,
-                onClose: () => _setAdding(false),
-                onCreated: (lesson) {
-                  inlineModalOpen.value = false;
-                  setState(() {
-                    _lessons = [lesson, ..._lessons];
-                    _adding = false;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('تم إضافة الدرس بنجاح'),
-                      backgroundColor: AppColors.green,
-                    ),
-                  );
-                },
-              ),
-            ),
         ],
       ),
-      bottomNavigationBar: inlineModalVisible
-          ? null
-          : NavigationBar(
-              selectedIndex: _tabIndex,
-              onDestinationSelected: (i) => setState(() => _tabIndex = i),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.people_outline),
-                  selectedIcon: Icon(Icons.people),
-                  label: 'الأطفال',
-                ),
-                NavigationDestination(
-                  icon: Icon(AppIcons.lesson),
-                  selectedIcon: Icon(Icons.menu_book),
-                  label: 'الدروس',
-                ),
-              ],
-            ),
-      floatingActionButton: _tabIndex == 1 && !inlineModalVisible
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _tabIndex,
+        onDestinationSelected: (i) => setState(() => _tabIndex = i),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'الأطفال',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.lesson),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'الدروس',
+          ),
+        ],
+      ),
+      floatingActionButton: _tabIndex == 1
           ? FloatingActionButton.extended(
               onPressed: () async {
-                if (await _checkVerification()) _setAdding(true);
+                if (!await _checkVerification() || !mounted) return;
+                final lesson = await Navigator.push<Map>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddLessonScreen(types: _types),
+                  ),
+                );
+                if (!mounted || lesson == null) return;
+                setState(() => _lessons = [lesson, ..._lessons]);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('تم إضافة الدرس بنجاح'),
+                    backgroundColor: AppColors.green,
+                  ),
+                );
               },
               icon: const Icon(AppIcons.add),
               label: const Text(
