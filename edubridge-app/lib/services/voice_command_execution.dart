@@ -3,6 +3,8 @@ part of 'voice_command_service.dart';
 
 extension _VoiceCommandExecutionExtension on VoiceCommandService {
   Future<void> _executeCommand(String rawText) async {
+    final userId = await ApiService.getUserId();
+    if (userId == null) { await _reply('سجّل الدخول لاستخدام الأوامر الصوتية'); return; }
     final text = _normalize(rawText);
     final nav = appNavigatorKey.currentState;
 
@@ -70,6 +72,14 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     }
 
     final role = await ApiService.getRole();
+    final accountCommand = _matches(text, ['الملف الشخصي', 'ملفي', 'بروفايل', 'حسابي', 'كلمه المرور', 'كلمه السر', 'الباسورد', 'توثيق', 'توثيق الهويه', 'تحقق', 'هويتي']);
+    if (!accountCommand && role != 'admin' && !await ApiService.isVerified()) {
+      if (await ApiService.getUserId() != userId) return;
+      await _reply('وثّق هويتك أولاً لفتح الخدمات');
+      nav.push(MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()));
+      return;
+    }
+    if (await ApiService.getUserId() != userId) return;
     final childRole = ['parent', 'teacher', 'specialist', 'admin'].contains(role);
     if (_matches(text, ['دروس ولي الامر', 'دروس لولي الامر', 'دروس للاهل', 'نصائح', 'دروس عامه', 'الدروس العامه', 'مكتبه الدروس'])) {
       final parentLessons = !_matches(text, ['دروس عامه', 'الدروس العامه', 'مكتبه الدروس']);
@@ -96,6 +106,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     }
     if (_matches(text, ['دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقرير', 'التقرير', 'تقارير', 'التقارير', 'فريق', 'الفريق', 'طلب دعم', 'دعم تعليمي', 'تكييف', 'تكيف', 'دراسه', 'دراسات الحاله', 'نقاش', 'مناقشه'])) {
       await _ensureChildrenLoaded();
+      if (await ApiService.getUserId() != userId) return;
       if (await _tryExecuteChildCommand(text, nav)) return;
     }
 
