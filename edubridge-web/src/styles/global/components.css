@@ -416,6 +416,8 @@ textarea::placeholder {
 
 .access-intro { display: flex; gap: 14px; align-items: center; background: var(--navy); color: #fff; padding: 18px 20px; border-radius: 16px; margin-bottom: 14px; }
 .access-intro span { display: block; opacity: .8; font-size: 13px; }
+:root[data-theme="dark"] .access-intro,
+html.access-high-contrast .access-intro { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
 .disability-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }
 .disability-option { border: 1.5px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); min-height: 95px; padding: 10px; cursor: pointer; font: inherit; }
 .disability-option>span { display: block; font-size: 28px; }
@@ -427,7 +429,7 @@ textarea::placeholder {
 .access-switch strong, .access-switch small { display: block; }
 .access-switch small { color: var(--muted); font-weight: 400; }
 .access-switch input { width: 22px; min-height: 22px; accent-color: var(--teal-deep); }
-.access-save-bar { position: sticky; bottom: 12px; display: flex; justify-content: flex-end; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: oklch(99% .003 75 / .94); backdrop-filter: blur(8px); }
+.access-save-bar { position: sticky; bottom: 12px; display: flex; justify-content: flex-end; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); backdrop-filter: blur(8px); }
 .access-child-card .avatar { font-size: 25px; }
 .access-card-action { display: flex; align-items: center; color: var(--teal-deep); font-size: 13px; font-weight: 700; }
 
@@ -488,5 +490,4 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     margin-top: 14px;
     flex-wrap: wrap;
 }
-
 
