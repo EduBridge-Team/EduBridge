@@ -5,6 +5,7 @@ extension _ChatScreenStateView on _ChatScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
         title: widget.otherUserName,
         actions: [

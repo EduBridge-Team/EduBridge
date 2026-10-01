@@ -20,6 +20,7 @@ Widget buildFormState({
   required VoidCallback onSubmit,
 }) {
   return Scaffold(
+    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),

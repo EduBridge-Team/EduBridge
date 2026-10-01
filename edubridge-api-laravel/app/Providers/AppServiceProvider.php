@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\RateLimiter::for('lesson-ratings', function (\Illuminate\Http\Request $request) {
+            $user = $request->attributes->get('jwt_user');
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(10)
+                ->by($user ? 'user:' . $user->id : 'ip:' . $request->ip());
+        });
     }
 }
