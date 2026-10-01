@@ -4,6 +4,7 @@
 :root[data-theme="dark"] .pp-content .specialist-hero-stats strong,
 :root[data-theme="dark"] .pp-content .specialist-hero-stats article > svg,
 :root[data-theme="dark"] .pp-content .specialist-child-avatar,
+:root[data-theme="dark"] .pp-content .pc-meta-box,
 :root[data-theme="dark"] .pp-content .pc-meta-box b {
   color: #9bd8ff;
 }
@@ -26,8 +27,8 @@
 /* Reserve a narrow lane for the assistant and microphone. Content and sticky
    save bars stay beside their default positions even while scrolling. */
 body:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
-  width: min(1180px, calc(100% - 132px));
-  margin-left: 116px;
+  width: min(1180px, calc(100% - 144px));
+  margin-left: 128px;
   margin-right: 16px;
 }
 body:has(.pp-shell) .vc-status { display: none; }
