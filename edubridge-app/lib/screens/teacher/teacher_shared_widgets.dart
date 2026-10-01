@@ -32,6 +32,17 @@ Widget _buildTeacherHeader({
                   iconColor: Colors.white,
                   actions: [
                     DashboardMenuAction(
+                      id: 'notifications',
+                      label: 'الإشعارات',
+                      icon: AppIcons.notifications,
+                      onSelected: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      ),
+                    ),
+                    DashboardMenuAction(
                       id: 'case_discussion',
                       label: 'دراسات الحالة',
                       icon: AppIcons.forum,
