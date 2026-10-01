@@ -82,6 +82,7 @@ export default function LessonsPage() {
             filtered={filtered}
             loading={loading}
             onRetry={load}
+            onReset={() => { setQuery(''); setCategory('الكل') }}
             onToggleSpeak={toggleSpeak}
             speakingId={speakingId}
           />

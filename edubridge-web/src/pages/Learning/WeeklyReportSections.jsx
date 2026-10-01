@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
 export function WeeklyReportForm({
   busy,
@@ -83,7 +84,7 @@ export function WeeklyReportsGrid({ reports }) {
   return (
     <section className="fp-grid">
       {reports.length === 0 ? (
-        <div className="fp-empty">لا توجد تقارير لهذا الطفل</div>
+        <EmptyState title="لا توجد تقارير لهذا الطفل بعد" description="ستظهر هنا ملخصات التقدّم والإنجازات بعد إضافة التقرير الأسبوعي. يمكنك اختيار طفل آخر من أعلى الصفحة." />
       ) : (
         reports.map((report) => (
           <article className="fp-card weekly-report-card" key={report.id}>

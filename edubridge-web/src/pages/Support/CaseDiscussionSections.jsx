@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState'
 import { workflowLabel } from '../../utils/workflowLabels'
 import FormField from '../../components/FormField'
 export function CaseDiscussionCreateForm({
@@ -50,7 +51,7 @@ export function CaseDiscussionCreateForm({
           />
         </FormField>
 
-        <div className="fp-checks">
+        <fieldset className="fp-checks"><legend>المشاركون في الدراسة</legend>
           {users.map((user) => (
             <label className="fp-check" key={user.id}>
               <input
@@ -61,7 +62,7 @@ export function CaseDiscussionCreateForm({
               {user.role === 'teacher' ? '👨‍🏫' : '🧩'} {user.name}
             </label>
           ))}
-        </div>
+        </fieldset>
 
         <button
           className="btn"
@@ -74,11 +75,11 @@ export function CaseDiscussionCreateForm({
   )
 }
 
-export function CaseDiscussionList({ items, onOpen }) {
+export function CaseDiscussionList({ items, onOpen, onCreate }) {
   return (
     <section className="fp-list">
       {items.length === 0 ? (
-        <div className="fp-empty">لا توجد دراسات</div>
+        <EmptyState title="لا توجد دراسات حالة بعد" description="ابدأ بدراسة لطفل، ثم اختر المشاركين لتوثيق الملاحظات والقرارات." actionLabel="إضافة دراسة" onAction={onCreate} />
       ) : (
         items.map((discussion) => (
           <button
@@ -113,7 +114,7 @@ export function CaseDiscussionDetail({
   if (!selected) {
     return (
       <section className="fp-card case-detail-card">
-        <div className="fp-empty">اختر دراسة لعرض النقاش</div>
+        <EmptyState title="اختر دراسة حالة" description="افتح دراسة من القائمة لقراءة النقاش والملاحظات والقرارات." />
       </section>
     )
   }

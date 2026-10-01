@@ -1,3 +1,4 @@
+import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   createHomeworkWeb,
@@ -21,6 +22,7 @@ const EMPTY_SUBMISSION = {
 }
 
 export default function HomeworkPage() {
+  const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
   const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
 
@@ -84,6 +86,7 @@ export default function HomeworkPage() {
         assigned_child_ids: [],
       })
       setAttachments([])
+      setCreateOpen(false)
       await load()
     } catch (err) {
       setError(err.message)
@@ -158,15 +161,17 @@ export default function HomeworkPage() {
       {error && <div className="fp-error">{error}</div>}
 
       {isStaff && (
-        <HomeworkCreateForm
-          attachments={attachments}
-          busy={busy}
-          children={children}
-          draft={draft}
-          onAttachmentsChange={setAttachments}
-          onDraftChange={setDraft}
-          onSubmit={create}
-        />
+        <FormDisclosure label="إضافة واجب جديد" open={createOpen} onToggle={setCreateOpen}>
+          <HomeworkCreateForm
+            attachments={attachments}
+            busy={busy}
+            children={children}
+            draft={draft}
+            onAttachmentsChange={setAttachments}
+            onDraftChange={setDraft}
+            onSubmit={create}
+          />
+        </FormDisclosure>
       )}
 
       <section className="fp-grid">
@@ -180,6 +185,7 @@ export default function HomeworkPage() {
           onOpenSubmission={openSubmission}
           role={me?.role}
           staff={isStaff}
+          onCreate={() => setCreateOpen(true)}
         />
       </section>
 

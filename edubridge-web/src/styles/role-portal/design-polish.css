@@ -1,0 +1,114 @@
+/* Shared page hierarchy, preserving the existing role palette. */
+.pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading) {
+  min-height: 144px;
+  padding: 24px;
+  border-radius: var(--pp-radius-card);
+  gap: 20px;
+  align-items: center;
+}
+.pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading, .lessons-hero) h1 {
+  margin: 4px 0 8px;
+  color: var(--pp-blue-deep);
+  font-size: clamp(26px, 2.7vw, 34px);
+  line-height: 1.4;
+}
+.pp-content :is(.fp-hero, .conversations-hero, .pc-heading, .pcv-heading) p {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--pp-text);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.pp-content :is(.fp-meta, .meta, .lesson-meta, .admin-user-email, .admin-user-phone, .pc-child-top p, .pc-meta-box small) { font-size: 12px; line-height: 1.65; }
+.pp-content :is(.pc-meta-box b, .pc-child-actions button) { font-size: 13px; }
+.pp-content .pc-meta-box { min-height: 68px; }
+
+/* Native disclosure keeps a form's draft mounted when closed. */
+.form-disclosure { scroll-margin-top: 96px; border: 1px solid var(--pp-line); border-radius: 18px; background: var(--pp-surface); }
+.form-disclosure > summary {
+  min-height: 56px; display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; color: var(--pp-blue-deep); font-weight: 800; cursor: pointer; list-style: none;
+}
+.form-disclosure > summary::-webkit-details-marker { display: none; }
+.form-disclosure > summary > span { flex: 1; }
+.form-disclosure[open] > summary { border-bottom: 1px solid var(--pp-line); }
+.form-disclosure[open] > summary > svg:last-child { transform: rotate(180deg); }
+.form-disclosure-content { padding: 16px; }
+.form-disclosure-content > .fp-card { box-shadow: none; border: 0; padding: 0; }
+.form-disclosure-content .fp-form { gap: 16px; }
+.form-disclosure-content .fp-checks { padding: 12px; border: 1px solid var(--pp-line); border-radius: 14px; }
+.form-disclosure > summary:focus-visible, .admin-role-filters button:focus-visible { outline: 3px solid var(--pp-blue); outline-offset: 3px; }
+
+.portal-empty { grid-column: 1 / -1; padding: 32px 20px; text-align: center; border: 1px dashed var(--pp-line); border-radius: 20px; background: var(--pp-surface); color: var(--pp-ink); }
+.portal-empty-icon { width: 56px; height: 56px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 18px; background: var(--pp-soft); color: var(--pp-blue); }
+.portal-empty h3 { margin: 0 0 8px; font-size: 18px; color: var(--pp-ink); }
+.portal-empty p { margin: 0 auto 16px; max-width: 48ch; font-size: 14px; line-height: 1.8; color: var(--pp-text); }
+
+.admin-overview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.admin-overview article { padding: 18px; border: 1px solid var(--pp-line); border-radius: 18px; background: var(--pp-soft); }
+.admin-overview span { display: block; color: var(--pp-text); font-size: 13px; }
+.admin-overview strong { display: block; margin-top: 8px; color: var(--pp-blue-deep); font-size: 28px; }
+.admin-role-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
+.admin-role-filters button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--pp-line); border-radius: 12px; background: var(--pp-surface); color: var(--pp-body); font: inherit; font-weight: 700; cursor: pointer; }
+.admin-role-filters button[aria-pressed="true"] { background: var(--pp-blue-deep); border-color: transparent; color: var(--pp-surface); }
+.admin-role-filters button > span { min-width: 22px; padding: 2px 5px; border-radius: 6px; background: color-mix(in srgb, currentColor 12%, transparent); font-size: 12px; }
+
+/* Content illustrations are decorative; lesson taxonomy remains API driven. */
+.pp-content .lesson-cover { position: relative; overflow: hidden; height: 164px; background: var(--cover-bg); color: var(--cover-ink); }
+.lesson-cover.tone-blue { --cover-bg: #e4f1ff; --cover-ink: #1769c2; }
+.lesson-cover.tone-teal { --cover-bg: #ddf6f0; --cover-ink: #177c70; }
+.lesson-cover.tone-rose { --cover-bg: #fde9ec; --cover-ink: #ad3f63; }
+.lesson-cover.tone-violet { --cover-bg: #eee7fb; --cover-ink: #7750ac; }
+.lesson-cover.tone-amber { --cover-bg: #fff1d5; --cover-ink: #9a6a14; }
+.lesson-cover img { width: 100%; height: 100%; object-fit: cover; }
+.lesson-artwork { position: relative; display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; height: 100%; }
+.lesson-artwork > svg { position: relative; padding: 12px; box-sizing: content-box; border-radius: 22px; background: rgba(255,255,255,.75); transform: rotate(-8deg); }
+.art-orbit { position: absolute; width: 190px; height: 190px; border: 2px solid currentColor; border-radius: 50%; opacity: .12; inset-inline-end: -30px; top: -52px; }
+.art-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: currentColor; opacity: .3; top: 28px; inset-inline-start: 30px; }
+.art-lines { display: grid; gap: 10px; width: 66px; }
+.art-lines i { height: 8px; border-radius: 8px; background: currentColor; opacity: .3; }
+.art-lines i:nth-child(2) { width: 80%; }
+.art-lines i:nth-child(3) { width: 55%; }
+
+.pp-content .chat-layout { grid-template-columns: minmax(220px, 28%) minmax(0, 1fr); min-height: 520px; }
+.pp-content .conversation-item { width: calc(100% - 16px); margin: 8px; border: 1px solid transparent; border-radius: 14px; min-width: 0; }
+.pp-content .conversation-item > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; }
+.pp-content .conversation-item strong { font-size: 14px; }
+.pp-content .conversation-item small { font-size: 12px; line-height: 1.7; }
+.pp-content .conversation-item.active { border-color: var(--pp-blue); background: var(--pp-soft); box-shadow: inset -4px 0 var(--pp-blue); }
+.pp-content .conversation-item.is-unread strong { color: var(--pp-blue-deep); }
+.pp-content .conversation-item .pcv-unread { flex-shrink: 0; background: var(--pp-blue-deep); color: var(--pp-surface); }
+.chat-back { display: none; }
+.pp-content .chat-messages { height: clamp(320px, 50vh, 540px); min-height: 320px; }
+.pp-content .chat-bubble { max-width: 85%; overflow-wrap: anywhere; line-height: 1.75; }
+.chat-bubble time { display: block; margin-top: 6px; font-size: 11px; opacity: .85; }
+
+@media (max-width: 900px) {
+  .admin-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading) { min-height: auto; padding: 18px; flex-wrap: wrap; align-items: stretch; gap: 14px; }
+  .pp-content :is(.fp-hero, .conversations-hero, .pc-heading, .pcv-heading) > .btn { width: 100%; }
+  .form-disclosure-content { padding: 12px; }
+  .form-disclosure-content .fp-row { grid-template-columns: minmax(0, 1fr); }
+  .admin-overview article { padding: 12px; }
+  .admin-overview span { font-size: 12px; }
+  .admin-role-filters { gap: 6px; }
+  .admin-role-filters button { padding: 8px 10px; font-size: 12px; }
+  .pp-content .chat-layout { grid-template-columns: minmax(0, 1fr); min-height: auto; }
+  .pp-content .chat-layout:not(.has-active) .chat-panel { display: none; }
+  .pp-content .chat-layout.has-active .conversation-list { display: none; }
+  .pp-content .chat-layout .conversation-list { max-height: none; border: 0; }
+  .chat-back { display: inline-flex; }
+  .pp-content .chat-compose { gap: 8px; padding: 10px; }
+  .pp-content .chat-compose input { min-width: 0; }
+}
+
+.form-disclosure-content fieldset.fp-checks { min-width: 0; margin: 0; }
+.form-disclosure-content fieldset.fp-checks legend { padding: 0 6px; color: var(--pp-text); font-size: 13px; font-weight: 700; }
+
+.pp-content :is(.teacher-hero, .specialist-hero, .admin-hero, .ministry-hero, .pd-hero) h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(26px, 2.7vw, 34px);
+  line-height: 1.4;
+}

@@ -1,3 +1,4 @@
+import EmptyState from '../../../components/EmptyState'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, UsersRound } from 'lucide-react'
@@ -14,6 +15,7 @@ export default function UsersTab() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
+  const [activeRole, setActiveRole] = useState('teacher')
   const [editing, setEditing] = useState(null)
 
   const load = useCallback(async () => {
@@ -94,12 +96,21 @@ export default function UsersTab() {
   const grouped = ADMIN_ROLE_SECTIONS.map((section) => ({
     ...section,
     items: filteredUsers.filter((u) => u.role === section.role),
+    total: users.filter((u) => u.role === section.role).length,
   }))
 
-  const hasResults = grouped.some((section) => section.items.length > 0) || filteredChildren.length > 0
+  const visibleGroups = grouped.filter((section) => activeRole === 'all' || section.role === activeRole)
+  const showChildren = ['all', 'children'].includes(activeRole)
+  const hasResults = visibleGroups.some((section) => section.items.length > 0) || (showChildren && filteredChildren.length > 0)
 
   return (
     <section className="admin-panel admin-users-panel">
+      <div className="admin-overview" aria-label="ملخص الحسابات">
+        <article><span>المستخدمون</span><strong>{users.length}</strong></article>
+        <article><span>الأطفال</span><strong>{children.length}</strong></article>
+        <article><span>بانتظار التوثيق</span><strong>{users.filter((user) => user.verification_status === 'pending').length}</strong></article>
+        <article><span>حسابات موثّقة</span><strong>{users.filter((user) => user.verification_status === 'verified').length}</strong></article>
+      </div>
       <div className="admin-panel-head admin-users-head">
         <div className="admin-panel-title">
           <span><UsersRound size={20} /></span>
@@ -113,19 +124,24 @@ export default function UsersTab() {
           <input
             className="admin-search"
             type="search"
-            aria-label="البحث في المستخدمين والأطفال"
-            placeholder="ابحث بالاسم أو البريد..."
+            aria-label="البحث في القائمة الحالية"
+            placeholder="ابحث في القائمة الحالية..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
       </div>
 
+      <div className="admin-role-filters" role="group" aria-label="عرض حسب الدور">
+        {grouped.map((section) => <button key={section.role} type="button" aria-pressed={activeRole === section.role} onClick={() => setActiveRole(section.role)}>{section.label}<span>{section.total}</span></button>)}
+        <button type="button" aria-pressed={activeRole === 'children'} onClick={() => setActiveRole('children')}>الأطفال<span>{children.length}</span></button>
+        <button type="button" aria-pressed={activeRole === 'all'} onClick={() => setActiveRole('all')}>الكل</button>
+      </div>
       {!hasResults ? (
-        <div className="state">لا توجد نتائج مطابقة</div>
+        <EmptyState title="لا توجد نتائج في هذه القائمة" description="امسح البحث أو اختر دورًا آخر لاستعراض الحسابات." actionLabel="عرض جميع الحسابات" onAction={() => { setSearch(''); setActiveRole('all') }} />
       ) : (
         <div className="admin-group-list">
-          {grouped.map((section) => (
+          {visibleGroups.map((section) => (
             section.items.length > 0 && (
               <AdminRoleSection
                 key={section.role}
@@ -139,11 +155,11 @@ export default function UsersTab() {
             )
           ))}
 
-          <AdminChildrenSection
+          {showChildren && <AdminChildrenSection
             children={filteredChildren}
             onDelete={removeChild}
             onEdit={(childId) => navigate(`/children/${childId}/edit`)}
-          />
+          />}
         </div>
       )}
 

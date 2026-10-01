@@ -1,3 +1,4 @@
+import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
   fetchChildWeeklyReports,
@@ -18,6 +19,7 @@ function currentMonday() {
 }
 
 export default function WeeklyReportsPage() {
+  const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
   const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
 
@@ -83,6 +85,7 @@ export default function WeeklyReportsPage() {
           .filter(Boolean),
       })
       await loadReports(childId)
+      setCreateOpen(false)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -112,12 +115,14 @@ export default function WeeklyReportsPage() {
       {error && <div className="fp-error">{error}</div>}
 
       {isStaff && childId && (
-        <WeeklyReportForm
-          busy={busy}
-          draft={draft}
-          onChange={setDraft}
-          onSubmit={save}
-        />
+        <FormDisclosure label="إضافة أو تحديث تقرير" open={createOpen} onToggle={setCreateOpen}>
+          <WeeklyReportForm
+            busy={busy}
+            draft={draft}
+            onChange={setDraft}
+            onSubmit={save}
+          />
+        </FormDisclosure>
       )}
 
       <WeeklyReportsGrid reports={reports} />
