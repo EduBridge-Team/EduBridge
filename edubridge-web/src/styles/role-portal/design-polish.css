@@ -6,7 +6,8 @@
   gap: 20px;
   align-items: center;
 }
-.pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading, .lessons-hero) h1 {
+.pp-content :is(.fp-hero, .notifications-hero, .identity-search-hero, .verification-admin-hero, .consultations-hero, .conversations-hero, .accessibility-overview-hero, .pc-heading, .pcv-heading, .lessons-hero) h1,
+.pp-content .portal-lessons-page .lessons-hero h1 {
   margin: 4px 0 8px;
   color: var(--pp-blue-deep);
   font-size: clamp(26px, 2.7vw, 34px);
