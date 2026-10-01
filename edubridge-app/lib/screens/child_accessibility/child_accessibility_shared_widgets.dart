@@ -37,7 +37,7 @@ Widget buildSectionTitle(String title, JisrColors c) {
 Widget buildDisabilitySelector({
   required JisrColors c,
   required String? selectedValue,
-  required VoidCallback onTap,
+  required VoidCallback? onTap,
 }) {
   final hasValue = selectedValue != null;
 
@@ -210,13 +210,13 @@ Widget buildFeatureSection({
   );
 }
 
-Widget sw(String t, String s, bool v, ValueChanged<bool> on) {
+Widget sw(String t, String s, bool v, ValueChanged<bool> on, {bool enabled = true}) {
   return SwitchListTile(
     dense: true,
     title: Text(t,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5)),
     subtitle: Text(s, style: const TextStyle(fontSize: 11.5)),
     value: v,
-    onChanged: on,
+    onChanged: enabled ? on : null,
   );
 }

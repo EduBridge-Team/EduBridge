@@ -147,6 +147,10 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
       'تكييف', 'إعدادات التكييف', 'اعدادات التكييف',
       'تكييف الطفل',
     ])) {
+      if (await ApiService.getRole() != 'specialist') {
+        await _reply('إعدادات التكيف متاحة للمختص فقط');
+        return true;
+      }
       final child = _findChild(text);
       if (child != null) {
         await _reply('سأفتح إعدادات تكييف ${child['name']}');

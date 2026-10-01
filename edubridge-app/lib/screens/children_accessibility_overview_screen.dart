@@ -41,6 +41,10 @@ class _ChildrenAccessibilityOverviewScreenState
     });
 
     try {
+      if (await ApiService.getRole() != 'specialist') {
+        if (mounted) setState(() { _error = 'إعدادات التكيف متاحة للمختص فقط'; _loading = false; });
+        return;
+      }
       final res = await ApiService.authGet('/children');
       final data = jsonDecode(res.body);
 

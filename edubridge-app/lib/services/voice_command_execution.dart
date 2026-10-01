@@ -148,6 +148,10 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'احتياجات', 'الاحتياجات', 'احتياجات الابناء', 'تخصيص',
     ])) {
+      if (await ApiService.getRole() != 'specialist') {
+        await _reply('إعدادات التكيف متاحة للمختص فقط');
+        return;
+      }
       await _reply('سأفتح احتياجات الأبناء');
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenAccessibilityOverviewScreen(),

@@ -78,8 +78,6 @@ export function CareTeamMemberForm({
             >
               <option value="learning_support">دعم تعليمي</option>
               <option value="educational">تعليمي</option>
-              <option value="communication_support">تخاطب</option>
-              <option value="learning_behavior">دعم سلوك التعلم</option>
             </select>
           </FormField>
         )}

@@ -61,6 +61,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   final Set<int> _doneLessonIds = {};
   int? _savingLessonId;
   bool _canMarkDone = false;
+  bool _isSpecialist = false;
 
   int _timerCycle = 0;
   int _stars = 0;
@@ -106,7 +107,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             context: context,
             childName: widget.childName,
             stars: _stars,
-            onOpenSettings: _openSettings,
+            onOpenSettings: _isSpecialist ? _openSettings : null,
             onOpenProgress: _openProgress,
           ),
           body: RefreshIndicator(

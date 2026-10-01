@@ -13,7 +13,7 @@ trait ChildAccessibilityProfileWriteActions
         $userId = (int) ($jwtUser->id ?? 0);
         $role = (string) ($jwtUser->role ?? '');
 
-        if (!$this->canAccessChild($userId, $role, $childId)) {
+        if ($role !== 'specialist' || !$this->canAccessChild($userId, $role, $childId)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 

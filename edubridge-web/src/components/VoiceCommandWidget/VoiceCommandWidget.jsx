@@ -15,7 +15,7 @@ const MAP=[
   [['فريق الدعم التعليمي','فريق الطفل','الفريق'],'/care-team'],
   [['دراسات الحالة','دراسة حالة','دراسه حاله'],'/case-discussions'],
   [['اقتراحات المختصين','متابعة المختصين'],'/specialist-workflow'],
-  [['التواصل','تواصل بالصور','aac'],'/aac'],
+  [['التواصل','تواصل بالصور','aac'],'/conversations?mode=aac'],
   [['المحادثات','رسائل','شات'],'/conversations'],
   [['الاشعارات','الإشعارات','تنبيهات'],'/notifications'],
   [['الملف الشخصي','ملفي','حسابي'],'/profile'],
@@ -43,7 +43,8 @@ export default function VoiceCommandWidget(){
     const hit=MAP.find(([phrases])=>phrases.some(p=>text.includes(p)))
     if(!hit){reply('لم أفهم الأمر. جرّب: الدروس، الواجبات، التقارير، الجلسات، أو التواصل بالصور.');return}
     const path=hit[1]
-    if(path==='/parent-lessons'&&me?.role!=='parent'){reply('دروس ولي الأمر متاحة لحساب ولي الأمر.');return}
+    if(path==='/accessibility'&&me?.role!=='specialist'){reply('إعدادات التكيف متاحة للمختص فقط.');return}
+    if(path==='/parent-lessons'&&!['parent','specialist','teacher','admin'].includes(me?.role)){reply('دروس ولي الأمر متاحة لحساب ولي الأمر.');return}
     if(path==='/case-discussions'&&!['teacher','specialist','admin'].includes(me?.role)){reply('دراسات الحالة غير متاحة لهذا الحساب.');return}
     if(path==='/specialist-workflow'&&!['teacher','specialist','admin'].includes(me?.role)){reply('متابعة المختصين غير متاحة لهذا الحساب.');return}
     reply('حسناً')

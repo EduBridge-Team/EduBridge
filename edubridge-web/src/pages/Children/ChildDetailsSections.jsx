@@ -1,3 +1,4 @@
+import { getUser } from '../../api'
 import { childAssignment } from '../../utils/childPresentation'
 import { workflowLabel } from '../../utils/workflowLabels'
 import {
@@ -121,12 +122,12 @@ export function ChildDetailsActions({ childId, name, navigate }) {
       >
         <Gamepad2 size={18} /> الألعاب التعليمية
       </button>
-      <button
+      {getUser()?.role === 'specialist' && <button
         className="btn outline"
         onClick={() => navigate(`/children/${childId}/accessibility`)}
       >
         <Accessibility size={18} /> إعدادات الوصول
-      </button>
+      </button>}
     </div>
   )
 }

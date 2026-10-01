@@ -25,7 +25,7 @@ export function isPortalPathForRole(pathname, role) {
   }
 
   if (pathname.startsWith('/accessibility')) {
-    return CHILD_ROLES.includes(role)
+    return role === 'specialist'
   }
 
   if (pathname === '/search') {
@@ -41,7 +41,7 @@ export function isPortalPathForRole(pathname, role) {
   }
 
   if (pathname === '/parent-lessons') {
-    return role === 'parent'
+    return CHILD_ROLES.includes(role)
   }
 
   if (pathname === '/learning-support') {

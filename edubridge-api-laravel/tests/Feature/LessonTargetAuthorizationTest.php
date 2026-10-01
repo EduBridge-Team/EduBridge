@@ -161,6 +161,19 @@ class LessonTargetAuthorizationTest extends TestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function test_specialist_can_publish_parent_guidance(): void
+    {
+        $response = app(LessonController::class)->store($this->request('POST', [
+            'title' => 'دعم الطفل في المنزل',
+            'content' => 'إرشادات عملية لولي الأمر',
+            'target_type' => 'parents',
+        ], 2, 'specialist'));
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertDatabaseHas('lessons', [
+            'title' => 'دعم الطفل في المنزل', 'target_type' => 'parents', 'teacher_id' => 2,
+        ]);
+    }
+
     private function request(string $method, array $payload, int $id, string $role): Request
     {
         $request = Request::create('/api/lessons', $method, $payload);

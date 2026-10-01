@@ -25,22 +25,21 @@ trait SpecialistSuggestionResponseHelpers
                 return ['status' => 409, 'body' => ['error' => 'تمت معالجة هذا الاقتراح مسبقاً']];
             }
 
+            if ($accept) {
+                $assignment = \App\Services\ChildSpecialistAssignment::assign(
+                    (int) $suggestion->child_id, (int) $suggestion->specialist_id, $suggestion->specialty
+                );
+                if (isset($assignment['error'])) {
+                    return ['status' => $assignment['status'], 'body' => ['error' => $assignment['error']]];
+                }
+            }
+
             DB::table('specialist_suggestions')->where('id', $id)->update([
                 'status' => $accept ? 'accepted' : 'rejected',
                 'rejection_reason' => $accept ? null : ($rejectionReason !== '' ? $rejectionReason : null),
                 'responded_at' => now(),
                 'updated_at' => now(),
             ]);
-
-            if ($accept) {
-                DB::table('child_specialist')->insertOrIgnore([
-                    'child_id' => $suggestion->child_id,
-                    'specialist_id' => $suggestion->specialist_id,
-                    'specialty' => $suggestion->specialty,
-                    'assigned_at' => now(),
-                    'created_at' => now(),
-                ]);
-            }
 
             return ['status' => 200, 'body' => ['suggestion' => $this->findSuggestion($id)]];
         });
