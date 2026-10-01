@@ -24,7 +24,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(340px, .9fr);
   align-items: center;
   gap: 34px;
-  padding: clamp(28px, 5vw, 58px);
+  padding: clamp(24px, 3vw, 40px);
   overflow: hidden;
 }
 
@@ -40,7 +40,7 @@
 .about-hero-copy h1 {
   max-width: 680px;
   margin-top: 10px;
-  font-size: clamp(32px, 5vw, 58px);
+  font-size: clamp(32px, 3.8vw, 48px);
 }
 
 .about-hero-copy > p,
@@ -100,6 +100,8 @@
 
 .about-hero-art img {
   width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
   max-width: 590px;
   display: block;
   border-radius: 24px;
@@ -302,6 +304,7 @@
 
   .about-hero-art img {
     max-width: 680px;
+    aspect-ratio: 16 / 9;
   }
 
   .about-values-grid {
