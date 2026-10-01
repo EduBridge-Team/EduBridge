@@ -73,7 +73,21 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
 
     final role = await ApiService.getRole();
     final accountCommand = _matches(text, ['الملف الشخصي', 'ملفي', 'بروفايل', 'حسابي', 'كلمه المرور', 'كلمه السر', 'الباسورد', 'توثيق', 'توثيق الهويه', 'تحقق', 'هويتي']);
-    if (!accountCommand && role != 'admin' && !await ApiService.isVerified()) {
+    if (accountCommand) {
+      if (await ApiService.getUserId() != userId) return;
+      final Widget screen;
+      if (_matches(text, ['توثيق', 'توثيق الهويه', 'تحقق', 'هويتي'])) {
+        screen = const VerifyIdentityScreen();
+      } else if (_matches(text, ['كلمه المرور', 'كلمه السر', 'الباسورد'])) {
+        screen = const ChangePasswordScreen();
+      } else {
+        screen = const ProfileScreen();
+      }
+      await _reply('سأفتح إعدادات حسابك');
+      nav.push(MaterialPageRoute(builder: (_) => screen));
+      return;
+    }
+    if (role != 'admin' && !await ApiService.isVerified()) {
       if (await ApiService.getUserId() != userId) return;
       await _reply('وثّق هويتك أولاً لفتح الخدمات');
       nav.push(MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()));
@@ -191,34 +205,6 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       await _reply('سأفتح احتياجات الأبناء');
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenAccessibilityOverviewScreen(),
-      ));
-      return;
-    }
-
-    if (_matches(text, [
-      'الملف الشخصي', 'ملفي', 'بروفايل', 'حسابي',
-    ])) {
-      await _reply('سأفتح ملفك الشخصي');
-      nav.push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
-      return;
-    }
-
-    if (_matches(text, [
-      'كلمه المرور', 'كلمة السر', 'الباسورد',
-    ])) {
-      await _reply('سأفتح تغيير كلمة المرور');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const ChangePasswordScreen(),
-      ));
-      return;
-    }
-
-    if (_matches(text, [
-      'توثيق', 'توثيق الهويه', 'تحقق', 'هويتي',
-    ])) {
-      await _reply('سأفتح توثيق الهوية');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const VerifyIdentityScreen(),
       ));
       return;
     }
