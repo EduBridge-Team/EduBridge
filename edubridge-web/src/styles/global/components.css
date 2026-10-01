@@ -404,7 +404,7 @@ textarea::placeholder {
 .game-good, .game-retry { text-align: center; margin-top: 16px; padding: 12px; border-radius: 12px; font-weight: 700; }
 .game-good { background: var(--tint-green); color: var(--green-deep); }
 .game-retry { background: var(--tint-coral); color: var(--coral-deep); }
-.sound-prompt { display: flex; gap: 8px; align-items: center; justify-content: center; width: 100%; min-height: 72px; margin-bottom: 18px; border: 0; border-radius: 16px; background: var(--navy); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.sound-prompt { display: flex; gap: 8px; align-items: center; justify-content: center; width: 100%; min-height: 72px; margin-bottom: 18px; border: 0; border-radius: 16px; background: var(--navy); color: var(--surface); font: inherit; font-weight: 700; cursor: pointer; }
 .quick-game, .game-result { text-align: center; padding: 22px 0; }
 .quick-action { font-size: 34px; font-weight: 800; color: var(--navy); margin-bottom: 14px; }
 .rhythm-pad { width: 180px; height: 180px; border-radius: 50%; border: 8px solid var(--tint-teal); background: var(--teal); color: #fff; font-size: 58px; cursor: pointer; }
@@ -490,4 +490,3 @@ html.access-calm { --bg: #f3f5ef; --surface: #fbfcf8; --teal: #668f82; --teal-de
     margin-top: 14px;
     flex-wrap: wrap;
 }
-
