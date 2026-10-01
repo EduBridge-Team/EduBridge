@@ -28,6 +28,12 @@ class UserControllerPrivacyTest extends TestCase
             $table->timestamps();
         });
 
+        Schema::create('children', fn (Blueprint $table) => $table->id());
+        Schema::create('child_parent', function (Blueprint $table) {
+            $table->unsignedBigInteger('child_id');
+            $table->unsignedBigInteger('parent_id');
+        });
+
         DB::table('users')->insert([
             [
                 'id' => 1,
@@ -45,6 +51,8 @@ class UserControllerPrivacyTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('child_parent');
+        Schema::dropIfExists('children');
         Schema::dropIfExists('users');
         parent::tearDown();
     }

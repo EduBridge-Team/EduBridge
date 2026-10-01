@@ -9,15 +9,19 @@ export const ADMIN_ROLE_SECTIONS = [
 
 export function countChildrenForUser(children, user) {
   const role = user.role
-  const id = user.id
+  const id = String(user.id)
+  const sameId = (value) => value != null && String(value) === id
+  if (role === 'parent' && user.parent_children_count != null) {
+    return Number(user.parent_children_count)
+  }
 
   return children.filter((child) => {
-    if (role === 'teacher') return child.assigned_teacher_id === id
+    if (role === 'teacher') return sameId(child.assigned_teacher_id)
     if (role === 'specialist') {
-      return child.assigned_specialist_id === id || child.specialist_id === id
+      return [...(child.specialist_ids || []), ...(child.assigned_specialist_ids || []), child.assigned_specialist_id, child.specialist_id].some(sameId)
     }
     if (role === 'parent') {
-      return child.parent_id === id || child.user_id === id
+      return sameId(child.parent_id) || sameId(child.user_id)
     }
     return false
   }).length

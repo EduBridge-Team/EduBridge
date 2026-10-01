@@ -21,3 +21,11 @@ export function scheduleHashScroll(hash, { window: browser = window, document: p
   frame = browser.requestAnimationFrame(scroll)
   return () => { cancelled = true; browser.cancelAnimationFrame(frame) }
 }
+
+export function scheduleNavigationScroll(hash, environment = {}) {
+  if (hash && hash !== '#') return scheduleHashScroll(hash, environment)
+  const browser = environment.window || window
+  // Stop any smooth section scroll before showing the new page's heading.
+  browser.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  return () => {}
+}
