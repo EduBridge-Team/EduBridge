@@ -178,7 +178,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                             color: Colors.white, strokeWidth: 2),
                       )
                     : const Icon(AppIcons.save),
-                label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الواجب'),
+                label: Text(_saving ? 'جارِ النشر...' : 'نشر'),
                 onPressed: _saving ? null : _save,
               ),
             ),
