@@ -59,7 +59,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
   @override
   void initState() {
     super.initState();
-    _tabIndex = widget.initialTab.clamp(0, 1);
+    _tabIndex = widget.initialTab < 0
+        ? 0
+        : (widget.initialTab > 1 ? 1 : widget.initialTab);
     _loadData().then((_) => _checkAndShowVerificationDialog());
   }
 
