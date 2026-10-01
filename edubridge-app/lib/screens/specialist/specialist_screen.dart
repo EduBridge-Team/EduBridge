@@ -25,6 +25,7 @@ import '../plan_evaluation_screen.dart';
 import '../support_sheet.dart';
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
+import 'specialist_child_profile_screen.dart';
 import '../login_screen.dart';
 
 part 'specialist_header.dart';
