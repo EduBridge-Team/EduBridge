@@ -47,7 +47,7 @@ trait AuthRegisterHelpers
             && $input['specialty'] !== null
             && !in_array(
                 $input['specialty'],
-                ['learning_support', 'educational', 'communication_support', 'learning_behavior'],
+                \App\Services\ChildSpecialistAssignment::SPECIALTIES,
                 true
             )
         ) {
