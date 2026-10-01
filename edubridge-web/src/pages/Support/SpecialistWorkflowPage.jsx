@@ -184,6 +184,7 @@ export default function SpecialistWorkflowPage() {
         notes_for_teacher: '',
         recommended_changes: '',
       }))
+      setPlanOpen(false)
       setError('')
     } catch (err) {
       setError(err.message)

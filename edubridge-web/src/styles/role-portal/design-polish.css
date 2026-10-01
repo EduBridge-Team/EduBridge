@@ -106,3 +106,9 @@
 
 .form-disclosure-content fieldset.fp-checks { min-width: 0; margin: 0; }
 .form-disclosure-content fieldset.fp-checks legend { padding: 0 6px; color: var(--pp-text); font-size: 13px; font-weight: 700; }
+
+.pp-content :is(.teacher-hero, .specialist-hero, .admin-hero, .ministry-hero, .pd-hero) h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(26px, 2.7vw, 34px);
+  line-height: 1.4;
+}
