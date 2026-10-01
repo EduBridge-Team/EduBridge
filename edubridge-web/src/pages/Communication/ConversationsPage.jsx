@@ -62,7 +62,9 @@ export default function ConversationsPage() {
     return () => clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.id])
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+  const lastMessageId = messages.at(-1)?.id
+  const activeConversationId = active?.id
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [lastMessageId, activeConversationId])
 
   const visibleConversations = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -158,17 +160,20 @@ export default function ConversationsPage() {
 
       {error && <div className="error-box">{error}</div>}
 
-      <div className="chat-layout">
+      <div className={`chat-layout ${active ? 'has-active' : ''}`}>
         <ConversationList
           active={active}
           conversations={conversations}
           onSelect={setActive}
+          onCreate={openPicker}
+          onReset={() => { setQuery(''); setFilter('all') }}
           visibleConversations={visibleConversations}
         />
 
         <ConversationPanel
           active={active}
           bottomRef={bottomRef}
+          onBack={() => setActive(null)}
           draft={draft}
           messages={messages}
           onDraftChange={setDraft}

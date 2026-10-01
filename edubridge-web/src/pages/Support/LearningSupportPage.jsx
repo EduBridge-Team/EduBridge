@@ -1,3 +1,4 @@
+import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
   cancelLearningSupportRequestWeb,
@@ -16,6 +17,7 @@ import {
 } from './LearningSupportSections'
 
 export default function LearningSupportPage() {
+  const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
   const isParent = me?.role === 'parent'
   const isSpecialist = ['specialist', 'admin'].includes(me?.role)
@@ -75,6 +77,7 @@ export default function LearningSupportPage() {
         reason: '',
         description: '',
       }))
+      setCreateOpen(false)
       await load()
     } catch (err) {
       setError(err.message)
@@ -143,18 +146,21 @@ export default function LearningSupportPage() {
       {error && <div className="fp-error">{error}</div>}
 
       {isParent && (
-        <LearningSupportRequestForm
-          busy={busy}
-          children={children}
-          onChange={setRequest}
-          onSubmit={create}
-          request={request}
-        />
+        <FormDisclosure label="طلب دعم تعليمي جديد" open={createOpen} onToggle={setCreateOpen}>
+          <LearningSupportRequestForm
+            busy={busy}
+            children={children}
+            onChange={setRequest}
+            onSubmit={create}
+            request={request}
+          />
+        </FormDisclosure>
       )}
 
       <LearningSupportRequests
         busy={busy}
         onCancel={cancelOne}
+        onCreate={isParent ? () => setCreateOpen(true) : undefined}
         onSchedule={scheduleOne}
         onScheduleChange={setSchedule}
         requests={requests}

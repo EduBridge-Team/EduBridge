@@ -1,3 +1,4 @@
+import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
   createCaseDiscussionWeb,
@@ -16,6 +17,7 @@ import {
 } from './CaseDiscussionSections'
 
 export default function CaseDiscussionsPage() {
+  const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
   const meId = me?.id
   const [items, setItems] = useState([])
@@ -92,6 +94,7 @@ export default function CaseDiscussionsPage() {
         description: '',
         participant_ids: [],
       }))
+      setCreateOpen(false)
       await load()
     } catch (err) {
       setError(err.message)
@@ -145,17 +148,19 @@ export default function CaseDiscussionsPage() {
 
       {error && <div className="fp-error">{error}</div>}
 
-      <CaseDiscussionCreateForm
-        busy={busy}
-        children={children}
-        draft={draft}
-        onChange={setDraft}
-        onSubmit={create}
-        users={users}
-      />
+      <FormDisclosure label="إضافة دراسة حالة" open={createOpen} onToggle={setCreateOpen}>
+        <CaseDiscussionCreateForm
+          busy={busy}
+          children={children}
+          draft={draft}
+          onChange={setDraft}
+          onSubmit={create}
+          users={users}
+        />
+      </FormDisclosure>
 
       <div className="fp-two">
-        <CaseDiscussionList items={items} onOpen={open} />
+        <CaseDiscussionList items={items} onOpen={open} onCreate={() => setCreateOpen(true)} />
         <CaseDiscussionDetail
           busy={busy}
           message={message}

@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState'
 import { workflowLabel } from '../../utils/workflowLabels'
 import FormField from '../../components/FormField'
 export function LearningSupportRequestForm({
@@ -58,6 +59,7 @@ export function LearningSupportRequestForm({
 }
 
 export function LearningSupportRequests({
+  onCreate,
   busy,
   onCancel,
   onSchedule,
@@ -71,7 +73,7 @@ export function LearningSupportRequests({
       <h3>طلبات الدعم</h3>
       <div className="fp-list">
         {requests.length === 0 ? (
-          <div className="fp-empty">لا توجد طلبات</div>
+          <EmptyState title="لا توجد طلبات دعم بعد" description={specialist ? "ستظهر هنا طلبات أولياء الأمور لتحديد المواعيد ومتابعتها." : "أرسل طلبًا للفريق التعليمي عندما يحتاج طفلك إلى متابعة إضافية."} actionLabel="طلب دعم جديد" onAction={onCreate} />
         ) : (
           requests.map((request) => (
             <article className="fp-card learning-support-card" key={request.id}>
@@ -158,7 +160,7 @@ export function LearningSupportSessions({
       <h3>الجلسات</h3>
       <div className="fp-grid">
         {sessions.length === 0 ? (
-          <div className="fp-empty">لا توجد جلسات</div>
+          <EmptyState title="لا توجد جلسات بعد" description="ستظهر الجلسات هنا بعد تحديد موعد لطلب الدعم." />
         ) : (
           sessions.map((session) => (
             <article className="fp-card learning-support-card" key={session.id}>
