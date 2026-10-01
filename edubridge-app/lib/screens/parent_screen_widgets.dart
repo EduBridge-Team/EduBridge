@@ -247,8 +247,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                                 ),
                             ],
                           ),
-                            ),
-                          ],
                         ],
                       ),
                     ),
