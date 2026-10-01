@@ -49,6 +49,27 @@ JWT_SECRET=<long-random-secret>
 
 Keep the existing R2, Google OAuth, Groq and other production secrets in the same server-side `.env`.
 
+Noor requires these values on production:
+
+```env
+GROQ_API_KEY=<server-side-secret>
+GROQ_MODEL=openai/gpt-oss-20b
+```
+
+After changing Noor settings, recreate the API container or run:
+
+```bash
+docker compose --env-file edubridge-api-laravel/.env -f deploy/oracle-compose.yml up -d --no-deps --force-recreate api
+docker exec edubridge-api php artisan optimize:clear
+```
+
+Verify without exposing the key:
+
+```bash
+curl -fsS https://api.edubridge.win/api/health
+docker exec edubridge-api php artisan tinker --execute='echo config("services.groq.key") ? "configured" : "missing";'
+```
+
 `SESSION_DRIVER=file` is intentional. EduBridge already has a domain table named `sessions` for specialist sessions, so Laravel's database session driver would collide with that table.
 
 ## Deploy
