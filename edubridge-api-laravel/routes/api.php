@@ -17,6 +17,7 @@ Route::get('/health', function () {
         'status' => $statusCode === 200 ? 'ok' : 'degraded',
         'service' => 'EduBridge API',
         'database' => $database,
+        'noor' => config('services.groq.key') ? 'configured' : 'missing',
         'git_sha' => env('GIT_SHA'),
         'timestamp' => now()->toIso8601String(),
     ], $statusCode);
