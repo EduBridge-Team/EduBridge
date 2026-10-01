@@ -1,16 +1,19 @@
+import { useId } from 'react'
+
 export function LessonAudienceFields({ audience, onAudienceChange, onTypeIdChange, typeId, types }) {
+  const fieldId = useId()
   return (
     <>
-      <label>الفئة المستهدفة</label>
-      <select value={audience} onChange={(e) => onAudienceChange(e.target.value)}>
+      <label htmlFor={`${fieldId}-audience`}>الفئة المستهدفة</label>
+      <select id={`${fieldId}-audience`} value={audience} onChange={(e) => onAudienceChange(e.target.value)}>
         <option value="children">الأطفال</option>
         <option value="parents">أولياء الأمور</option>
       </select>
 
       {audience === 'children' && (
         <>
-          <label>نوع الإعاقة المستهدَف</label>
-          <select value={typeId} onChange={(e) => onTypeIdChange(e.target.value)}>
+          <label htmlFor={`${fieldId}-disability`}>نوع الإعاقة المستهدَف</label>
+          <select id={`${fieldId}-disability`} value={typeId} onChange={(e) => onTypeIdChange(e.target.value)}>
             <option value="">— عام (كل الأنواع) —</option>
             {types.map((type) => (
               <option key={type.id} value={type.id}>{type.name}</option>
@@ -33,6 +36,7 @@ export function LessonMediaFields({
   onSignLanguageChange,
   onVideoChange,
 }) {
+  const fieldId = useId()
   return (
     <>
       {isEditing && existingMedia.length > 0 && (
@@ -41,44 +45,50 @@ export function LessonMediaFields({
         </div>
       )}
 
-      <label>{isEditing ? 'استبدال صور الدرس' : 'صور الدرس (يمكن اختيار عدة صور)'}</label>
+      <label htmlFor={`${fieldId}-images`}>{isEditing ? 'استبدال صور الدرس' : 'صور الدرس (يمكن اختيار عدة صور)'}</label>
       <input
+        id={`${fieldId}-images`}
         type="file"
         accept="image/jpeg,image/png,image/webp"
         multiple
         onChange={(e) => onImagesChange(Array.from(e.target.files || []))}
       />
 
-      <label>{isEditing ? 'استبدال فيديو الدرس' : 'فيديو الدرس'}</label>
+      <label htmlFor={`${fieldId}-video`}>{isEditing ? 'استبدال فيديو الدرس' : 'فيديو الدرس'}</label>
       <input
+        id={`${fieldId}-video`}
         type="file"
         accept="video/mp4,video/webm,video/quicktime"
         onChange={(e) => onVideoChange(e.target.files?.[0] || null)}
       />
 
-      <label>{isEditing ? 'استبدال التسجيل الصوتي' : 'تسجيل صوتي'}</label>
+      <label htmlFor={`${fieldId}-audio`}>{isEditing ? 'استبدال التسجيل الصوتي' : 'تسجيل صوتي'}</label>
       <input
+        id={`${fieldId}-audio`}
         type="file"
         accept="audio/mpeg,audio/mp4,audio/aac,audio/wav,audio/ogg"
         onChange={(e) => onAudioChange(e.target.files?.[0] || null)}
       />
 
-      <label>{isEditing ? 'استبدال ملف الترجمة' : 'ملف الترجمة (.vtt أو .srt)'}</label>
+      <label htmlFor={`${fieldId}-caption`}>{isEditing ? 'استبدال ملف الترجمة' : 'ملف الترجمة (.vtt أو .srt)'}</label>
       <input
+        id={`${fieldId}-caption`}
         type="file"
         accept=".vtt,.srt,text/vtt"
         onChange={(e) => onCaptionChange(e.target.files?.[0] || null)}
       />
 
-      <label>{isEditing ? 'استبدال فيديو لغة الإشارة' : 'فيديو لغة الإشارة'}</label>
+      <label htmlFor={`${fieldId}-sign`}>{isEditing ? 'استبدال فيديو لغة الإشارة' : 'فيديو لغة الإشارة'}</label>
       <input
+        id={`${fieldId}-sign`}
         type="file"
         accept="video/mp4,video/webm,video/quicktime"
         onChange={(e) => onSignLanguageChange(e.target.files?.[0] || null)}
       />
 
-      <label>الوصف الصوتي</label>
+      <label htmlFor={`${fieldId}-description`}>الوصف الصوتي</label>
       <textarea
+        id={`${fieldId}-description`}
         value={audioDescription}
         onChange={(e) => onAudioDescriptionChange(e.target.value)}
         rows={3}

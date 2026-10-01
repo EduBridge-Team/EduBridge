@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { Pencil, Plus, X } from 'lucide-react'
 import { createLesson, updateLesson } from '../../../api'
 import {
@@ -8,6 +8,34 @@ import {
 } from './LessonFormSections'
 
 export default function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
+  const fieldId = useId()
+  const dialogRef = useRef(null)
+  useEffect(() => {
+    const opener = document.activeElement
+    dialogRef.current?.querySelector('input')?.focus()
+    return () => {
+      if (opener?.isConnected) opener.focus({ preventScroll: true })
+    }
+  }, [])
+
+  const handleDialogKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      onClose()
+    } else if (event.key === 'Tab') {
+      const controls = Array.from(dialogRef.current.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled])'))
+        .filter((control) => control.getClientRects().length > 0)
+      const first = controls[0]
+      const last = controls.at(-1)
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last?.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first?.focus()
+      }
+    }
+  }
   const isEditing = Boolean(lesson)
   const [title, setTitle] = useState(lesson?.title || '')
   const [content, setContent] = useState(lesson?.content || '')
@@ -63,9 +91,9 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={`${fieldId}-heading`} onKeyDown={handleDialogKeyDown} onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 id={`${fieldId}-heading`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {isEditing ? <Pencil size={20} /> : <Plus size={20} />}
             {isEditing ? 'تعديل الدرس' : 'إضافة درس جديد'}
           </h3>
@@ -75,11 +103,11 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
         </div>
 
         <form onSubmit={save}>
-          <label>عنوان الدرس</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <label htmlFor={`${fieldId}-title`}>عنوان الدرس</label>
+          <input id={`${fieldId}-title`} value={title} onChange={(e) => setTitle(e.target.value)} required />
 
-          <label>المحتوى</label>
-          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} placeholder="اكتب محتوى الدرس..." />
+          <label htmlFor={`${fieldId}-content`}>المحتوى</label>
+          <textarea id={`${fieldId}-content`} value={content} onChange={(e) => setContent(e.target.value)} rows={4} placeholder="اكتب محتوى الدرس..." />
 
           <LessonAudienceFields
             audience={audience}
