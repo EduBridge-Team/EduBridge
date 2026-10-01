@@ -185,7 +185,23 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
           ],
         ),
       ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: 0,
+        onDestinationSelected: (index) => Navigator.pop(context, index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.people_outline),
+            selectedIcon: Icon(Icons.people),
+            label: 'الأطفال',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.lesson),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'الدروس',
+          ),
+        ],
+      ),
     );
-  
+
   }
 }
