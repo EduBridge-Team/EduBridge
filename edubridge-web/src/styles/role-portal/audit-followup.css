@@ -24,8 +24,7 @@
   overflow: hidden;
 }
 
-/* Reserve a narrow lane for the assistant and microphone. Content and sticky
-   save bars stay beside their default positions even while scrolling. */
+/* Reserve a desktop lane for the assistant and microphone. */
 body.role-portal-active:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
   width: min(1180px, calc(100% - 144px)) !important;
   margin-left: 128px !important;
@@ -34,9 +33,12 @@ body.role-portal-active:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content
 body:has(.pp-shell) .vc-status { display: none; }
 @media (max-width: 700px) {
   body.role-portal-active:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
-    width: calc(100% - 98px) !important;
-    margin-left: 88px !important;
+    width: calc(100% - 20px) !important;
+    margin-left: 10px !important;
     margin-right: 10px !important;
+    /* Let the last card scroll above the floating controls without narrowing
+       every card on a phone. */
+    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
   }
   body:has(.pp-shell) .vc-widget {
     left: 18px;
