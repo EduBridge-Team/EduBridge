@@ -6,7 +6,6 @@ import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/legal_links_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../services/api_service.dart';
-import '../../services/notification_listener_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
 import '../add_certificate_sheet.dart';
@@ -156,49 +155,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 onOpenHomework: _openCreateHomework,
                 onVerify: _checkVerification,
                 onLoadData: _loadData,
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    ValueListenableBuilder<int>(
-                      valueListenable: NotificationListenerService.instance.unreadCount,
-                      builder: (context, count, _) {
-                        return Stack(
-                          children: [
-                            IconButton(
-                              icon: const Icon(AppIcons.notifications),
-                              onPressed: _openNotifications,
-                              tooltip: 'الإشعارات',
-                            ),
-                            if (count > 0)
-                              Positioned(
-                                right: 4,
-                                top: 4,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  constraints:
-                                      const BoxConstraints(minWidth: 16, minHeight: 16),
-                                  child: Text('$count',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center),
-                                ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
               ),
               Expanded(
                 child: RefreshIndicator(
