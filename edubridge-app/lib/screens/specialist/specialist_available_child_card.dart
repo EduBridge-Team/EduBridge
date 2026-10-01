@@ -50,12 +50,19 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildChildHeader(
-              name: name,
-              age: age,
-              disability: disability,
-              color: color,
-              c: c,
+            InkWell(
+              onTap: () => _openChildProfile(child),
+              borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: _buildChildHeader(
+                  name: name,
+                  age: age,
+                  disability: disability,
+                  color: color,
+                  c: c,
+                ),
+              ),
             ),
             const SizedBox(height: 14),
 

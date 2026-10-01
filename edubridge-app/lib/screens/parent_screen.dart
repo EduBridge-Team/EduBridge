@@ -20,13 +20,13 @@ import 'notifications_screen.dart';
 import 'support_sheet.dart';
 import 'child_progress_screen.dart';
 import 'edit_child_screen.dart';
-import 'children_accessibility_overview_screen.dart';
 import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
 import 'create_learning_support_request_screen.dart';
 import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
+import 'login_screen.dart';
 
 part 'parent_screen_widgets.dart';
 
@@ -253,18 +253,6 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: _openParentLessons,
               ),
               DashboardMenuAction(
-                id: 'accessibility',
-                label: 'احتياجات الأبناء',
-                icon: Icons.accessibility_new,
-                onSelected: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        const ChildrenAccessibilityOverviewScreen(),
-                  ),
-                ),
-              ),
-              DashboardMenuAction(
                 id: 'support',
                 label: 'الدعم الفني',
                 icon: AppIcons.support,
@@ -309,7 +297,10 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: () async {
                   final navigator = Navigator.of(context);
                   await ApiService.logout();
-                  navigator.pushReplacementNamed('/home');
+                  navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (_) => false,
+                  );
                 },
               ),
             ],

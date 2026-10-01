@@ -98,7 +98,7 @@ trait AuthAccountRecoveryActions
             return response()->json(['error' => 'رابط الاستعادة غير صالح أو منتهي'], 422);
         }
 
-        if (!$record->created_at || now()->diffInMinutes($record->created_at) > 60) {
+        if (!$record->created_at || \Illuminate\Support\Carbon::parse($record->created_at)->lte(now()->subMinutes(60))) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
             return response()->json(['error' => 'انتهت صلاحية رابط الاستعادة'], 422);
         }
@@ -146,7 +146,7 @@ trait AuthAccountRecoveryActions
             && $token !== ''
             && hash_equals((string) $record->token, hash('sha256', $token))
             && $record->created_at
-            && now()->diffInHours($record->created_at) <= 24;
+            && \Illuminate\Support\Carbon::parse($record->created_at)->gt(now()->subHours(24));
 
         $frontend = rtrim((string) config('app.frontend_url', config('app.url')), '/');
 

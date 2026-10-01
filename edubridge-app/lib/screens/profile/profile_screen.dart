@@ -1,6 +1,7 @@
 // lib/screens/profile/profile_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../widgets/teacher_navigation_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
@@ -294,6 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: 'الملف الشخصي'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

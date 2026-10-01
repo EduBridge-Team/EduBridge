@@ -1,6 +1,7 @@
 // lib/screens/create_weekly_report_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../widgets/teacher_navigation_bar.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 part 'create_weekly_report_view.dart';

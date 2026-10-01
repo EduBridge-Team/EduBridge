@@ -3,6 +3,7 @@ part of 'weekly_report_screen.dart';
 extension _WeeklyReportScreenStateView on _WeeklyReportScreenState {
   Widget buildView(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: 'تقرير ${widget.childName} الأسبوعي'),
       body: RefreshIndicator(
         onRefresh: _load,

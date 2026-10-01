@@ -5,6 +5,7 @@ extension _ChatsScreenStateView on _ChatsScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: 'المحادثات'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _startNewConversation,
