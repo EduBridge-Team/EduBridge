@@ -134,6 +134,10 @@ extension _TeacherActions on _TeacherScreenState {
       context,
       MaterialPageRoute(builder: (_) => CreateHomeworkScreen(children: _children)),
     );
-    if (result == true) _loadData();
+    if (result == true) {
+      _loadData();
+    } else if (result is int && mounted) {
+      setState(() => _tabIndex = result.clamp(0, 1));
+    }
   }
 }
