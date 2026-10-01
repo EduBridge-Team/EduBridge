@@ -7,6 +7,14 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     final nav = appNavigatorKey.currentState;
 
     // ═══ 1. القراءة باللمس ═══
+    if (_matches(text, ['اوقف القراءه', 'اقفل القراءه', 'الغ القراءه'])) {
+      if (TtsService.instance.tapToRead.value) {
+        await TtsService.instance.toggleTapToRead();
+      }
+      await _reply('أوقفت وضع القراءة');
+      return;
+    }
+
     if (_matches(text, [
       'اقرا', 'اقراء', 'قراءه', 'قرايه',
       'شغل القراءه', 'فعل القراءه', 'ابدا القراءه', 'وضع القراءه',
@@ -17,14 +25,6 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       await _reply('وضع القراءة باللمس مُفعّل');
       return;
     }
-    if (_matches(text, ['اوقف القراءه', 'اقفل القراءه', 'الغ القراءه'])) {
-      if (TtsService.instance.tapToRead.value) {
-        await TtsService.instance.toggleTapToRead();
-      }
-      await _reply('أوقفت وضع القراءة');
-      return;
-    }
-
     // ═══ 2. الإيقاف ═══
     if (_matches(text, ['اوقف', 'اسكت', 'سكوت', 'هدوء', 'صمت'])) {
       await TtsService.instance.stop();
@@ -69,14 +69,39 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       return;
     }
 
-    // ═══ 6. الأوامر الخاصة بالطفل (قبل العامة) ═══
-    await _ensureChildrenLoaded();
-
-    if (await _tryExecuteChildCommand(text, nav)) return;
+    final role = await ApiService.getRole();
+    final childRole = ['parent', 'teacher', 'specialist', 'admin'].contains(role);
+    if (_matches(text, ['دروس ولي الامر', 'دروس لولي الامر', 'دروس للاهل', 'نصائح', 'دروس عامه', 'الدروس العامه', 'مكتبه الدروس'])) {
+      final parentLessons = !_matches(text, ['دروس عامه', 'الدروس العامه', 'مكتبه الدروس']);
+      if (parentLessons && !childRole) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
+      await _reply(parentLessons ? 'سأفتح دروس ولي الأمر' : 'سأفتح مكتبة الدروس');
+      nav.push(MaterialPageRoute(builder: (_) => parentLessons ? const ParentLessonsScreen() : const LessonsScreen()));
+      return;
+    }
+    if (_matches(text, ['طلبات الدعم', 'طلبات الدعم التعليمي', 'اجتماعات الدعم التعليمي'])) {
+      if (!['parent', 'specialist', 'admin'].contains(role)) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
+      await _reply('سأفتح طلبات الدعم');
+      nav.push(MaterialPageRoute(builder: (_) => const LearningSupportRequestsScreen()));
+      return;
+    }
+    if (_matches(text, ['جلسات', 'الجلسات', 'اجتماعات الدعم', 'اجتماعات دعم', 'طلبات', 'الطلبات', 'طلبات الدعم', 'طلب دعم', 'دعم تعليمي']) &&
+        !_matches(text, ['فريق', 'الفريق']) && !['parent', 'specialist', 'admin'].contains(role)) {
+      await _reply('الدعم التعليمي غير متاح لدور حسابك'); return;
+    }
+    if (_matches(text, ['دراسه', 'دراسه الحاله', 'دراسات الحاله', 'نقاش', 'مناقشه']) && !['teacher', 'specialist', 'admin'].contains(role)) {
+      await _reply('دراسات الحالة غير متاحة لدور حسابك'); return;
+    }
+    if (_matches(text, ['الاطفال', 'اطفال', 'طفل', 'دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقارير', 'التقارير', 'تقرير', 'التقرير', 'فريق', 'الفريق', 'العاب', 'الالعاب', 'العب']) && !childRole) {
+      await _reply('هذه الصفحة غير متاحة لدور حسابك'); return;
+    }
+    if (_matches(text, ['دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقرير', 'التقرير', 'تقارير', 'التقارير', 'فريق', 'الفريق', 'طلب دعم', 'دعم تعليمي', 'تكييف', 'تكيف', 'دراسه', 'دراسات الحاله', 'نقاش', 'مناقشه'])) {
+      await _ensureChildrenLoaded();
+      if (await _tryExecuteChildCommand(text, nav)) return;
+    }
 
     // ═══ 7. الألعاب ═══
     final gameId = _detectGame(text);
-    if (gameId != null) {
+    if (gameId != null && childRole) {
       final widget = _gameWidgetFor(gameId);
       if (widget != null) {
         await _reply('سأفتح ${_gameDisplayName(gameId)}');

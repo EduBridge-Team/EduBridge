@@ -101,7 +101,8 @@ export function ChildEvaluationsSection({ evaluations }) {
   )
 }
 
-export function ChildDetailsActions({ childId, name, navigate }) {
+export function ChildDetailsActions({ childId, name, navigate, canFollow = true }) {
+  if (!canFollow) return <p className="meta">المتابعة والتقدم متاحان للمختص المعيّن للطفل فقط.</p>
   return (
     <div className="child-actions child-details-actions">
       <button

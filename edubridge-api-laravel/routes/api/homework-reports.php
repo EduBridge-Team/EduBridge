@@ -18,6 +18,6 @@ Route::get('/reports/weekly', [\App\Http\Controllers\WeeklyReportController::cla
 Route::get('/reports/weekly/child/{childId}', [\App\Http\Controllers\WeeklyReportController::class, 'byChild'])
     ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
 Route::post('/reports/weekly', [\App\Http\Controllers\WeeklyReportController::class, 'store'])
-    ->middleware('role:teacher,specialist,admin');
+    ->middleware('role:teacher,admin');
 Route::post('/reports/weekly/specialist', [\App\Http\Controllers\WeeklyReportController::class, 'storeSpecialist'])
     ->middleware('role:specialist,admin');

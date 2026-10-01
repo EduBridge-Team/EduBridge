@@ -95,7 +95,7 @@ export default function SearchPage() {
                 </div>
                 <div className="search-result-side">
                   <VerifyBadge status={r.verification_status} />
-                  {r.kind === 'child' && (
+                  {r.kind === 'child' && ['teacher', 'specialist', 'admin'].includes(me.role) && (
                     <button
                       className="btn small outline"
                       onClick={() => navigate(`/children/${r.id}`)}

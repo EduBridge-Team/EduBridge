@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
 import { PassThrough } from 'node:stream'
 import { createElement } from 'react'
-import { renderToPipeableStream } from 'react-dom/server'
+import { renderToString, renderToPipeableStream } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { createServer } from 'vite'
 
@@ -110,5 +110,50 @@ test('protected pages still reject guests before resolving their lazy content', 
   for (const role of ['parent', 'teacher', 'admin']) {
     const html = await renderRoute('/children/10/accessibility', role)
     assert.ok(!html.includes('accessibility-page'), role)
+  }
+})
+
+ test('specialist weekly progress is separate from read-only teacher reports', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const { default: SpecialistWeeklyProgressForm, specialistProgressPayload } = await server.ssrLoadModule('/src/pages/Learning/SpecialistWeeklyProgressForm.jsx')
+  const form = renderToStaticMarkup(createElement(SpecialistWeeklyProgressForm, { childId: 10, onSaved() {} }))
+  assert.match(form, /ملاحظات المختص/)
+  assert.ok(!form.includes('name="teacher_notes"'))
+  assert.ok(!form.includes('placeholder="ملاحظات المعلم"'))
+  assert.deepEqual(specialistProgressPayload('10', ' متابعة ', ' توصية '), { child_id: 10, specialist_notes: 'متابعة', recommendations: 'توصية' })
+  const { WeeklyReportsGrid } = await server.ssrLoadModule('/src/pages/Learning/WeeklyReportSections.jsx')
+  const grid = renderToStaticMarkup(createElement(WeeklyReportsGrid, { reports: [{ id: 1, week_start: '2026-09-28', week_end: '2026-10-04', teacher_notes: 'ملاحظة المعلم الأصلية', specialist_notes: 'متابعة المختص' }], progressView: true }))
+  assert.match(grid, /تقرير المعلم/)
+  assert.match(grid, /ملاحظة المعلم الأصلية/)
+  assert.ok(!grid.includes('<textarea'))
+  const page = await renderRoute('/weekly-reports', 'specialist')
+  assert.match(page, /<h1>التقدم الأسبوعي<\/h1>/)
+  assert.ok(!page.includes('weekly-report-form-card'))
+})
+
+ test('each role menu links only to authorized portal pages', async () => {
+  const { createRoleNavItems } = await server.ssrLoadModule('/src/layouts/rolePortalNavigation.jsx')
+  const { isPortalPathForRole } = await server.ssrLoadModule('/src/portalRoutes.js')
+  for (const role of ['parent', 'teacher', 'specialist', 'admin', 'institution', 'ministry']) {
+    let selected
+    const items = createRoleNavItems({ role, homePath: `/${role}`, childrenList: [], conversationCount: 0, navigate(path) { selected = path }, goToProgress() {} })
+    for (const item of items) {
+      selected = null
+      item.onClick()
+      if (selected) assert.ok(isPortalPathForRole(selected, role), `${role}: ${selected}`)
+    }
+  }
+})
+
+test('admin has institution and ministry creation inside account management', async () => {
+  const Form = (await server.ssrLoadModule('/src/pages/Dashboards/Admin/AdminOrganizationAccountForm.jsx')).default
+  const html = renderToString(createElement(Form, { onCreated() {} }))
+  assert.ok(html.includes('إنشاء حساب مؤسسة أو وزارة'))
+  assert.ok(html.includes('value="institution"'))
+  assert.ok(html.includes('value="ministry"'))
+  assert.ok(html.includes('تأكيد كلمة المرور'))
+  for (const role of ['parent', 'teacher', 'specialist', 'ministry', 'institution']) {
+    const html = await renderRoute('/admin', role)
+    assert.ok(!html.includes('إنشاء حساب مؤسسة أو وزارة'))
   }
 })

@@ -59,7 +59,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     if (_matches(text, [
       'تقدم', 'التقدم', 'انجاز', 'انجازات', 'مكافات',
       'نجوم', 'افتح تقدم', 'تقدم الطفل',
-    ])) {
+    ]) && !_matches(text, ['التقدم الاسبوعي', 'تقدم اسبوعي'])) {
       final child = _findChild(text);
       if (child != null) {
         await _reply('سأفتح تقدّم ${child['name']}');
@@ -81,7 +81,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     // ═══ 6.4 تقرير الطفل ═══
     if (_matches(text, [
       'تقرير', 'التقرير', 'تقارير', 'التقارير',
-      'تقرير اسبوعي', 'افتح تقرير',
+      'تقرير اسبوعي', 'افتح تقرير', 'التقدم الاسبوعي', 'تقدم اسبوعي',
     ])) {
       final child = _findChild(text);
       if (child != null) {
@@ -128,6 +128,11 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       final child = _findChild(text);
       if (child != null) {
+        if (await ApiService.getRole() != 'parent') {
+          await _reply('سأفتح طلبات الدعم');
+          nav.push(MaterialPageRoute(builder: (_) => const LearningSupportRequestsScreen()));
+          return true;
+        }
         await _reply('سأفتح طلب دعم تعليمي لـ ${child['name']}');
         nav.push(MaterialPageRoute(
           builder: (_) => CreateLearningSupportRequestScreen(
@@ -144,7 +149,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
 
     // ═══ 6.7 إعدادات التكييف للطفل ═══
     if (_matches(text, [
-      'تكييف', 'إعدادات التكييف', 'اعدادات التكييف',
+      'تكييف', 'تكيف', 'إعدادات التكيف', 'إعدادات التكييف', 'اعدادات التكييف',
       'تكييف الطفل',
     ])) {
       if (await ApiService.getRole() != 'specialist') {
@@ -172,7 +177,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
 
     // ═══ 6.8 دراسة حالة للطفل ═══
     if (_matches(text, [
-      'دراسه', 'دراسة الحاله', 'دراسه الحاله', 'نقاش', 'مناقشه',
+      'دراسه', 'دراسات الحاله', 'دراسة الحاله', 'دراسه الحاله', 'نقاش', 'مناقشه',
     ])) {
       final child = _findChild(text);
       if (child != null) {

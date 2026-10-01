@@ -77,6 +77,17 @@ class ChildSpecialistAssignmentTest extends TestCase
         $this->assertDatabaseCount('child_specialist', 1);
     }
 
+    public function test_generic_team_removal_cannot_bypass_specialist_self_removal_rule(): void
+    {
+        ChildSpecialistAssignment::assign(10, 1, 'educational');
+        ChildSpecialistAssignment::assign(10, 2, 'learning_support');
+        $request = Request::create('/api/test', 'DELETE');
+        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'specialist']);
+        $response = app(CareTeamController::class)->removeCareTeamMember($request, 10, 2);
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseCount('child_specialist', 2);
+    }
+
     public function test_historical_full_teams_are_preserved_and_cannot_grow(): void
     {
         DB::table('child_specialist')->insert([

@@ -91,6 +91,7 @@ export function CareTeamMemberForm({
 export function CareTeamMembers({
   busy,
   canManage,
+  currentUser,
   members,
   onRemove,
 }) {
@@ -115,7 +116,7 @@ export function CareTeamMembers({
               </span>
             </div>
 
-            {canManage && (
+            {canManage && (currentUser?.role === 'admin' || member.role === 'teacher' || String(member.user_id) === String(currentUser?.id)) && (
               <div className="fp-actions">
                 <button
                   className="btn outline small"
