@@ -191,7 +191,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     return GestureDetector(
       onTap: widget.fullScreen ? null : widget.onClose,
       child: Container(
-        color: widget.fullScreen ? c.background : Colors.black54,
+        color: widget.fullScreen
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.black54,
         alignment: widget.fullScreen ? Alignment.topCenter : Alignment.center,
         child: GestureDetector(
           onTap: () {},
