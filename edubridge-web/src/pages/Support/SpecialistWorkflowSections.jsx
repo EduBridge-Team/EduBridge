@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState'
 import { workflowLabel } from '../../utils/workflowLabels'
 import FormField from '../../components/FormField'
 export function SpecialistWorkflowHeader({ filter, onFilterChange }) {
@@ -133,6 +134,7 @@ export function SpecialistSuggestionForm({
 }
 
 export function SpecialistSuggestionList({
+  onCreate,
   busy,
   isSpecialist,
   items,
@@ -142,7 +144,7 @@ export function SpecialistSuggestionList({
   return (
     <section className="fp-grid">
       {items.length === 0 ? (
-        <div className="fp-empty">لا توجد اقتراحات</div>
+        <EmptyState title="لا توجد اقتراحات في هذه الحالة" description="جرّب حالة أخرى، أو أضف اقتراحًا لمتابعة طفل مع مختص." actionLabel="إضافة اقتراح" onAction={onCreate} />
       ) : (
         items.map((suggestion) => (
           <article className="fp-card specialist-workflow-card" key={suggestion.id}>

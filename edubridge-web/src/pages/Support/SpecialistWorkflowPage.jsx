@@ -1,3 +1,4 @@
+import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
   acceptSpecialistSuggestion,
@@ -20,6 +21,8 @@ import {
 } from './SpecialistWorkflowSections'
 
 export default function SpecialistWorkflowPage() {
+  const [planOpen, setPlanOpen] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
   const role = me?.role
   const isSpecialist = role === 'specialist'
@@ -135,6 +138,7 @@ export default function SpecialistWorkflowPage() {
         specialist_id: '',
         reason: '',
       }))
+      setCreateOpen(false)
       await load()
     } catch (err) {
       setError(err.message)
@@ -202,6 +206,8 @@ export default function SpecialistWorkflowPage() {
     }
   }
 
+  const evaluableChildren = children.filter((child) => child.current_plan_id && (role === 'admin' || (child.assigned_specialist_ids || []).map(Number).includes(Number(me?.id))))
+
   return (
     <div className="fp-page specialist-workflow-page-v2">
       <SpecialistWorkflowHeader
@@ -221,29 +227,29 @@ export default function SpecialistWorkflowPage() {
         />
       )}
 
-      {['specialist', 'admin'].includes(role) && (
-        <PlanEvaluationSection
-          busy={busy}
-          children={children.filter((child) => {
-            if (!child.current_plan_id) return false
-            if (role === 'admin') return true
-            return (child.assigned_specialist_ids || []).map(Number).includes(Number(me?.id))
-          })}
-          draft={planDraft}
-          onChange={setPlanDraft}
-          onSubmit={evaluatePlan}
-        />
+      {['specialist', 'admin'].includes(role) && evaluableChildren.length > 0 && (
+        <FormDisclosure label="تقييم خطة تعليمية" open={planOpen} onToggle={setPlanOpen}>
+          <PlanEvaluationSection
+            busy={busy}
+            children={evaluableChildren}
+            draft={planDraft}
+            onChange={setPlanDraft}
+            onSubmit={evaluatePlan}
+          />
+        </FormDisclosure>
       )}
 
       {canSuggest && (
-        <SpecialistSuggestionForm
-          busy={busy}
-          children={children}
-          draft={draft}
-          onChange={setDraft}
-          onSubmit={suggest}
-          specialists={specialists}
-        />
+        <FormDisclosure label="اقتراح مختص لطفل" open={createOpen} onToggle={setCreateOpen}>
+          <SpecialistSuggestionForm
+            busy={busy}
+            children={children}
+            draft={draft}
+            onChange={setDraft}
+            onSubmit={suggest}
+            specialists={specialists}
+          />
+        </FormDisclosure>
       )}
 
       <SpecialistSuggestionList
@@ -252,6 +258,7 @@ export default function SpecialistWorkflowPage() {
         items={items}
         onAccept={accept}
         onReject={reject}
+        onCreate={canSuggest ? () => setCreateOpen(true) : undefined}
       />
     </div>
   )

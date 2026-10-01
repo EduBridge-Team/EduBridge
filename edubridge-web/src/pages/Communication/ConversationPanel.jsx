@@ -1,8 +1,9 @@
-import { MessageCircle, RefreshCw, Send } from 'lucide-react'
+import { ArrowRight, MessageCircle, RefreshCw, Send } from 'lucide-react'
 import { ROLE_NAMES } from '../../roles'
 
 export default function ConversationPanel({
   active,
+  onBack,
   bottomRef,
   draft,
   messages,
@@ -21,6 +22,7 @@ export default function ConversationPanel({
       ) : (
         <>
           <div className="chat-panel-head">
+            <button className="icon-btn chat-back" type="button" onClick={onBack} aria-label="الرجوع إلى قائمة المحادثات"><ArrowRight size={20} /></button>
             <div>
               <strong>{active.other_user_name}</strong>
               <small>{ROLE_NAMES[active.other_user_role] || active.other_user_role}</small>
@@ -30,18 +32,18 @@ export default function ConversationPanel({
             </button>
           </div>
 
-          <div className="chat-messages">
+          <div className="chat-messages" role="log" aria-label="رسائل المحادثة">
             {messages.length === 0 ? (
               <div className="state">ابدأ المحادثة الآن</div>
             ) : messages.map((message) => (
               <div key={message.id} className={`chat-bubble ${message.is_mine ? 'mine' : ''}`}>
                 <span>{message.content}</span>
-                <small>
+                <time dateTime={message.created_at} title={new Date(message.created_at).toLocaleDateString('ar')}>
                   {new Date(message.created_at).toLocaleTimeString('ar', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
-                </small>
+                </time>
               </div>
             ))}
             <div ref={bottomRef} />

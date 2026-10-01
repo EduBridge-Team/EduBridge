@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState'
 export function ParentLessonCard({
   lesson,
   isSpeaking,
@@ -90,7 +91,7 @@ export function ParentLessonsGrid({
   if (lessons.length === 0) {
     return (
       <section className="fp-grid">
-        <div className="fp-empty">لا توجد دروس مخصصة لأولياء الأمور بعد</div>
+        <EmptyState title="لا توجد دروس مخصصة لأولياء الأمور بعد" description="ستظهر هنا إرشادات الفريق التعليمي عند إضافتها. يمكنك تصفّح مكتبة الدروس أو التواصل مع معلّم طفلك." actionLabel="تصفّح الدروس" actionHref="/lessons" />
       </section>
     )
   }

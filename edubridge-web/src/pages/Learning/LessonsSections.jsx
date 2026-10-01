@@ -1,3 +1,5 @@
+import LessonCover from '../../components/LessonCover'
+import EmptyState from '../../components/EmptyState'
 import { LESSON_CATEGORIES, lessonCategory } from '../../utils/lessonCategories'
 import {
   Clock3,
@@ -63,24 +65,11 @@ export function LessonsHero({
 
 function LessonCard({ lesson, onToggleSpeak, speakingId }) {
   const category = lessonCategory(lesson)
-  const categoryIndex = LESSON_CATEGORIES.indexOf(category) - 1
-  const visual = categoryIndex >= 0 && categoryIndex < 5 ? LESSON_VISUALS[categoryIndex] : { icon: '📚', cls: 'blue' }
   const images = lesson.images || lesson.image_urls || []
 
   return (
     <article className="lesson-card-new">
-      <div className={`lesson-visual ${visual.cls}`}>
-        {images.length > 0 ? (
-          <img
-            src={images[0]}
-            alt={lesson.title}
-            loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span>{visual.icon}</span>
-        )}
-      </div>
+      <LessonCover lesson={lesson} />
       <div className="lesson-body">
         <span className="lesson-tag">
           {category}
@@ -108,7 +97,7 @@ function LessonCard({ lesson, onToggleSpeak, speakingId }) {
   )
 }
 
-export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, speakingId }) {
+export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, speakingId, onReset }) {
   if (loading) {
     return <div className="state"><div className="spinner" />جارِ تحميل الدروس...</div>
   }
@@ -123,7 +112,7 @@ export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, 
   }
 
   if (filtered.length === 0) {
-    return <div className="state">لا توجد نتائج مطابقة لبحثك</div>
+    return <EmptyState title="لا توجد دروس مطابقة" description="جرّب كلمة أخرى أو اعرض جميع التصنيفات." actionLabel="عرض كل الدروس" onAction={onReset} />
   }
 
   return (
