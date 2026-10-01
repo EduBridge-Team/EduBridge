@@ -1,3 +1,4 @@
+import { homeworkGradePayload } from './homeworkGrading'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -120,16 +121,20 @@ export default function HomeworkPage() {
     }
   }
 
-  const grade = async (id) => {
-    const currentGrade = grades[id] || {}
+  const grade = async (submission) => {
+    const payload = homeworkGradePayload(submission, grades[submission.id])
+    if (!payload) {
+      setError('أدخل علامة صحيحة بين 0 و100')
+      return
+    }
     setBusy(true)
     setError('')
 
     try {
       await gradeHomeworkWeb(
-        id,
-        Number(currentGrade.grade),
-        currentGrade.feedback || '',
+        submission.id,
+        payload.grade,
+        payload.feedback,
       )
       await load()
     } catch (err) {

@@ -11,6 +11,7 @@ import {
 import { ROLE_NAMES } from '../../roles'
 
 export function SignedInTopBarMenu({
+  verified = true,
   dashboardPath,
   dark,
   onLogout,
@@ -23,7 +24,7 @@ export function SignedInTopBarMenu({
       <nav className="topbar-nav">
         <NavLink to="/" end><Home size={16} /> الرئيسية</NavLink>
         <NavLink to="/about"><Info size={16} /> من نحن</NavLink>
-        <NavLink to={dashboardPath}><LayoutDashboard size={16} /> لوحتي</NavLink>
+        <NavLink to={dashboardPath}><LayoutDashboard size={16} /> {verified ? 'لوحتي' : 'توثيق الحساب'}</NavLink>
       </nav>
 
       <div className="icon-strip">
@@ -40,7 +41,7 @@ export function SignedInTopBarMenu({
           </NavLink>
         ))}
         <span className="strip-sep" />
-        <NavLink
+        {verified && <NavLink
           to="/notifications"
           className="strip-btn"
           title="الإشعارات"
@@ -48,7 +49,7 @@ export function SignedInTopBarMenu({
           aria-label="الإشعارات"
         >
           <Bell size={16} /><span className="strip-dot" />
-        </NavLink>
+        </NavLink>}
       </div>
 
       <div className="topbar-actions">

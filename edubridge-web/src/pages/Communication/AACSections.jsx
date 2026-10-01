@@ -17,13 +17,13 @@ export function AACSentencePanel({
       </div>
 
       <div className="fp-actions">
-        <button className="btn success" onClick={onSpeak} disabled={!sentence.length}>
+        <button type="button" className="btn success" onClick={onSpeak} disabled={!sentence.length}>
           🔊 قلها
         </button>
-        <button className="btn outline" onClick={onRemoveLast} disabled={!sentence.length}>
+        <button type="button" className="btn outline" onClick={onRemoveLast} disabled={!sentence.length}>
           ⌫ حذف آخر
         </button>
-        <button className="btn outline" onClick={onClear} disabled={!sentence.length}>
+        <button type="button" className="btn outline" onClick={onClear} disabled={!sentence.length}>
           مسح
         </button>
       </div>
@@ -40,6 +40,7 @@ export function AACCategoryTabs({
     <div className="fp-actions">
       {categories.map((category) => (
         <button
+          type="button"
           key={category}
           className={category === selectedCategory ? 'btn' : 'btn outline'}
           onClick={() => onSelect(category)}
@@ -56,6 +57,7 @@ export function AACSymbolGrid({ items, onSelect }) {
     <section className="aac-grid">
       {items.map(([emoji, label, spoken]) => (
         <button
+          type="button"
           className="aac-tile"
           key={`${label}-${spoken}`}
           onClick={() => onSelect(label, spoken)}

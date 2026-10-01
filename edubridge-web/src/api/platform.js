@@ -30,6 +30,10 @@ export function fetchUsers(role) {
   return request(`/users${q}`);
 }
 
+export function createOrganizationAccount(payload) {
+  return request('/users', { method: 'POST', body: JSON.stringify(payload) });
+}
+
 // تعديل مستخدم (الاسم/البريد/الدور/الهاتف)
 export function updateUser(id, payload) {
   return request(`/users/${id}`, {

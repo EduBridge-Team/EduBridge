@@ -16,5 +16,5 @@ class CareTeamController extends Controller
     use CareTeamTeacherActions;
     use CareTeamSpecialistActions;
 
-    private const SPECIALTIES = ['educational','learning_support','communication_support','learning_behavior'];
+    private const SPECIALTIES = \App\Services\ChildSpecialistAssignment::SPECIALTIES;
 }

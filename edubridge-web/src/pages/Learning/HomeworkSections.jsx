@@ -1,3 +1,4 @@
+import { homeworkGradePayload } from './homeworkGrading'
 import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
 export function HomeworkCreateForm({
@@ -102,6 +103,8 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
                 type="number"
                 min="0"
                 max="100"
+                step="1"
+                required
                 placeholder="الدرجة"
                 value={grades[submission.id]?.grade ?? submission.grade ?? ''}
                 onChange={(e) => onGradesChange({
@@ -128,8 +131,8 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
             </FormField>
             <button
               className="btn small"
-              onClick={() => onGrade(submission.id)}
-              disabled={busy}
+              onClick={() => onGrade(submission)}
+              disabled={busy || !homeworkGradePayload(submission, grades[submission.id])}
             >
               حفظ التقييم
             </button>

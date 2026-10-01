@@ -50,6 +50,7 @@ import '../theme.dart';
 import '../utils/navigation.dart';
 import 'api_service.dart';
 import 'tts_service.dart';
+import 'voice_command_text.dart';
 
 part 'voice_command_routing.dart';
 part 'voice_command_execution.dart';
@@ -62,6 +63,12 @@ class VoiceCommandService {
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _initialized = false;
   bool _available = false;
+  bool _starting = false;
+  bool _acceptResults = false;
+  bool _commandHandled = false;
+  int? _childrenCacheUserId;
+  int _session = 0;
+  String? _localeId;
 
   final ValueNotifier<bool> isListening = ValueNotifier<bool>(false);
   final ValueNotifier<String> lastHeard = ValueNotifier<String>('');
@@ -78,15 +85,25 @@ class VoiceCommandService {
 
   Future<bool> initialize() async {
     if (_initialized) return _available;
-    _initialized = true;
     try {
       _available = await _speech.initialize(
         onStatus: _onStatus,
         onError: _onError,
       );
+      _initialized = _available;
+      if (_available) {
+        final locales = await _speech.locales();
+        for (final locale in locales) {
+          if (locale.localeId.toLowerCase().startsWith('ar')) {
+            _localeId = locale.localeId;
+            break;
+          }
+        }
+      }
       return _available;
     } catch (_) {
       _available = false;
+      _initialized = false;
       return false;
     }
   }
@@ -97,41 +114,61 @@ class VoiceCommandService {
     }
   }
 
-  void _onError(dynamic error) => isListening.value = false;
+  void _onError(dynamic error) {
+    isListening.value = false;
+    _acceptResults = false;
+    lastReply.value = 'تعذّر سماع الأمر. تأكد من إذن الميكروفون ثم حاول مجدداً';
+  }
 
   Future<void> startListening() async {
-    if (!await initialize()) {
-      await _speak('الميكروفون غير متاح على هذا الجهاز');
+    if (_starting || isListening.value) {
+      await cancel();
       return;
     }
-    if (isListening.value) {
-      await stopListening();
-      return;
+    _starting = true;
+    final session = ++_session;
+    try {
+      if (!await initialize()) {
+        await _reply('الميكروفون غير متاح. تأكد من إذن الميكروفون ثم حاول مجدداً');
+        return;
+      }
+      if (session != _session) return;
+      if (_localeId == null) {
+        await _reply('التعرف على الكلام العربي غير متاح. أضف اللغة العربية إلى خدمة الكلام على الجهاز');
+        return;
+      }
+      await TtsService.instance.stop();
+      if (session != _session) return;
+      lastHeard.value = '';
+      lastReply.value = '';
+      _acceptResults = true;
+      _commandHandled = false;
+      isListening.value = true;
+      await _speech.listen(
+        onResult: (result) { if (session == _session) _onResult(result); },
+        listenOptions: stt.SpeechListenOptions(
+          localeId: _localeId,
+          listenFor: const Duration(seconds: 10),
+          pauseFor: const Duration(seconds: 4),
+          partialResults: true,
+        ),
+      );
+    } catch (_) {
+      isListening.value = false;
+      _acceptResults = false;
+      await _reply('تعذّر تشغيل الميكروفون. حاول مجدداً');
+    } finally {
+      _starting = false;
     }
-    await TtsService.instance.stop();
-    lastHeard.value = '';
-    lastReply.value = '';
-    isListening.value = true;
-    await _speech.listen(
-      onResult: _onResult,
-      listenOptions: stt.SpeechListenOptions(
-        localeId: 'ar-SA',
-        listenFor: const Duration(seconds: 10),
-        pauseFor: const Duration(seconds: 4),
-        partialResults: true,
-      ),
-    );
   }
 
   Future<void> stopListening() async {
-    if (!isListening.value) return;
-    isListening.value = false;
-    try {
-      await _speech.stop();
-    } catch (_) {}
+    await cancel();
   }
 
   Future<void> cancel() async {
+    _session++;
+    _acceptResults = false;
     isListening.value = false;
     try {
       await _speech.cancel();
@@ -139,15 +176,22 @@ class VoiceCommandService {
   }
 
   void _onResult(SpeechRecognitionResult result) {
+    if (!_acceptResults || _commandHandled) return;
     final text = result.recognizedWords.trim();
     if (text.isEmpty) return;
     lastHeard.value = text;
-    if (result.finalResult) _executeCommand(text);
+    if (result.finalResult) {
+      _commandHandled = true;
+      _acceptResults = false;
+      isListening.value = false;
+      unawaited(_executeCommand(text).catchError((Object _) => _reply('تعذّر تنفيذ الأمر. حاول مجدداً')));
+    }
   }
 
   /// لتفريغ cache (استدعِها بعد إضافة/حذف طفل)
   void clearChildrenCache() {
     _childrenCache = [];
     _childrenCacheTime = null;
+    _childrenCacheUserId = null;
   }
 }

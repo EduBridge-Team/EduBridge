@@ -13,6 +13,7 @@ import {
   SpecialistSummary,
 } from './SpecialistDashboardSections'
 import { computeSpecialistProgressStats } from './specialistDashboardUtils'
+import { isAssignedToSpecialist } from './specialistAssignment'
 
 export default function SpecialistDashboard() {
   const me = getUser()
@@ -22,6 +23,7 @@ export default function SpecialistDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [approvingId, setApprovingId] = useState(null)
+  const [scope, setScope] = useState('mine')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -32,9 +34,11 @@ export default function SpecialistDashboard() {
       // نجلب تقدّم كل طفل بالتوازي
       const withProgress = await Promise.all(
         children.map(async (child) => {
+          const assigned = isAssignedToSpecialist(child, me.id)
+          if (!assigned) return { child, assigned, progress: [], stats: computeSpecialistProgressStats([]) }
           const p = await fetchChildProgress(child.id)
           const progress = p.progress || []
-          return { child, progress, stats: computeSpecialistProgressStats(progress) }
+          return { child, assigned, progress, stats: computeSpecialistProgressStats(progress) }
         })
       )
       setRows(withProgress)
@@ -43,7 +47,7 @@ export default function SpecialistDashboard() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [me?.id])
 
   useEffect(() => {
     if (role !== 'specialist') return
@@ -70,7 +74,8 @@ export default function SpecialistDashboard() {
   }
 
   // مؤشّرات عامة أعلى اللوحة
-  const totalChildren = rows.length
+  const visibleRows = scope === 'mine' ? rows.filter((row) => row.assigned) : rows
+  const totalChildren = rows.filter((row) => row.assigned).length
   const doneToday = rows.reduce((s, r) => s + r.stats.doneToday, 0)
   const pending = rows.reduce((s, r) => s + r.stats.inProgress, 0)
 
@@ -102,6 +107,10 @@ export default function SpecialistDashboard() {
             <h2>الأطفال والتقدّم</h2>
             <p>راجع الحالة الحالية لكل طفل وافتح سجل التقدّم للتفاصيل.</p>
           </div>
+          <div className="toolbar" role="group" aria-label="عرض الأطفال">
+            <button className={`btn ${scope === 'mine' ? '' : 'outline'}`} aria-pressed={scope === 'mine'} onClick={() => setScope('mine')}>أطفالي المعينون لي</button>
+            <button className={`btn ${scope === 'all' ? '' : 'outline'}`} aria-pressed={scope === 'all'} onClick={() => setScope('all')}>كل الأطفال</button>
+          </div>
         </div>
 
         <SpecialistChildrenList
@@ -115,7 +124,8 @@ export default function SpecialistDashboard() {
             })
           }
           onRetry={load}
-          rows={rows}
+          rows={visibleRows}
+          onOpenChild={(child) => navigate(`/children/${child.id}`)}
         />
       </main>
 

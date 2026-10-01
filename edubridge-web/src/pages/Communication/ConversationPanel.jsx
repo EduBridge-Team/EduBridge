@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { AACCategoryTabs } from './AACSections'
+import { AAC_CATEGORIES, appendAACSymbol } from './aacData'
 import { ArrowRight, MessageCircle, RefreshCw, Send } from 'lucide-react'
 import { ROLE_NAMES } from '../../roles'
 
@@ -12,6 +16,10 @@ export default function ConversationPanel({
   onSend,
   sending,
 }) {
+  const location = useLocation()
+  const [mode, setMode] = useState(new URLSearchParams(location.search).get('mode') === 'aac' ? 'aac' : 'text')
+  const [category, setCategory] = useState('أساسية')
+
   return (
     <section className="chat-panel">
       {!active ? (
@@ -49,6 +57,23 @@ export default function ConversationPanel({
             <div ref={bottomRef} />
           </div>
 
+          <div className="chat-composer-modes fp-actions" aria-label="طريقة كتابة الرسالة">
+            <button type="button" className={mode === 'text' ? 'btn' : 'btn outline'} aria-pressed={mode === 'text'} onClick={() => setMode('text')}>نص</button>
+            <button type="button" className={mode === 'aac' ? 'btn' : 'btn outline'} aria-pressed={mode === 'aac'} onClick={() => setMode('aac')}>تواصل بالصور</button>
+          </div>
+          {mode === 'aac' && (
+            <div className="chat-aac-panel">
+              <p className="meta">اختر الصور لإضافتها إلى رسالتك، ثم اضغط إرسال.</p>
+              <AACCategoryTabs categories={Object.keys(AAC_CATEGORIES)} selectedCategory={category} onSelect={setCategory} />
+              <div className="aac-grid">
+                {AAC_CATEGORIES[category].map(([emoji, label, spoken]) => (
+                  <button type="button" className="aac-tile" key={label} onClick={() => onDraftChange(appendAACSymbol(draft, emoji, spoken))} disabled={sending || draft.length >= 4000}>
+                    <span>{emoji}</span><strong>{label}</strong>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <form className="chat-compose" onSubmit={onSend}>
             <input
               value={draft}

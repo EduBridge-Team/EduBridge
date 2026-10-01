@@ -1,3 +1,4 @@
+import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   addCareTeamMember,
@@ -45,7 +46,7 @@ export default function CareTeamPage() {
   const loadChildren = useCallback(async () => {
     try {
       const childrenData = await fetchChildren()
-      const childList = childrenData.children || []
+      const childList = (childrenData.children || []).filter((child) => me?.role !== 'specialist' || isAssignedToSpecialist(child, me?.id))
 
       setChildren(childList)
       setChildId((current) => current || (childList[0] ? String(childList[0].id) : ''))
@@ -62,7 +63,7 @@ export default function CareTeamPage() {
     } catch (err) {
       setError(err.message)
     }
-  }, [canManage])
+  }, [canManage, me?.id, me?.role])
 
   useEffect(() => {
     loadChildren()
@@ -133,6 +134,7 @@ export default function CareTeamPage() {
       <CareTeamMembers
         busy={busy}
         canManage={canManage}
+        currentUser={me}
         members={team.members || []}
         onRemove={remove}
       />

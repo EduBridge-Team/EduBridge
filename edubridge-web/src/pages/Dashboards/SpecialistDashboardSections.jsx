@@ -17,7 +17,7 @@ export function SpecialistSummary({ doneToday, pending, totalChildren }) {
   )
 }
 
-function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
+function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, onOpenChild, row }) {
   const { child, stats } = row
   const hasCurrent = Boolean(stats.current)
 
@@ -27,7 +27,7 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
         <div className="avatar specialist-child-avatar">{(child.name || '؟').trim().charAt(0)}</div>
         <div>
           <h3 className="pr-name">
-            <button type="button" className="specialist-progress-link" aria-label={`عرض تقدّم ${child.name}`} onClick={() => onOpenProgress(child)}>
+            <button type="button" className="specialist-progress-link" aria-label={`عرض ملف ${child.name}`} onClick={() => onOpenChild(child)}>
               {child.name}
             </button>
           </h3>
@@ -38,12 +38,13 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
       </div>
 
       <div className="pr-mid">
+        {row.assigned === false && <span className="meta">غير معيّن لك</span>}
         {hasCurrent && (
           <span className="status-chip in_progress">
             🕒 {stats.current.lesson_title}
           </span>
         )}
-        <span className="pr-pct">{stats.pct}% ⭐</span>
+        {row.assigned !== false && <span className="pr-pct">{stats.pct}% ⭐</span>}
         {stats.inProgress > 0 && (
           <span className="pr-count orange">{stats.inProgress}</span>
         )}
@@ -51,7 +52,7 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
       </div>
 
       <div className="pr-action">
-        {hasCurrent ? (
+        {row.assigned === false ? <button className="btn small outline" onClick={() => onOpenChild(child)}>عرض ملف الطالب</button> : hasCurrent ? (
           <button
             className="btn small specialist-approve-btn"
             disabled={approvingId === child.id}
@@ -60,8 +61,8 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
             {approvingId === child.id ? 'جارٍ...' : '✔ اعتماد كمنجز'}
           </button>
         ) : (
-          <button className="btn small outline" disabled>
-            ⏳ بانتظار البدء
+          <button className="btn small outline" onClick={() => onOpenProgress(child)}>
+            عرض التقدّم
           </button>
         )}
       </div>
@@ -75,6 +76,7 @@ export function SpecialistChildrenList({
   loading,
   onApprove,
   onOpenProgress,
+  onOpenChild,
   onRetry,
   rows,
 }) {
@@ -106,6 +108,7 @@ export function SpecialistChildrenList({
       approvingId={approvingId}
       onApprove={onApprove}
       onOpenProgress={onOpenProgress}
+      onOpenChild={onOpenChild}
       row={row}
     />
   ))

@@ -18,6 +18,6 @@ class SpecialistSuggestionController extends Controller
     use SpecialistSuggestionResponseHelpers;
     use SpecialistSuggestionResponseActions;
 
-    private const SPECIALTIES = ['learning_support', 'educational', 'communication_support', 'learning_behavior'];
+    private const SPECIALTIES = \App\Services\ChildSpecialistAssignment::SPECIALTIES;
     private const STATUSES = ['pending', 'accepted', 'rejected'];
 }

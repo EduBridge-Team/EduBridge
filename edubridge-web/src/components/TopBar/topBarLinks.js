@@ -24,7 +24,7 @@ export function buildTopBarStripLinks(user) {
     { to: '/institution', label: 'لوحة المؤسسة', Icon: Building2, show: is('institution') },
     { to: '/children', label: 'ملفات الأطفال', Icon: Users, show: is('parent', 'teacher', 'specialist', 'admin') },
     { to: '/lessons', label: 'الدروس', Icon: BookOpen, show: Boolean(user) },
-    { to: '/accessibility', label: 'إعدادات الوصول', Icon: Accessibility, show: is('parent', 'teacher', 'specialist') },
+    { to: '/accessibility', label: 'إعدادات التكيف', Icon: Accessibility, show: is('specialist') },
     { to: '/search', label: 'البحث برقم الهوية', Icon: Search, show: is('teacher', 'specialist', 'admin', 'ministry', 'institution') },
     { to: '/consultations', label: 'دراسة الحالة', Icon: Stethoscope, show: is('parent', 'teacher', 'specialist') },
     { to: '/verify', label: 'توثيق الحساب', Icon: IdCard, show: Boolean(user) },

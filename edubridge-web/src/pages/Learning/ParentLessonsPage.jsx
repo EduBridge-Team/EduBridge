@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { fetchParentLessons } from '../../api'
+import { fetchParentLessons, getUser } from '../../api'
+import ParentLessonForm from './ParentLessonForm'
 import { ParentLessonsGrid } from './ParentLessonSections'
 
 export default function ParentLessonsPage() {
@@ -66,6 +67,10 @@ export default function ParentLessonsPage() {
         </div>
         <button className="btn outline" onClick={load}>تحديث</button>
       </section>
+
+      {['specialist', 'teacher', 'admin'].includes(getUser()?.role) && (
+        <ParentLessonForm onCreated={load} />
+      )}
 
       <input
         className="parent-lessons-search"

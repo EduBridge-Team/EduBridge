@@ -1,6 +1,6 @@
 import { ArrowRight, RotateCcw, Save, Sparkles } from 'lucide-react'
 import { DISABILITY_TYPES } from '../../accessibility'
-import { ACCESSIBILITY_SETTINGS } from './accessibilitySettings'
+import { ACCESSIBILITY_GROUPS } from './accessibilitySettings'
 
 export function AccessibilityHeader({ childName, onBack }) {
   return (
@@ -58,8 +58,11 @@ export function AccessibilityOptionsCard({ onUpdate, profile }) {
   return (
     <section className="card">
       <h3>خصائص التكييف</h3>
-      <div className="settings-grid">
-        {ACCESSIBILITY_SETTINGS.map(([key, title, hint]) => (
+      {ACCESSIBILITY_GROUPS.map(([groupTitle, settings]) => (
+        <section key={groupTitle}>
+          <h4>{groupTitle}</h4>
+          <div className="settings-grid">
+        {settings.map(([key, title, hint]) => (
           <label className="access-switch" key={key}>
             <span><strong>{title}</strong><small>{hint}</small></span>
             <input
@@ -69,7 +72,9 @@ export function AccessibilityOptionsCard({ onUpdate, profile }) {
             />
           </label>
         ))}
-      </div>
+          </div>
+        </section>
+      ))}
 
       {profile.brainBreaksEnabled && (
         <label>
@@ -78,7 +83,7 @@ export function AccessibilityOptionsCard({ onUpdate, profile }) {
             type="range"
             min="5"
             max="45"
-            step="5"
+            step="1"
             value={profile.brainBreakIntervalMinutes}
             onChange={(e) => onUpdate('brainBreakIntervalMinutes', Number(e.target.value))}
           />

@@ -1,3 +1,5 @@
+import SpecialistWeeklyProgressForm from './SpecialistWeeklyProgressForm'
+import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
@@ -21,7 +23,8 @@ function currentMonday() {
 export default function WeeklyReportsPage() {
   const [createOpen, setCreateOpen] = useState(false)
   const me = getUser()
-  const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
+  const isSpecialist = me?.role === 'specialist'
+  const isStaff = ['teacher', 'admin'].includes(me?.role)
 
   const [children, setChildren] = useState([])
   const [childId, setChildId] = useState('')
@@ -50,14 +53,14 @@ export default function WeeklyReportsPage() {
   useEffect(() => {
     fetchChildren()
       .then((data) => {
-        const childList = data.children || []
+        const childList = (data.children || []).filter((child) => !isSpecialist || isAssignedToSpecialist(child, me?.id))
         setChildren(childList)
         setChildId((current) => (
           current || (childList[0] ? String(childList[0].id) : '')
         ))
       })
       .catch((err) => setError(err.message))
-  }, [])
+  }, [isSpecialist, me?.id])
 
   useEffect(() => {
     loadReports(childId).catch((err) => setError(err.message))
@@ -98,7 +101,7 @@ export default function WeeklyReportsPage() {
       <section className="fp-hero reports-hero">
         <div>
           <span className="fp-eyebrow">متابعة التقدّم</span>
-          <h1>التقارير الأسبوعية</h1>
+          <h1>{isSpecialist ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية'}</h1>
           <p>ملخص واضح للدروس والواجبات واجتماعات الدعم والإنجازات الأسبوعية.</p>
         </div>
 
@@ -125,7 +128,8 @@ export default function WeeklyReportsPage() {
         </FormDisclosure>
       )}
 
-      <WeeklyReportsGrid reports={reports} />
+      {isSpecialist && childId && <SpecialistWeeklyProgressForm key={childId} childId={childId} onSaved={() => loadReports(childId)} />}
+      <WeeklyReportsGrid reports={reports} progressView={isSpecialist} />
     </div>
   )
 }

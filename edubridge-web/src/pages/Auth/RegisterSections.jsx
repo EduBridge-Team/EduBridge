@@ -74,10 +74,8 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             <div className="auth-field auth-field-wide">
               <label htmlFor="specialty">التخصص</label>
               <select id="specialty" value={form.specialty} onChange={onChange('specialty')}>
-                <option value="learning_support">دعم تعليمي</option>
-                <option value="educational">خطط تعلم</option>
-                <option value="communication_support">دعم التواصل التعليمي</option>
-                <option value="learning_behavior">دعم سلوك التعلم</option>
+                <option value="learning_support">مختص دعم تعليمي</option>
+                <option value="educational">مختص تعليمي</option>
               </select>
             </div>
           </>

@@ -1,3 +1,4 @@
+import { getUser } from '../../api'
 import { childAssignment } from '../../utils/childPresentation'
 import { workflowLabel } from '../../utils/workflowLabels'
 import {
@@ -100,7 +101,8 @@ export function ChildEvaluationsSection({ evaluations }) {
   )
 }
 
-export function ChildDetailsActions({ childId, name, navigate }) {
+export function ChildDetailsActions({ childId, name, navigate, canFollow = true }) {
+  if (!canFollow) return <p className="meta">المتابعة والتقدم متاحان للمختص المعيّن للطفل فقط.</p>
   return (
     <div className="child-actions child-details-actions">
       <button
@@ -121,12 +123,12 @@ export function ChildDetailsActions({ childId, name, navigate }) {
       >
         <Gamepad2 size={18} /> الألعاب التعليمية
       </button>
-      <button
+      {getUser()?.role === 'specialist' && <button
         className="btn outline"
         onClick={() => navigate(`/children/${childId}/accessibility`)}
       >
         <Accessibility size={18} /> إعدادات الوصول
-      </button>
+      </button>}
     </div>
   )
 }

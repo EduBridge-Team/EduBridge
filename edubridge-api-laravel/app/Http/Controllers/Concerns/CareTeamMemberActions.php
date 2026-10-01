@@ -38,18 +38,13 @@ trait CareTeamMemberActions
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        DB::transaction(function () use ($childId, $userId) {
-            DB::table('child_teacher')
-                ->where('child_id', $childId)
-                ->where('teacher_id', $userId)
-                ->delete();
-
-            DB::table('child_specialist')
-                ->where('child_id', $childId)
-                ->where('specialist_id', $userId)
-                ->delete();
-        });
-
-        return response()->json(['ok' => true]);
+        $memberRole = DB::table('users')->where('id', $userId)->value('role');
+        if ($memberRole === 'specialist') {
+            return $this->removeSpecialist($request, $childId, $userId);
+        }
+        if ($memberRole === 'teacher') {
+            return $this->removeTeacher($request, $childId, $userId);
+        }
+        return response()->json(['error' => 'عضو الفريق غير موجود'], 404);
     }
 }
