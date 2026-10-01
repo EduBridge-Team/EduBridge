@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from 'lucide-react'
+import { workflowLabel } from '../../../utils/workflowLabels'
 
 export default function AdminChildrenSection({ children, onDelete, onEdit }) {
   if (children.length === 0) return null
@@ -22,7 +23,7 @@ export default function AdminChildrenSection({ children, onDelete, onEdit }) {
               <strong>{child.name || 'طفل'}</strong>
               <small>
                 {child.age ? `العمر: ${child.age} سنوات` : 'العمر غير محدد'}
-                {child.disability_name ? ` • ${child.disability_name}` : child.status ? ` • ${child.status}` : ''}
+                {child.disability_name ? ` • ${child.disability_name}` : child.status ? ` • ${workflowLabel(child.status)}` : ''}
               </small>
               {child.assigned_teacher_name && (
                 <small className="admin-child-teacher">👨‍🏫 {child.assigned_teacher_name}</small>

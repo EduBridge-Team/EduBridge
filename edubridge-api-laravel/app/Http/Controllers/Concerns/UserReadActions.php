@@ -28,6 +28,12 @@ trait UserReadActions
 
             if ($user->role === 'admin') {
                 $query->addSelect('national_id');
+                $query->addSelect([
+                    'parent_children_count' => DB::table('child_parent as cp')
+                        ->join('children as c', 'c.id', '=', 'cp.child_id')
+                        ->whereColumn('cp.parent_id', 'users.id')
+                        ->selectRaw('COUNT(DISTINCT cp.child_id)'),
+                ]);
                 $role = $request->query('role');
                 if ($role) {
                     $query->where('role', $role);
