@@ -2,6 +2,8 @@ part of 'add_lesson_sheet.dart';
 
 extension _AddLessonWidgets on _AddLessonSheetState {
   Widget _buildHeader() {
+    if (widget.fullScreen) return const SizedBox.shrink();
+
     return Row(
       children: [
         const Icon(AppIcons.lesson, color: AppColors.brandBlue, size: 26),
@@ -81,6 +83,33 @@ extension _AddLessonWidgets on _AddLessonSheetState {
   }
 
   Widget _buildActions() {
+    if (widget.fullScreen) {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  _forParents ? AppColors.brandTealDeep : AppColors.green,
+              foregroundColor: Colors.white,
+            ),
+            icon: _saving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(AppIcons.save),
+            onPressed: _saving ? null : _save,
+            label: Text(
+              _saving ? 'جارِ الحفظ...' : 'حفظ الدرس',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Row(
       children: [
         Expanded(
