@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { filterLessons, lessonCategory, UNCATEGORIZED } from '../src/utils/lessonCategories.js'
 import { childAssignment } from '../src/utils/childPresentation.js'
+import { countChildrenForUser } from '../src/pages/Dashboards/Admin/adminUsersConfig.js'
 import { workflowLabel } from '../src/utils/workflowLabels.js'
 
 test('lesson categories remain truthful and consistent across search and filtering', () => {
@@ -53,4 +54,16 @@ test('workflow controls render visible associated labels and child links are key
     const childrenHtml = renderToStaticMarkup(createElement(GeneralChildrenView, { children: [{ id: 1, name: 'طفل اختبار' }], navigate() {} }))
     assert.match(childrenHtml, /role="link" tabindex="0" aria-label="دروس طفل اختبار"/)
   } finally { await server.close() }
+})
+
+test('admin child counts use real parent relations and include every assigned specialist', () => {
+  const children = [
+    { assigned_teacher_id: '12', specialist_ids: [4, '5'] },
+    { assigned_teacher_id: 12, assigned_specialist_ids: ['5'] },
+  ]
+  assert.equal(countChildrenForUser(children, { id: 7, role: 'parent', parent_children_count: '6' }), 6)
+  assert.equal(countChildrenForUser(children, { id: 8, role: 'parent', parent_children_count: 0 }), 0)
+  assert.equal(countChildrenForUser(children, { id: 12, role: 'teacher' }), 2)
+  assert.equal(countChildrenForUser(children, { id: 5, role: 'specialist' }), 2)
+  assert.equal(workflowLabel('assigned'), 'تم التعيين')
 })

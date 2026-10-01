@@ -22,7 +22,7 @@ export default function UsersTab() {
     try {
       const [userData, childData] = await Promise.all([
         fetchUsers(),
-        fetchChildren().catch(() => ({ children: [] })),
+        fetchChildren(),
       ])
       setUsers(userData.users || [])
       setChildren(childData.children || [])
@@ -113,6 +113,7 @@ export default function UsersTab() {
           <input
             className="admin-search"
             type="search"
+            aria-label="البحث في المستخدمين والأطفال"
             placeholder="ابحث بالاسم أو البريد..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

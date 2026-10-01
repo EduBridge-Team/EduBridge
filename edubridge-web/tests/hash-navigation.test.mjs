@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { scheduleHashScroll } from '../src/components/scrollToHash.js'
+import { scheduleHashScroll, scheduleNavigationScroll } from '../src/components/scrollToHash.js'
 
 function browserHarness({ present = true, reduced = false } = {}) {
   const frames = new Map()
@@ -58,4 +58,19 @@ test('encoded section IDs work and malformed or empty hashes do nothing', () => 
   assert.equal(h.calls.length, 1)
   for (const hash of ['', '#', '#%bad%']) scheduleHashScroll(hash, { window: h.browser, document: h.page })
   assert.equal(h.frames.size, 0)
+})
+
+test('all three section destinations return to the top of home and about', () => {
+  for (const section of ['services', 'features', 'contact']) {
+    for (const destination of ['/', '/about']) {
+      const h = browserHarness({ present: false })
+      const cancel = scheduleNavigationScroll(`#${section}`, { window: h.browser, document: h.page })
+      h.tick()
+      cancel()
+      scheduleNavigationScroll('', { window: h.browser, document: h.page })
+      h.tick()
+      assert.deepEqual(h.calls, [{ top: 0, left: 0, behavior: 'instant' }], `${section} → ${destination}`)
+      assert.equal(h.frames.size, 0)
+    }
+  }
 })
