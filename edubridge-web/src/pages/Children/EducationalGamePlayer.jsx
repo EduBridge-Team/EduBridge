@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { RotateCcw, Volume2, X } from 'lucide-react'
 import { speakArabic } from '../../accessibility'
 import { recordGameAttempt } from '../../api'
@@ -138,6 +138,34 @@ function RhythmGame({ onScore }) {
 }
 
 export default function GamePlayer({ game, childId, age, profile, close, onRecorded }) {
+  const headingId = useId()
+  const dialogRef = useRef(null)
+  useEffect(() => {
+    const opener = document.activeElement
+    dialogRef.current?.querySelector('button')?.focus()
+    return () => {
+      if (opener?.isConnected) opener.focus({ preventScroll: true })
+    }
+  }, [])
+
+  const handleDialogKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      close()
+    } else if (event.key === 'Tab') {
+      const controls = Array.from(dialogRef.current.querySelectorAll('button:not([disabled])'))
+        .filter((control) => control.getClientRects().length > 0)
+      const first = controls[0]
+      const last = controls.at(-1)
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last?.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first?.focus()
+      }
+    }
+  }
   const [result, setResult] = useState(null)
   const [key, setKey] = useState(0)
   const startedAt = useRef(Date.now())
@@ -164,9 +192,9 @@ export default function GamePlayer({ game, childId, age, profile, close, onRecor
   else if (game[6] === 'rhythm') content = <RhythmGame key={key} onScore={finish} />
   else content = <QuizGame key={key} game={game} age={age} profile={profile} onScore={finish} />
 
-  return <div className="game-overlay" role="dialog" aria-modal="true"><div className="game-modal">
+  return <div className="game-overlay" role="dialog" aria-modal="true" aria-labelledby={headingId} ref={dialogRef} onKeyDown={handleDialogKeyDown}><div className="game-modal">
     <div className="game-modal-head">
-      <div><span>{game[1]}</span><h2>{game[2]}</h2></div>
+      <div><span>{game[1]}</span><h2 id={headingId}>{game[2]}</h2></div>
       <button onClick={close} aria-label="إغلاق"><X /></button>
     </div>
     {result == null
