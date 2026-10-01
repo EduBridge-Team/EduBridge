@@ -112,6 +112,18 @@
     cursor: pointer;
 }
 
+:root[data-theme="dark"] .auth-label-row a,
+:root[data-theme="dark"] .auth-secondary-action {
+    color: #9bd8ff;
+}
+
+.auth-label-row a:focus-visible,
+.auth-secondary-action:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 3px;
+}
+
 :root[data-theme="dark"] .auth-split {
     border-color: #28506c;
     background: #0d2947;

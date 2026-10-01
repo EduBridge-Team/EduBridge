@@ -93,6 +93,12 @@
     grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
     margin: auto;
   }
+  .center-page.auth-page-login {
+    padding-top: clamp(24px, 5vh, 48px);
+  }
+  .auth-page-login .auth-split {
+    margin-block: 0;
+  }
   .auth-page .auth-split .auth-card-branded {
     width: 100%;
     min-height: 0;
