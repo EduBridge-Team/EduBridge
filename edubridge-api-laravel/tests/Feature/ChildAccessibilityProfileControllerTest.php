@@ -94,15 +94,30 @@ class ChildAccessibilityProfileControllerTest extends TestCase
         $controller = app(ChildAccessibilityProfileController::class);
         $payload = ['profile' => ['largeText' => true, 'highContrast' => false]];
 
-        $allowed = $controller->update($this->request('PUT', $payload, 5, 'parent'), 10);
+        $allowed = $controller->update($this->request('PUT', $payload, 4, 'specialist'), 10);
         $this->assertSame(200, $allowed->getStatusCode());
         $this->assertDatabaseHas('child_accessibility_profiles', [
             'child_id' => 10,
-            'updated_by' => 5,
+            'updated_by' => 4,
         ]);
 
         $blocked = $controller->update($this->request('PUT', $payload, 77, 'parent'), 10);
         $this->assertSame(403, $blocked->getStatusCode());
+    }
+
+    public function test_only_assigned_specialist_can_modify_profiles(): void
+    {
+        $controller = app(ChildAccessibilityProfileController::class);
+        $payload = ['profile' => ['highContrast' => true]];
+        foreach ([[5, 'parent'], [2, 'teacher'], [1, 'admin'], [99, 'specialist']] as [$id, $role]) {
+            $response = $controller->update($this->request('PUT', $payload, $id, $role), 10);
+            $this->assertSame(403, $response->getStatusCode(), $role);
+        }
+        $this->assertDatabaseCount('child_accessibility_profiles', 0);
+        $read = $controller->show($this->request('GET', [], 5, 'parent'), 10);
+        $this->assertFalse($read->getData(true)['can_edit']);
+        $read = $controller->show($this->request('GET', [], 4, 'specialist'), 10);
+        $this->assertTrue($read->getData(true)['can_edit']);
     }
 
     private function request(string $method, array $payload, int $id, string $role): Request

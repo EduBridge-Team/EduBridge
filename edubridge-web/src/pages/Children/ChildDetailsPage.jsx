@@ -1,7 +1,9 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { fetchChildDetails, fetchChildEvaluations } from '../../api'
+import { fetchChildDetails, fetchChildEvaluations, getUser } from '../../api'
+
+import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 
 import {
   ChildDetailsActions,
@@ -68,7 +70,7 @@ export default function ChildDetailsPage() {
       <ChildDetailsHeader name={name} onBack={() => navigate(-1)} />
       <ChildInfoCard child={child} />
       <ChildEvaluationsSection evaluations={evaluations} />
-      <ChildDetailsActions childId={childId} name={name} navigate={navigate} />
+      <ChildDetailsActions childId={childId} name={name} navigate={navigate} canFollow={getUser()?.role !== 'specialist' || isAssignedToSpecialist(child, getUser()?.id)} />
     </div>
   )
 }

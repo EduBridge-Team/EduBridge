@@ -1,7 +1,9 @@
 // lib/screens/child_accessibility/child_accessibility_settings_screen.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
+import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../widgets/disability/disability_catalog.dart';
 import '../../widgets/disability/disability_picker_sheet.dart';
@@ -35,6 +37,7 @@ class _ChildAccessibilitySettingsScreenState
 
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
+  bool _canEdit = false;
 
   @override
   void initState() {
@@ -44,8 +47,19 @@ class _ChildAccessibilitySettingsScreenState
       disabilityTypeHint: widget.disabilityTypeHint,
       forceReload: true,
     );
+    _loadEditPermission();
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
+  }
+
+  Future<void> _loadEditPermission() async {
+    try {
+      final response = await ApiService.authGet('/children/${widget.childId}/accessibility-profile');
+      final data = jsonDecode(response.body);
+      if (mounted) setState(() => _canEdit = response.statusCode == 200 && data['can_edit'] == true);
+    } catch (_) {
+      if (mounted) setState(() => _canEdit = false);
+    }
   }
 
   @override
@@ -61,10 +75,22 @@ class _ChildAccessibilitySettingsScreenState
       AccessibilityService.instance.profileForChild(widget.childId) ??
       const AccessibilityProfile(type: DisabilityType.none);
 
-  Future<void> _set(AccessibilityProfile next) =>
-      AccessibilityService.instance.updateForChild(widget.childId, next);
+  Future<bool> _set(AccessibilityProfile next) async {
+    if (!_canEdit) return false;
+    try {
+      await AccessibilityService.instance.updateForChild(widget.childId, next);
+      return true;
+    } catch (_) {
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر حفظ إعدادات التكيف')),
+      );
+      return false;
+    }
+  }
 
   Future<void> _openDisabilityPicker() async {
+    if (!_canEdit) return;
     final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -81,11 +107,10 @@ class _ChildAccessibilitySettingsScreenState
     if (result == 'أخرى') return;
 
     final type = disabilityTypeForCategory(result);
-    await AccessibilityService.instance.applyRecommendedForChild(
-      widget.childId,
-      type,
-      customName: type == DisabilityType.other ? result : null,
-    );
+    final saved = await _set(AccessibilityProfile.recommendedFor(
+      type, customName: type == DisabilityType.other ? result : null,
+    ));
+    if (!saved) return;
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -99,6 +124,7 @@ class _ChildAccessibilitySettingsScreenState
   }
 
   Future<void> _applyCustom() async {
+    if (!_canEdit) return;
     final name = _customNameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -109,11 +135,8 @@ class _ChildAccessibilitySettingsScreenState
       );
       return;
     }
-    await AccessibilityService.instance.applyRecommendedForChild(
-      widget.childId,
-      DisabilityType.other,
-      customName: name,
-    );
+    final saved = await _set(AccessibilityProfile.recommendedFor(DisabilityType.other, customName: name));
+    if (!saved) return;
     if (!mounted) return;
     setState(() => _selectedDisability = name);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -125,5 +148,13 @@ class _ChildAccessibilitySettingsScreenState
   }
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) {
+    if (!_canEdit) {
+      return Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
+      );
+    }
+    return buildView(context);
+  }
 }

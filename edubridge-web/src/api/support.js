@@ -74,6 +74,13 @@ export function saveWeeklyReport(payload) {
   });
 }
 
+export function saveSpecialistWeeklyProgress(payload) {
+  return request('/reports/weekly/specialist', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 // ===== Learning support requests & meetings =====
 export function fetchLearningSupportRequests(params = {}) {
   const q = new URLSearchParams(params).toString();

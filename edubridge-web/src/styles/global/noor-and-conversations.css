@@ -463,3 +463,12 @@
     }
 }
 
+
+.chat-composer-modes { padding: 8px 12px; flex-wrap: wrap; }
+.chat-aac-panel { padding: 8px 12px; max-height: 290px; overflow-y: auto; border-top: 1px solid var(--line); }
+.chat-aac-panel .aac-grid { grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 8px; margin-top: 10px; }
+.chat-aac-panel .aac-tile { padding: 10px 6px; min-height: 70px; }
+.parent-lesson-authoring form { display: grid; gap: 12px; margin-top: 16px; }
+.parent-lesson-authoring label { display: grid; gap: 6px; }
+
+.accessibility-controls { border: 0; padding: 0; margin: 0; min-width: 0; }

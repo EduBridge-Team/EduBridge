@@ -5,6 +5,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     final role = await ApiService.getRole();
     if (!mounted) return;
     _updateChildLessonsState(() {
+      _isSpecialist = role == 'specialist';
       _canMarkDone = role == 'teacher' || role == 'specialist' || role == 'admin';
     });
   }

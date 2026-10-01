@@ -2,7 +2,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { fetchChildProgress, fetchChildSummary } from '../../api'
+import { fetchChildProgress, fetchChildSummary, fetchChildWeeklyReports } from '../../api'
+
+import { WeeklyReportsGrid } from '../Learning/WeeklyReportSections'
 
 // معلومات العرض لكل حالة
 const STATUS = {
@@ -27,6 +29,8 @@ export default function ChildProgressPage() {
 
   const [summary, setSummary] = useState(null)
   const [progress, setProgress] = useState([])
+  const [reports, setReports] = useState([])
+  const [reportsError, setReportsError] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -51,6 +55,16 @@ export default function ChildProgressPage() {
   useEffect(() => {
     load()
   }, [load])
+
+  useEffect(() => {
+    let active = true
+    setReports([])
+    setReportsError('')
+    fetchChildWeeklyReports(childId).then((data) => {
+      if (active) setReports(data.reports || [])
+    }).catch((err) => { if (active) setReportsError(err.message) })
+    return () => { active = false }
+  }, [childId])
 
   if (loading) {
     return (
@@ -134,6 +148,10 @@ export default function ChildProgressPage() {
           })}
         </>
       )}
+      <section aria-label="التقدم الأسبوعي وتقرير المعلم">
+        <h3>التقدم الأسبوعي وتقرير المعلم</h3>
+        {reportsError ? <p className="error-box">{reportsError}</p> : <WeeklyReportsGrid reports={reports} progressView />}
+      </section>
     </div>
   )
 }

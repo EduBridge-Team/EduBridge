@@ -1,4 +1,4 @@
-import { DASHBOARD_BY_ROLE } from './roleRoutes'
+import { DASHBOARD_BY_ROLE } from './roleRoutes.js'
 
 export const CHILD_ROLES = ['parent', 'teacher', 'specialist', 'admin']
 export const STAFF_SEARCH_ROLES = ['teacher', 'specialist', 'admin', 'ministry', 'institution']
@@ -14,18 +14,20 @@ const COMMON_PORTAL_PATHS = new Set([
 ])
 
 export function isPortalPathForRole(pathname, role) {
-  if (!role) return false
+  if (!DASHBOARD_BY_ROLE[role]) return false
 
   const dashboard = DASHBOARD_BY_ROLE[role]
   if (dashboard && pathname === dashboard) return true
   if (COMMON_PORTAL_PATHS.has(pathname)) return true
 
   if (pathname.startsWith('/children')) {
+    if (pathname === '/children/new') return ['parent', 'admin'].includes(role)
+    if (/^\/children\/[^/]+\/accessibility$/.test(pathname)) return role === 'specialist'
     return CHILD_ROLES.includes(role)
   }
 
   if (pathname.startsWith('/accessibility')) {
-    return CHILD_ROLES.includes(role)
+    return role === 'specialist'
   }
 
   if (pathname === '/search') {
@@ -41,7 +43,7 @@ export function isPortalPathForRole(pathname, role) {
   }
 
   if (pathname === '/parent-lessons') {
-    return role === 'parent'
+    return CHILD_ROLES.includes(role)
   }
 
   if (pathname === '/learning-support') {

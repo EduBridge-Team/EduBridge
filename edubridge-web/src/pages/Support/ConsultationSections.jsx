@@ -111,6 +111,7 @@ export function ConsultationList({
                   {!detail.consultation.specialist_id && me.role === 'specialist' && (
                     <button className="btn small" onClick={() => onClaim(consultation.id)}>استلام الحالة</button>
                   )}
+                  {(me.role === 'admin' || String(detail.consultation.specialist_id) === String(me.id)) && <>
                   <button className="btn small outline" onClick={() => onSetStatus(consultation.id, 'in_progress')}>قيد الدراسة</button>
                   <button className="btn small outline" onClick={() => onSetStatus(consultation.id, 'closed')}>إغلاق</button>
                   <div className="note-add">
@@ -122,6 +123,7 @@ export function ConsultationList({
                     />
                     <button className="btn small" onClick={() => onSubmitNote(consultation.id)}>إضافة</button>
                   </div>
+                  </>}
                 </div>
               )}
             </>

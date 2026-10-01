@@ -80,11 +80,11 @@ export function WeeklyReportForm({
   )
 }
 
-export function WeeklyReportsGrid({ reports }) {
+export function WeeklyReportsGrid({ reports, progressView = false }) {
   return (
     <section className="fp-grid">
       {reports.length === 0 ? (
-        <EmptyState title="لا توجد تقارير لهذا الطفل بعد" description="ستظهر هنا ملخصات التقدّم والإنجازات بعد إضافة التقرير الأسبوعي. يمكنك اختيار طفل آخر من أعلى الصفحة." />
+        <EmptyState title={progressView ? "لا يوجد تقدم أسبوعي لهذا الطفل بعد" : "لا توجد تقارير لهذا الطفل بعد"} description="ستظهر هنا ملخصات التقدّم والإنجازات بعد إضافة التقرير الأسبوعي. يمكنك اختيار طفل آخر من أعلى الصفحة." />
       ) : (
         reports.map((report) => (
           <article className="fp-card weekly-report-card" key={report.id}>
@@ -121,7 +121,8 @@ export function WeeklyReportsGrid({ reports }) {
               </div>
             </div>
 
-            {report.teacher_notes && <p>{report.teacher_notes}</p>}
+            {report.teacher_notes && <section><h4>تقرير المعلم</h4><p style={{ whiteSpace: 'pre-wrap' }}>{report.teacher_notes}</p></section>}
+            {report.specialist_notes && <section><h4>متابعة المختص</h4><p style={{ whiteSpace: 'pre-wrap' }}>{report.specialist_notes}</p></section>}
 
             {(report.achievements || []).length > 0 && (
               <div>

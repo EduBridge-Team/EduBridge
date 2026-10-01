@@ -178,6 +178,15 @@ class ChildControllerPrivacyTest extends TestCase
         ]);
     }
 
+    public function test_unassigned_specialist_cannot_edit_child_fields(): void
+    {
+        $response = app(ChildController::class)->update(
+            $this->request(99, 'specialist', 'PUT', ['name' => 'تغيير غير مصرّح']), 10
+        );
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseMissing('children', ['id' => 10, 'name' => 'تغيير غير مصرّح']);
+    }
+
     private function request(
         int $id,
         string $role,

@@ -1,3 +1,4 @@
+import AdminOrganizationAccountForm from './AdminOrganizationAccountForm'
 import EmptyState from '../../../components/EmptyState'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -132,6 +133,11 @@ export default function UsersTab() {
         </label>
       </div>
 
+      <AdminOrganizationAccountForm onCreated={(user) => {
+        setUsers((list) => [...list, user])
+        setActiveRole(user.role)
+        setSearch('')
+      }} />
       <div className="admin-role-filters" role="group" aria-label="عرض حسب الدور">
         {grouped.map((section) => <button key={section.role} type="button" aria-pressed={activeRole === section.role} onClick={() => setActiveRole(section.role)}>{section.label}<span>{section.total}</span></button>)}
         <button type="button" aria-pressed={activeRole === 'children'} onClick={() => setActiveRole('children')}>الأطفال<span>{children.length}</span></button>

@@ -6,6 +6,9 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
   //  تحميل الأطفال (مع cache)
   // ═══════════════════════════════════════════════════════════
   Future<void> _ensureChildrenLoaded() async {
+    final userId = await ApiService.getUserId();
+    if (userId != _childrenCacheUserId) clearChildrenCache();
+    if (userId == null) return;
     if (_childrenCache.isNotEmpty &&
         _childrenCacheTime != null &&
         DateTime.now().difference(_childrenCacheTime!) < VoiceCommandService._cacheDuration) {
@@ -13,12 +16,13 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
     }
     try {
       final res = await ApiService.authGet('/children');
-      if (res.statusCode == 200) {
+      if (res.statusCode == 200 && await ApiService.getUserId() == userId) {
         final data = jsonDecode(res.body);
         _childrenCache = (data['children'] as List? ?? [])
             .map((e) => Map<String, dynamic>.from(e))
             .toList();
         _childrenCacheTime = DateTime.now();
+        _childrenCacheUserId = userId;
       }
     } catch (_) {}
   }
@@ -27,39 +31,7 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
   //  مطابقة اسم الطفل
   // ═══════════════════════════════════════════════════════════
   Map<String, dynamic>? _findChild(String rawText) {
-    if (_childrenCache.isEmpty) return null;
-
-    final text = _normalize(rawText);
-
-    // 1. مطابقة كامل الاسم
-    for (final child in _childrenCache) {
-      final name = _normalize((child['name'] ?? '').toString());
-      if (name.isEmpty) continue;
-      if (text.contains(name)) return child;
-    }
-
-    // 2. مطابقة الجزء الأول من الاسم (مثلاً: "محمد" يطابق "محمد أحمد")
-    for (final child in _childrenCache) {
-      final name = _normalize((child['name'] ?? '').toString());
-      if (name.isEmpty) continue;
-      final firstWord = name.split(' ').first;
-      if (firstWord.length >= 2 && text.contains(firstWord)) {
-        return child;
-      }
-    }
-
-    // 3. مطابقة أي كلمة في الاسم (طولها 3+)
-    for (final child in _childrenCache) {
-      final name = _normalize((child['name'] ?? '').toString());
-      if (name.isEmpty) continue;
-      for (final word in name.split(' ')) {
-        if (word.length >= 3 && text.contains(word)) {
-          return child;
-        }
-      }
-    }
-
-    return null;
+    return findVoiceChild(rawText, _childrenCache);
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -161,26 +133,9 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
   // ═══════════════════════════════════════════════════════════
   //  أدوات مساعدة
   // ═══════════════════════════════════════════════════════════
-  String _normalize(String input) {
-    var t = input.trim();
-    t = t.replaceAll(RegExp(r'[\u064B-\u0652]'), '');
-    t = t.replaceAll('\u0640', '');
-    t = t.replaceAll(RegExp('[أإآٱ]'), 'ا');
-    t = t.replaceAll('ئ', 'ي');
-    t = t.replaceAll('ؤ', 'و');
-    t = t.replaceAll('ى', 'ي');
-    t = t.replaceAll('ة', 'ه');
-    t = t.replaceAll(RegExp(r'[،.,!؟?]'), ' ');
-    t = t.replaceAll(RegExp(r'\s+'), ' ').trim();
-    return t;
-  }
+  String _normalize(String input) => normalizeVoiceText(input);
 
-  bool _matches(String text, List<String> keywords) {
-    for (final k in keywords) {
-      if (text.contains(_normalize(k))) return true;
-    }
-    return false;
-  }
+  bool _matches(String text, List<String> keywords) => matchesVoiceText(text, keywords);
 
   Future<void> _reply(String message) async {
     lastReply.value = message;

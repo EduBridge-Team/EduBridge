@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import {
   fetchChildAccessibilityProfile,
   fetchChildDetails,
+  getUser,
   saveChildAccessibilityProfile,
 } from '../../api'
 import {
   applyAccessibilityProfile,
+  clearAccessibilityProfile,
   defaultProfile,
   getAccessibilityProfile,
   recommendedProfile,
@@ -25,13 +27,20 @@ export default function AccessibilityPage() {
   const navigate = useNavigate()
   const [child, setChild] = useState(null)
   const [profile, setProfile] = useState(defaultProfile)
+  const [canEdit, setCanEdit] = useState(false)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  useEffect(() => { applyAccessibilityProfile(profile) }, [profile])
+
   useEffect(() => {
     let active = true
+    setLoading(true)
+    setCanEdit(false)
+    setError('')
+    setProfile(defaultProfile)
 
     Promise.all([
       fetchChildDetails(childId),
@@ -46,49 +55,47 @@ export default function AccessibilityPage() {
         ? { ...defaultProfile, ...profileData.profile }
         : fallback
 
+      setCanEdit(getUser()?.role === 'specialist' && profileData?.can_edit === true)
       setProfile(next)
       saveAccessibilityProfile(childId, next)
-      applyAccessibilityProfile(next)
     }).catch((err) => {
       if (active) setError(err.message || 'تعذّر تحميل إعدادات الوصول')
     }).finally(() => {
       if (active) setLoading(false)
     })
 
-    return () => { active = false }
+    return () => { active = false; clearAccessibilityProfile() }
   }, [childId])
 
   const chooseType = (type) => {
+    if (!canEdit) return
     const next = recommendedProfile(
       type,
       type === 'other' ? profile.customDisabilityName : '',
     )
     setProfile(next)
-    applyAccessibilityProfile(next)
     setSaved(false)
   }
 
   const update = (key, value) => {
+    if (!canEdit) return
     const next = { ...profile, [key]: value }
     setProfile(next)
-    applyAccessibilityProfile(next)
     setSaved(false)
   }
 
   const save = async () => {
+    if (!canEdit) return
     setSaving(true)
     setError('')
     try {
       const data = await saveChildAccessibilityProfile(childId, profile)
       const next = { ...defaultProfile, ...(data.profile || profile) }
       saveAccessibilityProfile(childId, next)
-      applyAccessibilityProfile(next)
       setProfile(next)
       setSaved(true)
     } catch (err) {
-      // نبقي النسخة المحلية كـ offline fallback، لكن لا ندّعي نجاح المزامنة.
-      saveAccessibilityProfile(childId, profile)
-      setError(err.message || 'تم الحفظ محلياً لكن تعذّرت المزامنة مع السيرفر')
+      setError(err.message || 'تعذّرت المزامنة مع السيرفر')
     } finally {
       setSaving(false)
     }
@@ -107,6 +114,8 @@ export default function AccessibilityPage() {
 
       {error && <div className="error-box">{error}</div>}
 
+      {!canEdit && <p className="meta" role="status">للعرض فقط — تعديل إعدادات التكيف متاح للمختص المعيّن للطفل.</p>}
+      <fieldset disabled={!canEdit || saving} className="accessibility-controls">
       <AccessibilityTypeCard
         onChooseType={chooseType}
         onUpdate={update}
@@ -118,12 +127,14 @@ export default function AccessibilityPage() {
         profile={profile}
       />
 
-      <AccessibilitySaveBar
+      </fieldset>
+
+      {canEdit && <AccessibilitySaveBar
         onReset={() => chooseType('none')}
         onSave={save}
         saved={saved}
         saving={saving}
-      />
+      />}
     </div>
   )
 }

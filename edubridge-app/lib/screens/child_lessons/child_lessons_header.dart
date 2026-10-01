@@ -5,7 +5,7 @@ PreferredSizeWidget buildChildLessonsAppBar({
   required BuildContext context,
   required String childName,
   required int stars,
-  required VoidCallback onOpenSettings,
+  required VoidCallback? onOpenSettings,
   required VoidCallback onOpenProgress,
 }) {
   return AppBar(
@@ -54,7 +54,7 @@ PreferredSizeWidget buildChildLessonsAppBar({
           ],
         ),
       ),
-      IconButton(
+      if (onOpenSettings != null) IconButton(
         icon: const Icon(Icons.accessibility_new, color: Colors.white),
         tooltip: 'إعدادات التكييف',
         onPressed: onOpenSettings,
