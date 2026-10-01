@@ -33,8 +33,14 @@ export default function AccessibilityPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  useEffect(() => { applyAccessibilityProfile(profile) }, [profile])
+
   useEffect(() => {
     let active = true
+    setLoading(true)
+    setCanEdit(false)
+    setError('')
+    setProfile(defaultProfile)
 
     Promise.all([
       fetchChildDetails(childId),
@@ -52,7 +58,6 @@ export default function AccessibilityPage() {
       setCanEdit(getUser()?.role === 'specialist' && profileData?.can_edit === true)
       setProfile(next)
       saveAccessibilityProfile(childId, next)
-      applyAccessibilityProfile(next)
     }).catch((err) => {
       if (active) setError(err.message || 'تعذّر تحميل إعدادات الوصول')
     }).finally(() => {
@@ -69,7 +74,6 @@ export default function AccessibilityPage() {
       type === 'other' ? profile.customDisabilityName : '',
     )
     setProfile(next)
-    applyAccessibilityProfile(next)
     setSaved(false)
   }
 
@@ -77,7 +81,6 @@ export default function AccessibilityPage() {
     if (!canEdit) return
     const next = { ...profile, [key]: value }
     setProfile(next)
-    applyAccessibilityProfile(next)
     setSaved(false)
   }
 
@@ -89,7 +92,6 @@ export default function AccessibilityPage() {
       const data = await saveChildAccessibilityProfile(childId, profile)
       const next = { ...defaultProfile, ...(data.profile || profile) }
       saveAccessibilityProfile(childId, next)
-      applyAccessibilityProfile(next)
       setProfile(next)
       setSaved(true)
     } catch (err) {

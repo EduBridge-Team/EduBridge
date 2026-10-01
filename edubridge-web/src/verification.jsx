@@ -8,36 +8,37 @@ export const useVerification = () => useContext(VerificationContext)
 
 export function VerificationProvider({ children }) {
   const location = useLocation()
+  const pathname = location.pathname
   const token = getToken()
   const role = getUser()?.role
-  const [state, setState] = useState({ token: null, loading: true, verification: null, error: '' })
+  const [state, setState] = useState({ token: null, pathname: null, loading: true, verification: null, error: '' })
   const sequence = useRef(0)
   const refresh = useCallback(async () => {
     const request = ++sequence.current
     if (!token || role === 'admin') {
-      setState({ token, loading: false, verification: null, error: '' })
+      setState({ token, pathname, loading: false, verification: null, error: '' })
       return
     }
-    setState((current) => ({ ...current, token, loading: true, error: '' }))
+    setState((current) => ({ ...current, token, pathname, loading: true, error: '' }))
     try {
       const data = await fetchMyVerification()
-      if (request === sequence.current) setState({ token, loading: false, verification: data.verification, error: '' })
+      if (request === sequence.current) setState({ token, pathname, loading: false, verification: data.verification, error: '' })
     } catch (error) {
-      if (request === sequence.current) setState({ token, loading: false, verification: null, error: error.message })
+      if (request === sequence.current) setState({ token, pathname, loading: false, verification: null, error: error.message })
     }
-  }, [token, role])
+  }, [token, role, pathname])
 
   useEffect(() => {
     refresh()
     return () => { ++sequence.current }
-  }, [refresh, location.pathname])
+  }, [refresh])
 
   useEffect(() => {
     window.addEventListener('focus', refresh)
     return () => window.removeEventListener('focus', refresh)
   }, [refresh])
 
-  const loading = Boolean(token) && role !== 'admin' && (state.token !== token || state.loading)
+  const loading = Boolean(token) && role !== 'admin' && (state.token !== token || state.pathname !== pathname || state.loading)
   const verified = !loading && state.token === token && isIdentityVerified(getUser(), state.verification)
   return <VerificationContext.Provider value={{ ...state, loading, verified, refresh }}>{children}</VerificationContext.Provider>
 }
