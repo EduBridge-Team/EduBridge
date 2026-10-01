@@ -2,6 +2,15 @@
 part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenState {
+  Future<void> _openChildProfile(Map<String, dynamic> child) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SpecialistChildProfileScreen(child: child),
+      ),
+    );
+  }
+
   void _openNotifications() {
     Navigator.push(
       context,
