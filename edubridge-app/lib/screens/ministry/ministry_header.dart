@@ -70,7 +70,10 @@ class _MinistryHeader extends StatelessWidget {
               onSelected: () async {
                 final navigator = Navigator.of(context);
                 await ApiService.logout();
-                navigator.pushReplacementNamed('/home');
+                navigator.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (_) => false,
+                );
               },
             ),
           ],
