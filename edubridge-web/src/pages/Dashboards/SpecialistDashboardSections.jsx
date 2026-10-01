@@ -26,11 +26,10 @@ function SpecialistChildRow({ approvingId, onApprove, onOpenProgress, row }) {
       <div className="pr-child">
         <div className="avatar specialist-child-avatar">{(child.name || '؟').trim().charAt(0)}</div>
         <div>
-          <h3
-            className="pr-name clickable"
-            onClick={() => onOpenProgress(child)}
-          >
-            {child.name}
+          <h3 className="pr-name">
+            <button type="button" className="specialist-progress-link" aria-label={`عرض تقدّم ${child.name}`} onClick={() => onOpenProgress(child)}>
+              {child.name}
+            </button>
           </h3>
           {child.disability_name && (
             <div className="meta">احتياج: {child.disability_name}</div>
