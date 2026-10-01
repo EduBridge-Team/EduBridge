@@ -87,7 +87,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('تم إنشاء الواجب بنجاح'),
+            content: Text('تم نشر الواجب بنجاح'),
             backgroundColor: AppColors.green,
           ),
         );
