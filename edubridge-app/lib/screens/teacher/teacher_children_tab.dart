@@ -161,55 +161,6 @@ class _TeacherChildCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateWeeklyReportScreen(
-                        childId: child['id'],
-                        childName: (child['name'] ?? '').toString(),
-                      ),
-                    ),
-                  );
-                  onReload();
-                },
-                icon: const Icon(AppIcons.edit, size: 18),
-                label: const Text('كتابة تقرير'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.brandTealDeep,
-                  minimumSize: const Size.fromHeight(48),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CaseDiscussionScreen(
-                      filterChildId: child['id'] as int,
-                    ),
-                  ),
-                ),
-                icon: const Icon(AppIcons.forum, size: 18),
-                label: const Text('دراسة الحالة'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.purple,
-                  minimumSize: const Size.fromHeight(48),
-                  side: BorderSide(
-                    color: AppColors.purple.withValues(alpha: .45),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
