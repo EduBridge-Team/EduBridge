@@ -184,7 +184,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     final age = child['age'] ?? '?';
     final status = child['status'];
     final disabilityType = (child['disability_type'] ?? '').toString().trim();
-    final teacher = (child['assigned_teacher_name'] ?? '').toString().trim();
     final color = AppColors.kidPalette[index % AppColors.kidPalette.length];
 
     return Padding(
@@ -248,29 +247,6 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                                 ),
                             ],
                           ),
-                          if (teacher.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.school_outlined,
-                                  size: 17,
-                                  color: AppColors.brandBlue,
-                                ),
-                                const SizedBox(width: 5),
-                                Expanded(
-                                  child: Text(
-                                    'المعلم: $teacher',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: c.muted,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ],
