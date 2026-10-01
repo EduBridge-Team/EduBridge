@@ -11,6 +11,7 @@ import '../admin/admin_screen.dart';
 import '../chats_screen.dart';
 import '../lessons_screen.dart';
 import '../support_sheet.dart';
+import '../login_screen.dart';
 
 part 'ministry_header.dart';
 part 'ministry_tab_bar.dart';
