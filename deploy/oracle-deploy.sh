@@ -11,6 +11,17 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
+groq_key="$(grep -E '^GROQ_API_KEY=' "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
+groq_model="$(grep -E '^GROQ_MODEL=' "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
+if [[ -z "$groq_key" ]]; then
+  echo "ERROR: GROQ_API_KEY is missing or empty in $ENV_FILE." >&2
+  echo "Noor cannot work without this server-side key." >&2
+  exit 1
+fi
+if [[ -z "$groq_model" ]]; then
+  echo "WARNING: GROQ_MODEL is not set; Laravel will use its default model."
+fi
+
 for command in docker curl git; do
   if ! command -v "$command" >/dev/null 2>&1; then
     echo "ERROR: required command not found: $command" >&2
@@ -103,6 +114,9 @@ echo "==> Recreating application containers..."
 compose up -d --no-deps api
 compose up -d --no-deps web
 
+echo "==> Clearing Laravel runtime caches..."
+compose exec -T api php artisan optimize:clear >/dev/null
+
 echo "==> Waiting for local health endpoints..."
 for url in http://127.0.0.1:8081/ http://127.0.0.1:8082/; do
   ok=false
@@ -127,7 +141,14 @@ if ! grep -Fq "\"git_sha\":\"$GIT_SHA\"" <<<"$api_health"; then
   exit 1
 fi
 
+noor_status="$(compose exec -T api php artisan tinker --execute='echo config("services.groq.key") ? "configured" : "missing";' 2>/dev/null | tail -n1 | tr -d '\r' || true)"
+if [[ "$noor_status" != "configured" ]]; then
+  echo "ERROR: Noor is still not configured inside the running API container." >&2
+  exit 1
+fi
+
 echo "==> Verified API Git SHA: $GIT_SHA"
+echo "==> Noor server configuration is loaded."
 echo "==> EduBridge Oracle deployment is healthy."
 compose ps
 
