@@ -26,17 +26,17 @@
 
 /* Reserve a narrow lane for the assistant and microphone. Content and sticky
    save bars stay beside their default positions even while scrolling. */
-body:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
-  width: min(1180px, calc(100% - 144px));
-  margin-left: 128px;
-  margin-right: 16px;
+body.role-portal-active:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
+  width: min(1180px, calc(100% - 144px)) !important;
+  margin-left: 128px !important;
+  margin-right: 16px !important;
 }
 body:has(.pp-shell) .vc-status { display: none; }
 @media (max-width: 700px) {
-  body:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
-    width: calc(100% - 98px);
-    margin-left: 88px;
-    margin-right: 10px;
+  body.role-portal-active:has(.noor-launcher, .vc-widget, .vc-restore) .pp-content {
+    width: calc(100% - 98px) !important;
+    margin-left: 88px !important;
+    margin-right: 10px !important;
   }
   body:has(.pp-shell) .vc-widget {
     left: 18px;
