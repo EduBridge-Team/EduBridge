@@ -104,6 +104,7 @@ trait ChildControllerHelpers
                 ->where('status', 'approved')
                 ->orderByDesc('reviewed_at')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->first();
 
             $child->current_plan_id = $plan ? (int) $plan->id : null;
