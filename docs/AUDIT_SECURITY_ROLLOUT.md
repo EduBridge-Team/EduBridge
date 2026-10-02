@@ -95,5 +95,14 @@ Old public links remain accessible until their public objects are deleted.
 If a CDN cached those URLs, purge the old URLs after cleanup as well.
 This repository change does not itself run the production storage migration.
 
-Remaining audit work: pagination and N+1 query reduction, secure mobile token
-storage, and replacing artisan serve with a production PHP runtime.
+Lesson list/search/child-lesson responses load media in one query for the whole
+result set. Child directories load specialist assignments and latest approved
+plans in two relation queries, independent of the number of children. Plan
+queries include only children whose detailed records the viewer may see;
+unassigned specialist discovery records retain their summary-only fields.
+Regression checks cover constant query counts and the real PostgreSQL endpoints.
+This optimization adds no database migration and preserves response fields.
+
+Remaining audit work: pagination, secure mobile token storage, and replacing
+artisan serve with a production PHP runtime. Other list endpoints may still need
+query profiling.

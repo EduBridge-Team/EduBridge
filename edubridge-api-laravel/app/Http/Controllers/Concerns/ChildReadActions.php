@@ -50,14 +50,18 @@ trait ChildReadActions
                 });
             }
 
-            $children = $children->map(
-                fn ($child) => $this->hideIdentityFieldsForStaff(
-                    ($user->role === 'specialist' && !in_array((int) $child->id, $assignedIds ?? [], true)) ? $this->attachSpecialists($child) : $this->attachCurrentPlan(
-                        $this->attachSpecialists($this->decodeChild($child))
-                    ),
-                    $user
-                )
-            );
+            $planChildIds = $children->filter(fn ($child) => $user->role !== 'specialist'
+                || in_array((int) $child->id, $assignedIds ?? [], true))->pluck('id');
+            [$specialists, $plans] = $this->loadChildRelations($children, $planChildIds);
+            $children = $children->map(function ($child) use ($user, $specialists, $plans, $planChildIds) {
+                $summaryOnly = $user->role === 'specialist'
+                    && !$planChildIds->contains($child->id);
+                $child = $this->attachSpecialists($summaryOnly ? $child : $this->decodeChild($child), $specialists);
+                if (!$summaryOnly) {
+                    $child = $this->attachCurrentPlan($child, $plans);
+                }
+                return $this->hideIdentityFieldsForStaff($child, $user);
+            });
 
             return response()->json(['children' => $children]);
         } catch (\Exception $e) {
