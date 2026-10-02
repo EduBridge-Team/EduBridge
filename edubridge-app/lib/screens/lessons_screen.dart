@@ -1,8 +1,9 @@
 // lib/screens/lessons_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/paged_list_controller.dart';
+import '../widgets/list_pagination.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
@@ -18,54 +19,41 @@ class LessonsScreen extends StatefulWidget {
 
 class _LessonsScreenState extends State<LessonsScreen> {
   List _lessons = [];
+  late final PagedListController _pages;
   bool _loading = true;
   String? _error;
   String _query = '';
+  final _searchInput = TextEditingController();
 
   int? _speakingLessonId;
 
   @override
   void initState() {
     super.initState();
+    _pages = PagedListController((page, query) => ApiService.getLessonsPage(page: page, query: query));
+    _pages.addListener(_syncPage);
     _loadLessons();
   }
 
   @override
   void dispose() {
+    _pages.dispose();
+    _searchInput.dispose();
     TtsService.instance.stop();
     super.dispose();
   }
 
-  Future<void> _loadLessons() async {
+  void _syncPage() {
+    if (!mounted) return;
     setState(() {
-      _loading = true;
-      _error = null;
+      _lessons = _pages.items;
+      _loading = _pages.loading;
+      _error = _pages.error;
     });
-
-    try {
-      final res = await ApiService.authGet('/lessons');
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 200) {
-        if (!mounted) return;
-        setState(() {
-          _lessons = data['lessons'] ?? [];
-          _loading = false;
-        });
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الدروس';
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
   }
+
+  Future<void> _loadLessons() => _pages.load();
+
 
   Future<void> _toggleSpeak(Map lesson) async {
     final lessonId = lesson['id'];
@@ -106,15 +94,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
     return parts.join('، ');
   }
 
-  List get _filtered {
-    final q = _query.trim();
-    if (q.isEmpty) return _lessons;
-    return _lessons.where((l) {
-      final title = (l['title'] ?? '').toString();
-      final content = (l['content'] ?? '').toString();
-      return title.contains(q) || content.contains(q);
-    }).toList();
-  }
+  List get _filtered => _lessons;
+
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +126,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 ),
                 const SizedBox(height: 14),
                 TextField(
+                  controller: _searchInput,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
                     hintText: 'ابحث عن درس...',
@@ -152,12 +134,12 @@ class _LessonsScreenState extends State<LessonsScreen> {
                     suffixIcon: _query.isNotEmpty
                         ? IconButton(
                             tooltip: 'مسح البحث',
-                            onPressed: () => setState(() => _query = ''),
+                            onPressed: () { _searchInput.clear(); setState(() => _query = ''); _pages.search(''); },
                             icon: const Icon(Icons.close_rounded),
                           )
                         : null,
                   ),
-                  onChanged: (v) => setState(() => _query = v),
+                  onChanged: (v) { setState(() => _query = v); _pages.search(v); },
                 ),
               ],
             ),
@@ -168,6 +150,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
               child: _buildBody(),
             ),
           ),
+          ListPagination(controller: _pages),
         ],
       ),
     );
@@ -209,7 +192,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _lessons.isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
+              _query.trim().isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
               style: TextStyle(
                   fontSize: 18, color: JisrColors.of(context).muted),
             ),

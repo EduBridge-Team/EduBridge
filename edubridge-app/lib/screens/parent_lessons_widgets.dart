@@ -32,7 +32,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _lessons.isEmpty
+              _query.trim().isEmpty
                   ? 'لا توجد دروس مخصصة لأولياء الأمور بعد'
                   : 'لا نتائج مطابقة لبحثك',
               style: TextStyle(
@@ -42,7 +42,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
               textAlign: TextAlign.center,
             ),
           ),
-          if (_lessons.isEmpty) ...[
+          if (_lessons.isEmpty && _query.trim().isEmpty) ...[
             const SizedBox(height: 8),
             Center(
               child: Text(

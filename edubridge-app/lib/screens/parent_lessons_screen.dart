@@ -1,10 +1,11 @@
 // lib/screens/parent_lessons_screen.dart
 // دروس مخصصة لأولياء الأمور
-import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/paged_list_controller.dart';
+import '../widgets/list_pagination.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/accessibility/adaptive_video_player.dart';
@@ -20,6 +21,7 @@ class ParentLessonsScreen extends StatefulWidget {
 
 class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
   List _lessons = [];
+  late final PagedListController _pages;
   bool _loading = true;
   String? _error;
   String _query = '';
@@ -31,57 +33,33 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
   @override
   void initState() {
     super.initState();
+    _pages = PagedListController((page, query) => ApiService.getLessonsPage(page: page, query: query, targetType: 'parents'));
+    _pages.addListener(_syncPage);
     _load();
   }
 
   @override
   void dispose() {
+    _pages.dispose();
     TtsService.instance.stop();
     _audioPlayer.dispose();
     super.dispose();
   }
 
-  Future<void> _load() async {
+  void _syncPage() {
+    if (!mounted) return;
     setState(() {
-      _loading = true;
-      _error = null;
+      _lessons = _pages.items;
+      _loading = _pages.loading;
+      _error = _pages.error;
     });
-
-    try {
-      final res = await ApiService.authGet('/lessons?target_type=parents');
-      final data = jsonDecode(res.body);
-
-      if (res.statusCode == 200) {
-        if (!mounted) return;
-        setState(() {
-          _lessons = data['lessons'] ?? [];
-          _loading = false;
-        });
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الدروس';
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
   }
 
-  List get _filtered {
-    final q = _query.trim();
-    if (q.isEmpty) return _lessons;
-    return _lessons.where((l) {
-      final title = (l['title'] ?? '').toString();
-      final content = (l['content'] ?? '').toString();
-      return title.contains(q) || content.contains(q);
-    }).toList();
-  }
+  Future<void> _load() => _pages.load();
+
+
+  List get _filtered => _lessons;
+
 
   Future<void> _toggleSpeak(Map lesson) async {
     final id = lesson['id'];
@@ -182,7 +160,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                 hintText: 'ابحث في الدروس...',
                 prefixIcon: Icon(AppIcons.search),
               ),
-              onChanged: (v) => setState(() => _query = v),
+              onChanged: (v) { setState(() => _query = v); _pages.search(v); },
             ),
           ),
 
@@ -192,6 +170,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               child: _buildBody(),
             ),
           ),
+          ListPagination(controller: _pages),
         ],
       ),
     );

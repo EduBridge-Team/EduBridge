@@ -1,5 +1,6 @@
-import { filterLessons } from '../../utils/lessonCategories'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useListPage } from '../../hooks/useListPage'
+import ListPagination from '../../components/ListPagination'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { fetchLessons, getUser } from '../../api'
 import {
@@ -11,31 +12,14 @@ import {
 export default function LessonsPage() {
   const location = useLocation()
   const isParent = getUser()?.role === 'parent'
-  const [lessons, setLessons] = useState([])
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('الكل')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [speakingId, setSpeakingId] = useState(null)
   const searchRef = useRef(null)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchLessons()
-      setLessons(data.lessons || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const { items: lessons, loading, error, meta, setPage, reload: load } = useListPage(fetchLessons, 'lessons', { q: query, category })
 
-  useEffect(() => {
-    load()
-    return () => window.speechSynthesis?.cancel()
-  }, [load])
+  useEffect(() => () => window.speechSynthesis?.cancel(), [])
 
   useEffect(() => {
     if (!loading && location.state?.focusSearch) searchRef.current?.focus()
@@ -58,7 +42,7 @@ export default function LessonsPage() {
     synth.speak(utter)
   }
 
-  const filtered = useMemo(() => filterLessons(lessons, query, category), [lessons, query, category])
+  const filtered = lessons
 
   return (
     <div className={`lessons-redesign portal-lessons-page ${isParent ? 'parent-lessons-page' : ''}`}>
@@ -74,7 +58,7 @@ export default function LessonsPage() {
       <div className="lessons-layout">
         <main className="lessons-main">
           <div className="section-heading compact">
-            <div><h2>الدروس المتاحة</h2><p>{filtered.length} درساً مناسباً لرحلة التعلّم</p></div>
+            <div><h2>الدروس المتاحة</h2><p>{meta?.total ?? 0} درساً مناسباً لرحلة التعلّم</p></div>
           </div>
 
           <LessonsList
@@ -86,9 +70,10 @@ export default function LessonsPage() {
             onToggleSpeak={toggleSpeak}
             speakingId={speakingId}
           />
+          <ListPagination meta={meta} loading={loading} onPage={setPage} />
         </main>
 
-        <LessonsRecommendations filteredCount={filtered.length} />
+        <LessonsRecommendations filteredCount={meta?.total ?? 0} />
       </div>
     </div>
   )

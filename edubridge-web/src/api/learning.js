@@ -1,8 +1,9 @@
 import { BASE_URL, getToken, request } from "./core.js";
 
 // الأطفال (ولي الأمر يستلم أطفاله فقط من السيرفر)
-export function fetchChildren() {
-  return request("/children");
+export function fetchChildren(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`/children${query ? `?${query}` : ''}`);
 }
 
 // تفاصيل طفل واحد (مع نوع الإعاقة والمعلم المسؤول والحالة)
@@ -41,8 +42,9 @@ export function fetchChildLessons(childId) {
 }
 
 // كل الدروس (لصفحة التصفح)
-export function fetchLessons() {
-  return request("/lessons");
+export function fetchLessons(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`/lessons${query ? `?${query}` : ''}`);
 }
 
 // أنواع الإعاقة (قائمة مرجعية)

@@ -1,9 +1,10 @@
 // lib/screens/children_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/paged_list_controller.dart';
+import '../widgets/list_pagination.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/listen_button.dart';
@@ -21,50 +22,36 @@ class ChildrenScreen extends StatefulWidget {
 
 class _ChildrenScreenState extends State<ChildrenScreen> {
   List _children = [];
+  late final PagedListController _pages;
   bool _loading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    _pages = PagedListController((page, query) => ApiService.getChildrenPage(page: page, query: query));
+    _pages.addListener(_syncPage);
     _loadChildren();
   }
 
   @override
   void dispose() {
+    _pages.dispose();
     TtsService.instance.stop();
     super.dispose();
   }
 
-  Future<void> _loadChildren() async {
+  void _syncPage() {
+    if (!mounted) return;
     setState(() {
-      _loading = true;
-      _error = null;
+      _children = _pages.items;
+      _loading = _pages.loading;
+      _error = _pages.error;
     });
-
-    try {
-      final res = await ApiService.authGet('/children');
-      final data = jsonDecode(res.body);
-      if (!mounted) return;
-      if (res.statusCode == 200) {
-        setState(() {
-          _children = data['children'] ?? [];
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الأطفال';
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
   }
+
+  Future<void> _loadChildren() => _pages.load();
+
 
   void _openChild(Map child) {
     Navigator.push(
@@ -90,10 +77,14 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
         title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
         actions: const [ListenButton()],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadChildren,
-        child: _buildBody(),
-      ),
+      body: Column(children: [
+        Padding(padding: const EdgeInsets.all(12), child: TextField(
+          decoration: const InputDecoration(hintText: 'ابحث عن طفل أو معلّم...', prefixIcon: Icon(AppIcons.search)),
+          onChanged: _pages.search,
+        )),
+        Expanded(child: RefreshIndicator(onRefresh: _loadChildren, child: _buildBody())),
+        ListPagination(controller: _pages),
+      ]),
     );
   }
 
@@ -154,7 +145,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            'لا يوجد أطفال بعد',
+            _pages.query.trim().isEmpty ? 'لا يوجد أطفال بعد' : 'لا نتائج مطابقة لبحثك',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
