@@ -16,6 +16,7 @@ class PrivatizeLearningFiles extends Command
 
     public function handle(): int
     {
+        $this->failures = 0;
         if (!$this->option('apply')) {
             $lessons = DB::table('media')->pluck('url')->filter(fn ($url) => PrivateFileMigration::publicKey((string) $url) !== null)->count();
             $submissions = 0;

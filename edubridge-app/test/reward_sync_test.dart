@@ -26,7 +26,8 @@ void main() {
     expect(await service.getStars(10), 25);
     online = true;
     expect(await service.getStars(10), 25);
-    expect(batches, [20, 5]);
+    // The first unacknowledged offline event keeps its original one-star payload.
+    expect(batches, [1, 20, 4]);
     expect(stars, 25);
     expect((await SharedPreferences.getInstance()).containsKey('child_stars_pending_10'), isFalse);
   });
