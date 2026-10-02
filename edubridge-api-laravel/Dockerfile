@@ -1,4 +1,4 @@
-FROM php:8.4-cli-bookworm
+FROM php:8.4-fpm-bookworm
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -9,7 +9,9 @@ RUN apt-get update \
         libxml2-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-install bcmath dom mbstring pdo_pgsql pgsql \
+        nginx \
+        supervisor \
+    && docker-php-ext-install bcmath dom mbstring opcache pdo_pgsql pgsql \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -17,6 +19,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 COPY docker/uploads.ini /usr/local/etc/php/conf.d/99-edubridge-uploads.ini
+COPY docker/production.ini /usr/local/etc/php/conf.d/98-edubridge-production.ini
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/supervisord.conf /etc/supervisor/edubridge.conf
 
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -39,9 +45,10 @@ RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENV APP_ENV=production \
-    APP_DEBUG=false \
-    PHP_CLI_SERVER_WORKERS=4
+    APP_DEBUG=false
 
 EXPOSE 8081
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8081"]
+STOPSIGNAL SIGTERM
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/edubridge.conf"]

@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile
     image: edubridge-api:latest
     container_name: edubridge-api
+    stop_grace_period: 200s
     restart: unless-stopped
     env_file:
       - ../edubridge-api-laravel/.env
