@@ -194,3 +194,31 @@ This first retargeter solves landmark **directions** into approximate parent-rel
 That calibration is done once per avatar, not once per sign.
 
 After calibration, the same pipeline can process all captured PSL clips without per-video credits.
+
+
+## Optional: generate the avatar bone map automatically
+
+If the avatar comes from a common humanoid rig such as Ready Player Me or Mixamo, try:
+
+```bash
+python auto_bone_map.py edubridge-avatar.glb -o generated_bone_map.json
+```
+
+Then inspect any unmatched bones:
+
+```bash
+python inspect_glb.py edubridge-avatar.glb
+```
+
+Use the generated map during export:
+
+```bash
+python export_glb_animation.py \
+  edubridge-avatar.glb \
+  triangle.motion.smooth.retarget.json \
+  --bone-map generated_bone_map.json \
+  --name PSL_Triangle \
+  -o generated/psl_triangle.glb
+```
+
+This means an initial avatar can be connected to the PSL pipeline without opening Blender, as long as it already contains a usable humanoid/finger rig.
