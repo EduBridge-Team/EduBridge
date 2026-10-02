@@ -105,3 +105,92 @@ MediaPipe landmarks
 ```
 
 The hand retargeter must map all finger joints explicitly. A normal body-only mocap retargeter is not sufficient for sign language.
+
+
+## 4. Retarget landmarks to humanoid bone rotations
+
+```bash
+python retarget_motion.py triangle.motion.smooth.json
+```
+
+Output:
+
+```text
+triangle.motion.smooth.retarget.json
+```
+
+The retarget file contains quaternion tracks for:
+
+- spine / neck / head
+- upper arms / forearms / hands
+- thumb, index, middle, ring, and pinky finger segments on both hands
+
+The result is still avatar-independent. It uses the EduBridge normalized humanoid bone layout.
+
+## 5. Inspect an avatar GLB
+
+Before exporting animation, inspect the node names:
+
+```bash
+python inspect_glb.py edubridge-avatar.glb
+```
+
+Compare the printed node names with `avatar_bone_map.json`.
+
+If your avatar uses different bone names, make a copy of the bone map and change only the right-hand values.
+
+For example:
+
+```json
+{
+  "bones": {
+    "left_upper_arm": "mixamorig:LeftArm",
+    "left_lower_arm": "mixamorig:LeftForeArm",
+    "left_hand": "mixamorig:LeftHand"
+  }
+}
+```
+
+## 6. Export a GLB animation
+
+Once the avatar bone names are mapped:
+
+```bash
+mkdir -p generated
+
+python export_glb_animation.py \
+  edubridge-avatar.glb \
+  triangle.motion.smooth.retarget.json \
+  --bone-map avatar_bone_map.json \
+  --name PSL_Triangle \
+  -o generated/psl_triangle.glb
+```
+
+The output GLB keeps the original mesh, skin, materials, and existing animations, then appends a new rotation animation clip.
+
+For a strict compatibility check:
+
+```bash
+python export_glb_animation.py \
+  edubridge-avatar.glb \
+  triangle.motion.smooth.retarget.json \
+  --bone-map avatar_bone_map.json \
+  --strict \
+  -o generated/psl_triangle.glb
+```
+
+`--strict` fails if a mapped bone is missing.
+
+## Current retargeting limitation
+
+This first retargeter solves landmark **directions** into approximate parent-relative quaternion rotations. That is enough to prove the complete free pipeline, but production sign motion still needs one calibration step for the final EduBridge avatar:
+
+1. confirm the avatar rest pose,
+2. confirm each bone's local forward axis,
+3. calculate bind-pose correction quaternions,
+4. apply hand/finger joint limits,
+5. visually compare the result with the source signer.
+
+That calibration is done once per avatar, not once per sign.
+
+After calibration, the same pipeline can process all captured PSL clips without per-video credits.
