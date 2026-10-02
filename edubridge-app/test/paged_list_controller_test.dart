@@ -22,7 +22,10 @@ void main() {
 
   test('obsolete query results cannot overwrite a newer search', () async {
     final old = Completer<ListPage>();
-    final controller = PagedListController((number, query) async => query == 'new' ? page(number, [2]) : old.future);
+    final controller = PagedListController((number, query) async {
+      if (query == 'new') return page(number, [2]);
+      return await old.future;
+    });
     final first = controller.load();
     controller.search('new');
     await controller.load();

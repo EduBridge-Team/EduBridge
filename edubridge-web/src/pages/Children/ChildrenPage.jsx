@@ -38,7 +38,7 @@ export default function ChildrenPage() {
         </label>
         {loading ? <div className="state">جارِ تحميل الأطفال...</div> : error ? (
           <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
-        ) : <GeneralChildrenView canAddChild={canAddChild} children={children} navigate={navigate} />}
+        ) : <GeneralChildrenView canAddChild={canAddChild} children={children} navigate={navigate} hasQuery={Boolean(query.trim())} />}
         <ListPagination meta={meta} loading={loading} onPage={setPage} />
       </div>
     )

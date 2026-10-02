@@ -1,10 +1,10 @@
 import { Plus } from 'lucide-react'
 
-export default function GeneralChildrenView({ canAddChild, children, navigate }) {
+export default function GeneralChildrenView({ canAddChild, children, navigate, hasQuery = false }) {
   if (children.length === 0) {
     return (
       <div className="state">
-        لا يوجد أطفال بعد
+        {hasQuery ? 'لا توجد نتائج مطابقة' : 'لا يوجد أطفال بعد'}
         {canAddChild && (
           <button className="btn" style={{ marginTop: 16 }} onClick={() => navigate('/children/new')}>
             <Plus size={18} /> إضافة طفل

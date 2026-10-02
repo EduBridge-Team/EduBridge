@@ -103,7 +103,7 @@ class FreshPostgresMigrationTest extends TestCase
             DB::table('child_parent')->insert(['child_id' => $id, 'parent_id' => $id <= 40 ? 1 : 99]);
         }
         DB::table('child_teacher')->insert(['child_id' => 1, 'teacher_id' => 21]);
-        DB::table('child_specialist')->insert(['child_id' => 1, 'specialist_id' => 3]);
+        DB::table('child_specialist')->insert(['child_id' => 1, 'specialist_id' => 3, 'specialty' => 'educational']);
         foreach (range(1, 70) as $id) {
             DB::table('lessons')->insert([
                 'id' => $id, 'title' => $id === 1 ? 'Far 100%' : 'Lesson', 'teacher_id' => 99,
