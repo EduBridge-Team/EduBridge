@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Concerns;
 use App\Support\Notify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 
 trait LessonCreateActions
@@ -15,6 +16,8 @@ trait LessonCreateActions
         if ($title === '') {
             return response()->json(['error' => 'عنوان الدرس مطلوب'], 400);
         }
+
+        $request->validate(['category' => ['nullable', 'string', 'max:100']]);
 
         $targetType = (string) $request->input('target_type', 'everyone');
         if (!in_array($targetType, self::TARGET_TYPES, true)) {
@@ -45,6 +48,7 @@ trait LessonCreateActions
             $lessonId = DB::table('lessons')->insertGetId([
                 'title' => $title,
                 'content' => $request->input('content'),
+            ...(Schema::hasColumn('lessons', 'category') ? ['category' => trim((string) $request->input('category')) ?: null] : []),
                 'disability_type_id' => $request->input('disability_type_id'),
                 'education_level' => $request->input('education_level'),
                 'teacher_id' => $user->id,

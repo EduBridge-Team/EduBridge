@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { childAssignment } from '../../utils/childPresentation'
 
 export default function GeneralChildrenView({ canAddChild, children, navigate, hasQuery = false }) {
   if (children.length === 0) {
@@ -25,10 +26,11 @@ export default function GeneralChildrenView({ canAddChild, children, navigate, h
         )}
       </div>
 
+      <div className="children-directory-grid">
       {children.map((child) => (
         <div
           key={child.id}
-          className="card clickable"
+          className="card clickable children-directory-card"
           role="link"
           tabIndex={0}
           aria-label={`ملف ${child.name}`}
@@ -36,14 +38,17 @@ export default function GeneralChildrenView({ canAddChild, children, navigate, h
           onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}
         >
           <div className="card-row">
-            <div className="avatar">🧒</div>
+            <div className="avatar" aria-hidden="true">{(child.name || 'ط').charAt(0)}</div>
             <div>
               <h3>{child.name}</h3>
-              {child.notes && <div className="meta">{child.notes}</div>}
+<div className="meta">{childAssignment(child).label}</div>
+              <div className="meta">المعلّم: {childAssignment(child).teacher}</div>
+              {child.notes && <div className="meta child-notes">{child.notes}</div>}
             </div>
           </div>
         </div>
       ))}
+      </div>
     </div>
   )
 }

@@ -25,6 +25,8 @@ trait LessonUpdateActions
             return response()->json(['error' => 'عنوان الدرس مطلوب'], 400);
         }
 
+        $request->validate(['category' => ['nullable', 'string', 'max:100']]);
+
         $targetType = (string) $request->input('target_type', $lesson->target_type ?? 'everyone');
         if (!in_array($targetType, self::TARGET_TYPES, true)) {
             return response()->json(['error' => 'نوع استهداف الدرس غير صالح'], 422);

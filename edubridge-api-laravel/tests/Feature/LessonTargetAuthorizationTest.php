@@ -39,6 +39,7 @@ class LessonTargetAuthorizationTest extends TestCase
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('category', 100)->nullable();
             $table->text('content')->nullable();
             $table->unsignedBigInteger('disability_type_id')->nullable();
             $table->string('education_level')->nullable();
@@ -89,6 +90,22 @@ class LessonTargetAuthorizationTest extends TestCase
         Schema::dropIfExists('children');
 
         parent::tearDown();
+    }
+
+    public function test_category_is_saved_updated_and_preserved_when_omitted(): void
+    {
+        $controller = app(LessonController::class);
+        $response = $controller->store($this->request('POST', [
+            'title' => 'تصنيف الدرس', 'category' => 'الرياضيات',
+        ], 1, 'teacher'));
+        $this->assertSame(201, $response->getStatusCode());
+        $lesson = json_decode($response->getContent(), true)['lesson'];
+        $this->assertSame('الرياضيات', $lesson['category']);
+        $controller->update($this->request('PUT', ['category' => 'القراءة'], 1, 'teacher'), $lesson['id']);
+        $controller->update($this->request('PUT', ['title' => 'عنوان جديد'], 1, 'teacher'), $lesson['id']);
+        $this->assertDatabaseHas('lessons', ['id' => $lesson['id'], 'category' => 'القراءة']);
+        $controller->update($this->request('PUT', ['category' => ''], 1, 'teacher'), $lesson['id']);
+        $this->assertDatabaseHas('lessons', ['id' => $lesson['id'], 'category' => null]);
     }
 
     public function test_teacher_cannot_target_unassigned_child(): void

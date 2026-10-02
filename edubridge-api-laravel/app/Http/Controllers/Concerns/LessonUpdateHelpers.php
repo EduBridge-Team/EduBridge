@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 trait LessonUpdateHelpers
 {
@@ -25,6 +26,7 @@ trait LessonUpdateHelpers
         return [
             'title' => $title,
             'content' => $request->input('content', $lesson->content),
+            ...(Schema::hasColumn('lessons', 'category') ? ['category' => trim((string) $request->input('category', $lesson->category ?? null)) ?: null] : []),
             'disability_type_id' => $disabilityTypeId,
             'education_level' => $request->input('education_level', $lesson->education_level ?? null),
             'target_type' => $targetType,
