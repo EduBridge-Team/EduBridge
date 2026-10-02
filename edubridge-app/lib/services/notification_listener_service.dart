@@ -7,9 +7,29 @@ import 'websocket_service.dart';
 
 /// يستمع لإشعارات WebSocket ويحدّث الواجهة فورياً
 class NotificationListenerService {
-  NotificationListenerService._();
+  NotificationListenerService({
+    Future<List<dynamic>> Function()? fetchNotifications,
+    Future<int> Function()? fetchUnreadCount,
+  }) : _fetchNotifications = fetchNotifications ?? ApiService.getNotifications,
+       _fetchUnreadCount = fetchUnreadCount ?? ApiService.getUnreadNotificationsCount;
+
+  final Future<List<dynamic>> Function() _fetchNotifications;
+  final Future<int> Function() _fetchUnreadCount;
+
+  @visibleForTesting
+  Future<void> pollNow() => _pollForNotifications();
   static final NotificationListenerService instance =
-      NotificationListenerService._();
+      NotificationListenerService({
+    Future<List<dynamic>> Function()? fetchNotifications,
+    Future<int> Function()? fetchUnreadCount,
+  }) : _fetchNotifications = fetchNotifications ?? ApiService.getNotifications,
+       _fetchUnreadCount = fetchUnreadCount ?? ApiService.getUnreadNotificationsCount;
+
+  final Future<List<dynamic>> Function() _fetchNotifications;
+  final Future<int> Function() _fetchUnreadCount;
+
+  @visibleForTesting
+  Future<void> pollNow() => _pollForNotifications();
 
   final ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
   final ValueNotifier<Map<String, dynamic>?> latestNotification =
@@ -29,8 +49,8 @@ class NotificationListenerService {
     final generation = ++_generation;
 
     try {
-      final count = await ApiService.getUnreadNotificationsCount();
-      final items = await ApiService.getNotifications();
+      final count = await _fetchUnreadCount();
+      final items = await _fetchNotifications();
       if (!_initialized || generation != _generation) return;
       unreadCount.value = count;
       notifications.value = items;
@@ -73,8 +93,8 @@ class NotificationListenerService {
     final generation = _generation;
 
     try {
-      final fetched = await ApiService.getNotifications();
-      final count = await ApiService.getUnreadNotificationsCount();
+      final fetched = await _fetchNotifications();
+      final count = await _fetchUnreadCount();
       if (!_initialized || generation != _generation) return;
       final newest = _newestNotificationId(fetched);
       final previous = _latestKnownId;
@@ -123,7 +143,7 @@ class NotificationListenerService {
   Future<void> refresh() async {
     final generation = _generation;
     try {
-      final count = await ApiService.getUnreadNotificationsCount();
+      final count = await _fetchUnreadCount();
       if (_initialized && generation == _generation) unreadCount.value = count;
     } catch (_) {}
   }
@@ -131,8 +151,8 @@ class NotificationListenerService {
   Future<void> reloadAll() async {
     final generation = _generation;
     try {
-      final items = await ApiService.getNotifications();
-      final count = await ApiService.getUnreadNotificationsCount();
+      final items = await _fetchNotifications();
+      final count = await _fetchUnreadCount();
       if (!_initialized || generation != _generation) return;
       notifications.value = items;
       unreadCount.value = count;
