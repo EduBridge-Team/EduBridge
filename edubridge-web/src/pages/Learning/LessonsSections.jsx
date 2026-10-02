@@ -43,7 +43,7 @@ export function LessonsHero({
           onChange={(e) => onQueryChange(e.target.value)}
         />
         {query && (
-          <button aria-label="مسح البحث" onClick={() => onQueryChange('')}>
+          <button type="button" aria-label="مسح البحث" onClick={() => { onQueryChange(''); searchRef?.current?.focus() }}>
             <X size={18} />
           </button>
         )}
