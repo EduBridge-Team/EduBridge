@@ -39,6 +39,37 @@ const hopByHopHeaders = new Set([
   "upgrade",
 ]);
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  "script-src 'self' https://accounts.google.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.edubridge.win https://accounts.google.com https://*.googleapis.com",
+  "frame-src https://accounts.google.com",
+  "media-src 'self' blob: https:",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+function setSecurityHeaders(res) {
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  res.setHeader("Content-Security-Policy", contentSecurityPolicy);
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()",
+  );
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+}
+
 function proxyApi(req, res) {
   const upstream = httpsRequest(
     {
@@ -61,6 +92,9 @@ function proxyApi(req, res) {
           res.setHeader(name, value);
         }
       }
+      // The edge response must keep the same baseline protections even when
+      // the payload comes from the API origin.
+      setSecurityHeaders(res);
       upstreamRes.pipe(res);
     },
   );
@@ -70,6 +104,7 @@ function proxyApi(req, res) {
     if (!res.headersSent) {
       res.statusCode = 502;
       res.setHeader("Content-Type", "application/json; charset=utf-8");
+      setSecurityHeaders(res);
     }
     res.end(JSON.stringify({ error: "تعذّر الاتصال بخادم EduBridge API" }));
   });
@@ -80,9 +115,7 @@ function proxyApi(req, res) {
 createServer((req, res) => {
   const requestUrl = req.url || "/";
 
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  setSecurityHeaders(res);
 
   // Keep browser requests same-origin. This avoids CORS/TLS edge cases between
   // edubridge.win and api.edubridge.win while preserving the public API domain.
