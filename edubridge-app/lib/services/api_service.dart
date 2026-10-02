@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 import 'google_auth_service.dart';
 import 'token_store.dart';
+import 'notification_page.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
@@ -185,6 +186,9 @@ class ApiService {
   }) => _apiMarkLessonProgress(childId: childId, lessonId: lessonId, status: status, score: score);
 
     static Future<List<dynamic>> getNotifications() => _apiGetNotifications();
+
+    static Future<NotificationPage> getNotificationPage({int? beforeId, int? afterId}) =>
+        _apiGetNotificationPage(beforeId: beforeId, afterId: afterId);
 
     static Future<int> getUnreadNotificationsCount() => _apiGetUnreadNotificationsCount();
 
