@@ -24,7 +24,7 @@ test('parent sees zero grades and feedback, pending status, and no other child s
     const html = renderToStaticMarkup(createElement(HomeworkGrid, {
       items, children: [{ id: 1 }, { id: 2 }], role: 'parent', staff: false, busy: false,
     }))
-    assert.match(html, /الدرجة:<\/b> 0 \/ 100/)
+    assert.match(html, /الدرجة:<\/b> 0 من 100/)
     assert.match(html, /راجع الإجابة/)
     assert.match(html, /بانتظار تقييم المعلّم/)
     assert.doesNotMatch(html, /طفل آخر|ملاحظة خاصة|حفظ التقييم|type="number"/)

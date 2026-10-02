@@ -159,7 +159,7 @@ export function ParentHomeworkSubmissions({ homework, children }) {
       <h4>{item.child_name}</h4>
       <small>تم التسليم: {new Date(item.submitted_at).toLocaleString('ar')}{item.is_late ? ' • متأخر' : ''}</small>
       {item.text_answer && <p>{item.text_answer}</p>}
-      {item.grade != null ? <p><b>الدرجة:</b> {item.grade} / 100</p> : <p>بانتظار تقييم المعلّم</p>}
+      {item.grade != null ? <p><b>الدرجة:</b> {item.grade} من 100</p> : <p>بانتظار تقييم المعلّم</p>}
       {item.feedback && <p className="homework-feedback"><b>ملاحظات المعلّم:</b> {item.feedback}</p>}
       {(item.file_urls?.length ? item.file_urls : item.file_url ? [item.file_url] : []).map(url => <SubmissionFile key={url} url={url} />)}
     </section>)}
