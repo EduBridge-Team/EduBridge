@@ -39,6 +39,9 @@ class SignLanguageControllerTest extends TestCase
             $table->string('source_video_name')->nullable();
             $table->text('media_url')->nullable();
             $table->text('thumbnail_url')->nullable();
+            $table->text('animation_url')->nullable();
+            $table->string('animation_format')->nullable();
+            $table->string('animation_status')->default('pending');
             $table->integer('frame_count')->nullable();
             $table->integer('duration_ms')->nullable();
             $table->string('review_status');
@@ -64,6 +67,7 @@ class SignLanguageControllerTest extends TestCase
             [
                 'id' => 1, 'sign_language_id' => 1, 'external_label_id' => 29, 'category' => 'math',
                 'arabic_label' => 'مثلث', 'english_label' => 'Triangle', 'canonical_label' => 'Triangle@مثلث',
+                'animation_url' => null, 'animation_format' => null, 'animation_status' => 'pending',
                 'duration_ms' => 3440, 'review_status' => 'verified', 'created_at' => now(), 'updated_at' => now(),
             ],
             [
@@ -92,6 +96,8 @@ class SignLanguageControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(1, $data['pagination']['total']);
         $this->assertSame('مثلث', $data['signs'][0]['arabic_label']);
+        $this->assertArrayHasKey('animation_url', $data['signs'][0]);
+        $this->assertSame('pending', $data['signs'][0]['animation_status']);
     }
 
     public function test_admin_can_explicitly_include_review_queue(): void

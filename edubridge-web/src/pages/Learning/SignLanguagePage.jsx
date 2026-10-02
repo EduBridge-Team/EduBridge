@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { fetchSignLanguageCategories, fetchSignLanguageSigns } from '../../api'
+import PSLAvatarPrototype from '../../components/SignLanguage/PSLAvatarPrototype'
 import './SignLanguagePage.css'
 
 const CATEGORY_LABELS = { math: 'الرياضيات', science: 'العلوم' }
@@ -101,6 +102,7 @@ export default function SignLanguagePage() {
             <span className="psl-category">{CATEGORY_LABELS[selected.category] ?? selected.category}</span>
             {selected.media_url ? <video controls playsInline src={selected.media_url} />
               : <div className="psl-media-placeholder"><strong>الفيديو الأصلي غير متاح بعد</strong><p>المدخل جاهز، وسيظهر الفيديو هنا مباشرة عند إضافته للمصدر.</p></div>}
+            <PSLAvatarPrototype sign={selected} />
             <button
               className="btn"
               type="button"

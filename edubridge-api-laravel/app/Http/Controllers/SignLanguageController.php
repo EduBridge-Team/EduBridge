@@ -139,6 +139,9 @@ class SignLanguageController extends Controller
             'canonical_label',
             'media_url',
             'thumbnail_url',
+            'animation_url',
+            'animation_format',
+            'animation_status',
             'duration_ms',
             'review_status',
         ];
