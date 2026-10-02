@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """Inject EduBridge PSL quaternion tracks into a compatible GLB avatar.
 
-The target GLB must use node names that match avatar_bone_map.json (or a
-custom mapping supplied with --bone-map). This script does not alter meshes,
-skins, materials, or the bind pose; it appends a glTF animation clip.
+For calibrated retarget v2 files, the tracks are motion deltas from a neutral
+reference. This exporter composes each delta with the avatar node's real bind
+rotation, preserving the authored rest pose and dramatically reducing twisted
+limbs caused by replacing bind rotations outright.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import struct
 from pathlib import Path
-from typing import Any
 
 from pygltflib import (
     Accessor,
@@ -64,6 +65,31 @@ def append_floats(
     return accessor_index
 
 
+def quat_normalize(q: list[float]) -> list[float]:
+    norm = math.sqrt(sum(component * component for component in q))
+    if norm < 1e-8:
+        return [0.0, 0.0, 0.0, 1.0]
+    return [component / norm for component in q]
+
+
+def quat_mul(a: list[float], b: list[float]) -> list[float]:
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return quat_normalize([
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+        aw * bw - ax * bx - ay * by - az * bz,
+    ])
+
+
+def bind_rotation(node) -> list[float]:
+    rotation = getattr(node, "rotation", None)
+    if rotation and len(rotation) == 4:
+        return quat_normalize([float(value) for value in rotation])
+    return [0.0, 0.0, 0.0, 1.0]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Append PSL retarget tracks to a GLB avatar.")
     parser.add_argument("avatar", type=Path, help="Input avatar GLB.")
@@ -75,8 +101,10 @@ def main() -> int:
     args = parser.parse_args()
 
     motion = json.loads(args.retarget.read_text(encoding="utf-8"))
-    if motion.get("schema") != "edubridge.psl.retarget.v1":
+    schema = motion.get("schema")
+    if schema not in {"edubridge.psl.retarget.v1", "edubridge.psl.retarget.v2"}:
         raise SystemExit("Unsupported retarget schema.")
+    calibrated_delta = schema == "edubridge.psl.retarget.v2"
 
     mapping_payload = json.loads(args.bone_map.read_text(encoding="utf-8"))
     bone_map: dict[str, str] = mapping_payload.get("bones", {})
@@ -111,11 +139,12 @@ def main() -> int:
             continue
 
         times = [float(sample["time_ms"]) / 1000.0 for sample in samples]
-        rotations = [
-            float(component)
-            for sample in samples
-            for component in sample["rotation"]
-        ]
+        base = bind_rotation(gltf.nodes[node_index])
+        output_quats = []
+        for sample in samples:
+            q = [float(component) for component in sample["rotation"]]
+            final = quat_mul(base, q) if calibrated_delta else quat_normalize(q)
+            output_quats.extend(final)
 
         input_accessor = append_floats(
             gltf,
@@ -129,7 +158,7 @@ def main() -> int:
         output_accessor = append_floats(
             gltf,
             blob,
-            rotations,
+            output_quats,
             "VEC4",
             len(samples),
         )
@@ -171,6 +200,7 @@ def main() -> int:
 
     print(f"Wrote {args.output}")
     print(f"Animation channels: {len(channels)}")
+    print(f"Bind-pose composition: {'enabled' if calibrated_delta else 'legacy absolute rotations'}")
     if missing:
         print(f"Skipped missing mapped bones: {len(missing)}")
         for item in missing:
