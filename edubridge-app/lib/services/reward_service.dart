@@ -37,7 +37,7 @@ class RewardService {
     final queue = <String, dynamic>{'pending': pending};
     if (pending > 0) {
       // Persist migration before removing the legacy counter.
-      await prefs.setString(_queueKey(childId, owner), jsonEncode(queue));
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
       await prefs.setInt(_cacheKey(childId, owner), prefs.getInt('child_stars_$childId') ?? pending);
     }
     await prefs.remove('child_stars_pending_$childId');
@@ -52,7 +52,7 @@ class RewardService {
           ? Map<String, dynamic>.from(queue['flight'] as Map)
           : <String, dynamic>{'count': pending > 20 ? 20 : pending, 'event_id': newSyncEventId()};
       queue['flight'] = flight;
-      await prefs.setString(_queueKey(childId, owner), jsonEncode(queue));
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
       if (await ApiService.getUserId() != owner) return;
       final response = await _post('/children/$childId/rewards/stars', flight);
       if (response.statusCode < 200 || response.statusCode >= 300) return;
@@ -61,7 +61,7 @@ class RewardService {
       queue['pending'] = pending;
       queue.remove('flight');
       // Pending count and the acknowledged event are committed in one preference write.
-      await prefs.setString(_queueKey(childId, owner), jsonEncode(queue));
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
       final serverStars = (body['stars'] as num?)?.toInt();
       if (serverStars != null) await prefs.setInt(_cacheKey(childId, owner), serverStars + pending);
     }
@@ -91,7 +91,7 @@ class RewardService {
     final owner = await ApiService.getUserId();
     final queue = await _queue(childId, owner, prefs);
     queue['pending'] = (queue['pending'] as num).toInt() + count;
-    await prefs.setString(_queueKey(childId, owner), jsonEncode(queue));
+    if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
     await prefs.setInt(_cacheKey(childId, owner), (prefs.getInt(_cacheKey(childId, owner)) ?? 0) + count);
     try { await _sync(childId, owner, prefs); } catch (_) {}
   });

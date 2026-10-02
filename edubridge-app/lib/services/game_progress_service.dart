@@ -45,7 +45,7 @@ class GameProgressService {
       final queue = await _queue(prefs, key);
       queue.add(attempt);
       // Enqueue before sending: crashes/lost HTTP responses retry the same event ID.
-      await prefs.setString(key, jsonEncode(queue));
+      if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
       await _flush(prefs, key, queue);
     });
   }
@@ -70,18 +70,24 @@ class GameProgressService {
   });
 
   Future<void> _flush(SharedPreferences prefs, String key, List<Map<String, dynamic>> queue) async {
-    while (queue.isNotEmpty) {
-      final attempt = queue.first;
+    var index = 0;
+    while (index < queue.length) {
+      final attempt = queue[index];
       final childId = (attempt['child_id'] as num).toInt();
       if (await _ownerKey() != key) return;
       final payload = Map<String, dynamic>.from(attempt)..remove('child_id');
       try {
         final response = await _post('/children/$childId/game-attempts', payload);
-        if (response.statusCode < 200 || response.statusCode >= 300) return;
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          if (response.statusCode >= 500 || response.statusCode == 429) return;
+          // A revoked child or invalid legacy record must not block other children's results.
+          index++;
+          continue;
+        }
       } catch (_) { return; }
-      queue.removeAt(0);
-      await prefs.setString(key, jsonEncode(queue));
+      queue.removeAt(index);
+      if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
     }
-    await prefs.remove(key);
+    if (queue.isEmpty) await prefs.remove(key);
   }
 }

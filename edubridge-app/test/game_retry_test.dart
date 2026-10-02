@@ -48,4 +48,20 @@ void main() {
     expect(calls, priorCalls + 5);
     expect(prefs.containsKey('pending_game_attempts_v2_1'), isFalse);
   });
+  test('a forbidden child does not block attempts for another child', () async {
+    final calls = <String>[];
+    final service = GameProgressService(post: (path, body) async {
+      calls.add(path);
+      return http.Response('{}', path.contains('/10/') ? 403 : 201);
+    });
+    service.begin(childId: 10, gameKey: 'colors');
+    await service.record(90);
+    service.begin(childId: 20, gameKey: 'colors');
+    await service.record(90);
+    expect(calls.last, '/children/20/game-attempts');
+    final queue = jsonDecode((await SharedPreferences.getInstance()).getString('pending_game_attempts_v2_1')!) as List;
+    expect(queue.length, 1);
+    expect(queue.first['child_id'], 10);
+  });
+
 }
