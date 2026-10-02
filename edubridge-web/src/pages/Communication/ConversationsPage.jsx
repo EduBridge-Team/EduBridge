@@ -12,6 +12,7 @@ import { ROLE_NAMES } from '../../roles'
 import ConversationList from './ConversationList'
 import ConversationPanel from './ConversationPanel'
 import ConversationPicker from './ConversationPicker'
+import { createMessageLoader } from './messageLoader'
 
 const FILTERS = [
   { id: 'all', label: 'الكل' },
@@ -50,16 +51,16 @@ export default function ConversationsPage() {
     .then((data) => setConversations(data.conversations || []))
     .catch((err) => setError(err.message))
 
-  const loadMessages = (id) => fetchConversationMessages(id)
-    .then((data) => setMessages(data.messages || []))
-    .catch((err) => setError(err.message))
+  const messageLoader = useMemo(() => createMessageLoader(fetchConversationMessages, setMessages, setError), [])
+  const loadMessages = (id) => messageLoader.load(id)
 
   useEffect(() => { loadConversations() }, [])
   useEffect(() => {
     if (!active) return undefined
+    messageLoader.activate(active.id)
     loadMessages(active.id)
     const timer = setInterval(() => loadMessages(active.id), 8000)
-    return () => clearInterval(timer)
+    return () => { clearInterval(timer); messageLoader.cancel() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.id])
   const lastMessageId = messages.at(-1)?.id
@@ -104,15 +105,18 @@ export default function ConversationsPage() {
     event.preventDefault()
     const content = draft.trim()
     if (!content || !active || sending) return
+    const conversationId = active.id
     setSending(true)
     setDraft('')
     try {
-      await sendConversationMessage(active.id, content)
-      await loadMessages(active.id)
+      await sendConversationMessage(conversationId, content)
+      await loadMessages(conversationId)
       await loadConversations()
     } catch (err) {
-      setDraft(content)
-      setError(err.message)
+      if (messageLoader.isActive(conversationId)) {
+        setDraft((current) => current ? `${content}\n${current}` : content)
+        setError(err.message)
+      }
     } finally {
       setSending(false)
     }

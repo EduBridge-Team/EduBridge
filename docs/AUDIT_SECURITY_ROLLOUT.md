@@ -42,7 +42,17 @@ together, then verify:
 - A parent cannot read a lesson or submission belonging to an unrelated child.
 - Editing a targeted lesson title preserves its original target IDs.
 
-Remaining audit work: legacy file migration and targeted media delivery,
-offline rewards and game idempotency, notification state and conversation races,
-role-scoped child directory, pagination, upload/runtime configuration and
-dependency updates.
+The child directory limits teacher access to assigned/team children. Specialists
+retain the shared directory but unassigned children expose only summary fields.
+Offline stars synchronize in batches of at most 20 and serialize local writes.
+Notification state resets on logout and ignores responses from prior sessions.
+Conversation requests cannot overwrite a newer selection. Arabic list separators
+round-trip correctly. PHP upload limits support the allowed media sizes, the
+container starts four development-server workers, and the health check uses the
+API endpoint. Web lockfile updates resolve the reported dependency advisories.
+
+Remaining audit work: legacy private-file migration and targeted media delivery,
+server-side idempotency for rewards/game retries, pagination and N+1 query
+reduction, secure mobile token storage, and replacing artisan serve with a
+production PHP runtime. The offline batching fix does not make rewards
+idempotent when a successful response is lost.

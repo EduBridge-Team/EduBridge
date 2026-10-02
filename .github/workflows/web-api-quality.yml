@@ -79,7 +79,7 @@ jobs:
             api=true
           fi
 
-          if matches '^(edubridge-api-laravel/(app|routes)/|edubridge-app/lib/services/api_service\.dart$|scripts/check_mobile_api_parity\.py$|\.github/workflows/web-api-quality\.yml$)'; then
+          if matches '^(edubridge-api-laravel/(app|routes)/|edubridge-app/lib/services/api[^/]*\.dart$|scripts/check_mobile_api_parity\.py$|\.github/workflows/web-api-quality\.yml$)'; then
             contract=true
           fi
 

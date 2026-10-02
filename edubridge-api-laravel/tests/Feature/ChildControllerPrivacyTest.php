@@ -46,6 +46,9 @@ class ChildControllerPrivacyTest extends TestCase
             $table->unsignedBigInteger('child_id');
             $table->unsignedBigInteger('parent_id');
         });
+        Schema::create('child_teacher', function (Blueprint $table) {
+            $table->unsignedBigInteger('child_id'); $table->unsignedBigInteger('teacher_id');
+        });
 
         Schema::create('child_specialist', function (Blueprint $table) {
             $table->unsignedBigInteger('child_id');
@@ -82,6 +85,7 @@ class ChildControllerPrivacyTest extends TestCase
     {
         Schema::dropIfExists('child_specialist');
         Schema::dropIfExists('child_parent');
+        Schema::dropIfExists('child_teacher');
         Schema::dropIfExists('children');
         Schema::dropIfExists('disability_types');
         Schema::dropIfExists('users');
@@ -103,6 +107,17 @@ class ChildControllerPrivacyTest extends TestCase
         $this->assertArrayNotHasKey('guardian_id_document_url', $child);
         $this->assertArrayNotHasKey('kinship_document_url', $child);
         $this->assertSame(['القراءة'], $child['strengths']);
+    }
+
+    public function test_teacher_directory_excludes_unrelated_children_and_includes_team_assignments(): void
+    {
+        DB::table('children')->insert(['id' => 20, 'name' => 'Unrelated']);
+        DB::table('children')->insert(['id' => 30, 'name' => 'Team child']);
+        DB::table('child_teacher')->insert(['child_id' => 30, 'teacher_id' => 2]);
+        $data = app(ChildController::class)->index($this->request(2, 'teacher'))->getData(true);
+        $this->assertEqualsCanonicalizing([10, 30], array_column($data['children'], 'id'));
+        $institution = app(ChildController::class)->index($this->request(4, 'institution'))->getData(true);
+        $this->assertSame([], $institution['children']);
     }
 
     public function test_parent_child_list_keeps_identity_fields_for_own_child(): void
