@@ -129,3 +129,29 @@
   font-size: clamp(26px, 2.7vw, 34px);
   line-height: 1.4;
 }
+
+/* Student actions and compact cards stay readable at every portal width. */
+.pp-content .child-details-actions .btn:not(.outline) { color: #fff; background: var(--pp-blue-deep); }
+.pp-content .conversation-item .avatar { color: #fff; background: var(--pp-blue-deep); }
+.pp-content .lesson-card-actions { flex-wrap: wrap; align-items: stretch; }
+.pp-content .lesson-card-actions .lesson-ratings { flex: 1 1 100%; min-width: 0; }
+.pp-content .lesson-ratings > button { width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; white-space: normal; }
+.pp-content .lesson-ratings .stars { display: inline-flex; flex-shrink: 0; }
+.pp-content .ministry-dashboard-v2 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+.pp-content .lesson-editor { max-width: 780px; margin-inline: auto; padding: 24px; }
+.pp-content .lesson-editor form { display: grid; gap: 12px; }
+.pp-sidebar-tools { padding: 12px; border-top: 1px solid var(--pp-line); }
+.pp-sidebar-tools .pp-mobile-quick-actions { display: grid; gap: 8px; }
+.pp-sidebar-tools .pp-mobile-quick-actions > button { display: flex; align-items: center; gap: 10px; min-height: 44px; border: 1px solid var(--pp-line); border-radius: 12px; background: var(--pp-surface); color: var(--pp-ink); padding: 10px; font: inherit; cursor: pointer; }
+.pp-sidebar-tools .pp-mobile-quick-actions em { margin-inline-start: auto; }
+
+.pp-content .notification-card-v2 { display: flex; align-items: flex-start; gap: 16px; padding: 20px; border-radius: 18px; border: 1px solid var(--pp-line); box-shadow: none; }
+.pp-content .notification-card-v2.unread { border-inline-start: 4px solid var(--pp-blue-deep); background: var(--pp-soft); }
+.pp-content .notification-card-v2 .notif-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.pp-content .notification-card-v2 .notif-body h3 { margin: 0 0 8px; }
+.pp-content .notification-card-v2 .notif-body p { margin: 0 0 10px; line-height: 1.7; }
+.pp-content .homework-card { border: 1px solid var(--pp-line); border-radius: 18px; padding: 20px; box-shadow: none; }
+.pp-content .homework-card .fp-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; padding-block: 10px; border-bottom: 1px solid var(--pp-line); }
+.pp-content .homework-card .fp-message { padding: 14px; border-radius: 14px; background: var(--pp-soft); }
+.pp-content .homework-card .fp-row { flex-wrap: wrap; }
+.pp-content .notification-card-v2:focus-visible { outline: 2px solid var(--pp-blue-deep); outline-offset: 3px; }

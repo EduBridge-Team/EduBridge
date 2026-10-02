@@ -4,14 +4,14 @@ import { isPortalPathForRole } from '../src/portalRoutes.js'
 
 const roles = ['parent', 'teacher', 'specialist', 'admin', 'institution', 'ministry']
 const allowed = {
-  '/admin': ['admin'], '/admin/verifications': ['admin'], '/ministry': ['ministry', 'admin'], '/institution': ['institution'],
-  '/children': ['parent', 'teacher', 'specialist', 'admin'], '/children/new': ['parent', 'admin'],
+  '/admin': ['admin'], '/admin/verifications': ['admin'], '/ministry': ['ministry'], '/institution': ['institution'],
+  '/children': ['parent', 'teacher', 'specialist', 'admin'], '/children/new': ['parent'],
   '/accessibility': ['specialist'], '/children/10/accessibility': ['specialist'],
   '/homeworks': ['parent', 'teacher', 'specialist', 'admin'], '/weekly-reports': ['parent', 'teacher', 'specialist', 'admin'],
   '/care-team': ['parent', 'teacher', 'specialist', 'admin'], '/parent-lessons': ['parent', 'teacher', 'specialist', 'admin'],
-  '/case-discussions': ['teacher', 'specialist', 'admin'], '/specialist-workflow': ['teacher', 'specialist', 'admin'],
+  '/case-discussions': ['teacher', 'specialist', 'admin'], '/specialist-workflow': ['specialist', 'admin'],
   '/learning-support': ['parent', 'specialist', 'admin'], '/search': ['teacher', 'specialist', 'admin', 'institution', 'ministry'],
-  '/lessons': roles, '/conversations': roles, '/notifications': roles, '/verify': roles, '/profile': roles, '/support': roles,
+  '/lessons/new': ['teacher', 'specialist', 'admin'], '/lessons': roles, '/conversations': roles, '/notifications': roles, '/verify': roles, '/profile': roles, '/support': roles,
 }
 
 test('portal role permissions match the API roles shared with mobile', () => {

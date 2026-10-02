@@ -75,7 +75,7 @@ test('protected pages still reject guests before resolving their lazy content', 
 })
 
  test('unverified roles see identity instructions on every private route without portal content', async () => {
-  for (const [role, paths] of [['parent', ['/parent', '/children', '/parent-lessons', '/conversations', '/lessons']], ['specialist', ['/specialist', '/care-team', '/children/10/progress']], ['teacher', ['/teacher', '/specialist-workflow']]]) {
+  for (const [role, paths] of [['specialist', ['/specialist', '/care-team', '/children/10/progress']], ['teacher', ['/teacher', '/children']]]) {
     for (const path of paths) {
       const html = await renderRoute(path, role, false)
       assert.match(html, /توثيق الهوية مطلوب/)
@@ -155,5 +155,23 @@ test('admin has institution and ministry creation inside account management', as
   for (const role of ['parent', 'teacher', 'specialist', 'ministry', 'institution']) {
     const html = await renderRoute('/admin', role)
     assert.ok(!html.includes('إنشاء حساب مؤسسة أو وزارة'))
+  }
+})
+
+ test('parent portal works without general identity approval', async () => {
+  for (const path of ['/parent', '/children', '/parent-lessons', '/conversations', '/lessons']) {
+    const html = await renderRoute(path, 'parent', false)
+    assert.ok(!html.includes('توثيق الهوية مطلوب'), path)
+    assert.match(html, /pp-sidebar/)
+  }
+})
+
+ test('lesson authoring is a standalone page with video controls for teaching roles', async () => {
+  for (const role of ['teacher', 'specialist']) {
+    const html = await renderRoute('/lessons/new?audience=parents', role)
+    assert.match(html, /lesson-editor-page/)
+    assert.match(html, /فيديو الدرس/)
+    assert.ok(!html.includes('modal-overlay'))
+    assert.ok(!html.includes('aria-modal="true"'))
   }
 })

@@ -15,7 +15,7 @@ class RequireIdentityVerification
             'api/me', 'api/me/*', 'api/settings', 'api/uploads', 'api/certificates',
             'api/certificates/*', 'api/private-files/user/*', 'api/support', 'api/support/*'
         );
-        if ($user && ($user->role === 'admin' || $onboarding
+        if ($user && (in_array($user->role, ['admin', 'parent'], true) || $onboarding
             || ($user->verification_status ?? null) === 'verified')) {
             return $next($request);
         }

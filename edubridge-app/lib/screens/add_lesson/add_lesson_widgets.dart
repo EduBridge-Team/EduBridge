@@ -92,7 +92,7 @@ extension _AddLessonWidgets on _AddLessonSheetState {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor:
-            _forParents ? AppColors.brandTealDeep : AppColors.green,
+            _forParents ? AppColors.brandTealDeep : AppColors.brandBlue,
         foregroundColor: Colors.white,
         minimumSize: const Size.fromHeight(54),
       ),

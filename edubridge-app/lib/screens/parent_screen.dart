@@ -23,7 +23,6 @@ import 'edit_child_screen.dart';
 import 'weekly_report_screen.dart';
 import 'care_team_screen.dart';
 import 'create_learning_support_request_screen.dart';
-import 'add_certificate_sheet.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
 import 'login_screen.dart';
@@ -270,17 +269,6 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelected: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ChatsScreen()),
-                ),
-              ),
-              DashboardMenuAction(
-                id: 'certificate',
-                label: 'إضافة شهادة',
-                icon: AppIcons.certificate,
-                onSelected: () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => AddCertificateSheet(onSaved: _loadData),
                 ),
               ),
               DashboardMenuAction(

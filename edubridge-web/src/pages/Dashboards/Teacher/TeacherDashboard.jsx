@@ -24,7 +24,6 @@ export default function TeacherDashboard() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [speaking, setSpeaking] = useState(false)
@@ -68,11 +67,6 @@ export default function TeacherDashboard() {
       (l.title || '').includes(query.trim()) ||
       (l.content || '').includes(query.trim())
   )
-
-  const onCreated = (lesson) => {
-    setLessons((list) => [lesson, ...list])
-    setAdding(false)
-  }
 
   const onUpdated = (lesson) => {
     setLessons((list) => list.map((item) => Number(item.id) === Number(lesson.id) ? lesson : item))
@@ -124,7 +118,7 @@ export default function TeacherDashboard() {
             <h1>مرحباً {me.name}</h1>
             <p>تابع طلابك، نظّم دروسك، وابدأ المحتوى الجديد من مكان واحد.</p>
             <div className="teacher-hero-actions">
-              <button className="btn" onClick={() => setAdding(true)}>
+              <button className="btn" onClick={() => navigate('/lessons/new')}>
                 <Plus size={18} /> إضافة درس جديد
               </button>
             </div>
@@ -173,7 +167,7 @@ export default function TeacherDashboard() {
 
             <TeacherChildrenSection
               children={children}
-              onOpenChild={(child) => navigate(`/children/${child.id}/lessons`, {
+              onOpenChild={(child) => navigate(`/children/${child.id}`, {
                 state: { childName: child.name },
               })}
             />
@@ -181,14 +175,6 @@ export default function TeacherDashboard() {
         )}
       </main>
 
-
-      {adding && (
-        <LessonFormModal
-          types={types}
-          onClose={() => setAdding(false)}
-          onSaved={onCreated}
-        />
-      )}
 
       {editing && (
         <LessonFormModal

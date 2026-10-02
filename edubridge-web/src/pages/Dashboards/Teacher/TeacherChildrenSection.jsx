@@ -20,7 +20,7 @@ export default function TeacherChildrenSection({ children, onOpenChild }) {
             className="card clickable teacher-child-card"
             role="link"
             tabIndex={0}
-            aria-label={`دروس ${child.name}`}
+            aria-label={`ملف ${child.name}`}
             onKeyDown={(event) => { if (event.key === 'Enter') onOpenChild(child) }}
             onClick={() => onOpenChild(child)}
           >

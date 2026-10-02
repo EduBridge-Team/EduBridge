@@ -3,7 +3,6 @@ import {
   BarChart3,
   BookOpen,
   Home,
-  Landmark,
   LifeBuoy,
   MessageCircle,
   Search,
@@ -95,7 +94,6 @@ export function createRoleNavItems({
       item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
       item('weekly-reports', role === 'specialist' ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
       item('case-discussions', 'دراسات الحالة', <Stethoscope size={21} />, '/case-discussions'),
-      item('specialist-workflow', 'اقتراح المختصين', <Users size={21} />, '/specialist-workflow'),
       conversations,
       ...(role === 'specialist' ? [item('settings', 'إعدادات التكيف', <Accessibility size={21} />, '/accessibility')] : []),
     ]
@@ -144,7 +142,6 @@ export function createRoleNavItems({
     return [
       home,
       item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
-      item('curriculum', 'مراجعة المناهج', <Landmark size={21} />, '/ministry'),
       item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
       item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
       item('specialist-workflow', 'متابعة المختصين', <Users size={21} />, '/specialist-workflow'),

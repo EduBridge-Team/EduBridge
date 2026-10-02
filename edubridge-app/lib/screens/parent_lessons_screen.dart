@@ -3,6 +3,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
+import 'add_lesson/add_lesson_screen.dart';
+import '../widgets/teacher_navigation_bar.dart';
 import '../services/api_service.dart';
 import '../services/paged_list_controller.dart';
 import '../widgets/list_pagination.dart';
@@ -20,6 +22,7 @@ class ParentLessonsScreen extends StatefulWidget {
 }
 
 class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
+  String? _role;
   List _lessons = [];
   late final PagedListController _pages;
   bool _loading = true;
@@ -35,6 +38,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
     super.initState();
     _pages = PagedListController((page, query) => ApiService.getLessonsPage(page: page, query: query, targetType: 'parents'));
     _pages.addListener(_syncPage);
+    ApiService.getRole().then((role) { if (mounted) setState(() => _role = role); });
     _load();
   }
 
@@ -104,6 +108,13 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       appBar: JisrAppBar(
         title: 'دروس لولي الأمر',
         actions: [
+          if (['teacher', 'specialist'].contains(_role)) IconButton(
+            tooltip: 'إضافة درس لولي الأمر', icon: const Icon(Icons.add),
+            onPressed: () async {
+              final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddLessonScreen(types: [], forParents: true)));
+              if (result != null && mounted) await _load();
+            },
+          ),
           IconButton(
             icon: const Icon(AppIcons.refresh),
             tooltip: 'تحديث',
@@ -111,17 +122,18 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: const TeacherNavigationBar(),
       body: Column(
         children: [
           // رأس توضيحي
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: AppColors.purple.withValues(alpha: 0.1),
+            color: AppColors.brandBlue.withValues(alpha: 0.1),
             child: Row(
               children: [
                 const Icon(AppIcons.parent,
-                    color: AppColors.purple, size: 32),
+                    color: AppColors.brandBlue, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -132,7 +144,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.purple,
+                          color: AppColors.brandBlue,
                         ),
                       ),
                       const SizedBox(height: 4),

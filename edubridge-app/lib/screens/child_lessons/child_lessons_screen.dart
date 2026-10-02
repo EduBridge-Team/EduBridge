@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/teacher_navigation_bar.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/api_service.dart';
@@ -103,6 +104,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       child: AdaptiveWrapper(
         screenTitle: 'دروس ${widget.childName}',
         child: Scaffold(
+          bottomNavigationBar: const TeacherNavigationBar(),
           appBar: buildChildLessonsAppBar(
             context: context,
             childName: widget.childName,

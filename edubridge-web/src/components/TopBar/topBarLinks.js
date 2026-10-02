@@ -20,7 +20,7 @@ export function buildTopBarStripLinks(user) {
   return [
     { to: '/admin', label: 'إدارة النظام', Icon: Settings, show: is('admin') },
     { to: '/admin/verifications', label: 'مراجعة التوثيق', Icon: ShieldCheck, show: is('admin') },
-    { to: '/ministry', label: 'مراجعة المناهج', Icon: Landmark, show: is('ministry', 'admin') },
+    { to: '/ministry', label: 'مراجعة المناهج', Icon: Landmark, show: is('ministry') },
     { to: '/institution', label: 'لوحة المؤسسة', Icon: Building2, show: is('institution') },
     { to: '/children', label: 'ملفات الأطفال', Icon: Users, show: is('parent', 'teacher', 'specialist', 'admin') },
     { to: '/lessons', label: 'الدروس', Icon: BookOpen, show: Boolean(user) },

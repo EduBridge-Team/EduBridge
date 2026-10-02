@@ -12,6 +12,10 @@ trait CertificateUploadActions
     {
         $me = $request->attributes->get('jwt_user');
 
+        if (!$me || !in_array($me->role, ['teacher', 'specialist', 'admin'], true)) {
+            return response()->json(['error' => 'الشهادات متاحة للمعلم والمختص فقط'], 403);
+        }
+
         $title = trim((string) $request->input('title'));
         $url = trim((string) $request->input('url', ''));
         $file = $request->file('file');

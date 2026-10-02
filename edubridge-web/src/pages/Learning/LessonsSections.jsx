@@ -13,10 +13,10 @@ import LessonRatings from '../../components/LessonRatings'
 
 export const LESSON_VISUALS = [
   { icon: '📖', cls: 'blue' },
-  { icon: '🔢', cls: 'purple' },
+  { icon: '🔢', cls: 'blue' },
   { icon: '🌱', cls: 'green' },
   { icon: '🧑‍🤝‍🧑', cls: 'aqua' },
-  { icon: '🎨', cls: 'peach' },
+  { icon: '🎨', cls: 'aqua' },
 ]
 
 export function LessonsHero({

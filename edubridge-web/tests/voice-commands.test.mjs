@@ -12,10 +12,12 @@ test('Arabic commands prioritize specific phrases and normalize speech spelling'
     ['افتح مكتبة الدروس', '/lessons'],
     ['افتح التواصل بالصور', '/conversations?mode=aac'],
     ['الرئيسية', '/specialist'],
+    ['الطلاب', '/children'],
+    ['أضف درس جديد', '/lessons/new'],
   ]) assert.deepEqual(resolveVoiceCommand(text,'specialist'),{type:'navigate',path})
   assert.equal(normalizeVoiceText('إعــدادات التَّكيُّف'), 'اعدادات التكيف')
   assert.equal(resolveVoiceCommand('الدعمة','parent').type,'unknown')
-  for(const [text,role] of [['إضافة طفل','teacher'],['إعدادات التكيف','parent'],['الواجبات','ministry'],['الدعم التعليمي','teacher'],['دراسة حالة','parent']])
+  for(const [text,role] of [['إضافة طفل','admin'],['إضافة طفل','teacher'],['متابعة المختصين','teacher'],['إعدادات التكيف','parent'],['الواجبات','ministry'],['الدعم التعليمي','teacher'],['دراسة حالة','parent']])
     assert.equal(resolveVoiceCommand(text,role).type,'denied')
   assert.equal(resolveVoiceCommand('ارجع','parent').type,'back')
 })

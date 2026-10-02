@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import { homeworkGradePayload } from './homeworkGrading'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -24,6 +25,9 @@ const EMPTY_SUBMISSION = {
 
 export default function HomeworkPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const childId = params.get('child_id') || ''
+  const [success, setSuccess] = useState('')
   const me = getUser()
   const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
 
@@ -36,7 +40,7 @@ export default function HomeworkPage() {
     description: '',
     subject: '',
     due_date: '',
-    assigned_child_ids: [],
+    assigned_child_ids: childId ? [Number(childId)] : [],
   })
   const [attachments, setAttachments] = useState([])
   const [submission, setSubmission] = useState(EMPTY_SUBMISSION)
@@ -46,16 +50,16 @@ export default function HomeworkPage() {
     try {
       const [childrenData, homeworkData] = await Promise.all([
         fetchChildren(),
-        fetchHomeworks(),
+        fetchHomeworks(childId),
       ])
 
-      setChildren(childrenData.children || [])
+      setChildren((childrenData.children || []).filter(child => !childId || String(child.id) === childId))
       setItems(homeworkData.homeworks || [])
       setError('')
     } catch (err) {
       setError(err.message)
     }
-  }, [])
+  }, [childId])
 
   useEffect(() => {
     load()
@@ -69,6 +73,7 @@ export default function HomeworkPage() {
   const create = async (event) => {
     event.preventDefault()
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
@@ -84,7 +89,7 @@ export default function HomeworkPage() {
         description: '',
         subject: '',
         due_date: '',
-        assigned_child_ids: [],
+        assigned_child_ids: childId ? [Number(childId)] : [],
       })
       setAttachments([])
       setCreateOpen(false)
@@ -101,6 +106,7 @@ export default function HomeworkPage() {
     if (!submission.homework_id) return
 
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
@@ -128,6 +134,7 @@ export default function HomeworkPage() {
       return
     }
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
@@ -136,6 +143,7 @@ export default function HomeworkPage() {
         payload.grade,
         payload.feedback,
       )
+      setSuccess('تم تقييم الواجب بنجاح')
       await load()
     } catch (err) {
       setError(err.message)
@@ -164,6 +172,7 @@ export default function HomeworkPage() {
       </section>
 
       {error && <div className="fp-error">{error}</div>}
+      {success && <div className="success-box" role="status">{success}</div>}
 
       {isStaff && (
         <FormDisclosure label="إضافة واجب جديد" open={createOpen} onToggle={setCreateOpen}>

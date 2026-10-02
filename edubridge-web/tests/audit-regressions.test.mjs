@@ -52,7 +52,7 @@ test('workflow controls render visible associated labels and child links are key
     }
     const { default: GeneralChildrenView } = await server.ssrLoadModule('/src/pages/Children/GeneralChildrenView.jsx')
     const childrenHtml = renderToStaticMarkup(createElement(GeneralChildrenView, { children: [{ id: 1, name: 'طفل اختبار' }], navigate() {} }))
-    assert.match(childrenHtml, /role="link" tabindex="0" aria-label="دروس طفل اختبار"/)
+    assert.match(childrenHtml, /role="link" tabindex="0" aria-label="ملف طفل اختبار"/)
   } finally { await server.close() }
 })
 

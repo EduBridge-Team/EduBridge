@@ -18,6 +18,7 @@ class ChildCreationLinkingTest extends TestCase
         Schema::create('children', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            foreach (['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url'] as $field) $table->string($field)->nullable();
         });
 
         Schema::create('child_parent', function (Blueprint $table) {
@@ -37,7 +38,7 @@ class ChildCreationLinkingTest extends TestCase
     public function test_parent_can_create_child_and_is_linked_automatically(): void
     {
         $response = app(ChildController::class)->store(
-            $this->request(1, 'parent', ['name' => 'طفل ولي الأمر'])
+            $this->request(1, 'parent', ['name' => 'طفل ولي الأمر', 'child_national_id' => '123456789', 'guardian_national_id' => '987654321', 'guardian_id_document_url' => '/api/private-files/user/1/id.jpg', 'kinship_document_url' => '/api/private-files/user/1/kinship.pdf'])
         );
 
         $this->assertSame(201, $response->getStatusCode());
@@ -50,17 +51,23 @@ class ChildCreationLinkingTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_create_child_without_parent_link(): void
+    public function test_admin_cannot_create_child(): void
     {
-        $response = app(ChildController::class)->store(
-            $this->request(5, 'admin', ['name' => 'طفل الأدمن'])
-        );
+        $response = app(ChildController::class)->store($this->request(5, 'admin', ['name' => 'طفل الأدمن']));
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseMissing('children', ['name' => 'طفل الأدمن']);
+    }
 
-        $this->assertSame(201, $response->getStatusCode());
-
-        $childId = DB::table('children')->where('name', 'طفل الأدمن')->value('id');
-        $this->assertNotNull($childId);
-        $this->assertDatabaseMissing('child_parent', ['child_id' => $childId]);
+    public function test_parent_must_supply_owned_identity_and_relationship_documents(): void
+    {
+        foreach (['', '/api/private-files/user/99/id.jpg'] as $document) {
+            $response = app(ChildController::class)->store($this->request(1, 'parent', [
+                'name' => 'طفل غير موثق', 'child_national_id' => '123', 'guardian_national_id' => '456',
+                'guardian_id_document_url' => $document, 'kinship_document_url' => '/api/private-files/user/1/kinship.pdf',
+            ]));
+            $this->assertSame(422, $response->getStatusCode());
+            $this->assertSame(0, DB::table('children')->count());
+        }
     }
 
     public function test_teacher_cannot_create_child(): void

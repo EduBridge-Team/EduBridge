@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Route;
 
 // الأطفال
 Route::post('/children', [\App\Http\Controllers\ChildController::class, 'store'])
-    ->middleware('role:parent,admin');
+    ->middleware('role:parent');
 Route::get('/children', [\App\Http\Controllers\ChildController::class, 'index']);
+Route::get('/children/{id}/assignment-preview', [\App\Http\Controllers\ChildController::class, 'assignmentPreview'])
+    ->middleware('role:specialist');
 Route::get('/children/{id}', [\App\Http\Controllers\ChildController::class, 'show'])
     ->middleware('child.access');
 Route::put('/children/{id}', [\App\Http\Controllers\ChildController::class, 'update'])

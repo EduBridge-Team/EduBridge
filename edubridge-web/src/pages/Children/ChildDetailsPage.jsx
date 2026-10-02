@@ -1,8 +1,9 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { fetchChildDetails, fetchChildEvaluations, getUser } from '../../api'
+import { fetchChildDetails, fetchChildEvaluations, getUser, assignSpecialistToChild } from '../../api'
 
+import ChildEvaluationForm from './ChildEvaluationForm'
 import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 
 import {
@@ -69,7 +70,20 @@ export default function ChildDetailsPage() {
     <div className="child-details-page">
       <ChildDetailsHeader name={name} onBack={() => navigate(-1)} />
       <ChildInfoCard child={child} />
+      {child?.assignment_preview && <section className="card">
+        <h3>معاينة الحالة قبل التعيين</h3>
+        <p>راجع حالة الطفل وبيانات ولي الأمر قبل قبول المتابعة.</p>
+        <button className="btn" disabled={loading} onClick={async () => {
+          setLoading(true)
+          try { await assignSpecialistToChild(childId, getUser().id, getUser().specialty); await load() }
+          catch (error) { setError(error.message); setLoading(false) }
+        }}>قبول متابعة الطفل</button>
+      </section>}
       <ChildEvaluationsSection evaluations={evaluations} />
+      {getUser()?.role === 'specialist' && isAssignedToSpecialist(child, getUser()?.id) && <>
+        <ChildEvaluationForm childId={childId} onSaved={load} />
+        {child?.current_plan_id && <button className="btn outline" onClick={() => navigate(`/specialist-workflow?child_id=${childId}`)}>تقييم الخطة الحالية</button>}
+      </>}
       <ChildDetailsActions childId={childId} name={name} navigate={navigate} canFollow={getUser()?.role !== 'specialist' || isAssignedToSpecialist(child, getUser()?.id)} />
     </div>
   )

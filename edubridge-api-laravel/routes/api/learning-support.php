@@ -20,7 +20,7 @@ Route::put('/learning-support/requests/{id}/cancel', [\App\Http\Controllers\Lear
 
 // اقتراحات متابعة المختصين
 Route::post('/children/{childId}/specialist-suggestions', [\App\Http\Controllers\SpecialistSuggestionController::class, 'store'])
-    ->middleware(['role:teacher,specialist,admin', 'child.access']);
+    ->middleware(['role:specialist,admin', 'child.access']);
 Route::get('/specialist-suggestions', [\App\Http\Controllers\SpecialistSuggestionController::class, 'index'])
     ->middleware('role:specialist,admin');
 Route::put('/specialist-suggestions/{id}/accept', [\App\Http\Controllers\SpecialistSuggestionController::class, 'accept'])

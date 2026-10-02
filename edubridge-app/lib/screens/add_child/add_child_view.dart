@@ -91,6 +91,14 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               ],
               const SizedBox(height: 20),
 
+              TextFormField(controller: _childIdCtrl, keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'رقم هوية الطفل *'),
+                validator: (value) => value == null || value.trim().isEmpty ? 'رقم الهوية مطلوب' : null),
+              const SizedBox(height: 16),
+              TextFormField(controller: _guardianIdCtrl, keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'رقم هوية ولي الأمر *'),
+                validator: (value) => value == null || value.trim().isEmpty ? 'رقم الهوية مطلوب' : null),
+              const SizedBox(height: 16),
               buildDocumentsSection(
                 context: context,
                 c: c,
@@ -104,15 +112,6 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               ),
               const SizedBox(height: 20),
 
-             buildMedicalReportSection(                      
-               context: context,
-                c: c,
-               files: _medicalReportFiles,
-               onPick: _pickMedicalReport,
-               onCapture: _captureMedicalReport,
-               onRemove: _removeMedicalReport,
-  ),
-             const SizedBox(height: 20),
               TextFormField(
                 controller: _disabilityDescCtrl,
                 maxLines: 3,

@@ -51,7 +51,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         return true;
       }
       await _reply('سأفتح قائمة الأطفال لاختيار طفل');
-      nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
+      nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen(destination: 'homeworks')));
       return true;
     }
 
@@ -96,7 +96,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
       }
       await _reply('سأفتح قائمة الأطفال');
       nav.push(MaterialPageRoute(
-        builder: (_) => const ChildrenScreen(forProgress: true),
+        builder: (_) => const ChildrenScreen(destination: 'weekly-reports'),
       ));
       return true;
     }
