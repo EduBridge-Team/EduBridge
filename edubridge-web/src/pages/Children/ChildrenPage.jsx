@@ -1,9 +1,11 @@
 // صفحة قائمة الأطفال
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchChildSummary, fetchChildren, getUser } from '../../api'
 import GeneralChildrenView from './GeneralChildrenView'
 import ParentChildrenView from './ParentChildrenView'
+import { useListPage } from '../../hooks/useListPage'
+import ListPagination from '../../components/ListPagination'
 
 export default function ChildrenPage() {
   const navigate = useNavigate()
@@ -11,89 +13,39 @@ export default function ChildrenPage() {
   const isParent = me?.role === 'parent'
   const isAdmin = me?.role === 'admin'
   const canAddChild = isParent || isAdmin
-  const [children, setChildren] = useState([])
   const [summaries, setSummaries] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
-
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchChildren()
-      const kids = data.children || []
-      setChildren(kids)
-
-      if (isParent && kids.length) {
-        const entries = await Promise.all(kids.map(async (child) => {
-          try {
-            const result = await fetchChildSummary(child.id)
-            return [child.id, result.summary || {}]
-          } catch {
-            return [child.id, {}]
-          }
-        }))
-        setSummaries(Object.fromEntries(entries))
-      }
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [isParent])
+  const { items: children, loading, error, meta, summary, setPage, reload: load } = useListPage(fetchChildren, 'children', { q: query, active_only: activeOnly ? '1' : '0' })
 
   useEffect(() => {
-    load()
-  }, [load])
-
-  const visibleChildren = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
-    return children.filter((child) => {
-      const matchesQuery = !normalizedQuery || [
-        child.name,
-        child.assigned_teacher_name,
-        child.disability_name,
-        child.disability_type,
-      ].filter(Boolean).some((value) => String(value).toLowerCase().includes(normalizedQuery))
-
-      const matchesStatus = !activeOnly || ['assigned', 'evaluated'].includes(child.status)
-      return matchesQuery && matchesStatus
-    })
-  }, [children, query, activeOnly])
-
-  if (loading) {
-    return (
-      <div className="state">
-        <div className="spinner" />
-        جارِ تحميل الأطفال...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="state">
-        <div className="error-box">{error}</div>
-        <button className="btn" style={{ marginTop: 16 }} onClick={load}>
-          إعادة المحاولة
-        </button>
-      </div>
-    )
-  }
+    let cancelled = false
+    setSummaries({})
+    if (isParent && !loading && children.length) {
+      Promise.all(children.map(async child => {
+        try { return [child.id, (await fetchChildSummary(child.id)).summary || {}] }
+        catch { return [child.id, {}] }
+      })).then(entries => { if (!cancelled) setSummaries(Object.fromEntries(entries)) })
+    }
+    return () => { cancelled = true }
+  }, [isParent, children, loading])
 
   if (!isParent) {
     return (
-      <GeneralChildrenView
-        canAddChild={canAddChild}
-        children={children}
-        navigate={navigate}
-      />
+      <div>
+        <label className="pc-search">
+          <input value={query} onChange={event => setQuery(event.target.value)} placeholder="ابحث عن طفل أو معلّم..." aria-label="ابحث عن طفل أو معلّم" />
+        </label>
+        {loading ? <div className="state">جارِ تحميل الأطفال...</div> : error ? (
+          <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={load}>إعادة المحاولة</button></div>
+        ) : <GeneralChildrenView canAddChild={canAddChild} children={children} navigate={navigate} hasQuery={Boolean(query.trim())} />}
+        <ListPagination meta={meta} loading={loading} onPage={setPage} />
+      </div>
     )
   }
 
   return (
+    <div>
     <ParentChildrenView
       activeOnly={activeOnly}
       children={children}
@@ -102,7 +54,13 @@ export default function ChildrenPage() {
       query={query}
       setQuery={setQuery}
       summaries={summaries}
-      visibleChildren={visibleChildren}
+      visibleChildren={children}
+      directorySummary={summary}
+      loading={loading}
+      error={error}
+      onRetry={load}
     />
+    <ListPagination meta={meta} loading={loading} onPage={setPage} />
+    </div>
   )
 }

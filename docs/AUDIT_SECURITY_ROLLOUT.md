@@ -138,5 +138,29 @@ Page requests are serialized on mobile and invalidated on logout. Read failures
 no longer show false success. Tests cover account boundaries, tied timestamps,
 backlogs, retries, overlapping pages, and logout during pending requests.
 
-Remaining audit work: pagination for other lists, including children and lessons.
-Other list endpoints may still need query profiling.
+Child and lesson browsing now opt into `page` and `per_page` (default 30,
+maximum 100). Legacy requests remain complete for selection forms and older
+clients. Server-side `q` searches the authorized result set; child pages also
+support `active_only` and specialist `assigned_only`. Lesson pages retain target,
+disability and curriculum filters, normalize existing category aliases, and treat
+missing category data as uncategorized. Search wildcard characters are literal.
+The child name/ID and lesson creation/ID orders have deterministic tie breakers
+and composite indexes, added by a migration. Run migrations after deployment.
+Parent directory statistics remain account-wide while filters/paging change the
+visible cards. Relation/media loading is bounded to the returned page; paged
+lesson rating projections avoid grouping the whole catalogue. Targeted lesson
+visibility uses correlated assignment checks in SQL rather than unbounded PHP
+assignment arrays and generated OR clauses. Tests cover SQLite and real PostgreSQL.
+
+Web children, lesson browsing and parent guidance pages, and the corresponding
+mobile browsing screens now show previous/next controls. Debounced searches reset
+to the first page; stale requests are invalidated on filter changes/unmount.
+Failed requests retain the last good page for retry. Mobile page responses also
+verify the account session before accepting data. Deploy the API/migrations before
+distributing the updated app.
+
+Remaining audit work: paging embedded role dashboard lists, accessibility and
+child-specific lesson lists, and searching large selection forms without requiring
+a complete directory. These existing consumers still use the compatible legacy
+requests. Other list endpoints may still need query profiling. Production storage
+migration and updated mobile installation remain separate rollout steps.

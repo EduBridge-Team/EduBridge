@@ -9,6 +9,7 @@ import '../config.dart';
 import 'google_auth_service.dart';
 import 'token_store.dart';
 import 'notification_page.dart';
+import 'list_page.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
@@ -111,6 +112,13 @@ class ApiService {
 
   // Domain API facade. Implementations live in focused part files.
     static Future<Map<String, dynamic>?> getChildren() => _apiGetChildren();
+
+    static Future<ListPage> getChildrenPage({int page = 1, String query = ''}) =>
+        _apiGetDirectoryPage('children', page, query);
+
+    static Future<ListPage> getLessonsPage({int page = 1, String query = '', String? targetType}) =>
+        _apiGetDirectoryPage('lessons', page, query, targetType: targetType);
+
 
     static Future<Map<String, dynamic>?> addChild({
     required String name,

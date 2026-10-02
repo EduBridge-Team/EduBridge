@@ -38,6 +38,8 @@ class FreshPostgresMigrationTest extends TestCase
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
+        $this->assertTrue(Schema::hasIndex('children', 'children_name_page_index'));
+        $this->assertTrue(Schema::hasIndex('lessons', 'lessons_created_page_index'));
         $this->assertTrue(Schema::hasIndex('notifications', 'notifications_user_cursor_index'));
         $this->assertTrue(Schema::hasIndex('notifications', 'notifications_user_unread_index'));
         $this->assertTrue(Schema::hasColumn('users', 'role'));
@@ -86,6 +88,48 @@ class FreshPostgresMigrationTest extends TestCase
             $this->assertCount(30, $childLessons->getData(true)['lessons']);
         } finally {
             DB::disableQueryLog();
+        }
+    }
+
+    public function test_paged_directories_use_real_postgres_role_scopes_and_literal_search(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') $this->markTestSkipped('Requires PostgreSQL.');
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        foreach ([1 => 'parent', 2 => 'teacher', 3 => 'specialist', 4 => 'ministry', 21 => 'teacher', 99 => 'admin'] as $id => $role) {
+            DB::table('users')->insert(['id' => $id, 'name' => $role, 'email' => "page-$id@example.com", 'password' => 'unused', 'role' => $role]);
+        }
+        foreach (range(1, 45) as $id) {
+            DB::table('children')->insert(['id' => $id, 'name' => $id === 1 ? 'Far 100%' : 'Same child', 'assigned_teacher_id' => $id <= 40 ? 2 : 21]);
+            DB::table('child_parent')->insert(['child_id' => $id, 'parent_id' => $id <= 40 ? 1 : 99]);
+        }
+        DB::table('child_teacher')->insert(['child_id' => 1, 'teacher_id' => 21]);
+        DB::table('child_specialist')->insert(['child_id' => 1, 'specialist_id' => 3, 'specialty' => 'educational']);
+        foreach (range(1, 70) as $id) {
+            DB::table('lessons')->insert([
+                'id' => $id, 'title' => $id === 1 ? 'Far 100%' : 'Lesson', 'teacher_id' => 99,
+                'target_type' => $id === 65 ? 'parents' : ($id >= 69 ? 'specificChildren' : 'everyone'),
+                'target_child_ids' => json_encode([$id === 70 ? 45 : 1]), 'created_at' => '2026-10-02 12:00:00',
+            ]);
+            DB::table('media')->insert(['lesson_id' => $id, 'type' => 'image', 'url' => 'https://example.com/image.png']);
+        }
+        $request = Request::create('/api/list', 'GET', ['page' => 1, 'per_page' => 3]);
+        $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'parent']);
+        $children = app(ChildController::class)->index($request)->getData(true);
+        $this->assertSame(40, $children['pagination']['total']);
+        $this->assertCount(3, $children['children']);
+        $this->assertSame(40, $children['summary']['total_children']);
+        $request->query->set('q', '100%');
+        $this->assertSame([1], array_column(app(ChildController::class)->index($request)->getData(true)['children'], 'id'));
+        $this->assertSame([1], array_column(app(LessonController::class)->index($request)->getData(true)['lessons'], 'id'));
+        $request->query->remove('q');
+        foreach ([[1, 'parent', 68], [2, 'teacher', 69], [3, 'specialist', 69], [4, 'ministry', 70], [21, 'teacher', 70]] as [$id, $role, $total]) {
+            $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
+            DB::enableQueryLog(); DB::flushQueryLog();
+            $data = app(LessonController::class)->index($request)->getData(true);
+            $queries = DB::getQueryLog(); DB::disableQueryLog();
+            $this->assertSame($total, $data['pagination']['total']);
+            $this->assertCount(3, $data['lessons']);
+            $this->assertCount(3, $queries); // count + page + batch media, no assignment prefetch.
         }
     }
 }

@@ -1,38 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { fetchParentLessons, getUser } from '../../api'
+import { useEffect, useState } from 'react'
+import { fetchLessons, getUser } from '../../api'
+import { useListPage } from '../../hooks/useListPage'
+import ListPagination from '../../components/ListPagination'
 import ParentLessonForm from './ParentLessonForm'
 import { ParentLessonsGrid } from './ParentLessonSections'
 
 export default function ParentLessonsPage() {
-  const [lessons, setLessons] = useState([])
   const [query, setQuery] = useState('')
-  const [error, setError] = useState('')
   const [speakingId, setSpeakingId] = useState(null)
 
-  const load = useCallback(async () => {
-    try {
-      const data = await fetchParentLessons()
-      setLessons(data.lessons || [])
-      setError('')
-    } catch (err) {
-      setError(err.message)
-    }
-  }, [])
+  const { items: filteredLessons, loading, error, meta, setPage, reload: load } = useListPage(fetchLessons, 'lessons', { target_type: 'parents', q: query })
 
-  useEffect(() => {
-    load()
-    return () => window.speechSynthesis?.cancel()
-  }, [load])
-
-  const filteredLessons = useMemo(() => {
-    const normalizedQuery = query.trim()
-    if (!normalizedQuery) return lessons
-
-    return lessons.filter((lesson) => (
-      (lesson.title || '').includes(normalizedQuery)
-      || (lesson.content || '').includes(normalizedQuery)
-    ))
-  }, [lessons, query])
+  useEffect(() => () => window.speechSynthesis?.cancel(), [])
 
   const speak = (lesson) => {
     const synth = window.speechSynthesis
@@ -82,11 +61,13 @@ export default function ParentLessonsPage() {
 
       {error && <div className="fp-error">{error}</div>}
 
-      <ParentLessonsGrid
+      {loading ? <div className="state">جارِ تحميل الدروس...</div> : !error && <ParentLessonsGrid
         lessons={filteredLessons}
         speakingId={speakingId}
         onSpeak={speak}
-      />
+      />}
+      {error && <button className="btn" onClick={load}>إعادة المحاولة</button>}
+      <ListPagination meta={meta} loading={loading} onPage={setPage} />
     </div>
   )
 }

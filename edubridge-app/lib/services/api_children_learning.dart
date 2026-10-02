@@ -1,6 +1,21 @@
 // API implementations for children, evaluations, lessons, and progress.
 part of 'api_service.dart';
 
+Future<ListPage> _apiGetDirectoryPage(String key, int page, String query, {String? targetType}) async {
+  final token = await ApiService.getToken();
+  final params = Uri(queryParameters: {
+    'page': '$page', 'per_page': '30', 'q': query,
+    if (targetType != null) 'target_type': targetType,
+  }).query;
+  final res = key == 'children'
+      ? await ApiService.authGet('/children?$params')
+      : await ApiService.authGet('/lessons?$params');
+  if (token != await ApiService.getToken()) throw StateError('Session changed');
+  if (res.statusCode != 200) throw Exception('تعذّر تحميل القائمة');
+  return ListPage.fromJson(ApiService._decodeBody(res), key);
+}
+
+
 Future<Map<String, dynamic>?> _apiGetChildren() async {
   try {
     final res = await ApiService.authGet('/children');
