@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { fetchSignLanguageCategories, fetchSignLanguageSigns } from '../../api'
 import './SignLanguagePage.css'
 
 const CATEGORY_LABELS = { math: 'الرياضيات', science: 'العلوم' }
 
 export default function SignLanguagePage() {
-  const [query, setQuery] = useState('')
+  const [searchParams] = useSearchParams()
+  const [query, setQuery] = useState(() => searchParams.get('q') || '')
   const [category, setCategory] = useState('')
   const [categories, setCategories] = useState([])
   const [signs, setSigns] = useState([])
