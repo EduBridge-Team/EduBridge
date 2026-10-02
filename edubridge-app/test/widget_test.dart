@@ -1,6 +1,7 @@
 // اختبارات بدء التطبيق واستعادة الجلسة المحفوظة.
 import 'package:edubridge_app/screens/admin/admin_screen.dart' show AdminScreen;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edubridge_app/main.dart' as app;
@@ -8,6 +9,7 @@ import 'package:edubridge_app/services/api_service.dart';
 import 'package:edubridge_app/utils/home_router.dart';
 
 void main() {
+  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
   testWidgets('المستخدم الضيف يرى الشاشة الترحيبية',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
