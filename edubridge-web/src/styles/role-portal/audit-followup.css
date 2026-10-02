@@ -1,4 +1,29 @@
 /* Keep text readable on the dark portal surfaces. */
+:root[data-theme="dark"] .pp-content .support-hero h1,
+:root[data-theme="dark"] .pp-content .support-section-head h2,
+:root[data-theme="dark"] .pp-content .support-ticket-card h3,
+:root[data-theme="dark"] .pp-content .support-request-card h3,
+:root[data-theme="dark"] .pp-content .child-info-card h3,
+:root[data-theme="dark"] .pp-content .child-evaluation-card strong,
+:root[data-theme="dark"] .pp-content .child-progress-page .weekly-report-card h3 {
+  color: #9bd8ff;
+}
+
+/* Preserve the accessible custom clear button without a second native icon. */
+.lesson-search input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.child-progress-heading { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.child-progress-heading h2 { flex: 1; min-width: 0; }
+.child-progress-heading .reports-child-select { width: min(100%, 240px); }
+.homework-parent-submissions { margin-top: 12px; }
+.homework-parent-submissions h4 { margin: 0 0 6px; }
+.homework-parent-submissions p { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 620px) {
+  .child-progress-heading .reports-child-select { width: 100%; }
+}
+
 :root[data-theme="dark"] .pp-content .conversations-hero h1,
 :root[data-theme="dark"] .pp-content .specialist-section-head h2,
 :root[data-theme="dark"] .pp-content .specialist-hero-stats strong,

@@ -1,4 +1,5 @@
 import { homeworkGradePayload } from './homeworkGrading'
+import { homeworkChildren } from './homeworkChildren'
 import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
 import { openProtectedFile } from '../../api'
@@ -150,6 +151,21 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
   )
 }
 
+export function ParentHomeworkSubmissions({ homework, children }) {
+  const ownedIds = new Set(children.map(child => String(child.id)))
+  const submissions = (homework.submissions || []).filter(item => ownedIds.has(String(item.child_id)))
+  return <div className="fp-list homework-parent-submissions">
+    {submissions.map(item => <section className="fp-message" key={item.id} aria-label={`تسليم ${item.child_name}`}>
+      <h4>{item.child_name}</h4>
+      <small>تم التسليم: {new Date(item.submitted_at).toLocaleString('ar')}{item.is_late ? ' • متأخر' : ''}</small>
+      {item.text_answer && <p>{item.text_answer}</p>}
+      {item.grade != null ? <p><b>الدرجة:</b> {item.grade} / 100</p> : <p>بانتظار تقييم المعلّم</p>}
+      {item.feedback && <p className="homework-feedback"><b>ملاحظات المعلّم:</b> {item.feedback}</p>}
+      {(item.file_urls?.length ? item.file_urls : item.file_url ? [item.file_url] : []).map(url => <SubmissionFile key={url} url={url} />)}
+    </section>)}
+  </div>
+}
+
 export function HomeworkGrid({
   onCreate,
   busy,
@@ -193,14 +209,18 @@ export function HomeworkGrid({
       )}
 
       {role === 'parent' && (
+        <>
+        <ParentHomeworkSubmissions homework={homework} children={children} />
         <div className="fp-actions">
           <button
             className="btn"
-            onClick={() => onOpenSubmission(homework.id, children[0]?.id || '')}
+            disabled={busy || homeworkChildren(homework, children).length === 0}
+            onClick={() => onOpenSubmission(homework.id, homeworkChildren(homework, children)[0]?.id || '')}
           >
             تسليم الواجب
           </button>
         </div>
+        </>
       )}
 
       {staff && (
