@@ -5,7 +5,13 @@ EduBridge production runs on the existing Oracle Linux/Ubuntu host alongside Yal
 ## Production topology
 
 - `edubridge-postgres`: PostgreSQL 17 on the private Docker network `edubridge-net`.
-- `edubridge-api`: Laravel/PHP 8.4, reachable on the host only at `127.0.0.1:8081`.
+- `edubridge-api`: Nginx + PHP 8.4 FPM, reachable on the host only at `127.0.0.1:8081`.
+  FPM uses a private Unix socket and up to four PHP workers; Supervisor manages
+  both services. Nginx forwards only Laravel's front controller to PHP and does
+  not log signed-link query strings. Upload limits are 150 MiB per file and
+  384 MiB per request. OPcache is enabled with timestamp checks disabled, so
+  rebuild/recreate the container for code changes. Compose allows up to 200
+  seconds for in-flight requests to finish during shutdown.
 - `edubridge-web`: built React/Vite SPA, reachable on the host only at `127.0.0.1:8082`.
 - Existing host-mode Caddy terminates TLS and proxies public traffic.
 - Public educational/private sensitive uploads continue to use the configured Cloudflare R2 buckets.

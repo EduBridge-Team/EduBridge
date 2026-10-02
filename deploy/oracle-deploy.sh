@@ -104,7 +104,7 @@ compose up -d --no-deps api
 compose up -d --no-deps web
 
 echo "==> Waiting for local health endpoints..."
-for url in http://127.0.0.1:8081/ http://127.0.0.1:8082/; do
+for url in http://127.0.0.1:8081/api/health http://127.0.0.1:8082/; do
   ok=false
   for _ in {1..30}; do
     if curl -fsS "$url" >/dev/null; then

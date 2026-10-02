@@ -57,8 +57,8 @@ Offline stars synchronize in batches of at most 20 and serialize local writes.
 Notification state resets on logout and ignores responses from prior sessions.
 Conversation requests cannot overwrite a newer selection. Arabic list separators
 round-trip correctly. PHP upload limits support the allowed media sizes, the
-container starts four development-server workers, and the health check uses the
-API endpoint. Web lockfile updates resolve the reported dependency advisories.
+production container uses Nginx and PHP-FPM with up to four PHP workers, and
+the health check uses the API endpoint. Web lockfile updates resolve the reported dependency advisories.
 
 Retry protection uses a per-account/per-child event ID and request fingerprint.
 Duplicate events return the original receipt without adding stars or game rows.
@@ -114,5 +114,15 @@ API 23 or higher and continues to disable automatic backups. The dependency
 lockfile is checked in CI. These changes apply when users install the updated
 app; old installed versions retain their existing storage behavior.
 
-Remaining audit work: pagination and replacing artisan serve with a production
-PHP runtime. Other list endpoints may still need query profiling.
+The production image now runs Nginx and PHP-FPM under Supervisor rather than
+artisan serve. FPM listens on a private Unix socket and runs application code as
+www-data. Only the front controller can execute PHP. OPcache is enabled for the
+immutable image; rebuild/recreate containers when deploying code. Signed URL
+query strings are excluded from Nginx access logs. CI builds the real image and
+checks PostgreSQL health/migrations, routing, upload limits, concurrent requests,
+and restrictions on direct PHP/dotfile access. Deploy this change using the
+existing Oracle deployment script; ports and external Caddy routing are unchanged.
+This code change does not itself update the production server.
+
+Remaining audit work: pagination. Other list endpoints may still need query
+profiling.
