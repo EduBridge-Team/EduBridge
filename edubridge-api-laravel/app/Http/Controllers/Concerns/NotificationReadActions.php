@@ -16,8 +16,8 @@ trait NotificationReadActions
         $paged = $request->query->has('limit') || $request->query->has('before_id') || $request->query->has('after_id');
         $paging = $paged ? Validator::make($request->query(), [
             'limit' => ['sometimes', 'required', 'integer', 'min:1', 'max:100'],
-            'before_id' => ['sometimes', 'required', 'integer', 'min:1', 'prohibited_with:after_id'],
-            'after_id' => ['sometimes', 'required', 'integer', 'min:0', 'prohibited_with:before_id'],
+            'before_id' => ['sometimes', 'required', 'integer', 'min:1', 'missing_with:after_id'],
+            'after_id' => ['sometimes', 'required', 'integer', 'min:0', 'missing_with:before_id'],
         ])->validate() : [];
 
         try {

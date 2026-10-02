@@ -142,9 +142,11 @@ class NotificationListenerService {
   }
 
   Future<void> markAllRead() => _serial((generation) async {
+    final ids = notifications.value.map((row) => row['id']).toSet();
     await ApiService.markAllNotificationsRead();
     if (!_active(generation)) return;
-    notifications.value = notifications.value.map((row) => {...row as Map, 'is_read': true}).toList();
+    notifications.value = notifications.value.map((row) => ids.contains(row['id'])
+        ? {...row as Map, 'is_read': true} : row).toList();
     unreadCount.value = 0;
   });
 
