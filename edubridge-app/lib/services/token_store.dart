@@ -63,7 +63,7 @@ class TokenStore {
           final legacy = prefs.getString('token');
           if (legacy == null || legacy.isEmpty) {
             _require(await prefs.remove(_migrating));
-            return _blocked ? null : stored;
+            return _blocked || stored == null || stored.isEmpty ? null : stored;
           }
           _require(await prefs.setBool(_migrating, true));
           await _write(legacy);

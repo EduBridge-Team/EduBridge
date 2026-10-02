@@ -82,8 +82,16 @@ Map<String, dynamic>? _apiCoreAsStringMap(dynamic value) {
   }
 
 Future<void> _apiCoreSaveToken(String token) async {
-    await TokenStore.instance.save(token);
-    ApiService.isAuthenticated.value = true;
+    try {
+      await TokenStore.instance.save(token);
+      ApiService.isAuthenticated.value = true;
+    } on TokenStorageException {
+      WebSocketService().disconnect();
+      NotificationListenerService.instance.dispose();
+      ApiService.isAuthenticated.value = false;
+      ApiService.userRole.value = null;
+      rethrow;
+    }
   }
 
 Future<String?> _apiCoreGetToken() async {

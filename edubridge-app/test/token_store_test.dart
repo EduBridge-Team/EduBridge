@@ -25,6 +25,11 @@ void main() {
     expect(await TokenStore().get(), 'legacy');
   });
 
+  test('an empty stored token cannot authenticate', () async {
+    FlutterSecureStorage.setMockInitialValues({key: ''});
+    expect(await TokenStore().get(), null);
+  });
+
   test('secure copy takes precedence over stale plaintext', () async {
     SharedPreferences.setMockInitialValues({'token': 'stale'});
     FlutterSecureStorage.setMockInitialValues({key: 'current'});
