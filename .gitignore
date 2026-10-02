@@ -44,3 +44,5 @@ tools/psl-motion/.venv/
 tools/psl-motion/*.motion.json
 tools/psl-motion/*.motion.smooth.json
 tools/psl-motion/captures/
+tools/psl-motion/*.retarget.json
+tools/psl-motion/generated/
