@@ -6,6 +6,8 @@ use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Support\AuthCredentials;
 
 class JwtAuth
 {
@@ -37,8 +39,16 @@ class JwtAuth
                 return response()->json(['error' => 'توكن غير صالح'], 401);
             }
 
-            // نمرر حمولة التوكن للمسارات التالية — { id, role }
-            $request->attributes->set('jwt_user', $decoded);
+            $account = DB::table('users')->where('id', (int) $userId)->first();
+            if (!$account || $account->role !== $role
+                || !isset($decoded->exp, $decoded->credential_stamp)
+                || !is_string($decoded->credential_stamp)
+                || !hash_equals(AuthCredentials::stamp($account, $secret), $decoded->credential_stamp)) {
+                return response()->json(['error' => 'انتهت جلسة الدخول. سجّل الدخول مجدداً.', 'code' => 'SESSION_INVALID'], 401);
+            }
+
+            // The current database account is authoritative for every policy.
+            $request->attributes->set('jwt_user', $account);
         } catch (\Throwable $e) {
             return response()->json(['error' => 'توكن غير صالح'], 401);
         }

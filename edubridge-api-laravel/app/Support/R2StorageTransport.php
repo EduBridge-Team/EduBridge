@@ -47,7 +47,7 @@ final class R2StorageTransport
             $options['body'] = $body;
         }
 
-        return (new Client())->request($method, $url, $options);
+        return app(Client::class)->request($method, $url, $options);
     }
 
     public static function requiredEnv(string $key, $fallback = null): string

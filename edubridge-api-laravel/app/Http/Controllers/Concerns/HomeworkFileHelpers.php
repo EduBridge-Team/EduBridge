@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 trait HomeworkFileHelpers
 {
-    private function storeFiles(Request $request, string $field, string $prefix): array
+    private function storeFiles(Request $request, string $field, string $prefix, ?int $homeworkId = null, ?int $childId = null): array
     {
         $files = $request->file($field, []);
 
@@ -39,16 +39,17 @@ trait HomeworkFileHelpers
                 . bin2hex(random_bytes(5))
                 . '.'
                 . $ext;
-            $key = 'homework/' . $name;
+            $private = $homeworkId !== null && $childId !== null;
+            $key = $private ? "homework/submissions/{$homeworkId}/{$childId}/{$name}" : 'homework/' . $name;
 
             R2Storage::putUploadedFile(
-                R2Storage::mediaBucket(),
+                $private ? R2Storage::privateBucket() : R2Storage::mediaBucket(),
                 $key,
                 $file,
                 (string) $file->getMimeType()
             );
 
-            $urls[] = R2Storage::mediaPublicUrl($key);
+            $urls[] = $private ? "/api/private-files/homework/{$homeworkId}/child/{$childId}/{$name}" : R2Storage::mediaPublicUrl($key);
         }
 
         return $urls;

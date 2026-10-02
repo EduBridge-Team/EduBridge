@@ -24,6 +24,9 @@ trait RatingWriteActions
             if (!DB::table('lessons')->where('id', $lessonId)->exists()) {
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
             }
+            if (!\App\Support\LessonVisibility::allowed($me, (int) $lessonId)) {
+                return response()->json(['error' => 'غير مصرّح'], 403);
+            }
 
             // The unique (lesson_id, user_id) key also protects concurrent requests.
             DB::table('lesson_ratings')->upsert([

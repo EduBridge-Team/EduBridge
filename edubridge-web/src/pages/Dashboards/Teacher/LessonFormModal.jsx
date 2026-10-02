@@ -40,7 +40,7 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
   const [title, setTitle] = useState(lesson?.title || '')
   const [content, setContent] = useState(lesson?.content || '')
   const [typeId, setTypeId] = useState(lesson?.disability_type_id ? String(lesson.disability_type_id) : '')
-  const [audience, setAudience] = useState(lesson?.target_type === 'parents' ? 'parents' : 'children')
+  const [audience, setAudience] = useState(lesson?.target_type === 'specificChildren' ? 'specificChildren' : lesson?.target_type === 'parents' ? 'parents' : 'children')
   const [images, setImages] = useState([])
   const [video, setVideo] = useState(null)
   const [audio, setAudio] = useState(null)
@@ -59,7 +59,8 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
       fd.append('title', title.trim())
       fd.append('content', content.trim())
       fd.append('disability_type_id', audience === 'parents' ? '' : typeId)
-      fd.append('target_type', audience === 'parents' ? 'parents' : (typeId ? 'byDisability' : 'everyone'))
+      fd.append('target_type', audience === 'specificChildren' ? 'specificChildren' : audience === 'parents' ? 'parents' : (typeId ? 'byDisability' : 'everyone'))
+      if (audience === 'specificChildren') fd.append('target_child_ids', JSON.stringify(lesson?.target_child_ids || []))
       fd.append('audio_description', audioDescription.trim())
       images.forEach((file) => fd.append('images[]', file))
       if (video) fd.append('video', video)
@@ -115,6 +116,7 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
             onTypeIdChange={setTypeId}
             typeId={typeId}
             types={types}
+            preserveSpecific={lesson?.target_type === 'specificChildren'}
           />
 
           <LessonMediaFields

@@ -1,6 +1,13 @@
 import { homeworkGradePayload } from './homeworkGrading'
 import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
+import { openProtectedFile } from '../../api'
+import { useState } from 'react'
+
+function SubmissionFile({ url }) {
+  const [error, setError] = useState('')
+  return <><button type="button" className="btn outline small" onClick={() => openProtectedFile(url).catch((err) => setError(err.message))}>فتح الملف</button>{error && <small role="alert">{error}</small>}</>
+}
 export function HomeworkCreateForm({
   attachments,
   busy,
@@ -95,7 +102,7 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
           </small>
           <div>{submission.text_answer || 'تسليم ملف'}</div>
           {submission.file_url && (
-            <a href={submission.file_url} target="_blank" rel="noreferrer">فتح الملف</a>
+            <SubmissionFile url={submission.file_url} />
           )}
           <div className="fp-row" style={{ marginTop: 8 }}>
             <FormField label="الدرجة">

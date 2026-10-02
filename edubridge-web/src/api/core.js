@@ -75,14 +75,16 @@ export async function fetchMyProfile() {
   return user;
 }
 
-export function changeMyPassword(currentPassword, newPassword) {
-  return request("/me/password", {
+export async function changeMyPassword(currentPassword, newPassword) {
+  const data = await request("/me/password", {
     method: "PUT",
     body: JSON.stringify({
       current_password: currentPassword,
       new_password: newPassword,
     }),
   });
+  if (data.token) localStorage.setItem('token', data.token);
+  return data;
 }
 
 // طلب عام مع التوكن ومعالجة الأخطاء بشكل موحّد
@@ -110,6 +112,10 @@ export async function request(path, options = {}) {
   }
 
   if (!res.ok) {
+    if (res.status === 401 && token && getToken() === token) {
+      logout();
+      window.location.assign('/login');
+    }
     const serverMessage =
       data.error ||
       data.message ||

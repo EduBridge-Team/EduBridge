@@ -33,6 +33,7 @@ class ChildControllerPrivacyTest extends TestCase
             $table->unsignedBigInteger('disability_type_id')->nullable();
             $table->unsignedBigInteger('organization_id')->nullable();
             $table->string('status')->default('pending');
+            $table->string('doc_verification_status')->default('verified');
             $table->string('child_national_id')->nullable();
             $table->string('guardian_national_id')->nullable();
             $table->text('guardian_id_document_url')->nullable();
@@ -198,5 +199,24 @@ class ChildControllerPrivacyTest extends TestCase
         $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
 
         return $request;
+    }
+
+    public function test_parent_cannot_keep_approval_by_sending_status_with_changed_identity(): void
+    {
+        $response = app(ChildController::class)->update($this->request(1, 'parent', 'PUT', [
+            'guardian_national_id' => '111111111', 'doc_verification_status' => 'verified',
+        ]), 10);
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseHas('children', ['id' => 10, 'guardian_national_id' => '987654321', 'doc_verification_status' => 'verified']);
+    }
+
+    public function test_unchanged_identity_keeps_approval_and_real_change_requires_review(): void
+    {
+        $controller = app(ChildController::class);
+        $response = $controller->update($this->request(1, 'parent', 'PUT', ['guardian_national_id' => '987654321']), 10);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertDatabaseHas('children', ['id' => 10, 'doc_verification_status' => 'verified']);
+        $controller->update($this->request(1, 'parent', 'PUT', ['guardian_national_id' => '111111111']), 10);
+        $this->assertDatabaseHas('children', ['id' => 10, 'doc_verification_status' => 'pending']);
     }
 }
