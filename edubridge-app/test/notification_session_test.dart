@@ -24,7 +24,10 @@ void main() {
     final response = Completer<List<dynamic>>();
     var calls = 0;
     final service = NotificationListenerService(
-      fetchNotifications: () async => ++calls == 1 ? [] : response.future,
+      fetchNotifications: () async {
+        if (++calls == 1) return <dynamic>[];
+        return await response.future;
+      },
       fetchUnreadCount: () async => 0,
     );
     await service.initialize();

@@ -18,18 +18,7 @@ class NotificationListenerService {
 
   @visibleForTesting
   Future<void> pollNow() => _pollForNotifications();
-  static final NotificationListenerService instance =
-      NotificationListenerService({
-    Future<List<dynamic>> Function()? fetchNotifications,
-    Future<int> Function()? fetchUnreadCount,
-  }) : _fetchNotifications = fetchNotifications ?? ApiService.getNotifications,
-       _fetchUnreadCount = fetchUnreadCount ?? ApiService.getUnreadNotificationsCount;
-
-  final Future<List<dynamic>> Function() _fetchNotifications;
-  final Future<int> Function() _fetchUnreadCount;
-
-  @visibleForTesting
-  Future<void> pollNow() => _pollForNotifications();
+  static final NotificationListenerService instance = NotificationListenerService();
 
   final ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
   final ValueNotifier<Map<String, dynamic>?> latestNotification =
