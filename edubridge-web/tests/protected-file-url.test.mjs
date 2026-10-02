@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { protectedFileUrl, safeFileBlob } from '../src/api/protectedFileUrl.js'
+import { protectedFileUrl, safeFileBlob, privateMediaCrossOrigin } from '../src/api/protectedFileUrl.js'
 
 test('private downloads follow the configured API origin and prefix', () => {
   const file = '/api/private-files/homework/12/child/7/result.pdf'
@@ -19,4 +19,10 @@ test('active uploaded content is rendered as text rather than executable same-or
   const pdf = new Blob(['pdf'], { type: 'application/pdf' })
   assert.equal(safeFileBlob(pdf), pdf)
   assert.equal(safeFileBlob(new Blob(['unknown'])).type, 'application/octet-stream')
+})
+
+test('signed video opts into CORS for captions while external legacy video keeps its behavior', () => {
+  assert.equal(privateMediaCrossOrigin('https://api.example.test/api/private-files/lesson/10/video.mp4?signature=abc'), 'anonymous')
+  assert.equal(privateMediaCrossOrigin('https://media.example.test/video.mp4'), undefined)
+  assert.equal(privateMediaCrossOrigin(null), undefined)
 })

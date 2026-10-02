@@ -114,7 +114,7 @@ class PrivateLessonFileTest extends \Tests\TestCase
     {
         $this->mockR2([new Response(206, ['Content-Type' => 'video/mp4', 'Content-Length' => '3', 'Content-Range' => 'bytes 0-2/10', 'Accept-Ranges' => 'bytes'], 'abc')]);
         $response = $this->withHeaders(['Range' => 'bytes=0-2'])->get($this->link());
-        $response->assertStatus(206)->assertHeader('Content-Range', 'bytes 0-2/10')->assertHeader('Content-Security-Policy', "sandbox; default-src 'none'")->assertHeader('Cache-Control');
+        $response->assertStatus(206)->assertHeader('Content-Range', 'bytes 0-2/10')->assertHeader('Content-Security-Policy', "sandbox; default-src 'none'; img-src 'self' data:; media-src 'self' blob:")->assertHeader('Cache-Control');
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $this->assertSame('abc', $response->streamedContent());
         $this->assertSame('bytes=0-2', $this->r2History[0]['request']->getHeaderLine('Range'));
@@ -154,4 +154,14 @@ class PrivateLessonFileTest extends \Tests\TestCase
         DB::table('media')->delete();
         $this->getJson($url)->assertNotFound();
     }
+    public function test_webvtt_uses_caption_mime_type_even_when_legacy_storage_metadata_is_plain_text(): void
+    {
+        DB::table('media')->insert(['lesson_id' => 100, 'type' => 'caption', 'url' => LessonFiles::path(100, 'caption.vtt')]);
+        $request = Request::create('https://api.example.test/api/lessons/100');
+        $request->attributes->set('jwt_user', DB::table('users')->find(3));
+        $url = LessonFiles::forViewer($request, LessonFiles::path(100, 'caption.vtt'));
+        $this->mockR2([new Response(200, ['Content-Type' => 'text/plain'], "WEBVTT\n")]);
+        $this->get($url)->assertOk()->assertHeader('Content-Type', 'text/vtt; charset=utf-8');
+    }
+
 }

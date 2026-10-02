@@ -20,9 +20,9 @@ trait UploadControllerHelpers
             $body = $object->getBody();
 
             $headers = [
-                'Content-Type' => $object->getHeaderLine('Content-Type') ?: 'application/octet-stream',
+                'Content-Type' => str_ends_with(strtolower($key), '.vtt') ? 'text/vtt; charset=utf-8' : ($object->getHeaderLine('Content-Type') ?: 'application/octet-stream'),
                 'X-Content-Type-Options' => 'nosniff',
-                'Content-Security-Policy' => "sandbox; default-src 'none'",
+                'Content-Security-Policy' => "sandbox; default-src 'none'; img-src 'self' data:; media-src 'self' blob:",
                 'Referrer-Policy' => 'no-referrer',
                 'Cache-Control' => 'private, no-store, max-age=0',
             ];

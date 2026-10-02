@@ -92,6 +92,7 @@ successfully migrated reference. New private objects may be safely rescanned.
 The command handles only exact URLs under R2_MEDIA_PUBLIC_URL. External links
 and old objects no longer referenced in the database require manual review.
 Old public links remain accessible until their public objects are deleted.
+If a CDN cached those URLs, purge the old URLs after cleanup as well.
 This repository change does not itself run the production storage migration.
 
 Remaining audit work: pagination and N+1 query reduction, secure mobile token

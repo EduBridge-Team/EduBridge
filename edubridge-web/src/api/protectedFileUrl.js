@@ -9,3 +9,7 @@ export function safeFileBlob(blob) {
   // HTML/SVG as a document in the application's origin.
   return new Blob([blob], { type: ['text/html', 'application/xhtml+xml', 'image/svg+xml'].includes(type) ? 'text/plain' : 'application/octet-stream' })
 }
+
+export function privateMediaCrossOrigin(url) {
+  return typeof url === 'string' && url.includes('/api/private-files/lesson/') ? 'anonymous' : undefined
+}
