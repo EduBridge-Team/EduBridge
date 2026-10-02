@@ -5,14 +5,19 @@ import '../theme.dart';
 import 'assistant_screen.dart';
 
 class SignLanguageScreen extends StatefulWidget {
-  const SignLanguageScreen({super.key});
+  final String initialQuery;
+
+  const SignLanguageScreen({
+    super.key,
+    this.initialQuery = '',
+  });
 
   @override
   State<SignLanguageScreen> createState() => _SignLanguageScreenState();
 }
 
 class _SignLanguageScreenState extends State<SignLanguageScreen> {
-  final _search = TextEditingController();
+  late final TextEditingController _search;
   List<dynamic> _signs = const [];
   List<dynamic> _categories = const [];
   String _category = '';
@@ -22,6 +27,7 @@ class _SignLanguageScreenState extends State<SignLanguageScreen> {
   @override
   void initState() {
     super.initState();
+    _search = TextEditingController(text: widget.initialQuery);
     _loadCategories();
     _load();
   }
