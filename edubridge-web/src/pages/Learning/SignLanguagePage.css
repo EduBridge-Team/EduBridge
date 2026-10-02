@@ -6,3 +6,7 @@
 @keyframes psl-arm-right{0%,100%{transform:rotate(0deg) translate(0,0)}35%{transform:rotate(-52deg) translate(-4px,-10px)}65%{transform:rotate(-30deg) translate(-10px,-20px)}}@keyframes psl-arm-left{0%,100%{transform:rotate(0deg) translate(0,0)}35%{transform:rotate(52deg) translate(4px,-10px)}65%{transform:rotate(30deg) translate(10px,-20px)}}
 .psl-avatar-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px}.psl-avatar-controls button,.psl-avatar-controls label{min-height:40px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border,#d9e2e1);border-radius:12px;background:var(--surface,#fff);color:inherit;padding:8px 11px;font:inherit}.psl-avatar-controls button{cursor:pointer}.psl-avatar-controls select{border:0;background:transparent;color:inherit;font:inherit}
 @media(max-width:700px){.psl-avatar-prototype{padding:13px}.psl-avatar-copy{display:grid}.psl-avatar-stage{min-height:210px}.psl-avatar-controls{justify-content:stretch}.psl-avatar-controls button,.psl-avatar-controls label{flex:1;justify-content:center}}
+
+.psl-avatar-stage model-viewer{display:block;width:100%;height:300px;background:transparent;--poster-color:transparent}
+.psl-avatar-badge.verified{background:color-mix(in srgb,var(--brand-primary,#087f73) 14%,#fff);color:var(--brand-primary,#087f73);border-color:color-mix(in srgb,var(--brand-primary,#087f73) 35%,#fff)}
+@media(max-width:700px){.psl-avatar-stage model-viewer{height:240px}}
