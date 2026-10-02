@@ -108,7 +108,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
         .replaceAll(RegExp(r'[أإآ]'), 'ا')
         .replaceAll('ة', 'ه')
         .replaceAll('ى', 'ي')
-        .replaceAll(RegExp(r'[^\p{L}\p{N}\s]', unicode: true), ' ')
+        .replaceAll(RegExp(r'[^A-Za-z0-9\u0600-\u06FF\s]'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
   }
