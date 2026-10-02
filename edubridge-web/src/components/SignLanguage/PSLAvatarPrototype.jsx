@@ -1,66 +1,75 @@
 import { Pause, Play, RotateCcw } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 const SPEEDS = [0.5, 0.75, 1, 1.25]
+const DEMO_GLB = 'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb'
 
 export default function PSLAvatarPrototype({ sign }) {
+  const viewerRef = useRef(null)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
-  const [cycle, setCycle] = useState(0)
 
   const isTriangle = useMemo(
     () => String(sign?.english_label || '').toLowerCase() === 'triangle',
     [sign?.english_label],
   )
 
-  if (!isTriangle) return null
+  const verifiedMotion = Boolean(
+    sign?.animation_url
+    && sign?.animation_status === 'verified'
+    && ['glb', 'gltf'].includes(String(sign?.animation_format || '').toLowerCase()),
+  )
+
+  const source = verifiedMotion ? sign.animation_url : DEMO_GLB
+  const animationName = verifiedMotion ? undefined : 'Wave'
+
+  useEffect(() => {
+    const viewer = viewerRef.current
+    if (!viewer) return
+
+    viewer.timeScale = speed
+    if (playing) {
+      viewer.play?.({ repetitions: Infinity })
+    } else {
+      viewer.pause?.()
+    }
+  }, [playing, speed, source])
+
+  if (!isTriangle && !verifiedMotion) return null
 
   const restart = () => {
-    setPlaying(false)
-    window.requestAnimationFrame(() => {
-      setCycle((value) => value + 1)
-      setPlaying(true)
-    })
+    const viewer = viewerRef.current
+    if (!viewer) return
+    viewer.currentTime = 0
+    viewer.timeScale = speed
+    viewer.play?.({ repetitions: Infinity })
+    setPlaying(true)
   }
 
   return (
-    <section className="psl-avatar-prototype" aria-label="نموذج شخصية لغة الإشارة">
+    <section className="psl-avatar-prototype" aria-label="مشغل شخصية لغة الإشارة ثلاثية الأبعاد">
       <div className="psl-avatar-copy">
-        <span className="psl-avatar-badge">Prototype</span>
+        <span className={verifiedMotion ? 'psl-avatar-badge verified' : 'psl-avatar-badge'}>{verifiedMotion ? 'PSL' : '3D Prototype'}</span>
         <div>
-          <strong>شخصية EduBridge للإشارة</strong>
-          <p>نموذج حركة تقني فقط لإثبات المشغّل. الحركة الحالية ليست توثيقاً معتمداً لإشارة «مثلث».</p>
+          <strong>شخصية EduBridge ثلاثية الأبعاد</strong>
+          {verifiedMotion
+            ? <p>هذه الحركة مرتبطة بملف GLB موثّق لهذا المدخل.</p>
+            : <p>هذا ملف GLB حقيقي لاختبار المشغّل والـrig فقط. حركة العرض ليست إشارة «{sign?.arabic_label}» ولا تُستخدم كمحتوى تعليمي.</p>}
         </div>
       </div>
 
-      <div
-        key={cycle}
-        className={`psl-avatar-stage ${playing ? 'is-playing' : 'is-paused'}`}
-        style={{ '--psl-avatar-duration': `${2.4 / speed}s` }}
-      >
-        <svg viewBox="0 0 300 300" role="img" aria-label="شخصية تجريبية متحركة">
-          <defs>
-            <linearGradient id="avatar-shirt" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#0e8f84" />
-              <stop offset="100%" stopColor="#0b6678" />
-            </linearGradient>
-          </defs>
-          <circle cx="150" cy="72" r="35" className="psl-avatar-head" />
-          <circle cx="137" cy="68" r="3" className="psl-avatar-eye" />
-          <circle cx="163" cy="68" r="3" className="psl-avatar-eye" />
-          <path d="M137 86 Q150 94 163 86" className="psl-avatar-mouth" />
-          <rect x="111" y="108" width="78" height="102" rx="34" fill="url(#avatar-shirt)" />
-          <g className="psl-avatar-arm psl-avatar-arm-right">
-            <rect x="176" y="116" width="28" height="86" rx="14" />
-            <circle cx="190" cy="207" r="16" className="psl-avatar-hand" />
-          </g>
-          <g className="psl-avatar-arm psl-avatar-arm-left">
-            <rect x="96" y="116" width="28" height="86" rx="14" />
-            <circle cx="110" cy="207" r="16" className="psl-avatar-hand" />
-          </g>
-          <rect x="124" y="205" width="20" height="60" rx="10" className="psl-avatar-leg" />
-          <rect x="156" y="205" width="20" height="60" rx="10" className="psl-avatar-leg" />
-        </svg>
+      <div className="psl-avatar-stage">
+        <model-viewer
+          ref={viewerRef}
+          src={source}
+          animation-name={animationName}
+          camera-controls
+          disable-zoom
+          shadow-intensity="1"
+          exposure="1"
+          interaction-prompt="none"
+          aria-label={verifiedMotion ? `شخصية تؤدي إشارة ${sign?.arabic_label}` : 'شخصية ثلاثية الأبعاد تجريبية'}
+        />
       </div>
 
       <div className="psl-avatar-controls">
