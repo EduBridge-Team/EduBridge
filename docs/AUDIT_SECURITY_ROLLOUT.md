@@ -103,6 +103,16 @@ unassigned specialist discovery records retain their summary-only fields.
 Regression checks cover constant query counts and the real PostgreSQL endpoints.
 This optimization adds no database migration and preserves response fields.
 
-Remaining audit work: pagination, secure mobile token storage, and replacing
-artisan serve with a production PHP runtime. Other list endpoints may still need
-query profiling.
+Mobile login tokens now use flutter_secure_storage rather than plaintext shared
+preferences. Existing sessions migrate after secure write/read-back verification;
+the old plaintext key is removed only after that check. Failed migration keeps
+its source for retry but does not authenticate using plaintext. A persisted
+logout marker prevents an undeleted secure key from restoring a logged-out
+session, and cleanup retries on subsequent reads. New login replaces the token
+only after verification. Credential operations are serialized. Android requires
+API 23 or higher and continues to disable automatic backups. The dependency
+lockfile is checked in CI. These changes apply when users install the updated
+app; old installed versions retain their existing storage behavior.
+
+Remaining audit work: pagination and replacing artisan serve with a production
+PHP runtime. Other list endpoints may still need query profiling.

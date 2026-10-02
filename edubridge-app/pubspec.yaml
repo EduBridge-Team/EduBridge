@@ -17,6 +17,7 @@ dependencies:
   url_launcher: ^6.2.0
   http: ^1.2.0
   shared_preferences: ^2.2.0
+  flutter_secure_storage: 10.3.4
   flutter_tts: ^4.2.0   # قراءة محتوى الدروس صوتياً (accessibility)
   image_picker: ^1.1.2
   file_picker: ^8.1.7
