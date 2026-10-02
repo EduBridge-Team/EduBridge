@@ -57,10 +57,12 @@ test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/.env)" = 4
 
 # Multiple requests remain healthy and signed-link query strings stay out of logs.
 seq 1 8 | xargs -P 4 -I '{}' curl -fsS -o /dev/null http://127.0.0.1:8081/api/health
+master_pid="$(docker exec "$container" cat /run/edubridge-php.pid)"
 docker exec "$container" sh -c 'kill -TERM "$(cat /run/edubridge-php.pid)"'
 restarted=false
 for _ in {1..10}; do
-  if curl -fsS -o /dev/null http://127.0.0.1:8081/api/health; then
+  new_pid="$(docker exec "$container" cat /run/edubridge-php.pid 2>/dev/null || true)"
+  if [[ -n "$new_pid" && "$new_pid" != "$master_pid" ]] && curl -fsS -o /dev/null http://127.0.0.1:8081/api/health; then
     restarted=true
     break
   fi
