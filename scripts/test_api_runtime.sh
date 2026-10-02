@@ -41,12 +41,13 @@ jq -e '.status == "ok" and .database == "ok" and .git_sha == "runtime-ci"' "$run
 
 docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
+docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "384M" && extension_loaded("Zend OPcache") ? 0 : 1);'
 docker exec --user www-data "$container" php artisan migrate --force
 
 # Authentication and Laravel's router must still work through FastCGI.
 test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/api/me)" = 401
 python3 -c 'import json; print(json.dumps({"padding":"x" * (2 * 1024 * 1024)}))' > "$runtime_tmp/upload.json"
-test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' --data-binary @"$runtime_tmp/upload.json" http://127.0.0.1:8081/api/auth/login)" = 422
+test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' --data-binary @"$runtime_tmp/upload.json" http://127.0.0.1:8081/api/auth/login)" = 400
 
 # No direct execution or disclosure of PHP files, and no dotfile access.
 docker exec "$container" sh -c 'printf "%s" "<?php echo 12345;" > /app/public/runtime-probe.php'
@@ -56,11 +57,28 @@ test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/.env)" = 4
 
 # Multiple requests remain healthy and signed-link query strings stay out of logs.
 seq 1 8 | xargs -P 4 -I '{}' curl -fsS -o /dev/null http://127.0.0.1:8081/api/health
-curl -fsS -o /dev/null 'http://127.0.0.1:8081/api/health?signature=runtime-query-sentinel'
-docker logs "$container" > "$runtime_tmp/access.log" 2>&1
-if rg -q 'runtime-query-sentinel' "$runtime_tmp/access.log"; then
+docker exec "$container" sh -c 'kill -TERM "$(cat /run/edubridge-php.pid)"'
+restarted=false
+for _ in {1..10}; do
+  if curl -fsS -o /dev/null http://127.0.0.1:8081/api/health; then
+    restarted=true
+    break
+  fi
+  sleep 1
+done
+test "$restarted" = true
+test "$(curl -sS -o /dev/null -w '%{http_code}' 'http://127.0.0.1:8081/api/runtime-log-probe?signature=runtime-query-sentinel')" = 404
+for _ in {1..5}; do
+  docker logs "$container" > "$runtime_tmp/access.log" 2>&1
+  if grep -Fq '/api/runtime-log-probe' "$runtime_tmp/access.log"; then
+    break
+  fi
+  sleep 1
+done
+grep -Fq '/api/runtime-log-probe' "$runtime_tmp/access.log"
+if grep -Fq 'runtime-query-sentinel' "$runtime_tmp/access.log"; then
   echo 'ERROR: Request query string leaked into container logs.' >&2
   exit 1
 fi
 runtime_ok=true
-echo 'API runtime smoke test passed: PostgreSQL, routing, upload limits, file restrictions and concurrent requests.'
+echo 'API runtime smoke test passed: PostgreSQL, routing, upload limits, file restrictions, concurrent requests and process recovery.'
