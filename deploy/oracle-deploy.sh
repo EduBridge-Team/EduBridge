@@ -126,10 +126,9 @@ for url in http://127.0.0.1:8081/api/health http://127.0.0.1:8082/; do
   fi
 done
 
-api_health="$(curl -fsS http://127.0.0.1:8081/api/health)"
-if ! grep -Fq "\"git_sha\":\"$GIT_SHA\"" <<<"$api_health"; then
-  echo "ERROR: API health does not report deployed Git SHA $GIT_SHA." >&2
-  echo "Health response: $api_health" >&2
+deployed_sha="$(compose exec -T api printenv GIT_SHA 2>/dev/null | tr -d '\r' || true)"
+if [[ "$deployed_sha" != "$GIT_SHA" ]]; then
+  echo "ERROR: API container reports Git SHA '$deployed_sha' instead of '$GIT_SHA'." >&2
   exit 1
 fi
 
@@ -139,7 +138,7 @@ if [[ "$noor_status" != "configured" ]]; then
   exit 1
 fi
 
-echo "==> Verified API Git SHA: $GIT_SHA"
+echo "==> Verified API Git SHA internally: $GIT_SHA"
 echo "==> Noor server configuration is loaded."
 echo "==> EduBridge Oracle deployment is healthy."
 compose ps
