@@ -1,0 +1,39 @@
+name: Temporary Laravel security update
+
+on:
+  push:
+    branches:
+      - fix/security-session-hardening
+    paths:
+      - .github/workflows/temporary-laravel-security-update.yml
+      - edubridge-api-laravel/composer.json
+
+permissions:
+  contents: write
+
+jobs:
+  update-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/security-session-hardening
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+      - name: Update Laravel to a patched 13.x release
+        working-directory: edubridge-api-laravel
+        run: composer update laravel/framework --with-all-dependencies --no-interaction --no-scripts
+      - name: Commit updated lock file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add edubridge-api-laravel/composer.lock
+          if git diff --cached --quiet; then
+            echo "composer.lock already current"
+            exit 0
+          fi
+          git commit -m "deps: update Laravel security patch"
+          git push origin HEAD:fix/security-session-hardening
