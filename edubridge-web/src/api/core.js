@@ -1,3 +1,4 @@
+import { protectedFileUrl } from './protectedFileUrl'
 // طبقة الاتصال بالخادم — نفس الواجهة التي يستخدمها تطبيق الموبايل
 // في الإنتاج نحدّد عنوان الواجهة وقت البناء عبر المتغير:
 //   VITE_API_URL
@@ -41,7 +42,7 @@ export async function openProtectedFile(url) {
       '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
 
     const token = getToken();
-    const res = await fetch(url, {
+    const res = await fetch(protectedFileUrl(BASE_URL, url), {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
