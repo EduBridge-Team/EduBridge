@@ -99,7 +99,18 @@ export default function SignLanguagePage() {
             <span className="psl-category">{CATEGORY_LABELS[selected.category] ?? selected.category}</span>
             {selected.media_url ? <video controls playsInline src={selected.media_url} />
               : <div className="psl-media-placeholder"><strong>الفيديو الأصلي غير متاح بعد</strong><p>المدخل جاهز، وسيظهر الفيديو هنا مباشرة عند إضافته للمصدر.</p></div>}
-            <p className="psl-noor-note">يمكنك سؤال نور عن هذا المفهوم من زر نور الظاهر في الصفحة.</p>
+            <button
+              className="btn"
+              type="button"
+              onClick={() => {
+                const prompt = `اشرح لي مفهوم "${selected.arabic_label}" (${selected.english_label}) بطريقة تعليمية مبسطة، واذكر أنه موجود في قاموس لغة الإشارة الفلسطينية داخل EduBridge.`
+                window.dispatchEvent(new CustomEvent('edubridge:noor-open', { detail: { prompt } }))
+                setSelected(null)
+              }}
+            >
+              ✨ اسأل نور عن هذا المفهوم
+            </button>
+            <p className="psl-noor-note">سيفتح نور مع السؤال جاهزاً ويمكنك تعديله قبل الإرسال.</p>
           </section>
         </div>
       )}
