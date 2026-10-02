@@ -19,13 +19,13 @@ test('global unread badge and empty final pages survive parsing; malformed curso
   assert.throws(() => notificationPage({ notifications: [] }))
 })
 
-test('notifications request bounded pages with explicit history/delta cursors', async () => {
+test('notifications request bounded pages with explicit history/delta cursors using the web session cookie', async () => {
   const { createServer } = await import('vite')
   const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
   const oldFetch = globalThis.fetch
   const oldStorage = globalThis.localStorage
   const requests = []
-  globalThis.localStorage = { getItem: () => 'test-session' }
+  globalThis.localStorage = { getItem: () => 'test-session', removeItem: () => {} }
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options })
     return { ok: true, text: async () => '{}' }
@@ -36,7 +36,8 @@ test('notifications request bounded pages with explicit history/delta cursors', 
     await fetchNotifications({ beforeId: 72 })
     await fetchNotifications({ afterId: 100, limit: 10 })
     assert.deepEqual(requests.map(row => row.url), ['/api/notifications?limit=30', '/api/notifications?limit=30&before_id=72', '/api/notifications?limit=10&after_id=100'])
-    assert.equal(requests[0].options.headers.Authorization, 'Bearer test-session')
+    assert.equal(requests[0].options.headers.Authorization, undefined)
+    assert.equal(requests[0].options.credentials, 'same-origin')
   } finally {
     globalThis.fetch = oldFetch
     globalThis.localStorage = oldStorage
