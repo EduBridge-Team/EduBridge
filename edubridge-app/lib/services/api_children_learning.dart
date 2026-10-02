@@ -348,3 +348,29 @@ Future<Map<String, dynamic>?> _apiMarkLessonProgress({
     ApiService._handleError(e);
   }
 }
+
+Future<List<dynamic>> _apiGetSignLanguageCategories() async {
+  final res = await ApiService.authGet('/sign-language/categories');
+  final data = ApiService._decodeBody(res);
+  if (res.statusCode != 200) {
+    throw Exception(data['error'] ?? 'تعذّر تحميل تصنيفات لغة الإشارة');
+  }
+  return data['categories'] ?? [];
+}
+
+Future<List<dynamic>> _apiGetSignLanguageSigns({
+  String query = '',
+  String? category,
+}) async {
+  final params = Uri(queryParameters: {
+    'per_page': '100',
+    if (query.trim().isNotEmpty) 'q': query.trim(),
+    if (category != null && category.isNotEmpty) 'category': category,
+  }).query;
+  final res = await ApiService.authGet('/sign-language/signs?$params');
+  final data = ApiService._decodeBody(res);
+  if (res.statusCode != 200) {
+    throw Exception(data['error'] ?? 'تعذّر تحميل قاموس لغة الإشارة');
+  }
+  return data['signs'] ?? [];
+}

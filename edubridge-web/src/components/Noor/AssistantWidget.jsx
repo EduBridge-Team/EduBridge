@@ -136,6 +136,16 @@ export default function AssistantWidget() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [open, messages, sending])
 
+  useEffect(() => {
+    const openWithPrompt = (event) => {
+      const prompt = String(event?.detail?.prompt || '').trim()
+      setOpen(true)
+      if (prompt) setInput(prompt.slice(0, 2000))
+    }
+    window.addEventListener('edubridge:noor-open', openWithPrompt)
+    return () => window.removeEventListener('edubridge:noor-open', openWithPrompt)
+  }, [])
+
   if (!signedIn || !settings.assistant_visible) return null
 
   const saveHistory = (next) => {

@@ -182,6 +182,14 @@ class ApiService {
 
     static Future<List<dynamic>> getDisabilityTypes() => _apiGetDisabilityTypes();
 
+    static Future<List<dynamic>> getSignLanguageCategories() =>
+        _apiGetSignLanguageCategories();
+
+    static Future<List<dynamic>> getSignLanguageSigns({
+      String query = '',
+      String? category,
+    }) => _apiGetSignLanguageSigns(query: query, category: category);
+
     static Future<Map<String, dynamic>?> getChildProgress(
       int childId) => _apiGetChildProgress(childId);
 

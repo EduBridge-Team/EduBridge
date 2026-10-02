@@ -19,6 +19,7 @@ const ChildrenPage = lazy(() => import('./pages/Children/ChildrenPage'))
 const ChildLessonsPage = lazy(() => import('./pages/Children/ChildLessonsPage'))
 const ChildProgressPage = lazy(() => import('./pages/Children/ChildProgressPage'))
 const LessonsPage = lazy(() => import('./pages/Learning/LessonsPage'))
+const SignLanguagePage = lazy(() => import('./pages/Learning/SignLanguagePage'))
 const AboutPage = lazy(() => import('./pages/Public/AboutPage'))
 const AdminPage = lazy(() => import('./pages/Dashboards/Admin/AdminPage'))
 const TeacherDashboard = lazy(() => import('./pages/Dashboards/Teacher/TeacherDashboard'))
@@ -121,6 +122,7 @@ export default function AppRoutes() {
           <Route path="/conversations" element={<Protected><Page><ConversationsPage /></Page></Protected>} />
           <Route path="/lessons/new" element={<RolePage roles={['teacher', 'specialist', 'admin']}><LessonEditorPage /></RolePage>} />
           <Route path="/lessons" element={<Protected><Page><LessonsPage /></Page></Protected>} />
+          <Route path="/sign-language" element={<Protected><Page><SignLanguagePage /></Page></Protected>} />
           <Route path="/verify" element={<Protected><Page><VerifyIdentityPage /></Page></Protected>} />
           <Route path="/profile" element={<Protected><Page><ProfilePage /></Page></Protected>} />
           <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />

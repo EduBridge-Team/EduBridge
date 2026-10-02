@@ -11,6 +11,7 @@ import 'services/onboarding_service.dart';
 import 'services/user_settings_sync_service.dart';
 import 'services/websocket_service.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/sign_language_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/welcome_screen.dart';
@@ -169,6 +170,7 @@ class EduBridgeApp extends StatelessWidget {
           routes: {
             '/home': (context) => const _HomeGate(),
             '/notifications': (context) => const NotificationsScreen(),
+            '/sign-language': (context) => const SignLanguageScreen(),
           },
         ),
       ),

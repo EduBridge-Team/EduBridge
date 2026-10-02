@@ -4,6 +4,7 @@ import '../services/notification_listener_service.dart';
 import '../services/overlay_visibility_service.dart';
 import '../services/user_settings_sync_service.dart';
 import '../theme.dart';
+import '../screens/sign_language_screen.dart';
 
 class DashboardMenuAction {
   final String id;
@@ -97,6 +98,15 @@ class DashboardMenu extends StatelessWidget {
                           await UserSettingsSyncService.pushCurrent();
                           return;
                         }
+                        if (value == '_sign_language') {
+                          if (!context.mounted) return;
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const SignLanguageScreen(),
+                            ),
+                          );
+                          return;
+                        }
                         for (final action in actions) {
                           if (action.id == value) {
                             action.onSelected();
@@ -105,6 +115,13 @@ class DashboardMenu extends StatelessWidget {
                         }
                       },
                       itemBuilder: (context) => [
+                        const PopupMenuItem<String>(
+                          value: '_sign_language',
+                          child: _MenuRow(
+                            icon: Icons.sign_language_rounded,
+                            label: 'لغة الإشارة الفلسطينية',
+                          ),
+                        ),
                         for (final action in actions)
                           PopupMenuItem<String>(
                             value: action.id,

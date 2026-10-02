@@ -1,8 +1,8 @@
 import { useListPage } from '../../hooks/useListPage'
 import ListPagination from '../../components/ListPagination'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { fetchLessons, getUser } from '../../api'
+import { Link, useLocation } from 'react-router-dom'
+import { fetchLessons, fetchSignLanguageSigns, getUser } from '../../api'
 import {
   LessonsHero,
   LessonsList,
@@ -15,11 +15,20 @@ export default function LessonsPage() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('الكل')
   const [speakingId, setSpeakingId] = useState(null)
+  const [signs, setSigns] = useState([])
   const searchRef = useRef(null)
 
   const { items: lessons, loading, error, meta, setPage, reload: load } = useListPage(fetchLessons, 'lessons', { q: query, category })
 
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
+
+  useEffect(() => {
+    let active = true
+    fetchSignLanguageSigns({ per_page: 100 })
+      .then((data) => { if (active) setSigns(data.signs ?? []) })
+      .catch(() => {})
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     if (!loading && location.state?.focusSearch) searchRef.current?.focus()
@@ -55,6 +64,12 @@ export default function LessonsPage() {
         searchRef={searchRef}
       />
 
+      <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '0 0 14px' }}>
+        <Link className="btn secondary" to="/sign-language" style={{ textDecoration: 'none' }}>
+          🤟 قاموس لغة الإشارة الفلسطينية
+        </Link>
+      </div>
+
       <div className="lessons-layout">
         <main className="lessons-main">
           <div className="section-heading compact">
@@ -69,6 +84,7 @@ export default function LessonsPage() {
             onReset={() => { setQuery(''); setCategory('الكل') }}
             onToggleSpeak={toggleSpeak}
             speakingId={speakingId}
+            signs={signs}
           />
           <ListPagination meta={meta} loading={loading} onPage={setPage} />
         </main>
