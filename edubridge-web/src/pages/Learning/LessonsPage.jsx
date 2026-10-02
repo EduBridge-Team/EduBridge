@@ -1,7 +1,7 @@
 import { useListPage } from '../../hooks/useListPage'
 import ListPagination from '../../components/ListPagination'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { fetchLessons, getUser } from '../../api'
 import {
   LessonsHero,
@@ -54,6 +54,12 @@ export default function LessonsPage() {
         query={query}
         searchRef={searchRef}
       />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '0 0 14px' }}>
+        <Link className="btn secondary" to="/sign-language" style={{ textDecoration: 'none' }}>
+          🤟 قاموس لغة الإشارة الفلسطينية
+        </Link>
+      </div>
 
       <div className="lessons-layout">
         <main className="lessons-main">
