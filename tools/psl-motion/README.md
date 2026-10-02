@@ -2,7 +2,7 @@
 
 Local, credit-free motion capture tooling for the Palestinian Sign Language (PSL) avatar pipeline.
 
-This toolset **does not recognise or validate the meaning of a sign**. It only extracts motion from a video. Every sign must still be reviewed by a qualified Palestinian Sign Language signer/specialist before it can be marked `verified`.
+This toolset **does not recognise or validate the meaning of a sign**. It only extracts and retargets motion from a video. Every sign must still be reviewed by a qualified Palestinian Sign Language signer/specialist before it can be marked `verified`.
 
 ## Pipeline
 
@@ -12,7 +12,8 @@ phone video
   -> body + left hand + right hand + compact face landmarks
   -> smoothing
   -> capture-quality validation
-  -> retargeting (next phase)
+  -> calibrated retargeting
+  -> bind-pose composition
   -> GLB animation
   -> EduBridge
 ```
@@ -72,8 +73,6 @@ Output:
 triangle.motion.smooth.json
 ```
 
-The first implementation uses a moving average deliberately: it is predictable, inspectable, and easy to compare before introducing more advanced filters.
-
 ## 3. Validate capture quality
 
 ```bash
@@ -90,24 +89,7 @@ Raw videos and generated motion files may contain biometric motion information. 
 
 Keep them in an approved private storage location and only publish reviewed animation assets intended for end users.
 
-## Next phase: retargeting
-
-The next stage converts the normalized landmark vectors into rotations for the EduBridge avatar skeleton:
-
-```text
-MediaPipe landmarks
- -> body/hand local coordinate frames
- -> joint rotations
- -> avatar bone map
- -> smoothing/constraints
- -> glTF animation channels
- -> GLB
-```
-
-The hand retargeter must map all finger joints explicitly. A normal body-only mocap retargeter is not sufficient for sign language.
-
-
-## 4. Retarget landmarks to humanoid bone rotations
+## 4. Retarget and calibrate motion
 
 ```bash
 python retarget_motion.py triangle.motion.smooth.json
@@ -119,100 +101,43 @@ Output:
 triangle.motion.smooth.retarget.json
 ```
 
-The retarget file contains quaternion tracks for:
+Retarget v2 adds three important corrections:
 
-- spine / neck / head
-- upper arms / forearms / hands
-- thumb, index, middle, ring, and pinky finger segments on both hands
+- per-bone neutral calibration from the first valid samples
+- short-gap interpolation using quaternion slerp
+- conservative joint rotation limits for torso, arms, wrists, and fingers
 
-The result is still avatar-independent. It uses the EduBridge normalized humanoid bone layout.
+The result contains **local motion deltas**, not absolute avatar rotations. This prevents the mocap stage from destroying the avatar's authored rest pose.
+
+For a clip whose neutral pose needs more or fewer reference frames:
+
+```bash
+python retarget_motion.py triangle.motion.smooth.json \
+  --reference-samples 6 \
+  --max-gap-ms 250
+```
 
 ## 5. Inspect an avatar GLB
-
-Before exporting animation, inspect the node names:
 
 ```bash
 python inspect_glb.py edubridge-avatar.glb
 ```
 
-Compare the printed node names with `avatar_bone_map.json`.
+## 6. Generate the avatar bone map
 
-If your avatar uses different bone names, make a copy of the bone map and change only the right-hand values.
-
-For example:
-
-```json
-{
-  "bones": {
-    "left_upper_arm": "mixamorig:LeftArm",
-    "left_lower_arm": "mixamorig:LeftForeArm",
-    "left_hand": "mixamorig:LeftHand"
-  }
-}
-```
-
-## 6. Export a GLB animation
-
-Once the avatar bone names are mapped:
-
-```bash
-mkdir -p generated
-
-python export_glb_animation.py \
-  edubridge-avatar.glb \
-  triangle.motion.smooth.retarget.json \
-  --bone-map avatar_bone_map.json \
-  --name PSL_Triangle \
-  -o generated/psl_triangle.glb
-```
-
-The output GLB keeps the original mesh, skin, materials, and existing animations, then appends a new rotation animation clip.
-
-For a strict compatibility check:
-
-```bash
-python export_glb_animation.py \
-  edubridge-avatar.glb \
-  triangle.motion.smooth.retarget.json \
-  --bone-map avatar_bone_map.json \
-  --strict \
-  -o generated/psl_triangle.glb
-```
-
-`--strict` fails if a mapped bone is missing.
-
-## Current retargeting limitation
-
-This first retargeter solves landmark **directions** into approximate parent-relative quaternion rotations. That is enough to prove the complete free pipeline, but production sign motion still needs one calibration step for the final EduBridge avatar:
-
-1. confirm the avatar rest pose,
-2. confirm each bone's local forward axis,
-3. calculate bind-pose correction quaternions,
-4. apply hand/finger joint limits,
-5. visually compare the result with the source signer.
-
-That calibration is done once per avatar, not once per sign.
-
-After calibration, the same pipeline can process all captured PSL clips without per-video credits.
-
-
-## Optional: generate the avatar bone map automatically
-
-If the avatar comes from a common humanoid rig such as Ready Player Me or Mixamo, try:
+For common humanoid rigs, including Ready Player Me, Mixamo, and the `J_Bip_*` VRM naming used by the current test avatar:
 
 ```bash
 python auto_bone_map.py edubridge-avatar.glb -o generated_bone_map.json
 ```
 
-Then inspect any unmatched bones:
+Review any unmatched bones printed by the tool. A sign-language avatar should expose finger bones for thumb, index, middle, ring, and little/pinky fingers on both hands.
+
+## 7. Export a calibrated GLB animation
 
 ```bash
-python inspect_glb.py edubridge-avatar.glb
-```
+mkdir -p generated
 
-Use the generated map during export:
-
-```bash
 python export_glb_animation.py \
   edubridge-avatar.glb \
   triangle.motion.smooth.retarget.json \
@@ -221,4 +146,34 @@ python export_glb_animation.py \
   -o generated/psl_triangle.glb
 ```
 
-This means an initial avatar can be connected to the PSL pipeline without opening Blender, as long as it already contains a usable humanoid/finger rig.
+For retarget v2, the exporter reads each target GLB node's actual bind rotation and composes the calibrated motion delta on top of it. The mesh, skin, materials, and rest pose remain intact.
+
+Expected export output includes:
+
+```text
+Animation channels: <count>
+Bind-pose composition: enabled
+```
+
+For a strict compatibility check:
+
+```bash
+python export_glb_animation.py \
+  edubridge-avatar.glb \
+  triangle.motion.smooth.retarget.json \
+  --bone-map generated_bone_map.json \
+  --strict \
+  -o generated/psl_triangle.glb
+```
+
+## Current limitations
+
+The pipeline is now bind-pose aware, but production-quality sign animation still requires visual QA. In particular:
+
+- monocular video can lose depth accuracy when hands move toward/away from the camera
+- hand/face occlusion can reduce tracking quality
+- palm twist is approximated from available landmarks and may still need rig-specific refinement
+- facial non-manual markers are captured as landmarks but are not yet exported as blendshape animation
+- a generated motion must still be reviewed by a PSL specialist before `animation_status=verified`
+
+After one avatar is visually calibrated, the same pipeline can process additional PSL clips without per-video credits or Blender.
