@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\ChildAccess;
+use App\Support\EngagementEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -40,12 +41,13 @@ class EngagementController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
+        $request->validate(['event_id' => 'nullable|uuid']);
         $count = (int) $request->input('count', 1);
         if ($count < 1 || $count > 20) {
             return response()->json(['error' => 'عدد النجوم غير صالح'], 422);
         }
 
-        $stars = DB::transaction(function () use ($childId, $count) {
+        $result = EngagementEvent::run($childId, (int) $me->id, $request->input('event_id'), ['kind' => 'stars', 'count' => $count], function () use ($childId, $count) {
             $row = DB::table('child_rewards')->where('child_id', $childId)->lockForUpdate()->first();
             if (!$row) {
                 DB::table('child_rewards')->insert([
@@ -54,7 +56,7 @@ class EngagementController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                return $count;
+                return ['stars' => $count];
             }
 
             $next = (int) $row->stars + $count;
@@ -62,10 +64,10 @@ class EngagementController extends Controller
                 'stars' => $next,
                 'updated_at' => now(),
             ]);
-            return $next;
+            return ['stars' => $next];
         });
 
-        return response()->json(['stars' => $stars]);
+        return response()->json($result);
     }
 
     public function storeAttempt(Request $request, $childId)
@@ -77,6 +79,7 @@ class EngagementController extends Controller
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
+        $request->validate(['event_id' => 'nullable|uuid']);
         $gameKey = trim((string) $request->input('game_key', ''));
         $score = (int) $request->input('score', -1);
         $duration = $request->input('duration_seconds');
@@ -93,7 +96,10 @@ class EngagementController extends Controller
 
         $starsEarned = $score >= 90 ? 3 : ($score >= 70 ? 2 : ($score >= 50 ? 1 : 0));
 
-        $result = DB::transaction(function () use ($childId, $me, $gameKey, $score, $starsEarned, $duration) {
+        $result = EngagementEvent::run($childId, (int) $me->id, $request->input('event_id'), [
+            'kind' => 'game', 'game_key' => $gameKey, 'score' => $score,
+            'duration_seconds' => $duration === null ? null : (int) $duration,
+        ], function () use ($childId, $me, $gameKey, $score, $starsEarned, $duration) {
             $attemptId = DB::table('game_attempts')->insertGetId([
                 'child_id' => $childId,
                 'user_id' => $me->id,

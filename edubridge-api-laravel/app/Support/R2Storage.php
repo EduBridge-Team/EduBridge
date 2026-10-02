@@ -9,7 +9,9 @@ final class R2Storage
 {
     public static function privateBucket(): string
     {
-        return R2StorageTransport::requiredEnv('R2_PRIVATE_BUCKET', env('AWS_BUCKET'));
+        $bucket = R2StorageTransport::requiredEnv('R2_PRIVATE_BUCKET', env('AWS_BUCKET'));
+        if ($bucket === env('R2_MEDIA_BUCKET')) throw new RuntimeException('Private and public buckets must be different');
+        return $bucket;
     }
 
     public static function mediaBucket(): string
@@ -104,9 +106,9 @@ final class R2Storage
         );
     }
 
-    public static function get(string $bucket, string $key): ResponseInterface
+    public static function get(string $bucket, string $key, ?string $range = null): ResponseInterface
     {
-        return R2StorageTransport::request('GET', $bucket, $key);
+        return R2StorageTransport::request('GET', $bucket, $key, requestHeaders: $range === null ? [] : ['Range' => $range]);
     }
 
     public static function delete(string $bucket, string $key): void

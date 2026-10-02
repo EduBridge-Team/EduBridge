@@ -13,10 +13,10 @@ trait UploadControllerHelpers
             && !str_contains($filename, '..');
     }
 
-    private function streamPrivateObject(string $key)
+    private function streamPrivateObject(string $key, ?string $range = null)
     {
         try {
-            $object = R2Storage::get(R2Storage::privateBucket(), $key);
+            $object = R2Storage::get(R2Storage::privateBucket(), $key, $range);
             $body = $object->getBody();
 
             $headers = [
@@ -25,6 +25,9 @@ trait UploadControllerHelpers
                 'Cache-Control' => 'private, no-store, max-age=0',
             ];
 
+            foreach (['Content-Range', 'Accept-Ranges'] as $header) {
+                if ($object->getHeaderLine($header) !== '') $headers[$header] = $object->getHeaderLine($header);
+            }
             $length = $object->getHeaderLine('Content-Length');
             if ($length !== '') {
                 $headers['Content-Length'] = $length;
@@ -34,8 +37,11 @@ trait UploadControllerHelpers
                 while (!$body->eof()) {
                     echo $body->read(8192);
                 }
-            }, 200, $headers);
+            }, $object->getStatusCode(), $headers);
         } catch (RequestException $e) {
+            if ($e->getResponse()?->getStatusCode() === 416) {
+                return response('', 416, ['Content-Range' => $e->getResponse()->getHeaderLine('Content-Range'), 'Cache-Control' => 'private, no-store']);
+            }
             if ($e->getResponse()?->getStatusCode() === 404) {
                 return response()->json(['error' => 'الملف غير موجود'], 404);
             }

@@ -18,6 +18,7 @@ class FreshPostgresMigrationTest extends TestCase
         Artisan::call('migrate:fresh', ['--force' => true]);
 
         foreach ([
+            'engagement_events',
             'users',
             'children',
             'lessons',

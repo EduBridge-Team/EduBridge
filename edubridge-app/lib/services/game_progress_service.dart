@@ -1,18 +1,24 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'api_service.dart';
+import 'sync_event.dart';
 
 class GameProgressService {
-  GameProgressService._();
-  static final GameProgressService instance = GameProgressService._();
-
-  static const _pendingKey = 'pending_game_attempts_v1';
-
+  GameProgressService({Future<http.Response> Function(String, Map<String, dynamic>)? post})
+      : _post = post ?? ApiService.authPost;
+  static final GameProgressService instance = GameProgressService();
+  final Future<http.Response> Function(String, Map<String, dynamic>) _post;
+  Future<void> _tail = Future<void>.value();
   int? _childId;
   String? _gameKey;
   DateTime? _startedAt;
+
+  Future<void> _serialize(Future<void> Function() work) {
+    final result = _tail.then((_) => work());
+    _tail = result.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    return result;
+  }
 
   void begin({required int? childId, required String gameKey}) {
     _childId = childId;
@@ -20,129 +26,62 @@ class GameProgressService {
     _startedAt = DateTime.now();
   }
 
-  void end() {
-    _childId = null;
-    _gameKey = null;
-    _startedAt = null;
-  }
+  void end() { _childId = null; _gameKey = null; _startedAt = null; }
 
-  Future<void> record(int score) async {
+  Future<void> record(int score) {
     final childId = _childId;
     final gameKey = _gameKey;
-    if (childId == null || gameKey == null) return;
-
-    final normalized = score.clamp(0, 100);
-    final stars = normalized >= 90
-        ? 3
-        : normalized >= 70
-            ? 2
-            : normalized >= 50
-                ? 1
-                : 0;
-    final startedAt = _startedAt;
-    final duration = startedAt == null
-        ? null
-        : DateTime.now().difference(startedAt).inSeconds.clamp(1, 86400);
-
+    if (childId == null || gameKey == null) return Future<void>.value();
+    final started = _startedAt;
+    _startedAt = DateTime.now();
     final attempt = <String, dynamic>{
-      'child_id': childId,
-      'game_key': gameKey,
-      'score': normalized,
-      'stars_earned': stars,
-      if (duration != null) 'duration_seconds': duration,
+      'child_id': childId, 'game_key': gameKey, 'score': score.clamp(0, 100),
+      'event_id': newSyncEventId(),
+      if (started != null) 'duration_seconds': DateTime.now().difference(started).inSeconds.clamp(1, 86400),
     };
-
-    await _flushPending();
-
-    try {
-      final res = await ApiService.authPost(
-        '/children/$childId/game-attempts',
-        {
-          'game_key': gameKey,
-          'score': normalized,
-          'stars_earned': stars,
-          if (duration != null) 'duration_seconds': duration,
-        },
-      );
-      if (res.statusCode < 200 || res.statusCode >= 300) {
-        await _enqueue(attempt);
-      }
-    } catch (_) {
-      await _enqueue(attempt);
-    } finally {
-      // إذا أعاد الطفل اللعبة من نفس الشاشة نحسب مدة جديدة.
-      _startedAt = DateTime.now();
-    }
+    return _serialize(() async {
+      final prefs = await SharedPreferences.getInstance();
+      final key = await _ownerKey();
+      final queue = await _queue(prefs, key);
+      queue.add(attempt);
+      // Enqueue before sending: crashes/lost HTTP responses retry the same event ID.
+      await prefs.setString(key, jsonEncode(queue));
+      await _flush(prefs, key, queue);
+    });
   }
 
-  Future<void> flushPending() => _flushPending();
+  Future<String> _ownerKey() async => 'pending_game_attempts_v2_${await ApiService.getUserId() ?? 0}';
 
-  Future<void> _flushPending() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_pendingKey);
-    if (raw == null || raw.isEmpty) return;
-
-    List<dynamic> items;
-    try {
-      final decoded = jsonDecode(raw);
-      items = decoded is List ? decoded : [];
-    } catch (_) {
-      items = [];
-    }
-    if (items.isEmpty) {
-      await prefs.remove(_pendingKey);
-      return;
-    }
-
-    final remaining = <Map<String, dynamic>>[];
-    for (final item in items) {
-      if (item is! Map) continue;
-      final attempt = Map<String, dynamic>.from(item);
-      final childId = (attempt['child_id'] as num?)?.toInt();
-      if (childId == null) continue;
-
-      try {
-        final res = await ApiService.authPost(
-          '/children/$childId/game-attempts',
-          {
-            'game_key': attempt['game_key'],
-            'score': attempt['score'],
-            'stars_earned': attempt['stars_earned'] ?? 0,
-            if (attempt['duration_seconds'] != null)
-              'duration_seconds': attempt['duration_seconds'],
-          },
-        );
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          remaining.add(attempt);
-        }
-      } catch (_) {
-        remaining.add(attempt);
-      }
-    }
-
-    if (remaining.isEmpty) {
-      await prefs.remove(_pendingKey);
-    } else {
-      await prefs.setString(_pendingKey, jsonEncode(remaining));
-    }
+  Future<List<Map<String, dynamic>>> _queue(SharedPreferences prefs, String key) async {
+    final raw = prefs.getString(key) ?? prefs.getString('pending_game_attempts_v1');
+    if (raw == null) return [];
+    final decoded = jsonDecode(raw) as List;
+    final queue = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+    for (final item in queue) { item['event_id'] ??= newSyncEventId(); }
+    await prefs.setString(key, jsonEncode(queue));
+    await prefs.remove('pending_game_attempts_v1');
+    return queue;
   }
 
-  Future<void> _enqueue(Map<String, dynamic> attempt) async {
+  Future<void> flushPending() => _serialize(() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_pendingKey);
-    List<dynamic> current = [];
-    if (raw != null && raw.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(raw);
-        if (decoded is List) current = decoded;
-      } catch (_) {}
-    }
+    final key = await _ownerKey();
+    await _flush(prefs, key, await _queue(prefs, key));
+  });
 
-    current.add(attempt);
-    // حد أعلى حتى لا تنمو القائمة بلا حدود عند انقطاع طويل.
-    final compact = current.length > 100
-        ? current.sublist(current.length - 100)
-        : current;
-    await prefs.setString(_pendingKey, jsonEncode(compact));
+  Future<void> _flush(SharedPreferences prefs, String key, List<Map<String, dynamic>> queue) async {
+    while (queue.isNotEmpty) {
+      final attempt = queue.first;
+      final childId = (attempt['child_id'] as num).toInt();
+      if (await _ownerKey() != key) return;
+      final payload = Map<String, dynamic>.from(attempt)..remove('child_id');
+      try {
+        final response = await _post('/children/$childId/game-attempts', payload);
+        if (response.statusCode < 200 || response.statusCode >= 300) return;
+      } catch (_) { return; }
+      queue.removeAt(0);
+      await prefs.setString(key, jsonEncode(queue));
+    }
+    await prefs.remove(key);
   }
 }

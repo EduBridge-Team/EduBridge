@@ -66,13 +66,6 @@ trait LessonSerializationHelpers
 
     private function absoluteMediaUrl(Request $request, ?string $url): ?string
     {
-        if (!$url) {
-            return null;
-        }
-        if (preg_match('/^https?:\/\//i', $url)) {
-            return $url;
-        }
-
-        return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
+        return \App\Support\LessonFiles::forViewer($request, $url);
     }
 }

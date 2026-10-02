@@ -44,24 +44,17 @@ trait MediaControllerHelpers
         $key = 'lessons/' . $lessonId . '/' . $filename;
 
         R2Storage::putUploadedFile(
-            R2Storage::mediaBucket(),
+            R2Storage::privateBucket(),
             $key,
             $file,
             (string) $file->getMimeType()
         );
 
-        return R2Storage::mediaPublicUrl($key);
+        return \App\Support\LessonFiles::path($lessonId, $filename);
     }
 
     private function absoluteUrl(Request $request, ?string $url): ?string
     {
-        if (!$url) {
-            return null;
-        }
-        if (preg_match('/^https?:\/\//i', $url)) {
-            return $url;
-        }
-
-        return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
+        return \App\Support\LessonFiles::forViewer($request, $url);
     }
 }
