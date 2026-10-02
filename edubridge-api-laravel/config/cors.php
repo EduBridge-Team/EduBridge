@@ -2,7 +2,7 @@
 
 return [
     'paths' => ['api/*'],
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     'allowed_origins' => [
         'https://edubridge.win',
         'https://www.edubridge.win',
@@ -11,8 +11,15 @@ return [
         '#^http://localhost:[0-9]+$#',
         '#^http://127[.]0[.]0[.]1:[0-9]+$#',
     ],
-    'allowed_headers' => ['*'],
+    'allowed_headers' => [
+        'Accept',
+        'Authorization',
+        'Content-Type',
+        'Origin',
+        'X-Requested-With',
+        'X-CSRF-TOKEN',
+    ],
     'exposed_headers' => [],
-    'max_age' => 0,
+    'max_age' => 600,
     'supports_credentials' => false,
 ];
