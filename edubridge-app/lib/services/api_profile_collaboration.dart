@@ -25,6 +25,7 @@ Future<void> _apiChangePassword({
       });
       final data = ApiService._decodeBody(res);
       if (res.statusCode == 200 || res.statusCode == 204) {
+        if (data['token'] is String) await ApiService._saveToken(data['token'] as String);
         return;
       }
       throw Exception(data['error'] ?? 'فشل تغيير كلمة المرور');

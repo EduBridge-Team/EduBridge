@@ -1,3 +1,4 @@
+import { privateMediaCrossOrigin } from '../../../api/protectedFileUrl'
 import { Pencil, Square, Trash2, Volume2, X } from 'lucide-react'
 
 export default function TeacherLessonViewer({
@@ -52,7 +53,7 @@ export default function TeacherLessonViewer({
         )}
 
         {lesson.video_url && (
-          <video controls preload="metadata" style={{ width: '100%', borderRadius: 14, marginTop: 12 }}>
+          <video crossOrigin={privateMediaCrossOrigin(lesson.video_url)} controls preload="metadata" style={{ width: '100%', borderRadius: 14, marginTop: 12 }}>
             <source src={lesson.video_url} />
             {lesson.caption_url && (
               <track kind="captions" src={lesson.caption_url} srcLang="ar" label="العربية" default />

@@ -19,6 +19,7 @@ class AddLessonSheet extends StatefulWidget {
   final VoidCallback onClose;
   final void Function(Map lesson) onCreated;
   final bool fullScreen;
+  final bool forParents;
 
   const AddLessonSheet({
     super.key,
@@ -26,6 +27,7 @@ class AddLessonSheet extends StatefulWidget {
     required this.onClose,
     required this.onCreated,
     this.fullScreen = false,
+    this.forParents = false,
   });
 
   @override
@@ -61,6 +63,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   @override
   void initState() {
     super.initState();
+    _forParents = widget.forParents;
     _loadChildren();
   }
 

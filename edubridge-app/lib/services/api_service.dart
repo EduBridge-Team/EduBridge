@@ -7,6 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 import 'google_auth_service.dart';
+import 'token_store.dart';
+import 'notification_page.dart';
+import 'list_page.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
@@ -110,9 +113,18 @@ class ApiService {
   // Domain API facade. Implementations live in focused part files.
     static Future<Map<String, dynamic>?> getChildren() => _apiGetChildren();
 
+    static Future<ListPage> getChildrenPage({int page = 1, String query = ''}) =>
+        _apiGetDirectoryPage('children', page, query);
+
+    static Future<ListPage> getLessonsPage({int page = 1, String query = '', String? targetType}) =>
+        _apiGetDirectoryPage('lessons', page, query, targetType: targetType);
+
+
     static Future<Map<String, dynamic>?> addChild({
     required String name,
     required int age,
+    required String childNationalId,
+    required String guardianNationalId,
     String? disabilityType,
     String? disabilityDescription,
     String? specialNeeds,
@@ -122,7 +134,7 @@ class ApiService {
     File? idCardFile,
     File? birthCertFile,
     List<File>? medicalReportFiles, 
-  }) => _apiAddChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile,medicalReportFiles: medicalReportFiles,);
+  }) => _apiAddChild(name: name, age: age, childNationalId: childNationalId, guardianNationalId: guardianNationalId, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile,medicalReportFiles: medicalReportFiles,);
 
     static Future<Map<String, dynamic>?> getChildDetails(int childId) => _apiGetChildDetails(childId);
 
@@ -184,6 +196,9 @@ class ApiService {
   }) => _apiMarkLessonProgress(childId: childId, lessonId: lessonId, status: status, score: score);
 
     static Future<List<dynamic>> getNotifications() => _apiGetNotifications();
+
+    static Future<NotificationPage> getNotificationPage({int? beforeId, int? afterId}) =>
+        _apiGetNotificationPage(beforeId: beforeId, afterId: afterId);
 
     static Future<int> getUnreadNotificationsCount() => _apiGetUnreadNotificationsCount();
 

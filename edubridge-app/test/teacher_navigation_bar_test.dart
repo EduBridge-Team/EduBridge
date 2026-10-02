@@ -10,8 +10,19 @@ void main() {
       home: Scaffold(bottomNavigationBar: TeacherNavigationBar()),
     ));
     await tester.pumpAndSettle();
-    expect(find.text('الأطفال'), findsOneWidget);
+    expect(find.text('الطلاب'), findsOneWidget);
     expect(find.text('الدروس'), findsOneWidget);
+  });
+
+  testWidgets('specialist detail screens show students and lessons', (tester) async {
+    SharedPreferences.setMockInitialValues({'role': 'specialist'});
+    await tester.pumpWidget(const MaterialApp(
+      home: Scaffold(bottomNavigationBar: TeacherNavigationBar()),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('الطلاب'), findsOneWidget);
+    expect(find.text('الدروس'), findsOneWidget);
+    expect(find.text('التقدم'), findsNothing);
   });
 
   testWidgets('shared screens do not show teacher destinations to parents', (tester) async {

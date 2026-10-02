@@ -37,22 +37,21 @@ trait HomeworkGradeActions
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
-        DB::table('homework_submissions')->where('id', $submissionId)->update([
-            'grade' => (int) $grade,
-            'feedback' => $request->input('feedback'),
-            'graded_by' => $user->id,
-            'graded_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        Notify::toChildParents(
-            $submission->child_id,
-            'تم تقييم الواجب',
-            'تم تقييم الواجب "' . $submission->title . '" بدرجة ' . (int) $grade,
-            'homework_graded'
-        );
+        DB::transaction(function () use ($request, $submissionId, $submission, $grade, $user) {
+            $current = DB::table('homework_submissions')->where('id', $submissionId)->lockForUpdate()->first();
+            $feedback = $request->input('feedback');
+            if ($current->grade !== null && (int) $current->grade === (int) $grade
+                && ($current->feedback ?? '') === ($feedback ?? '')) return;
+            DB::table('homework_submissions')->where('id', $submissionId)->update([
+                'grade' => (int) $grade, 'feedback' => $feedback, 'graded_by' => $user->id,
+                'graded_at' => now(), 'updated_at' => now(),
+            ]);
+            Notify::toChildParents($submission->child_id, 'تم تقييم الواجب',
+                'تم تقييم الواجب "' . $submission->title . '" بدرجة ' . (int) $grade, 'homework_graded');
+        });
 
         return response()->json([
+            'message' => 'تم تقييم الواجب بنجاح',
             'submission' => DB::table('homework_submissions')->where('id', $submissionId)->first(),
         ]);
     }

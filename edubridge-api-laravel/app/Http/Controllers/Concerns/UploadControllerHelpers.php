@@ -13,18 +13,23 @@ trait UploadControllerHelpers
             && !str_contains($filename, '..');
     }
 
-    private function streamPrivateObject(string $key)
+    private function streamPrivateObject(string $key, ?string $range = null)
     {
         try {
-            $object = R2Storage::get(R2Storage::privateBucket(), $key);
+            $object = R2Storage::get(R2Storage::privateBucket(), $key, $range);
             $body = $object->getBody();
 
             $headers = [
-                'Content-Type' => $object->getHeaderLine('Content-Type') ?: 'application/octet-stream',
+                'Content-Type' => str_ends_with(strtolower($key), '.vtt') ? 'text/vtt; charset=utf-8' : ($object->getHeaderLine('Content-Type') ?: 'application/octet-stream'),
                 'X-Content-Type-Options' => 'nosniff',
+                'Content-Security-Policy' => "sandbox; default-src 'none'; img-src 'self' data:; media-src 'self' blob:",
+                'Referrer-Policy' => 'no-referrer',
                 'Cache-Control' => 'private, no-store, max-age=0',
             ];
 
+            foreach (['Content-Range', 'Accept-Ranges'] as $header) {
+                if ($object->getHeaderLine($header) !== '') $headers[$header] = $object->getHeaderLine($header);
+            }
             $length = $object->getHeaderLine('Content-Length');
             if ($length !== '') {
                 $headers['Content-Length'] = $length;
@@ -34,8 +39,11 @@ trait UploadControllerHelpers
                 while (!$body->eof()) {
                     echo $body->read(8192);
                 }
-            }, 200, $headers);
+            }, $object->getStatusCode(), $headers);
         } catch (RequestException $e) {
+            if ($e->getResponse()?->getStatusCode() === 416) {
+                return response('', 416, ['Content-Range' => $e->getResponse()->getHeaderLine('Content-Range'), 'Cache-Control' => 'private, no-store']);
+            }
             if ($e->getResponse()?->getStatusCode() === 404) {
                 return response()->json(['error' => 'الملف غير موجود'], 404);
             }

@@ -105,17 +105,9 @@ class _TeacherScreenState extends State<TeacherScreen> {
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
           responses[2].statusCode == 200) {
-        final allChildren = childrenData['children'] ?? [];
-        final myId = _currentUserId?.toString();
-
-        final myChildren = allChildren.where((child) {
-          if (child['assigned_teacher_id']?.toString() == myId) return true;
-          final ids = child['assigned_teacher_ids'] as List?;
-          if (ids != null && ids.map((e) => e.toString()).contains(myId)) return true;
-          final tIds = child['teacher_ids'] as List?;
-          if (tIds != null && tIds.map((e) => e.toString()).contains(myId)) return true;
-          return false;
-        }).toList();
+        // The server includes direct assignments and teaching-team membership.
+        // Re-filtering by the primary teacher would hide valid team assignments.
+        final myChildren = List<dynamic>.from(childrenData['children'] ?? []);
 
         if (!mounted) return;
         setState(() {

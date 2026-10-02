@@ -21,6 +21,7 @@ trait MinistryApprovalReviewActions
     private function review(Request $request, int $id, string $status)
     {
         $me = $request->attributes->get('jwt_user');
+        if (!$me || $me->role !== 'ministry') return response()->json(['error' => 'مراجعة الخطط متاحة للوزارة فقط'], 403);
         $approval = DB::table('ministry_approvals')->where('id', $id)->first();
 
         if (!$approval) {

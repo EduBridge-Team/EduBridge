@@ -14,30 +14,35 @@ Future<List<dynamic>> _apiGetNotifications() async {
     }
   }
 
+Future<NotificationPage> _apiGetNotificationPage({int? beforeId, int? afterId}) async {
+  final query = Uri(queryParameters: {
+    'limit': '30',
+    if (beforeId != null) 'before_id': '$beforeId',
+    if (afterId != null) 'after_id': '$afterId',
+  }).query;
+  final res = await ApiService.authGet('/notifications?$query');
+  if (res.statusCode != 200) throw Exception('تعذّر تحميل الإشعارات');
+  return NotificationPage.fromJson(ApiService._decodeBody(res));
+}
+
 Future<int> _apiGetUnreadNotificationsCount() async {
-    try {
-      final res = await ApiService.authGet('/notifications/unread/count');
-      final data = ApiService._decodeBody(res);
-      if (res.statusCode == 200) {
-        return data['count'] ?? 0;
-      }
-      return 0;
-    } catch (e) {
-      return 0;
-    }
+  final res = await ApiService.authGet('/notifications/unread/count');
+  final data = ApiService._decodeBody(res);
+  if (res.statusCode != 200 || data['count'] is! int) {
+    throw Exception('تعذّر تحديث عدد الإشعارات');
   }
+  return data['count'] as int;
+}
 
 Future<void> _apiMarkNotificationRead(int notificationId) async {
-    try {
-      await ApiService.authPut('/notifications/$notificationId/read', {});
-    } catch (_) {}
-  }
+  final res = await ApiService.authPut('/notifications/$notificationId/read', {});
+  if (res.statusCode != 200) throw Exception('تعذّر قراءة الإشعار');
+}
 
 Future<void> _apiMarkAllNotificationsRead() async {
-    try {
-      await ApiService.authPost('/notifications/read-all', {});
-    } catch (_) {}
-  }
+  final res = await ApiService.authPost('/notifications/read-all', {});
+  if (res.statusCode != 200) throw Exception('تعذّر قراءة الإشعارات');
+}
 
 Future<List<dynamic>> _apiGetConversations() async {
     try {

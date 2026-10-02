@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import SpecialistWeeklyProgressForm from './SpecialistWeeklyProgressForm'
 import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import FormDisclosure from '../../components/FormDisclosure'
@@ -22,12 +23,14 @@ function currentMonday() {
 
 export default function WeeklyReportsPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const selectedChild = params.get('child_id') || ''
   const me = getUser()
   const isSpecialist = me?.role === 'specialist'
   const isStaff = ['teacher', 'admin'].includes(me?.role)
 
   const [children, setChildren] = useState([])
-  const [childId, setChildId] = useState('')
+  const [childId, setChildId] = useState(selectedChild)
   const [reports, setReports] = useState([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -53,14 +56,16 @@ export default function WeeklyReportsPage() {
   useEffect(() => {
     fetchChildren()
       .then((data) => {
-        const childList = (data.children || []).filter((child) => !isSpecialist || isAssignedToSpecialist(child, me?.id))
+        const childList = (data.children || []).filter((child) => (!selectedChild || String(child.id) === selectedChild) && (!isSpecialist || isAssignedToSpecialist(child, me?.id)))
         setChildren(childList)
         setChildId((current) => (
           current || (childList[0] ? String(childList[0].id) : '')
         ))
       })
       .catch((err) => setError(err.message))
-  }, [isSpecialist, me?.id])
+  }, [isSpecialist, me?.id, selectedChild])
+
+  useEffect(() => { setChildId(selectedChild) }, [selectedChild])
 
   useEffect(() => {
     loadReports(childId).catch((err) => setError(err.message))

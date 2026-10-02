@@ -53,8 +53,8 @@ trait ChildUpdateHelpers
                 ], 403);
             }
 
-            $identityChanged = true;
             $value = $request->input($field);
+            $identityChanged = $identityChanged || (string) ($child->$field ?? '') !== (string) ($value ?? '');
 
             if (
                 in_array($field, ['guardian_id_document_url', 'kinship_document_url'], true)
@@ -72,8 +72,12 @@ trait ChildUpdateHelpers
             $data[$field] = $value;
         }
 
-        if ($identityChanged && !$request->has('doc_verification_status')) {
+        if ($identityChanged && $user->role !== 'admin') {
             $data['doc_verification_status'] = 'pending';
+        }
+
+        if ($request->has('doc_verification_status') && $user->role !== 'admin') {
+            return response()->json(['error' => 'تغيير حالة التوثيق متاح للأدمن فقط'], 403);
         }
 
         if ($request->has('doc_verification_status') && $user->role === 'admin') {

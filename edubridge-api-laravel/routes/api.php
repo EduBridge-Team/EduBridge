@@ -38,8 +38,11 @@ Route::post('/auth/resend-verification', [AuthController::class, 'resendEmailVer
 Route::get('/auth/verify-email', [AuthController::class, 'verifyEmail'])
     ->middleware('throttle:20,1');
 
+Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers\LessonFileController::class, 'show'])
+    ->name('lesson.file')->middleware(['signed:relative', 'throttle:300,1']);
+
 // كل ما يلي يتطلب توكن صالح
-Route::middleware('auth.jwt')->group(function () {
+Route::middleware(['auth.jwt', 'identity.verified'])->group(function () {
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';

@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Pencil, Plus, X } from 'lucide-react'
 import { createLesson, updateLesson } from '../../../api'
+import { LESSON_CATEGORIES, UNCATEGORIZED, lessonCategory } from '../../../utils/lessonCategories'
 import {
   LessonAudienceFields,
   LessonMediaFields,
   LessonModalActions,
 } from './LessonFormSections'
 
-export default function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
+export default function LessonFormModal({ types, lesson = null, onClose, onSaved, standalone = false, initialAudience = 'children' }) {
   const fieldId = useId()
   const dialogRef = useRef(null)
   useEffect(() => {
@@ -38,9 +39,10 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
   }
   const isEditing = Boolean(lesson)
   const [title, setTitle] = useState(lesson?.title || '')
+  const [category, setCategory] = useState(lesson ? lessonCategory(lesson) : UNCATEGORIZED)
   const [content, setContent] = useState(lesson?.content || '')
   const [typeId, setTypeId] = useState(lesson?.disability_type_id ? String(lesson.disability_type_id) : '')
-  const [audience, setAudience] = useState(lesson?.target_type === 'parents' ? 'parents' : 'children')
+  const [audience, setAudience] = useState(lesson?.target_type === 'specificChildren' ? 'specificChildren' : lesson?.target_type === 'parents' ? 'parents' : initialAudience)
   const [images, setImages] = useState([])
   const [video, setVideo] = useState(null)
   const [audio, setAudio] = useState(null)
@@ -58,8 +60,10 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
       const fd = new FormData()
       fd.append('title', title.trim())
       fd.append('content', content.trim())
+      fd.append('category', category === UNCATEGORIZED ? '' : category)
       fd.append('disability_type_id', audience === 'parents' ? '' : typeId)
-      fd.append('target_type', audience === 'parents' ? 'parents' : (typeId ? 'byDisability' : 'everyone'))
+      fd.append('target_type', audience === 'specificChildren' ? 'specificChildren' : audience === 'parents' ? 'parents' : (typeId ? 'byDisability' : 'everyone'))
+      if (audience === 'specificChildren') fd.append('target_child_ids', JSON.stringify(lesson?.target_child_ids || []))
       fd.append('audio_description', audioDescription.trim())
       images.forEach((file) => fd.append('images[]', file))
       if (video) fd.append('video', video)
@@ -90,8 +94,8 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
     : []
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={`${fieldId}-heading`} onKeyDown={handleDialogKeyDown} onClick={(e) => e.stopPropagation()}>
+    <div className={standalone ? "lesson-editor-page" : "modal-overlay"} onClick={standalone ? undefined : onClose}>
+      <div className={standalone ? "card lesson-editor" : "modal"} ref={dialogRef} role={standalone ? undefined : "dialog"} aria-modal={standalone ? undefined : true} aria-labelledby={`${fieldId}-heading`} onKeyDown={standalone ? undefined : handleDialogKeyDown} onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h3 id={`${fieldId}-heading`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {isEditing ? <Pencil size={20} /> : <Plus size={20} />}
@@ -109,12 +113,18 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
           <label htmlFor={`${fieldId}-content`}>المحتوى</label>
           <textarea id={`${fieldId}-content`} value={content} onChange={(e) => setContent(e.target.value)} rows={4} placeholder="اكتب محتوى الدرس..." />
 
+          <label htmlFor={`${fieldId}-category`}>تصنيف الدرس</label>
+          <select id={`${fieldId}-category`} value={category} onChange={(event) => setCategory(event.target.value)}>
+            {[...new Set([...LESSON_CATEGORIES.slice(1), category])].map((value) => <option key={value} value={value}>{value}</option>)}
+          </select>
+
           <LessonAudienceFields
             audience={audience}
             onAudienceChange={setAudience}
             onTypeIdChange={setTypeId}
             typeId={typeId}
             types={types}
+            preserveSpecific={lesson?.target_type === 'specificChildren'}
           />
 
           <LessonMediaFields

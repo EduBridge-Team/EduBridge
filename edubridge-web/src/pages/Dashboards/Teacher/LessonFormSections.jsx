@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-export function LessonAudienceFields({ audience, onAudienceChange, onTypeIdChange, typeId, types }) {
+export function LessonAudienceFields({ audience, onAudienceChange, onTypeIdChange, typeId, types, preserveSpecific = false }) {
   const fieldId = useId()
   return (
     <>
@@ -8,7 +8,9 @@ export function LessonAudienceFields({ audience, onAudienceChange, onTypeIdChang
       <select id={`${fieldId}-audience`} value={audience} onChange={(e) => onAudienceChange(e.target.value)}>
         <option value="children">الأطفال</option>
         <option value="parents">أولياء الأمور</option>
+        {preserveSpecific && <option value="specificChildren">الأطفال المحددون للدرس</option>}
       </select>
+      {audience === 'specificChildren' && <small>سيبقى الدرس مخصصاً لنفس الأطفال عند حفظ التعديلات.</small>}
 
       {audience === 'children' && (
         <>

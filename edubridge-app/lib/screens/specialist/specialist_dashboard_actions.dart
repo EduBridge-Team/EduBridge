@@ -6,7 +6,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SpecialistChildProfileScreen(child: child),
+        builder: (_) => SpecialistChildProfileScreen(child: child, onEvaluate: (data) => _openEvaluation({'child': data}), onAccept: _addMyselfToChild),
       ),
     );
   }
@@ -119,6 +119,18 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       return;
     }
 
+    Map<String, dynamic> preview;
+    try {
+      final response = await ApiService.authGet('/children/${child['id']}/assignment-preview');
+      final data = ApiService.decodeMap(response.body);
+      if (response.statusCode != 200) throw Exception(data['error'] ?? 'تعذّر معاينة الحالة');
+      preview = Map<String, dynamic>.from(data['child'] as Map);
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString().replaceFirst('Exception: ', ''))));
+      return;
+    }
+    if (!mounted) return;
+    final guardians = (preview['guardians'] as List? ?? []).map((guardian) => guardian['name']).join('، ');
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -140,6 +152,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
           ],
         ),
         content: Text(
+          'ولي الأمر: $guardians\nحالة الطفل: ${preview['disability_description'] ?? preview['disability_type'] ?? 'غير محددة'}\nالاحتياجات: ${preview['special_needs'] ?? 'غير محددة'}\n\n'
           'هل تريد إضافة "${child['name']}" لمتابعتك كـ'
           '${_mySpecialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي'}؟',
           style: const TextStyle(fontSize: 14, height: 1.5),

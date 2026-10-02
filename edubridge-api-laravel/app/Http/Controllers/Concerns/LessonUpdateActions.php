@@ -25,6 +25,8 @@ trait LessonUpdateActions
             return response()->json(['error' => 'عنوان الدرس مطلوب'], 400);
         }
 
+        $request->validate(['category' => ['nullable', 'string', 'max:100']]);
+
         $targetType = (string) $request->input('target_type', $lesson->target_type ?? 'everyone');
         if (!in_array($targetType, self::TARGET_TYPES, true)) {
             return response()->json(['error' => 'نوع استهداف الدرس غير صالح'], 422);
@@ -42,6 +44,12 @@ trait LessonUpdateActions
             return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
         }
 
+        if ($targetType === 'specificChildren' && ($lesson->target_type ?? null) !== 'specificChildren') {
+            $unprotected = DB::table('media')->where('lesson_id', $id)->pluck('url')
+                ->contains(fn ($url) => \App\Support\LessonFiles::key((string) $url) === null);
+            if ($unprotected) return response()->json(['error' => 'رحّل الوسائط القديمة إلى التخزين الخاص قبل تغيير جمهور الدرس'], 422);
+        }
+
         try {
             $this->validateUploadedMedia($request);
         } catch (InvalidArgumentException $e) {
@@ -56,11 +64,13 @@ trait LessonUpdateActions
             $targetChildIds
         );
 
+        $this->beginLessonMedia();
         DB::beginTransaction();
 
         try {
             $this->persistLessonUpdate($request, $lesson, $payload);
             DB::commit();
+            $this->commitLessonMedia();
 
             $updated = DB::table('lessons')->find($lesson->id);
 
@@ -69,6 +79,7 @@ trait LessonUpdateActions
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            $this->rollbackLessonMedia();
             report($e);
 
             return response()->json(['error' => 'تعذّر تعديل الدرس'], 500);

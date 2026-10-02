@@ -15,6 +15,9 @@ trait RatingReadActions
             if (!DB::table('lessons')->where('id', $lessonId)->exists()) {
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
             }
+            if (!\App\Support\LessonVisibility::allowed($me, (int) $lessonId)) {
+                return response()->json(['error' => 'غير مصرّح'], 403);
+            }
 
             $ratings = DB::table('lesson_ratings as r')
                 ->leftJoin('users as u', 'u.id', '=', 'r.user_id')

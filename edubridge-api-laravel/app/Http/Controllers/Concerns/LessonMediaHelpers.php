@@ -9,6 +9,27 @@ use InvalidArgumentException;
 
 trait LessonMediaHelpers
 {
+    private array $newLessonObjects = [];
+    private array $replacedLessonObjects = [];
+
+    private function beginLessonMedia(): void
+    {
+        $this->newLessonObjects = [];
+        $this->replacedLessonObjects = [];
+    }
+
+    private function commitLessonMedia(): void
+    {
+        $this->removeLessonObjects($this->replacedLessonObjects);
+        $this->beginLessonMedia();
+    }
+
+    private function rollbackLessonMedia(): void
+    {
+        $this->removeLessonObjects($this->newLessonObjects);
+        $this->beginLessonMedia();
+    }
+
     private function deleteMediaByType(int $lessonId, string $type): void
     {
         $items = DB::table('media')
@@ -16,18 +37,8 @@ trait LessonMediaHelpers
             ->where('type', $type)
             ->get(['id', 'url']);
 
-        foreach ($items as $item) {
-            $path = parse_url((string) $item->url, PHP_URL_PATH) ?: '';
-            $key = ltrim($path, '/');
-
-            if (str_starts_with($key, 'lessons/')) {
-                try {
-                    R2Storage::delete(R2Storage::mediaBucket(), $key);
-                } catch (\Throwable $e) {
-                    report($e);
-                }
-            }
-        }
+        // Object deletion is delayed until the database transaction commits.
+        foreach ($items as $item) $this->replacedLessonObjects[] = $item->url;
 
         DB::table('media')
             ->where('lesson_id', $lessonId)
@@ -95,33 +106,28 @@ trait LessonMediaHelpers
         $extension = strtolower((string) $file->getClientOriginalExtension());
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
         $key = 'lessons/' . $lessonId . '/' . $filename;
+        $url = \App\Support\LessonFiles::path($lessonId, $filename);
 
         R2Storage::putUploadedFile(
-            R2Storage::mediaBucket(),
+            R2Storage::privateBucket(),
             $key,
             $file,
             (string) $file->getMimeType()
         );
+        $this->newLessonObjects[] = $url;
 
         DB::table('media')->insert([
             'lesson_id' => $lessonId,
             'type' => $type,
-            'url' => R2Storage::mediaPublicUrl($key),
+            'url' => $url,
         ]);
     }
 
     private function removeLessonObjects(array $urls): void
     {
         foreach ($urls as $url) {
-            $path = parse_url((string) $url, PHP_URL_PATH) ?: '';
-            $key = ltrim($path, '/');
-
-            if (!str_starts_with($key, 'lessons/')) {
-                continue;
-            }
-
             try {
-                R2Storage::delete(R2Storage::mediaBucket(), $key);
+                \App\Support\LessonFiles::delete((string) $url);
             } catch (\Throwable $e) {
                 report($e);
             }

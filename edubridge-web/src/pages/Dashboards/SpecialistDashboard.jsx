@@ -13,7 +13,7 @@ import {
   SpecialistSummary,
 } from './SpecialistDashboardSections'
 import { computeSpecialistProgressStats } from './specialistDashboardUtils'
-import { isAssignedToSpecialist } from './specialistAssignment'
+import { isAssignedToSpecialist, isWaitingForSpecialist } from './specialistAssignment'
 
 export default function SpecialistDashboard() {
   const me = getUser()
@@ -74,7 +74,7 @@ export default function SpecialistDashboard() {
   }
 
   // مؤشّرات عامة أعلى اللوحة
-  const visibleRows = scope === 'mine' ? rows.filter((row) => row.assigned) : rows
+  const visibleRows = scope === 'mine' ? rows.filter((row) => row.assigned) : rows.filter(row => isWaitingForSpecialist(row.child, me))
   const totalChildren = rows.filter((row) => row.assigned).length
   const doneToday = rows.reduce((s, r) => s + r.stats.doneToday, 0)
   const pending = rows.reduce((s, r) => s + r.stats.inProgress, 0)
@@ -109,7 +109,7 @@ export default function SpecialistDashboard() {
           </div>
           <div className="toolbar" role="group" aria-label="عرض الأطفال">
             <button className={`btn ${scope === 'mine' ? '' : 'outline'}`} aria-pressed={scope === 'mine'} onClick={() => setScope('mine')}>أطفالي المعينون لي</button>
-            <button className={`btn ${scope === 'all' ? '' : 'outline'}`} aria-pressed={scope === 'all'} onClick={() => setScope('all')}>كل الأطفال</button>
+            <button className={`btn ${scope === 'all' ? '' : 'outline'}`} aria-pressed={scope === 'all'} onClick={() => setScope('all')}>قائمة الانتظار</button>
           </div>
         </div>
 

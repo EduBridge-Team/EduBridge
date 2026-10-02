@@ -79,11 +79,11 @@ jobs:
             api=true
           fi
 
-          if matches '^(edubridge-api-laravel/(app|routes)/|edubridge-app/lib/services/api_service\.dart$|scripts/check_mobile_api_parity\.py$|\.github/workflows/web-api-quality\.yml$)'; then
+          if matches '^(edubridge-api-laravel/(app|routes)/|edubridge-app/lib/services/api[^/]*\.dart$|scripts/check_mobile_api_parity\.py$|\.github/workflows/web-api-quality\.yml$)'; then
             contract=true
           fi
 
-          if matches '^(deploy/|\.github/workflows/web-api-quality\.yml$)'; then
+          if matches '^(deploy/|scripts/test_api_runtime\.sh$|\.github/workflows/web-api-quality\.yml$)'; then
             deploy=true
           fi
 
@@ -104,7 +104,7 @@ jobs:
           node-version: "22"
       - name: Validate deployment scripts
         run: |
-          bash -n deploy/*.sh
+          bash -n deploy/*.sh scripts/test_api_runtime.sh
           node --check deploy/web-server.mjs
 
           cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
@@ -257,6 +257,33 @@ jobs:
           SESSION_DRIVER: file
           JWT_SECRET: ci-test-jwt-secret
         run: php artisan test --filter=FreshPostgresMigrationTest
+
+  api-runtime-smoke:
+    name: Production API container
+    needs: changes
+    if: needs.changes.outputs.api == 'true' || needs.changes.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: edubridge_runtime_ci
+          POSTGRES_USER: edubridge_ci
+          POSTGRES_PASSWORD: isolated-runtime-ci-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U edubridge_ci -d edubridge_runtime_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build production API image
+        run: docker build -t edubridge-api-ci edubridge-api-laravel
+      - name: Verify production container
+        run: bash scripts/test_api_runtime.sh edubridge-api-ci
 
   web-build:
     name: React production build

@@ -1,3 +1,4 @@
+import { protectedFileUrl, safeFileBlob } from './protectedFileUrl'
 // طبقة الاتصال بالخادم — نفس الواجهة التي يستخدمها تطبيق الموبايل
 // في الإنتاج نحدّد عنوان الواجهة وقت البناء عبر المتغير:
 //   VITE_API_URL
@@ -36,12 +37,13 @@ export async function openProtectedFile(url) {
   }
 
   try {
+    popup.opener = null;
     popup.document.title = "EduBridge";
     popup.document.body.innerHTML =
       '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
 
     const token = getToken();
-    const res = await fetch(url, {
+    const res = await fetch(protectedFileUrl(BASE_URL, url), {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
@@ -54,7 +56,7 @@ export async function openProtectedFile(url) {
       throw new Error(message);
     }
 
-    const blob = await res.blob();
+    const blob = safeFileBlob(await res.blob());
     const objectUrl = URL.createObjectURL(blob);
 
     popup.location.replace(objectUrl);
@@ -75,14 +77,16 @@ export async function fetchMyProfile() {
   return user;
 }
 
-export function changeMyPassword(currentPassword, newPassword) {
-  return request("/me/password", {
+export async function changeMyPassword(currentPassword, newPassword) {
+  const data = await request("/me/password", {
     method: "PUT",
     body: JSON.stringify({
       current_password: currentPassword,
       new_password: newPassword,
     }),
   });
+  if (data.token) localStorage.setItem('token', data.token);
+  return data;
 }
 
 // طلب عام مع التوكن ومعالجة الأخطاء بشكل موحّد
@@ -110,6 +114,10 @@ export async function request(path, options = {}) {
   }
 
   if (!res.ok) {
+    if (res.status === 401 && token && getToken() === token) {
+      logout();
+      window.location.assign('/login');
+    }
     const serverMessage =
       data.error ||
       data.message ||

@@ -25,6 +25,9 @@ trait VerificationUserReviewActions
                     'verified_at',
                     'created_at'
                 )
+                ->whereIn('role', ['teacher', 'specialist'])
+                ->whereNotNull('id_document_url')
+                ->where('id_document_url', '!=', '')
                 ->orderByDesc('created_at');
 
             $status = $request->query('status');
@@ -54,6 +57,10 @@ trait VerificationUserReviewActions
             $user = DB::table('users')->where('id', $id)->first();
             if (!$user) {
                 return response()->json(['error' => 'المستخدم غير موجود'], 404);
+            }
+
+            if (!in_array($user->role, ['teacher', 'specialist'], true) || !trim((string) ($user->id_document_url ?? ''))) {
+                return response()->json(['error' => 'مراجعة الحساب متاحة للمعلمين والمختصين بعد رفع الهوية'], 422);
             }
 
             DB::table('users')->where('id', $id)->update([

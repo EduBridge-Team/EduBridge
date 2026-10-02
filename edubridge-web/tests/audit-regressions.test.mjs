@@ -52,7 +52,7 @@ test('workflow controls render visible associated labels and child links are key
     }
     const { default: GeneralChildrenView } = await server.ssrLoadModule('/src/pages/Children/GeneralChildrenView.jsx')
     const childrenHtml = renderToStaticMarkup(createElement(GeneralChildrenView, { children: [{ id: 1, name: 'طفل اختبار' }], navigate() {} }))
-    assert.match(childrenHtml, /role="link" tabindex="0" aria-label="دروس طفل اختبار"/)
+    assert.match(childrenHtml, /role="link" tabindex="0" aria-label="ملف طفل اختبار"/)
   } finally { await server.close() }
 })
 
@@ -66,4 +66,21 @@ test('admin child counts use real parent relations and include every assigned sp
   assert.equal(countChildrenForUser(children, { id: 12, role: 'teacher' }), 2)
   assert.equal(countChildrenForUser(children, { id: 5, role: 'specialist' }), 2)
   assert.equal(workflowLabel('assigned'), 'تم التعيين')
+})
+
+
+test('closed support tickets do not offer close or in-progress actions', async () => {
+  const { createServer } = await import('vite')
+  const { createElement } = await import('react')
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
+  try {
+    const { SupportTicketsList } = await server.ssrLoadModule('/src/pages/Support/SupportSections.jsx')
+    const render = (status, isAdmin = true) => renderToStaticMarkup(createElement(SupportTicketsList, {
+      tickets: [{ id: 1, subject: 'طلب', status }], isAdmin, loading: false, onReply() {}, onStatusChange() {},
+    }))
+    assert.doesNotMatch(render('closed'), />\s*إغلاق\s*<|>\s*قيد المعالجة\s*</)
+    assert.match(render('open'), />\s*إغلاق\s*</)
+    assert.doesNotMatch(render('open', false), /<button/)
+  } finally { await server.close() }
 })

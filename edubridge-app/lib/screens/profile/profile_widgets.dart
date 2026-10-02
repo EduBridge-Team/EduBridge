@@ -40,10 +40,18 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
           _sectionTitle('معلومات الحساب', c),
           const SizedBox(height: 10),
           _buildInfoCard(name, email, phone, role, isVerified),
-          if (role == 'teacher') ...[
+          if (['teacher', 'specialist'].contains(role)) ...[
             const SizedBox(height: 20),
             _sectionTitle('الملف المهني', c),
             const SizedBox(height: 8),
+            if (_certificates.isEmpty) const Text('لا توجد شهادات مضافة بعد'),
+            ..._certificates.map((certificate) => Card(child: ListTile(
+              leading: const Icon(AppIcons.certificate, color: AppColors.brandBlue),
+              title: Text((certificate['title'] ?? '').toString()),
+              subtitle: Text(switch (certificate['status']) {
+                'verified' || 'approved' => 'معتمدة', 'rejected' => 'مرفوضة', _ => 'بانتظار المراجعة',
+              }),
+            ))),
             _actionCard(
               icon: AppIcons.certificate,
               title: 'إضافة شهادة',

@@ -18,10 +18,11 @@ export function isPortalPathForRole(pathname, role) {
 
   const dashboard = DASHBOARD_BY_ROLE[role]
   if (dashboard && pathname === dashboard) return true
+  if (pathname === '/lessons/new') return ['teacher', 'specialist', 'admin'].includes(role)
   if (COMMON_PORTAL_PATHS.has(pathname)) return true
 
   if (pathname.startsWith('/children')) {
-    if (pathname === '/children/new') return ['parent', 'admin'].includes(role)
+    if (pathname === '/children/new') return role === 'parent'
     if (/^\/children\/[^/]+\/accessibility$/.test(pathname)) return role === 'specialist'
     return CHILD_ROLES.includes(role)
   }
@@ -50,7 +51,9 @@ export function isPortalPathForRole(pathname, role) {
     return ['parent', 'specialist', 'admin'].includes(role)
   }
 
-  if (pathname === '/case-discussions' || pathname === '/specialist-workflow') {
+  if (pathname === '/specialist-workflow') return ['specialist', 'admin'].includes(role)
+
+  if (pathname === '/case-discussions') {
     return ['teacher', 'specialist', 'admin'].includes(role)
   }
 
@@ -60,7 +63,7 @@ export function isPortalPathForRole(pathname, role) {
 
   // Admins are explicitly allowed to use the ministry curriculum review route.
   if (pathname === '/ministry') {
-    return role === 'ministry' || role === 'admin'
+    return role === 'ministry'
   }
 
   return false

@@ -27,12 +27,14 @@ export default function ParentChildrenView({
   setQuery,
   summaries,
   visibleChildren,
+  directorySummary, loading = false, error, onRetry,
 }) {
-  const completedTasks = Object.values(summaries).reduce(
+  const completedTasks = directorySummary?.completed_tasks ?? Object.values(summaries).reduce(
     (total, summary) => total + Number(summary.done || 0),
     0,
   )
-  const activePlans = children.filter((child) => ['assigned', 'evaluated'].includes(child.status)).length
+  const activePlans = directorySummary?.active_plans ?? children.filter((child) => ['assigned', 'evaluated'].includes(child.status)).length
+  const totalChildren = directorySummary?.total_children ?? children.length
 
   return (
     <div className="parent-children-page">
@@ -66,7 +68,7 @@ export default function ParentChildrenView({
       <section className="pc-stats">
         <article className="pc-stat">
           <span className="pc-stat-icon"><Users size={22} /></span>
-          <div><strong>{children.length}</strong><small>إجمالي الأطفال</small></div>
+          <div><strong>{totalChildren}</strong><small>إجمالي الأطفال</small></div>
         </article>
         <article className="pc-stat">
           <span className="pc-stat-icon"><BookOpen size={22} /></span>
@@ -78,12 +80,14 @@ export default function ParentChildrenView({
         </article>
       </section>
 
-      {visibleChildren.length === 0 ? (
+      {loading ? <div className="state">جارِ تحميل الأطفال...</div> : error ? (
+        <div className="state"><div className="error-box">{error}</div><button className="btn" onClick={onRetry}>إعادة المحاولة</button></div>
+      ) : visibleChildren.length === 0 ? (
         <section className="pc-empty">
           <Users size={38} />
-          <h3>{children.length ? 'لا توجد نتائج مطابقة' : 'لا يوجد أطفال مرتبطون بحسابك بعد'}</h3>
-          <p>{children.length ? 'جرّب تغيير البحث أو التصفية.' : 'أضف طفلك لتبدأ متابعة خطته ودروسه وتقدّمه.'}</p>
-          {!children.length && (
+          <h3>{totalChildren ? 'لا توجد نتائج مطابقة' : 'لا يوجد أطفال مرتبطون بحسابك بعد'}</h3>
+          <p>{totalChildren ? 'جرّب تغيير البحث أو التصفية.' : 'أضف طفلك لتبدأ متابعة خطته ودروسه وتقدّمه.'}</p>
+          {!totalChildren && (
             <button className="pc-add-button" onClick={() => navigate('/children/new')}>
               <Plus size={18} /> إضافة طفل
             </button>

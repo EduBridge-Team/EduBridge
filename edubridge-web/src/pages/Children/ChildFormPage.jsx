@@ -13,7 +13,7 @@ function toList(text) {
   const t = (text || '').trim()
   if (!t) return null
   return t
-    .split(',')
+    .split(/[,،]/)
     .map((s) => s.trim())
     .filter(Boolean)
 }
@@ -100,6 +100,10 @@ export default function ChildFormPage() {
       setError('الاسم مطلوب')
       return
     }
+    if (!editing && ['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url'].some(key => !form[key].trim())) {
+      setError('هوية الطفل وولي الأمر ومستندات صلة القرابة مطلوبة')
+      return
+    }
     const age = parseInt(form.age.trim(), 10)
     if (isNaN(age)) {
       setError('أدخل عمراً صحيحاً')
@@ -182,7 +186,7 @@ export default function ChildFormPage() {
 
           {error && <div className="error-box">{error}</div>}
 
-          <button className="btn success full" type="submit" disabled={loading}>
+          <button className="btn success full" type="submit" disabled={loading || Boolean(uploading)}>
             {loading
               ? 'جارِ الحفظ...'
               : editing

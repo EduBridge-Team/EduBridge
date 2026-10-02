@@ -14,7 +14,8 @@ export default function TopBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
-  const { verified } = useVerification()
+  const { verified: identityVerified } = useVerification()
+  const verified = identityVerified || getUser()?.role === 'parent'
   const [open, setOpen] = useState(false)
   const { dark, toggleTheme } = useTheme()
 

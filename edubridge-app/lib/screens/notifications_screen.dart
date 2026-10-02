@@ -19,6 +19,7 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   bool _loading = true;
   bool _markingAll = false;
+  bool _loadingMore = false;
   String? _error;
 
   @override
@@ -45,6 +46,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  Future<void> _loadMore() async {
+    if (_loadingMore || _markingAll) return;
+    setState(() => _loadingMore = true);
+    try {
+      await NotificationListenerService.instance.loadMore();
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
   Future<void> _markRead(int id) async {
     try {
       await ApiService.markNotificationRead(id);
@@ -64,16 +79,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _markAllRead() async {
-    if (_markingAll) return;
+    if (_markingAll || _loadingMore) return;
     setState(() => _markingAll = true);
 
     try {
-      await ApiService.markAllNotificationsRead();
+      await NotificationListenerService.instance.markAllRead();
       if (!mounted) return;
-
-      final current = NotificationListenerService.instance.notifications.value;
-      NotificationListenerService.instance.notifications.value =
-          current.map((n) => {...n as Map, 'is_read': true}).toList();
 
       await NotificationListenerService.instance.refresh();
       if (!mounted) return;
@@ -174,7 +185,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (!mounted) return;
 
     final title = (n['title'] ?? 'تفاصيل الإشعار').toString();
-    final body = (n['body'] ?? '').toString();
+    final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final date = n['created_at'] != null
         ? DateTime.tryParse(n['created_at'].toString())
@@ -249,7 +260,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               if (body.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: c.tintTeal.withValues(alpha: .35),
                     borderRadius: BorderRadius.circular(16),
@@ -384,8 +395,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           onRefresh: _load,
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-            itemCount: list.length,
-            itemBuilder: (context, i) => _buildTile(list[i] as Map, c),
+            itemCount: list.length + 1,
+            itemBuilder: (context, i) {
+              if (i < list.length) return _buildTile(list[i] as Map, c);
+              return ValueListenableBuilder<bool>(
+                valueListenable: NotificationListenerService.instance.hasMore,
+                builder: (context, more, _) => more ? TextButton(
+                  onPressed: _loadingMore || _markingAll ? null : _loadMore,
+                  child: Text(_loadingMore ? 'جارِ التحميل...' : 'تحميل إشعارات أقدم'),
+                ) : const SizedBox.shrink(),
+              );
+            },
           ),
         );
       },
@@ -398,7 +418,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ? DateTime.tryParse(n['created_at'].toString())
         : null;
     final title = (n['title'] ?? '').toString();
-    final body = (n['body'] ?? '').toString();
+    final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final icon = _getIcon(type);
     final iconColor = _getIconColor(type);
@@ -410,13 +430,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         color: isRead ? c.card : c.tintTeal.withValues(alpha: .35),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
-          side: BorderSide(color: c.line),
+          side: BorderSide(
+            color: isRead ? c.line : AppColors.brandBlue.withValues(alpha: .35),
+          ),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _openNotificationDetails(n, c),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

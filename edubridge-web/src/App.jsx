@@ -1,3 +1,4 @@
+import { getUser } from './api'
 import HashNavigation from './components/HashNavigation'
 import TopBar from './components/TopBar/TopBar'
 import AssistantWidget from './components/Noor/AssistantWidget'
@@ -11,7 +12,8 @@ export default function App() {
 }
 
 function VerifiedApp() {
-  const { verified } = useVerification()
+  const { verified: identityVerified } = useVerification()
+  const verified = identityVerified || getUser()?.role === 'parent'
   return (
     <div>
       <TopBar />

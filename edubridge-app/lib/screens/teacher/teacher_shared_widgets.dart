@@ -31,6 +31,8 @@ Widget _buildTeacherHeader({
                   iconSize: 26,
                   iconColor: Colors.white,
                   actions: [
+                    DashboardMenuAction(id: 'notifications', label: 'الإشعارات', icon: AppIcons.notifications,
+                      onSelected: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()))),
                     DashboardMenuAction(
                       id: 'case_discussion',
                       label: 'دراسات الحالة',
@@ -85,21 +87,6 @@ Widget _buildTeacherHeader({
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      tooltip: 'الإشعارات',
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationsScreen(),
-                        ),
-                      ),
-                      icon: const Icon(
-                        AppIcons.notifications,
-                        color: Colors.white,
-                        size: 27,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
                     ColorFiltered(
                       colorFilter: const ColorFilter.mode(
                         Colors.white,

@@ -39,6 +39,7 @@ class LessonTargetAuthorizationTest extends TestCase
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('category', 100)->nullable();
             $table->text('content')->nullable();
             $table->unsignedBigInteger('disability_type_id')->nullable();
             $table->string('education_level')->nullable();
@@ -89,6 +90,22 @@ class LessonTargetAuthorizationTest extends TestCase
         Schema::dropIfExists('children');
 
         parent::tearDown();
+    }
+
+    public function test_category_is_saved_updated_and_preserved_when_omitted(): void
+    {
+        $controller = app(LessonController::class);
+        $response = $controller->store($this->request('POST', [
+            'title' => 'تصنيف الدرس', 'category' => 'الرياضيات',
+        ], 1, 'teacher'));
+        $this->assertSame(201, $response->getStatusCode());
+        $lesson = json_decode($response->getContent(), true)['lesson'];
+        $this->assertSame('الرياضيات', $lesson['category']);
+        $controller->update($this->request('PUT', ['category' => 'القراءة'], 1, 'teacher'), $lesson['id']);
+        $controller->update($this->request('PUT', ['title' => 'عنوان جديد'], 1, 'teacher'), $lesson['id']);
+        $this->assertDatabaseHas('lessons', ['id' => $lesson['id'], 'category' => 'القراءة']);
+        $controller->update($this->request('PUT', ['category' => ''], 1, 'teacher'), $lesson['id']);
+        $this->assertDatabaseHas('lessons', ['id' => $lesson['id'], 'category' => null]);
     }
 
     public function test_teacher_cannot_target_unassigned_child(): void
@@ -181,5 +198,18 @@ class LessonTargetAuthorizationTest extends TestCase
         $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
 
         return $request;
+    }
+
+    public function test_private_lesson_and_media_reject_unrelated_parent_but_allow_linked_parent(): void
+    {
+        $controller = app(LessonController::class);
+        $outsider = $this->request('GET', [], 3, 'parent');
+        $this->assertSame(403, $controller->show($outsider, 100)->getStatusCode());
+        $this->assertSame(403, app(\App\Http\Controllers\MediaController::class)->index($outsider, 100)->getStatusCode());
+        DB::table('child_parent')->insert(['child_id' => 10, 'parent_id' => 3]);
+        $this->assertSame(200, $controller->show($outsider, 100)->getStatusCode());
+        $this->assertSame(200, app(\App\Http\Controllers\MediaController::class)->index($outsider, 100)->getStatusCode());
+        $this->assertTrue(\App\Support\LessonVisibility::scope(DB::table('lessons'), (object) ['id' => 3, 'role' => 'parent'])->where('id', 100)->exists());
+        $this->assertFalse(\App\Support\LessonVisibility::scope(DB::table('lessons'), (object) ['id' => 4, 'role' => 'parent'])->where('id', 100)->exists());
     }
 }

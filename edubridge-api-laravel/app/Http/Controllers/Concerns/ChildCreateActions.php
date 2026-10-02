@@ -12,11 +12,17 @@ trait ChildCreateActions
     {
         $user = $request->attributes->get('jwt_user');
 
-        if (!$user || !in_array($user->role, ['parent', 'admin'], true)) {
-            return response()->json(['error' => 'إضافة طفل متاحة لولي الأمر والأدمن فقط'], 403);
+        if (!$user || $user->role !== 'parent') {
+            return response()->json(['error' => 'إضافة طفل متاحة لولي الأمر فقط'], 403);
         }
         if (!$request->input('name')) {
             return response()->json(['error' => 'اسم الطفل مطلوب'], 400);
+        }
+
+        foreach (self::IDENTITY_FIELDS as $field) {
+            if (!is_string($request->input($field)) || trim($request->input($field)) === '') {
+                return response()->json(['error' => 'هوية الطفل وولي الأمر ومستندات صلة القرابة مطلوبة'], 422);
+            }
         }
 
         $data = ['name' => $request->input('name')];
