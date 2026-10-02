@@ -38,6 +38,8 @@ class FreshPostgresMigrationTest extends TestCase
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
+        $this->assertTrue(Schema::hasIndex('notifications', 'notifications_user_cursor_index'));
+        $this->assertTrue(Schema::hasIndex('notifications', 'notifications_user_unread_index'));
         $this->assertTrue(Schema::hasColumn('users', 'role'));
         $this->assertTrue(Schema::hasColumn('users', 'password_hash'));
         $this->assertTrue(Schema::hasColumn('sessions', 'learning_support_request_id'));

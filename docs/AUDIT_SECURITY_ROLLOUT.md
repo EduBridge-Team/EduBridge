@@ -124,5 +124,19 @@ and restrictions on direct PHP/dotfile access. Deploy this change using the
 existing Oracle deployment script; ports and external Caddy routing are unchanged.
 This code change does not itself update the production server.
 
-Remaining audit work: pagination. Other list endpoints may still need query
-profiling.
+Notifications now support opt-in keyset pages: `limit` (1–100, default 30),
+`before_id` for older history, or `after_id` for ascending delivery batches.
+The cursors are mutually exclusive. History uses delivery ID order rather than
+creation timestamps. Responses include `pagination` and an owner-scoped global
+`unread_count`; requests without paging parameters retain the legacy full list.
+Two composite notification indexes are added by a database migration. Deploy
+and migrate the API before distributing the updated mobile app. Web and mobile
+load 30 items initially and offer a button for older pages. Mobile polling fetches
+only new deliveries, up to three pages per cycle, retaining its cursor for retry.
+WebSocket duplicates do not inflate the badge or advance the polling cursor.
+Page requests are serialized on mobile and invalidated on logout. Read failures
+no longer show false success. Tests cover account boundaries, tied timestamps,
+backlogs, retries, overlapping pages, and logout during pending requests.
+
+Remaining audit work: pagination for other lists, including children and lessons.
+Other list endpoints may still need query profiling.

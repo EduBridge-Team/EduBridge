@@ -19,6 +19,7 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   bool _loading = true;
   bool _markingAll = false;
+  bool _loadingMore = false;
   String? _error;
 
   @override
@@ -45,6 +46,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  Future<void> _loadMore() async {
+    if (_loadingMore || _markingAll) return;
+    setState(() => _loadingMore = true);
+    try {
+      await NotificationListenerService.instance.loadMore();
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
   Future<void> _markRead(int id) async {
     try {
       await ApiService.markNotificationRead(id);
@@ -64,16 +79,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _markAllRead() async {
-    if (_markingAll) return;
+    if (_markingAll || _loadingMore) return;
     setState(() => _markingAll = true);
 
     try {
-      await ApiService.markAllNotificationsRead();
+      await NotificationListenerService.instance.markAllRead();
       if (!mounted) return;
-
-      final current = NotificationListenerService.instance.notifications.value;
-      NotificationListenerService.instance.notifications.value =
-          current.map((n) => {...n as Map, 'is_read': true}).toList();
 
       await NotificationListenerService.instance.refresh();
       if (!mounted) return;
@@ -384,8 +395,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           onRefresh: _load,
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-            itemCount: list.length,
-            itemBuilder: (context, i) => _buildTile(list[i] as Map, c),
+            itemCount: list.length + 1,
+            itemBuilder: (context, i) {
+              if (i < list.length) return _buildTile(list[i] as Map, c);
+              return ValueListenableBuilder<bool>(
+                valueListenable: NotificationListenerService.instance.hasMore,
+                builder: (context, more, _) => more ? TextButton(
+                  onPressed: _loadingMore || _markingAll ? null : _loadMore,
+                  child: Text(_loadingMore ? 'جارِ التحميل...' : 'تحميل إشعارات أقدم'),
+                ) : const SizedBox.shrink(),
+              );
+            },
           ),
         );
       },
