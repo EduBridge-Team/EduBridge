@@ -6,20 +6,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', function () {
     try {
         \Illuminate\Support\Facades\DB::select('select 1');
-        $database = 'ok';
         $statusCode = 200;
     } catch (\Throwable $e) {
-        $database = 'unavailable';
         $statusCode = 503;
     }
 
     return response()->json([
         'status' => $statusCode === 200 ? 'ok' : 'degraded',
-        'service' => 'EduBridge API',
-        'database' => $database,
-        'noor' => config('services.groq.key') ? 'configured' : 'missing',
-        'git_sha' => env('GIT_SHA'),
-        'timestamp' => now()->toIso8601String(),
     ], $statusCode);
 });
 
@@ -30,6 +23,8 @@ Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:10,1');
 Route::post('/auth/google', [AuthController::class, 'google'])
     ->middleware('throttle:10,1');
+Route::post('/auth/logout', fn () => response()->json(['message' => 'تم تسجيل الخروج']))
+    ->middleware('throttle:20,1');
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])
     ->middleware('throttle:5,1');
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])

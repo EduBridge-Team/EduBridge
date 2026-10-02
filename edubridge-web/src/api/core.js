@@ -6,9 +6,13 @@ import { protectedFileUrl, safeFileBlob } from './protectedFileUrl'
 // للتطوير المحلي يمكن تمرير VITE_API_URL=http://localhost:3000/api.
 export const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
-// التوكن وبيانات المستخدم في localStorage
+const SESSION_MARKER_KEY = "edubridge_session_active";
+
+// الويب لا يحتفظ بالـJWT داخل JavaScript. الخادم يضعه في HttpOnly cookie.
+// هذه الدالة تبقى كـsession marker للتوافق مع مكوّنات الواجهة الحالية.
 export function getToken() {
-  return localStorage.getItem("token");
+  localStorage.removeItem("token");
+  return localStorage.getItem(SESSION_MARKER_KEY) || (localStorage.getItem("user") ? "cookie" : null);
 }
 
 export function getUser() {
@@ -17,7 +21,14 @@ export function getUser() {
 }
 
 export function logout() {
+  fetch(`${BASE_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+  }).catch(() => {});
+
   localStorage.removeItem("token");
+  localStorage.removeItem(SESSION_MARKER_KEY);
   localStorage.removeItem("user");
 }
 
@@ -42,9 +53,8 @@ export async function openProtectedFile(url) {
     popup.document.body.innerHTML =
       '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
 
-    const token = getToken();
     const res = await fetch(protectedFileUrl(BASE_URL, url), {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "same-origin",
     });
 
     if (!res.ok) {
@@ -73,31 +83,32 @@ export async function fetchMyProfile() {
   if (user?.id) {
     const current = getUser() || {};
     localStorage.setItem("user", JSON.stringify({ ...current, ...user }));
+    localStorage.setItem(SESSION_MARKER_KEY, "1");
   }
   return user;
 }
 
 export async function changeMyPassword(currentPassword, newPassword) {
-  const data = await request("/me/password", {
+  return request("/me/password", {
     method: "PUT",
     body: JSON.stringify({
       current_password: currentPassword,
       new_password: newPassword,
     }),
   });
-  if (data.token) localStorage.setItem('token', data.token);
-  return data;
 }
 
-// طلب عام مع التوكن ومعالجة الأخطاء بشكل موحّد
+// طلب عام يعتمد HttpOnly cookie للويب ومعالجة الأخطاء بشكل موحّد.
 export async function request(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...options.headers };
-  const token = getToken();
-  if (token) headers.Authorization = `Bearer ${token}`;
 
   let res;
   try {
-    res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+    res = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers,
+      credentials: "same-origin",
+    });
   } catch {
     // فشل الشبكة نفسه (السيرفر مطفأ مثلاً)
     throw new Error("تعذّر الاتصال بالسيرفر");
@@ -114,7 +125,7 @@ export async function request(path, options = {}) {
   }
 
   if (!res.ok) {
-    if (res.status === 401 && token && getToken() === token) {
+    if (res.status === 401 && getToken()) {
       logout();
       window.location.assign('/login');
     }
@@ -130,24 +141,26 @@ export async function request(path, options = {}) {
   return data;
 }
 
-// تسجيل الدخول — يحفظ التوكن وبيانات المستخدم
+// تسجيل الدخول — الـJWT يبقى في HttpOnly cookie، ونخزن فقط بيانات العرض.
 export async function login(email, password) {
   const data = await request("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
-  localStorage.setItem("token", data.token);
+  localStorage.removeItem("token");
+  localStorage.setItem(SESSION_MARKER_KEY, "1");
   localStorage.setItem("user", JSON.stringify(data.user));
   return data.user;
 }
 
-// تسجيل الدخول عبر Google — يحفظ التوكن وبيانات المستخدم
+// تسجيل الدخول عبر Google — نفس مسار الجلسة الآمنة للويب.
 export async function googleLogin(idToken) {
   const data = await request("/auth/google", {
     method: "POST",
     body: JSON.stringify({ id_token: idToken }),
   });
-  localStorage.setItem("token", data.token);
+  localStorage.removeItem("token");
+  localStorage.setItem(SESSION_MARKER_KEY, "1");
   localStorage.setItem("user", JSON.stringify(data.user));
   return data.user;
 }
@@ -166,8 +179,6 @@ export function register(name, email, password, role, nationalId, specialty) {
     }),
   });
 }
-
-
 
 export function forgotPassword(email) {
   return request("/auth/forgot-password", {
