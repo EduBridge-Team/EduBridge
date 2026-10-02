@@ -15,9 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from pygltflib import (
-    ACCESSOR_TYPE_SCALAR,
-    ACCESSOR_TYPE_VEC4,
-    FLOAT,
     Accessor,
     Animation,
     AnimationChannel,
@@ -58,7 +55,7 @@ def append_floats(
     gltf.accessors.append(Accessor(
         bufferView=buffer_view_index,
         byteOffset=0,
-        componentType=FLOAT,
+        componentType=5126,
         count=count,
         type=accessor_type,
         min=min_values or [],
@@ -85,6 +82,9 @@ def main() -> int:
     bone_map: dict[str, str] = mapping_payload.get("bones", {})
 
     gltf = GLTF2().load(str(args.avatar))
+    gltf.bufferViews = gltf.bufferViews or []
+    gltf.accessors = gltf.accessors or []
+    gltf.animations = gltf.animations or []
     if not gltf.buffers:
         raise SystemExit("Avatar has no glTF buffer.")
 
@@ -121,7 +121,7 @@ def main() -> int:
             gltf,
             blob,
             times,
-            ACCESSOR_TYPE_SCALAR,
+            "SCALAR",
             len(times),
             [min(times)],
             [max(times)],
@@ -130,7 +130,7 @@ def main() -> int:
             gltf,
             blob,
             rotations,
-            ACCESSOR_TYPE_VEC4,
+            "VEC4",
             len(samples),
         )
 
