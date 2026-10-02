@@ -215,3 +215,14 @@ export function resolveEmergencyAlert(id) {
 export function saveChildEvaluation(childId, payload) {
   return request(`/evaluations/child/${childId}`, { method: 'POST', body: JSON.stringify(payload) });
 }
+
+
+// قاموس لغة الإشارة الفلسطينية
+export function fetchSignLanguageCategories() {
+  return request("/sign-language/categories");
+}
+
+export function fetchSignLanguageSigns(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`/sign-language/signs${query ? `?${query}` : ''}`);
+}
