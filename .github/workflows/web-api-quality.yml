@@ -106,6 +106,7 @@ jobs:
         run: |
           bash -n deploy/*.sh scripts/test_api_runtime.sh
           node --check deploy/web-server.mjs
+          python3 -m unittest discover -s scripts -p test_noor_config.py
 
           cp edubridge-api-laravel/.env.example edubridge-api-laravel/.env
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' edubridge-api-laravel/.env

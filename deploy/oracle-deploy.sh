@@ -11,7 +11,7 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-for command in docker curl git; do
+for command in docker curl git python3; do
   if ! command -v "$command" >/dev/null 2>&1; then
     echo "ERROR: required command not found: $command" >&2
     exit 1
@@ -34,6 +34,9 @@ compose() {
     -f "$COMPOSE_FILE" \
     "$@"
 }
+
+echo "==> Checking resolved Noor configuration before changing containers..."
+compose config --format json | python3 "$ROOT/deploy/check-noor-config.py"
 
 echo "==> Ensuring persistent Docker resources exist..."
 docker network inspect edubridge-net >/dev/null 2>&1 || docker network create edubridge-net >/dev/null
@@ -103,6 +106,9 @@ echo "==> Recreating application containers..."
 compose up -d --no-deps api
 compose up -d --no-deps web
 
+echo "==> Clearing Laravel runtime caches..."
+compose exec -T api php artisan optimize:clear >/dev/null
+
 echo "==> Waiting for local health endpoints..."
 for url in http://127.0.0.1:8081/api/health http://127.0.0.1:8082/; do
   ok=false
@@ -127,7 +133,14 @@ if ! grep -Fq "\"git_sha\":\"$GIT_SHA\"" <<<"$api_health"; then
   exit 1
 fi
 
+noor_status="$(compose exec -T api php artisan tinker --execute='echo config("services.groq.key") ? "configured" : "missing";' 2>/dev/null | tail -n1 | tr -d '\r' || true)"
+if [[ "$noor_status" != "configured" ]]; then
+  echo "ERROR: Noor is still not configured inside the running API container." >&2
+  exit 1
+fi
+
 echo "==> Verified API Git SHA: $GIT_SHA"
+echo "==> Noor server configuration is loaded."
 echo "==> EduBridge Oracle deployment is healthy."
 compose ps
 
