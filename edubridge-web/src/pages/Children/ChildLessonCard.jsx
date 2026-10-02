@@ -1,3 +1,4 @@
+import { privateMediaCrossOrigin } from '../../api/protectedFileUrl'
 import {
   BookOpen,
   Check,
@@ -55,7 +56,7 @@ export default function ChildLessonCard({
       )}
 
       {lesson.video_url && (
-        <video
+        <video crossOrigin={privateMediaCrossOrigin(lesson.video_url)}
           controls
           preload="metadata"
           style={{ width: '100%', borderRadius: 14, marginTop: 12 }}

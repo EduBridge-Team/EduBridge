@@ -24,7 +24,7 @@ class LessonMediaRollbackTest extends TestCase
     {
         parent::setUp();
         foreach (['AWS_ENDPOINT' => 'https://r2.example.test', 'AWS_ACCESS_KEY_ID' => 'key', 'AWS_SECRET_ACCESS_KEY' => 'secret',
-            'R2_MEDIA_BUCKET' => 'media', 'R2_MEDIA_PUBLIC_URL' => 'https://media.example.test'] as $key => $value) {
+            'R2_PRIVATE_BUCKET' => 'private', 'R2_MEDIA_BUCKET' => 'media', 'R2_MEDIA_PUBLIC_URL' => 'https://media.example.test'] as $key => $value) {
             $this->previousEnv[$key] = [$_ENV[$key] ?? null, $_SERVER[$key] ?? null];
             $_ENV[$key] = $_SERVER[$key] = $value;
         }

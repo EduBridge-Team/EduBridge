@@ -1,4 +1,4 @@
-import { protectedFileUrl } from './protectedFileUrl'
+import { protectedFileUrl, safeFileBlob } from './protectedFileUrl'
 // طبقة الاتصال بالخادم — نفس الواجهة التي يستخدمها تطبيق الموبايل
 // في الإنتاج نحدّد عنوان الواجهة وقت البناء عبر المتغير:
 //   VITE_API_URL
@@ -37,6 +37,7 @@ export async function openProtectedFile(url) {
   }
 
   try {
+    popup.opener = null;
     popup.document.title = "EduBridge";
     popup.document.body.innerHTML =
       '<div dir="rtl" style="font-family:sans-serif;padding:24px">جارِ تحميل الملف...</div>';
@@ -55,7 +56,7 @@ export async function openProtectedFile(url) {
       throw new Error(message);
     }
 
-    const blob = await res.blob();
+    const blob = safeFileBlob(await res.blob());
     const objectUrl = URL.createObjectURL(blob);
 
     popup.location.replace(objectUrl);

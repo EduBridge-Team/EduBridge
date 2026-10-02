@@ -14,24 +14,33 @@ verification alone does not unlock product APIs.
 New homework submission files are stored in private R2. Their API download path
 checks the child's parent/care team or the homework author/admin, as well as the
 exact file reference on the submission. The web opens these files through an
-authenticated fetch. Existing public submission files require a separate storage
+authenticated fetch. Active HTML/SVG types are displayed as plain text before
+blob navigation, and API downloads carry sandbox/no-referrer headers. Existing public submission files require a separate storage
 migration; changing their database URLs alone does not remove public objects.
 Until that migration is performed, earlier shared links can remain accessible.
 
 Targeted lesson read policies are enforced on list/search/detail/media/ratings.
-The lesson editor preserves specific-child audiences. Previously published
-lesson media still uses the existing public storage scheme: a previously shared
-public object URL is not revoked by API filtering. Moving targeted lesson media
-to private storage requires a compatible media-delivery migration for both
-clients.
+The editor preserves specific-child audiences. All new uploaded lesson media is
+private, including non-targeted lessons so later audience changes remain safe.
+API serializers return signed playback links valid for 15 minutes. Each request
+rechecks the viewer's account, role, password fingerprint, identity approval and
+current child relationship. Video/audio byte ranges are streamed from R2.
+The link is a short-lived bearer capability: someone with a copied link can use
+it during that window while its original viewer remains authorized. No login
+JWT is placed in the URL. Reopen/reload a lesson after a link expires.
+External lesson links cannot be made private by the API. Targeted lessons reject
+new external media links, and changing a public lesson to specific children is
+blocked until all its media has private references. Existing external links
+must be replaced with uploaded files; the migration never fetches external URLs.
 
 Lesson media replacement uploads new files before deleting the old objects.
 Rollback cleans up new uploads using an in-memory object journal. Old objects
 are deleted only after the database commit. Storage deletion failures are logged
 and leave an orphan for cleanup, rather than breaking the saved lesson.
 
-No database migration is needed for this batch. Deploy API, web and mobile
-together, then verify:
+The first batch needed no database migration. This follow-up adds the
+engagement_events ledger. Deploy API, web and mobile together, run the migration
+before accepting engagement writes, then verify:
 
 - An old token is rejected and fresh login works.
 - Pending/rejected identity accounts can upload documents and contact support,
@@ -51,8 +60,40 @@ round-trip correctly. PHP upload limits support the allowed media sizes, the
 container starts four development-server workers, and the health check uses the
 API endpoint. Web lockfile updates resolve the reported dependency advisories.
 
-Remaining audit work: legacy private-file migration and targeted media delivery,
-server-side idempotency for rewards/game retries, pagination and N+1 query
-reduction, secure mobile token storage, and replacing artisan serve with a
-production PHP runtime. The offline batching fix does not make rewards
-idempotent when a successful response is lost.
+Retry protection uses a per-account/per-child event ID and request fingerprint.
+Duplicate events return the original receipt without adding stars or game rows.
+A reused ID with different input is rejected. The child row is locked before
+both first and subsequent reward writes. Older clients without event IDs remain
+compatible but do not gain retry protection until updated. Mobile queues persist
+the event before sending, retain the same ID after restart, and keep new queues
+and reward caches separate for each signed-in account. Legacy pending entries
+have no account metadata and are migrated once into the current account's queue.
+
+## Follow-up deployment
+
+Keep APP_KEY stable, set APP_URL=https://api.edubridge.win, and ensure
+R2_PRIVATE_BUCKET has no public access and differs from R2_MEDIA_BUCKET.
+Back up the database before the following commands:
+
+```sh
+docker exec edubridge-api php artisan migrate --force
+docker exec edubridge-api php artisan edubridge:privatize-learning-files
+# Apply after reviewing the preview:
+docker exec edubridge-api php artisan edubridge:privatize-learning-files --apply
+```
+
+The first file command is a dry run. Apply downloads owned public objects to
+temporary disk files, uploads/verifies private copies, locks the corresponding
+rows and updates references. A separate cleanup pass removes old public objects
+only after private copies exist and no old public reference remains. Shared
+objects are retained if another row's migration fails. Failures return a nonzero
+exit status; rerun --apply to retry copying or deleting without overwriting a
+successfully migrated reference. New private objects may be safely rescanned.
+The command handles only exact URLs under R2_MEDIA_PUBLIC_URL. External links
+and old objects no longer referenced in the database require manual review.
+Old public links remain accessible until their public objects are deleted.
+If a CDN cached those URLs, purge the old URLs after cleanup as well.
+This repository change does not itself run the production storage migration.
+
+Remaining audit work: pagination and N+1 query reduction, secure mobile token
+storage, and replacing artisan serve with a production PHP runtime.

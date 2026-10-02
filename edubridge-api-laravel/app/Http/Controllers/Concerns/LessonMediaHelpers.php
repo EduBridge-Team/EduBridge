@@ -106,10 +106,10 @@ trait LessonMediaHelpers
         $extension = strtolower((string) $file->getClientOriginalExtension());
         $filename = $type . '_' . bin2hex(random_bytes(10)) . '.' . $extension;
         $key = 'lessons/' . $lessonId . '/' . $filename;
-        $url = R2Storage::mediaPublicUrl($key);
+        $url = \App\Support\LessonFiles::path($lessonId, $filename);
 
         R2Storage::putUploadedFile(
-            R2Storage::mediaBucket(),
+            R2Storage::privateBucket(),
             $key,
             $file,
             (string) $file->getMimeType()
@@ -126,15 +126,8 @@ trait LessonMediaHelpers
     private function removeLessonObjects(array $urls): void
     {
         foreach ($urls as $url) {
-            $path = parse_url((string) $url, PHP_URL_PATH) ?: '';
-            $key = ltrim($path, '/');
-
-            if (!str_starts_with($key, 'lessons/')) {
-                continue;
-            }
-
             try {
-                R2Storage::delete(R2Storage::mediaBucket(), $key);
+                \App\Support\LessonFiles::delete((string) $url);
             } catch (\Throwable $e) {
                 report($e);
             }

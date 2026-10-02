@@ -1,3 +1,4 @@
+import { privateMediaCrossOrigin } from '../../api/protectedFileUrl'
 import EmptyState from '../../components/EmptyState'
 export function ParentLessonCard({
   lesson,
@@ -34,7 +35,7 @@ export function ParentLessonCard({
       )}
 
       {lesson.video_url && (
-        <video
+        <video crossOrigin={privateMediaCrossOrigin(lesson.video_url)}
           controls
           preload="metadata"
           style={{ width: '100%', borderRadius: 14, marginTop: 10 }}

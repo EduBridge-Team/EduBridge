@@ -14,7 +14,8 @@ final class R2StorageTransport
         string $key,
         $body = null,
         ?string $payloadHash = null,
-        ?string $contentType = null
+        ?string $contentType = null,
+        array $requestHeaders = []
     ): ResponseInterface {
         $endpoint = rtrim(self::requiredEnv('AWS_ENDPOINT'), '/');
         $accessKey = self::requiredEnv('AWS_ACCESS_KEY_ID');
@@ -37,7 +38,8 @@ final class R2StorageTransport
         );
 
         $options = [
-            'headers' => $headers,
+            'headers' => array_merge($headers, $requestHeaders),
+            'stream' => $method === 'GET',
             'http_errors' => true,
             'timeout' => 120,
             'connect_timeout' => 15,

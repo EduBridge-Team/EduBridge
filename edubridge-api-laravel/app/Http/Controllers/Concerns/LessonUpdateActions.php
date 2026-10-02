@@ -42,6 +42,12 @@ trait LessonUpdateActions
             return response()->json(['error' => 'يمكنك استهداف الأطفال المرتبطين بك فقط'], 403);
         }
 
+        if ($targetType === 'specificChildren' && ($lesson->target_type ?? null) !== 'specificChildren') {
+            $unprotected = DB::table('media')->where('lesson_id', $id)->pluck('url')
+                ->contains(fn ($url) => \App\Support\LessonFiles::key((string) $url) === null);
+            if ($unprotected) return response()->json(['error' => 'رحّل الوسائط القديمة إلى التخزين الخاص قبل تغيير جمهور الدرس'], 422);
+        }
+
         try {
             $this->validateUploadedMedia($request);
         } catch (InvalidArgumentException $e) {

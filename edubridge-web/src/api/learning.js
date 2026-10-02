@@ -167,18 +167,19 @@ export function fetchChildEngagement(childId) {
   return request(`/children/${childId}/engagement`);
 }
 
-export function addChildStars(childId, count = 1) {
+export function addChildStars(childId, count = 1, eventId = crypto.randomUUID()) {
   return request(`/children/${childId}/rewards/stars`, {
     method: "POST",
-    body: JSON.stringify({ count }),
+    body: JSON.stringify({ count, event_id: eventId }),
   });
 }
 
-export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, durationSeconds = null) {
+export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, durationSeconds = null, eventId = crypto.randomUUID()) {
   return request(`/children/${childId}/game-attempts`, {
     method: "POST",
     body: JSON.stringify({
       game_key: gameKey,
+      event_id: eventId,
       score,
       stars_earned: starsEarned,
       ...(durationSeconds == null ? {} : { duration_seconds: durationSeconds }),

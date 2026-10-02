@@ -25,10 +25,7 @@ trait ChildLessonHelpers
             ->orderBy('id')
             ->get()
             ->map(function ($item) use ($request) {
-                $url = $item->url;
-                if ($url && !preg_match('/^https?:\/\//i', $url)) {
-                    $url = rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
-                }
+                $url = \App\Support\LessonFiles::forViewer($request, $item->url);
 
                 return [
                     'id' => $item->id,
