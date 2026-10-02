@@ -12,16 +12,16 @@ from pygltflib import GLTF2
 
 
 ALIASES = {
-    "hips": ["Hips", "mixamorig:Hips", "mixamorigHips"],
-    "spine": ["Spine", "Spine1", "mixamorig:Spine", "mixamorigSpine"],
-    "neck": ["Neck", "mixamorig:Neck", "mixamorigNeck"],
-    "head": ["Head", "mixamorig:Head", "mixamorigHead"],
-    "left_upper_arm": ["LeftUpperArm", "LeftArm", "mixamorig:LeftArm", "mixamorigLeftArm"],
-    "left_lower_arm": ["LeftLowerArm", "LeftForeArm", "mixamorig:LeftForeArm", "mixamorigLeftForeArm"],
-    "left_hand": ["LeftHand", "mixamorig:LeftHand", "mixamorigLeftHand"],
-    "right_upper_arm": ["RightUpperArm", "RightArm", "mixamorig:RightArm", "mixamorigRightArm"],
-    "right_lower_arm": ["RightLowerArm", "RightForeArm", "mixamorig:RightForeArm", "mixamorigRightForeArm"],
-    "right_hand": ["RightHand", "mixamorig:RightHand", "mixamorigRightHand"],
+    "hips": ["Hips", "mixamorig:Hips", "mixamorigHips", "J_Bip_C_Hips"],
+    "spine": ["Spine", "Spine1", "mixamorig:Spine", "mixamorigSpine", "J_Bip_C_Spine", "J_Bip_C_Chest", "J_Bip_C_UpperChest"],
+    "neck": ["Neck", "mixamorig:Neck", "mixamorigNeck", "J_Bip_C_Neck"],
+    "head": ["Head", "mixamorig:Head", "mixamorigHead", "J_Bip_C_Head"],
+    "left_upper_arm": ["LeftUpperArm", "LeftArm", "mixamorig:LeftArm", "mixamorigLeftArm", "J_Bip_L_UpperArm"],
+    "left_lower_arm": ["LeftLowerArm", "LeftForeArm", "mixamorig:LeftForeArm", "mixamorigLeftForeArm", "J_Bip_L_LowerArm"],
+    "left_hand": ["LeftHand", "mixamorig:LeftHand", "mixamorigLeftHand", "J_Bip_L_Hand"],
+    "right_upper_arm": ["RightUpperArm", "RightArm", "mixamorig:RightArm", "mixamorigRightArm", "J_Bip_R_UpperArm"],
+    "right_lower_arm": ["RightLowerArm", "RightForeArm", "mixamorig:RightForeArm", "mixamorigRightForeArm", "J_Bip_R_LowerArm"],
+    "right_hand": ["RightHand", "mixamorig:RightHand", "mixamorigRightHand", "J_Bip_R_Hand"],
 }
 
 FINGER_ALIASES = {
@@ -30,6 +30,11 @@ FINGER_ALIASES = {
     "middle": ["Middle", "MiddleFinger"],
     "ring": ["Ring", "RingFinger"],
     "pinky": ["Pinky", "Little", "LittleFinger"],
+}
+
+VRM_FINGER_PREFIX = {
+    "left": "J_Bip_L_",
+    "right": "J_Bip_R_",
 }
 
 
@@ -66,6 +71,15 @@ def finger_aliases(side: str, finger: str, segment: int) -> list[str]:
                 f"{prefix}{finger_name}{segment}",
                 f"{prefix}{finger_name}_{segment}",
             ])
+
+    # VRM/UniVRM rigs commonly use names such as J_Bip_L_Index1
+    # and J_Bip_R_Little3.
+    vrm_prefix = VRM_FINGER_PREFIX[side]
+    vrm_finger = "Little" if finger == "pinky" else finger.capitalize()
+    names.extend([
+        f"{vrm_prefix}{vrm_finger}{segment}",
+        f"{vrm_prefix}{vrm_finger}_{segment}",
+    ])
     return names
 
 
