@@ -114,7 +114,7 @@ class PrivateLessonFileTest extends \Tests\TestCase
     {
         $this->mockR2([new Response(206, ['Content-Type' => 'video/mp4', 'Content-Length' => '3', 'Content-Range' => 'bytes 0-2/10', 'Accept-Ranges' => 'bytes'], 'abc')]);
         $response = $this->withHeaders(['Range' => 'bytes=0-2'])->get($this->link());
-        $response->assertStatus(206)->assertHeader('Content-Range', 'bytes 0-2/10')->assertHeader('Cache-Control');
+        $response->assertStatus(206)->assertHeader('Content-Range', 'bytes 0-2/10')->assertHeader('Content-Security-Policy', "sandbox; default-src 'none'")->assertHeader('Cache-Control');
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $this->assertSame('abc', $response->streamedContent());
         $this->assertSame('bytes=0-2', $this->r2History[0]['request']->getHeaderLine('Range'));

@@ -14,7 +14,8 @@ verification alone does not unlock product APIs.
 New homework submission files are stored in private R2. Their API download path
 checks the child's parent/care team or the homework author/admin, as well as the
 exact file reference on the submission. The web opens these files through an
-authenticated fetch. Existing public submission files require a separate storage
+authenticated fetch. Active HTML/SVG types are displayed as plain text before
+blob navigation, and API downloads carry sandbox/no-referrer headers. Existing public submission files require a separate storage
 migration; changing their database URLs alone does not remove public objects.
 Until that migration is performed, earlier shared links can remain accessible.
 

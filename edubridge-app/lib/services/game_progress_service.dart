@@ -58,7 +58,7 @@ class GameProgressService {
     final decoded = jsonDecode(raw) as List;
     final queue = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
     for (final item in queue) { item['event_id'] ??= newSyncEventId(); }
-    await prefs.setString(key, jsonEncode(queue));
+    if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
     await prefs.remove('pending_game_attempts_v1');
     return queue;
   }

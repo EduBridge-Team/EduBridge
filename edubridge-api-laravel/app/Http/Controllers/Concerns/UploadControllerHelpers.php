@@ -22,6 +22,8 @@ trait UploadControllerHelpers
             $headers = [
                 'Content-Type' => $object->getHeaderLine('Content-Type') ?: 'application/octet-stream',
                 'X-Content-Type-Options' => 'nosniff',
+                'Content-Security-Policy' => "sandbox; default-src 'none'",
+                'Referrer-Policy' => 'no-referrer',
                 'Cache-Control' => 'private, no-store, max-age=0',
             ];
 
