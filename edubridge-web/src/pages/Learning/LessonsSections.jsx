@@ -63,30 +63,9 @@ export function LessonsHero({
   )
 }
 
-function normalizeMatchText(value) {
-  return String(value || '')
-    .toLowerCase()
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ى/g, 'ي')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function LessonCard({ lesson, onToggleSpeak, speakingId, signs = [] }) {
+function LessonCard({ lesson, onToggleSpeak, speakingId }) {
   const category = lessonCategory(lesson)
   const images = lesson.images || lesson.image_urls || []
-  const haystack = normalizeMatchText([lesson.title, lesson.content].filter(Boolean).join(' '))
-  const matchedSigns = signs.filter((sign) => {
-    const ar = normalizeMatchText(sign.arabic_label)
-    const en = normalizeMatchText(sign.english_label)
-    return (ar && haystack.includes(ar)) || (en && haystack.includes(en))
-  }).slice(0, 3)
-
-  const openSign = (sign) => {
-    window.location.assign(`/sign-language?q=${encodeURIComponent(sign.arabic_label)}`)
-  }
 
   return (
     <article className="lesson-card-new">
@@ -105,15 +84,6 @@ function LessonCard({ lesson, onToggleSpeak, speakingId, signs = [] }) {
             {images.length > 0 && <span>🖼️ صور</span>}
           </div>
         )}
-        {matchedSigns.length > 0 && (
-          <div className="lesson-sign-links" aria-label="إشارات مرتبطة بالدرس">
-            {matchedSigns.map((sign) => (
-              <button key={sign.id} type="button" className="btn small outline" onClick={() => openSign(sign)}>
-                🤟 {sign.arabic_label}
-              </button>
-            ))}
-          </div>
-        )}
         <div className="lesson-card-actions">
           <button className="btn small outline" onClick={() => onToggleSpeak(lesson)}>
             {speakingId === lesson.id
@@ -127,7 +97,7 @@ function LessonCard({ lesson, onToggleSpeak, speakingId, signs = [] }) {
   )
 }
 
-export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, speakingId, onReset, signs = [] }) {
+export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, speakingId, onReset }) {
   if (loading) {
     return <div className="state"><div className="spinner" />جارِ تحميل الدروس...</div>
   }
@@ -153,7 +123,6 @@ export function LessonsList({ error, filtered, loading, onRetry, onToggleSpeak, 
           lesson={lesson}
           onToggleSpeak={onToggleSpeak}
           speakingId={speakingId}
-          signs={signs}
         />
       ))}
     </div>

@@ -16,7 +16,6 @@ export function activeSection(pathname, role, homePath) {
   if (/\/children\/[^/]+\/progress$/.test(pathname)) return role === 'parent' ? 'progress' : 'children'
   if (/\/children\/[^/]+\/lessons$/.test(pathname)) return role === 'parent' ? 'lessons' : 'children'
   if (pathname === '/lessons') return 'lessons'
-  if (pathname === '/sign-language') return 'sign-language'
   if (pathname.startsWith('/children')) return 'children'
   if (pathname === '/conversations') return 'conversations'
   if (pathname === '/search') return 'search'
@@ -55,12 +54,6 @@ export function createRoleNavItems({
   })
 
   const home = item('home', 'الرئيسية', <Home size={21} />, homePath)
-  const signLanguage = item(
-    'sign-language',
-    'لغة الإشارة',
-    <Accessibility size={21} />,
-    '/sign-language',
-  )
   const conversations = item(
     'conversations',
     'المحادثات',
@@ -74,7 +67,6 @@ export function createRoleNavItems({
       home,
       item('children', 'أطفالي', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons'),
       {
@@ -97,7 +89,6 @@ export function createRoleNavItems({
       home,
       item('children', 'الطلاب', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
       item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
@@ -119,7 +110,6 @@ export function createRoleNavItems({
       item('care-team', 'فريق الدعم التعليمي', <Users size={21} />, '/care-team'),
       item('search', 'البحث', <Search size={21} />, '/search'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       conversations,
       ...(role === 'specialist' ? [item('settings', 'إعدادات التكيف', <Accessibility size={21} />, '/accessibility')] : []),
@@ -130,7 +120,6 @@ export function createRoleNavItems({
     return [
       home,
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
       conversations,
@@ -142,7 +131,6 @@ export function createRoleNavItems({
     return [
       home,
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث', <Search size={21} />, '/search'),
       conversations,
@@ -159,7 +147,6 @@ export function createRoleNavItems({
       item('specialist-workflow', 'متابعة المختصين', <Users size={21} />, '/specialist-workflow'),
       item('learning-support', 'اجتماعات الدعم', <BookOpen size={21} />, '/learning-support'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث', <Search size={21} />, '/search'),
       conversations,
