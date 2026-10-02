@@ -38,6 +38,7 @@ trait LessonCreateActions
         }
 
         $lessonId = null;
+        $this->beginLessonMedia();
         DB::beginTransaction();
 
         try {
@@ -66,6 +67,7 @@ trait LessonCreateActions
             }
 
             DB::commit();
+            $this->commitLessonMedia();
 
             Notify::toParentsByDisabilityType(
                 $request->input('disability_type_id'),
@@ -82,13 +84,7 @@ trait LessonCreateActions
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            if ($lessonId !== null) {
-                $urls = DB::table('media')
-                    ->where('lesson_id', $lessonId)
-                    ->pluck('url')
-                    ->all();
-                $this->removeLessonObjects($urls);
-            }
+            $this->rollbackLessonMedia();
 
             report($e);
 

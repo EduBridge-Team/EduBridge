@@ -56,11 +56,13 @@ trait LessonUpdateActions
             $targetChildIds
         );
 
+        $this->beginLessonMedia();
         DB::beginTransaction();
 
         try {
             $this->persistLessonUpdate($request, $lesson, $payload);
             DB::commit();
+            $this->commitLessonMedia();
 
             $updated = DB::table('lessons')->find($lesson->id);
 
@@ -69,6 +71,7 @@ trait LessonUpdateActions
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            $this->rollbackLessonMedia();
             report($e);
 
             return response()->json(['error' => 'تعذّر تعديل الدرس'], 500);

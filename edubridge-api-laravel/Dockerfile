@@ -16,6 +16,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/99-edubridge-uploads.ini
+
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
@@ -37,7 +39,8 @@ RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENV APP_ENV=production \
-    APP_DEBUG=false
+    APP_DEBUG=false \
+    PHP_CLI_SERVER_WORKERS=4
 
 EXPOSE 8081
 

@@ -286,7 +286,7 @@ Future<bool> _apiCoreVerifyToken() async {
       if (token == null) return false;
 
       final res = await http.get(
-        Uri.parse('${Config.baseUrl}/auth/verify'),
+        Uri.parse('${Config.baseUrl}/me'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -296,18 +296,27 @@ Future<bool> _apiCoreVerifyToken() async {
     }
   }
 
+Future<http.Response> _apiCoreCheckSession(String? token, http.Response response) async {
+    if (response.statusCode == 401 && token != null &&
+        await ApiService.getToken() == token) {
+      await ApiService.logout();
+    }
+    return response;
+  }
+
 Future<http.Response> _apiCoreAuthGet(String path) async {
     final token = await ApiService.getToken();
-    return http.get(
+    final response = await http.get(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {'Authorization': 'Bearer $token'},
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthPost(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
-    return http.post(
+    final response = await http.post(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {
         'Content-Type': 'application/json',
@@ -315,12 +324,13 @@ Future<http.Response> _apiCoreAuthPost(
       },
       body: jsonEncode(body),
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthPut(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
-    return http.put(
+    final response = await http.put(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {
         'Content-Type': 'application/json',
@@ -328,12 +338,14 @@ Future<http.Response> _apiCoreAuthPut(
       },
       body: jsonEncode(body),
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthDelete(String path) async {
     final token = await ApiService.getToken();
-    return http.delete(
+    final response = await http.delete(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {'Authorization': 'Bearer $token'},
     );
+    return _apiCoreCheckSession(token, response);
   }

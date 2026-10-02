@@ -9,6 +9,9 @@ trait MediaReadActions
 {
     public function index(Request $request, $lessonId)
     {
+        if (!\App\Support\LessonVisibility::allowed($request->attributes->get('jwt_user'), (int) $lessonId)) {
+            return response()->json(['error' => 'غير مصرّح بعرض وسائط هذا الدرس'], 403);
+        }
         try {
             $media = DB::table('media')
                 ->where('lesson_id', $lessonId)

@@ -10,6 +10,8 @@ class HomeworkController extends Controller
     use \App\Http\Controllers\Concerns\HomeworkAccessHelpers;
     use \App\Http\Controllers\Concerns\HomeworkQueryHelpers;
     use \App\Http\Controllers\Concerns\HomeworkFileHelpers;
+    use \App\Http\Controllers\Concerns\HomeworkFileReadActions;
+    use \App\Http\Controllers\Concerns\UploadControllerHelpers;
     use \App\Http\Controllers\Concerns\HomeworkReadActions;
     use \App\Http\Controllers\Concerns\HomeworkAssignmentActions;
     use \App\Http\Controllers\Concerns\HomeworkSubmitActions;

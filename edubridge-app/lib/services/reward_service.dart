@@ -2,77 +2,70 @@
 // نظام المكافآت — نجوم متزامنة مع السيرفر مع fallback محلي للعمل دون اتصال.
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_service.dart';
 
 class RewardService {
-  RewardService._();
-  static final RewardService instance = RewardService._();
+  RewardService({
+    Future<http.Response> Function(String)? get,
+    Future<http.Response> Function(String, Map<String, dynamic>)? post,
+  }) : _get = get ?? ApiService.authGet, _post = post ?? ApiService.authPost;
+
+  static final RewardService instance = RewardService();
+  final Future<http.Response> Function(String) _get;
+  final Future<http.Response> Function(String, Map<String, dynamic>) _post;
+  Future<void> _tail = Future<void>.value();
+
+  Future<T> _serialize<T>(Future<T> Function() work) {
+    final result = _tail.then((_) => work());
+    _tail = result.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    return result;
+  }
 
   String _cacheKey(int childId) => 'child_stars_$childId';
   String _pendingKey(int childId) => 'child_stars_pending_$childId';
 
-  Future<int> getStars(int childId) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    try {
-      final pending = prefs.getInt(_pendingKey(childId)) ?? 0;
-      if (pending > 0) {
-        final flush = await ApiService.authPost(
-          '/children/$childId/rewards/stars',
-          {'count': pending},
-        );
-        if (flush.statusCode >= 200 && flush.statusCode < 300) {
-          final body = jsonDecode(flush.body) as Map<String, dynamic>;
-          final synced = (body['stars'] as num?)?.toInt() ?? 0;
-          await prefs.setInt(_cacheKey(childId), synced);
-          await prefs.remove(_pendingKey(childId));
-        }
-      }
-
-      final res = await ApiService.authGet('/children/$childId/engagement');
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        final synced = (body['stars'] as num?)?.toInt() ?? 0;
-        await prefs.setInt(_cacheKey(childId), synced);
-        return synced;
-      }
-    } catch (_) {
-      // Offline fallback أدناه.
+  Future<void> _sync(int childId, SharedPreferences prefs) async {
+    var pending = prefs.getInt(_pendingKey(childId)) ?? 0;
+    while (pending > 0) {
+      final batch = pending > 20 ? 20 : pending;
+      final response = await _post('/children/$childId/rewards/stars', {'count': batch});
+      if (response.statusCode < 200 || response.statusCode >= 300) return;
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      pending -= batch;
+      await prefs.setInt(_pendingKey(childId), pending);
+      final serverStars = (body['stars'] as num?)?.toInt();
+      if (serverStars != null) await prefs.setInt(_cacheKey(childId), serverStars + pending);
     }
+    await prefs.remove(_pendingKey(childId));
+  }
 
+  Future<int> getStars(int childId) => _serialize(() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      await _sync(childId, prefs);
+      final response = await _get('/children/$childId/engagement');
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final total = ((body['stars'] as num?)?.toInt() ?? 0) + (prefs.getInt(_pendingKey(childId)) ?? 0);
+        await prefs.setInt(_cacheKey(childId), total);
+        return total;
+      }
+    } catch (_) {}
     return prefs.getInt(_cacheKey(childId)) ?? 0;
-  }
+  });
 
-  Future<void> addStar(int childId, {int count = 1}) async {
+  Future<void> addStar(int childId, {int count = 1}) => _serialize(() async {
+    if (count <= 0) return;
     final prefs = await SharedPreferences.getInstance();
-    final pending = prefs.getInt(_pendingKey(childId)) ?? 0;
-    final toSync = pending + count;
-
-    try {
-      final res = await ApiService.authPost(
-        '/children/$childId/rewards/stars',
-        {'count': toSync},
-      );
-
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        final synced = (body['stars'] as num?)?.toInt() ??
-            (prefs.getInt(_cacheKey(childId)) ?? 0) + toSync;
-        await prefs.setInt(_cacheKey(childId), synced);
-        await prefs.remove(_pendingKey(childId));
-        return;
-      }
-    } catch (_) {
-      // نحفظ الزيادة محلياً كي لا تضيع مكافأة الطفل.
-    }
-
-    final current = prefs.getInt(_cacheKey(childId)) ?? 0;
-    await prefs.setInt(_cacheKey(childId), current + count);
-    await prefs.setInt(_pendingKey(childId), toSync);
-  }
+    await prefs.setInt(_cacheKey(childId), (prefs.getInt(_cacheKey(childId)) ?? 0) + count);
+    await prefs.setInt(_pendingKey(childId), (prefs.getInt(_pendingKey(childId)) ?? 0) + count);
+    try { await _sync(childId, prefs); } catch (_) {}
+  });
 
   /// إظهار مكافأة بصرية
   static Future<void> showReward(

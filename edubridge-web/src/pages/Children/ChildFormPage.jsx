@@ -13,7 +13,7 @@ function toList(text) {
   const t = (text || '').trim()
   if (!t) return null
   return t
-    .split(',')
+    .split(/[,،]/)
     .map((s) => s.trim())
     .filter(Boolean)
 }

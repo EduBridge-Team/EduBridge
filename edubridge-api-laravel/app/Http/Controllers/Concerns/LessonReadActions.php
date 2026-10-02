@@ -17,6 +17,7 @@ trait LessonReadActions
                 ->selectRaw('COUNT(r.id) as rating_count')
                 ->groupBy('l.id')
                 ->orderByDesc('l.created_at');
+            \App\Support\LessonVisibility::scope($query, $request->attributes->get('jwt_user'), 'l.');
 
             if ($request->query('disability_type_id')) {
                 $query->where('l.disability_type_id', $request->query('disability_type_id'));
@@ -63,6 +64,7 @@ trait LessonReadActions
                 })
                 ->orderByDesc('created_at')
                 ->limit(50);
+            \App\Support\LessonVisibility::scope($query, $request->attributes->get('jwt_user'));
 
             $user = $request->attributes->get('jwt_user');
             if (($user->role ?? null) === 'parent') {
@@ -83,6 +85,9 @@ trait LessonReadActions
             $lesson = DB::table('lessons')->find($id);
             if (!$lesson) {
                 return response()->json(['error' => 'الدرس غير موجود'], 404);
+            }
+            if (!\App\Support\LessonVisibility::allowed($request->attributes->get('jwt_user'), (int) $id)) {
+                return response()->json(['error' => 'غير مصرّح بعرض هذا الدرس'], 403);
             }
 
             $serialized = $this->serializeLesson($request, $lesson);

@@ -33,6 +33,7 @@ class ChildControllerPrivacyTest extends TestCase
             $table->unsignedBigInteger('disability_type_id')->nullable();
             $table->unsignedBigInteger('organization_id')->nullable();
             $table->string('status')->default('pending');
+            $table->string('doc_verification_status')->default('verified');
             $table->string('child_national_id')->nullable();
             $table->string('guardian_national_id')->nullable();
             $table->text('guardian_id_document_url')->nullable();
@@ -44,6 +45,9 @@ class ChildControllerPrivacyTest extends TestCase
         Schema::create('child_parent', function (Blueprint $table) {
             $table->unsignedBigInteger('child_id');
             $table->unsignedBigInteger('parent_id');
+        });
+        Schema::create('child_teacher', function (Blueprint $table) {
+            $table->unsignedBigInteger('child_id'); $table->unsignedBigInteger('teacher_id');
         });
 
         Schema::create('child_specialist', function (Blueprint $table) {
@@ -81,6 +85,7 @@ class ChildControllerPrivacyTest extends TestCase
     {
         Schema::dropIfExists('child_specialist');
         Schema::dropIfExists('child_parent');
+        Schema::dropIfExists('child_teacher');
         Schema::dropIfExists('children');
         Schema::dropIfExists('disability_types');
         Schema::dropIfExists('users');
@@ -102,6 +107,17 @@ class ChildControllerPrivacyTest extends TestCase
         $this->assertArrayNotHasKey('guardian_id_document_url', $child);
         $this->assertArrayNotHasKey('kinship_document_url', $child);
         $this->assertSame(['القراءة'], $child['strengths']);
+    }
+
+    public function test_teacher_directory_excludes_unrelated_children_and_includes_team_assignments(): void
+    {
+        DB::table('children')->insert(['id' => 20, 'name' => 'Unrelated']);
+        DB::table('children')->insert(['id' => 30, 'name' => 'Team child']);
+        DB::table('child_teacher')->insert(['child_id' => 30, 'teacher_id' => 2]);
+        $data = app(ChildController::class)->index($this->request(2, 'teacher'))->getData(true);
+        $this->assertEqualsCanonicalizing([10, 30], array_column($data['children'], 'id'));
+        $institution = app(ChildController::class)->index($this->request(4, 'institution'))->getData(true);
+        $this->assertSame([], $institution['children']);
     }
 
     public function test_parent_child_list_keeps_identity_fields_for_own_child(): void
@@ -198,5 +214,24 @@ class ChildControllerPrivacyTest extends TestCase
         $request->attributes->set('jwt_user', (object) ['id' => $id, 'role' => $role]);
 
         return $request;
+    }
+
+    public function test_parent_cannot_keep_approval_by_sending_status_with_changed_identity(): void
+    {
+        $response = app(ChildController::class)->update($this->request(1, 'parent', 'PUT', [
+            'guardian_national_id' => '111111111', 'doc_verification_status' => 'verified',
+        ]), 10);
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseHas('children', ['id' => 10, 'guardian_national_id' => '987654321', 'doc_verification_status' => 'verified']);
+    }
+
+    public function test_unchanged_identity_keeps_approval_and_real_change_requires_review(): void
+    {
+        $controller = app(ChildController::class);
+        $response = $controller->update($this->request(1, 'parent', 'PUT', ['guardian_national_id' => '987654321']), 10);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertDatabaseHas('children', ['id' => 10, 'doc_verification_status' => 'verified']);
+        $controller->update($this->request(1, 'parent', 'PUT', ['guardian_national_id' => '111111111']), 10);
+        $this->assertDatabaseHas('children', ['id' => 10, 'doc_verification_status' => 'pending']);
     }
 }

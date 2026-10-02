@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 // الواجبات
+Route::get('/private-files/homework/{homeworkId}/child/{childId}/{filename}', [\App\Http\Controllers\HomeworkController::class, 'file'])
+    ->where('filename', '[A-Za-z0-9._-]+');
 Route::get('/homeworks', [\App\Http\Controllers\HomeworkController::class, 'index'])
     ->middleware('role:parent,teacher,specialist,admin');
 Route::post('/homeworks', [\App\Http\Controllers\HomeworkController::class, 'store'])

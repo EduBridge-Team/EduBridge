@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Concerns;
 
-use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use App\Support\AuthCredentials;
 
 trait AuthControllerHelpers
 {
@@ -45,12 +46,11 @@ trait AuthControllerHelpers
             throw new \RuntimeException('USER_ROLE_MISSING');
         }
 
-        $now = time();
+        $account = DB::table('users')->where('id', $user->id)->first();
+        if (!$account) {
+            throw new \RuntimeException('USER_NOT_FOUND');
+        }
 
-        return JWT::encode(
-            ['id' => $user->id, 'role' => $role, 'iat' => $now, 'exp' => $now + 7 * 24 * 3600],
-            $jwtSecret,
-            'HS256'
-        );
+        return AuthCredentials::issue($account, $jwtSecret);
     }
 }

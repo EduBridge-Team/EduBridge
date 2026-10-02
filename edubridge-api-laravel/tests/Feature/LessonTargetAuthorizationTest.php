@@ -182,4 +182,17 @@ class LessonTargetAuthorizationTest extends TestCase
 
         return $request;
     }
+
+    public function test_private_lesson_and_media_reject_unrelated_parent_but_allow_linked_parent(): void
+    {
+        $controller = app(LessonController::class);
+        $outsider = $this->request('GET', [], 3, 'parent');
+        $this->assertSame(403, $controller->show($outsider, 100)->getStatusCode());
+        $this->assertSame(403, app(\App\Http\Controllers\MediaController::class)->index($outsider, 100)->getStatusCode());
+        DB::table('child_parent')->insert(['child_id' => 10, 'parent_id' => 3]);
+        $this->assertSame(200, $controller->show($outsider, 100)->getStatusCode());
+        $this->assertSame(200, app(\App\Http\Controllers\MediaController::class)->index($outsider, 100)->getStatusCode());
+        $this->assertTrue(\App\Support\LessonVisibility::scope(DB::table('lessons'), (object) ['id' => 3, 'role' => 'parent'])->where('id', 100)->exists());
+        $this->assertFalse(\App\Support\LessonVisibility::scope(DB::table('lessons'), (object) ['id' => 4, 'role' => 'parent'])->where('id', 100)->exists());
+    }
 }
