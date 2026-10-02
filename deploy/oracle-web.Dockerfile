@@ -21,7 +21,7 @@ ENV NODE_ENV=production \
     API_ORIGIN=https://api.edubridge.win
 
 COPY --from=build /app/edubridge-web/dist ./edubridge-web/dist
-COPY deploy/web-server.mjs ./deploy/web-server.mjs
+COPY deploy/web-server.mjs deploy/static-encoding.mjs ./deploy/
 
 EXPOSE 8080
 
