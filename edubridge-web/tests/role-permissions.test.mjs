@@ -11,7 +11,7 @@ const allowed = {
   '/care-team': ['parent', 'teacher', 'specialist', 'admin'], '/parent-lessons': ['parent', 'teacher', 'specialist', 'admin'],
   '/case-discussions': ['teacher', 'specialist', 'admin'], '/specialist-workflow': ['specialist', 'admin'],
   '/learning-support': ['parent', 'specialist', 'admin'], '/search': ['teacher', 'specialist', 'admin', 'institution', 'ministry'],
-  '/lessons': roles, '/conversations': roles, '/notifications': roles, '/verify': roles, '/profile': roles, '/support': roles,
+  '/lessons/new': ['teacher', 'specialist', 'admin'], '/lessons': roles, '/conversations': roles, '/notifications': roles, '/verify': roles, '/profile': roles, '/support': roles,
 }
 
 test('portal role permissions match the API roles shared with mobile', () => {

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { fetchMyVerification, getToken, getUser } from './api'
 import { isIdentityVerified } from './verificationPolicy'
 
@@ -7,6 +7,7 @@ export const VerificationContext = createContext({ verified: false, loading: tru
 export const useVerification = () => useContext(VerificationContext)
 
 export function VerificationProvider({ children }) {
+  const { pathname } = useLocation()
   const token = getToken()
   const role = getUser()?.role
   const [state, setState] = useState({ token: null, loading: true, verification: null, error: '' })
@@ -24,7 +25,7 @@ export function VerificationProvider({ children }) {
     } catch (error) {
       if (request === sequence.current) setState({ token, loading: false, verification: null, error: error.message })
     }
-  }, [token, role])
+  }, [token, role, pathname])
 
   useEffect(() => {
     refresh()
@@ -37,7 +38,7 @@ export function VerificationProvider({ children }) {
   }, [refresh])
 
   const loading = Boolean(token) && role !== 'admin' && (state.token !== token || state.loading)
-  const verified = Boolean(token) && (role === 'admin' || (!loading && state.token === token && isIdentityVerified(getUser(), state.verification)))
+  const verified = Boolean(token) && (role === 'admin' || (state.token === token && isIdentityVerified(getUser(), state.verification)))
   return <VerificationContext.Provider value={{ ...state, loading, verified, canAccessPortal: Boolean(token) && (role === 'parent' || verified), refresh }}>{children}</VerificationContext.Provider>
 }
 

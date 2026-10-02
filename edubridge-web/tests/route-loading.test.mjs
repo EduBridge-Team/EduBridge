@@ -165,3 +165,13 @@ test('admin has institution and ministry creation inside account management', as
     assert.match(html, /pp-sidebar/)
   }
 })
+
+ test('lesson authoring is a standalone page with video controls for teaching roles', async () => {
+  for (const role of ['teacher', 'specialist']) {
+    const html = await renderRoute('/lessons/new?audience=parents', role)
+    assert.match(html, /lesson-editor-page/)
+    assert.match(html, /فيديو الدرس/)
+    assert.ok(!html.includes('modal-overlay'))
+    assert.ok(!html.includes('aria-modal="true"'))
+  }
+})

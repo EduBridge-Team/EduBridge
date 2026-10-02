@@ -7,6 +7,7 @@ import '../child_lessons/child_lessons_screen.dart';
 import '../weekly_report_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../plan_evaluation_screen.dart';
+import '../evaluation/evaluation_sheet.dart';
 import '../../widgets/teacher_navigation_bar.dart';
 
 class SpecialistChildProfileScreen extends StatefulWidget {
@@ -66,6 +67,18 @@ class _SpecialistChildProfileScreenState
       if (mounted) setState(() => _error = 'تعذّر تحديث معلومات الطالب. حاول مرة أخرى.');
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _evaluate() async {
+    if (widget.onEvaluate != null) { await widget.onEvaluate!(_child); return; }
+    try {
+      final teachers = await ApiService.getUsers(role: 'teacher');
+      if (!mounted) return;
+      await showModalBottomSheet(context: context, isScrollControlled: true,
+        builder: (_) => EvaluationSheet(child: _child, teachers: teachers, onSaved: (_) => _load()));
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 
@@ -226,8 +239,8 @@ class _SpecialistChildProfileScreenState
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WeeklyReportScreen(childId: _childId, childName: _childName)))),
           OutlinedButton.icon(icon: const Icon(AppIcons.forum), label: const Text('مناقشة الحالة'),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CaseDiscussionScreen(filterChildId: _childId)))),
-          if (widget.onEvaluate != null) OutlinedButton.icon(icon: const Icon(AppIcons.evaluate), label: const Text('تقييم الطالب والخطة'),
-            onPressed: () => widget.onEvaluate!(_child)),
+          OutlinedButton.icon(icon: const Icon(AppIcons.evaluate), label: const Text('تقييم الطالب والخطة'),
+            onPressed: _evaluate),
           if (child['current_plan_id'] is int) OutlinedButton.icon(icon: const Icon(AppIcons.evaluate), label: const Text('تقييم الخطة الحالية'),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlanEvaluationScreen(childId: _childId, childName: _childName, planId: child['current_plan_id'] as int)))),
           ],
