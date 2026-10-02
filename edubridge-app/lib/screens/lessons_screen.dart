@@ -20,6 +20,7 @@ class LessonsScreen extends StatefulWidget {
 
 class _LessonsScreenState extends State<LessonsScreen> {
   List _lessons = [];
+  List<dynamic> _signs = const [];
   late final PagedListController _pages;
   bool _loading = true;
   String? _error;
@@ -34,6 +35,9 @@ class _LessonsScreenState extends State<LessonsScreen> {
     _pages = PagedListController((page, query) => ApiService.getLessonsPage(page: page, query: query));
     _pages.addListener(_syncPage);
     _loadLessons();
+    ApiService.getSignLanguageSigns().then((signs) {
+      if (mounted) setState(() => _signs = signs);
+    }).catchError((_) {});
   }
 
   @override
@@ -96,6 +100,34 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   List get _filtered => _lessons;
+
+  String _normalizeSignText(Object? value) {
+    return (value ?? '')
+        .toString()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[أإآ]'), 'ا')
+        .replaceAll('ة', 'ه')
+        .replaceAll('ى', 'ي')
+        .replaceAll(RegExp(r'[^\p{L}\p{N}\s]', unicode: true), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
+  List<Map<String, dynamic>> _matchingSigns(Map lesson) {
+    final haystack = _normalizeSignText(
+      '${lesson['title'] ?? ''} ${lesson['content'] ?? ''}',
+    );
+    return _signs
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .where((sign) {
+          final ar = _normalizeSignText(sign['arabic_label']);
+          final en = _normalizeSignText(sign['english_label']);
+          return (ar.isNotEmpty && haystack.contains(ar)) ||
+              (en.isNotEmpty && haystack.contains(en));
+        })
+        .take(3)
+        .toList();
+  }
 
 
   @override
@@ -224,6 +256,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   Widget _buildLessonCard(Map lesson) {
     final isSpeaking = _speakingLessonId == lesson['id'];
     final content = (lesson['content'] ?? '').toString();
+    final matchedSigns = _matchingSigns(lesson);
     final c = JisrColors.of(context);
 
     return Speakable(
@@ -267,6 +300,26 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 Text(
                   content,
                   style: const TextStyle(fontSize: 15, height: 1.5),
+                ),
+              ],
+              if (matchedSigns.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: matchedSigns.map((sign) {
+                    final arabic = (sign['arabic_label'] ?? '').toString();
+                    return ActionChip(
+                      avatar: const Icon(Icons.sign_language_rounded, size: 18),
+                      label: Text(arabic),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SignLanguageScreen(initialQuery: arabic),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ],
               const SizedBox(height: 16),
