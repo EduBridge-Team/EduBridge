@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../widgets/speakable.dart';
 import '../widgets/lesson_rating_sheet.dart';
 import 'assistant_screen.dart';
+import 'sign_language_screen.dart';
 
 class LessonsScreen extends StatefulWidget {
   const LessonsScreen({super.key});
@@ -140,6 +141,18 @@ class _LessonsScreenState extends State<LessonsScreen> {
                         : null,
                   ),
                   onChanged: (v) { setState(() => _query = v); _pages.search(v); },
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.sign_language_rounded),
+                    label: const Text('قاموس لغة الإشارة الفلسطينية'),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignLanguageScreen()),
+                    ),
+                  ),
                 ),
               ],
             ),
