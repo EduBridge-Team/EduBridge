@@ -12,7 +12,7 @@ phone video
   -> body + left hand + right hand + compact face landmarks
   -> smoothing
   -> capture-quality validation
-  -> calibrated retargeting
+  -> joint-angle + palm-plane retargeting
   -> bind-pose composition
   -> GLB animation
   -> EduBridge
@@ -89,10 +89,11 @@ Raw videos and generated motion files may contain biometric motion information. 
 
 Keep them in an approved private storage location and only publish reviewed animation assets intended for end users.
 
-## 4. Retarget and calibrate motion
+## 4. Retarget motion
 
 ```bash
-python retarget_motion.py triangle.motion.smooth.json
+python retarget_motion.py triangle.motion.smooth.json \
+  --max-gap-ms 250
 ```
 
 Output:
@@ -101,21 +102,18 @@ Output:
 triangle.motion.smooth.retarget.json
 ```
 
-Retarget v2 adds three important corrections:
+The v2 solver now uses motion geometry directly instead of treating the first few captured frames as the avatar's neutral pose:
 
-- per-bone neutral calibration from the first valid samples
-- short-gap interpolation using quaternion slerp
-- conservative joint rotation limits for torso, arms, wrists, and fingers
+- upper arms are aimed from the avatar-style left/right bind axes
+- elbows use the relative angle between upper-arm and forearm segments
+- wrist orientation comes from a full palm coordinate frame, including palm normal / twist
+- finger bones use relative bends between neighboring phalanges
+- short tracking gaps are filled with quaternion slerp
+- conservative limits are applied to unstable rotations
 
-The result contains **local motion deltas**, not absolute avatar rotations. This prevents the mocap stage from destroying the avatar's authored rest pose.
+The result uses schema `edubridge.psl.retarget.v2` and contains bind-pose delta rotations. The GLB exporter composes those deltas on top of the avatar's authored bind rotations.
 
-For a clip whose neutral pose needs more or fewer reference frames:
-
-```bash
-python retarget_motion.py triangle.motion.smooth.json \
-  --reference-samples 6 \
-  --max-gap-ms 250
-```
+`--reference-samples` is still accepted for backwards-compatible scripts, but v2 no longer relies on it.
 
 ## 5. Inspect an avatar GLB
 
@@ -133,7 +131,7 @@ python auto_bone_map.py edubridge-avatar.glb -o generated_bone_map.json
 
 Review any unmatched bones printed by the tool. A sign-language avatar should expose finger bones for thumb, index, middle, ring, and little/pinky fingers on both hands.
 
-## 7. Export a calibrated GLB animation
+## 7. Export a GLB animation
 
 ```bash
 mkdir -p generated
@@ -146,7 +144,7 @@ python export_glb_animation.py \
   -o generated/psl_triangle.glb
 ```
 
-For retarget v2, the exporter reads each target GLB node's actual bind rotation and composes the calibrated motion delta on top of it. The mesh, skin, materials, and rest pose remain intact.
+For retarget v2, the exporter reads each target GLB node's real bind rotation and composes the motion delta on top of it. The mesh, skin, materials, and rest pose remain intact.
 
 Expected export output includes:
 
@@ -168,11 +166,11 @@ python export_glb_animation.py \
 
 ## Current limitations
 
-The pipeline is now bind-pose aware, but production-quality sign animation still requires visual QA. In particular:
+The pipeline is bind-pose aware and uses relative joint geometry, but production-quality sign animation still requires visual QA. In particular:
 
 - monocular video can lose depth accuracy when hands move toward/away from the camera
 - hand/face occlusion can reduce tracking quality
-- palm twist is approximated from available landmarks and may still need rig-specific refinement
+- wrist and finger twist may still require rig-specific tuning
 - facial non-manual markers are captured as landmarks but are not yet exported as blendshape animation
 - a generated motion must still be reviewed by a PSL specialist before `animation_status=verified`
 
