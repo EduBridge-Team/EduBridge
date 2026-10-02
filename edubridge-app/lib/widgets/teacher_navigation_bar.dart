@@ -5,7 +5,7 @@ import '../screens/teacher/teacher_screen.dart';
 import '../screens/specialist/specialist_screen.dart';
 import '../services/api_service.dart';
 
-/// Keeps the teacher's destinations available on shared detail screens.
+/// Keeps teacher and specialist destinations available on shared detail screens.
 class TeacherNavigationBar extends StatefulWidget {
   const TeacherNavigationBar({super.key});
 

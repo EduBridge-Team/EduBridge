@@ -44,7 +44,7 @@ class _HomeworkCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: c.card,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: c.line),
+        border: Border.all(color: statusColor.withValues(alpha: .35)),
       ),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +61,8 @@ class _HomeworkCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
+                const SizedBox(width: 8),
+                Flexible(child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -76,7 +77,7 @@ class _HomeworkCard extends StatelessWidget {
                       fontSize: large ? 14 : 12,
                     ),
                   ),
-                ),
+                )),
               ],
             ),
             const SizedBox(height: 8),
@@ -183,14 +184,14 @@ class _HomeworkCard extends StatelessWidget {
             Row(
               children: [
                 const Icon(AppIcons.starFilled,
-                    color: AppColors.yellow, size: 22),
+                    color: AppColors.brandBlue, size: 22),
                 const SizedBox(width: 6),
                 Text(
                   'الدرجة: ${submission.grade}',
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: large ? 17 : 15,
-                    color: AppColors.greenDeep,
+                    color: AppColors.brandTealDeep,
                   ),
                 ),
               ],

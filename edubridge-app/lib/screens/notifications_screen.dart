@@ -185,7 +185,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (!mounted) return;
 
     final title = (n['title'] ?? 'تفاصيل الإشعار').toString();
-    final body = (n['body'] ?? '').toString();
+    final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final date = n['created_at'] != null
         ? DateTime.tryParse(n['created_at'].toString())
@@ -260,7 +260,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               if (body.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: c.tintTeal.withValues(alpha: .35),
                     borderRadius: BorderRadius.circular(16),
@@ -418,7 +418,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ? DateTime.tryParse(n['created_at'].toString())
         : null;
     final title = (n['title'] ?? '').toString();
-    final body = (n['body'] ?? '').toString();
+    final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final icon = _getIcon(type);
     final iconColor = _getIconColor(type);
@@ -430,13 +430,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         color: isRead ? c.card : c.tintTeal.withValues(alpha: .35),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
-          side: BorderSide(color: c.line),
+          side: BorderSide(
+            color: isRead ? c.line : AppColors.brandBlue.withValues(alpha: .35),
+          ),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _openNotificationDetails(n, c),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

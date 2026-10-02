@@ -11,16 +11,16 @@ Widget buildImagesPicker({
   return Container(
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      color: AppColors.orange.withValues(alpha: 0.08),
+      color: AppColors.brandBlue.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
+      border: Border.all(color: AppColors.brandBlue.withValues(alpha: 0.3)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            const Icon(AppIcons.image, color: AppColors.orange, size: 20),
+            const Icon(AppIcons.image, color: AppColors.brandBlue, size: 20),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
@@ -88,7 +88,7 @@ Widget buildImagesPicker({
           height: 38,
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.brandBlue,
               foregroundColor: Colors.white,
             ),
             icon: const Icon(AppIcons.image, size: 18),
