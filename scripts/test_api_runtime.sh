@@ -37,7 +37,7 @@ for _ in {1..30}; do
   sleep 1
 done
 test "$ready" = true
-jq -e '.status == "ok" and .database == "ok" and .git_sha == "runtime-ci"' "$runtime_tmp/health.json" >/dev/null
+jq -e '.status == "ok" and (keys | sort) == ["status"]' "$runtime_tmp/health.json" >/dev/null
 
 docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
