@@ -8,7 +8,6 @@ const COMMON_PORTAL_PATHS = new Set([
   '/notifications',
   '/conversations',
   '/lessons',
-  '/sign-language',
   '/verify',
   '/profile',
   '/support',
