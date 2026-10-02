@@ -16,6 +16,7 @@ export function activeSection(pathname, role, homePath) {
   if (/\/children\/[^/]+\/progress$/.test(pathname)) return role === 'parent' ? 'progress' : 'children'
   if (/\/children\/[^/]+\/lessons$/.test(pathname)) return role === 'parent' ? 'lessons' : 'children'
   if (pathname === '/lessons') return 'lessons'
+  if (pathname === '/sign-language') return 'sign-language'
   if (pathname.startsWith('/children')) return 'children'
   if (pathname === '/conversations') return 'conversations'
   if (pathname === '/search') return 'search'
@@ -54,6 +55,12 @@ export function createRoleNavItems({
   })
 
   const home = item('home', 'الرئيسية', <Home size={21} />, homePath)
+  const signLanguage = item(
+    'sign-language',
+    'لغة الإشارة',
+    <Accessibility size={21} />,
+    '/sign-language',
+  )
   const conversations = item(
     'conversations',
     'المحادثات',
@@ -67,6 +74,12 @@ export function createRoleNavItems({
       home,
       item('children', 'أطفالي', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      signLanguage,
+      signLanguage,
+      signLanguage,
+      signLanguage,
+      signLanguage,
+      signLanguage,
       ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons'),
       {
