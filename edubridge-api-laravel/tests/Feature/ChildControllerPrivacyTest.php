@@ -83,6 +83,7 @@ class ChildControllerPrivacyTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('ministry_approvals');
         Schema::dropIfExists('child_specialist');
         Schema::dropIfExists('child_parent');
         Schema::dropIfExists('child_teacher');
@@ -201,6 +202,68 @@ class ChildControllerPrivacyTest extends TestCase
         );
         $this->assertSame(403, $response->getStatusCode());
         $this->assertDatabaseMissing('children', ['id' => 10, 'name' => 'تغيير غير مصرّح']);
+    }
+
+    private function createPlans(): void
+    {
+        Schema::create('ministry_approvals', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('child_id');
+            $table->string('status');
+            $table->text('educational_plan')->nullable();
+            $table->text('teaching_methods')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->timestamp('created_at')->nullable();
+        });
+        DB::table('ministry_approvals')->insert([
+            ['id' => 1, 'child_id' => 10, 'status' => 'approved', 'educational_plan' => 'Older', 'teaching_methods' => '[]', 'reviewed_at' => '2026-09-01', 'created_at' => '2026-09-01'],
+            ['id' => 2, 'child_id' => 10, 'status' => 'approved', 'educational_plan' => 'Current', 'teaching_methods' => '["visual"]', 'reviewed_at' => '2026-09-02', 'created_at' => '2026-09-02'],
+            ['id' => 3, 'child_id' => 10, 'status' => 'pending', 'educational_plan' => 'Pending', 'teaching_methods' => '[]', 'reviewed_at' => '2026-09-03', 'created_at' => '2026-09-03'],
+        ]);
+    }
+
+    public function test_directory_query_count_stays_constant_as_children_increase(): void
+    {
+        $this->createPlans();
+        DB::table('child_specialist')->insert(['child_id' => 10, 'specialist_id' => 2, 'specialty' => 'learning', 'assigned_at' => '2026-09-01']);
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        $small = app(ChildController::class)->index($this->request(3, 'admin'));
+        $smallCount = count(DB::getQueryLog());
+        $this->assertSame(200, $small->getStatusCode());
+        $this->assertSame(3, $smallCount);
+        $child = $small->getData(true)['children'][0];
+        $this->assertSame(2, $child['current_plan_id']);
+        $this->assertSame(['visual'], $child['current_plan']['teaching_methods']);
+        $this->assertSame([2], $child['specialist_ids']);
+        $this->assertArrayNotHasKey('child_id', $child['specialists'][0]);
+        for ($id = 20; $id < 50; $id++) {
+            DB::table('children')->insert(['id' => $id, 'name' => 'Child '.$id]);
+        }
+        DB::flushQueryLog();
+        $large = app(ChildController::class)->index($this->request(3, 'admin'));
+        $this->assertSame($smallCount, count(DB::getQueryLog()));
+        DB::disableQueryLog();
+        $this->assertCount(31, $large->getData(true)['children']);
+    }
+
+    public function test_specialist_discovery_never_loads_unassigned_child_plans(): void
+    {
+        $this->createPlans();
+        DB::table('children')->insert(['id' => 20, 'name' => 'Assigned child']);
+        DB::table('child_specialist')->insert(['child_id' => 20, 'specialist_id' => 99]);
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        $response = app(ChildController::class)->index($this->request(99, 'specialist'));
+        $queries = DB::getQueryLog();
+        DB::disableQueryLog();
+        $this->assertSame(200, $response->getStatusCode());
+        $children = collect($response->getData(true)['children'])->keyBy('id');
+        $this->assertArrayNotHasKey('current_plan', $children[10]);
+        $this->assertArrayNotHasKey('strengths', $children[10]);
+        $this->assertArrayHasKey('current_plan', $children[20]);
+        $planQuery = collect($queries)->first(fn ($query) => str_contains($query['query'], 'ranked_plans'));
+        $this->assertSame([20, 'approved', 1], $planQuery['bindings']);
     }
 
     private function request(

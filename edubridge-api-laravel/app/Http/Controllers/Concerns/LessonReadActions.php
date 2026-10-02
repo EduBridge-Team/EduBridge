@@ -38,9 +38,7 @@ trait LessonReadActions
                 }
             }
 
-            $lessons = $query->get()->map(
-                fn ($lesson) => $this->serializeLesson($request, $lesson)
-            );
+            $lessons = $this->serializeLessons($request, $query->get());
 
             return response()->json(['lessons' => $lessons]);
         } catch (\Exception $e) {
@@ -71,7 +69,7 @@ trait LessonReadActions
                 $query->where('target_type', '!=', 'parents');
             }
 
-            $lessons = $query->get()->map(fn ($lesson) => $this->serializeLesson($request, $lesson));
+            $lessons = $this->serializeLessons($request, $query->get());
             return response()->json(['lessons' => $lessons]);
         } catch (\Throwable $e) {
             report($e);

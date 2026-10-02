@@ -31,8 +31,11 @@ trait ChildLessonReadActions
                 })
                 ->orderByDesc('l.created_at')
                 ->select('l.*')
-                ->get()
-                ->map(fn ($lesson) => $this->serializeChildLesson($request, $lesson));
+                ->get();
+            $media = $this->loadLessonMedia($lessons);
+            $lessons = $lessons->map(fn ($lesson) => $this->serializeChildLesson(
+                $request, $lesson, $media->get($lesson->id, collect())
+            ));
 
             return response()->json(['lessons' => $lessons]);
         } catch (\Exception $e) {
