@@ -3,11 +3,23 @@
 namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 trait LessonSerializationHelpers
 {
-    private function serializeLesson(Request $request, $lesson): array
+    use LessonMediaBatchLoading;
+
+    private function serializeLessons(Request $request, Collection $lessons): Collection
+    {
+        $media = $this->loadLessonMedia($lessons);
+
+        return $lessons->map(fn ($lesson) => $this->serializeLesson(
+            $request, $lesson, $media->get($lesson->id, collect())
+        ));
+    }
+
+    private function serializeLesson(Request $request, $lesson, ?Collection $loadedMedia = null): array
     {
         $data = (array) $lesson;
 
@@ -22,11 +34,11 @@ trait LessonSerializationHelpers
             }
         }
 
-        $media = DB::table('media')
+        $media = ($loadedMedia ?? DB::table('media')
             ->where('lesson_id', $lesson->id)
             ->select('id', 'lesson_id', 'type', 'url')
             ->orderBy('id')
-            ->get()
+            ->get())
             ->map(function ($item) use ($request) {
                 return [
                     'id' => $item->id,
@@ -66,13 +78,6 @@ trait LessonSerializationHelpers
 
     private function absoluteMediaUrl(Request $request, ?string $url): ?string
     {
-        if (!$url) {
-            return null;
-        }
-        if (preg_match('/^https?:\/\//i', $url)) {
-            return $url;
-        }
-
-        return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
+        return \App\Support\LessonFiles::forViewer($request, $url);
     }
 }

@@ -1,3 +1,4 @@
+import { getUser } from '../../api'
 import { childAssignment } from '../../utils/childPresentation'
 import { workflowLabel } from '../../utils/workflowLabels'
 import {
@@ -60,6 +61,9 @@ export function ChildInfoCard({ child }) {
       <InfoRow label="نقاط القوة" value={child?.strengths} />
       <InfoRow label="التحديات" value={child?.challenges} />
       <InfoRow label="المعلم المسؤول" value={childAssignment(child).teacher} />
+      <InfoRow label="ولي الأمر" value={(child?.guardians || []).map(parent => parent.name)} />
+      <InfoRow label="المختصون" value={(child?.specialists || []).map(member => member.name)} />
+      <InfoRow label="الخطة التعليمية" value={child?.current_plan?.educational_plan} />
       <InfoRow label="الحالة" value={childAssignment(child).label} />
     </div>
   )
@@ -100,7 +104,8 @@ export function ChildEvaluationsSection({ evaluations }) {
   )
 }
 
-export function ChildDetailsActions({ childId, name, navigate }) {
+export function ChildDetailsActions({ childId, name, navigate, canFollow = true }) {
+  if (!canFollow) return <p className="meta">المتابعة والتقدم متاحان للمختص المعيّن للطفل فقط.</p>
   return (
     <div className="child-actions child-details-actions">
       <button
@@ -121,12 +126,17 @@ export function ChildDetailsActions({ childId, name, navigate }) {
       >
         <Gamepad2 size={18} /> الألعاب التعليمية
       </button>
-      <button
+      {['teacher', 'specialist'].includes(getUser()?.role) && <>
+        <button className="btn outline" onClick={() => navigate(`/homeworks?child_id=${childId}`)}>الواجبات</button>
+        <button className="btn outline" onClick={() => navigate(`/weekly-reports?child_id=${childId}`)}>{getUser()?.role === 'specialist' ? 'التقدم الأسبوعي' : 'كتابة تقرير / التقدم'}</button>
+        <button className="btn outline" onClick={() => navigate(`/case-discussions?child_id=${childId}`)}>مناقشة الحالة</button>
+      </>}
+      {getUser()?.role === 'specialist' && <button
         className="btn outline"
         onClick={() => navigate(`/children/${childId}/accessibility`)}
       >
         <Accessibility size={18} /> إعدادات الوصول
-      </button>
+      </button>}
     </div>
   )
 }

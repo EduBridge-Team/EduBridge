@@ -5,6 +5,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: '📊 تقرير أسبوعي — ${widget.childName}'),
       body: Form(
         key: _formKey,

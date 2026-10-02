@@ -3,7 +3,9 @@ part of 'api_service.dart';
 Future<void> _apiCoreInitializeAuthState() async {
     ApiService.isAuthenticated.value = await ApiService.getToken() != null;
     final prefs = await SharedPreferences.getInstance();
-    ApiService.userRole.value = prefs.getString('role');
+    ApiService.userRole.value = ApiService.isAuthenticated.value
+        ? prefs.getString('role')
+        : null;
   }
 
 Never _apiCoreHandleError(Object error) {
@@ -80,14 +82,20 @@ Map<String, dynamic>? _apiCoreAsStringMap(dynamic value) {
   }
 
 Future<void> _apiCoreSaveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-    ApiService.isAuthenticated.value = true;
+    try {
+      await TokenStore.instance.save(token);
+      ApiService.isAuthenticated.value = true;
+    } on TokenStorageException {
+      WebSocketService().disconnect();
+      NotificationListenerService.instance.dispose();
+      ApiService.isAuthenticated.value = false;
+      ApiService.userRole.value = null;
+      rethrow;
+    }
   }
 
 Future<String?> _apiCoreGetToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+    return TokenStore.instance.get();
   }
 
 Future<void> _apiCoreSaveUserData(Map<String, dynamic> user) async {
@@ -117,10 +125,12 @@ Future<int?> _apiCoreGetUserId() async {
 Future<void> _apiCoreLogout() async {
     WebSocketService().disconnect();
     NotificationListenerService.instance.dispose();
+    ApiService.isAuthenticated.value = false;
+    ApiService.userRole.value = null;
+    await TokenStore.instance.clear();
     await GoogleAuthService.signOut();
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
     await prefs.remove('role');
     await prefs.remove('name');
     await prefs.remove('userId');
@@ -154,6 +164,8 @@ Future<String?> _apiCoreLogin(String email, String password) async {
         return null;
       }
       return data['error'] ?? 'فشل تسجيل الدخول';
+    } on TokenStorageException catch (e) {
+      return e.toString();
     } catch (e) {
       return 'تعذّر الاتصال بالسيرفر';
     }
@@ -188,6 +200,8 @@ Future<String?> _apiCoreGoogleLogin(String idToken) async {
       }
 
       return data['error'] ?? data['message'] ?? 'فشل تسجيل الدخول عبر Google';
+    } on TokenStorageException catch (e) {
+      return e.toString();
     } catch (_) {
       return 'تعذّر الاتصال بالسيرفر';
     }
@@ -286,7 +300,7 @@ Future<bool> _apiCoreVerifyToken() async {
       if (token == null) return false;
 
       final res = await http.get(
-        Uri.parse('${Config.baseUrl}/auth/verify'),
+        Uri.parse('${Config.baseUrl}/me'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -296,18 +310,27 @@ Future<bool> _apiCoreVerifyToken() async {
     }
   }
 
+Future<http.Response> _apiCoreCheckSession(String? token, http.Response response) async {
+    if (response.statusCode == 401 && token != null &&
+        await ApiService.getToken() == token) {
+      await ApiService.logout();
+    }
+    return response;
+  }
+
 Future<http.Response> _apiCoreAuthGet(String path) async {
     final token = await ApiService.getToken();
-    return http.get(
+    final response = await http.get(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {'Authorization': 'Bearer $token'},
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthPost(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
-    return http.post(
+    final response = await http.post(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {
         'Content-Type': 'application/json',
@@ -315,12 +338,13 @@ Future<http.Response> _apiCoreAuthPost(
       },
       body: jsonEncode(body),
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthPut(
       String path, Map<String, dynamic> body) async {
     final token = await ApiService.getToken();
-    return http.put(
+    final response = await http.put(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {
         'Content-Type': 'application/json',
@@ -328,12 +352,14 @@ Future<http.Response> _apiCoreAuthPut(
       },
       body: jsonEncode(body),
     );
+    return _apiCoreCheckSession(token, response);
   }
 
 Future<http.Response> _apiCoreAuthDelete(String path) async {
     final token = await ApiService.getToken();
-    return http.delete(
+    final response = await http.delete(
       Uri.parse('${Config.baseUrl}$path'),
       headers: {'Authorization': 'Bearer $token'},
     );
+    return _apiCoreCheckSession(token, response);
   }

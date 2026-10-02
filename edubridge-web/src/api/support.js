@@ -74,6 +74,13 @@ export function saveWeeklyReport(payload) {
   });
 }
 
+export function saveSpecialistWeeklyProgress(payload) {
+  return request('/reports/weekly/specialist', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 // ===== Learning support requests & meetings =====
 export function fetchLearningSupportRequests(params = {}) {
   const q = new URLSearchParams(params).toString();
@@ -217,4 +224,8 @@ export function recommendLearningSupport(payload) {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+}
+
+export function assignSpecialistToChild(childId, specialistId, specialty) {
+  return request(`/children/${childId}/specialists`, { method: 'POST', body: JSON.stringify({ specialist_id: specialistId, specialty }) });
 }

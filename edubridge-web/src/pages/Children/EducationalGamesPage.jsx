@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, Settings } from 'lucide-react'
-import { fetchChildAccessibilityProfile, fetchChildDetails, fetchChildEngagement } from '../../api'
-import { applyAccessibilityProfile, getAccessibilityProfile, typeFromText } from '../../accessibility'
+import { fetchChildAccessibilityProfile, fetchChildDetails, fetchChildEngagement, getUser } from '../../api'
+import { getAccessibilityProfile, typeFromText } from '../../accessibility'
 import EducationalGamePlayer from './EducationalGamePlayer'
 import { ageGroup, ageLabel, GAMES } from './educationalGamesData'
 
@@ -28,7 +28,6 @@ export default function EducationalGamesPage() {
         : getAccessibilityProfile(childId, currentChild.disability_type)
       setChild(currentChild)
       setProfile(currentProfile)
-      applyAccessibilityProfile(currentProfile)
     }).catch((err) => setError(err.message))
 
     fetchChildEngagement(childId)
@@ -76,9 +75,9 @@ export default function EducationalGamesPage() {
       <button className="back-btn" aria-label="رجوع" onClick={() => navigate(-1)}><ArrowRight size={18} /></button>
       <h2>الألعاب التعليمية</h2>
       <span style={{ flex: 1 }} />
-      <button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
+      {getUser()?.role === 'specialist' && <button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
         <Settings size={16} /> إعدادات الوصول
-      </button>
+      </button>}
     </div>
 
     <section className="games-hero">

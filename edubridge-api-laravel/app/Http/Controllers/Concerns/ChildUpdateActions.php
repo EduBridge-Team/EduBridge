@@ -10,6 +10,13 @@ trait ChildUpdateActions
     public function update(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
+        if (!$user || !in_array($user->role, ['parent', 'teacher', 'specialist', 'admin'], true)) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
+        }
+        if ($user->role === 'specialist' && !DB::table('child_specialist')
+            ->where('child_id', $id)->where('specialist_id', $user->id)->exists()) {
+            return response()->json(['error' => 'يمكنك تعديل الأطفال المعيّنين لك فقط'], 403);
+        }
 
         try {
             $child = DB::table('children')->where('id', $id)->first();

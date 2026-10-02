@@ -11,18 +11,7 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
-groq_key="$(grep -E '^GROQ_API_KEY=' "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
-groq_model="$(grep -E '^GROQ_MODEL=' "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
-if [[ -z "$groq_key" ]]; then
-  echo "ERROR: GROQ_API_KEY is missing or empty in $ENV_FILE." >&2
-  echo "Noor cannot work without this server-side key." >&2
-  exit 1
-fi
-if [[ -z "$groq_model" ]]; then
-  echo "WARNING: GROQ_MODEL is not set; Laravel will use its default model."
-fi
-
-for command in docker curl git; do
+for command in docker curl git python3; do
   if ! command -v "$command" >/dev/null 2>&1; then
     echo "ERROR: required command not found: $command" >&2
     exit 1
@@ -45,6 +34,9 @@ compose() {
     -f "$COMPOSE_FILE" \
     "$@"
 }
+
+echo "==> Checking resolved Noor configuration before changing containers..."
+compose config --format json | python3 "$ROOT/deploy/check-noor-config.py"
 
 echo "==> Ensuring persistent Docker resources exist..."
 docker network inspect edubridge-net >/dev/null 2>&1 || docker network create edubridge-net >/dev/null
@@ -118,7 +110,7 @@ echo "==> Clearing Laravel runtime caches..."
 compose exec -T api php artisan optimize:clear >/dev/null
 
 echo "==> Waiting for local health endpoints..."
-for url in http://127.0.0.1:8081/ http://127.0.0.1:8082/; do
+for url in http://127.0.0.1:8081/api/health http://127.0.0.1:8082/; do
   ok=false
   for _ in {1..30}; do
     if curl -fsS "$url" >/dev/null; then

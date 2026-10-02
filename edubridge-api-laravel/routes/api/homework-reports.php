@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 // الواجبات
+Route::get('/private-files/homework/{homeworkId}/child/{childId}/{filename}', [\App\Http\Controllers\HomeworkController::class, 'file'])
+    ->where('filename', '[A-Za-z0-9._-]+');
 Route::get('/homeworks', [\App\Http\Controllers\HomeworkController::class, 'index'])
     ->middleware('role:parent,teacher,specialist,admin');
 Route::post('/homeworks', [\App\Http\Controllers\HomeworkController::class, 'store'])
@@ -18,6 +20,6 @@ Route::get('/reports/weekly', [\App\Http\Controllers\WeeklyReportController::cla
 Route::get('/reports/weekly/child/{childId}', [\App\Http\Controllers\WeeklyReportController::class, 'byChild'])
     ->middleware(['role:parent,teacher,specialist,admin', 'child.access']);
 Route::post('/reports/weekly', [\App\Http\Controllers\WeeklyReportController::class, 'store'])
-    ->middleware('role:teacher,specialist,admin');
+    ->middleware('role:teacher,admin');
 Route::post('/reports/weekly/specialist', [\App\Http\Controllers\WeeklyReportController::class, 'storeSpecialist'])
     ->middleware('role:specialist,admin');

@@ -78,8 +78,6 @@ export function CareTeamMemberForm({
             >
               <option value="learning_support">دعم تعليمي</option>
               <option value="educational">تعليمي</option>
-              <option value="communication_support">تخاطب</option>
-              <option value="learning_behavior">دعم سلوك التعلم</option>
             </select>
           </FormField>
         )}
@@ -93,6 +91,7 @@ export function CareTeamMemberForm({
 export function CareTeamMembers({
   busy,
   canManage,
+  currentUser,
   members,
   onRemove,
 }) {
@@ -117,7 +116,7 @@ export function CareTeamMembers({
               </span>
             </div>
 
-            {canManage && (
+            {canManage && (currentUser?.role === 'admin' || member.role === 'teacher' || String(member.user_id) === String(currentUser?.id)) && (
               <div className="fp-actions">
                 <button
                   className="btn outline small"

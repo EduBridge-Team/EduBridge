@@ -36,10 +36,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool get _needsSpecialty => _role == 'specialist';
 
   static const _specialties = {
-    'learning_support': 'دعم تعليمي',
-    'educational': 'خطط تعلم',
-    'communication_support': 'دعم التواصل التعليمي',
-    'learning_behavior': 'دعم سلوك التعلم',
+    'learning_support': 'مختص دعم تعليمي',
+    'educational': 'مختص تعليمي',
   };
 
   Future<void> _register() async {

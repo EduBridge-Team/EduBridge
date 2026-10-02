@@ -12,7 +12,7 @@ import {
   markLessonDone,
   sendChildEmergencyAlert,
 } from '../../api'
-import { applyAccessibilityProfile, defaultProfile, getAccessibilityProfile, saveAccessibilityProfile } from '../../accessibility'
+import { applyAccessibilityProfile, clearAccessibilityProfile, defaultProfile, getAccessibilityProfile, saveAccessibilityProfile } from '../../accessibility'
 import ChildLessonCard from './ChildLessonCard'
 
 export default function ChildLessonsPage() {
@@ -32,12 +32,14 @@ export default function ChildLessonsPage() {
   const [stars, setStars] = useState(0)
   const [emergencyBusy, setEmergencyBusy] = useState(false)
   const utterRef = useRef(null)
+  const loadSequence = useRef(0)
 
   // ولي الأمر يعرض فقط — لا يسجّل إتماماً
   const role = getUser()?.role
   const canMarkDone = ['teacher', 'specialist', 'admin'].includes(role)
 
   const load = useCallback(async () => {
+    const sequence = ++loadSequence.current
     setLoading(true)
     setError(null)
     try {
@@ -56,6 +58,7 @@ export default function ChildLessonsPage() {
         fetchChildEngagement(childId).catch(() => ({ stars: 0 })),
       ])
 
+      if (sequence !== loadSequence.current) return
       const child = childData.child || childData || {}
       const fallback = getAccessibilityProfile(childId, child.disability_type)
       const nextProfile = accessibilityData?.profile
@@ -84,7 +87,7 @@ export default function ChildLessonsPage() {
   useEffect(() => {
     load()
     // إيقاف أي قراءة صوتية عند مغادرة الصفحة
-    return () => window.speechSynthesis?.cancel()
+    return () => { ++loadSequence.current; clearAccessibilityProfile() }
   }, [childId, load])
 
   // تسجيل إتمام درس
@@ -198,9 +201,9 @@ export default function ChildLessonsPage() {
         <button className="btn small outline" onClick={() => navigate(`/children/${childId}/games`, { state: { childName } })}>
           <Gamepad2 size={16} /> الألعاب
         </button>
-        <button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
+        {getUser()?.role === 'specialist' && <button className="btn small outline" onClick={() => navigate(`/children/${childId}/accessibility`)}>
           <Settings size={16} /> التكييف
-        </button>
+        </button>}
       </div>
 
       {profile.emergencyButton && (

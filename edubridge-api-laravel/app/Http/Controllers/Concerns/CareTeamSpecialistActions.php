@@ -40,24 +40,9 @@ trait CareTeamSpecialistActions
             return response()->json(['error' => 'التخصص لا يطابق تخصص المختص'], 422);
         }
 
-        if (
-            $selfClaim
-            && DB::table('child_specialist')
-                ->where('child_id', $childId)
-                ->where('specialty', $specialty)
-                ->where('specialist_id', '<>', $specialistId)
-                ->exists()
-        ) {
-            return response()->json(['error' => 'تم تعيين مختص لهذا النوع بالفعل'], 409);
-        }
-
-        DB::table('child_specialist')->insertOrIgnore([
-            'child_id' => $childId,
-            'specialist_id' => $specialistId,
-            'specialty' => $specialty,
-            'assigned_at' => now(),
-            'created_at' => now(),
-        ]);
+        $result = \App\Services\ChildSpecialistAssignment::assign((int) $childId, $specialistId, $specialty);
+        if (isset($result['error'])) return response()->json(['error' => $result['error']], $result['status']);
+        if (!$result['added']) return $this->listSpecialists($request, $childId);
 
         Notify::toUser(
             $specialistId,

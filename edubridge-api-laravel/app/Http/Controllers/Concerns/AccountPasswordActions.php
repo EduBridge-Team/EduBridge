@@ -50,6 +50,9 @@ trait AccountPasswordActions
             $passwordColumn => password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 10]),
         ]);
 
-        return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح']);
+        $account = DB::table('users')->find($userId);
+        $secret = config('services.jwt.secret') ?: env('JWT_SECRET');
+        return response()->json(['message' => 'تم تغيير كلمة المرور بنجاح',
+            'token' => \App\Support\AuthCredentials::issue($account, $secret)]);
     }
 }

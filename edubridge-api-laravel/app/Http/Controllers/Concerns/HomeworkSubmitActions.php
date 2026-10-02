@@ -33,7 +33,7 @@ trait HomeworkSubmitActions
         $text = trim((string) $request->input('text_answer', ''));
 
         try {
-            $files = $this->storeFiles($request, 'files', 'submission');
+            $files = $this->storeFiles($request, 'files', 'submission', (int) $id, $childId);
             if ($text === '' && !$files) {
                 return response()->json(['error' => 'أضف إجابة نصية أو ملفاً واحداً على الأقل'], 422);
             }

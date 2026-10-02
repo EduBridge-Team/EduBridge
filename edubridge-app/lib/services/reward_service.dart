@@ -2,77 +2,99 @@
 // نظام المكافآت — نجوم متزامنة مع السيرفر مع fallback محلي للعمل دون اتصال.
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_service.dart';
+import 'sync_event.dart';
 
 class RewardService {
-  RewardService._();
-  static final RewardService instance = RewardService._();
+  RewardService({
+    Future<http.Response> Function(String)? get,
+    Future<http.Response> Function(String, Map<String, dynamic>)? post,
+  }) : _get = get ?? ApiService.authGet, _post = post ?? ApiService.authPost;
 
-  String _cacheKey(int childId) => 'child_stars_$childId';
-  String _pendingKey(int childId) => 'child_stars_pending_$childId';
+  static final RewardService instance = RewardService();
+  final Future<http.Response> Function(String) _get;
+  final Future<http.Response> Function(String, Map<String, dynamic>) _post;
+  Future<void> _tail = Future<void>.value();
 
-  Future<int> getStars(int childId) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    try {
-      final pending = prefs.getInt(_pendingKey(childId)) ?? 0;
-      if (pending > 0) {
-        final flush = await ApiService.authPost(
-          '/children/$childId/rewards/stars',
-          {'count': pending},
-        );
-        if (flush.statusCode >= 200 && flush.statusCode < 300) {
-          final body = jsonDecode(flush.body) as Map<String, dynamic>;
-          final synced = (body['stars'] as num?)?.toInt() ?? 0;
-          await prefs.setInt(_cacheKey(childId), synced);
-          await prefs.remove(_pendingKey(childId));
-        }
-      }
-
-      final res = await ApiService.authGet('/children/$childId/engagement');
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        final synced = (body['stars'] as num?)?.toInt() ?? 0;
-        await prefs.setInt(_cacheKey(childId), synced);
-        return synced;
-      }
-    } catch (_) {
-      // Offline fallback أدناه.
-    }
-
-    return prefs.getInt(_cacheKey(childId)) ?? 0;
+  Future<T> _serialize<T>(Future<T> Function() work) {
+    final result = _tail.then((_) => work());
+    _tail = result.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    return result;
   }
 
-  Future<void> addStar(int childId, {int count = 1}) async {
-    final prefs = await SharedPreferences.getInstance();
-    final pending = prefs.getInt(_pendingKey(childId)) ?? 0;
-    final toSync = pending + count;
+  String _cacheKey(int childId, int? owner) => 'child_stars_v2_${owner ?? 0}_$childId';
+  String _queueKey(int childId, int? owner) => 'child_stars_queue_v2_${owner ?? 0}_$childId';
 
-    try {
-      final res = await ApiService.authPost(
-        '/children/$childId/rewards/stars',
-        {'count': toSync},
-      );
-
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        final body = jsonDecode(res.body) as Map<String, dynamic>;
-        final synced = (body['stars'] as num?)?.toInt() ??
-            (prefs.getInt(_cacheKey(childId)) ?? 0) + toSync;
-        await prefs.setInt(_cacheKey(childId), synced);
-        await prefs.remove(_pendingKey(childId));
-        return;
-      }
-    } catch (_) {
-      // نحفظ الزيادة محلياً كي لا تضيع مكافأة الطفل.
+  Future<Map<String, dynamic>> _queue(int childId, int? owner, SharedPreferences prefs) async {
+    final raw = prefs.getString(_queueKey(childId, owner));
+    if (raw != null) return Map<String, dynamic>.from(jsonDecode(raw) as Map);
+    final pending = prefs.getInt('child_stars_pending_$childId') ?? 0;
+    final queue = <String, dynamic>{'pending': pending};
+    if (pending > 0) {
+      // Persist migration before removing the legacy counter.
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
+      await prefs.setInt(_cacheKey(childId, owner), prefs.getInt('child_stars_$childId') ?? pending);
     }
-
-    final current = prefs.getInt(_cacheKey(childId)) ?? 0;
-    await prefs.setInt(_cacheKey(childId), current + count);
-    await prefs.setInt(_pendingKey(childId), toSync);
+    await prefs.remove('child_stars_pending_$childId');
+    return queue;
   }
+
+  Future<void> _sync(int childId, int? owner, SharedPreferences prefs) async {
+    final queue = await _queue(childId, owner, prefs);
+    var pending = (queue['pending'] as num).toInt();
+    while (pending > 0) {
+      final flight = queue['flight'] is Map
+          ? Map<String, dynamic>.from(queue['flight'] as Map)
+          : <String, dynamic>{'count': pending > 20 ? 20 : pending, 'event_id': newSyncEventId()};
+      queue['flight'] = flight;
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
+      if (await ApiService.getUserId() != owner) return;
+      final response = await _post('/children/$childId/rewards/stars', flight);
+      if (response.statusCode < 200 || response.statusCode >= 300) return;
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      pending -= (flight['count'] as num).toInt();
+      queue['pending'] = pending;
+      queue.remove('flight');
+      // Pending count and the acknowledged event are committed in one preference write.
+      if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
+      final serverStars = (body['stars'] as num?)?.toInt();
+      if (serverStars != null) await prefs.setInt(_cacheKey(childId, owner), serverStars + pending);
+    }
+    await prefs.remove(_queueKey(childId, owner));
+  }
+
+  Future<int> getStars(int childId) => _serialize(() async {
+    final prefs = await SharedPreferences.getInstance();
+    final owner = await ApiService.getUserId();
+    try {
+      await _sync(childId, owner, prefs);
+      final response = await _get('/children/$childId/engagement');
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final queue = await _queue(childId, owner, prefs);
+        final total = ((body['stars'] as num?)?.toInt() ?? 0) + (queue['pending'] as num).toInt();
+        await prefs.setInt(_cacheKey(childId, owner), total);
+        return total;
+      }
+    } catch (_) {}
+    return prefs.getInt(_cacheKey(childId, owner)) ?? 0;
+  });
+
+  Future<void> addStar(int childId, {int count = 1}) => _serialize(() async {
+    if (count <= 0) return;
+    final prefs = await SharedPreferences.getInstance();
+    final owner = await ApiService.getUserId();
+    final queue = await _queue(childId, owner, prefs);
+    queue['pending'] = (queue['pending'] as num).toInt() + count;
+    if (!await prefs.setString(_queueKey(childId, owner), jsonEncode(queue))) throw StateError('Unable to persist reward events');
+    await prefs.setInt(_cacheKey(childId, owner), (prefs.getInt(_cacheKey(childId, owner)) ?? 0) + count);
+    try { await _sync(childId, owner, prefs); } catch (_) {}
+  });
 
   /// إظهار مكافأة بصرية
   static Future<void> showReward(

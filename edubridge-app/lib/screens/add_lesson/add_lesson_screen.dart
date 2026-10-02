@@ -3,14 +3,16 @@ import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import 'add_lesson_sheet.dart';
-import '../teacher/teacher_screen.dart';
+import '../../widgets/teacher_navigation_bar.dart';
 
 class AddLessonScreen extends StatefulWidget {
   final List types;
+  final bool forParents;
 
   const AddLessonScreen({
     super.key,
     required this.types,
+    this.forParents = false,
   });
 
   @override
@@ -106,33 +108,11 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
               : AddLessonSheet(
                   types: widget.types,
                   fullScreen: true,
+                  forParents: widget.forParents,
                   onClose: () => Navigator.pop(context),
                   onCreated: (lesson) => Navigator.pop(context, lesson),
                 ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 1,
-        onDestinationSelected: (index) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TeacherScreen(initialTab: index),
-            ),
-            (route) => false,
-          );
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'الأطفال',
-          ),
-          NavigationDestination(
-            icon: Icon(AppIcons.lesson),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const TeacherNavigationBar(),
     );
   }
 }

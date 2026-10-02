@@ -32,7 +32,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _lessons.isEmpty
+              _query.trim().isEmpty
                   ? 'لا توجد دروس مخصصة لأولياء الأمور بعد'
                   : 'لا نتائج مطابقة لبحثك',
               style: TextStyle(
@@ -42,7 +42,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
               textAlign: TextAlign.center,
             ),
           ),
-          if (_lessons.isEmpty) ...[
+          if (_lessons.isEmpty && _query.trim().isEmpty) ...[
             const SizedBox(height: 8),
             Center(
               child: Text(
@@ -97,11 +97,11 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: AppColors.purple.withValues(alpha: 0.12),
+                    color: AppColors.brandBlue.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(AppIcons.parent,
-                      size: 26, color: AppColors.purple),
+                      size: 26, color: AppColors.brandBlue),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -161,7 +161,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                 height: 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.purple,
+                    backgroundColor: AppColors.brandBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -200,9 +200,9 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                 height: 48,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.green,
+                    foregroundColor: AppColors.brandTealDeep,
                     side: const BorderSide(
-                        color: AppColors.green, width: 1.5),
+                        color: AppColors.brandTealDeep, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),

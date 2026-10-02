@@ -1,6 +1,7 @@
 // lib/screens/case_discussion/case_discussion_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../widgets/teacher_navigation_bar.dart';
 import '../../app_icons.dart';
 import '../../model/case_discussion_model.dart';
 import '../../services/api_service.dart';

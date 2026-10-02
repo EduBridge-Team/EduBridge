@@ -1,8 +1,10 @@
 // نموذج إضافة/تعديل طفل — يُستخدم للحالتين (مطابق لنموذج التطبيق)
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { addChild, updateChild, uploadFile } from '../../api'
+import { addChild, updateChild, uploadFile, fetchChildDetails, getUser } from '../../api'
+import { dashboardFor } from '../../roleRoutes'
+import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import ChildIdentityFields from './ChildIdentityFields'
 import ChildLearningFields from './ChildLearningFields'
 
@@ -11,7 +13,7 @@ function toList(text) {
   const t = (text || '').trim()
   if (!t) return null
   return t
-    .split(',')
+    .split(/[,،]/)
     .map((s) => s.trim())
     .filter(Boolean)
 }
@@ -27,6 +29,9 @@ export default function ChildFormPage() {
   const location = useLocation()
   const { childId } = useParams()
   const editing = Boolean(childId)
+  const canEditIdentity = ['parent', 'admin'].includes(getUser()?.role)
+  const [initialLoading, setInitialLoading] = useState(editing)
+  const [accessDenied, setAccessDenied] = useState(false)
   const existing = location.state?.child || {}
 
   const [form, setForm] = useState({
@@ -46,6 +51,28 @@ export default function ChildFormPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(null) // اسم الحقل الجاري رفعه
+
+  useEffect(() => {
+    if (!editing) return undefined
+    let active = true
+    setInitialLoading(true)
+    setAccessDenied(false)
+    fetchChildDetails(childId).then((data) => {
+      if (!active) return
+      const child = data.child || data
+      if (getUser()?.role === 'specialist' && !isAssignedToSpecialist(child, getUser()?.id)) {
+        setAccessDenied(true)
+        setError('تعديل ملف الطفل متاح للمختص المعيّن له فقط')
+        return
+      }
+      setForm((current) => Object.fromEntries(Object.keys(current).map((key) => [key,
+        ['strengths', 'challenges'].includes(key) ? fromList(child[key]) : String(child[key] ?? ''),
+      ])))
+    }).catch((err) => {
+      if (active) { setAccessDenied(true); setError(err.message) }
+    }).finally(() => { if (active) setInitialLoading(false) })
+    return () => { active = false }
+  }, [childId, editing])
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
@@ -71,6 +98,10 @@ export default function ChildFormPage() {
 
     if (!form.name.trim()) {
       setError('الاسم مطلوب')
+      return
+    }
+    if (!editing && ['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url'].some(key => !form[key].trim())) {
+      setError('هوية الطفل وولي الأمر ومستندات صلة القرابة مطلوبة')
       return
     }
     const age = parseInt(form.age.trim(), 10)
@@ -99,6 +130,9 @@ export default function ChildFormPage() {
       kinship_document_url: clean(form.kinship_document_url),
     }
 
+    if (!canEditIdentity) {
+      for (const key of ['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url']) delete payload[key]
+    }
     setLoading(true)
     try {
       if (editing) {
@@ -106,13 +140,16 @@ export default function ChildFormPage() {
       } else {
         await addChild(payload)
       }
-      navigate('/parent')
+      navigate(dashboardFor(getUser()))
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
   }
+
+  if (initialLoading) return <div className="state" role="status">جارِ تحميل ملف الطفل...</div>
+  if (accessDenied) return <div className="error-box">{error}</div>
 
   return (
     <div>
@@ -138,18 +175,18 @@ export default function ChildFormPage() {
             required
           />
 
-          <ChildIdentityFields
+          {canEditIdentity && <ChildIdentityFields
             form={form}
             onChange={set}
             onUpload={upload}
             uploading={uploading}
-          />
+          />}
 
           <ChildLearningFields form={form} onChange={set} />
 
           {error && <div className="error-box">{error}</div>}
 
-          <button className="btn success full" type="submit" disabled={loading}>
+          <button className="btn success full" type="submit" disabled={loading || Boolean(uploading)}>
             {loading
               ? 'جارِ الحفظ...'
               : editing

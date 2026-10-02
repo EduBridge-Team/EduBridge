@@ -10,6 +10,7 @@ Widget buildVerifiedState({
   required bool isTeacherOrSpecialist,
 }) {
   return Scaffold(
+    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Container(
@@ -77,6 +78,7 @@ Widget buildPendingState({
   required Future<void> Function() onRefresh,
 }) {
   return Scaffold(
+    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Padding(
@@ -133,6 +135,7 @@ Widget buildRejectedState({
   required VoidCallback onRetry,
 }) {
   return Scaffold(
+    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Padding(

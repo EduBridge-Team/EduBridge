@@ -1,0 +1,166 @@
+# Audit security fixes
+
+The API now resolves the current account on every authenticated request and
+rejects a token after account deletion, role changes or password changes.
+Tokens issued before this release lack a credential fingerprint and require
+one fresh sign-in. Changing a password returns a replacement token to the
+current web/mobile client; other tokens become invalid.
+
+Private product APIs now require identity approval from the database. Profile,
+identity submission, settings, document uploads, certificates and support remain
+available during onboarding. Admin retains its existing exception. Email
+verification alone does not unlock product APIs.
+
+New homework submission files are stored in private R2. Their API download path
+checks the child's parent/care team or the homework author/admin, as well as the
+exact file reference on the submission. The web opens these files through an
+authenticated fetch. Active HTML/SVG types are displayed as plain text before
+blob navigation, and API downloads carry sandbox/no-referrer headers. Existing public submission files require a separate storage
+migration; changing their database URLs alone does not remove public objects.
+Until that migration is performed, earlier shared links can remain accessible.
+
+Targeted lesson read policies are enforced on list/search/detail/media/ratings.
+The editor preserves specific-child audiences. All new uploaded lesson media is
+private, including non-targeted lessons so later audience changes remain safe.
+API serializers return signed playback links valid for 15 minutes. Each request
+rechecks the viewer's account, role, password fingerprint, identity approval and
+current child relationship. Video/audio byte ranges are streamed from R2.
+The link is a short-lived bearer capability: someone with a copied link can use
+it during that window while its original viewer remains authorized. No login
+JWT is placed in the URL. Reopen/reload a lesson after a link expires.
+External lesson links cannot be made private by the API. Targeted lessons reject
+new external media links, and changing a public lesson to specific children is
+blocked until all its media has private references. Existing external links
+must be replaced with uploaded files; the migration never fetches external URLs.
+
+Lesson media replacement uploads new files before deleting the old objects.
+Rollback cleans up new uploads using an in-memory object journal. Old objects
+are deleted only after the database commit. Storage deletion failures are logged
+and leave an orphan for cleanup, rather than breaking the saved lesson.
+
+The first batch needed no database migration. This follow-up adds the
+engagement_events ledger. Deploy API, web and mobile together, run the migration
+before accepting engagement writes, then verify:
+
+- An old token is rejected and fresh login works.
+- Pending/rejected identity accounts can upload documents and contact support,
+  but cannot call private product APIs directly.
+- Revoking identity approval takes effect on the next request.
+- Changing a password keeps the current updated client signed in and rejects
+  old tokens elsewhere.
+- A parent cannot read a lesson or submission belonging to an unrelated child.
+- Editing a targeted lesson title preserves its original target IDs.
+
+The child directory limits teacher access to assigned/team children. Specialists
+retain the shared directory but unassigned children expose only summary fields.
+Offline stars synchronize in batches of at most 20 and serialize local writes.
+Notification state resets on logout and ignores responses from prior sessions.
+Conversation requests cannot overwrite a newer selection. Arabic list separators
+round-trip correctly. PHP upload limits support the allowed media sizes, the
+production container uses Nginx and PHP-FPM with up to four PHP workers, and
+the health check uses the API endpoint. Web lockfile updates resolve the reported dependency advisories.
+
+Retry protection uses a per-account/per-child event ID and request fingerprint.
+Duplicate events return the original receipt without adding stars or game rows.
+A reused ID with different input is rejected. The child row is locked before
+both first and subsequent reward writes. Older clients without event IDs remain
+compatible but do not gain retry protection until updated. Mobile queues persist
+the event before sending, retain the same ID after restart, and keep new queues
+and reward caches separate for each signed-in account. Legacy pending entries
+have no account metadata and are migrated once into the current account's queue.
+
+## Follow-up deployment
+
+Keep APP_KEY stable, set APP_URL=https://api.edubridge.win, and ensure
+R2_PRIVATE_BUCKET has no public access and differs from R2_MEDIA_BUCKET.
+Back up the database before the following commands:
+
+```sh
+docker exec edubridge-api php artisan migrate --force
+docker exec edubridge-api php artisan edubridge:privatize-learning-files
+# Apply after reviewing the preview:
+docker exec edubridge-api php artisan edubridge:privatize-learning-files --apply
+```
+
+The first file command is a dry run. Apply downloads owned public objects to
+temporary disk files, uploads/verifies private copies, locks the corresponding
+rows and updates references. A separate cleanup pass removes old public objects
+only after private copies exist and no old public reference remains. Shared
+objects are retained if another row's migration fails. Failures return a nonzero
+exit status; rerun --apply to retry copying or deleting without overwriting a
+successfully migrated reference. New private objects may be safely rescanned.
+The command handles only exact URLs under R2_MEDIA_PUBLIC_URL. External links
+and old objects no longer referenced in the database require manual review.
+Old public links remain accessible until their public objects are deleted.
+If a CDN cached those URLs, purge the old URLs after cleanup as well.
+This repository change does not itself run the production storage migration.
+
+Lesson list/search/child-lesson responses load media in one query for the whole
+result set. Child directories load specialist assignments and latest approved
+plans in two relation queries, independent of the number of children. Plan
+queries include only children whose detailed records the viewer may see;
+unassigned specialist discovery records retain their summary-only fields.
+Regression checks cover constant query counts and the real PostgreSQL endpoints.
+This optimization adds no database migration and preserves response fields.
+
+Mobile login tokens now use flutter_secure_storage rather than plaintext shared
+preferences. Existing sessions migrate after secure write/read-back verification;
+the old plaintext key is removed only after that check. Failed migration keeps
+its source for retry but does not authenticate using plaintext. A persisted
+logout marker prevents an undeleted secure key from restoring a logged-out
+session, and cleanup retries on subsequent reads. New login replaces the token
+only after verification. Credential operations are serialized. Android requires
+API 23 or higher and continues to disable automatic backups. The dependency
+lockfile is checked in CI. These changes apply when users install the updated
+app; old installed versions retain their existing storage behavior.
+
+The production image now runs Nginx and PHP-FPM under Supervisor rather than
+artisan serve. FPM listens on a private Unix socket and runs application code as
+www-data. Only the front controller can execute PHP. OPcache is enabled for the
+immutable image; rebuild/recreate containers when deploying code. Signed URL
+query strings are excluded from Nginx access logs. CI builds the real image and
+checks PostgreSQL health/migrations, routing, upload limits, concurrent requests,
+and restrictions on direct PHP/dotfile access. Deploy this change using the
+existing Oracle deployment script; ports and external Caddy routing are unchanged.
+This code change does not itself update the production server.
+
+Notifications now support opt-in keyset pages: `limit` (1–100, default 30),
+`before_id` for older history, or `after_id` for ascending delivery batches.
+The cursors are mutually exclusive. History uses delivery ID order rather than
+creation timestamps. Responses include `pagination` and an owner-scoped global
+`unread_count`; requests without paging parameters retain the legacy full list.
+Two composite notification indexes are added by a database migration. Deploy
+and migrate the API before distributing the updated mobile app. Web and mobile
+load 30 items initially and offer a button for older pages. Mobile polling fetches
+only new deliveries, up to three pages per cycle, retaining its cursor for retry.
+WebSocket duplicates do not inflate the badge or advance the polling cursor.
+Page requests are serialized on mobile and invalidated on logout. Read failures
+no longer show false success. Tests cover account boundaries, tied timestamps,
+backlogs, retries, overlapping pages, and logout during pending requests.
+
+Child and lesson browsing now opt into `page` and `per_page` (default 30,
+maximum 100). Legacy requests remain complete for selection forms and older
+clients. Server-side `q` searches the authorized result set; child pages also
+support `active_only` and specialist `assigned_only`. Lesson pages retain target,
+disability and curriculum filters, normalize existing category aliases, and treat
+missing category data as uncategorized. Search wildcard characters are literal.
+The child name/ID and lesson creation/ID orders have deterministic tie breakers
+and composite indexes, added by a migration. Run migrations after deployment.
+Parent directory statistics remain account-wide while filters/paging change the
+visible cards. Relation/media loading is bounded to the returned page; paged
+lesson rating projections avoid grouping the whole catalogue. Targeted lesson
+visibility uses correlated assignment checks in SQL rather than unbounded PHP
+assignment arrays and generated OR clauses. Tests cover SQLite and real PostgreSQL.
+
+Web children, lesson browsing and parent guidance pages, and the corresponding
+mobile browsing screens now show previous/next controls. Debounced searches reset
+to the first page; stale requests are invalidated on filter changes/unmount.
+Failed requests retain the last good page for retry. Mobile page responses also
+verify the account session before accepting data. Deploy the API/migrations before
+distributing the updated app.
+
+Remaining audit work: paging embedded role dashboard lists, accessibility and
+child-specific lesson lists, and searching large selection forms without requiring
+a complete directory. These existing consumers still use the compatible legacy
+requests. Other list endpoints may still need query profiling. Production storage
+migration and updated mobile installation remain separate rollout steps.

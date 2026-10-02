@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { changeMyPassword, fetchMyProfile, getUser, logout } from '../../api'
+import { changeMyPassword, fetchMyProfile, fetchCertificates, openProtectedFile, getUser, logout } from '../../api'
 import { ROLE_NAMES } from '../../roles'
 import { useTheme } from '../../theme'
 import { useUserSettings } from '../../userSettings'
@@ -15,6 +15,7 @@ import {
 export default function ProfilePage() {
   const navigate = useNavigate()
   const [profile, setProfile] = useState(() => getUser() || {})
+  const [certificates, setCertificates] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [passwordOpen, setPasswordOpen] = useState(false)
@@ -28,6 +29,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let active = true
+    if (['teacher', 'specialist'].includes(getUser()?.role)) {
+      fetchCertificates().then(data => { if (active) setCertificates(data.certificates || []) }).catch(error => { if (active) setError(error.message) })
+    }
     fetchMyProfile()
       .then((data) => {
         if (active && data) setProfile(data)
@@ -97,6 +101,7 @@ export default function ProfilePage() {
   return (
     <div className="parent-profile-page">
       <ProfileHero
+        guardian={profile.role === 'parent'}
         initial={initial}
         name={profile.name}
         onVerify={() => navigate('/verify')}
@@ -109,6 +114,17 @@ export default function ProfilePage() {
       {passwordMessage && <div className="success-box profile-message">{passwordMessage}</div>}
 
       <ProfileAccountSection profile={profile} role={role} verified={verified} />
+
+      {['teacher', 'specialist'].includes(profile.role) && <section className="card">
+        <h2>شهادات الأهلية والمؤهلات</h2>
+        {certificates.length === 0 && <p>لا توجد شهادات مضافة بعد.</p>}
+        {certificates.map(certificate => <article className="info-row" key={certificate.id}>
+          <strong>{certificate.title}</strong>
+          <span>{({ pending: 'بانتظار المراجعة', verified: 'موثقة', approved: 'معتمدة', rejected: 'مرفوضة' })[certificate.status] || certificate.status}</span>
+          <button className="btn outline small" onClick={() => openProtectedFile(certificate.url).catch(error => setError(error.message))}>عرض الشهادة</button>
+        </article>)}
+        <button className="btn" onClick={() => navigate('/verify')}>إضافة شهادة</button>
+      </section>}
 
       <ProfileSecuritySection
         confirmPassword={confirmPassword}

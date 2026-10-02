@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile
     image: edubridge-api:latest
     container_name: edubridge-api
+    stop_grace_period: 200s
     restart: unless-stopped
     env_file:
       - ../edubridge-api-laravel/.env
@@ -52,7 +53,7 @@ services:
       test:
         - CMD-SHELL
         - >-
-          php -r '$$body=@file_get_contents("http://127.0.0.1:8081/"); exit($$body === false ? 1 : 0);'
+          php -r '$$body=@file_get_contents("http://127.0.0.1:8081/api/health"); exit($$body === false ? 1 : 0);'
       interval: 15s
       timeout: 5s
       retries: 10

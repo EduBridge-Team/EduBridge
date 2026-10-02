@@ -4,14 +4,14 @@ import { lessonCategory } from '../utils/lessonCategories'
 
 function artwork(lesson) {
   const title = lesson.title || ''
-  if (/مشاعر|عواطف/.test(title)) return { Icon: Heart, tone: 'rose' }
+  if (/مشاعر|عواطف/.test(title)) return { Icon: Heart, tone: 'teal' }
   if (/روتين|جدول|يوم/.test(title)) return { Icon: CalendarDays, tone: 'teal' }
-  if (/إشارة|اشارة/.test(title)) return { Icon: Hand, tone: 'amber' }
+  if (/إشارة|اشارة/.test(title)) return { Icon: Hand, tone: 'blue' }
   const category = lessonCategory(lesson)
-  if (category === 'الرياضيات') return { Icon: Calculator, tone: 'violet' }
-  if (category === 'الفنون') return { Icon: Palette, tone: 'rose' }
+  if (category === 'الرياضيات') return { Icon: Calculator, tone: 'blue' }
+  if (category === 'الفنون') return { Icon: Palette, tone: 'teal' }
   if (category === 'التواصل') return { Icon: MessageCircle, tone: 'teal' }
-  if (/شكل|أشكال/.test(title)) return { Icon: Shapes, tone: 'violet' }
+  if (/شكل|أشكال/.test(title)) return { Icon: Shapes, tone: 'blue' }
   return { Icon: BookOpen, tone: 'blue' }
 }
 

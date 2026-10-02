@@ -58,7 +58,9 @@ jobs:
           java -version
 
       - name: Install Flutter dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          git diff --exit-code -- pubspec.lock
 
       - name: Analyze Flutter code
         run: flutter analyze --no-fatal-warnings --no-fatal-infos

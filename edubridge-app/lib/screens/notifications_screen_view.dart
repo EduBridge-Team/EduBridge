@@ -5,6 +5,7 @@ extension _NotificationsScreenStateView on _NotificationsScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
         title: 'الإشعارات',
         actions: [
@@ -18,7 +19,7 @@ extension _NotificationsScreenStateView on _NotificationsScreenState {
             builder: (context, count, _) {
               if (count == 0) return const SizedBox.shrink();
               return TextButton(
-                onPressed: _markingAll ? null : _markAllRead,
+                onPressed: _markingAll || _loadingMore ? null : _markAllRead,
                 child: _markingAll
                     ? const SizedBox(
                         width: 18,

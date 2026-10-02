@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 trait ChildControllerHelpers
@@ -51,18 +52,59 @@ trait ChildControllerHelpers
         return $child;
     }
     
-    private function attachCurrentPlan($child)
+    private function loadChildRelations(Collection $children, Collection $planChildIds): array
+    {
+        $specialists = collect();
+        $plans = collect();
+        if ($children->isEmpty()) {
+            return [$specialists, $plans];
+        }
+
+        try {
+            $specialists = DB::table('child_specialist as cs')
+                ->join('users as u', 'u.id', '=', 'cs.specialist_id')
+                ->whereIn('cs.child_id', $children->pluck('id'))
+                ->orderBy('cs.assigned_at')
+                ->select('cs.child_id', 'u.id', 'u.name', 'cs.specialty', 'cs.assigned_at')
+                ->get()->groupBy('child_id')
+                ->map(fn ($items) => $items->map(function ($item) {
+                    unset($item->child_id);
+                    return $item;
+                }));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        if ($planChildIds->isNotEmpty()) {
+            try {
+                $ranked = DB::table('ministry_approvals')
+                    ->whereIn('child_id', $planChildIds)
+                    ->where('status', 'approved')
+                    ->select('*')
+                    ->selectRaw('ROW_NUMBER() OVER (PARTITION BY child_id ORDER BY reviewed_at DESC, created_at DESC, id DESC) as plan_rank');
+                $plans = DB::query()->fromSub($ranked, 'ranked_plans')
+                    ->where('plan_rank', 1)->get()->keyBy('child_id');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        return [$specialists, $plans];
+    }
+
+    private function attachCurrentPlan($child, ?Collection $loadedPlans = null)
     {
         if (!$child) {
             return $child;
         }
 
         try {
-            $plan = DB::table('ministry_approvals')
+            $plan = $loadedPlans !== null ? $loadedPlans->get($child->id) : DB::table('ministry_approvals')
                 ->where('child_id', $child->id)
                 ->where('status', 'approved')
                 ->orderByDesc('reviewed_at')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->first();
 
             $child->current_plan_id = $plan ? (int) $plan->id : null;
@@ -84,14 +126,14 @@ trait ChildControllerHelpers
         return $child;
     }
 
-    private function attachSpecialists($child)
+    private function attachSpecialists($child, ?Collection $loadedSpecialists = null)
     {
         if (!$child) {
             return $child;
         }
     
         try {
-            $specialists = DB::table('child_specialist as cs')
+            $specialists = $loadedSpecialists !== null ? $loadedSpecialists->get($child->id, collect()) : DB::table('child_specialist as cs')
                 ->join('users as u', 'u.id', '=', 'cs.specialist_id')
                 ->where('cs.child_id', $child->id)
                 ->orderBy('cs.assigned_at')

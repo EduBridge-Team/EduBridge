@@ -1,13 +1,17 @@
-import { BASE_URL, getToken, request } from "./core.js";
+import { BASE_URL, getToken, getUser, request } from "./core.js";
 
 // الأطفال (ولي الأمر يستلم أطفاله فقط من السيرفر)
-export function fetchChildren() {
-  return request("/children");
+export function fetchChildren(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`/children${query ? `?${query}` : ''}`);
 }
 
 // تفاصيل طفل واحد (مع نوع الإعاقة والمعلم المسؤول والحالة)
 export function fetchChildDetails(childId) {
-  return request(`/children/${childId}`);
+  return request(`/children/${childId}`).catch(error => {
+    if (getUser()?.role !== 'specialist') throw error;
+    return request(`/children/${childId}/assignment-preview`);
+  });
 }
 
 // تقييمات الطفل (يعرضها ولي الأمر ضمن تفاصيل الطفل)
@@ -41,8 +45,9 @@ export function fetchChildLessons(childId) {
 }
 
 // كل الدروس (لصفحة التصفح)
-export function fetchLessons() {
-  return request("/lessons");
+export function fetchLessons(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`/lessons${query ? `?${query}` : ''}`);
 }
 
 // أنواع الإعاقة (قائمة مرجعية)
@@ -167,18 +172,19 @@ export function fetchChildEngagement(childId) {
   return request(`/children/${childId}/engagement`);
 }
 
-export function addChildStars(childId, count = 1) {
+export function addChildStars(childId, count = 1, eventId = crypto.randomUUID()) {
   return request(`/children/${childId}/rewards/stars`, {
     method: "POST",
-    body: JSON.stringify({ count }),
+    body: JSON.stringify({ count, event_id: eventId }),
   });
 }
 
-export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, durationSeconds = null) {
+export function recordGameAttempt(childId, gameKey, score, starsEarned = 0, durationSeconds = null, eventId = crypto.randomUUID()) {
   return request(`/children/${childId}/game-attempts`, {
     method: "POST",
     body: JSON.stringify({
       game_key: gameKey,
+      event_id: eventId,
       score,
       stars_earned: starsEarned,
       ...(durationSeconds == null ? {} : { duration_seconds: durationSeconds }),
@@ -204,4 +210,8 @@ export function resolveEmergencyAlert(id) {
     method: "PUT",
     body: "{}",
   });
+}
+
+export function saveChildEvaluation(childId, payload) {
+  return request(`/evaluations/child/${childId}`, { method: 'POST', body: JSON.stringify(payload) });
 }

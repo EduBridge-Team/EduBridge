@@ -12,7 +12,7 @@ trait WeeklyReportGeneralWriteActions
     public function store(Request $request)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$user || !in_array($user->role, ['teacher','specialist','admin'], true)) {
+        if (!$user || !in_array($user->role, ['teacher','admin'], true)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -57,8 +57,6 @@ trait WeeklyReportGeneralWriteActions
             'lessons_completed' => (int) $request->input('lessons_completed', 0),
             'progress_percentage' => $progress,
             'teacher_notes' => $request->input('teacher_notes'),
-            'specialist_notes' => $request->input('specialist_notes'),
-            'parent_notes' => $request->input('parent_notes'),
             'achievements' => json_encode(array_values($achievements), JSON_UNESCAPED_UNICODE),
             'concerns' => json_encode(array_values($concerns), JSON_UNESCAPED_UNICODE),
             'generated_at' => now(),

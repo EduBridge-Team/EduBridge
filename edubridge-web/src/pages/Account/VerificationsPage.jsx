@@ -98,14 +98,14 @@ export default function VerificationsPage() {
       <section className="verification-admin-hero">
         <span className="role-eyebrow"><ShieldCheck size={18} /> التحقق والمراجعة</span>
         <h1>مراجعة التوثيق</h1>
-        <p>راجع هويات المستخدمين وبيانات الأطفال والشهادات المهنية من مكان واحد.</p>
+        <p>راجع هويات المعلمين والمختصين ومستندات الأطفال والشهادات المهنية. توثيق ولي الأمر يتم مع مستندات الطفل.</p>
       </section>
 
       <AdminSectionTabs />
 
       <div className="tabs verification-tabs">
         <button className={tab === 'users' ? 'tab on' : 'tab'} onClick={() => setTab('users')}>
-          المستخدمون ({users.length})
+          المعلمون والمختصون ({users.length})
         </button>
         <button className={tab === 'children' ? 'tab on' : 'tab'} onClick={() => setTab('children')}>
           الأطفال ({children.length})

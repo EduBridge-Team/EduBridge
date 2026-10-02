@@ -40,24 +40,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                 const SizedBox(width: 12),
                 Expanded(
                   child: InkWell(
-                    onTap: () async {
-                      final navigator = Navigator.of(context);
-                      await AccessibilityService.instance.setActiveChild(
-                        childId,
-                        disabilityTypeHint:
-                            child['disability_type']?.toString(),
-                      );
-                      await navigator.push(
-                        MaterialPageRoute(
-                          builder: (_) => ChildProgressScreen(
-                            childId: childId,
-                            childName: name,
-                          ),
-                        ),
-                      );
-                      await AccessibilityService.instance
-                          .setActiveChild(null);
-                    },
+                    onTap: () => _openChildProfile(child),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

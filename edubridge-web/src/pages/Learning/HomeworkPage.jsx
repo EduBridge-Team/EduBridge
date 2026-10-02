@@ -1,5 +1,8 @@
+import { useSearchParams } from 'react-router-dom'
+import { homeworkGradePayload } from './homeworkGrading'
 import FormDisclosure from '../../components/FormDisclosure'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { homeworkChildren } from './homeworkChildren'
 import {
   createHomeworkWeb,
   fetchChildren,
@@ -23,6 +26,9 @@ const EMPTY_SUBMISSION = {
 
 export default function HomeworkPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const childId = params.get('child_id') || ''
+  const [success, setSuccess] = useState('')
   const me = getUser()
   const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
 
@@ -35,29 +41,43 @@ export default function HomeworkPage() {
     description: '',
     subject: '',
     due_date: '',
-    assigned_child_ids: [],
+    assigned_child_ids: childId ? [Number(childId)] : [],
   })
   const [attachments, setAttachments] = useState([])
   const [submission, setSubmission] = useState(EMPTY_SUBMISSION)
   const [grades, setGrades] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [loadedChildId, setLoadedChildId] = useState(null)
+  const requestId = useRef(0)
 
   const load = useCallback(async () => {
+    const currentRequest = ++requestId.current
+    setLoading(true)
     try {
       const [childrenData, homeworkData] = await Promise.all([
         fetchChildren(),
-        fetchHomeworks(),
+        fetchHomeworks(childId),
       ])
 
-      setChildren(childrenData.children || [])
+      if (currentRequest !== requestId.current) return
+      setChildren((childrenData.children || []).filter(child => !childId || String(child.id) === childId))
       setItems(homeworkData.homeworks || [])
       setError('')
     } catch (err) {
+      if (currentRequest !== requestId.current) return
       setError(err.message)
+    } finally {
+      if (currentRequest === requestId.current) {
+        setLoadedChildId(childId)
+        setLoading(false)
+      }
     }
-  }, [])
+  }, [childId])
 
   useEffect(() => {
     load()
+    setSubmission(EMPTY_SUBMISSION)
+    return () => { requestId.current += 1 }
   }, [load])
 
   const defaultDueDate = useMemo(() => {
@@ -68,6 +88,7 @@ export default function HomeworkPage() {
   const create = async (event) => {
     event.preventDefault()
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
@@ -83,7 +104,7 @@ export default function HomeworkPage() {
         description: '',
         subject: '',
         due_date: '',
-        assigned_child_ids: [],
+        assigned_child_ids: childId ? [Number(childId)] : [],
       })
       setAttachments([])
       setCreateOpen(false)
@@ -100,6 +121,7 @@ export default function HomeworkPage() {
     if (!submission.homework_id) return
 
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
@@ -120,17 +142,23 @@ export default function HomeworkPage() {
     }
   }
 
-  const grade = async (id) => {
-    const currentGrade = grades[id] || {}
+  const grade = async (submission) => {
+    const payload = homeworkGradePayload(submission, grades[submission.id])
+    if (!payload) {
+      setError('أدخل علامة صحيحة بين 0 و100')
+      return
+    }
     setBusy(true)
+    setSuccess('')
     setError('')
 
     try {
       await gradeHomeworkWeb(
-        id,
-        Number(currentGrade.grade),
-        currentGrade.feedback || '',
+        submission.id,
+        payload.grade,
+        payload.feedback,
       )
+      setSuccess('تم تقييم الواجب بنجاح')
       await load()
     } catch (err) {
       setError(err.message)
@@ -140,12 +168,15 @@ export default function HomeworkPage() {
   }
 
   const openSubmission = (homeworkId, childId) => {
-    setSubmission((current) => ({
-      ...current,
+    setSubmission({
+      ...EMPTY_SUBMISSION,
       homework_id: homeworkId,
       child_id: childId,
-    }))
+    })
   }
+
+  const submissionChildren = homeworkChildren(items.find(item => item.id === submission.homework_id), children)
+  const listLoading = loading || loadedChildId !== childId
 
   return (
     <div className="fp-page homework-page-v2">
@@ -155,10 +186,11 @@ export default function HomeworkPage() {
           <h1>الواجبات</h1>
           <p>{isStaff ? 'أنشئ الواجبات، تابع التسليم، وراجع التقييمات من مكان واحد.' : 'تابع واجبات أبنائك، سلّم الإجابات، وراجع تقييمات المعلّم.'}</p>
         </div>
-        <button className="btn outline" onClick={load}>تحديث</button>
+        <button className="btn outline" onClick={load} disabled={listLoading}>تحديث</button>
       </section>
 
       {error && <div className="fp-error">{error}</div>}
+      {success && <div className="success-box" role="status">{success}</div>}
 
       {isStaff && (
         <FormDisclosure label="إضافة واجب جديد" open={createOpen} onToggle={setCreateOpen}>
@@ -174,7 +206,8 @@ export default function HomeworkPage() {
         </FormDisclosure>
       )}
 
-      <section className="fp-grid">
+      <section className="fp-grid" aria-busy={listLoading}>
+        {listLoading ? <div className="state" role="status">جارِ تحميل الواجبات...</div> : !error &&
         <HomeworkGrid
           busy={busy}
           children={children}
@@ -186,12 +219,12 @@ export default function HomeworkPage() {
           role={me?.role}
           staff={isStaff}
           onCreate={() => setCreateOpen(true)}
-        />
+        />}
       </section>
 
       <HomeworkSubmissionForm
         busy={busy}
-        children={children}
+        children={submissionChildren}
         onCancel={() => setSubmission(EMPTY_SUBMISSION)}
         onChange={setSubmission}
         onSubmit={submit}

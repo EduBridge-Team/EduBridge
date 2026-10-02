@@ -39,6 +39,19 @@ trait MediaWriteActions
                 $url = $this->storeFile($file, (int) $lessonId, $type);
             }
 
+            if (!$file && ($lesson->target_type ?? null) === 'specificChildren') {
+                return response()->json(['error' => 'ارفع الملف لحمايته في درس موجّه لأطفال محددين'], 422);
+            }
+            if (!$file && ($ownedKey = \App\Support\PrivateFileMigration::publicKey((string) $url))
+                && !str_starts_with($ownedKey, "lessons/{$lessonId}/")) {
+                return response()->json(['error' => 'رابط الملف لا يخص هذا الدرس'], 422);
+            }
+            if (!$file && !filter_var($url, FILTER_VALIDATE_URL)) {
+                return response()->json(['error' => 'رابط غير صالح'], 422);
+            }
+            if (!$file && !in_array(strtolower(parse_url($url, PHP_URL_SCHEME) ?: ''), ['http', 'https'], true)) {
+                return response()->json(['error' => 'رابط غير صالح'], 422);
+            }
             if (!$url) {
                 return response()->json(['error' => 'الملف أو الرابط مطلوب'], 400);
             }
@@ -82,18 +95,9 @@ trait MediaWriteActions
 
             DB::table('media')->where('id', $id)->delete();
 
-            if (is_string($media->url) && str_contains($media->url, '/lessons/')) {
-                $path = parse_url($media->url, PHP_URL_PATH) ?: '';
-                $key = ltrim($path, '/');
-
-                if (str_starts_with($key, 'lessons/')) {
-                    try {
-                        R2Storage::delete(R2Storage::mediaBucket(), $key);
-                    } catch (\Throwable $e) {
-                        report($e);
-                    }
-                }
-            }
+            try {
+                \App\Support\LessonFiles::delete((string) $media->url);
+            } catch (\Throwable $e) { report($e); }
 
             return response()->json(['message' => 'تم الحذف']);
         } catch (\Exception $e) {

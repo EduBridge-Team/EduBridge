@@ -1,5 +1,6 @@
 // lib/screens/change_password_screen.dart
 import 'package:flutter/material.dart';
+import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -68,6 +69,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: 'تغيير كلمة المرور'),
       body: Form(
         key: _formKey,

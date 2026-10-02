@@ -108,18 +108,18 @@ export function SupportTicketsList({
       {isAdmin && (
         <div className="actions">
           <button className="btn small" onClick={() => onReply(ticket)}>ردّ</button>
-          <button
+          {ticket.status !== 'in_progress' && ticket.status !== 'closed' && <button
             className="btn small outline"
             onClick={() => onStatusChange(ticket, 'in_progress')}
           >
             قيد المعالجة
-          </button>
-          <button
+          </button>}
+          {ticket.status !== 'closed' && <button
             className="btn small outline"
             onClick={() => onStatusChange(ticket, 'closed')}
           >
             إغلاق
-          </button>
+          </button>}
         </div>
       )}
     </div>

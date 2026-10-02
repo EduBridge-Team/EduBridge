@@ -3,8 +3,11 @@ import { BASE_URL, getToken, request } from "./core.js";
 // ===== الإشعارات — لكل مستخدم إشعاراته =====
 
 // كل إشعارات المستخدم الحالي
-export function fetchNotifications() {
-  return request("/notifications");
+export function fetchNotifications({ limit = 30, beforeId, afterId } = {}) {
+  const query = new URLSearchParams({ limit });
+  if (beforeId != null) query.set('before_id', beforeId);
+  if (afterId != null) query.set('after_id', afterId);
+  return request(`/notifications?${query}`);
 }
 
 // عدد الإشعارات غير المقروءة (لشارة الجرس)
@@ -28,6 +31,10 @@ export function markAllNotificationsRead() {
 export function fetchUsers(role) {
   const q = role ? `?role=${encodeURIComponent(role)}` : "";
   return request(`/users${q}`);
+}
+
+export function createOrganizationAccount(payload) {
+  return request('/users', { method: 'POST', body: JSON.stringify(payload) });
 }
 
 // تعديل مستخدم (الاسم/البريد/الدور/الهاتف)

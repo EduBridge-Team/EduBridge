@@ -7,11 +7,15 @@ import { useTheme } from '../../theme'
 import BrandLogo from '../BrandLogo/BrandLogo'
 import { GuestTopBarMenu, SignedInTopBarMenu } from './TopBarMenus'
 import { buildTopBarStripLinks } from './topBarLinks'
+import { useVerification } from '../../verification'
+import { canOpenUnverifiedPath } from '../../verificationPolicy'
 
 export default function TopBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
+  const { verified: identityVerified } = useVerification()
+  const verified = identityVerified || getUser()?.role === 'parent'
   const [open, setOpen] = useState(false)
   const { dark, toggleTheme } = useTheme()
 
@@ -29,12 +33,12 @@ export default function TopBar() {
   }
 
   const dashboardPath = dashboardFor(user)
-  const isRolePortal = Boolean(user?.role)
+  const isRolePortal = verified && Boolean(user?.role)
     && isPortalPathForRole(location.pathname, user.role)
   const userInitial = String(user?.name || '؟').trim().charAt(0) || '؟'
   const profileImage = user?.avatar_url || user?.avatar || user?.photo_url || user?.profile_photo_url || ''
 
-  const stripLinks = buildTopBarStripLinks(user)
+  const stripLinks = buildTopBarStripLinks(user).filter((link) => verified || canOpenUnverifiedPath(link.to))
 
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
@@ -70,7 +74,8 @@ export default function TopBar() {
       <div className={'topbar-menu ' + (open ? 'open' : '')}>
         {user ? (
           <SignedInTopBarMenu
-            dashboardPath={dashboardPath}
+            dashboardPath={verified ? dashboardPath : '/verify'}
+            verified={verified}
             dark={dark}
             onLogout={handleLogout}
             stripLinks={stripLinks}

@@ -6,6 +6,7 @@ extension _CaseDiscussionDetailStateView on _CaseDiscussionDetailState {
     final d = _discussion;
 
     return Scaffold(
+      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
         title: d != null ? 'دراسة حالة — ${d.childName}' : 'دراسة حالة',
         actions: [

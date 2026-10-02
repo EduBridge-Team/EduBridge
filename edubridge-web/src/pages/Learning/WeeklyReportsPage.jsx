@@ -1,5 +1,8 @@
+import { useSearchParams } from 'react-router-dom'
+import SpecialistWeeklyProgressForm from './SpecialistWeeklyProgressForm'
+import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import FormDisclosure from '../../components/FormDisclosure'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   fetchChildWeeklyReports,
   fetchChildren,
@@ -20,14 +23,22 @@ function currentMonday() {
 
 export default function WeeklyReportsPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const selectedChild = params.get('child_id') || ''
   const me = getUser()
-  const isStaff = ['teacher', 'specialist', 'admin'].includes(me?.role)
+  const isSpecialist = me?.role === 'specialist'
+  const isStaff = ['teacher', 'admin'].includes(me?.role)
 
   const [children, setChildren] = useState([])
-  const [childId, setChildId] = useState('')
+  const [childId, setChildId] = useState(selectedChild)
   const [reports, setReports] = useState([])
   const [error, setError] = useState('')
+  const [childrenError, setChildrenError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [childrenLoading, setChildrenLoading] = useState(true)
+  const [reportsLoading, setReportsLoading] = useState(true)
+  const [loadedChildId, setLoadedChildId] = useState(null)
+  const requestId = useRef(0)
   const [draft, setDraft] = useState({
     week_start: currentMonday(),
     lessons_completed: 0,
@@ -38,30 +49,52 @@ export default function WeeklyReportsPage() {
   })
 
   const loadReports = useCallback(async (selectedChildId) => {
+    const currentRequest = ++requestId.current
+    setReportsLoading(true)
+    setError('')
     if (!selectedChildId) {
       setReports([])
+      setLoadedChildId(selectedChildId)
+      setReportsLoading(false)
       return
     }
-
-    const data = await fetchChildWeeklyReports(selectedChildId)
-    setReports(data.reports || [])
+    try {
+      const data = await fetchChildWeeklyReports(selectedChildId)
+      if (currentRequest === requestId.current) setReports(data.reports || [])
+    } catch (err) {
+      if (currentRequest === requestId.current) setError(err.message)
+    } finally {
+      if (currentRequest === requestId.current) {
+        setLoadedChildId(selectedChildId)
+        setReportsLoading(false)
+      }
+    }
   }, [])
 
   useEffect(() => {
+    let active = true
+    setChildrenLoading(true)
+    setChildrenError('')
     fetchChildren()
       .then((data) => {
-        const childList = data.children || []
+        if (!active) return
+        const childList = (data.children || []).filter((child) => (!selectedChild || String(child.id) === selectedChild) && (!isSpecialist || isAssignedToSpecialist(child, me?.id)))
         setChildren(childList)
         setChildId((current) => (
           current || (childList[0] ? String(childList[0].id) : '')
         ))
       })
-      .catch((err) => setError(err.message))
-  }, [])
+      .catch((err) => { if (active) setChildrenError(err.message) })
+      .finally(() => { if (active) setChildrenLoading(false) })
+    return () => { active = false }
+  }, [isSpecialist, me?.id, selectedChild])
+
+  useEffect(() => { setChildId(selectedChild) }, [selectedChild])
 
   useEffect(() => {
-    loadReports(childId).catch((err) => setError(err.message))
-  }, [childId, loadReports])
+    if (!childrenLoading) loadReports(childId)
+    return () => { requestId.current += 1 }
+  }, [childId, childrenLoading, loadReports])
 
   const save = async (event) => {
     event.preventDefault()
@@ -98,7 +131,7 @@ export default function WeeklyReportsPage() {
       <section className="fp-hero reports-hero">
         <div>
           <span className="fp-eyebrow">متابعة التقدّم</span>
-          <h1>التقارير الأسبوعية</h1>
+          <h1>{isSpecialist ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية'}</h1>
           <p>ملخص واضح للدروس والواجبات واجتماعات الدعم والإنجازات الأسبوعية.</p>
         </div>
 
@@ -113,6 +146,7 @@ export default function WeeklyReportsPage() {
       </section>
 
       {error && <div className="fp-error">{error}</div>}
+      {childrenError && <div className="fp-error">{childrenError}</div>}
 
       {isStaff && childId && (
         <FormDisclosure label="إضافة أو تحديث تقرير" open={createOpen} onToggle={setCreateOpen}>
@@ -125,7 +159,10 @@ export default function WeeklyReportsPage() {
         </FormDisclosure>
       )}
 
-      <WeeklyReportsGrid reports={reports} />
+      {isSpecialist && childId && <SpecialistWeeklyProgressForm key={childId} childId={childId} onSaved={() => loadReports(childId)} />}
+      {childrenLoading || reportsLoading || loadedChildId !== childId
+        ? <div className="state" role="status">جارِ تحميل التقارير...</div>
+        : !error && !childrenError && <WeeklyReportsGrid reports={reports} progressView={isSpecialist} />}
     </div>
   )
 }

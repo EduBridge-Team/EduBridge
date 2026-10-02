@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.jwt' => JwtAuth::class,
             'role' => RoleMiddleware::class,
             'child.access' => ChildAccessMiddleware::class,
+            'identity.verified' => \App\Http\Middleware\RequireIdentityVerification::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

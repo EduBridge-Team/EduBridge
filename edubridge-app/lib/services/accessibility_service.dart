@@ -174,9 +174,7 @@ class AccessibilityService {
       await _persistParent(next);
     } else {
       final id = activeChildId.value!;
-      _childProfiles[id] = next;
-      await _persistChild(id, next);
-      profile.value = next;
+      await updateForChild(id, next);
     }
   }
 
@@ -184,23 +182,21 @@ class AccessibilityService {
     int childId,
     AccessibilityProfile next,
   ) async {
-    _childProfiles[childId] = next;
-
-    // التغيير يظهر فوراً في صفحة إعدادات/دروس الطفل قبل انتظار الشبكة.
-    if (activeChildId.value == childId) {
-      profile.value = next;
+    if (await ApiService.getRole() != 'specialist') {
+      throw StateError('تعديل التكيف متاح للمختص فقط');
     }
-
+    // The API also checks assignment to this child. Persist locally only after
+    // authorization succeeds, so read-only users cannot override the profile.
+    final response = await ApiService.authPut(
+      '/children/$childId/accessibility-profile',
+      {'profile': next.toJson()},
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError('تعذّر حفظ إعدادات التكيف');
+    }
+    _childProfiles[childId] = next;
     await _persistChild(childId, next);
-
-    // مزامنة كل طفل بمفتاحه الخاص على السيرفر. فشل الشبكة لا يلغي
-    // التغيير المحلي ولا يخلط إعدادات الأطفال ببعضها.
-    try {
-      await ApiService.authPut(
-        '/children/$childId/accessibility-profile',
-        {'profile': next.toJson()},
-      );
-    } catch (_) {}
+    if (activeChildId.value == childId) profile.value = next;
   }
 
   Future<void> applyRecommendedForChild(

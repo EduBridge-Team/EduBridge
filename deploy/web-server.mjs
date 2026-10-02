@@ -3,6 +3,7 @@ import { request as httpsRequest } from "node:https";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { extname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { preferredEncodings } from "./static-encoding.mjs";
 
 const root = fileURLToPath(new URL("../edubridge-web/dist/", import.meta.url));
 const port = Number(process.env.PORT || 8080);
@@ -137,6 +138,20 @@ createServer((req, res) => {
         ? "public, max-age=31536000, immutable"
         : "public, max-age=3600",
   );
+
+  res.setHeader("Vary", "Accept-Encoding");
+  const encodings = preferredEncodings(req.headers["accept-encoding"]);
+  const encoding = encodings.find((name) => name === "identity" || existsSync(`${filePath}.${name === "br" ? "br" : "gz"}`));
+  if (!encoding) {
+    res.statusCode = 406;
+    res.end();
+    return;
+  }
+  if (encoding !== "identity") {
+    filePath += encoding === "br" ? ".br" : ".gz";
+    res.setHeader("Content-Encoding", encoding);
+  }
+  res.setHeader("Content-Length", statSync(filePath).size);
 
   if (req.method === "HEAD") {
     res.end();

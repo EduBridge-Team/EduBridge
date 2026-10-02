@@ -3,11 +3,9 @@ import {
   BarChart3,
   BookOpen,
   Home,
-  Landmark,
   LifeBuoy,
   MessageCircle,
   Search,
-  Settings,
   ShieldCheck,
   Stethoscope,
   Users,
@@ -69,8 +67,8 @@ export function createRoleNavItems({
       home,
       item('children', 'أطفالي', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons'),
-      item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
       {
         key: 'progress',
         label: 'التقدم',
@@ -79,11 +77,10 @@ export function createRoleNavItems({
         disabled: !childrenList[0],
       },
       item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
-      item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+      item('weekly-reports', role === 'specialist' ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
       item('learning-support', 'الدعم التعليمي', <BookOpen size={21} />, '/learning-support'),
       item('care-team', 'فريق الدعم التعليمي', <Users size={21} />, '/care-team'),
       conversations,
-      item('settings', 'الإعدادات', <Settings size={21} />, '/accessibility'),
     ]
   }
 
@@ -92,14 +89,13 @@ export function createRoleNavItems({
       home,
       item('children', 'الطلاب', <Users size={21} />, '/children'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
       item('homeworks', 'الواجبات', <BookOpen size={21} />, '/homeworks'),
-      item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+      item('weekly-reports', role === 'specialist' ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
       item('case-discussions', 'دراسات الحالة', <Stethoscope size={21} />, '/case-discussions'),
-      item('specialist-workflow', 'اقتراح المختصين', <Users size={21} />, '/specialist-workflow'),
       conversations,
-      item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
+      ...(role === 'specialist' ? [item('settings', 'إعدادات التكيف', <Accessibility size={21} />, '/accessibility')] : []),
     ]
   }
 
@@ -107,16 +103,16 @@ export function createRoleNavItems({
     return [
       home,
       item('children', 'الأطفال', <Users size={21} />, '/children'),
-      item('aac', 'تواصل بالصور', <MessageCircle size={21} />, '/aac'),
       item('specialist-workflow', 'اقتراحات المتابعة', <Users size={21} />, '/specialist-workflow'),
       item('learning-support', 'اجتماعات الدعم', <BookOpen size={21} />, '/learning-support'),
-      item('weekly-reports', 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
+      item('weekly-reports', role === 'specialist' ? 'التقدم الأسبوعي' : 'التقارير الأسبوعية', <BarChart3 size={21} />, '/weekly-reports'),
       item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
       item('care-team', 'فريق الدعم التعليمي', <Users size={21} />, '/care-team'),
       item('search', 'البحث', <Search size={21} />, '/search'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       conversations,
-      item('settings', 'إعدادات الوصول', <Accessibility size={21} />, '/accessibility'),
+      ...(role === 'specialist' ? [item('settings', 'إعدادات التكيف', <Accessibility size={21} />, '/accessibility')] : []),
     ]
   }
 
@@ -124,6 +120,7 @@ export function createRoleNavItems({
     return [
       home,
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
       conversations,
       item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
@@ -134,6 +131,7 @@ export function createRoleNavItems({
     return [
       home,
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث', <Search size={21} />, '/search'),
       conversations,
       item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
@@ -144,12 +142,12 @@ export function createRoleNavItems({
     return [
       home,
       item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
-      item('curriculum', 'مراجعة المناهج', <Landmark size={21} />, '/ministry'),
       item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
       item('case-discussions', 'دراسات الحالة', <MessageCircle size={21} />, '/case-discussions'),
       item('specialist-workflow', 'متابعة المختصين', <Users size={21} />, '/specialist-workflow'),
       item('learning-support', 'اجتماعات الدعم', <BookOpen size={21} />, '/learning-support'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
+      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث', <Search size={21} />, '/search'),
       conversations,
       item('support', 'الدعم الفني', <LifeBuoy size={21} />, '/support'),

@@ -3,10 +3,20 @@ part of 'voice_command_service.dart';
 
 extension _VoiceCommandExecutionExtension on VoiceCommandService {
   Future<void> _executeCommand(String rawText) async {
+    final userId = await ApiService.getUserId();
+    if (userId == null) { await _reply('سجّل الدخول لاستخدام الأوامر الصوتية'); return; }
     final text = _normalize(rawText);
     final nav = appNavigatorKey.currentState;
 
     // ═══ 1. القراءة باللمس ═══
+    if (_matches(text, ['اوقف القراءه', 'اقفل القراءه', 'الغ القراءه'])) {
+      if (TtsService.instance.tapToRead.value) {
+        await TtsService.instance.toggleTapToRead();
+      }
+      await _reply('أوقفت وضع القراءة');
+      return;
+    }
+
     if (_matches(text, [
       'اقرا', 'اقراء', 'قراءه', 'قرايه',
       'شغل القراءه', 'فعل القراءه', 'ابدا القراءه', 'وضع القراءه',
@@ -17,14 +27,6 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       await _reply('وضع القراءة باللمس مُفعّل');
       return;
     }
-    if (_matches(text, ['اوقف القراءه', 'اقفل القراءه', 'الغ القراءه'])) {
-      if (TtsService.instance.tapToRead.value) {
-        await TtsService.instance.toggleTapToRead();
-      }
-      await _reply('أوقفت وضع القراءة');
-      return;
-    }
-
     // ═══ 2. الإيقاف ═══
     if (_matches(text, ['اوقف', 'اسكت', 'سكوت', 'هدوء', 'صمت'])) {
       await TtsService.instance.stop();
@@ -69,14 +71,62 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       return;
     }
 
-    // ═══ 6. الأوامر الخاصة بالطفل (قبل العامة) ═══
-    await _ensureChildrenLoaded();
-
-    if (await _tryExecuteChildCommand(text, nav)) return;
+    final role = await ApiService.getRole();
+    final accountCommand = _matches(text, ['الملف الشخصي', 'ملفي', 'بروفايل', 'حسابي', 'كلمه المرور', 'كلمه السر', 'الباسورد', 'توثيق', 'توثيق الهويه', 'تحقق', 'هويتي']);
+    if (accountCommand) {
+      if (await ApiService.getUserId() != userId) return;
+      final Widget screen;
+      if (_matches(text, ['توثيق', 'توثيق الهويه', 'تحقق', 'هويتي'])) {
+        screen = const VerifyIdentityScreen();
+      } else if (_matches(text, ['كلمه المرور', 'كلمه السر', 'الباسورد'])) {
+        screen = const ChangePasswordScreen();
+      } else {
+        screen = const ProfileScreen();
+      }
+      await _reply('سأفتح إعدادات حسابك');
+      nav.push(MaterialPageRoute(builder: (_) => screen));
+      return;
+    }
+    if (!['admin', 'parent'].contains(role) && !await ApiService.isVerified()) {
+      if (await ApiService.getUserId() != userId) return;
+      await _reply('وثّق هويتك أولاً لفتح الخدمات');
+      nav.push(MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()));
+      return;
+    }
+    if (await ApiService.getUserId() != userId) return;
+    final childRole = ['parent', 'teacher', 'specialist', 'admin'].contains(role);
+    if (_matches(text, ['دروس ولي الامر', 'دروس لولي الامر', 'دروس للاهل', 'نصائح', 'دروس عامه', 'الدروس العامه', 'مكتبه الدروس'])) {
+      final parentLessons = !_matches(text, ['دروس عامه', 'الدروس العامه', 'مكتبه الدروس']);
+      if (parentLessons && !childRole) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
+      await _reply(parentLessons ? 'سأفتح دروس ولي الأمر' : 'سأفتح مكتبة الدروس');
+      nav.push(MaterialPageRoute(builder: (_) => parentLessons ? const ParentLessonsScreen() : const LessonsScreen()));
+      return;
+    }
+    if (_matches(text, ['طلبات الدعم', 'طلبات الدعم التعليمي', 'اجتماعات الدعم التعليمي'])) {
+      if (!['parent', 'specialist', 'admin'].contains(role)) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
+      await _reply('سأفتح طلبات الدعم');
+      nav.push(MaterialPageRoute(builder: (_) => const LearningSupportRequestsScreen()));
+      return;
+    }
+    if (_matches(text, ['جلسات', 'الجلسات', 'اجتماعات الدعم', 'اجتماعات دعم', 'طلبات', 'الطلبات', 'طلبات الدعم', 'طلب دعم', 'دعم تعليمي']) &&
+        !_matches(text, ['فريق', 'الفريق']) && !['parent', 'specialist', 'admin'].contains(role)) {
+      await _reply('الدعم التعليمي غير متاح لدور حسابك'); return;
+    }
+    if (_matches(text, ['دراسه', 'دراسه الحاله', 'دراسات الحاله', 'نقاش', 'مناقشه']) && !['teacher', 'specialist', 'admin'].contains(role)) {
+      await _reply('دراسات الحالة غير متاحة لدور حسابك'); return;
+    }
+    if (_matches(text, ['الاطفال', 'اطفال', 'الطلاب', 'طلاب', 'طلابي', 'طفل', 'دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقارير', 'التقارير', 'تقرير', 'التقرير', 'فريق', 'الفريق', 'العاب', 'الالعاب', 'العب']) && !childRole) {
+      await _reply('هذه الصفحة غير متاحة لدور حسابك'); return;
+    }
+    if (_matches(text, ['دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقرير', 'التقرير', 'تقارير', 'التقارير', 'فريق', 'الفريق', 'طلب دعم', 'دعم تعليمي', 'تكييف', 'تكيف', 'دراسه', 'دراسات الحاله', 'نقاش', 'مناقشه'])) {
+      await _ensureChildrenLoaded();
+      if (await ApiService.getUserId() != userId) return;
+      if (await _tryExecuteChildCommand(text, nav)) return;
+    }
 
     // ═══ 7. الألعاب ═══
     final gameId = _detectGame(text);
-    if (gameId != null) {
+    if (gameId != null && childRole) {
       final widget = _gameWidgetFor(gameId);
       if (widget != null) {
         await _reply('سأفتح ${_gameDisplayName(gameId)}');
@@ -100,7 +150,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
 
     // ═══ 8. الشاشات العامة ═══
     if (_matches(text, [
-      'الاطفال', 'اطفال', 'الاولاد', 'اولاد', 'قائمه الاطفال',
+      'الاطفال', 'اطفال', 'الطلاب', 'طلاب', 'طلابي', 'الاولاد', 'اولاد', 'قائمه الاطفال',
     ])) {
       await _reply('سأفتح قائمة الأطفال');
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
@@ -148,37 +198,13 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'احتياجات', 'الاحتياجات', 'احتياجات الابناء', 'تخصيص',
     ])) {
+      if (await ApiService.getRole() != 'specialist') {
+        await _reply('إعدادات التكيف متاحة للمختص فقط');
+        return;
+      }
       await _reply('سأفتح احتياجات الأبناء');
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenAccessibilityOverviewScreen(),
-      ));
-      return;
-    }
-
-    if (_matches(text, [
-      'الملف الشخصي', 'ملفي', 'بروفايل', 'حسابي',
-    ])) {
-      await _reply('سأفتح ملفك الشخصي');
-      nav.push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
-      return;
-    }
-
-    if (_matches(text, [
-      'كلمه المرور', 'كلمة السر', 'الباسورد',
-    ])) {
-      await _reply('سأفتح تغيير كلمة المرور');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const ChangePasswordScreen(),
-      ));
-      return;
-    }
-
-    if (_matches(text, [
-      'توثيق', 'توثيق الهويه', 'تحقق', 'هويتي',
-    ])) {
-      await _reply('سأفتح توثيق الهوية');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const VerifyIdentityScreen(),
       ));
       return;
     }
@@ -215,8 +241,8 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       'اضف طفل', 'اضافه طفل', 'ضيف طفل', 'طفل جديد',
     ])) {
       final role = await ApiService.getRole();
-      if (role != 'parent' && role != 'admin') {
-        await _reply('إضافة طفل متاحة لولي الأمر والأدمن فقط');
+      if (role != 'parent') {
+        await _reply('إضافة طفل متاحة لولي الأمر فقط');
         return;
       }
       await _reply('سأفتح إضافة طفل جديد');

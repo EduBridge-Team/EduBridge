@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
@@ -18,6 +19,8 @@ import {
 
 export default function CaseDiscussionsPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const childId = params.get('child_id') || ''
   const me = getUser()
   const meId = me?.id
   const [items, setItems] = useState([])
@@ -27,7 +30,7 @@ export default function CaseDiscussionsPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [draft, setDraft] = useState({
-    child_id: '',
+    child_id: childId,
     topic: '',
     description: '',
     participant_ids: [],
@@ -41,9 +44,9 @@ export default function CaseDiscussionsPage() {
         fetchChildren(),
         fetchUsers(),
       ])
-      const childList = childrenData.children || []
+      const childList = (childrenData.children || []).filter(child => !childId || String(child.id) === childId)
 
-      setItems(discussionsData.discussions || [])
+      setItems((discussionsData.discussions || []).filter(item => !childId || String(item.child_id) === childId))
       setChildren(childList)
       setUsers(
         (usersData.users || []).filter(
@@ -62,11 +65,13 @@ export default function CaseDiscussionsPage() {
     } catch (err) {
       setError(err.message)
     }
-  }, [meId])
+  }, [meId, childId])
 
   useEffect(() => {
+    setSelected(null)
+    setDraft(current => ({ ...current, child_id: childId }))
     load()
-  }, [load])
+  }, [load, childId])
 
   const open = async (id) => {
     try {

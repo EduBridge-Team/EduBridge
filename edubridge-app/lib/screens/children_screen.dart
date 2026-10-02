@@ -1,84 +1,88 @@
 // lib/screens/children_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/paged_list_controller.dart';
+import '../widgets/list_pagination.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 import '../widgets/listen_button.dart';
 import '../widgets/speakable.dart';
 import 'child_lessons/child_lessons_screen.dart';
 import 'child_progress_screen.dart';
+import 'weekly_report_screen.dart';
+import 'child_homework/child_homework_screen.dart';
+import 'teacher_child_details/teacher_child_details_screen.dart';
+import 'specialist/specialist_child_profile_screen.dart';
+import '../widgets/teacher_navigation_bar.dart';
 
 class ChildrenScreen extends StatefulWidget {
+  String? get destinationLabel => switch (destination) {
+    'weekly-reports' => 'التقدم الأسبوعي', 'homeworks' => 'الواجبات', _ => null,
+  };
+  final String? destination;
   final bool forProgress;
-  const ChildrenScreen({super.key, this.forProgress = false});
+  const ChildrenScreen({super.key, this.forProgress = false, this.destination});
 
   @override
   State<ChildrenScreen> createState() => _ChildrenScreenState();
 }
 
 class _ChildrenScreenState extends State<ChildrenScreen> {
+  String? _role;
   List _children = [];
+  late final PagedListController _pages;
   bool _loading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    _pages = PagedListController((page, query) => ApiService.getChildrenPage(page: page, query: query));
+    _pages.addListener(_syncPage);
     _loadChildren();
   }
 
   @override
   void dispose() {
+    _pages.dispose();
     TtsService.instance.stop();
     super.dispose();
   }
 
-  Future<void> _loadChildren() async {
+  void _syncPage() {
+    if (!mounted) return;
     setState(() {
-      _loading = true;
-      _error = null;
+      _children = _pages.items;
+      _loading = _pages.loading;
+      _error = _pages.error;
     });
-
-    try {
-      final res = await ApiService.authGet('/children');
-      final data = jsonDecode(res.body);
-      if (!mounted) return;
-      if (res.statusCode == 200) {
-        setState(() {
-          _children = data['children'] ?? [];
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الأطفال';
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
   }
+
+  Future<void> _loadChildren() async {
+    final role = await ApiService.getRole();
+    if (!mounted) return;
+    setState(() => _role = role);
+    await _pages.load();
+  }
+
 
   void _openChild(Map child) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => widget.forProgress
-            ? ChildProgressScreen(
-                childId: child['id'],
-                childName: child['name'] ?? '',
-              )
-            : ChildLessonsScreen(
-                childId: child['id'],
-                childName: child['name'] ?? '',
-              ),
+        builder: (_) => widget.destination == 'weekly-reports'
+            ? WeeklyReportScreen(childId: child['id'], childName: child['name'] ?? '')
+            : widget.destination == 'homeworks'
+            ? ChildHomeworkScreen(childId: child['id'], childName: child['name'] ?? '')
+            : widget.forProgress
+            ? ChildProgressScreen(childId: child['id'], childName: child['name'] ?? '')
+            : _role == 'teacher'
+            ? TeacherChildDetailsScreen(childId: child['id'], childName: child['name'] ?? '')
+            : _role == 'specialist'
+            ? SpecialistChildProfileScreen(child: Map<String, dynamic>.from(child))
+            : ChildLessonsScreen(childId: child['id'], childName: child['name'] ?? ''),
       ),
     );
   }
@@ -87,13 +91,18 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: JisrAppBar(
-        title: widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
+        title: widget.destinationLabel != null ? 'اختر طالباً لعرض ${widget.destinationLabel}' : widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
         actions: const [ListenButton()],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadChildren,
-        child: _buildBody(),
-      ),
+      bottomNavigationBar: const TeacherNavigationBar(),
+      body: Column(children: [
+        Padding(padding: const EdgeInsets.all(12), child: TextField(
+          decoration: const InputDecoration(hintText: 'ابحث عن طفل أو معلّم...', prefixIcon: Icon(AppIcons.search)),
+          onChanged: _pages.search,
+        )),
+        Expanded(child: RefreshIndicator(onRefresh: _loadChildren, child: _buildBody())),
+        ListPagination(controller: _pages),
+      ]),
     );
   }
 
@@ -154,7 +163,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            'لا يوجد أطفال بعد',
+            _pages.query.trim().isEmpty ? 'لا يوجد أطفال بعد' : 'لا نتائج مطابقة لبحثك',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
@@ -232,7 +241,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                             Text(
                               widget.forProgress
                                   ? 'عرض التقدّم والإنجازات'
-                                  : 'عرض الدروس والأنشطة',
+                                  : widget.destinationLabel ?? (['teacher', 'specialist'].contains(_role) ? 'عرض ملف الطالب' : 'عرض الدروس والأنشطة'),
                               style: TextStyle(
                                 fontSize: 13.5,
                                 color: c.muted,

@@ -22,7 +22,7 @@ trait ChildAccessibilityProfileReadActions
             ->first();
 
         if (!$row) {
-            return response()->json(['profile' => null]);
+            return response()->json(['profile' => null, 'can_edit' => $role === 'specialist']);
         }
 
         $profile = is_string($row->profile)
@@ -31,6 +31,7 @@ trait ChildAccessibilityProfileReadActions
 
         return response()->json([
             'profile' => $profile,
+            'can_edit' => $role === 'specialist',
             'updated_at' => $row->updated_at,
         ]);
     }

@@ -125,6 +125,7 @@ class HomeworkSpecialistScopeTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('notifications');
         Schema::dropIfExists('homework_submissions');
         Schema::dropIfExists('homeworks');
         Schema::dropIfExists('child_specialist');
@@ -156,6 +157,44 @@ class HomeworkSpecialistScopeTest extends TestCase
         );
 
         $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function test_teacher_can_grade_own_homework_and_preserve_feedback(): void
+    {
+        $response = app(HomeworkController::class)->grade(
+            $this->request('PUT', ['grade' => 90, 'feedback' => 'أحسنت'], 1, 'teacher'), 500
+        );
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertDatabaseHas('homework_submissions', ['id' => 500, 'grade' => 90, 'feedback' => 'أحسنت', 'graded_by' => 1]);
+    }
+
+    public function test_empty_and_out_of_range_grades_never_overwrite_submission(): void
+    {
+        foreach ([null, '', -1, 101, 100.5, 'not-a-grade'] as $grade) {
+            $response = app(HomeworkController::class)->grade(
+                $this->request('PUT', ['grade' => $grade], 1, 'teacher'), 500
+            );
+            $this->assertSame(422, $response->getStatusCode());
+        }
+        $this->assertDatabaseHas('homework_submissions', ['id' => 500, 'grade' => null]);
+    }
+
+    public function test_repeated_grade_preserves_timestamp_and_notifies_parents_only_once(): void
+    {
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->id(); $table->unsignedBigInteger('user_id'); $table->string('title');
+            $table->text('message'); $table->string('type')->nullable();
+        });
+        DB::table('child_parent')->insert(['child_id' => 20, 'parent_id' => 9]);
+        $controller = app(HomeworkController::class);
+        $request = $this->request('PUT', ['grade' => 90, 'feedback' => 'أحسنت'], 1, 'teacher');
+        $this->assertSame(200, $controller->grade($request, 500)->getStatusCode());
+        $timestamp = DB::table('homework_submissions')->where('id', 500)->value('graded_at');
+        $this->travel(1)->minutes();
+        $this->assertSame(200, $controller->grade($request, 500)->getStatusCode());
+        $this->assertSame($timestamp, DB::table('homework_submissions')->where('id', 500)->value('graded_at'));
+        $this->assertSame(1, DB::table('notifications')->where('type', 'homework_graded')->count());
+        $this->travelBack();
     }
 
     private function request(string $method, array $payload, int $id, string $role): Request

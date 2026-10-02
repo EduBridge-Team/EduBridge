@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { googleLogin } from '../../api'
 import { dashboardFor } from '../../roleRoutes'
+import { loadGoogleIdentity } from './googleIdentity.js'
 
 export function useGoogleSignIn({ navigate, setError, setLoading }) {
   const [googleReady, setGoogleReady] = useState(false)
@@ -10,7 +11,6 @@ export function useGoogleSignIn({ navigate, setError, setLoading }) {
     if (!googleClientId) return undefined
 
     let cancelled = false
-    let pollId
 
     const setupGoogle = () => {
       if (cancelled || !window.google?.accounts?.id) return false
@@ -46,15 +46,13 @@ export function useGoogleSignIn({ navigate, setError, setLoading }) {
       return true
     }
 
-    if (!setupGoogle()) {
-      pollId = setInterval(() => {
-        if (setupGoogle()) clearInterval(pollId)
-      }, 200)
-    }
+    loadGoogleIdentity().then(setupGoogle).catch(() => {
+      // Password login remains available when the external provider fails.
+      if (!cancelled) setGoogleReady(false)
+    })
 
     return () => {
       cancelled = true
-      if (pollId) clearInterval(pollId)
     }
   }, [navigate, setError, setLoading])
 

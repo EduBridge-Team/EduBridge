@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Concerns;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 trait ChildLessonHelpers
 {
-    private function serializeChildLesson(Request $request, object $lesson): array
+    use LessonMediaBatchLoading;
+
+    private function serializeChildLesson(Request $request, object $lesson, ?Collection $loadedMedia = null): array
     {
         $data = (array) $lesson;
         $rawTargets = $data['target_child_ids'] ?? null;
@@ -19,16 +22,13 @@ trait ChildLessonHelpers
             $data['target_child_ids'] = [];
         }
 
-        $media = DB::table('media')
+        $media = ($loadedMedia ?? DB::table('media')
             ->where('lesson_id', $lesson->id)
             ->select('id', 'lesson_id', 'type', 'url')
             ->orderBy('id')
-            ->get()
+            ->get())
             ->map(function ($item) use ($request) {
-                $url = $item->url;
-                if ($url && !preg_match('/^https?:\/\//i', $url)) {
-                    $url = rtrim($request->getSchemeAndHttpHost(), '/') . '/' . ltrim($url, '/');
-                }
+                $url = \App\Support\LessonFiles::forViewer($request, $item->url);
 
                 return [
                     'id' => $item->id,

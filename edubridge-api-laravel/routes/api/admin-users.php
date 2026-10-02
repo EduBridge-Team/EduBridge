@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 // إدارة المستخدمين
+Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])
+    ->middleware(['role:admin', 'throttle:10,1']);
 Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])
     ->middleware('role:parent,teacher,specialist,admin,ministry,institution');
 Route::put('/users/{id}', [\App\Http\Controllers\UserController::class, 'update'])
