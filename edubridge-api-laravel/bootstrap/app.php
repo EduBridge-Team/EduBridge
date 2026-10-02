@@ -4,6 +4,7 @@ use App\Http\Middleware\JwtAuth;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ChildAccessMiddleware;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\WebSessionBridge;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../app/Console/Commands',
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(WebSessionBridge::class);
         $middleware->append(SecurityHeaders::class);
 
         // أسماء مختصرة لوسطاء التوكن والصلاحيات
