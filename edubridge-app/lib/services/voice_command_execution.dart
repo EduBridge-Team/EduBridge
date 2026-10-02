@@ -87,7 +87,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       nav.push(MaterialPageRoute(builder: (_) => screen));
       return;
     }
-    if (role != 'admin' && !await ApiService.isVerified()) {
+    if (!['admin', 'parent'].contains(role) && !await ApiService.isVerified()) {
       if (await ApiService.getUserId() != userId) return;
       await _reply('وثّق هويتك أولاً لفتح الخدمات');
       nav.push(MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()));

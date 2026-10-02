@@ -24,6 +24,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
+  final _childIdCtrl = TextEditingController();
+  final _guardianIdCtrl = TextEditingController();
   final _ageCtrl = TextEditingController();
   final _disabilityDescCtrl = TextEditingController();
   
@@ -46,6 +48,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
   void dispose() {
     _nameCtrl.dispose();
     _ageCtrl.dispose();
+    _childIdCtrl.dispose();
+    _guardianIdCtrl.dispose();
     _disabilityDescCtrl.dispose();
     _specialNeedsCtrl.dispose();
     _learningStyleCtrl.dispose();
@@ -122,10 +126,6 @@ void _removeMedicalReport(int index) {
       setState(() => _error = 'صورة شهادة الميلاد مطلوبة');
       return;
     }
-    if (_medicalReportFiles.isEmpty) {
-      setState(() => _error = 'صورة التقرير الطبي مطلوبة');
-       return;
-    }
 
     setState(() {
       _loading = true;
@@ -143,6 +143,8 @@ void _removeMedicalReport(int index) {
       await ApiService.addChild(
         name: _nameCtrl.text.trim(),
         age: int.parse(_ageCtrl.text.trim()),
+        childNationalId: _childIdCtrl.text.trim(),
+        guardianNationalId: _guardianIdCtrl.text.trim(),
         disabilityType: finalDisabilityType,
         disabilityDescription: _optional(_disabilityDescCtrl.text),
         specialNeeds: _optional(_specialNeedsCtrl.text),

@@ -31,9 +31,9 @@ export default function GeneralChildrenView({ canAddChild, children, navigate, h
           className="card clickable"
           role="link"
           tabIndex={0}
-          aria-label={`دروس ${child.name}`}
-          onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/children/${child.id}/lessons`, { state: { childName: child.name } }) }}
-          onClick={() => navigate(`/children/${child.id}/lessons`, { state: { childName: child.name } })}
+          aria-label={`ملف ${child.name}`}
+          onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/children/${child.id}`, { state: { childName: child.name } }) }}
+          onClick={() => navigate(`/children/${child.id}`, { state: { childName: child.name } })}
         >
           <div className="card-row">
             <div className="avatar">🧒</div>

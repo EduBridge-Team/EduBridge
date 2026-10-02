@@ -22,6 +22,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _profile;
+  List<dynamic> _certificates = [];
   bool _loading = true;
   String? _error;
   bool _deleting = false;
@@ -43,6 +44,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       final data = await ApiService.getProfile();
+      if (['teacher', 'specialist'].contains(data?['role'])) {
+        final response = await ApiService.authGet('/certificates');
+        final certificates = ApiService.decodeMap(response.body);
+        if (response.statusCode != 200) throw Exception('تعذّر تحميل الشهادات');
+        _certificates = certificates['certificates'] as List? ?? [];
+      }
       if (!mounted) return;
 
       final avatarUrl = (data?['avatar_url'] ?? '').toString();

@@ -123,6 +123,8 @@ class ApiService {
     static Future<Map<String, dynamic>?> addChild({
     required String name,
     required int age,
+    required String childNationalId,
+    required String guardianNationalId,
     String? disabilityType,
     String? disabilityDescription,
     String? specialNeeds,
@@ -132,7 +134,7 @@ class ApiService {
     File? idCardFile,
     File? birthCertFile,
     List<File>? medicalReportFiles, 
-  }) => _apiAddChild(name: name, age: age, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile,medicalReportFiles: medicalReportFiles,);
+  }) => _apiAddChild(name: name, age: age, childNationalId: childNationalId, guardianNationalId: guardianNationalId, disabilityType: disabilityType, disabilityDescription: disabilityDescription, specialNeeds: specialNeeds, preferredLearningStyle: preferredLearningStyle, strengths: strengths, challenges: challenges, idCardFile: idCardFile, birthCertFile: birthCertFile,medicalReportFiles: medicalReportFiles,);
 
     static Future<Map<String, dynamic>?> getChildDetails(int childId) => _apiGetChildDetails(childId);
 

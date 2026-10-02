@@ -195,12 +195,15 @@ export default function NotificationsPage() {
           <div
             key={n.id}
             className={`card notif-card notification-card-v2 clickable ${n.is_read ? '' : 'unread'}`}
+            role="button" tabIndex={0}
+            aria-label={`${n.title}${n.is_read ? '' : ' — تعليم كمقروء'}`}
+            onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); readOne(n) } }}
             onClick={() => readOne(n)}
           >
             <div className="notif-icon">{iconFor(n.type)}</div>
             <div className="notif-body">
               <h3 className={n.is_read ? '' : 'bold'}>{n.title}</h3>
-              {n.body && <div>{n.body}</div>}
+              {(n.body || n.message) && <p>{n.body || n.message}</p>}
               {formatDateTime(n.created_at) && (
                 <div className="meta">{formatDateTime(n.created_at)}</div>
               )}

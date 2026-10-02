@@ -3,13 +3,22 @@ import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../child_progress_screen.dart';
+import '../child_lessons/child_lessons_screen.dart';
+import '../weekly_report_screen.dart';
+import '../case_discussion/case_discussion_screen.dart';
+import '../plan_evaluation_screen.dart';
+import '../../widgets/teacher_navigation_bar.dart';
 
 class SpecialistChildProfileScreen extends StatefulWidget {
   final Map<String, dynamic> child;
+  final Future<void> Function(Map<String, dynamic>)? onEvaluate;
+  final Future<void> Function(Map<String, dynamic>)? onAccept;
 
   const SpecialistChildProfileScreen({
     super.key,
     required this.child,
+    this.onEvaluate,
+    this.onAccept,
   });
 
   @override
@@ -45,7 +54,8 @@ class _SpecialistChildProfileScreenState
       _error = null;
     });
     try {
-      final response = await ApiService.authGet('/children/$_childId');
+      var response = await ApiService.authGet('/children/$_childId');
+      if (response.statusCode == 403) response = await ApiService.authGet('/children/$_childId/assignment-preview');
       final data = ApiService.decodeMap(response.body);
       if (response.statusCode != 200 || data['child'] is! Map) {
         throw Exception('تعذّر تحميل معلومات الطالب');
@@ -82,6 +92,7 @@ class _SpecialistChildProfileScreenState
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
+      bottomNavigationBar: const TeacherNavigationBar(),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -142,6 +153,7 @@ class _SpecialistChildProfileScreenState
             c,
             title: 'معلومات الطالب',
             children: [
+              _row(c, 'ولي الأمر', (child['guardians'] as List? ?? []).map((guardian) => guardian['name']).join('، '), AppIcons.parent),
               if (_text(child['birth_date']).isNotEmpty)
                 _row(c, 'تاريخ الميلاد', _text(child['birth_date']), Icons.cake_outlined),
               if (_text(child['gender']).isNotEmpty)
@@ -193,6 +205,7 @@ class _SpecialistChildProfileScreenState
             ),
           ],
           const SizedBox(height: 18),
+          if (!_loading && _error == null && child['assignment_preview'] != true) ...[
           FilledButton.icon(
             onPressed: () => Navigator.push(
               context,
@@ -206,6 +219,20 @@ class _SpecialistChildProfileScreenState
             icon: const Icon(AppIcons.progress),
             label: const Text('عرض التقدّم'),
           ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(icon: const Icon(AppIcons.lesson), label: const Text('دروس الطالب'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChildLessonsScreen(childId: _childId, childName: _childName)))),
+          OutlinedButton.icon(icon: const Icon(AppIcons.progress), label: const Text('التقدم الأسبوعي وتقارير المعلم'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => WeeklyReportScreen(childId: _childId, childName: _childName)))),
+          OutlinedButton.icon(icon: const Icon(AppIcons.forum), label: const Text('مناقشة الحالة'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CaseDiscussionScreen(filterChildId: _childId)))),
+          if (widget.onEvaluate != null) OutlinedButton.icon(icon: const Icon(AppIcons.evaluate), label: const Text('تقييم الطالب والخطة'),
+            onPressed: () => widget.onEvaluate!(_child)),
+          if (child['current_plan_id'] is int) OutlinedButton.icon(icon: const Icon(AppIcons.evaluate), label: const Text('تقييم الخطة الحالية'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlanEvaluationScreen(childId: _childId, childName: _childName, planId: child['current_plan_id'] as int)))),
+          ],
+          if (!_loading && _error == null && child['assignment_preview'] == true && widget.onAccept != null)
+            FilledButton(onPressed: () async { await widget.onAccept!(_child); if (mounted) await _load(); }, child: const Text('قبول متابعة الطفل')),
           const SizedBox(height: 28),
         ],
       ),

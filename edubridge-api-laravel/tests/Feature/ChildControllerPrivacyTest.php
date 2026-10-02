@@ -266,6 +266,23 @@ class ChildControllerPrivacyTest extends TestCase
         $this->assertSame([20, 'approved', 1], $planQuery['bindings']);
     }
 
+    public function test_assignment_preview_shares_guardian_name_but_never_identity_documents(): void
+    {
+        $request = $this->request(8, 'specialist');
+        $request->attributes->get('jwt_user')->specialty = 'educational';
+        $response = app(ChildController::class)->assignmentPreview($request, 10);
+        $this->assertSame(200, $response->getStatusCode());
+        $child = $response->getData(true)['child'];
+        $this->assertSame('ولي الأمر', $child['guardians'][0]['name']);
+        foreach (['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url'] as $field) $this->assertArrayNotHasKey($field, $child);
+        DB::table('child_specialist')->insert(['child_id' => 10, 'specialist_id' => 9, 'specialty' => 'educational']);
+        $this->assertSame(403, app(ChildController::class)->assignmentPreview($request, 10)->getStatusCode());
+        $request->attributes->get('jwt_user')->specialty = 'learning_support';
+        $this->assertSame(200, app(ChildController::class)->assignmentPreview($request, 10)->getStatusCode());
+        DB::table('child_specialist')->insert(['child_id' => 10, 'specialist_id' => 7, 'specialty' => 'learning_support']);
+        $this->assertSame(403, app(ChildController::class)->assignmentPreview($request, 10)->getStatusCode());
+    }
+
     private function request(
         int $id,
         string $role,

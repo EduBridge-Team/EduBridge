@@ -47,9 +47,12 @@ const CaseDiscussionsPage = lazy(() => import('./pages/Support/CaseDiscussionsPa
 const SpecialistWorkflowPage = lazy(() => import('./pages/Support/SpecialistWorkflowPage'))
 const ParentLessonsPage = lazy(() => import('./pages/Learning/ParentLessonsPage'))
 
+const LessonEditorPage = lazy(() => import('./pages/Learning/LessonEditorPage'))
+
 function Protected({ children }) {
   const location = useLocation()
-  const { verified } = useVerification()
+  const { verified: identityVerified } = useVerification()
+  const verified = identityVerified || getUser()?.role === 'parent'
   if (!getToken()) return <Navigate to="/login" replace />
   if (!verified && !canOpenUnverifiedPath(location.pathname)) return <VerificationRequired />
   return children
@@ -78,7 +81,8 @@ function GuestOnly({ children }) {
 }
 
 function Page({ children }) {
-  const { verified } = useVerification()
+  const { verified: identityVerified } = useVerification()
+  const verified = identityVerified || getUser()?.role === 'parent'
   const user = getUser()
   const location = useLocation()
   const useRoleShell = verified && Boolean(user?.role)
@@ -111,17 +115,18 @@ export default function AppRoutes() {
           <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
           <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
           <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
-          <Route path="/ministry" element={<RolePage roles={['ministry', 'admin']}><MinistryPage /></RolePage>} />
+          <Route path="/ministry" element={<RolePage roles={['ministry']}><MinistryPage /></RolePage>} />
 
           <Route path="/notifications" element={<Protected><Page><NotificationsPage /></Page></Protected>} />
           <Route path="/conversations" element={<Protected><Page><ConversationsPage /></Page></Protected>} />
+          <Route path="/lessons/new" element={<RolePage roles={['teacher', 'specialist', 'admin']}><LessonEditorPage /></RolePage>} />
           <Route path="/lessons" element={<Protected><Page><LessonsPage /></Page></Protected>} />
           <Route path="/verify" element={<Protected><Page><VerifyIdentityPage /></Page></Protected>} />
           <Route path="/profile" element={<Protected><Page><ProfilePage /></Page></Protected>} />
           <Route path="/support" element={<Protected><Page><SupportPage /></Page></Protected>} />
 
           <Route path="/children" element={<RolePage roles={CHILD_ROLES}><ChildrenPage /></RolePage>} />
-          <Route path="/children/new" element={<RolePage roles={['parent', 'admin']}><ChildFormPage /></RolePage>} />
+          <Route path="/children/new" element={<RolePage roles={['parent']}><ChildFormPage /></RolePage>} />
           <Route path="/children/:childId" element={<RolePage roles={CHILD_ROLES}><ChildDetailsPage /></RolePage>} />
           <Route path="/children/:childId/edit" element={<RolePage roles={CHILD_ROLES}><ChildFormPage /></RolePage>} />
           <Route path="/children/:childId/lessons" element={<RolePage roles={CHILD_ROLES}><ChildLessonsPage /></RolePage>} />
@@ -137,7 +142,7 @@ export default function AppRoutes() {
           <Route path="/learning-support" element={<RolePage roles={['parent','specialist','admin']}><LearningSupportPage /></RolePage>} />
           <Route path="/care-team" element={<RolePage roles={['parent','teacher','specialist','admin']}><CareTeamPage /></RolePage>} />
           <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
-          <Route path="/specialist-workflow" element={<RolePage roles={['teacher','specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
+          <Route path="/specialist-workflow" element={<RolePage roles={['specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
           <Route path="/parent-lessons" element={<RolePage roles={CHILD_ROLES}><ParentLessonsPage /></RolePage>} />
           <Route path="/aac" element={<RolePage roles={CHILD_ROLES}><Navigate to="/conversations?mode=aac" replace /></RolePage>} />
           <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />

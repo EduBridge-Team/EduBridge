@@ -11,12 +11,12 @@ export default function ChildrenPage() {
   const navigate = useNavigate()
   const me = getUser()
   const isParent = me?.role === 'parent'
-  const isAdmin = me?.role === 'admin'
-  const canAddChild = isParent || isAdmin
+  const canAddChild = isParent
   const [summaries, setSummaries] = useState({})
   const [query, setQuery] = useState('')
+  const [scope, setScope] = useState('mine')
   const [activeOnly, setActiveOnly] = useState(false)
-  const { items: children, loading, error, meta, summary, setPage, reload: load } = useListPage(fetchChildren, 'children', { q: query, active_only: activeOnly ? '1' : '0' })
+  const { items: children, loading, error, meta, summary, setPage, reload: load } = useListPage(fetchChildren, 'children', { q: query, active_only: activeOnly ? '1' : '0', ...(me?.role === 'specialist' ? { assigned_only: scope === 'mine' ? '1' : '0', waiting_only: scope === 'waiting' ? '1' : '0' } : {}) })
 
   useEffect(() => {
     let cancelled = false
@@ -33,6 +33,10 @@ export default function ChildrenPage() {
   if (!isParent) {
     return (
       <div>
+        {me?.role === 'specialist' && <div className="toolbar" role="group" aria-label="عرض الطلاب">
+          <button className={`btn ${scope === 'mine' ? '' : 'outline'}`} aria-pressed={scope === 'mine'} onClick={() => setScope('mine')}>الطلاب المعيّنون لي</button>
+          <button className={`btn ${scope === 'waiting' ? '' : 'outline'}`} aria-pressed={scope === 'waiting'} onClick={() => setScope('waiting')}>قائمة الانتظار</button>
+        </div>}
         <label className="pc-search">
           <input value={query} onChange={event => setQuery(event.target.value)} placeholder="ابحث عن طفل أو معلّم..." aria-label="ابحث عن طفل أو معلّم" />
         </label>

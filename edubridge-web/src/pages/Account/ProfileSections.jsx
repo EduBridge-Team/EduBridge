@@ -41,7 +41,7 @@ function ActionCard({ Icon, title, subtitle, tone = '', onClick }) {
   )
 }
 
-export function ProfileHero({ initial, name, onVerify, role, verified }) {
+export function ProfileHero({ initial, name, onVerify, role, verified, guardian = false }) {
   return (
     <section className="profile-hero">
       <div className="profile-avatar-large" aria-hidden="true">
@@ -49,13 +49,13 @@ export function ProfileHero({ initial, name, onVerify, role, verified }) {
       </div>
       <h1>{name || 'مستخدم'}</h1>
       <span className="profile-role">{role}</span>
-      <button
+      {guardian ? <p>توثيق الهوية وصلة القرابة عند إضافة الطفل</p> : <button
         className={`profile-verification ${verified ? 'verified' : 'pending'}`}
         onClick={onVerify}
       >
         {verified ? <BadgeCheck size={17} /> : <ShieldAlert size={17} />}
         {verified ? 'حساب موثّق' : 'غير موثّق — استكمال التوثيق'}
-      </button>
+      </button>}
     </section>
   )
 }

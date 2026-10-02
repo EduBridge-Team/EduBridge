@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
-import { isIdentityVerified, canOpenUnverifiedPath } from '../src/verificationPolicy.js'
-import { isAssignedToSpecialist } from '../src/pages/Dashboards/specialistAssignment.js'
+import { isIdentityVerified, canAccessPortal, canOpenUnverifiedPath } from '../src/verificationPolicy.js'
+import { isAssignedToSpecialist, isWaitingForSpecialist } from '../src/pages/Dashboards/specialistAssignment.js'
 import { defaultProfile, recommendedProfile, typeFromText, DISABILITY_TYPES } from '../src/accessibility.js'
 import { ACCESSIBILITY_SETTINGS } from '../src/pages/Children/accessibilitySettings.js'
 import { appendAACSymbol } from '../src/pages/Communication/aacData.js'
@@ -53,4 +53,15 @@ test('picture messages remain in the normal conversation draft and respect the A
   assert.equal(appendAACSymbol('مرحبا', '💧', 'أريد ماء'), 'مرحبا 💧 أريد ماء')
   assert.equal(appendAACSymbol('', '💧', 'أريد ماء'), '💧 أريد ماء')
   assert.equal(appendAACSymbol('أ'.repeat(3999), '💧', 'أريد ماء').length, 4000)
+})
+
+test('parent access does not imply identity approval; queue excludes occupied specialties', () => {
+  assert.equal(canAccessPortal({role: 'parent'}, null), true)
+  assert.equal(isIdentityVerified({role: 'parent'}, null), false)
+  assert.equal(canAccessPortal({role: 'teacher'}, {verification_status: 'pending'}), false)
+  const child = {specialists: [{id: 1, specialty: 'educational'}]}
+  assert.equal(isWaitingForSpecialist(child, {id: 2, specialty: 'educational'}), false)
+  assert.equal(isWaitingForSpecialist(child, {id: 2, specialty: 'learning_support'}), true)
+  assert.equal(isWaitingForSpecialist(child, {id: 1, specialty: 'learning_support'}), false)
+  assert.equal(isWaitingForSpecialist({specialists: [...child.specialists, {id: 3, specialty: 'learning_support'}]}, {id: 2, specialty: 'learning_support'}), false)
 })

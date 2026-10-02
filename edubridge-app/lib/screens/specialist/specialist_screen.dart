@@ -12,6 +12,7 @@ import '../../widgets/dashboard_menu.dart';
 import '../../widgets/legal_links_button.dart';
 import '../add_certificate_sheet.dart';
 import '../add_lesson/add_lesson_sheet.dart';
+import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../chat_screen.dart';
 import '../child_progress_screen.dart';
@@ -44,7 +45,8 @@ part 'specialist_evaluation_logic.dart';
 part 'specialist_dashboard_actions.dart';
 
 class SpecialistDashboardScreen extends StatefulWidget {
-  const SpecialistDashboardScreen({super.key});
+  final int initialTab;
+  const SpecialistDashboardScreen({super.key, this.initialTab = 0});
 
   @override
   State<SpecialistDashboardScreen> createState() =>
@@ -83,6 +85,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _tabIndex = widget.initialTab;
     _loadUserAndData();
   }
 
@@ -99,9 +102,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     _checkAndShowVerificationDialog();
   }
 
-  void _setAdding(bool value) {
-    inlineModalOpen.value = value;
-    setState(() => _adding = value);
+  Future<void> _setAdding(bool value) async {
+    if (!value) { inlineModalOpen.value = false; setState(() => _adding = false); return; }
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => AddLessonScreen(types: _types)));
+    if (result != null && mounted) await _load();
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -533,7 +537,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 NavigationDestination(
                   icon: Icon(AppIcons.progress),
                   selectedIcon: Icon(Icons.insights),
-                  label: 'التقدّم',
+                  label: 'الطلاب',
                 ),
                 NavigationDestination(
                   icon: Icon(AppIcons.lesson),

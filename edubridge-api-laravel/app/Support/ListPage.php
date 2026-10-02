@@ -16,6 +16,7 @@ final class ListPage
             'q' => ['sometimes', 'nullable', 'string', 'max:200'],
             'active_only' => ['sometimes', 'boolean'],
             'assigned_only' => ['sometimes', 'boolean'],
+            'waiting_only' => ['sometimes', 'boolean'],
             'category' => ['sometimes', 'nullable', 'string', 'max:100'],
         ])->validate();
         return ['page' => (int) ($data['page'] ?? 1), 'per_page' => (int) ($data['per_page'] ?? 30)] + $data;

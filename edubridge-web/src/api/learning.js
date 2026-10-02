@@ -1,4 +1,4 @@
-import { BASE_URL, getToken, request } from "./core.js";
+import { BASE_URL, getToken, getUser, request } from "./core.js";
 
 // الأطفال (ولي الأمر يستلم أطفاله فقط من السيرفر)
 export function fetchChildren(params = {}) {
@@ -8,7 +8,10 @@ export function fetchChildren(params = {}) {
 
 // تفاصيل طفل واحد (مع نوع الإعاقة والمعلم المسؤول والحالة)
 export function fetchChildDetails(childId) {
-  return request(`/children/${childId}`);
+  return request(`/children/${childId}`).catch(error => {
+    if (getUser()?.role !== 'specialist') throw error;
+    return request(`/children/${childId}/assignment-preview`);
+  });
 }
 
 // تقييمات الطفل (يعرضها ولي الأمر ضمن تفاصيل الطفل)
@@ -207,4 +210,8 @@ export function resolveEmergencyAlert(id) {
     method: "PUT",
     body: "{}",
   });
+}
+
+export function saveChildEvaluation(childId, payload) {
+  return request(`/evaluations/child/${childId}`, { method: 'POST', body: JSON.stringify(payload) });
 }

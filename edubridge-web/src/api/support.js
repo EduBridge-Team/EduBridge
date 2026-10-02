@@ -225,3 +225,7 @@ export function recommendLearningSupport(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function assignSpecialistToChild(childId, specialistId, specialty) {
+  return request(`/children/${childId}/specialists`, { method: 'POST', body: JSON.stringify({ specialist_id: specialistId, specialty }) });
+}

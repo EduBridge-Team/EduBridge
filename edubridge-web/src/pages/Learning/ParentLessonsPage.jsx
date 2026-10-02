@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchLessons, getUser } from '../../api'
 import { useListPage } from '../../hooks/useListPage'
 import ListPagination from '../../components/ListPagination'
-import ParentLessonForm from './ParentLessonForm'
+import { Link } from 'react-router-dom'
 import { ParentLessonsGrid } from './ParentLessonSections'
 
 export default function ParentLessonsPage() {
@@ -48,7 +48,7 @@ export default function ParentLessonsPage() {
       </section>
 
       {['specialist', 'teacher', 'admin'].includes(getUser()?.role) && (
-        <ParentLessonForm onCreated={load} />
+        <Link className="btn" to="/lessons/new?audience=parents">إضافة درس لأولياء الأمور</Link>
       )}
 
       <input

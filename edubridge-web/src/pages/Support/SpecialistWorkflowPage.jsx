@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useState } from 'react'
 import {
@@ -23,10 +24,12 @@ import {
 export default function SpecialistWorkflowPage() {
   const [planOpen, setPlanOpen] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
+  const [params] = useSearchParams()
+  const selectedChild = params.get('child_id') || ''
   const me = getUser()
   const role = me?.role
   const isSpecialist = role === 'specialist'
-  const canSuggest = ['teacher', 'specialist', 'admin'].includes(role)
+  const canSuggest = ['specialist', 'admin'].includes(role)
 
   const [profile, setProfile] = useState(null)
   const [items, setItems] = useState([])
@@ -35,7 +38,7 @@ export default function SpecialistWorkflowPage() {
   const [filter, setFilter] = useState('pending')
   const [specialty, setSpecialty] = useState('learning_support')
   const [draft, setDraft] = useState({
-    child_id: '',
+    child_id: selectedChild,
     specialist_id: '',
     specialty: 'learning_support',
     reason: '',
@@ -43,7 +46,7 @@ export default function SpecialistWorkflowPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [planDraft, setPlanDraft] = useState({
-    child_id: '',
+    child_id: selectedChild,
     is_plan_appropriate: true,
     notes_for_teacher: '',
     recommended_changes: '',
@@ -66,9 +69,9 @@ export default function SpecialistWorkflowPage() {
         fetchUsers('specialist'),
       ])
 
-      const childList = childrenData.children || []
+      const childList = (childrenData.children || []).filter(child => !selectedChild || String(child.id) === selectedChild)
 
-      setItems(suggestionsData.suggestions || [])
+      setItems((suggestionsData.suggestions || []).filter(item => !selectedChild || String(item.child_id) === selectedChild))
       setProfile(profileData)
       setChildren(childList)
       setSpecialists(
@@ -104,11 +107,13 @@ export default function SpecialistWorkflowPage() {
     } catch (err) {
       setError(err.message)
     }
-  }, [filter, isSpecialist, role])
+  }, [filter, isSpecialist, role, selectedChild, me?.id])
 
   useEffect(() => {
+    setDraft(current => ({ ...current, child_id: selectedChild }))
+    setPlanDraft(current => ({ ...current, child_id: selectedChild }))
     load()
-  }, [load])
+  }, [load, selectedChild])
 
   const saveSpecialty = async () => {
     setBusy(true)

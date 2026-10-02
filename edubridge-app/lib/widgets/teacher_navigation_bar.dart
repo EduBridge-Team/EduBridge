@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_icons.dart';
 import '../screens/teacher/teacher_screen.dart';
+import '../screens/specialist/specialist_screen.dart';
 import '../services/api_service.dart';
 
 /// Keeps the teacher's destinations available on shared detail screens.
@@ -20,14 +21,14 @@ class _TeacherNavigationBarState extends State<TeacherNavigationBar> {
     return FutureBuilder<String?>(
       future: _role,
       builder: (context, snapshot) {
-        if (snapshot.data != 'teacher') return const SizedBox.shrink();
+        if (!['teacher', 'specialist'].contains(snapshot.data)) return const SizedBox.shrink();
         return NavigationBar(
           selectedIndex: 0,
           onDestinationSelected: (index) {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute<void>(
-                builder: (_) => TeacherScreen(initialTab: index),
+                builder: (_) => snapshot.data == 'specialist' ? SpecialistDashboardScreen(initialTab: index) : TeacherScreen(initialTab: index),
               ),
               (route) => false,
             );
@@ -36,7 +37,7 @@ class _TeacherNavigationBarState extends State<TeacherNavigationBar> {
             NavigationDestination(
               icon: Icon(Icons.people_outline),
               selectedIcon: Icon(Icons.people),
-              label: 'الأطفال',
+              label: 'الطلاب',
             ),
             NavigationDestination(
               icon: Icon(AppIcons.lesson),

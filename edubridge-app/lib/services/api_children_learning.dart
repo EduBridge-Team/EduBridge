@@ -32,6 +32,8 @@ Future<Map<String, dynamic>?> _apiGetChildren() async {
 Future<Map<String, dynamic>?> _apiAddChild({
   required String name,
   required int age,
+  required String childNationalId,
+  required String guardianNationalId,
   String? disabilityType,
   String? disabilityDescription,
   String? specialNeeds,
@@ -42,71 +44,34 @@ Future<Map<String, dynamic>?> _apiAddChild({
   File? birthCertFile,
   List<File>? medicalReportFiles,
 }) async {
-  try {
-    final token = await ApiService.getToken();
-    final uri = Uri.parse('${Config.baseUrl}/children');
+  if (await ApiService.getRole() != 'parent') throw Exception('إضافة طفل متاحة لولي الأمر فقط');
+  if (idCardFile == null || birthCertFile == null) throw Exception('مستندات الهوية وصلة القرابة مطلوبة');
+  final guardianUrl = await _apiUploadChildDocument(idCardFile);
+  final kinshipUrl = await _apiUploadChildDocument(birthCertFile);
+  final res = await ApiService.authPost('/children', {
+    'name': name, 'age': age,
+    'child_national_id': childNationalId, 'guardian_national_id': guardianNationalId,
+    'guardian_id_document_url': guardianUrl, 'kinship_document_url': kinshipUrl,
+    'disability_type': disabilityType, 'disability_description': disabilityDescription,
+    'special_needs': specialNeeds, 'preferred_learning_style': preferredLearningStyle,
+    'strengths': strengths, 'challenges': challenges,
+  });
+  final data = ApiService._decodeBody(res);
+  if (res.statusCode != 201) throw Exception(data['error'] ?? 'فشل إضافة الطفل');
+  return ApiService._asStringMap(data['child']);
+}
 
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token';
-
-    request.fields['name'] = name;
-    request.fields['age'] = age.toString();
-    if (disabilityType != null) {
-      request.fields['disability_type'] = disabilityType;
-    }
-    if (disabilityDescription != null) {
-      request.fields['disability_description'] = disabilityDescription;
-    }
-    if (specialNeeds != null) {
-      request.fields['special_needs'] = specialNeeds;
-    }
-    if (preferredLearningStyle != null) {
-      request.fields['preferred_learning_style'] = preferredLearningStyle;
-    }
-    if (strengths != null && strengths.isNotEmpty) {
-      request.fields['strengths'] = jsonEncode(strengths);
-    }
-    if (challenges != null && challenges.isNotEmpty) {
-      request.fields['challenges'] = jsonEncode(challenges);
-    }
-
-    if (idCardFile != null && await idCardFile.exists()) {
-      request.files.add(
-        await http.MultipartFile.fromPath('id_card', idCardFile.path),
-      );
-    }
-    if (birthCertFile != null && await birthCertFile.exists()) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-            'birth_certificate', birthCertFile.path),
-      );
-    }
-
-    // صور التقرير الطبي (قد تكون أكثر من صورة) — تُرسل تحت نفس اسم الحقل
-    if (medicalReportFiles != null && medicalReportFiles.isNotEmpty) {
-      for (final file in medicalReportFiles) {
-        if (await file.exists()) {
-          request.files.add(
-            await http.MultipartFile.fromPath(
-              'medical_report',
-              file.path,
-            ),
-          );
-        }
-      }
-    }
-
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
-    final data = ApiService.decodeMap(responseBody);
-
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return ApiService._asStringMap(data['child']);
-    }
-    throw Exception(data['error'] ?? 'فشل إضافة الطفل');
-  } catch (e) {
-    ApiService._handleError(e);
+Future<String> _apiUploadChildDocument(File file) async {
+  final token = await ApiService.getToken();
+  final request = http.MultipartRequest('POST', Uri.parse('${Config.baseUrl}/uploads'))
+    ..headers['Authorization'] = 'Bearer $token'
+    ..files.add(await http.MultipartFile.fromPath('file', file.path));
+  final response = await request.send();
+  final data = ApiService.decodeMap(await response.stream.bytesToString());
+  if ((response.statusCode != 200 && response.statusCode != 201) || data['url'] is! String) {
+    throw Exception(data['error'] ?? 'تعذّر رفع المستند');
   }
+  return data['url'] as String;
 }
 
 Future<Map<String, dynamic>?> _apiGetChildDetails(int childId) async {

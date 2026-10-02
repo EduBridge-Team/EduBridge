@@ -51,15 +51,31 @@ class IdentityVerificationMiddlewareTest extends TestCase
     public function test_pending_and_rejected_accounts_cannot_bypass_ui_but_can_open_profile(): void
     {
         foreach (['pending', 'rejected'] as $status) {
-            DB::table('users')->where('id', 1)->update(['verification_status' => $status]);
+            DB::table('users')->where('id', 1)->update(['role' => 'teacher', 'verification_status' => $status]);
             $this->getJson('/api/children', $this->headers())->assertForbidden()->assertJsonPath('code', 'IDENTITY_NOT_VERIFIED');
             $this->getJson('/api/me', $this->headers())->assertOk()->assertJsonPath('user.id', 1);
         }
     }
 
+    public function test_parent_has_portal_access_without_general_identity_approval(): void
+    {
+        foreach (['pending', 'rejected', 'verified'] as $status) {
+            DB::table('users')->where('id', 1)->update(['verification_status' => $status]);
+            $this->getJson('/api/disability-types', $this->headers())->assertOk();
+        }
+    }
+
+    public function test_admin_cannot_add_children_or_operate_ministry_portal(): void
+    {
+        DB::table('users')->where('id', 1)->update(['role' => 'admin']);
+        $this->postJson('/api/children', ['name' => 'Child'], $this->headers())->assertForbidden();
+        $this->getJson('/api/ministry/stats', $this->headers())->assertForbidden();
+        $this->postJson('/api/ministry/approvals/1/approve', [], $this->headers())->assertForbidden();
+    }
+
     public function test_verified_accounts_and_admin_are_allowed_and_revocation_is_immediate(): void
     {
-        DB::table('users')->where('id', 1)->update(['verification_status' => 'verified']);
+        DB::table('users')->where('id', 1)->update(['role' => 'teacher', 'verification_status' => 'verified']);
         $headers = $this->headers();
         $this->getJson('/api/disability-types', $headers)->assertOk();
         DB::table('users')->where('id', 1)->update(['verification_status' => 'rejected']);

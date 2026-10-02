@@ -36,6 +36,16 @@ trait ChildReadActions
                 $base->whereRaw('1 = 0');
             }
 
+            if ($user->role === 'specialist' && $request->boolean('waiting_only')) {
+                $specialty = $user->specialty ?? null;
+                if (!in_array($specialty, ['educational', 'learning_support'], true)) $base->whereRaw('1 = 0');
+                $base->whereRaw('(SELECT COUNT(*) FROM child_specialist cs WHERE cs.child_id = c.id) < 2')
+                    ->whereNotExists(function ($occupied) use ($user, $specialty) {
+                        $occupied->selectRaw('1')->from('child_specialist as cs')->whereColumn('cs.child_id', 'c.id')
+                            ->where(fn ($match) => $match->where('cs.specialist_id', $user->id)->orWhere('cs.specialty', $specialty));
+                    });
+            }
+
             $summary = null;
             if ($paging !== null) {
                 if ($user->role === 'parent') {
@@ -94,6 +104,29 @@ trait ChildReadActions
         }
     }
 
+    public function assignmentPreview(Request $request, $id)
+    {
+        $user = $request->attributes->get('jwt_user');
+        if (!$user || $user->role !== 'specialist') return response()->json(['error' => 'غير مصرّح'], 403);
+        $child = DB::table('children')->where('id', $id)->first();
+        if (!$child) return response()->json(['error' => 'الطفل غير موجود'], 404);
+        $specialists = DB::table('child_specialist')->where('child_id', $id)->get();
+        $assigned = $specialists->contains(fn ($member) => (int) $member->specialist_id === (int) $user->id);
+        $specialty = $user->specialty ?? null;
+        if (!$assigned && (!in_array($specialty, ['educational', 'learning_support'], true)
+            || $specialists->count() >= 2 || $specialists->contains('specialty', $specialty))) {
+            return response()->json(['error' => 'هذه الحالة لا تنتظر مختصاً من تخصصك'], 403);
+        }
+        $preview = (object) array_intersect_key((array) $child, array_flip([
+            'id', 'name', 'age', 'status', 'disability_type', 'disability_description',
+            'special_needs', 'preferred_learning_style', 'strengths', 'challenges',
+        ]));
+        $preview->guardians = DB::table('child_parent as cp')->join('users as u', 'u.id', '=', 'cp.parent_id')
+            ->where('cp.child_id', $id)->select('u.name')->get();
+        $preview->assignment_preview = true;
+        return response()->json(['child' => $this->attachSpecialists($this->decodeChild($preview))]);
+    }
+
     public function show(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
@@ -118,6 +151,8 @@ trait ChildReadActions
                 $user
             );
 
+            $child->guardians = DB::table('child_parent as cp')->join('users as u', 'u.id', '=', 'cp.parent_id')
+                ->where('cp.child_id', $id)->select('u.name')->get();
             return response()->json(['child' => $child]);
         } catch (\Exception $e) {
             report($e);

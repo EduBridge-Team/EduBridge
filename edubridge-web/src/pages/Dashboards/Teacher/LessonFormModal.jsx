@@ -7,7 +7,7 @@ import {
   LessonModalActions,
 } from './LessonFormSections'
 
-export default function LessonFormModal({ types, lesson = null, onClose, onSaved }) {
+export default function LessonFormModal({ types, lesson = null, onClose, onSaved, standalone = false, initialAudience = 'children' }) {
   const fieldId = useId()
   const dialogRef = useRef(null)
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
   const [title, setTitle] = useState(lesson?.title || '')
   const [content, setContent] = useState(lesson?.content || '')
   const [typeId, setTypeId] = useState(lesson?.disability_type_id ? String(lesson.disability_type_id) : '')
-  const [audience, setAudience] = useState(lesson?.target_type === 'specificChildren' ? 'specificChildren' : lesson?.target_type === 'parents' ? 'parents' : 'children')
+  const [audience, setAudience] = useState(lesson?.target_type === 'specificChildren' ? 'specificChildren' : lesson?.target_type === 'parents' ? 'parents' : initialAudience)
   const [images, setImages] = useState([])
   const [video, setVideo] = useState(null)
   const [audio, setAudio] = useState(null)
@@ -91,8 +91,8 @@ export default function LessonFormModal({ types, lesson = null, onClose, onSaved
     : []
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={`${fieldId}-heading`} onKeyDown={handleDialogKeyDown} onClick={(e) => e.stopPropagation()}>
+    <div className={standalone ? "lesson-editor-page" : "modal-overlay"} onClick={standalone ? undefined : onClose}>
+      <div className={standalone ? "card lesson-editor" : "modal"} ref={dialogRef} role={standalone ? undefined : "dialog"} aria-modal={standalone ? undefined : true} aria-labelledby={`${fieldId}-heading`} onKeyDown={standalone ? undefined : handleDialogKeyDown} onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h3 id={`${fieldId}-heading`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {isEditing ? <Pencil size={20} /> : <Plus size={20} />}

@@ -61,6 +61,9 @@ export function ChildInfoCard({ child }) {
       <InfoRow label="نقاط القوة" value={child?.strengths} />
       <InfoRow label="التحديات" value={child?.challenges} />
       <InfoRow label="المعلم المسؤول" value={childAssignment(child).teacher} />
+      <InfoRow label="ولي الأمر" value={(child?.guardians || []).map(parent => parent.name)} />
+      <InfoRow label="المختصون" value={(child?.specialists || []).map(member => member.name)} />
+      <InfoRow label="الخطة التعليمية" value={child?.current_plan?.educational_plan} />
       <InfoRow label="الحالة" value={childAssignment(child).label} />
     </div>
   )
@@ -123,6 +126,11 @@ export function ChildDetailsActions({ childId, name, navigate, canFollow = true 
       >
         <Gamepad2 size={18} /> الألعاب التعليمية
       </button>
+      {['teacher', 'specialist'].includes(getUser()?.role) && <>
+        <button className="btn outline" onClick={() => navigate(`/homeworks?child_id=${childId}`)}>الواجبات</button>
+        <button className="btn outline" onClick={() => navigate(`/weekly-reports?child_id=${childId}`)}>{getUser()?.role === 'specialist' ? 'التقدم الأسبوعي' : 'كتابة تقرير / التقدم'}</button>
+        <button className="btn outline" onClick={() => navigate(`/case-discussions?child_id=${childId}`)}>مناقشة الحالة</button>
+      </>}
       {getUser()?.role === 'specialist' && <button
         className="btn outline"
         onClick={() => navigate(`/children/${childId}/accessibility`)}
