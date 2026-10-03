@@ -142,17 +142,14 @@ class _TeacherScreenState extends State<TeacherScreen> {
     }
   }
 
-  Widget _currentTab(BuildContext context, JisrColors c) {
+  Widget _currentPrimaryTab(BuildContext context, JisrColors c) {
     if (_tabIndex == 0) {
       return _buildChildrenTab(context, c, _children, _query,
           (v) => setState(() => _query = v), _typeName, _loadData);
     }
-    if (_tabIndex == 1) {
-      return _buildLessonsTab(context, c, _lessons, _types, _query,
-          (v) => setState(() => _query = v),
-          (lesson) => _setViewingLesson(lesson));
-    }
-    return _TeacherHomeworksTab(children: _children);
+    return _buildLessonsTab(context, c, _lessons, _types, _query,
+        (v) => setState(() => _query = v),
+        (lesson) => _setViewingLesson(lesson));
   }
 
   @override
@@ -174,14 +171,16 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 onLoadData: _loadData,
               ),
               Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _refreshData,
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error != null
-                          ? _buildTeacherError(_error!, _loadData)
-                          : _currentTab(context, c),
-                ),
+                child: _tabIndex == 2
+                    ? _TeacherHomeworksTab(children: _children)
+                    : RefreshIndicator(
+                        onRefresh: _refreshData,
+                        child: _loading
+                            ? const Center(child: CircularProgressIndicator())
+                            : _error != null
+                                ? _buildTeacherError(_error!, _loadData)
+                                : _currentPrimaryTab(context, c),
+                      ),
               ),
             ],
           ),
