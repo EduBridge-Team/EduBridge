@@ -7,7 +7,6 @@ Widget _buildTeacherHeader({
   required int tabIndex,
   required int childrenCount,
   required Future<void> Function() onLogout,
-  required Future<void> Function() onOpenHomework,
   required Future<bool> Function() onVerify,
   required Future<void> Function() onLoadData,
 }) {
@@ -42,12 +41,6 @@ Widget _buildTeacherHeader({
                         MaterialPageRoute(
                             builder: (_) => const CaseDiscussionScreen()),
                       ),
-                    ),
-                    DashboardMenuAction(
-                      id: 'create_homework',
-                      label: 'إضافة واجب',
-                      icon: AppIcons.homework,
-                      onSelected: () => onOpenHomework(),
                     ),
                     DashboardMenuAction(
                       id: 'support',
@@ -109,6 +102,11 @@ Widget _buildTeacherHeader({
               future: ApiService.getName(),
               builder: (context, snap) {
                 final name = snap.data ?? 'المعلم';
+                final subtitle = switch (tabIndex) {
+                  0 => 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك',
+                  1 => 'أضف دروساً جديدة أو تصفّح الدروس الموجودة',
+                  _ => 'تابع الواجبات والتسليمات والتصحيح',
+                };
                 return Row(
                   children: [
                     const ProfileAvatarButton(size: 54),
@@ -125,9 +123,7 @@ Widget _buildTeacherHeader({
                               )),
                           const SizedBox(height: 3),
                           Text(
-                      tabIndex == 0
-                          ? 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك'
-                          : 'أضف دروساً جديدة أو صفّح الدروس الموجودة',
+                            subtitle,
                             style: TextStyle(
                               fontSize: 13.5,
                               color: Colors.white.withValues(alpha: 0.86),
