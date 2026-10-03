@@ -17,272 +17,269 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: c.line),
+      ),
+      elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── الرأس ───
             Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: color,
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: .14),
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
                     name.isNotEmpty ? name.characters.first : '؟',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    style: TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w900,
+                      color: color,
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: InkWell(
-                    onTap: () => _openChildProfile(child),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: c.heading,
-                            )),
-                        if (need.isNotEmpty)
-                          Text('الإعاقة: $need',
-                              style: TextStyle(
-                                  fontSize: 13, color: c.muted)),
-                      ],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 17.5,
+                          fontWeight: FontWeight.w900,
+                          color: c.heading,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        need.isEmpty ? 'طالب قيد المتابعة' : need,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12.5, color: c.muted),
+                      ),
+                    ],
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(AppIcons.starFilled,
-                            size: 16, color: AppColors.brandTealLight),
-                        const SizedBox(width: 4),
-                        Text('${stats['pct']}%',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.brandBlue,
-                            )),
-                      ],
-                    ),
-                    if (isPending)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.brandTeal.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text('بانتظار التقييم',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.brandTealDeep,
-                            )),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 5,
                       ),
+                      decoration: BoxDecoration(
+                        color: AppColors.brandBlue.withValues(alpha: .08),
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            AppIcons.starFilled,
+                            size: 14,
+                            color: AppColors.brandTealLight,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${stats['pct']}%',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.brandBlue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isPending) ...[
+                      const SizedBox(height: 5),
+                      Text(
+                        'بانتظار التقييم',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color: c.muted,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ],
             ),
-
-            // ─── شارة طلب دعم ───
             if (child['has_pending_therapy_request'] == true) ...[
               const SizedBox(height: 10),
               _buildPendingSupportBanner(),
             ],
-
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                if (current != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: c.tintOrange,
-                      borderRadius: BorderRadius.circular(12),
+            if (current != null ||
+                (stats['inProgress'] as int) > 0 ||
+                (stats['done'] as int) > 0) ...[
+              const SizedBox(height: 11),
+              Wrap(
+                spacing: 7,
+                runSpacing: 7,
+                children: [
+                  if (current != null)
+                    _CountBadge(
+                      '${current['lesson_title'] ?? 'نشاط حالي'}',
+                      color: AppColors.brandTealDeep,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(AppIcons.clock,
-                            size: 12, color: AppColors.brandTealDeep),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${current['lesson_title'] ?? ''}',
-                          style:
-                              TextStyle(fontSize: 13, color: c.onTint),
-                        ),
-                      ],
+                  if ((stats['inProgress'] as int) > 0)
+                    _CountBadge(
+                      '${stats['inProgress']} قيد التنفيذ',
+                      color: AppColors.brandBlue,
                     ),
-                  ),
-                if ((stats['inProgress'] as int) > 0)
-                  _CountBadge('${stats['inProgress']} قيد التنفيذ',
-                      color: AppColors.brandBlue),
-                if ((stats['done'] as int) > 0)
-                  _CountBadge('${stats['done']} مكتمل',
-                      color: AppColors.lightTeal),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // ─── تقييم / عرض + اعتماد ───
+                  if ((stats['done'] as int) > 0)
+                    _CountBadge(
+                      '${stats['done']} مكتمل',
+                      color: AppColors.lightTeal,
+                    ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 13),
             Row(
               children: [
                 Expanded(
-                  child: isPending
-                      ? ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.brandTealDeep,
-                          ),
-                          icon: const Icon(AppIcons.evaluate,
-                              color: Colors.white),
-                          label: const Text('تقييم الطفل'),
-                          onPressed: () => _openEvaluation(row),
-                        )
-                      : OutlinedButton.icon(
-                          icon: const Icon(AppIcons.view),
-                          label: const Text('عرض التقييم'),
-                          onPressed: () => _viewEvaluation(childId),
-                        ),
-                ),
-                if (!isPending && current != null) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightTeal,
+                  flex: 2,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 46),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      icon: approving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white))
-                          : const Icon(AppIcons.check,
-                              color: Colors.white),
-                      label: Text(
-                        approving ? 'جارٍ...' : 'اعتماد',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      onPressed: approving ? null : () => _approve(row),
+                    ),
+                    onPressed: () => _openChildProfile(child),
+                    icon: const Icon(Icons.folder_open_outlined, size: 19),
+                    label: const Text(
+                      'فتح ملف الطالب',
+                      style: TextStyle(fontWeight: FontWeight.w800),
                     ),
                   ),
-                ],
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 46),
+                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    icon: Icon(
+                      isPending ? AppIcons.evaluate : AppIcons.view,
+                      size: 18,
+                    ),
+                    label: Text(
+                      isPending ? 'تقييم' : 'التقييم',
+                      style: const TextStyle(fontSize: 12.5),
+                    ),
+                    onPressed: isPending
+                        ? () => _openEvaluation(row)
+                        : () => _viewEvaluation(childId),
+                  ),
+                ),
               ],
             ),
-
-            // ─── تقرير المعلم / اكتب تقدّم ───
             if (!isPending) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 42),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8),
-                        foregroundColor: AppColors.brandBlue,
-                        side: const BorderSide(
-                            color: AppColors.brandBlue, width: 1.5),
-                      ),
-                      icon: const Icon(AppIcons.report, size: 18),
-                      label: const Text('تقرير المعلم',
-                          style: TextStyle(fontSize: 13)),
-                      onPressed: () => _openTeacherReport(row),
+              const SizedBox(height: 6),
+              Theme(
+                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                  childrenPadding: const EdgeInsets.only(top: 2),
+                  leading: const Icon(Icons.tune_rounded, size: 20),
+                  title: Text(
+                    'إجراءات سريعة',
+                    style: TextStyle(
+                      color: c.heading,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(0, 42),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: AppColors.lightTeal,
-                        foregroundColor: Colors.white,
-                      ),
-                      icon: const Icon(AppIcons.edit, size: 18),
-                      label: const Text('اكتب تقدّم',
-                          style: TextStyle(fontSize: 13)),
-                      onPressed: () => _writeProgressBasedOnReport(row),
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(AppIcons.report, size: 17),
+                            label: const Text('تقرير المعلم'),
+                            onPressed: () => _openTeacherReport(row),
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(AppIcons.edit, size: 17),
+                            label: const Text('اكتب تقدّم'),
+                            onPressed: () => _writeProgressBasedOnReport(row),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-
-              // ─── دراسة الحالة / اقترح دعم ───
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 42),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8),
-                        foregroundColor: AppColors.brandTeal,
-                        side: const BorderSide(
-                            color: AppColors.brandTeal, width: 1.5),
-                      ),
-                      icon: const Icon(AppIcons.forum, size: 18),
-                      label: const Text('دراسة الحالة',
-                          style: TextStyle(fontSize: 13)),
-                      onPressed: () =>
-                          _openCaseDiscussion(childId: childId),
+                    const SizedBox(height: 7),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(AppIcons.forum, size: 17),
+                            label: const Text('دراسة الحالة'),
+                            onPressed: () => _openCaseDiscussion(childId: childId),
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(AppIcons.specialist, size: 17),
+                            label: const Text('اقترح دعم'),
+                            onPressed: () => _recommendLearningSupport(row),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(0, 42),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: AppColors.blue,
-                        foregroundColor: Colors.white,
+                    _buildSuggestSpecialistButtons(row, child),
+                    if (child['current_plan_id'] != null) ...[
+                      const SizedBox(height: 7),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          icon: const Icon(AppIcons.evaluate),
+                          label: const Text('تقييم الخطة الحالية'),
+                          onPressed: () => _openPlanEvaluation(row),
+                        ),
                       ),
-                      icon: const Icon(AppIcons.specialist, size: 18),
-                      label: const Text('اقترح دعم',
-                          style: TextStyle(fontSize: 12)),
-                      onPressed: () => _recommendLearningSupport(row),
-                    ),
-                  ),
-                ],
-              ),
-
-              // ─── اقتراح مختص دعم/تعليمي ───
-              _buildSuggestSpecialistButtons(row, child),
-            ],
-
-            // ─── تقييم الخطة ───
-            if (!isPending && child['current_plan_id'] != null) ...[
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.lightTeal,
-                    side:
-                        const BorderSide(color: AppColors.lightTeal),
-                  ),
-                  icon: const Icon(AppIcons.evaluate),
-                  label: const Text('تقييم الخطة الحالية'),
-                  onPressed: () => _openPlanEvaluation(row),
+                    ],
+                    if (current != null) ...[
+                      const SizedBox(height: 7),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.tonalIcon(
+                          icon: approving
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(AppIcons.check),
+                          label: Text(approving ? 'جارٍ الاعتماد...' : 'اعتماد النشاط الحالي'),
+                          onPressed: approving ? null : () => _approve(row),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
@@ -291,6 +288,4 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
       ),
     );
   }
-
-  // ─── Helper: شارة طلب دعم ───
 }
