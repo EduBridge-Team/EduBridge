@@ -118,6 +118,32 @@ class _AssistantScreenState extends State<AssistantScreen> {
     return items.take(4).toList(growable: false);
   }
 
+  bool get _hasConversation =>
+      _messages.any((message) => message.role == 'user');
+
+  List<String> get _followUpSuggestions {
+    final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
+    final items = <String>[
+      'بسّط أكثر',
+      'اعطني مثالاً عملياً',
+      if (hasLessonContext) 'اعمل 3 أسئلة قصيرة',
+      ...switch (_role) {
+        'parent' => const ['اقترح نشاط متابعة قصيراً'],
+        'teacher' => const ['حوّل الفكرة إلى نشاط صفي'],
+        'specialist' => const ['اقترح خطوة متابعة تعليمية'],
+        _ => const ['اعطني تمريناً قصيراً'],
+      },
+    ];
+
+    return items.take(4).toList(growable: false);
+  }
+
+  List<String> get _visibleSuggestions {
+    if (!_hasConversation) return _suggestions;
+    if (_messages.isEmpty || _messages.last.role != 'assistant') return const [];
+    return _followUpSuggestions;
+  }
+
   Future<void> _clearHistory() async {
     await AssistantService.clearHistory();
     if (!mounted) return;
