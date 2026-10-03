@@ -38,11 +38,17 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
     try {
       final list = await ApiService.getHomeworks(childId: widget.childId);
       if (!mounted) return;
@@ -79,7 +85,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     return Scaffold(
       appBar: JisrAppBar(title: 'واجبات ${widget.childName}'),
       body: RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: _refresh,
         child: _buildBody(),
       ),
     );
