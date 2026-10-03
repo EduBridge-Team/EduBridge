@@ -18,6 +18,19 @@ const DESKTOP_LAUNCHER_SIZE = 72
 const MOBILE_LAUNCHER_SIZE = 64
 const SCREEN_MARGIN = 14
 const MOVE_THRESHOLD = 8
+const STRUCTURED_HEADINGS = new Set([
+  'الهدف',
+  'المواد',
+  'الخطوات',
+  'المدة',
+  'ملاحظات',
+  'المطلوب',
+  'تلميح',
+  'الخطوة التالية',
+  'ملخص',
+  'نقاط قوة ظاهرة',
+  'يحتاج متابعة',
+])
 
 function historyKey(user) {
   return `noor_assistant_history_v1_${user?.id || 0}`
@@ -53,6 +66,79 @@ function assistantFollowUps(user, pathname = '') {
 
   if (items.length < 4) items.push('اعطني تمريناً قصيراً')
   return [...new Set(items)].slice(0, 4)
+}
+
+function cleanAssistantLine(value) {
+  return value
+    .replace(/^\s*#{1,6}\s*/, '')
+    .replace(/^\s*[-*+]\s+/, '• ')
+    .replace(/^\s*\d+[.)]\s+/, '• ')
+    .replace(/\*\*|__|`/g, '')
+    .trim()
+}
+
+function parseAssistantSections(content) {
+  const lines = content.replace(/\r\n/g, '\n').split('\n')
+  const sections = []
+  let intro = []
+  let current = null
+
+  const flushIntro = () => {
+    const text = intro.filter(Boolean).join('\n').trim()
+    if (text) sections.push({ type: 'text', text })
+    intro = []
+  }
+
+  const flushCurrent = () => {
+    if (!current) return
+    const text = current.lines.filter(Boolean).join('\n').trim()
+    sections.push({ type: 'section', title: current.title, text })
+    current = null
+  }
+
+  for (const rawLine of lines) {
+    const line = cleanAssistantLine(rawLine)
+    if (!line || /^[-_:| ]{3,}$/.test(line)) continue
+
+    const headingMatch = line.match(/^([^:：]{2,30})\s*[:：]?\s*(.*)$/)
+    const possibleHeading = headingMatch?.[1]?.trim()
+    if (possibleHeading && STRUCTURED_HEADINGS.has(possibleHeading)) {
+      flushIntro()
+      flushCurrent()
+      current = {
+        title: possibleHeading,
+        lines: headingMatch?.[2]?.trim() ? [headingMatch[2].trim()] : [],
+      }
+      continue
+    }
+
+    if (current) current.lines.push(line)
+    else intro.push(line)
+  }
+
+  flushIntro()
+  flushCurrent()
+  return sections
+}
+
+function AssistantMessageContent({ content }) {
+  const sections = parseAssistantSections(content)
+  const hasStructured = sections.some((section) => section.type === 'section')
+
+  if (!hasStructured) return content
+
+  return (
+    <div className="noor-structured-response">
+      {sections.map((section, index) => section.type === 'section' ? (
+        <section className="noor-response-card" key={`${section.title}-${index}`}>
+          <strong className="noor-response-card-title">{section.title}</strong>
+          {section.text && <div className="noor-response-card-body">{section.text}</div>}
+        </section>
+      ) : (
+        <div className="noor-response-intro" key={`intro-${index}`}>{section.text}</div>
+      ))}
+    </div>
+  )
 }
 
 function positionBounds() {
@@ -312,7 +398,9 @@ export default function AssistantWidget() {
           <div className="noor-messages" aria-live="polite">
             {messages.map((message, index) => (
               <div key={message.id || `${message.role}-${index}`} className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
-                {message.content}
+                {message.role === 'assistant'
+                  ? <AssistantMessageContent content={message.content} />
+                  : message.content}
               </div>
             ))}
             {sending && <div className="noor-message assistant noor-typing">نور يكتب…</div>}
