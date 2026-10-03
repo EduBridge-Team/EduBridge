@@ -7,11 +7,11 @@ export function isIdentityVerificationExempt(user) {
 }
 
 export function isIdentityVerified(user, verification) {
-  return isIdentityVerificationExempt(user) || verification?.verification_status === 'verified'
+  return user?.role === 'admin' || verification?.verification_status === 'verified'
 }
 
 export function canAccessPortal(user, verification) {
-  return isIdentityVerified(user, verification)
+  return isIdentityVerificationExempt(user) || isIdentityVerified(user, verification)
 }
 
 export function canOpenUnverifiedPath(pathname) {
