@@ -13,44 +13,48 @@ trait UserReadActions
         $user = $request->attributes->get('jwt_user');
 
         try {
-            $query = DB::table('users')
-                ->select(
-                    'id',
-                    'name',
-                    'email',
-                    'role',
-                    'phone',
-                    'verification_status',
-                    'verified_at',
-                    'created_at'
-                )
-                ->orderBy('name');
-
             if ($user->role === 'admin') {
-                $query->addSelect('national_id');
-                $query->addSelect([
-                    'parent_children_count' => DB::table('child_parent as cp')
-                        ->join('children as c', 'c.id', '=', 'cp.child_id')
-                        ->whereColumn('cp.parent_id', 'users.id')
-                        ->selectRaw('COUNT(DISTINCT cp.child_id)'),
-                ]);
+                $query = DB::table('users')
+                    ->select(
+                        'id',
+                        'name',
+                        'email',
+                        'role',
+                        'phone',
+                        'verification_status',
+                        'verified_at',
+                        'created_at',
+                        'national_id'
+                    )
+                    ->addSelect([
+                        'parent_children_count' => DB::table('child_parent as cp')
+                            ->join('children as c', 'c.id', '=', 'cp.child_id')
+                            ->whereColumn('cp.parent_id', 'users.id')
+                            ->selectRaw('COUNT(DISTINCT cp.child_id)'),
+                    ])
+                    ->orderBy('name');
+
                 $role = $request->query('role');
                 if ($role) {
                     $query->where('role', $role);
                 }
             } elseif (in_array($user->role, ['ministry', 'institution'], true)) {
+                $query = DB::table('users')
+                    ->select('id', 'name', 'role', 'verification_status')
+                    ->orderBy('name');
+
                 $role = $request->query('role');
                 if ($role) {
                     $query->where('role', $role);
                 }
             } elseif ($user->role === 'parent') {
                 $query = DB::table('users')
-                    ->select('id', 'name', 'email', 'role', 'phone', 'verification_status')
+                    ->select('id', 'name', 'role', 'verification_status')
                     ->whereIn('role', ['teacher', 'specialist'])
                     ->orderBy('name');
             } else {
                 $query = DB::table('users')
-                    ->select('id', 'name', 'email', 'role', 'phone', 'verification_status')
+                    ->select('id', 'name', 'role', 'verification_status')
                     ->whereIn('role', ['teacher', 'specialist', 'admin', 'ministry', 'institution'])
                     ->where('id', '!=', $user->id)
                     ->orderBy('name');
