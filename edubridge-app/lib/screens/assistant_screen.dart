@@ -12,6 +12,20 @@ import 'chats_screen.dart';
 import 'notifications_screen.dart';
 part 'assistant_screen_view.dart';
 
+const _structuredAssistantHeadings = <String>{
+  'الهدف',
+  'المواد',
+  'الخطوات',
+  'المدة',
+  'ملاحظات',
+  'المطلوب',
+  'تلميح',
+  'الخطوة التالية',
+  'ملخص',
+  'نقاط قوة ظاهرة',
+  'يحتاج متابعة',
+};
+
 String _cleanAssistantText(String value) {
   final lines = value.replaceAll('\r\n', '\n').split('\n');
   final cleaned = <String>[];
@@ -39,6 +53,58 @@ String _cleanAssistantText(String value) {
   }
 
   return cleaned.join('\n').trim();
+}
+
+List<_AssistantResponseSection> _parseAssistantSections(String value) {
+  final lines = _cleanAssistantText(value).split('\n');
+  final sections = <_AssistantResponseSection>[];
+  final intro = <String>[];
+  String? currentTitle;
+  final currentLines = <String>[];
+
+  void flushIntro() {
+    final text = intro.where((line) => line.trim().isNotEmpty).join('\n').trim();
+    if (text.isNotEmpty) {
+      sections.add(_AssistantResponseSection(text: text));
+    }
+    intro.clear();
+  }
+
+  void flushCurrent() {
+    if (currentTitle == null) return;
+    sections.add(_AssistantResponseSection(
+      title: currentTitle,
+      text: currentLines.where((line) => line.trim().isNotEmpty).join('\n').trim(),
+    ));
+    currentTitle = null;
+    currentLines.clear();
+  }
+
+  for (final rawLine in lines) {
+    final line = rawLine.trim();
+    if (line.isEmpty) continue;
+
+    final match = RegExp(r'^([^:：]{2,30})\s*[:：]?\s*(.*)$').firstMatch(line);
+    final possibleHeading = match?.group(1)?.trim();
+    if (possibleHeading != null && _structuredAssistantHeadings.contains(possibleHeading)) {
+      flushIntro();
+      flushCurrent();
+      currentTitle = possibleHeading;
+      final rest = match?.group(2)?.trim() ?? '';
+      if (rest.isNotEmpty) currentLines.add(rest);
+      continue;
+    }
+
+    if (currentTitle != null) {
+      currentLines.add(line);
+    } else {
+      intro.add(line);
+    }
+  }
+
+  flushIntro();
+  flushCurrent();
+  return sections;
 }
 
 class AssistantScreen extends StatefulWidget {
@@ -279,6 +345,15 @@ class _NoorNavigationAction {
   });
 }
 
+class _AssistantResponseSection {
+  final String? title;
+  final String text;
+
+  const _AssistantResponseSection({this.title, required this.text});
+
+  bool get isStructured => title != null;
+}
+
 class _MessageBubble extends StatelessWidget {
   final AssistantMessage message;
 
@@ -288,7 +363,73 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     final isUser = message.isUser;
-    final content = isUser ? message.content : _cleanAssistantText(message.content);
+    final sections = isUser ? const <_AssistantResponseSection>[] : _parseAssistantSections(message.content);
+    final hasStructured = sections.any((section) => section.isStructured);
+
+    final contentWidget = isUser || !hasStructured
+        ? Text(
+            isUser ? message.content : _cleanAssistantText(message.content),
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              color: isUser ? Colors.white : c.body,
+              fontSize: 16,
+              height: 1.55,
+            ),
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: sections.map((section) {
+              if (!section.isStructured) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    section.text,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      color: c.body,
+                      fontSize: 16,
+                      height: 1.55,
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: c.tintTeal,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: c.line),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      section.title!,
+                      style: TextStyle(
+                        color: c.heading,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    if (section.text.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        section.text,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: c.body,
+                          fontSize: 15.5,
+                          height: 1.55,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }).toList(growable: false),
+          );
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -308,15 +449,7 @@ class _MessageBubble extends StatelessWidget {
         ),
         child: Directionality(
           textDirection: TextDirection.rtl,
-          child: Text(
-            content,
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              color: isUser ? Colors.white : c.body,
-              fontSize: 16,
-              height: 1.55,
-            ),
-          ),
+          child: contentWidget,
         ),
       ),
     );
