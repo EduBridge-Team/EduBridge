@@ -34,3 +34,44 @@
   opacity: .55;
   cursor: not-allowed;
 }
+
+.noor-structured-response {
+  display: grid;
+  gap: 8px;
+}
+
+.noor-response-intro {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.noor-response-card {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--surface) 82%, var(--tint-teal));
+}
+
+.noor-response-card-title {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--navy);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.noor-response-card-body {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.noor-navigation-actions {
+  padding-top: 4px;
+}
+
+.noor-navigation-action {
+  background: var(--tint-teal);
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+  font-weight: 700;
+}
