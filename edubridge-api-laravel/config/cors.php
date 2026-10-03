@@ -9,7 +9,7 @@ return [
     ],
     'allowed_origins_patterns' => [
         '#^http://localhost:[0-9]+$#',
-        '#^http://127[.]0[.]0[.]1:[0-9]+$#',
+        '#^http://127[.]0[.]1:[0-9]+$#',
     ],
     'allowed_headers' => [
         'Accept',
@@ -18,6 +18,7 @@ return [
         'Origin',
         'X-Requested-With',
         'X-CSRF-TOKEN',
+        'X-EduBridge-Client',
     ],
     'exposed_headers' => [],
     'max_age' => 600,

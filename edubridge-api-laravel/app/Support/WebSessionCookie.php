@@ -28,6 +28,16 @@ final class WebSessionCookie
 
     public static function forget(JsonResponse $response): JsonResponse
     {
-        return $response->withCookie(Cookie::forget(self::NAME, '/api'));
+        return $response->withCookie(Cookie::make(
+            self::NAME,
+            '',
+            -2628000,
+            '/api',
+            null,
+            true,
+            true,
+            false,
+            'Lax'
+        ));
     }
 }
