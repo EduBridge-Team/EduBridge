@@ -22,6 +22,12 @@ final class WebSessionBridge
         /** @var Response $response */
         $response = $next($request);
 
+        // Always clear the browser cookie on an explicit logout attempt, even if
+        // the presented token has already expired or was revoked.
+        if ($request->is('api/auth/logout')) {
+            WebSessionCookie::forget($response);
+        }
+
         if ($response instanceof JsonResponse && $response->isSuccessful()) {
             $isWebClient = strtolower((string) $request->header('X-EduBridge-Client')) === 'web';
 
@@ -39,10 +45,6 @@ final class WebSessionBridge
                         $response->setData($payload);
                     }
                 }
-            }
-
-            if ($request->is('api/auth/logout')) {
-                WebSessionCookie::forget($response);
             }
         }
 
