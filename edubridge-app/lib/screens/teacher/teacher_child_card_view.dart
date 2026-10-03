@@ -92,27 +92,30 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: SizedBox(
-                    height: 58,
+                    height: 54,
                     child: FilledButton.icon(
                       onPressed: () => _openProfile(context),
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.brandBlue,
                         foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      icon: const Icon(Icons.folder_open_rounded, size: 23),
+                      icon: const Icon(Icons.folder_open_rounded, size: 21),
                       label: const Text(
                         'فتح ملف الطالب',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -121,22 +124,25 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
+                  flex: 2,
                   child: SizedBox(
-                    height: 58,
+                    height: 54,
                     child: OutlinedButton.icon(
                       onPressed: () => _openApprovedPlan(context, child),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.brandBlue,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         side: BorderSide(color: c.line, width: 1.3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      icon: const Icon(AppIcons.view, size: 22),
+                      icon: const Icon(AppIcons.view, size: 20),
                       label: const Text(
                         'الخطة',
+                        maxLines: 1,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -145,12 +151,12 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
             InkWell(
               onTap: () => setState(() => _expanded = !_expanded),
               borderRadius: BorderRadius.circular(14),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
                 child: Row(
                   children: [
                     const Icon(
@@ -187,7 +193,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                   : CrossFadeState.showSecond,
               secondChild: const SizedBox.shrink(),
               firstChild: Padding(
-                padding: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.only(top: 10),
                 child: Column(
                   children: [
                     Row(
@@ -254,8 +260,8 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         borderRadius: BorderRadius.circular(18),
                         child: Container(
                           width: double.infinity,
-                          constraints: const BoxConstraints(minHeight: 62),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                          constraints: const BoxConstraints(minHeight: 60),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
