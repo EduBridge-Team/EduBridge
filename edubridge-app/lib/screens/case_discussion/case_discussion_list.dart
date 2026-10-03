@@ -3,7 +3,12 @@ part of 'case_discussion_screen.dart';
 
 class _CaseDiscussionList extends StatefulWidget {
   final int? filterChildId;
-  const _CaseDiscussionList({this.filterChildId});
+  final bool embedded;
+
+  const _CaseDiscussionList({
+    this.filterChildId,
+    this.embedded = false,
+  });
 
   @override
   State<_CaseDiscussionList> createState() => _CaseDiscussionListState();
@@ -53,9 +58,62 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     if (created == true) _load();
   }
 
+  Widget _body(JisrColors c) {
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? _buildError()
+              : _items.isEmpty
+                  ? _buildEmpty(c)
+                  : _buildList(c),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+
+    if (widget.embedded) {
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _openNewDiscussion,
+          icon: const Icon(AppIcons.add),
+          label: const Text(
+            'دراسة جديدة',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'دراسات الحالة',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'تحديث',
+                    icon: const Icon(AppIcons.refresh),
+                    onPressed: _load,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(child: _body(c)),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       bottomNavigationBar: const TeacherNavigationBar(),
@@ -73,20 +131,12 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? _buildError()
-                : _items.isEmpty
-                    ? _buildEmpty(c)
-                    : _buildList(c),
-      ),
+      body: _body(c),
     );
   }
 
   Widget _buildError() => ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 100),
@@ -113,6 +163,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       );
 
   Widget _buildEmpty(JisrColors c) => ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 100),
@@ -157,6 +208,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
         _items.where((d) => d.status == CaseDiscussionStatus.resolved).toList();
 
     return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
       children: [
         if (open.isNotEmpty) ...[
