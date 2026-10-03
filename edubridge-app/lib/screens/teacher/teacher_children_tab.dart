@@ -153,7 +153,7 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
-          minHeight: 76,
+          constraints: const BoxConstraints(minHeight: 76),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
