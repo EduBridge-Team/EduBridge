@@ -6,6 +6,21 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
 
     return Scaffold(
       appBar: JisrAppBar(title: 'واجب جديد'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _saving ? null : _save,
+        icon: _saving
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
+            : const Icon(AppIcons.save),
+        label: Text(
+          _saving ? 'جارِ النشر...' : 'نشر الواجب',
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -13,7 +28,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
             16,
             16,
             16,
-            16 + safeModalBottom(context),
+            104 + safeModalBottom(context),
           ),
           children: [
             TextFormField(
@@ -22,8 +37,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                 labelText: 'عنوان الواجب *',
                 prefixIcon: Icon(AppIcons.edit),
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'العنوان مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? 'العنوان مطلوب' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -34,8 +48,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                 prefixIcon: Icon(AppIcons.info),
                 alignLabelWithHint: true,
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'الوصف مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? 'الوصف مطلوب' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -58,23 +71,16 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                 ),
                 child: Row(
                   children: [
-                    const Icon(AppIcons.calendar,
-                        color: AppColors.orange),
+                    const Icon(AppIcons.calendar, color: AppColors.orange),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'موعد التسليم',
-                            style: TextStyle(fontSize: 12),
-                          ),
+                          const Text('موعد التسليم', style: TextStyle(fontSize: 12)),
                           Text(
                             '${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -87,10 +93,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
             const SizedBox(height: 16),
             Text(
               'تعيين لطلاب (${_selectedChildIds.length} محدد):',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
             ...widget.children.map((child) {
@@ -113,20 +116,17 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
               );
             }),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.brandBlue,
-                      foregroundColor: Colors.white,
-                    ),
-                    icon: const Icon(AppIcons.attach),
-                    label: const Text('إضافة مرفق'),
-                    onPressed: _pickAttachment,
-                  ),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandBlue,
+                  foregroundColor: Colors.white,
                 ),
-              ],
+                icon: const Icon(AppIcons.upload),
+                label: const Text('رفع مرفق'),
+                onPressed: _pickAttachment,
+              ),
             ),
             if (_attachments.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -135,10 +135,8 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                     leading: const Icon(AppIcons.attach),
                     title: Text(e.value.path.split('/').last),
                     trailing: IconButton(
-                      icon: const Icon(AppIcons.close,
-                          color: AppColors.red),
-                      onPressed: () =>
-                          _refreshState(() => _attachments.removeAt(e.key)),
+                      icon: const Icon(AppIcons.close, color: AppColors.red),
+                      onPressed: () => _refreshState(() => _attachments.removeAt(e.key)),
                     ),
                   )),
             ],
@@ -152,56 +150,16 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                 ),
                 child: Row(
                   children: [
-                    const Icon(AppIcons.error,
-                        color: AppColors.red, size: 20),
+                    const Icon(AppIcons.error, color: AppColors.red, size: 20),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(_error!,
-                          style: const TextStyle(color: AppColors.red)),
-                    ),
+                    Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.red))),
                   ],
                 ),
               ),
             ],
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
-                ),
-                icon: _saving
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
-                      )
-                    : const Icon(AppIcons.save),
-                label: Text(_saving ? 'جارِ النشر...' : 'نشر'),
-                onPressed: _saving ? null : _save,
-              ),
-            ),
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (index) => Navigator.pop(context, index),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'الأطفال',
-          ),
-          NavigationDestination(
-            icon: Icon(AppIcons.lesson),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
-          ),
-        ],
-      ),
     );
-
   }
 }
