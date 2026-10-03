@@ -198,9 +198,190 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     }
   }
 
+  Widget _formContent(JisrColors c) {
+    return SingleChildScrollView(
+      padding: widget.fullScreen
+          ? const EdgeInsets.fromLTRB(16, 16, 16, 112)
+          : EdgeInsets.zero,
+      child: Container(
+        margin: widget.fullScreen
+            ? EdgeInsets.zero
+            : const EdgeInsets.fromLTRB(12, 52, 12, 12),
+        padding: widget.fullScreen ? EdgeInsets.zero : const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: widget.fullScreen ? BorderRadius.zero : BorderRadius.circular(28),
+          border: widget.fullScreen ? null : Border.all(color: c.line),
+          boxShadow: widget.fullScreen
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .10),
+                    blurRadius: 28,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            if (!widget.fullScreen) const SizedBox(height: 6),
+            Text(
+              _isChildLocked
+                  ? 'هذا الدرس سيظهر للطالب ${widget.initialChildName ?? ''} فقط.'
+                  : 'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
+              style: TextStyle(fontSize: 13.5, color: c.muted),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _titleCtrl,
+              decoration: const InputDecoration(
+                labelText: 'عنوان الدرس *',
+                prefixIcon: Icon(AppIcons.edit),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _contentCtrl,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'المحتوى النصي',
+                hintText: 'اكتب محتوى الدرس (اختياري)...',
+                prefixIcon: Icon(AppIcons.info),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_isChildLocked) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.brandBlue.withValues(alpha: .07),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.brandBlue.withValues(alpha: .18)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(AppIcons.child, color: AppColors.brandBlue),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'الطالب: ${widget.initialChildName ?? widget.initialChildId}',
+                        style: TextStyle(color: c.heading, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ] else ...[
+              _buildForParentsToggle(c),
+              const SizedBox(height: 16),
+              if (!_forParents) ...[
+                buildTargetSelector(
+                  context: context,
+                  c: c,
+                  target: _target,
+                  onTargetChanged: (v) => setState(() => _target = v),
+                  typeId: _typeId,
+                  onTypeChanged: (v) => setState(() => _typeId = v),
+                  types: widget.types,
+                  allChildren: _allChildren,
+                  selectedChildIds: _selectedChildIds,
+                  loadingChildren: _loadingChildren,
+                  onChildToggle: (id, selected) => setState(() {
+                    if (selected) {
+                      _selectedChildIds.add(id);
+                    } else {
+                      _selectedChildIds.remove(id);
+                    }
+                  }),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ],
+            buildImagesPicker(
+              context: context,
+              c: c,
+              imageFiles: _imageFiles,
+              onPick: _pickImages,
+              onRemove: (i) => setState(() => _imageFiles.removeAt(i)),
+            ),
+            const SizedBox(height: 12),
+            buildFilePicker(
+              c: c,
+              icon: AppIcons.video,
+              label: 'فيديو الدرس (اختياري)',
+              sublabel: 'ارفع شرحاً مرئياً للدرس',
+              color: AppColors.brandTeal,
+              file: _videoFile,
+              onPick: _pickVideo,
+              onClear: () => setState(() => _videoFile = null),
+            ),
+            const SizedBox(height: 12),
+            buildFilePicker(
+              c: c,
+              icon: AppIcons.captions,
+              label: 'ملف ترجمات (اختياري)',
+              sublabel: 'ملف .vtt أو .srt — للصمّ وضعاف السمع',
+              color: AppColors.brandTeal,
+              file: _captionFile,
+              onPick: _pickCaption,
+              onClear: () => setState(() => _captionFile = null),
+            ),
+            const SizedBox(height: 12),
+            buildFilePicker(
+              c: c,
+              icon: AppIcons.signLanguage,
+              label: 'فيديو لغة الإشارة (اختياري)',
+              sublabel: 'فيديو المترجم — للصمّ',
+              color: AppColors.brandTeal,
+              file: _signLanguageFile,
+              onPick: _pickSignLanguage,
+              onClear: () => setState(() => _signLanguageFile = null),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _audioDescriptionCtrl,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'الوصف الصوتي (اختياري)',
+                hintText: 'وصف ما يحدث في الفيديو — للكفيف',
+                alignLabelWithHint: true,
+                prefixIcon: Icon(AppIcons.speech),
+              ),
+            ),
+            const SizedBox(height: 12),
+            buildFilePicker(
+              c: c,
+              icon: AppIcons.audio,
+              label: 'تسجيل صوتي (اختياري)',
+              sublabel: 'بديل عن الفيديو',
+              color: AppColors.brandTeal,
+              file: _audioFile,
+              onPick: _pickAudio,
+              onClear: () => setState(() => _audioFile = null),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              _buildErrorBox(),
+            ],
+            if (!widget.fullScreen) ...[
+              const SizedBox(height: 16),
+              _buildActions(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final content = GestureDetector(onTap: () {}, child: _formContent(c));
 
     return GestureDetector(
       onTap: widget.fullScreen ? null : widget.onClose,
@@ -209,196 +390,19 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? Theme.of(context).scaffoldBackgroundColor
             : Colors.black54,
         alignment: widget.fullScreen ? Alignment.topCenter : Alignment.center,
-        child: GestureDetector(
-          onTap: () {},
-          child: SingleChildScrollView(
-            padding: widget.fullScreen
-                ? const EdgeInsets.fromLTRB(16, 16, 16, 28)
-                : EdgeInsets.zero,
-            child: Container(
-              margin: widget.fullScreen
-                  ? EdgeInsets.zero
-                  : const EdgeInsets.fromLTRB(12, 52, 12, 12),
-              padding: widget.fullScreen
-                  ? EdgeInsets.zero
-                  : const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: c.card,
-                borderRadius: widget.fullScreen
-                    ? BorderRadius.zero
-                    : BorderRadius.circular(28),
-                border: widget.fullScreen ? null : Border.all(color: c.line),
-                boxShadow: widget.fullScreen
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: .10),
-                          blurRadius: 28,
-                          offset: const Offset(0, 12),
-                        ),
-                      ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: widget.fullScreen
+            ? Stack(
                 children: [
-                  _buildHeader(),
-                  if (!widget.fullScreen) const SizedBox(height: 6),
-                  Text(
-                    _isChildLocked
-                        ? 'هذا الدرس سيظهر للطالب ${widget.initialChildName ?? ''} فقط.'
-                        : 'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      color: c.muted,
-                    ),
+                  Positioned.fill(child: content),
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    width: 220,
+                    child: _buildSaveButton(),
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _titleCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'عنوان الدرس *',
-                      prefixIcon: Icon(AppIcons.edit),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _contentCtrl,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'المحتوى النصي',
-                      hintText: 'اكتب محتوى الدرس (اختياري)...',
-                      prefixIcon: Icon(AppIcons.info),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (_isChildLocked) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: AppColors.brandBlue.withValues(alpha: .07),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: AppColors.brandBlue.withValues(alpha: .18),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(AppIcons.child, color: AppColors.brandBlue),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'الطالب: ${widget.initialChildName ?? widget.initialChildId}',
-                              style: TextStyle(
-                                color: c.heading,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ] else ...[
-                    _buildForParentsToggle(c),
-                    const SizedBox(height: 16),
-                    if (!_forParents) ...[
-                      buildTargetSelector(
-                        context: context,
-                        c: c,
-                        target: _target,
-                        onTargetChanged: (v) => setState(() => _target = v),
-                        typeId: _typeId,
-                        onTypeChanged: (v) => setState(() => _typeId = v),
-                        types: widget.types,
-                        allChildren: _allChildren,
-                        selectedChildIds: _selectedChildIds,
-                        loadingChildren: _loadingChildren,
-                        onChildToggle: (id, selected) => setState(() {
-                          if (selected) {
-                            _selectedChildIds.add(id);
-                          } else {
-                            _selectedChildIds.remove(id);
-                          }
-                        }),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ],
-                  buildImagesPicker(
-                    context: context,
-                    c: c,
-                    imageFiles: _imageFiles,
-                    onPick: _pickImages,
-                    onRemove: (i) => setState(() => _imageFiles.removeAt(i)),
-                  ),
-                  const SizedBox(height: 12),
-                  buildFilePicker(
-                    c: c,
-                    icon: AppIcons.video,
-                    label: 'فيديو الدرس (اختياري)',
-                    sublabel: 'ارفع شرحاً مرئياً للدرس',
-                    color: AppColors.brandTeal,
-                    file: _videoFile,
-                    onPick: _pickVideo,
-                    onClear: () => setState(() => _videoFile = null),
-                  ),
-                  const SizedBox(height: 12),
-                  buildFilePicker(
-                    c: c,
-                    icon: AppIcons.captions,
-                    label: 'ملف ترجمات (اختياري)',
-                    sublabel: 'ملف .vtt أو .srt — للصمّ وضعاف السمع',
-                    color: AppColors.brandTeal,
-                    file: _captionFile,
-                    onPick: _pickCaption,
-                    onClear: () => setState(() => _captionFile = null),
-                  ),
-                  const SizedBox(height: 12),
-                  buildFilePicker(
-                    c: c,
-                    icon: AppIcons.signLanguage,
-                    label: 'فيديو لغة الإشارة (اختياري)',
-                    sublabel: 'فيديو المترجم — للصمّ',
-                    color: AppColors.brandTeal,
-                    file: _signLanguageFile,
-                    onPick: _pickSignLanguage,
-                    onClear: () => setState(() => _signLanguageFile = null),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _audioDescriptionCtrl,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'الوصف الصوتي (اختياري)',
-                      hintText: 'وصف ما يحدث في الفيديو — للكفيف',
-                      alignLabelWithHint: true,
-                      prefixIcon: Icon(AppIcons.speech),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  buildFilePicker(
-                    c: c,
-                    icon: AppIcons.audio,
-                    label: 'تسجيل صوتي (اختياري)',
-                    sublabel: 'بديل عن الفيديو',
-                    color: AppColors.brandTeal,
-                    file: _audioFile,
-                    onPick: _pickAudio,
-                    onClear: () => setState(() => _audioFile = null),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 12),
-                    _buildErrorBox(),
-                  ],
-                  const SizedBox(height: 16),
-                  _buildActions(),
                 ],
-              ),
-            ),
-          ),
-        ),
+              )
+            : content,
       ),
     );
   }
