@@ -9,3 +9,55 @@
 }
 .route-load-state p { margin: 0; color: var(--muted); }
 .route-load-state .btn { justify-self: center; }
+
+/* Branded route loading state shown while lazy-loaded pages are downloading. */
+.route-load-state[role="status"] {
+  min-height: calc(100dvh - 76px);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px;
+  place-content: center;
+  gap: 18px;
+  font-size: 0;
+  color: transparent;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 30%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-ice) 62%, transparent), transparent 70%);
+}
+
+.route-load-state[role="status"]::before {
+  content: "";
+  display: block;
+  width: clamp(170px, 42vw, 240px);
+  height: clamp(58px, 13vw, 82px);
+  margin-inline: auto;
+  background: url('/edubridge-logo-horizontal-transparent.webp') center / contain no-repeat;
+}
+
+.route-load-state[role="status"]::after {
+  content: "";
+  width: 28px;
+  height: 28px;
+  margin-inline: auto;
+  border: 3px solid color-mix(in srgb, var(--brand-blue) 18%, var(--line));
+  border-top-color: var(--brand-blue);
+  border-radius: 50%;
+  animation: route-loader-spin .75s linear infinite;
+}
+
+:root[data-theme="dark"] .route-load-state[role="status"] {
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 32%),
+    linear-gradient(180deg, rgba(8, 31, 49, .34), transparent 72%);
+}
+
+@keyframes route-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-load-state[role="status"]::after {
+    animation-duration: 1.4s;
+  }
+}
