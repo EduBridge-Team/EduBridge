@@ -81,125 +81,131 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-        children: [
-          FilledButton.icon(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: RefreshIndicator(
+            onRefresh: _load,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              children: [
+                if (_loading)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 120),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 90),
+                    child: Column(
+                      children: [
+                        const Icon(AppIcons.error, size: 52, color: AppColors.red),
+                        const SizedBox(height: 12),
+                        Text(
+                          _error!,
+                          style: const TextStyle(
+                            color: AppColors.red,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        OutlinedButton.icon(
+                          onPressed: _load,
+                          icon: const Icon(AppIcons.refresh),
+                          label: const Text('إعادة المحاولة'),
+                        ),
+                      ],
+                    ),
+                  )
+                else if (_reports.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 90),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                            color: c.tintTeal,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            AppIcons.report,
+                            size: 38,
+                            color: AppColors.brandBlue,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'لا توجد تقارير بعد',
+                          style: TextStyle(
+                            color: c.heading,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'اكتب أول تقرير أسبوعي لهذا الطالب.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: c.muted, fontSize: 13.5),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Row(
+                    children: [
+                      Text(
+                        'كل التقارير',
+                        style: TextStyle(
+                          color: c.heading,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: c.tintTeal,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '${_reports.length}',
+                          style: const TextStyle(
+                            color: AppColors.brandBlue,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ..._reports.map((report) => _ReportTile(
+                        report: report,
+                        onTap: () => _openReport(report),
+                      )),
+                ],
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 16,
+          bottom: 16,
+          child: FloatingActionButton.extended(
+            heroTag: 'create-report-${widget.childId}',
             onPressed: _createReport,
-            icon: const Icon(AppIcons.edit),
+            icon: const Icon(AppIcons.add),
             label: const Text(
               'كتابة تقرير',
               style: TextStyle(fontWeight: FontWeight.w800),
             ),
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.brandTealDeep,
-              minimumSize: const Size.fromHeight(50),
-            ),
           ),
-          const SizedBox(height: 18),
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.only(top: 120),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_error != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 90),
-              child: Column(
-                children: [
-                  const Icon(AppIcons.error, size: 52, color: AppColors.red),
-                  const SizedBox(height: 12),
-                  Text(
-                    _error!,
-                    style: const TextStyle(
-                      color: AppColors.red,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  OutlinedButton.icon(
-                    onPressed: _load,
-                    icon: const Icon(AppIcons.refresh),
-                    label: const Text('إعادة المحاولة'),
-                  ),
-                ],
-              ),
-            )
-          else if (_reports.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 90),
-              child: Column(
-                children: [
-                  Container(
-                    width: 82,
-                    height: 82,
-                    decoration: BoxDecoration(
-                      color: c.tintTeal,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      AppIcons.report,
-                      size: 38,
-                      color: AppColors.brandBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'لا توجد تقارير بعد',
-                    style: TextStyle(
-                      color: c.heading,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'اكتب أول تقرير أسبوعي لهذا الطالب.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: c.muted, fontSize: 13.5),
-                  ),
-                ],
-              ),
-            )
-          else ...[
-            Row(
-              children: [
-                Text(
-                  'كل التقارير',
-                  style: TextStyle(
-                    color: c.heading,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: c.tintTeal,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${_reports.length}',
-                    style: const TextStyle(
-                      color: AppColors.brandBlue,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ..._reports.map((report) => _ReportTile(
-                  report: report,
-                  onTap: () => _openReport(report),
-                )),
-          ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
