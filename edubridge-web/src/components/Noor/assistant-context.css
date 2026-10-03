@@ -75,3 +75,63 @@
   border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
   font-weight: 700;
 }
+
+.noor-message-group {
+  display: flex;
+  flex-direction: column;
+  max-width: 86%;
+}
+
+.noor-message-group.assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.noor-message-group.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.noor-message-group .noor-message {
+  max-width: 100%;
+}
+
+.noor-response-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding-inline: 3px;
+}
+
+.noor-response-tools button {
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.noor-response-tools button:hover,
+.noor-response-tools button.is-active {
+  color: var(--navy);
+  background: var(--tint-teal);
+  border-color: var(--line);
+}
+
+.noor-response-tools button:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 1px;
+}
+
+.noor-response-tools button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
