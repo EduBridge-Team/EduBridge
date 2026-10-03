@@ -34,7 +34,7 @@ trait VerificationUserReviewActions
 
             $status = $request->query('status');
             if ($status && in_array($status, self::STATUSES, true)) {
-                $query->where('verification_status', $status);
+                $query->where('identity_status', $status);
             }
             if ($request->query('role')) {
                 $query->where('role', $request->query('role'));
