@@ -16,11 +16,13 @@ part 'case_discussion_detail_view.dart';
 class CaseDiscussionScreen extends StatefulWidget {
   final int? discussionId;
   final int? filterChildId;
+  final bool embedded;
 
   const CaseDiscussionScreen({
     super.key,
     this.discussionId,
     this.filterChildId,
+    this.embedded = false,
   });
 
   @override
@@ -31,7 +33,10 @@ class _CaseDiscussionScreenState extends State<CaseDiscussionScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.discussionId == null) {
-      return _CaseDiscussionList(filterChildId: widget.filterChildId);
+      return _CaseDiscussionList(
+        filterChildId: widget.filterChildId,
+        embedded: widget.embedded,
+      );
     }
     return _CaseDiscussionDetail(discussionId: widget.discussionId!);
   }
