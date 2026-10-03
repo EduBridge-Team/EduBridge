@@ -6,6 +6,7 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../create_weekly_report_screen.dart';
+import '../weekly_report_screen.dart';
 
 part 'teacher_homework_tab.dart';
 part 'teacher_homework_tab_widgets.dart';
@@ -51,9 +52,32 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
   }
 
   void _selectTab(int index) {
-    if (_selectedTab == index) return;
-    setState(() => _selectedTab = index);
-    _tabController.animateTo(index);
+    if (index < 2) {
+      if (_selectedTab == index) return;
+      setState(() => _selectedTab = index);
+      _tabController.animateTo(index);
+      return;
+    }
+
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => WeeklyReportScreen(
+            childId: widget.childId,
+            childName: widget.childName,
+          ),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CaseDiscussionScreen(filterChildId: widget.childId),
+      ),
+    );
   }
 
   @override
@@ -172,12 +196,22 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
           NavigationDestination(
             icon: Icon(AppIcons.homework),
             selectedIcon: Icon(Icons.assignment),
-            label: 'واجبات الطالب',
+            label: 'الواجبات',
           ),
           NavigationDestination(
             icon: Icon(AppIcons.lesson),
             selectedIcon: Icon(Icons.menu_book),
-            label: 'دروس الطالب',
+            label: 'الدروس',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.report),
+            selectedIcon: Icon(Icons.description),
+            label: 'التقارير',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.forum),
+            selectedIcon: Icon(Icons.forum),
+            label: 'الحالة',
           ),
         ],
       ),
