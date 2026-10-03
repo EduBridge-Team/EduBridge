@@ -2,10 +2,9 @@ part of 'teacher_child_details_screen.dart';
 
 extension _HomeworkTabWidgets on _HomeworkTabState {
   Widget _buildFilterBar() {
-    final c = JisrColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      color: c.card,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
         children: [
           _filterChip('الكل', 'all', _homeworks.length, AppColors.brandBlue),
@@ -100,6 +99,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
     final list = _filtered;
     if (list.isEmpty) {
       return ListView(
+        padding: const EdgeInsets.only(bottom: 92),
         children: [
           const SizedBox(height: 80),
           Icon(AppIcons.homework,
@@ -121,7 +121,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 92),
       itemCount: list.length,
       itemBuilder: (context, i) => _buildHomeworkCard(list[i]),
     );
