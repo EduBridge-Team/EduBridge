@@ -1,4 +1,4 @@
-import { BASE_URL, getToken, request } from "./core.js";
+import { BASE_URL, request } from "./core.js";
 
 // ===== الإشعارات — لكل مستخدم إشعاراته =====
 
@@ -59,18 +59,18 @@ export function deleteUser(id) {
 }
 
 // ===== رفع الملفات (صور الهوية/الشهادات/المستندات) =====
-// يرسل الملف كـ multipart ويعيد { url }
+// يرسل الملف كـ multipart ويعيد { url }. الويب يعتمد جلسة HttpOnly cookie.
 export async function uploadFile(file) {
   const fd = new FormData();
   fd.append("file", file);
-  const token = getToken();
   const res = await fetch(`${BASE_URL}/uploads`, {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    credentials: "same-origin",
+    headers: { "X-EduBridge-Client": "web" },
     body: fd,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "تعذّر رفع الملف");
+  if (!res.ok) throw new Error(data.error || data.message || "تعذّر رفع الملف");
   return data; // { url }
 }
 
@@ -212,9 +212,6 @@ export function fetchConversationMessages(id) {
 export function sendConversationMessage(id, content) {
   return request(`/conversations/${id}/messages`, { method: 'POST', body: JSON.stringify({ content }) });
 }
-
-
-
 
 // ===== إعدادات المستخدم المتزامنة =====
 export function fetchUserSettings() {
