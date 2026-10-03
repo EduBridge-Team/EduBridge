@@ -1,7 +1,13 @@
 // تفاصيل الطفل — معلوماته وتقييماته وروابط الدروس والتقدّم
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { fetchChildDetails, fetchChildEvaluations, getUser, assignSpecialistToChild } from '../../api'
+import {
+  fetchChildDetails,
+  fetchChildEvaluations,
+  getUser,
+  assignSpecialistToChild,
+  openProtectedFile,
+} from '../../api'
 
 import ChildEvaluationForm from './ChildEvaluationForm'
 import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
@@ -45,6 +51,14 @@ export default function ChildDetailsPage() {
     load()
   }, [load])
 
+  const viewFile = async (url) => {
+    try {
+      await openProtectedFile(url)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   const name = child?.name || fallbackName
 
   if (loading) {
@@ -69,7 +83,7 @@ export default function ChildDetailsPage() {
   return (
     <div className="child-details-page">
       <ChildDetailsHeader name={name} onBack={() => navigate(-1)} />
-      <ChildInfoCard child={child} />
+      <ChildInfoCard child={child} onViewFile={viewFile} />
       {child?.assignment_preview && <section className="card">
         <h3>معاينة الحالة قبل التعيين</h3>
         <p>راجع حالة الطفل وبيانات ولي الأمر قبل قبول المتابعة.</p>
