@@ -23,8 +23,8 @@ Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:10,1');
 Route::post('/auth/google', [AuthController::class, 'google'])
     ->middleware('throttle:10,1');
-Route::post('/auth/logout', fn () => response()->json(['message' => 'تم تسجيل الخروج']))
-    ->middleware('throttle:20,1');
+Route::post('/auth/logout', [AuthController::class, 'logout'])
+    ->middleware(['auth.jwt', 'throttle:20,1']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])
     ->middleware('throttle:5,1');
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])

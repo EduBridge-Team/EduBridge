@@ -40,7 +40,10 @@ class JwtAuth
             }
 
             $account = DB::table('users')->where('id', (int) $userId)->first();
+            $tokenSessionVersion = (int) ($decoded->session_version ?? 0);
+            $accountSessionVersion = (int) ($account->session_version ?? 0);
             if (!$account || $account->role !== $role
+                || $tokenSessionVersion !== $accountSessionVersion
                 || !isset($decoded->exp, $decoded->credential_stamp)
                 || !is_string($decoded->credential_stamp)
                 || !hash_equals(AuthCredentials::stamp($account, $secret), $decoded->credential_stamp)) {
