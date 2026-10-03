@@ -19,13 +19,14 @@ function asText(value) {
   return value
 }
 
-function InfoRow({ label, value }) {
-  if (value == null || value === '') return null
+function InfoRow({ label, value, showEmpty = false }) {
+  const empty = value == null || value === '' || (Array.isArray(value) && value.length === 0)
+  if (empty && !showEmpty) return null
 
   return (
     <div className="info-row">
       <span className="info-label">{label}:</span>
-      <span className="info-value">{asText(value)}</span>
+      <span className="info-value">{empty ? 'غير مضاف' : asText(value)}</span>
     </div>
   )
 }
@@ -58,6 +59,7 @@ export function ChildDetailsHeader({ name, onBack }) {
 }
 
 export function ChildInfoCard({ child, onViewFile }) {
+  const assignmentPreview = getUser()?.role === 'specialist' && Boolean(child?.assignment_preview)
   const specialistCanViewDocuments = getUser()?.role === 'specialist'
     && Boolean(child?.child_national_id || child?.guardian_national_id || child?.guardian_id_document_url || child?.kinship_document_url || child?.medical_report_url)
 
@@ -69,16 +71,22 @@ export function ChildInfoCard({ child, onViewFile }) {
       <InfoRow label="الاسم" value={child?.name} />
       <InfoRow label="العمر" value={child?.age != null ? `${child.age} سنة` : null} />
       <InfoRow label="نوع الإعاقة" value={child?.disability_type || 'غير محدد'} />
-      <InfoRow label="تفاصيل الإعاقة" value={child?.disability_description} />
-      <InfoRow label="احتياجات خاصة" value={child?.special_needs} />
+      <InfoRow label="وصف الإعاقة" value={child?.disability_description} showEmpty={assignmentPreview} />
+      <InfoRow label="احتياجات خاصة" value={child?.special_needs} showEmpty={assignmentPreview} />
       <InfoRow label="أسلوب التعلم المفضل" value={child?.preferred_learning_style} />
-      <InfoRow label="نقاط القوة" value={child?.strengths} />
-      <InfoRow label="التحديات" value={child?.challenges} />
+      <InfoRow label="نقاط القوة" value={child?.strengths} showEmpty={assignmentPreview} />
+      <InfoRow label="التحديات" value={child?.challenges} showEmpty={assignmentPreview} />
       <InfoRow label="المعلم المسؤول" value={childAssignment(child).teacher} />
       <InfoRow label="ولي الأمر" value={(child?.guardians || []).map(parent => parent.name)} />
       <InfoRow label="المختصون" value={(child?.specialists || []).map(member => member.name)} />
       <InfoRow label="الخطة التعليمية" value={child?.current_plan?.educational_plan} />
       <InfoRow label="الحالة" value={childAssignment(child).label} />
+
+      {assignmentPreview && (
+        <div className="meta" style={{ marginTop: 14 }}>
+          هذه بيانات الحالة المتاحة للمختص قبل قبول المتابعة. بيانات الهوية والمستندات والتقرير الطبي تظهر بعد التعيين فقط.
+        </div>
+      )}
 
       {specialistCanViewDocuments && (
         <section className="child-verification-summary" style={{ marginTop: 20 }}>
