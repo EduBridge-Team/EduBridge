@@ -68,7 +68,7 @@ extension _LessonsTabStateView on _LessonsTabState {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _refresh,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
         children: [
@@ -83,6 +83,5 @@ extension _LessonsTabStateView on _LessonsTabState {
         ],
       ),
     );
-  
   }
 }
