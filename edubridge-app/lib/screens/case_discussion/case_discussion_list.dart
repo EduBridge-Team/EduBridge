@@ -4,10 +4,12 @@ part of 'case_discussion_screen.dart';
 class _CaseDiscussionList extends StatefulWidget {
   final int? filterChildId;
   final bool embedded;
+  final bool showBottomNavigation;
 
   const _CaseDiscussionList({
     this.filterChildId,
     this.embedded = false,
+    this.showBottomNavigation = true,
   });
 
   @override
@@ -122,7 +124,8 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     }
 
     return Scaffold(
-      bottomNavigationBar: const TeacherNavigationBar(),
+      bottomNavigationBar:
+          widget.showBottomNavigation ? const TeacherNavigationBar() : null,
       appBar: JisrAppBar(
         title: 'دراسات الحالة',
         actions: [
