@@ -29,6 +29,29 @@ class _LessonsTabState extends State<_LessonsTab>
 
   Future<void> _refresh() => _load(showLoader: false);
 
+  Future<void> _addLesson() async {
+    final created = await Navigator.push<Map>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddLessonScreen(
+          types: const [],
+          initialChildId: widget.childId,
+          initialChildName: widget.childName,
+          showBottomNavigation: false,
+        ),
+      ),
+    );
+    if (!mounted || created == null) return;
+    await _load(showLoader: false);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تمت إضافة الدرس لـ ${widget.childName}'),
+        backgroundColor: AppColors.green,
+      ),
+    );
+  }
+
   Future<void> _load({bool showLoader = true}) async {
     if (showLoader) {
       setState(() {
