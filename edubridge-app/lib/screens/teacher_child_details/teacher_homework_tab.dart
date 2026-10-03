@@ -39,8 +39,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
       if (!mounted) return;
       setState(() {
         _homeworks = list
-            .map((e) =>
-                Homework.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map((e) => Homework.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
         _loading = false;
       });
@@ -50,6 +49,26 @@ class _HomeworkTabState extends State<_HomeworkTab>
         _error = 'تعذّر تحميل الواجبات';
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _createHomework() async {
+    final created = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateHomeworkScreen(
+          children: [
+            {
+              'id': widget.childId,
+              'name': widget.childName,
+            },
+          ],
+        ),
+      ),
+    );
+
+    if (created == true && mounted) {
+      await _load();
     }
   }
 
@@ -111,7 +130,29 @@ class _HomeworkTabState extends State<_HomeworkTab>
       children: [
         _buildFilterBar(),
         Expanded(
-          child: RefreshIndicator(onRefresh: _load, child: _buildBody()),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: RefreshIndicator(
+                  onRefresh: _load,
+                  child: _buildBody(),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                bottom: 16,
+                child: FloatingActionButton.extended(
+                  heroTag: 'create-homework-${widget.childId}',
+                  onPressed: _createHomework,
+                  icon: const Icon(AppIcons.add),
+                  label: const Text(
+                    'إنشاء واجب',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
