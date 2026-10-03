@@ -47,11 +47,17 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     setState(() => _stars = stars);
   }
 
-  Future<void> _loadProgress() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshProgress() => _loadProgress(showLoader: false);
+
+  Future<void> _loadProgress({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final responses = await Future.wait([
@@ -62,6 +68,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       final summaryRes = responses[0];
       final detailsRes = responses[1];
 
+      if (!mounted) return;
       if (summaryRes.statusCode == 200 && detailsRes.statusCode == 200) {
         setState(() {
           _summary = jsonDecode(summaryRes.body)['summary'];
@@ -75,6 +82,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _loading = false;
@@ -140,7 +148,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           ],
         ),
         body: RefreshIndicator(
-          onRefresh: _loadProgress,
+          onRefresh: _refreshProgress,
           child: _buildBody(),
         ),
       ),
