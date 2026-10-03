@@ -1,0 +1,137 @@
+.noor-quick-actions {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 8px 10px 2px;
+  scrollbar-width: thin;
+}
+
+.noor-quick-action {
+  flex: 0 0 auto;
+  max-width: 240px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.noor-quick-action:hover {
+  border-color: var(--teal);
+  background: var(--tint-teal);
+}
+
+.noor-quick-action:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.noor-quick-action:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.noor-structured-response {
+  display: grid;
+  gap: 8px;
+}
+
+.noor-response-intro {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.noor-response-card {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--surface) 82%, var(--tint-teal));
+}
+
+.noor-response-card-title {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--navy);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.noor-response-card-body {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.noor-navigation-actions {
+  padding-top: 4px;
+}
+
+.noor-navigation-action {
+  background: var(--tint-teal);
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+  font-weight: 700;
+}
+
+.noor-message-group {
+  display: flex;
+  flex-direction: column;
+  max-width: 86%;
+}
+
+.noor-message-group.assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.noor-message-group.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.noor-message-group .noor-message {
+  max-width: 100%;
+}
+
+.noor-response-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding-inline: 3px;
+}
+
+.noor-response-tools button {
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.noor-response-tools button:hover,
+.noor-response-tools button.is-active {
+  color: var(--navy);
+  background: var(--tint-teal);
+  border-color: var(--line);
+}
+
+.noor-response-tools button:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 1px;
+}
+
+.noor-response-tools button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
