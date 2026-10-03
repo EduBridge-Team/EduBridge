@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Support\R2Storage;
+use App\Support\VerificationRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -71,8 +72,11 @@ trait CertificateUploadActions
                 'url' => $url,
             ]);
 
+            $snapshot = VerificationRequirements::syncUserStatus((int) $me->id);
+
             return response()->json([
                 'certificate' => DB::table('certificates')->find($id),
+                'verification' => $snapshot,
             ], 201);
         } catch (\Exception $e) {
             report($e);
