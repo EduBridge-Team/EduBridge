@@ -37,6 +37,24 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
 }
 
+function assistantFollowUps(user, pathname = '') {
+  const items = [
+    'بسّط أكثر',
+    'اعطني مثالاً عملياً',
+  ]
+
+  if (/\/lessons/i.test(pathname)) items.push('اعمل 3 أسئلة قصيرة')
+  if (/\/assignments|\/homework/i.test(pathname)) items.push('اعطني تلميحاً بدون الحل')
+  if (/\/progress|\/reports/i.test(pathname)) items.push('ما الخطوة التعليمية التالية؟')
+
+  if (user?.role === 'parent') items.push('اقترح نشاط متابعة قصيراً')
+  if (user?.role === 'teacher') items.push('حوّل الفكرة إلى نشاط صفي')
+  if (user?.role === 'specialist') items.push('اقترح خطوة متابعة تعليمية')
+
+  if (items.length < 4) items.push('اعطني تمريناً قصيراً')
+  return [...new Set(items)].slice(0, 4)
+}
+
 function positionBounds() {
   const size = launcherSize()
   return {
@@ -105,6 +123,13 @@ export default function AssistantWidget() {
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
   const suggestions = assistantSuggestions(user, location.pathname)
+  const hasConversation = messages.some((message) => message.role === 'user')
+  const lastMessage = messages[messages.length - 1]
+  const quickActions = !hasConversation
+    ? suggestions
+    : lastMessage?.role === 'assistant'
+      ? assistantFollowUps(user, location.pathname)
+      : []
 
   useEffect(() => {
     setOpen(false)
@@ -288,19 +313,20 @@ export default function AssistantWidget() {
 
           {error && <div className="noor-error" role="alert">{error}</div>}
 
-          <div className="noor-quick-actions" aria-label="اقتراحات نور">
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                className="noor-quick-action"
-                onClick={() => sendMessage(null, suggestion)}
-                disabled={sending}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
+          {!sending && quickActions.length > 0 && (
+            <div className="noor-quick-actions" aria-label={hasConversation ? 'متابعة سريعة' : 'اقتراحات نور'}>
+              {quickActions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  className="noor-quick-action"
+                  onClick={() => sendMessage(null, suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form className="noor-form" onSubmit={sendMessage}>
             <textarea
