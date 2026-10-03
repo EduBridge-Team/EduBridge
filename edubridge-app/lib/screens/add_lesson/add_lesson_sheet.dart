@@ -20,6 +20,8 @@ class AddLessonSheet extends StatefulWidget {
   final void Function(Map lesson) onCreated;
   final bool fullScreen;
   final bool forParents;
+  final int? initialChildId;
+  final String? initialChildName;
 
   const AddLessonSheet({
     super.key,
@@ -28,6 +30,8 @@ class AddLessonSheet extends StatefulWidget {
     required this.onCreated,
     this.fullScreen = false,
     this.forParents = false,
+    this.initialChildId,
+    this.initialChildName,
   });
 
   @override
@@ -60,10 +64,17 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
 
   void _updateLessonSheetState(VoidCallback callback) => setState(callback);
 
+  bool get _isChildLocked => widget.initialChildId != null;
+
   @override
   void initState() {
     super.initState();
     _forParents = widget.forParents;
+    if (widget.initialChildId != null) {
+      _target = LessonTarget.specificChildren;
+      _selectedChildIds.add(widget.initialChildId!);
+      _forParents = false;
+    }
     _loadChildren();
   }
 
@@ -234,7 +245,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                   _buildHeader(),
                   if (!widget.fullScreen) const SizedBox(height: 6),
                   Text(
-                    'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
+                    _isChildLocked
+                        ? 'هذا الدرس سيظهر للطالب ${widget.initialChildName ?? ''} فقط.'
+                        : 'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
                     style: TextStyle(
                       fontSize: 13.5,
                       color: c.muted,
@@ -259,29 +272,59 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildForParentsToggle(c),
-                  const SizedBox(height: 16),
-                  if (!_forParents) ...[
-                    buildTargetSelector(
-                      context: context,
-                      c: c,
-                      target: _target,
-                      onTargetChanged: (v) => setState(() => _target = v),
-                      typeId: _typeId,
-                      onTypeChanged: (v) => setState(() => _typeId = v),
-                      types: widget.types,
-                      allChildren: _allChildren,
-                      selectedChildIds: _selectedChildIds,
-                      loadingChildren: _loadingChildren,
-                      onChildToggle: (id, selected) => setState(() {
-                        if (selected) {
-                          _selectedChildIds.add(id);
-                        } else {
-                          _selectedChildIds.remove(id);
-                        }
-                      }),
+                  if (_isChildLocked) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: AppColors.brandBlue.withValues(alpha: .07),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.brandBlue.withValues(alpha: .18),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(AppIcons.child, color: AppColors.brandBlue),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'الطالب: ${widget.initialChildName ?? widget.initialChildId}',
+                              style: TextStyle(
+                                color: c.heading,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
+                  ] else ...[
+                    _buildForParentsToggle(c),
+                    const SizedBox(height: 16),
+                    if (!_forParents) ...[
+                      buildTargetSelector(
+                        context: context,
+                        c: c,
+                        target: _target,
+                        onTargetChanged: (v) => setState(() => _target = v),
+                        typeId: _typeId,
+                        onTypeChanged: (v) => setState(() => _typeId = v),
+                        types: widget.types,
+                        allChildren: _allChildren,
+                        selectedChildIds: _selectedChildIds,
+                        loadingChildren: _loadingChildren,
+                        onChildToggle: (id, selected) => setState(() {
+                          if (selected) {
+                            _selectedChildIds.add(id);
+                          } else {
+                            _selectedChildIds.remove(id);
+                          }
+                        }),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   ],
                   buildImagesPicker(
                     context: context,
