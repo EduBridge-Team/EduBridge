@@ -42,6 +42,37 @@ const ROLE_SUGGESTIONS = {
   ],
 }
 
+const SENSITIVE_LINE = /(رقم\s*(?:الهوية|الهويه|الوطني)|هوية|هويه|جواز|هاتف|جوال|موبايل|بريد\s*إلكتروني|email|address|العنوان|كلمة\s*المرور|password|مستند|وثيقة|شهادة\s*ميلاد|تقرير\s*طبي)/i
+const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu
+const LONG_NUMBER = /(?<!\d)(?:\d[\s-]?){7,15}(?!\d)/gu
+
+function visiblePageFacts() {
+  if (typeof document === 'undefined') return ''
+
+  const root = document.querySelector('main, [role="main"], .pp-content, .dashboard-content')
+  if (!root) return ''
+
+  const lines = (root.innerText || '')
+    .split(/\n+/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => !SENSITIVE_LINE.test(line))
+    .map(line => line.replace(EMAIL, '[بريد محذوف]').replace(LONG_NUMBER, '[رقم محذوف]'))
+    .filter(line => line.length <= 220)
+
+  const unique = [...new Set(lines)]
+  const facts = []
+  let total = 0
+
+  for (const line of unique) {
+    if (facts.length >= 18 || total + line.length > 850) break
+    facts.push(line)
+    total += line.length
+  }
+
+  return facts.join('\n')
+}
+
 export function assistantSuggestions(user, pathname = '') {
   const role = user?.role || 'user'
   const suggestions = [...(ROLE_SUGGESTIONS[role] || [
@@ -61,11 +92,15 @@ export function buildAssistantContext({ user, location }) {
   const pathname = location?.pathname || '/'
   const pageLabel = PAGE_LABELS.find(([pattern]) => pattern.test(pathname))?.[1] || 'صفحة داخل EduBridge'
   const role = user?.role || 'user'
+  const pageFacts = visiblePageFacts()
 
   return [
     `الدور: ${role}`,
     `الصفحة الحالية: ${pageLabel}`,
     `المسار: ${pathname}`,
-    'لا توجد في هذا السياق بيانات طالب أو واجب أو موعد إلا إذا كانت مذكورة صراحة في رسالة المستخدم.',
-  ].join('\n')
+    pageFacts ? `بيانات مرئية آمنة من الصفحة:\n${pageFacts}` : null,
+    pageFacts
+      ? 'استخدم فقط البيانات المذكورة أعلاه عند الحديث عن طالب أو واجب أو موعد أو تقدم.'
+      : 'لا توجد بيانات فعلية من الصفحة في هذا السياق؛ لا تخمّن طالباً أو واجباً أو موعداً أو تقدماً.',
+  ].filter(Boolean).join('\n')
 }
