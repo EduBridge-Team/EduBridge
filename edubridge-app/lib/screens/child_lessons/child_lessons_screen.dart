@@ -113,7 +113,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             onOpenProgress: _openProgress,
           ),
           body: RefreshIndicator(
-            onRefresh: _loadLessons,
+            onRefresh: _refreshLessons,
             child: _buildBody(),
           ),
         ),
