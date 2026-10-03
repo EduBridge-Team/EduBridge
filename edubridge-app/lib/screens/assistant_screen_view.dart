@@ -65,7 +65,8 @@ extension _AssistantScreenStateView on _AssistantScreenState {
 
                     final message = _messages[index];
                     final isAssistant = message.role == 'assistant';
-                    final showActions = isAssistant && message != _welcome;
+                    final showActions =
+                        isAssistant && message != _AssistantScreenState._welcome;
                     final isLastAssistant = showActions &&
                         index == _messages.length - 1 &&
                         !_sending;
