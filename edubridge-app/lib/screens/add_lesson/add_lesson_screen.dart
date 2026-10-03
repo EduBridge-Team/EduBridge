@@ -45,14 +45,47 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'إضافة درس جديد',
-          style: TextStyle(fontWeight: FontWeight.w800),
+        toolbarHeight: 88,
+        elevation: 0,
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
         ),
         leading: IconButton(
           tooltip: 'رجوع',
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_forward_rounded),
+          icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'إضافة درس جديد',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'أضف المحتوى وحدد الجمهور والوسائط المساندة',
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+                color: Colors.white70,
+              ),
+            ),
+          ],
         ),
       ),
       body: _verified == null
@@ -105,12 +138,16 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                     ),
                   ),
                 )
-              : AddLessonSheet(
-                  types: widget.types,
-                  fullScreen: true,
-                  forParents: widget.forParents,
-                  onClose: () => Navigator.pop(context),
-                  onCreated: (lesson) => Navigator.pop(context, lesson),
+              : SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: AddLessonSheet(
+                    types: widget.types,
+                    fullScreen: true,
+                    forParents: widget.forParents,
+                    onClose: () => Navigator.pop(context),
+                    onCreated: (lesson) => Navigator.pop(context, lesson),
+                  ),
                 ),
       bottomNavigationBar: const TeacherNavigationBar(),
     );
