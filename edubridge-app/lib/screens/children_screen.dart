@@ -67,6 +67,12 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
     await _pages.load();
   }
 
+  Future<void> _refreshChildren() async {
+    final role = await ApiService.getRole();
+    if (!mounted) return;
+    setState(() => _role = role);
+    await _pages.refresh();
+  }
 
   void _openChild(Map child) {
     Navigator.push(
@@ -100,7 +106,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           decoration: const InputDecoration(hintText: 'ابحث عن طفل أو معلّم...', prefixIcon: Icon(AppIcons.search)),
           onChanged: _pages.search,
         )),
-        Expanded(child: RefreshIndicator(onRefresh: _loadChildren, child: _buildBody())),
+        Expanded(child: RefreshIndicator(onRefresh: _refreshChildren, child: _buildBody())),
         ListPagination(controller: _pages),
       ]),
     );
