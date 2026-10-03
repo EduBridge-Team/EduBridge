@@ -19,8 +19,10 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() => _loading = true);
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) setState(() => _loading = true);
     try {
       final serverPending = await ApiService.getPendingApprovals();
       final serverProcessed =
@@ -31,12 +33,14 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         final localApproved = await ApprovalService.getApprovedPlans();
         final localRejected = await ApprovalService.getRejectedPlans();
 
+        if (!mounted) return;
         setState(() {
           _pending = localPending;
           _processed = [...localApproved, ...localRejected];
           _loading = false;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _pending = serverPending.cast<Map<String, dynamic>>();
           _processed = serverProcessed.cast<Map<String, dynamic>>();
@@ -44,7 +48,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         });
       }
     } catch (_) {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -179,7 +183,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
     if (_loading) return const Center(child: CircularProgressIndicator());
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _refresh,
       child: ListView(
         padding: const EdgeInsets.all(12),
         children: [
@@ -199,9 +203,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
                   onApprove: () => _handleApprove(a),
                   onReject: () => _handleReject(a),
                 )),
-
           const SizedBox(height: 24),
-
           if (_processed.isNotEmpty) ...[
             _MinistrySectionHeader(
               title: 'سجل القرارات',
