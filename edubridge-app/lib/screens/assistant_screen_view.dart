@@ -4,6 +4,8 @@ extension _AssistantScreenStateView on _AssistantScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
+    final visibleSuggestions = _visibleSuggestions;
+    final navigationActions = _navigationActions;
 
     return Scaffold(
       appBar: JisrAppBar(
@@ -60,17 +62,53 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                     if (index == _messages.length) {
                       return const _TypingBubble();
                     }
-                    return _MessageBubble(message: _messages[index]);
+
+                    final message = _messages[index];
+                    final isAssistant = message.role == 'assistant';
+                    final showActions =
+                        isAssistant && message != _AssistantScreenState._welcome;
+                    final isLastAssistant = showActions &&
+                        index == _messages.length - 1 &&
+                        !_sending;
+
+                    return _MessageBubble(
+                      message: message,
+                      showActions: showActions,
+                      isLastAssistant: isLastAssistant,
+                      feedback: _responseFeedback[index],
+                      onCopy: showActions ? () => _copyResponse(index) : null,
+                      onRegenerate:
+                          isLastAssistant ? _regenerateLastResponse : null,
+                      onFeedback: showActions
+                          ? (helpful) => _rateResponse(index, helpful)
+                          : null,
+                    );
                   },
                 ),
               ),
-            if (!_loadingHistory)
+            if (!_loadingHistory && !_sending && visibleSuggestions.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
-                  children: _suggestions
+                  children: visibleSuggestions
                       .map((text) => _SuggestionChip(text: text, onTap: _send))
+                      .toList(growable: false),
+                ),
+              ),
+            if (!_loadingHistory &&
+                !_sending &&
+                _hasConversation &&
+                navigationActions.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+                child: Row(
+                  children: navigationActions
+                      .map((action) => _NavigationActionChip(
+                            action: action,
+                            onTap: _openNavigationAction,
+                          ))
                       .toList(growable: false),
                 ),
               ),

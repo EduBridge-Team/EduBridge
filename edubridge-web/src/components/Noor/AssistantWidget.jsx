@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { EyeOff, Send, Trash2, X } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { Copy, EyeOff, RotateCcw, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
-import { assistantSuggestions, buildAssistantContext } from './assistantContext'
+import { assistantNavigationActions, assistantSuggestions, buildAssistantContext } from './assistantContext'
 import './assistant-context.css'
 import { useUserSettings } from '../../userSettings'
 
@@ -18,6 +18,19 @@ const DESKTOP_LAUNCHER_SIZE = 72
 const MOBILE_LAUNCHER_SIZE = 64
 const SCREEN_MARGIN = 14
 const MOVE_THRESHOLD = 8
+const STRUCTURED_HEADINGS = new Set([
+  'الهدف',
+  'المواد',
+  'الخطوات',
+  'المدة',
+  'ملاحظات',
+  'المطلوب',
+  'تلميح',
+  'الخطوة التالية',
+  'ملخص',
+  'نقاط قوة ظاهرة',
+  'يحتاج متابعة',
+])
 
 function historyKey(user) {
   return `noor_assistant_history_v1_${user?.id || 0}`
@@ -35,6 +48,97 @@ function launcherSize() {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
+}
+
+function assistantFollowUps(user, pathname = '') {
+  const items = [
+    'بسّط أكثر',
+    'اعطني مثالاً عملياً',
+  ]
+
+  if (/\/lessons/i.test(pathname)) items.push('اعمل 3 أسئلة قصيرة')
+  if (/\/assignments|\/homework/i.test(pathname)) items.push('اعطني تلميحاً بدون الحل')
+  if (/\/progress|\/reports/i.test(pathname)) items.push('ما الخطوة التعليمية التالية؟')
+
+  if (user?.role === 'parent') items.push('اقترح نشاط متابعة قصيراً')
+  if (user?.role === 'teacher') items.push('حوّل الفكرة إلى نشاط صفي')
+  if (user?.role === 'specialist') items.push('اقترح خطوة متابعة تعليمية')
+
+  if (items.length < 4) items.push('اعطني تمريناً قصيراً')
+  return [...new Set(items)].slice(0, 4)
+}
+
+function cleanAssistantLine(value) {
+  return value
+    .replace(/^\s*#{1,6}\s*/, '')
+    .replace(/^\s*[-*+]\s+/, '• ')
+    .replace(/^\s*\d+[.)]\s+/, '• ')
+    .replace(/\*\*|__|`/g, '')
+    .trim()
+}
+
+function parseAssistantSections(content) {
+  const lines = content.replace(/\r\n/g, '\n').split('\n')
+  const sections = []
+  let intro = []
+  let current = null
+
+  const flushIntro = () => {
+    const text = intro.filter(Boolean).join('\n').trim()
+    if (text) sections.push({ type: 'text', text })
+    intro = []
+  }
+
+  const flushCurrent = () => {
+    if (!current) return
+    const text = current.lines.filter(Boolean).join('\n').trim()
+    sections.push({ type: 'section', title: current.title, text })
+    current = null
+  }
+
+  for (const rawLine of lines) {
+    const line = cleanAssistantLine(rawLine)
+    if (!line || /^[-_:| ]{3,}$/.test(line)) continue
+
+    const headingMatch = line.match(/^([^:：]{2,30})\s*[:：]?\s*(.*)$/)
+    const possibleHeading = headingMatch?.[1]?.trim()
+    if (possibleHeading && STRUCTURED_HEADINGS.has(possibleHeading)) {
+      flushIntro()
+      flushCurrent()
+      current = {
+        title: possibleHeading,
+        lines: headingMatch?.[2]?.trim() ? [headingMatch[2].trim()] : [],
+      }
+      continue
+    }
+
+    if (current) current.lines.push(line)
+    else intro.push(line)
+  }
+
+  flushIntro()
+  flushCurrent()
+  return sections
+}
+
+function AssistantMessageContent({ content }) {
+  const sections = parseAssistantSections(content)
+  const hasStructured = sections.some((section) => section.type === 'section')
+
+  if (!hasStructured) return content
+
+  return (
+    <div className="noor-structured-response">
+      {sections.map((section, index) => section.type === 'section' ? (
+        <section className="noor-response-card" key={`${section.title}-${index}`}>
+          <strong className="noor-response-card-title">{section.title}</strong>
+          {section.text && <div className="noor-response-card-body">{section.text}</div>}
+        </section>
+      ) : (
+        <div className="noor-response-intro" key={`intro-${index}`}>{section.text}</div>
+      ))}
+    </div>
+  )
 }
 
 function positionBounds() {
@@ -90,6 +194,7 @@ function loadHistory(user) {
 
 export default function AssistantWidget() {
   const location = useLocation()
+  const navigate = useNavigate()
   const user = getUser()
   const signedIn = Boolean(getToken() && user)
   const { settings, updateSettings } = useUserSettings()
@@ -100,17 +205,28 @@ export default function AssistantWidget() {
   const [error, setError] = useState('')
   const [launcherPosition, setLauncherPosition] = useState(null)
   const [dragging, setDragging] = useState(false)
+  const [copiedIndex, setCopiedIndex] = useState(null)
+  const [feedback, setFeedback] = useState({})
   const endRef = useRef(null)
   const inputRef = useRef(null)
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
   const suggestions = assistantSuggestions(user, location.pathname)
+  const navigationActions = assistantNavigationActions(user, location.pathname)
+  const hasConversation = messages.some((message) => message.role === 'user')
+  const lastMessage = messages[messages.length - 1]
+  const quickActions = !hasConversation
+    ? suggestions
+    : lastMessage?.role === 'assistant'
+      ? assistantFollowUps(user, location.pathname)
+      : []
 
   useEffect(() => {
     setOpen(false)
     setMessages([WELCOME, ...loadHistory(getUser())])
     setInput('')
     setError('')
+    setFeedback({})
   }, [location.pathname, user?.id])
 
   useEffect(() => {
@@ -153,6 +269,7 @@ export default function AssistantWidget() {
     localStorage.removeItem(historyKey(user))
     setMessages([WELCOME])
     setError('')
+    setFeedback({})
   }
 
   const hideAssistant = () => {
@@ -221,6 +338,18 @@ export default function AssistantWidget() {
     setOpen(true)
   }
 
+  const openNavigationAction = (action) => {
+    if (!action?.path) return
+    setOpen(false)
+    navigate(action.path)
+  }
+
+  const requestAssistant = async (requestMessages) => {
+    const context = buildAssistantContext({ user, location })
+    const data = await askAssistant(requestMessages, context)
+    return { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+  }
+
   const sendMessage = async (event, suggestedContent = null) => {
     event?.preventDefault?.()
     const content = (suggestedContent ?? input).trim()
@@ -239,9 +368,7 @@ export default function AssistantWidget() {
     saveHistory(next)
 
     try {
-      const context = buildAssistantContext({ user, location })
-      const data = await askAssistant(requestMessages, context)
-      const reply = { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+      const reply = await requestAssistant(requestMessages)
       setMessages((current) => {
         const updated = [...current, reply]
         saveHistory(updated)
@@ -249,6 +376,61 @@ export default function AssistantWidget() {
       })
     } catch (requestError) {
       setError(requestError.message || 'تعذّر التواصل مع نور الآن.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const copyResponse = async (content, index) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopiedIndex(index)
+      window.setTimeout(() => setCopiedIndex((current) => current === index ? null : current), 1500)
+    } catch {
+      setError('تعذّر نسخ الرد على هذا الجهاز.')
+    }
+  }
+
+  const rateResponse = (index, value) => {
+    setFeedback((current) => ({
+      ...current,
+      [index]: current[index] === value ? null : value,
+    }))
+  }
+
+  const regenerateLastResponse = async () => {
+    if (sending) return
+    const lastAssistantIndex = messages.findLastIndex((message) => message.role === 'assistant' && message.id !== WELCOME.id)
+    if (lastAssistantIndex < 1) return
+
+    const baseMessages = messages.slice(0, lastAssistantIndex)
+    if (baseMessages[baseMessages.length - 1]?.role !== 'user') return
+
+    const requestMessages = baseMessages
+      .filter((message) => message.id !== WELCOME.id)
+      .map(({ role, content }) => ({ role, content }))
+
+    setMessages(baseMessages)
+    setSending(true)
+    setError('')
+    saveHistory(baseMessages)
+
+    try {
+      const reply = await requestAssistant(requestMessages)
+      setMessages((current) => {
+        const updated = [...current, reply]
+        saveHistory(updated)
+        return updated
+      })
+      setFeedback((current) => {
+        const next = { ...current }
+        delete next[lastAssistantIndex]
+        return next
+      })
+    } catch (requestError) {
+      setMessages(messages)
+      saveHistory(messages)
+      setError(requestError.message || 'تعذّر إعادة توليد الرد الآن.')
     } finally {
       setSending(false)
     }
@@ -277,30 +459,87 @@ export default function AssistantWidget() {
 
           <div className="noor-notice">نور يفهم دورك والصفحة الحالية. لا تشارك معلومات شخصية أو حساسة.</div>
           <div className="noor-messages" aria-live="polite">
-            {messages.map((message, index) => (
-              <div key={message.id || `${message.role}-${index}`} className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
-                {message.content}
-              </div>
-            ))}
+            {messages.map((message, index) => {
+              const isAssistant = message.role === 'assistant'
+              const showTools = isAssistant && message.id !== WELCOME.id
+              const isLastAssistant = showTools && index === messages.length - 1
+              return (
+                <div key={message.id || `${message.role}-${index}`} className={`noor-message-group ${isAssistant ? 'assistant' : 'user'}`}>
+                  <div className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
+                    {isAssistant
+                      ? <AssistantMessageContent content={message.content} />
+                      : message.content}
+                  </div>
+                  {showTools && (
+                    <div className="noor-response-tools" aria-label="أدوات الرد">
+                      <button type="button" onClick={() => copyResponse(message.content, index)} aria-label="نسخ الرد" title="نسخ الرد">
+                        <Copy size={14} />
+                        <span>{copiedIndex === index ? 'تم النسخ' : 'نسخ'}</span>
+                      </button>
+                      {isLastAssistant && (
+                        <button type="button" onClick={regenerateLastResponse} disabled={sending} aria-label="إعادة توليد الرد" title="إعادة توليد الرد">
+                          <RotateCcw size={14} />
+                          <span>إعادة</span>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className={feedback[index] === 'up' ? 'is-active' : ''}
+                        onClick={() => rateResponse(index, 'up')}
+                        aria-label="الرد مفيد"
+                        title="مفيد"
+                      >
+                        <ThumbsUp size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        className={feedback[index] === 'down' ? 'is-active' : ''}
+                        onClick={() => rateResponse(index, 'down')}
+                        aria-label="الرد غير مفيد"
+                        title="غير مفيد"
+                      >
+                        <ThumbsDown size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
             {sending && <div className="noor-message assistant noor-typing">نور يكتب…</div>}
             <div ref={endRef} />
           </div>
 
           {error && <div className="noor-error" role="alert">{error}</div>}
 
-          <div className="noor-quick-actions" aria-label="اقتراحات نور">
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                className="noor-quick-action"
-                onClick={() => sendMessage(null, suggestion)}
-                disabled={sending}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
+          {!sending && quickActions.length > 0 && (
+            <div className="noor-quick-actions" aria-label={hasConversation ? 'متابعة سريعة' : 'اقتراحات نور'}>
+              {quickActions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  className="noor-quick-action"
+                  onClick={() => sendMessage(null, suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!sending && hasConversation && navigationActions.length > 0 && (
+            <div className="noor-quick-actions noor-navigation-actions" aria-label="فتح سريع">
+              {navigationActions.map((action) => (
+                <button
+                  key={action.path}
+                  type="button"
+                  className="noor-quick-action noor-navigation-action"
+                  onClick={() => openNavigationAction(action)}
+                >
+                  فتح {action.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form className="noor-form" onSubmit={sendMessage}>
             <textarea
