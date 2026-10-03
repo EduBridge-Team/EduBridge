@@ -6,7 +6,6 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../create_weekly_report_screen.dart';
-import '../teacher/teacher_screen.dart';
 
 part 'teacher_homework_tab.dart';
 part 'teacher_homework_tab_widgets.dart';
@@ -32,11 +31,17 @@ class TeacherChildDetailsScreen extends StatefulWidget {
 class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging && mounted) {
+        setState(() => _selectedTab = _tabController.index);
+      }
+    });
   }
 
   @override
@@ -45,41 +50,51 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
     super.dispose();
   }
 
+  void _selectTab(int index) {
+    if (_selectedTab == index) return;
+    setState(() => _selectedTab = index);
+    _tabController.animateTo(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 72,
+        toolbarHeight: 78,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
           ),
         ),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
-        title: Text(
-          widget.childName,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-          tabs: const [
-            Tab(icon: Icon(AppIcons.homework, size: 22), text: 'الواجبات'),
-            Tab(icon: Icon(AppIcons.lesson, size: 22), text: 'الدروس'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.childName,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            const SizedBox(height: 3),
+            Text(
+              _selectedTab == 0 ? 'واجبات الطالب' : 'دروس الطالب',
+              style: const TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+                color: Colors.white70,
+              ),
+            ),
           ],
         ),
       ),
@@ -151,26 +166,18 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen>
         ],
       ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (index) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TeacherScreen(initialTab: index),
-            ),
-            (route) => false,
-          );
-        },
+        selectedIndex: _selectedTab,
+        onDestinationSelected: _selectTab,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'الأطفال',
+            icon: Icon(AppIcons.homework),
+            selectedIcon: Icon(Icons.assignment),
+            label: 'واجبات الطالب',
           ),
           NavigationDestination(
             icon: Icon(AppIcons.lesson),
             selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
+            label: 'دروس الطالب',
           ),
         ],
       ),

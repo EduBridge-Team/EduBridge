@@ -142,6 +142,16 @@
     flex: 1;
 }
 
+.certificate-info-row {
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.certificate-info-row .certificate-view-button {
+    margin-inline-start: auto;
+    flex-shrink: 0;
+}
+
 .child-actions {
     display: flex;
     gap: 12px;

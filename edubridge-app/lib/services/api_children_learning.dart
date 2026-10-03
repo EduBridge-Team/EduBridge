@@ -15,7 +15,6 @@ Future<ListPage> _apiGetDirectoryPage(String key, int page, String query, {Strin
   return ListPage.fromJson(ApiService._decodeBody(res), key);
 }
 
-
 Future<Map<String, dynamic>?> _apiGetChildren() async {
   try {
     final res = await ApiService.authGet('/children');
@@ -45,13 +44,17 @@ Future<Map<String, dynamic>?> _apiAddChild({
   List<File>? medicalReportFiles,
 }) async {
   if (await ApiService.getRole() != 'parent') throw Exception('إضافة طفل متاحة لولي الأمر فقط');
-  if (idCardFile == null || birthCertFile == null) throw Exception('مستندات الهوية وصلة القرابة مطلوبة');
+  if (idCardFile == null || birthCertFile == null || medicalReportFiles == null || medicalReportFiles.isEmpty) {
+    throw Exception('صورة الهوية ومستند القرابة والتقرير الطبي مطلوبة');
+  }
   final guardianUrl = await _apiUploadChildDocument(idCardFile);
   final kinshipUrl = await _apiUploadChildDocument(birthCertFile);
+  final medicalReportUrl = await _apiUploadChildDocument(medicalReportFiles.first);
   final res = await ApiService.authPost('/children', {
     'name': name, 'age': age,
     'child_national_id': childNationalId, 'guardian_national_id': guardianNationalId,
     'guardian_id_document_url': guardianUrl, 'kinship_document_url': kinshipUrl,
+    'medical_report_url': medicalReportUrl,
     'disability_type': disabilityType, 'disability_description': disabilityDescription,
     'special_needs': specialNeeds, 'preferred_learning_style': preferredLearningStyle,
     'strengths': strengths, 'challenges': challenges,
@@ -251,7 +254,6 @@ Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
         }
       }
     }
-
     if (videoFile != null && await videoFile.exists()) {
       request.files.add(
         await http.MultipartFile.fromPath('video', videoFile.path),
@@ -262,7 +264,6 @@ Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
         await http.MultipartFile.fromPath('audio', audioFile.path),
       );
     }
-
     if (captionFile != null && await captionFile.exists()) {
       request.files.add(
         await http.MultipartFile.fromPath('caption', captionFile.path),
@@ -270,8 +271,7 @@ Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
     }
     if (signLanguageFile != null && await signLanguageFile.exists()) {
       request.files.add(
-        await http.MultipartFile.fromPath(
-            'sign_language', signLanguageFile.path),
+        await http.MultipartFile.fromPath('sign_language', signLanguageFile.path),
       );
     }
 
@@ -338,7 +338,6 @@ Future<Map<String, dynamic>?> _apiMarkLessonProgress({
       'status': status,
       'score': score,
     });
-
     final data = ApiService._decodeBody(res);
     if (res.statusCode == 200 || res.statusCode == 201) {
       return ApiService._asStringMap(data['progress']);

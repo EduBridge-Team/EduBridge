@@ -110,13 +110,33 @@ export function AccessibilityOptionsCard({ onUpdate, profile }) {
 export function AccessibilitySaveBar({ onReset, onSave, saved, saving = false }) {
   return (
     <>
-      {saved && <div className="success-box">تم حفظ الإعدادات وتطبيقها بنجاح ✓</div>}
+      {saved && (
+        <div
+          className="success-box accessibility-save-toast"
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed',
+            left: '50%',
+            bottom: 24,
+            transform: 'translateX(-50%)',
+            zIndex: 3000,
+            width: 'min(92vw, 520px)',
+            margin: 0,
+            boxShadow: '0 14px 36px rgba(0, 0, 0, 0.18)',
+            textAlign: 'center',
+            fontWeight: 800,
+          }}
+        >
+          ✓ تم حفظ إعدادات التكييف ومزامنتها بنجاح
+        </div>
+      )}
       <div className="access-save-bar">
         <button className="btn outline" onClick={onReset} disabled={saving}>
           <RotateCcw size={17} /> إعادة الضبط
         </button>
         <button className="btn" onClick={onSave} disabled={saving}>
-          <Save size={17} /> {saving ? 'جارِ المزامنة...' : 'حفظ الإعدادات'}
+          <Save size={17} /> {saving ? 'جارِ المزامنة...' : saved ? 'تم الحفظ ✓' : 'حفظ الإعدادات'}
         </button>
       </div>
     </>

@@ -13,11 +13,11 @@ trait ChildControllerHelpers
         if ($user && $user->role === 'admin') return true;
         if ($current !== null && $url === $current) return true;
         if (!$user) return false;
-    
+
         $expectedPrefix = '/api/private-files/user/' . (int) $user->id . '/';
         return str_starts_with($url, $expectedPrefix);
     }
-    
+
     // فكّ ترميز أعمدة JSON (نقاط القوة/التحديات) وإرجاعها كمصفوفات
     private function decodeChild($child)
     {
@@ -31,27 +31,39 @@ trait ChildControllerHelpers
         }
         // لا نعيد الحقول الصحية القديمة في واجهات المنتج التعليمي.
         unset($child->medical_history, $child->psychologist_notes);
-    
+
         // للتوافق: لو ما فيه نوع إعاقة نصّي نستعمل اسم النوع من القائمة المرجعية
         if (empty($child->disability_type) && !empty($child->disability_name)) {
             $child->disability_type = $child->disability_name;
         }
         return $child;
     }
-    
+
     private function hideIdentityFieldsForStaff($child, $user)
     {
         if (!$child || !$user || in_array($user->role, ['admin', 'parent'], true)) {
             return $child;
         }
-    
+
+        // المختص المعيّن للطفل يحتاج بيانات الهوية والتقرير الطبي للمتابعة،
+        // لكن تبقى هذه البيانات للقراءة فقط ولا تظهر لباقي الطاقم.
+        if ($user->role === 'specialist' && !empty($child->id)) {
+            $assigned = DB::table('child_specialist')
+                ->where('child_id', (int) $child->id)
+                ->where('specialist_id', (int) $user->id)
+                ->exists();
+            if ($assigned) {
+                return $child;
+            }
+        }
+
         foreach (self::IDENTITY_FIELDS as $field) {
             unset($child->$field);
         }
-    
+
         return $child;
     }
-    
+
     private function loadChildRelations(Collection $children, Collection $planChildIds): array
     {
         $specialists = collect();
@@ -131,7 +143,7 @@ trait ChildControllerHelpers
         if (!$child) {
             return $child;
         }
-    
+
         try {
             $specialists = $loadedSpecialists !== null ? $loadedSpecialists->get($child->id, collect()) : DB::table('child_specialist as cs')
                 ->join('users as u', 'u.id', '=', 'cs.specialist_id')
@@ -144,11 +156,11 @@ trait ChildControllerHelpers
                     'cs.assigned_at'
                 )
                 ->get();
-    
+
             $child->specialists = $specialists;
             $child->specialist_ids = $specialists->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
             $child->assigned_specialist_ids = $child->specialist_ids;
-    
+
             if ($specialists->isNotEmpty()) {
                 $first = $specialists->first();
                 $child->specialist_id = (int) $first->id;
@@ -161,10 +173,10 @@ trait ChildControllerHelpers
             $child->specialist_ids = [];
             $child->assigned_specialist_ids = [];
         }
-    
+
         return $child;
     }
-    
+
     // إضافة طفل (ولي أمر / أدمن)
     // POST /api/children
 }

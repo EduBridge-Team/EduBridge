@@ -7,30 +7,34 @@ export function VerificationUsersList({ onDecide, onViewFile, users }) {
     return <div className="state">لا توجد طلبات توثيق ضمن هذا الفلتر</div>
   }
 
-  return users.map((user) => (
-    <div key={user.id} className="card verify-row">
-      <div>
-        <h3>
-          {user.name} <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
-        </h3>
-        <div className="meta">{user.email} · هوية: {user.national_id || '—'}</div>
-        {user.id_document_url && (
-          <button type="button" className="file-link" onClick={() => onViewFile(user.id_document_url)}>
-            <Paperclip size={14} /> صورة الهوية
-          </button>
-        )}
+  return users.map((user) => {
+    const identityStatus = user.identity_status || 'pending'
+    return (
+      <div key={user.id} className="card verify-row">
+        <div>
+          <h3>
+            {user.name} <span className="role-badge">{ROLE_NAMES[user.role] || user.role}</span>
+          </h3>
+          <div className="meta">{user.email} · هوية: {user.national_id || '—'}</div>
+          {user.id_document_url && (
+            <button type="button" className="file-link" onClick={() => onViewFile(user.id_document_url)}>
+              <Paperclip size={14} /> صورة الهوية
+            </button>
+          )}
+          <div className="meta">حالة الحساب الكلية: <VerificationBadge status={user.verification_status} /></div>
+        </div>
+        <div className="verify-actions">
+          {identityStatus !== 'verified' && (
+            <button className="btn small success" onClick={() => onDecide(user.id, 'verified')}>اعتماد الهوية</button>
+          )}
+          {identityStatus !== 'rejected' && (
+            <button className="btn small danger" onClick={() => onDecide(user.id, 'rejected')}>رفض الهوية</button>
+          )}
+          <VerificationBadge status={identityStatus} />
+        </div>
       </div>
-      <div className="verify-actions">
-        {user.verification_status !== 'verified' && (
-          <button className="btn small success" onClick={() => onDecide(user.id, 'verified')}>اعتماد</button>
-        )}
-        {user.verification_status !== 'rejected' && (
-          <button className="btn small danger" onClick={() => onDecide(user.id, 'rejected')}>رفض</button>
-        )}
-        <VerificationBadge status={user.verification_status} />
-      </div>
-    </div>
-  ))
+    )
+  })
 }
 
 export function VerificationChildrenList({ children, onDecide, onViewFile }) {
@@ -56,6 +60,11 @@ export function VerificationChildrenList({ children, onDecide, onViewFile }) {
           {child.kinship_document_url && (
             <button type="button" className="file-link" onClick={() => onViewFile(child.kinship_document_url)}>
               <Paperclip size={14} /> مستند القرابة
+            </button>
+          )}
+          {child.medical_report_url && (
+            <button type="button" className="file-link" onClick={() => onViewFile(child.medical_report_url)}>
+              <Paperclip size={14} /> التقرير الطبي
             </button>
           )}
         </div>

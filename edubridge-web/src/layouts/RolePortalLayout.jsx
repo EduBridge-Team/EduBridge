@@ -189,7 +189,7 @@ export default function RolePortalLayout({ children }) {
           ))}
         </nav>
 
-        <div className={role === 'teacher' ? "pp-sidebar-tools" : "pp-mobile-sidebar-tools"}>
+        <div className="pp-mobile-sidebar-tools">
           <div className="pp-mobile-quick-actions" aria-label="إجراءات سريعة">
             <button
               type="button"
@@ -279,12 +279,10 @@ export default function RolePortalLayout({ children }) {
             {dark ? <Sun size={19} /> : <Moon size={19} />}
           </button>
 
-          {role !== 'teacher' && <button className="pp-notification" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
+          <button className="pp-notification" onClick={() => navigate('/notifications')} aria-label="الإشعارات">
             <Bell size={20} />
             {unread > 0 && <span>{Math.min(unread, 99)}</span>}
           </button>
-
-          }
 
           <button className="pp-profile" onClick={() => navigate('/profile')} aria-label="الملف الشخصي">
             <span className="pp-profile-avatar">

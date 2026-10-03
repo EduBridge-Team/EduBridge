@@ -11,9 +11,12 @@ trait LegacyMobileVerificationReadActions
         $requests = collect();
 
         DB::table('users')
-            ->where('verification_status', 'pending')
+            ->whereIn('role', ['teacher', 'specialist'])
+            ->where('identity_status', 'pending')
+            ->whereNotNull('id_document_url')
+            ->where('id_document_url', '!=', '')
             ->orderByDesc('created_at')
-            ->get(['id','name','email','national_id','id_document_url','created_at'])
+            ->get(['id','name','email','id_document_url','created_at'])
             ->each(function ($user) use ($requests) {
                 $requests->push([
                     'id' => $this->encodeId((int) $user->id, 1),
@@ -21,7 +24,6 @@ trait LegacyMobileVerificationReadActions
                     'type' => 'users',
                     'name' => $user->name,
                     'email' => $user->email,
-                    'national_id' => $user->national_id,
                     'document_url' => $user->id_document_url,
                     'created_at' => $user->created_at,
                 ]);
@@ -32,7 +34,7 @@ trait LegacyMobileVerificationReadActions
             ->orderByDesc('created_at')
             ->get([
                 'id','name','child_national_id','guardian_national_id',
-                'guardian_id_document_url','kinship_document_url','created_at',
+                'guardian_id_document_url','kinship_document_url','medical_report_url','created_at',
             ])
             ->each(function ($child) use ($requests) {
                 $requests->push([
@@ -45,6 +47,7 @@ trait LegacyMobileVerificationReadActions
                     'guardian_national_id' => $child->guardian_national_id,
                     'document_url' => $child->guardian_id_document_url,
                     'kinship_document_url' => $child->kinship_document_url,
+                    'medical_report_url' => $child->medical_report_url,
                     'created_at' => $child->created_at,
                 ]);
             });

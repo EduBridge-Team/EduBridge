@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { changeMyPassword, fetchMyProfile, fetchCertificates, openProtectedFile, getUser, logout } from '../../api'
 import { ROLE_NAMES } from '../../roles'
+import { isIdentityVerificationExempt } from '../../verificationPolicy'
 import { useTheme } from '../../theme'
 import { useUserSettings } from '../../userSettings'
 import {
@@ -95,7 +96,7 @@ export default function ProfilePage() {
   }
 
   const role = ROLE_NAMES[profile.role] || profile.role || 'مستخدم'
-  const verified = profile.is_verified === true || profile.verification_status === 'verified'
+  const verified = isIdentityVerificationExempt(profile) || profile.is_verified === true || profile.verification_status === 'verified'
   const initial = String(profile.name || '؟').trim().charAt(0) || '؟'
 
   return (
@@ -118,10 +119,10 @@ export default function ProfilePage() {
       {['teacher', 'specialist'].includes(profile.role) && <section className="card">
         <h2>شهادات الأهلية والمؤهلات</h2>
         {certificates.length === 0 && <p>لا توجد شهادات مضافة بعد.</p>}
-        {certificates.map(certificate => <article className="info-row" key={certificate.id}>
+        {certificates.map(certificate => <article className="info-row certificate-info-row" key={certificate.id}>
           <strong>{certificate.title}</strong>
           <span>{({ pending: 'بانتظار المراجعة', verified: 'موثقة', approved: 'معتمدة', rejected: 'مرفوضة' })[certificate.status] || certificate.status}</span>
-          <button className="btn outline small" onClick={() => openProtectedFile(certificate.url).catch(error => setError(error.message))}>عرض الشهادة</button>
+          <button className="btn outline small certificate-view-button" onClick={() => openProtectedFile(certificate.url).catch(error => setError(error.message))}>عرض الشهادة</button>
         </article>)}
         <button className="btn" onClick={() => navigate('/verify')}>إضافة شهادة</button>
       </section>}

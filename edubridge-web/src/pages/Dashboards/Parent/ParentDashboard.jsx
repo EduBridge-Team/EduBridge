@@ -43,12 +43,7 @@ export default function ParentDashboard() {
     : lessons
 
   const openNoor = () => {
-    const launcher = document.querySelector('.noor-launcher')
-    if (launcher) {
-      launcher.click()
-      return
-    }
-    navigate('/support')
+    document.querySelector('.noor-launcher')?.click()
   }
 
   return (

@@ -18,6 +18,15 @@ test('identity approval is authoritative and email approval never unlocks privat
   for (const path of ['/parent', '/children/5', '/lessons', '/conversations', '/parent-lessons', '/aac']) assert.equal(canOpenUnverifiedPath(path), false)
 })
 
+test('admin-created ministry and institution accounts do not require identity verification', () => {
+  assert.equal(canAccessPortal({ role: 'ministry' }, null), true)
+  assert.equal(canAccessPortal({ role: 'institution' }, null), true)
+  assert.equal(isIdentityVerified({ role: 'ministry' }, null), false)
+  assert.equal(isIdentityVerified({ role: 'institution' }, null), false)
+  assert.equal(canAccessPortal({ role: 'teacher' }, { verification_status: 'pending' }), false)
+  assert.equal(canAccessPortal({ role: 'specialist' }, { verification_status: 'pending' }), false)
+})
+
 test('assigned child scope supports all API representations and normalized IDs', () => {
   for (const child of [{ specialist_id: 5 }, { assigned_specialist_id: '5' }, { specialist_ids: [4, '5'] }, { assigned_specialist_ids: [5] }, { specialists: [{ id: '5' }] }]) {
     assert.equal(isAssignedToSpecialist(child, 5), true)

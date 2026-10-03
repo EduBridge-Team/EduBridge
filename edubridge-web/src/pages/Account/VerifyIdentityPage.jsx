@@ -29,6 +29,8 @@ export default function VerifyIdentityPage() {
   const [msg, setMsg] = useState(null)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [idUploadStatus, setIdUploadStatus] = useState('idle')
+  const [certUploadStatus, setCertUploadStatus] = useState('idle')
 
   const isProfessional = me && ['teacher', 'specialist'].includes(me.role)
 
@@ -56,14 +58,17 @@ export default function VerifyIdentityPage() {
 
   if (!me) return <Navigate to="/login" replace />
 
-  const upload = async (file, setter) => {
+  const upload = async (file, setter, setStatus) => {
     if (!file) return
     setError(null)
+    setStatus('uploading')
     setBusy(true)
     try {
       const { url } = await uploadFile(file)
       setter(url)
+      setStatus('success')
     } catch (err) {
+      setStatus('error')
       setError(err.message)
     } finally {
       setBusy(false)
@@ -71,12 +76,20 @@ export default function VerifyIdentityPage() {
   }
 
   const saveIdentity = async () => {
+    const trimmedNationalId = nationalId.trim()
+    if (!trimmedNationalId || !idUrl) {
+      setMsg(null)
+      setError('رقم الهوية وصورة الهوية مطلوبان قبل الإرسال للتوثيق')
+      return
+    }
+
     setError(null)
     setMsg(null)
     setBusy(true)
     try {
-      await submitMyIdentity({ national_id: nationalId.trim(), id_document_url: idUrl })
+      await submitMyIdentity({ national_id: trimmedNationalId, id_document_url: idUrl })
       setMsg('تم إرسال بيانات التوثيق — بانتظار مراجعة الإدارة')
+      setIdUploadStatus('idle')
       await load()
     } catch (err) {
       setError(err.message)
@@ -87,7 +100,7 @@ export default function VerifyIdentityPage() {
 
   const submitCert = async () => {
     if (!certTitle.trim() || !certUrl) {
-      setError('عنوان الشهادة وملفها مطلوبان')
+      setError('عنوان الشهادة وملف الشهادة مطلوبان قبل الإضافة')
       return
     }
     setError(null)
@@ -96,6 +109,7 @@ export default function VerifyIdentityPage() {
       await addCertificate({ title: certTitle.trim(), url: certUrl })
       setCertTitle('')
       setCertUrl('')
+      setCertUploadStatus('idle')
       const c = await fetchCertificates()
       setCerts(c.certificates || [])
     } catch (err) {
@@ -141,8 +155,9 @@ export default function VerifyIdentityPage() {
         nationalId={nationalId}
         onNationalIdChange={setNationalId}
         onSave={saveIdentity}
-        onUpload={(file) => upload(file, setIdUrl)}
+        onUpload={(file) => upload(file, setIdUrl, setIdUploadStatus)}
         onViewFile={viewFile}
+        uploadStatus={idUploadStatus}
         verification={verification}
       />
 
@@ -155,8 +170,9 @@ export default function VerifyIdentityPage() {
           onRemove={removeCert}
           onSubmit={submitCert}
           onTitleChange={setCertTitle}
-          onUpload={(file) => upload(file, setCertUrl)}
+          onUpload={(file) => upload(file, setCertUrl, setCertUploadStatus)}
           onViewFile={viewFile}
+          uploadStatus={certUploadStatus}
         />
       )}
     </div>
