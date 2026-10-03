@@ -20,11 +20,15 @@ part 'teacher_reports_tab.dart';
 class TeacherChildDetailsScreen extends StatefulWidget {
   final int childId;
   final String childName;
+  final int initialTab;
+  final bool showBottomNavigation;
 
   const TeacherChildDetailsScreen({
     super.key,
     required this.childId,
     required this.childName,
+    this.initialTab = 0,
+    this.showBottomNavigation = true,
   });
 
   @override
@@ -33,7 +37,7 @@ class TeacherChildDetailsScreen extends StatefulWidget {
 }
 
 class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
-  int _selectedTab = 0;
+  late int _selectedTab;
 
   static const _tabTitles = [
     'واجبات الطالب',
@@ -41,6 +45,12 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
     'تقارير الطالب',
     'حالة الطالب',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTab = widget.initialTab.clamp(0, 3);
+  }
 
   void _selectTab(int index) {
     if (_selectedTab == index) return;
@@ -110,32 +120,34 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedTab,
-        onDestinationSelected: _selectTab,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(AppIcons.homework),
-            selectedIcon: Icon(Icons.assignment),
-            label: 'الواجبات',
-          ),
-          NavigationDestination(
-            icon: Icon(AppIcons.lesson),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
-          ),
-          NavigationDestination(
-            icon: Icon(AppIcons.report),
-            selectedIcon: Icon(Icons.description),
-            label: 'التقارير',
-          ),
-          NavigationDestination(
-            icon: Icon(AppIcons.forum),
-            selectedIcon: Icon(Icons.forum),
-            label: 'الحالة',
-          ),
-        ],
-      ),
+      bottomNavigationBar: widget.showBottomNavigation
+          ? NavigationBar(
+              selectedIndex: _selectedTab,
+              onDestinationSelected: _selectTab,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(AppIcons.homework),
+                  selectedIcon: Icon(Icons.assignment),
+                  label: 'الواجبات',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.lesson),
+                  selectedIcon: Icon(Icons.menu_book),
+                  label: 'الدروس',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.report),
+                  selectedIcon: Icon(Icons.description),
+                  label: 'التقارير',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.forum),
+                  selectedIcon: Icon(Icons.forum),
+                  label: 'الحالة',
+                ),
+              ],
+            )
+          : null,
     );
   }
 }
