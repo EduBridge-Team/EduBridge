@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { EyeOff, Send, Trash2, X } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
-import { assistantSuggestions, buildAssistantContext } from './assistantContext'
+import { assistantNavigationActions, assistantSuggestions, buildAssistantContext } from './assistantContext'
 import './assistant-context.css'
 import { useUserSettings } from '../../userSettings'
 
@@ -108,6 +108,7 @@ function loadHistory(user) {
 
 export default function AssistantWidget() {
   const location = useLocation()
+  const navigate = useNavigate()
   const user = getUser()
   const signedIn = Boolean(getToken() && user)
   const { settings, updateSettings } = useUserSettings()
@@ -123,6 +124,7 @@ export default function AssistantWidget() {
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
   const suggestions = assistantSuggestions(user, location.pathname)
+  const navigationActions = assistantNavigationActions(user, location.pathname)
   const hasConversation = messages.some((message) => message.role === 'user')
   const lastMessage = messages[messages.length - 1]
   const quickActions = !hasConversation
@@ -246,6 +248,12 @@ export default function AssistantWidget() {
     setOpen(true)
   }
 
+  const openNavigationAction = (action) => {
+    if (!action?.path) return
+    setOpen(false)
+    navigate(action.path)
+  }
+
   const sendMessage = async (event, suggestedContent = null) => {
     event?.preventDefault?.()
     const content = (suggestedContent ?? input).trim()
@@ -323,6 +331,21 @@ export default function AssistantWidget() {
                   onClick={() => sendMessage(null, suggestion)}
                 >
                   {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!sending && hasConversation && navigationActions.length > 0 && (
+            <div className="noor-quick-actions noor-navigation-actions" aria-label="فتح سريع">
+              {navigationActions.map((action) => (
+                <button
+                  key={action.path}
+                  type="button"
+                  className="noor-quick-action noor-navigation-action"
+                  onClick={() => openNavigationAction(action)}
+                >
+                  فتح {action.label}
                 </button>
               ))}
             </div>
