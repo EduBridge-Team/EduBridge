@@ -98,9 +98,9 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
       child['progress'],
     ];
     for (final value in candidates) {
-      if (value is num) return value.toDouble().clamp(0, 100);
+      if (value is num) return value.toDouble().clamp(0, 100).toDouble();
       final parsed = double.tryParse('${value ?? ''}');
-      if (parsed != null) return parsed.clamp(0, 100);
+      if (parsed != null) return parsed.clamp(0, 100).toDouble();
     }
     return 0;
   }
