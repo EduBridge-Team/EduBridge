@@ -10,6 +10,19 @@ export function VerificationStatusBadge({ status }) {
   return <span className={`vbadge ${item.color}`}>{item.text}</span>
 }
 
+function UploadStatus({ status }) {
+  if (status === 'uploading') {
+    return <div className="meta" role="status">جارٍ رفع الملف...</div>
+  }
+  if (status === 'success') {
+    return <div className="success-box" role="status"><Check size={16} /> تم رفع الملف بنجاح</div>
+  }
+  if (status === 'error') {
+    return <div className="error-box" role="alert">فشل رفع الملف، حاول مرة أخرى</div>
+  }
+  return null
+}
+
 export function IdentityVerificationCard({
   busy,
   error,
@@ -20,8 +33,11 @@ export function IdentityVerificationCard({
   onSave,
   onUpload,
   onViewFile,
+  uploadStatus,
   verification,
 }) {
+  const canSubmit = Boolean(nationalId.trim() && idUrl)
+
   return (
     <>
       <section className="verify-hero">
@@ -40,19 +56,24 @@ export function IdentityVerificationCard({
           <p className="meta">ملاحظة الإدارة: {verification.verification_note}</p>
         )}
 
-        <label>رقم الهوية</label>
+        <label>رقم الهوية <span aria-hidden="true">*</span></label>
         <input
           value={nationalId}
           inputMode="numeric"
+          required
+          aria-required="true"
           onChange={(e) => onNationalIdChange(e.target.value)}
         />
 
-        <label>صورة الهوية (jpg, png, webp, pdf — حتى 5 ميغابايت)</label>
+        <label>صورة الهوية * (jpg, png, webp, pdf — حتى 5 ميغابايت)</label>
         <input
           type="file"
           accept=".jpg,.jpeg,.png,.webp,.pdf"
+          required={!idUrl}
+          aria-required="true"
           onChange={(e) => onUpload(e.target.files[0])}
         />
+        <UploadStatus status={uploadStatus} />
 
         {idUrl && (
           <button type="button" className="file-link" onClick={() => onViewFile(idUrl)}>
@@ -62,8 +83,11 @@ export function IdentityVerificationCard({
 
         {message && <div className="success-box">{message}</div>}
         {error && <div className="error-box">{error}</div>}
+        {!canSubmit && (
+          <div className="meta">* رقم الهوية وصورة الهوية مطلوبان قبل الإرسال.</div>
+        )}
 
-        <button className="btn" onClick={onSave} disabled={busy}>
+        <button className="btn" onClick={onSave} disabled={busy || !canSubmit}>
           {busy ? 'جارٍ الإرسال...' : 'حفظ وإرسال للتوثيق'}
         </button>
       </div>
@@ -81,7 +105,10 @@ export function CertificatesCard({
   onTitleChange,
   onUpload,
   onViewFile,
+  uploadStatus,
 }) {
+  const canSubmit = Boolean(certTitle.trim() && certUrl)
+
   return (
     <div className="card verify-card certificates-card-v2">
       <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -118,20 +145,29 @@ export function CertificatesCard({
       )}
 
       <div className="cert-add">
-        <label>عنوان الشهادة</label>
-        <input value={certTitle} onChange={(e) => onTitleChange(e.target.value)} />
-        <label>ملف الشهادة</label>
+        <label>عنوان الشهادة *</label>
+        <input
+          value={certTitle}
+          required
+          aria-required="true"
+          onChange={(e) => onTitleChange(e.target.value)}
+        />
+        <label>ملف الشهادة *</label>
         <input
           type="file"
           accept=".jpg,.jpeg,.png,.webp,.pdf"
+          required={!certUrl}
+          aria-required="true"
           onChange={(e) => onUpload(e.target.files[0])}
         />
-        {certUrl && (
+        <UploadStatus status={uploadStatus} />
+        {certUrl && uploadStatus !== 'success' && (
           <span className="file-link">
-            <Check size={14} /> تم رفع الملف
+            <Check size={14} /> يوجد ملف مرفوع
           </span>
         )}
-        <button className="btn" onClick={onSubmit} disabled={busy}>
+        {!canSubmit && <div className="meta">* عنوان الشهادة وملفها مطلوبان قبل الإضافة.</div>}
+        <button className="btn" onClick={onSubmit} disabled={busy || !canSubmit}>
           إضافة شهادة
         </button>
       </div>
