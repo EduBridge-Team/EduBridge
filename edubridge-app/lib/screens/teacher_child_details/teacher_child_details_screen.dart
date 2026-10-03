@@ -5,6 +5,7 @@ import '../../model/homework_model.dart';
 import '../../model/weekly_report_model.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../create_homework_screen.dart';
 import '../create_weekly_report_screen.dart';
