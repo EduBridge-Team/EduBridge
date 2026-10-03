@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { Link, useLocation } from 'react-router-dom'
 import { AlertCircle, CheckCircle2, Headphones, IdCard, RefreshCw, ShieldCheck } from 'lucide-react'
 import { fetchMyVerification, getToken, getUser } from './api'
-import { isIdentityVerified } from './verificationPolicy'
+import { isIdentityVerificationExempt, isIdentityVerified } from './verificationPolicy'
 import './styles/global/verification-required.css'
 
 export const VerificationContext = createContext({ verified: false, loading: true })
@@ -11,12 +11,14 @@ export const useVerification = () => useContext(VerificationContext)
 export function VerificationProvider({ children }) {
   const { pathname } = useLocation()
   const token = getToken()
-  const role = getUser()?.role
+  const user = getUser()
+  const role = user?.role
+  const exempt = isIdentityVerificationExempt(user)
   const [state, setState] = useState({ token: null, loading: true, verification: null, error: '' })
   const sequence = useRef(0)
   const refresh = useCallback(async () => {
     const request = ++sequence.current
-    if (!token || role === 'admin') {
+    if (!token || exempt) {
       setState({ token, loading: false, verification: null, error: '' })
       return
     }
@@ -27,7 +29,7 @@ export function VerificationProvider({ children }) {
     } catch (error) {
       if (request === sequence.current) setState({ token, loading: false, verification: null, error: error.message })
     }
-  }, [token, role, pathname])
+  }, [token, exempt, pathname])
 
   useEffect(() => {
     refresh()
@@ -39,9 +41,9 @@ export function VerificationProvider({ children }) {
     return () => window.removeEventListener('focus', refresh)
   }, [refresh])
 
-  const loading = Boolean(token) && role !== 'admin' && (state.token !== token || state.loading)
-  const verified = Boolean(token) && (role === 'admin' || (state.token === token && isIdentityVerified(getUser(), state.verification)))
-  return <VerificationContext.Provider value={{ ...state, loading, verified, canAccessPortal: Boolean(token) && (role === 'parent' || verified), refresh }}>{children}</VerificationContext.Provider>
+  const loading = Boolean(token) && !exempt && (state.token !== token || state.loading)
+  const verified = Boolean(token) && (exempt || (state.token === token && isIdentityVerified(user, state.verification)))
+  return <VerificationContext.Provider value={{ ...state, loading, verified, canAccessPortal: Boolean(token) && verified, refresh }}>{children}</VerificationContext.Provider>
 }
 
 export function VerificationRequired() {
