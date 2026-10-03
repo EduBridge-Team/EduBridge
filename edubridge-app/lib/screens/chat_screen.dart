@@ -1,6 +1,5 @@
 // lib/screens/chat_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -70,9 +69,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  يقبل نصاً مباشراً من ChatComposer أو من الحقل
-  // ═══════════════════════════════════════════════════════════
   Future<void> _sendMessage({String? contentOverride}) async {
     final content = (contentOverride ?? _messageCtrl.text).trim();
     if (content.isEmpty || _sending) return;
@@ -93,9 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
         SnackBar(content: Text('تعذّر إرسال الرسالة: $e')),
       );
     } finally {
-      if (mounted) {
-        setState(() => _sending = false);
-      }
+      if (mounted) setState(() => _sending = false);
     }
   }
 
@@ -141,8 +135,7 @@ class _ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isMe) ...[
             Container(
@@ -166,19 +159,14 @@ class _ChatBubble extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 15, vertical: 11),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
-                  bottomLeft: isMe
-                      ? const Radius.circular(20)
-                      : const Radius.circular(6),
-                  bottomRight: isMe
-                      ? const Radius.circular(6)
-                      : const Radius.circular(20),
+                  bottomLeft: isMe ? const Radius.circular(20) : const Radius.circular(6),
+                  bottomRight: isMe ? const Radius.circular(6) : const Radius.circular(20),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -203,19 +191,12 @@ class _ChatBubble extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     message,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 15,
-                      height: 1.45,
-                    ),
+                    style: TextStyle(color: textColor, fontSize: 15, height: 1.45),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     time,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: textColor.withValues(alpha: 0.6),
-                    ),
+                    style: TextStyle(fontSize: 10, color: textColor.withValues(alpha: 0.6)),
                   ),
                 ],
               ),
@@ -230,11 +211,7 @@ class _ChatBubble extends StatelessWidget {
                 color: AppColors.brandBlue.withValues(alpha: .12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
-                AppIcons.profile,
-                size: 17,
-                color: AppColors.brandBlue,
-              ),
+              child: const Icon(AppIcons.profile, size: 17, color: AppColors.brandBlue),
             ),
         ],
       ),
