@@ -32,84 +32,157 @@ class _AdminScreenState extends State<AdminScreen> {
   int _tab = 0;
 
   static const _tabs = [
-    (AppIcons.users,   'المستخدمون'),
-    (AppIcons.shield,  'مراجعة التوثيق'),
+    (AppIcons.users, 'المستخدمون'),
+    (AppIcons.shield, 'مراجعة التوثيق'),
     (AppIcons.support, 'الدعم الفني'),
   ];
+
+  String _adminSubtitle() {
+    switch (_tab) {
+      case 1:
+        return 'مراجعة طلبات التوثيق واعتماد الحسابات';
+      case 2:
+        return 'متابعة طلبات الدعم الفني';
+      default:
+        return 'إدارة المستخدمين وحسابات المنصة';
+    }
+  }
+
+  Future<void> _logout() async {
+    await ApiService.logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (_) => false,
+    );
+  }
+
+  Widget _buildAdminHeader() {
+    final menuActions = <DashboardMenuAction>[
+      DashboardMenuAction(
+        id: 'search_identity',
+        label: 'البحث بالهوية',
+        icon: AppIcons.search,
+        onSelected: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
+        ),
+      ),
+      DashboardMenuAction(
+        id: 'legal',
+        label: 'الخصوصية والحساب',
+        icon: AppIcons.privacy,
+        onSelected: () => const LegalLinksButton().show(context),
+      ),
+      DashboardMenuAction(
+        id: 'logout',
+        label: 'تسجيل الخروج',
+        icon: AppIcons.logout,
+        destructive: true,
+        onSelected: _logout,
+      ),
+    ];
+
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: AppColors.headerGradient,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 10, 18, 22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  DashboardMenu(
+                    actions: menuActions,
+                    iconSize: 26,
+                    iconColor: Colors.white,
+                  ),
+                  const Spacer(),
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(
+                      'assets/brand_logo.png',
+                      width: 124,
+                      height: 34,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              FutureBuilder<String?>(
+                future: ApiService.getName(),
+                builder: (context, snap) {
+                  final fallbackName =
+                      (widget.admin['name'] ?? widget.admin['full_name'] ?? 'الإدارة')
+                          .toString();
+                  final name = (snap.data ?? fallbackName).trim();
+                  return Row(
+                    children: [
+                      const ProfileAvatarButton(
+                        size: 54,
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.brandTealDeep,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'مرحباً، ${name.isEmpty ? 'الإدارة' : name}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _adminSubtitle(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                height: 1.35,
+                                color: Colors.white.withValues(alpha: 0.86),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 72,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-        ),
-        title: const Text(
-          'الإدارة',
-          style: TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(AppIcons.search, color: Colors.white),
-            tooltip: 'البحث بالهوية',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Center(
-              child: ProfileAvatarButton(size: 38, backgroundColor: Colors.white),
-            ),
-          ),
-          DashboardMenu(
-            actions: [
-              DashboardMenuAction(
-                id: 'legal',
-                label: 'الخصوصية والحساب',
-                icon: AppIcons.privacy,
-                onSelected: () => const LegalLinksButton().show(context),
-              ),
-              DashboardMenuAction(
-                id: 'logout',
-                label: 'تسجيل الخروج',
-                icon: AppIcons.logout,
-                destructive: true,
-                onSelected: () async {
-                  await ApiService.logout();
-                  if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (_) => false,
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          _buildAdminHeader(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
             child: Container(
