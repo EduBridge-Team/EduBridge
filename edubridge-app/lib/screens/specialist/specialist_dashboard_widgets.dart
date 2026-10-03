@@ -2,138 +2,111 @@
 part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenState {
-  Widget _buildNotificationBell() {
-    return ValueListenableBuilder<int>(
-      valueListenable: NotificationListenerService.instance.unreadCount,
-      builder: (context, count, _) {
-        return Stack(
-          children: [
-            IconButton(
-              icon: const Icon(AppIcons.notifications),
-              onPressed: _openNotifications,
-              tooltip: 'الإشعارات',
-            ),
-            if (count > 0)
-              Positioned(
-                right: 4,
-                top: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: AppColors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints:
-                      const BoxConstraints(minWidth: 16, minHeight: 16),
-                  child: Text(
-                    '$count',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
+  Widget _buildNotificationBell() => const SizedBox.shrink();
 
   Widget _buildFilterCard(JisrColors c) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: _showOnlyMine
-              ? AppColors.brandBlue.withValues(alpha: 0.1)
-              : AppColors.orange.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color:
-                _showOnlyMine ? AppColors.brandBlue : AppColors.brandTealDeep,
-            width: 1.2,
-          ),
+          color: c.card,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .035),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: _showOnlyMine
-                    ? AppColors.brandBlue
-                    : AppColors.brandTealDeep,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              alignment: Alignment.center,
-              child: Icon(
-                _showOnlyMine ? AppIcons.profile : AppIcons.clock,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        _showOnlyMine ? 'أطفالي فقط' : 'قائمة الانتظار',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: _showOnlyMine
-                              ? AppColors.brandBlue
-                              : AppColors.brandTealDeep,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: _showOnlyMine
-                              ? AppColors.brandBlue
-                              : AppColors.brandTealDeep,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '${_filteredChildren.length}',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _showOnlyMine
-                        ? 'الأطفال المعيّنون لك'
-                        : 'أطفال يحتاجون مختص',
-                    style: TextStyle(fontSize: 11, color: c.muted),
-                  ),
-                ],
+              child: _scopeButton(
+                c: c,
+                selected: _showOnlyMine,
+                icon: AppIcons.profile,
+                label: 'أطفالي',
+                onTap: () => _refreshState(() => _showOnlyMine = true),
               ),
             ),
-            Switch(
-              value: _showOnlyMine,
-              activeThumbColor: AppColors.brandBlue,
-              inactiveThumbColor: AppColors.brandTealDeep,
-              inactiveTrackColor:
-                  AppColors.brandTeal.withValues(alpha: 0.35),
-              onChanged: (v) => _refreshState(() => _showOnlyMine = v),
+            const SizedBox(width: 5),
+            Expanded(
+              child: _scopeButton(
+                c: c,
+                selected: !_showOnlyMine,
+                icon: AppIcons.clock,
+                label: 'قائمة الانتظار',
+                onTap: () => _refreshState(() => _showOnlyMine = false),
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _scopeButton({
+    required JisrColors c,
+    required bool selected,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: selected
+          ? AppColors.brandBlue.withValues(alpha: .10)
+          : Colors.transparent,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 19,
+                color: selected ? AppColors.brandBlue : c.muted,
+              ),
+              const SizedBox(width: 7),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    color: selected ? AppColors.brandBlue : c.body,
+                  ),
+                ),
+              ),
+              if (selected) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandBlue,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Text(
+                    '${_filteredChildren.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
