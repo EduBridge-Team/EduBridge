@@ -19,6 +19,7 @@ trait VerificationChildReviewActions
                     'guardian_national_id',
                     'guardian_id_document_url',
                     'kinship_document_url',
+                    'medical_report_url',
                     'doc_verification_status',
                     'doc_verification_note',
                     'created_at'
