@@ -254,7 +254,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         borderRadius: BorderRadius.circular(18),
                         child: Container(
                           width: double.infinity,
-                          minHeight: 62,
+                          constraints: const BoxConstraints(minHeight: 62),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(18),
