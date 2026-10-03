@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom'
 import { homeworkGradePayload } from './homeworkGrading'
 import FormDisclosure from '../../components/FormDisclosure'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { homeworkChildren } from './homeworkChildren'
+import { unsubmittedHomeworkChildren } from './homeworkChildren'
 import {
   createHomeworkWeb,
   fetchChildren,
@@ -175,7 +175,8 @@ export default function HomeworkPage() {
     })
   }
 
-  const submissionChildren = homeworkChildren(items.find(item => item.id === submission.homework_id), children)
+  const submissionHomework = items.find(item => item.id === submission.homework_id)
+  const submissionChildren = unsubmittedHomeworkChildren(submissionHomework, children)
   const listLoading = loading || loadedChildId !== childId
 
   return (

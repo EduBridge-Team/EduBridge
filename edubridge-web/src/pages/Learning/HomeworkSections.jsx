@@ -1,5 +1,5 @@
 import { homeworkGradePayload } from './homeworkGrading'
-import { homeworkChildren } from './homeworkChildren'
+import { unsubmittedHomeworkChildren } from './homeworkChildren'
 import EmptyState from '../../components/EmptyState'
 import FormField from '../../components/FormField'
 import { openProtectedFile } from '../../api'
@@ -180,7 +180,10 @@ export function HomeworkGrid({
 }) {
   if (items.length === 0) return <EmptyState title="لا توجد واجبات بعد" description={staff ? "أضف واجبًا وحدّد الأطفال وموعد التسليم لبدء المتابعة." : "ستظهر هنا واجبات أطفالك عندما يضيفها المعلّم. يمكنك التواصل معه للاستفسار."} actionLabel={staff ? "إضافة واجب" : undefined} onAction={onCreate} />
 
-  return items.map((homework) => (
+  return items.map((homework) => {
+    const pendingChildren = unsubmittedHomeworkChildren(homework, children)
+
+    return (
     <article className="fp-card homework-card" key={homework.id}>
       <h3>{homework.title}</h3>
       <p>{homework.description}</p>
@@ -211,15 +214,17 @@ export function HomeworkGrid({
       {role === 'parent' && (
         <>
         <ParentHomeworkSubmissions homework={homework} children={children} />
-        <div className="fp-actions">
-          <button
-            className="btn"
-            disabled={busy || homeworkChildren(homework, children).length === 0}
-            onClick={() => onOpenSubmission(homework.id, homeworkChildren(homework, children)[0]?.id || '')}
-          >
-            تسليم الواجب
-          </button>
-        </div>
+        {pendingChildren.length > 0 && (
+          <div className="fp-actions">
+            <button
+              className="btn"
+              disabled={busy}
+              onClick={() => onOpenSubmission(homework.id, pendingChildren[0]?.id || '')}
+            >
+              تسليم الواجب
+            </button>
+          </div>
+        )}
         </>
       )}
 
@@ -233,7 +238,8 @@ export function HomeworkGrid({
         />
       )}
     </article>
-  ))
+    )
+  })
 }
 
 export function HomeworkSubmissionForm({
