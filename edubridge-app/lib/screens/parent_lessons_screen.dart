@@ -60,10 +60,9 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
   }
 
   Future<void> _load() => _pages.load();
-
+  Future<void> _refresh() => _pages.refresh();
 
   List get _filtered => _lessons;
-
 
   Future<void> _toggleSpeak(Map lesson) async {
     final id = lesson['id'];
@@ -125,7 +124,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       bottomNavigationBar: const TeacherNavigationBar(),
       body: Column(
         children: [
-          // رأس توضيحي
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -162,8 +160,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               ],
             ),
           ),
-
-          // بحث
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
@@ -175,10 +171,9 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               onChanged: (v) { setState(() => _query = v); _pages.search(v); },
             ),
           ),
-
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _load,
+              onRefresh: _refresh,
               child: _buildBody(),
             ),
           ),
