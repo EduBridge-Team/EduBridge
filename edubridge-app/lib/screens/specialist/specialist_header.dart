@@ -8,24 +8,36 @@ Widget _buildHeader({
   required String? specialty,
   required List<DashboardMenuAction> menuActions,
 }) {
+  final actions = <DashboardMenuAction>[
+    DashboardMenuAction(
+      id: 'notifications',
+      label: 'الإشعارات',
+      icon: AppIcons.notifications,
+      onSelected: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      ),
+    ),
+    ...menuActions,
+  ];
+
   return Container(
     width: double.infinity,
     decoration: const BoxDecoration(
       gradient: AppColors.headerGradient,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
     ),
     child: SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // الصف العلوي موحّد: القائمة يميناً والشعار الأبيض يساراً.
             Row(
               children: [
                 DashboardMenu(
-                  actions: menuActions,
+                  actions: actions,
                   iconSize: 26,
                   iconColor: Colors.white,
                 ),
@@ -37,8 +49,8 @@ Widget _buildHeader({
                   ),
                   child: Image.asset(
                     'assets/brand_logo.png',
-                    width: 136,
-                    height: 38,
+                    width: 124,
+                    height: 34,
                     fit: BoxFit.contain,
                     filterQuality: FilterQuality.high,
                   ),
@@ -46,8 +58,6 @@ Widget _buildHeader({
               ],
             ),
             const SizedBox(height: 18),
-
-            // ═══ الترحيب + التخصص ═══
             FutureBuilder<String?>(
               future: ApiService.getName(),
               builder: (context, snap) {
@@ -66,17 +76,22 @@ Widget _buildHeader({
                         children: [
                           Text(
                             'مرحباً، $name',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 23,
+                              fontSize: 22,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 4),
                           Text(
                             _subtitleFor(tabIndex, specialty),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 13.5,
+                              height: 1.35,
                               color: Colors.white.withValues(alpha: 0.86),
                             ),
                           ),
@@ -94,20 +109,17 @@ Widget _buildHeader({
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-//  سطر فرعي ذكي — يعرض التخصص في تبويب التقدم
-// ═══════════════════════════════════════════════════════════
 String _subtitleFor(int tabIndex, String? specialty) {
   if (tabIndex == 1) {
-    return 'أضف دروساً لأولياء الأمور وللأطفال';
+    return 'دروس إرشادية للأطفال وأولياء الأمور';
   }
 
   switch (specialty) {
     case 'learning_support':
-      return 'مختص دعم تعليمي • نظرة عامة على الأطفال';
+      return 'مختص دعم تعليمي • متابعة الأطفال والتقدم';
     case 'educational':
-      return 'مختص تعليمي • نظرة عامة على الأطفال';
+      return 'مختص تعليمي • متابعة الأطفال والتقدم';
     default:
-      return 'نظرة عامة على الأطفال';
+      return 'متابعة الأطفال والتقييم والتقدم';
   }
 }
