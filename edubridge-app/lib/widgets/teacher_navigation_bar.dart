@@ -5,7 +5,7 @@ import '../screens/teacher/teacher_screen.dart';
 import '../screens/specialist/specialist_screen.dart';
 import '../services/api_service.dart';
 
-/// Keeps teacher and specialist destinations available on shared detail screens.
+/// Keeps top-level teacher and specialist destinations available on shared screens.
 class TeacherNavigationBar extends StatefulWidget {
   const TeacherNavigationBar({super.key});
 
@@ -21,30 +21,55 @@ class _TeacherNavigationBarState extends State<TeacherNavigationBar> {
     return FutureBuilder<String?>(
       future: _role,
       builder: (context, snapshot) {
-        if (!['teacher', 'specialist'].contains(snapshot.data)) return const SizedBox.shrink();
+        final role = snapshot.data;
+        if (!['teacher', 'specialist'].contains(role)) {
+          return const SizedBox.shrink();
+        }
+        final destinations = role == 'teacher'
+            ? const [
+                NavigationDestination(
+                  icon: Icon(Icons.people_outline),
+                  selectedIcon: Icon(Icons.people),
+                  label: 'الأطفال',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.lesson),
+                  selectedIcon: Icon(Icons.menu_book),
+                  label: 'الدروس',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.homework),
+                  selectedIcon: Icon(Icons.assignment),
+                  label: 'الواجبات',
+                ),
+              ]
+            : const [
+                NavigationDestination(
+                  icon: Icon(Icons.people_outline),
+                  selectedIcon: Icon(Icons.people),
+                  label: 'الطلاب',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.lesson),
+                  selectedIcon: Icon(Icons.menu_book),
+                  label: 'الدروس',
+                ),
+              ];
+
         return NavigationBar(
           selectedIndex: 0,
           onDestinationSelected: (index) {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute<void>(
-                builder: (_) => snapshot.data == 'specialist' ? SpecialistDashboardScreen(initialTab: index) : TeacherScreen(initialTab: index),
+                builder: (_) => role == 'specialist'
+                    ? SpecialistDashboardScreen(initialTab: index)
+                    : TeacherScreen(initialTab: index),
               ),
               (route) => false,
             );
           },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.people_outline),
-              selectedIcon: Icon(Icons.people),
-              label: 'الطلاب',
-            ),
-            NavigationDestination(
-              icon: Icon(AppIcons.lesson),
-              selectedIcon: Icon(Icons.menu_book),
-              label: 'الدروس',
-            ),
-          ],
+          destinations: destinations,
         );
       },
     );
