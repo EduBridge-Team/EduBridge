@@ -16,7 +16,7 @@ extension _ChatsScreenStateView on _ChatsScreenState {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: _loadConversations,
+        onRefresh: _refreshConversations,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
@@ -92,18 +92,18 @@ extension _ChatsScreenStateView on _ChatsScreenState {
                               clipBehavior: Clip.antiAlias,
                               child: InkWell(
                                 onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ChatScreen(
-                                      conversationId: conv['id'],
-                                      otherUserName: otherName,
-                                      otherUserRole:
-                                          conv['other_user_role'] ?? '',
-                                      childName: conv['subject'] ?? '',
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChatScreen(
+                                        conversationId: conv['id'],
+                                        otherUserName: otherName,
+                                        otherUserRole:
+                                            conv['other_user_role'] ?? '',
+                                        childName: conv['subject'] ?? '',
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
                                   _loadConversations();
                                 },
                                 child: Padding(
@@ -191,6 +191,5 @@ extension _ChatsScreenStateView on _ChatsScreenState {
                       ),
       ),
     );
-  
   }
 }
