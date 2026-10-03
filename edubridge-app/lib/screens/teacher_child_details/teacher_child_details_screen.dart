@@ -49,7 +49,7 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedTab = widget.initialTab.clamp(0, 3);
+    _selectedTab = widget.initialTab.clamp(0, 3).toInt();
   }
 
   void _selectTab(int index) {
