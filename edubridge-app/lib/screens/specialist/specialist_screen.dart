@@ -126,11 +126,17 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final responses = await Future.wait([
@@ -523,7 +529,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ],
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: _load,
+                  onRefresh: _refresh,
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null
