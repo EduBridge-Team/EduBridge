@@ -34,7 +34,7 @@ trait LegacyMobileVerificationReadActions
             ->orderByDesc('created_at')
             ->get([
                 'id','name','child_national_id','guardian_national_id',
-                'guardian_id_document_url','kinship_document_url','created_at',
+                'guardian_id_document_url','kinship_document_url','medical_report_url','created_at',
             ])
             ->each(function ($child) use ($requests) {
                 $requests->push([
@@ -47,6 +47,7 @@ trait LegacyMobileVerificationReadActions
                     'guardian_national_id' => $child->guardian_national_id,
                     'document_url' => $child->guardian_id_document_url,
                     'kinship_document_url' => $child->kinship_document_url,
+                    'medical_report_url' => $child->medical_report_url,
                     'created_at' => $child->created_at,
                 ]);
             });
