@@ -7,6 +7,7 @@ import { protectedFileUrl, safeFileBlob } from './protectedFileUrl'
 export const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 const SESSION_MARKER_KEY = "edubridge_session_active";
+const WEB_CLIENT_HEADER = { "X-EduBridge-Client": "web" };
 
 // الويب لا يحتفظ بالـJWT داخل JavaScript. الخادم يضعه في HttpOnly cookie.
 // هذه الدالة تبقى كـsession marker للتوافق مع مكوّنات الواجهة الحالية.
@@ -24,7 +25,7 @@ export function logout() {
   fetch(`${BASE_URL}/auth/logout`, {
     method: "POST",
     credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...WEB_CLIENT_HEADER },
   }).catch(() => {});
 
   localStorage.removeItem("token");
@@ -55,6 +56,7 @@ export async function openProtectedFile(url) {
 
     const res = await fetch(protectedFileUrl(BASE_URL, url), {
       credentials: "same-origin",
+      headers: WEB_CLIENT_HEADER,
     });
 
     if (!res.ok) {
@@ -100,7 +102,11 @@ export async function changeMyPassword(currentPassword, newPassword) {
 
 // طلب عام يعتمد HttpOnly cookie للويب ومعالجة الأخطاء بشكل موحّد.
 export async function request(path, options = {}) {
-  const headers = { "Content-Type": "application/json", ...options.headers };
+  const headers = {
+    "Content-Type": "application/json",
+    ...WEB_CLIENT_HEADER,
+    ...options.headers,
+  };
 
   let res;
   try {
