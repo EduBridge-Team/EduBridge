@@ -42,6 +42,46 @@ const ROLE_SUGGESTIONS = {
   ],
 }
 
+const ROLE_NAVIGATION = {
+  parent: [
+    ['الدروس', '/lessons'],
+    ['الواجبات', '/homeworks'],
+    ['التقدم الأسبوعي', '/weekly-reports'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+  teacher: [
+    ['الدروس', '/lessons'],
+    ['الواجبات', '/homeworks'],
+    ['التقدم الأسبوعي', '/weekly-reports'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+  specialist: [
+    ['الدروس', '/lessons'],
+    ['الواجبات', '/homeworks'],
+    ['التقدم الأسبوعي', '/weekly-reports'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+  admin: [
+    ['الدروس', '/lessons'],
+    ['الواجبات', '/homeworks'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+  institution: [
+    ['الدروس', '/lessons'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+  ministry: [
+    ['الدروس', '/lessons'],
+    ['المحادثات', '/conversations'],
+    ['الإشعارات', '/notifications'],
+  ],
+}
+
 const SENSITIVE_LINE = /(رقم\s*(?:الهوية|الهويه|الوطني)|هوية|هويه|جواز|هاتف|جوال|موبايل|بريد\s*إلكتروني|email|address|العنوان|كلمة\s*المرور|password|مستند|وثيقة|شهادة\s*ميلاد|تقرير\s*طبي)/i
 const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu
 const LONG_NUMBER = /(?<!\d)(?:\d[\s-]?){7,15}(?!\d)/gu
@@ -86,6 +126,19 @@ export function assistantSuggestions(user, pathname = '') {
   if (/\/progress|\/reports/i.test(pathname)) suggestions.unshift('لخّص التقدم الظاهر في الصفحة')
 
   return [...new Set(suggestions)].slice(0, 4)
+}
+
+export function assistantNavigationActions(user, pathname = '') {
+  const role = user?.role || 'user'
+  const items = ROLE_NAVIGATION[role] || [
+    ['الدروس', '/lessons'],
+    ['الإشعارات', '/notifications'],
+  ]
+
+  return items
+    .filter(([, path]) => path !== pathname)
+    .slice(0, 4)
+    .map(([label, path]) => ({ label, path }))
 }
 
 export function buildAssistantContext({ user, location }) {
