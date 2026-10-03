@@ -6,11 +6,13 @@ import {
   ArrowRight,
   BookOpen,
   ClipboardList,
+  FileText,
   Gamepad2,
+  IdCard,
+  Paperclip,
   TrendingUp,
   User,
 } from 'lucide-react'
-
 
 function asText(value) {
   if (Array.isArray(value)) return value.join('، ')
@@ -25,6 +27,15 @@ function InfoRow({ label, value }) {
       <span className="info-label">{label}:</span>
       <span className="info-value">{asText(value)}</span>
     </div>
+  )
+}
+
+function DocumentButton({ label, url, onViewFile }) {
+  if (!url) return null
+  return (
+    <button type="button" className="file-link" onClick={() => onViewFile(url)}>
+      <Paperclip size={14} /> {label}
+    </button>
   )
 }
 
@@ -46,7 +57,10 @@ export function ChildDetailsHeader({ name, onBack }) {
   )
 }
 
-export function ChildInfoCard({ child }) {
+export function ChildInfoCard({ child, onViewFile }) {
+  const specialistCanViewDocuments = getUser()?.role === 'specialist'
+    && Boolean(child?.child_national_id || child?.guardian_national_id || child?.guardian_id_document_url || child?.kinship_document_url || child?.medical_report_url)
+
   return (
     <div className="card child-info-card">
       <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -65,6 +79,26 @@ export function ChildInfoCard({ child }) {
       <InfoRow label="المختصون" value={(child?.specialists || []).map(member => member.name)} />
       <InfoRow label="الخطة التعليمية" value={child?.current_plan?.educational_plan} />
       <InfoRow label="الحالة" value={childAssignment(child).label} />
+
+      {specialistCanViewDocuments && (
+        <section className="child-verification-summary" style={{ marginTop: 20 }}>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <IdCard size={17} /> بيانات التوثيق والمستندات
+          </h4>
+          <InfoRow label="رقم هوية الطفل" value={child?.child_national_id} />
+          <InfoRow label="رقم هوية ولي الأمر" value={child?.guardian_national_id} />
+          <div className="file-links" style={{ marginTop: 10 }}>
+            <DocumentButton label="صورة هوية ولي الأمر" url={child?.guardian_id_document_url} onViewFile={onViewFile} />
+            <DocumentButton label="مستند صلة القرابة" url={child?.kinship_document_url} onViewFile={onViewFile} />
+            <DocumentButton label="التقرير الطبي" url={child?.medical_report_url} onViewFile={onViewFile} />
+          </div>
+          {child?.medical_report_url && (
+            <div className="meta" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+              <FileText size={14} /> التقرير الطبي متاح للمختص المعيّن للطفل فقط.
+            </div>
+          )}
+        </section>
+      )}
     </div>
   )
 }
