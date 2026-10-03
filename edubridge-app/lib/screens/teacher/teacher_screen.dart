@@ -18,6 +18,7 @@ import '../educational_plan_sheet.dart';
 import '../notifications_screen.dart';
 import '../support_sheet.dart';
 import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
+import 'teacher_child_profile_screen.dart';
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
 import '../login_screen.dart';
@@ -111,8 +112,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
           responses[2].statusCode == 200) {
-        // The server includes direct assignments and teaching-team membership.
-        // Re-filtering by the primary teacher would hide valid team assignments.
         final myChildren = List<dynamic>.from(childrenData['children'] ?? []);
 
         if (!mounted) return;
