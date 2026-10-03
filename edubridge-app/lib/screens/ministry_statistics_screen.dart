@@ -21,15 +21,19 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() => _loading = true);
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) setState(() => _loading = true);
     try {
       final stats = await ApiService.getMinistryStatistics();
+      if (!mounted) return;
       setState(() {
         _stats = stats;
         _loading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() => _loading = false);
     }
   }
@@ -39,7 +43,7 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
     return Scaffold(
       appBar: JisrAppBar(title: '📊 إحصائيات الوزارة'),
       body: RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: _refresh,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _buildBody(),
