@@ -143,7 +143,6 @@ export function createRoleNavItems({
       home,
       item('verifications', 'مراجعة التوثيق', <ShieldCheck size={21} />, '/admin/verifications'),
       item('children', 'ملفات الأطفال', <Users size={21} />, '/children'),
-      item('learning-support', 'اجتماعات الدعم', <BookOpen size={21} />, '/learning-support'),
       item('search', 'البحث', <Search size={21} />, '/search'),
       conversations,
       item('support', 'الدعم الفني', <LifeBuoy size={21} />, '/support'),
