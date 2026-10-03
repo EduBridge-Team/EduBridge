@@ -22,6 +22,23 @@ trait ChildCreateActions
             return response()->json(['error' => 'العمر مطلوب'], 422);
         }
 
+        $requiredLearningFields = [
+            'disability_type' => 'نوع الإعاقة',
+            'disability_description' => 'وصف الإعاقة',
+            'special_needs' => 'الاحتياجات الخاصة',
+        ];
+        foreach ($requiredLearningFields as $field => $label) {
+            if (!is_string($request->input($field)) || trim($request->input($field)) === '') {
+                return response()->json(['error' => $label . ' مطلوبة'], 422);
+            }
+        }
+        foreach (['strengths' => 'نقاط القوة', 'challenges' => 'التحديات'] as $field => $label) {
+            $value = $request->input($field);
+            if (!is_array($value) || count(array_filter($value, fn ($item) => is_string($item) && trim($item) !== '')) === 0) {
+                return response()->json(['error' => $label . ' مطلوبة'], 422);
+            }
+        }
+
         foreach (self::IDENTITY_FIELDS as $field) {
             if (!is_string($request->input($field)) || trim($request->input($field)) === '') {
                 return response()->json([
