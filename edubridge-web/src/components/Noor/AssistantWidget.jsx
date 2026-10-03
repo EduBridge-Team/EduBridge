@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { EyeOff, Send, Trash2, X } from 'lucide-react'
+import { Copy, EyeOff, RotateCcw, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
@@ -205,6 +205,8 @@ export default function AssistantWidget() {
   const [error, setError] = useState('')
   const [launcherPosition, setLauncherPosition] = useState(null)
   const [dragging, setDragging] = useState(false)
+  const [copiedIndex, setCopiedIndex] = useState(null)
+  const [feedback, setFeedback] = useState({})
   const endRef = useRef(null)
   const inputRef = useRef(null)
   const dragRef = useRef(null)
@@ -224,6 +226,7 @@ export default function AssistantWidget() {
     setMessages([WELCOME, ...loadHistory(getUser())])
     setInput('')
     setError('')
+    setFeedback({})
   }, [location.pathname, user?.id])
 
   useEffect(() => {
@@ -266,6 +269,7 @@ export default function AssistantWidget() {
     localStorage.removeItem(historyKey(user))
     setMessages([WELCOME])
     setError('')
+    setFeedback({})
   }
 
   const hideAssistant = () => {
@@ -340,6 +344,12 @@ export default function AssistantWidget() {
     navigate(action.path)
   }
 
+  const requestAssistant = async (requestMessages) => {
+    const context = buildAssistantContext({ user, location })
+    const data = await askAssistant(requestMessages, context)
+    return { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+  }
+
   const sendMessage = async (event, suggestedContent = null) => {
     event?.preventDefault?.()
     const content = (suggestedContent ?? input).trim()
@@ -358,9 +368,7 @@ export default function AssistantWidget() {
     saveHistory(next)
 
     try {
-      const context = buildAssistantContext({ user, location })
-      const data = await askAssistant(requestMessages, context)
-      const reply = { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+      const reply = await requestAssistant(requestMessages)
       setMessages((current) => {
         const updated = [...current, reply]
         saveHistory(updated)
@@ -368,6 +376,61 @@ export default function AssistantWidget() {
       })
     } catch (requestError) {
       setError(requestError.message || 'تعذّر التواصل مع نور الآن.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const copyResponse = async (content, index) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopiedIndex(index)
+      window.setTimeout(() => setCopiedIndex((current) => current === index ? null : current), 1500)
+    } catch {
+      setError('تعذّر نسخ الرد على هذا الجهاز.')
+    }
+  }
+
+  const rateResponse = (index, value) => {
+    setFeedback((current) => ({
+      ...current,
+      [index]: current[index] === value ? null : value,
+    }))
+  }
+
+  const regenerateLastResponse = async () => {
+    if (sending) return
+    const lastAssistantIndex = messages.findLastIndex((message) => message.role === 'assistant' && message.id !== WELCOME.id)
+    if (lastAssistantIndex < 1) return
+
+    const baseMessages = messages.slice(0, lastAssistantIndex)
+    if (baseMessages[baseMessages.length - 1]?.role !== 'user') return
+
+    const requestMessages = baseMessages
+      .filter((message) => message.id !== WELCOME.id)
+      .map(({ role, content }) => ({ role, content }))
+
+    setMessages(baseMessages)
+    setSending(true)
+    setError('')
+    saveHistory(baseMessages)
+
+    try {
+      const reply = await requestAssistant(requestMessages)
+      setMessages((current) => {
+        const updated = [...current, reply]
+        saveHistory(updated)
+        return updated
+      })
+      setFeedback((current) => {
+        const next = { ...current }
+        delete next[lastAssistantIndex]
+        return next
+      })
+    } catch (requestError) {
+      setMessages(messages)
+      saveHistory(messages)
+      setError(requestError.message || 'تعذّر إعادة توليد الرد الآن.')
     } finally {
       setSending(false)
     }
@@ -396,13 +459,52 @@ export default function AssistantWidget() {
 
           <div className="noor-notice">نور يفهم دورك والصفحة الحالية. لا تشارك معلومات شخصية أو حساسة.</div>
           <div className="noor-messages" aria-live="polite">
-            {messages.map((message, index) => (
-              <div key={message.id || `${message.role}-${index}`} className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
-                {message.role === 'assistant'
-                  ? <AssistantMessageContent content={message.content} />
-                  : message.content}
-              </div>
-            ))}
+            {messages.map((message, index) => {
+              const isAssistant = message.role === 'assistant'
+              const showTools = isAssistant && message.id !== WELCOME.id
+              const isLastAssistant = showTools && index === messages.length - 1
+              return (
+                <div key={message.id || `${message.role}-${index}`} className={`noor-message-group ${isAssistant ? 'assistant' : 'user'}`}>
+                  <div className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
+                    {isAssistant
+                      ? <AssistantMessageContent content={message.content} />
+                      : message.content}
+                  </div>
+                  {showTools && (
+                    <div className="noor-response-tools" aria-label="أدوات الرد">
+                      <button type="button" onClick={() => copyResponse(message.content, index)} aria-label="نسخ الرد" title="نسخ الرد">
+                        <Copy size={14} />
+                        <span>{copiedIndex === index ? 'تم النسخ' : 'نسخ'}</span>
+                      </button>
+                      {isLastAssistant && (
+                        <button type="button" onClick={regenerateLastResponse} disabled={sending} aria-label="إعادة توليد الرد" title="إعادة توليد الرد">
+                          <RotateCcw size={14} />
+                          <span>إعادة</span>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className={feedback[index] === 'up' ? 'is-active' : ''}
+                        onClick={() => rateResponse(index, 'up')}
+                        aria-label="الرد مفيد"
+                        title="مفيد"
+                      >
+                        <ThumbsUp size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        className={feedback[index] === 'down' ? 'is-active' : ''}
+                        onClick={() => rateResponse(index, 'down')}
+                        aria-label="الرد غير مفيد"
+                        title="غير مفيد"
+                      >
+                        <ThumbsDown size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
             {sending && <div className="noor-message assistant noor-typing">نور يكتب…</div>}
             <div ref={endRef} />
           </div>
