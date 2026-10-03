@@ -1,7 +1,6 @@
 // lib/screens/child_progress_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/reward_service.dart';
@@ -95,7 +94,6 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     return AdaptiveWrapper(
       screenTitle: 'تقدّم ${widget.childName}',
       child: Scaffold(
-        bottomNavigationBar: const TeacherNavigationBar(),
         appBar: AppBar(
           flexibleSpace: Container(
             decoration: const BoxDecoration(
