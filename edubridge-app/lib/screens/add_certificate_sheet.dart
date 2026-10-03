@@ -59,7 +59,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('تم إضافة الشهادة بنجاح'),
+          content: Text('تم إرسال الشهادة للمراجعة'),
           backgroundColor: AppColors.green,
         ),
       );
@@ -246,7 +246,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                             )
                           : const Icon(AppIcons.save),
                       onPressed: _saving ? null : _save,
-                      label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الشهادة'),
+                      label: Text(_saving ? 'جارِ الحفظ...' : 'إرسال للمراجعة'),
                     ),
                   ),
                 ],

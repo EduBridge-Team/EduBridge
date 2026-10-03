@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Support\Notify;
+use App\Support\VerificationRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,16 +27,32 @@ trait CertificateReviewActions
                 'note' => $request->input('note'),
             ]);
 
+            $snapshot = VerificationRequirements::syncUserStatus((int) $certificate->user_id);
+
+            if ($status === 'verified' && $snapshot['requirements_complete']) {
+                $title = 'اكتمل توثيق حسابك';
+                $message = 'تم اعتماد الشهادة: ' . $certificate->title . '، وأصبحت جميع متطلبات التوثيق مكتملة.';
+            } elseif ($status === 'verified') {
+                $title = 'تم اعتماد شهادتك';
+                $message = 'تم اعتماد الشهادة: ' . $certificate->title . '. سيكتمل التوثيق بعد اعتماد الهوية.';
+            } else {
+                $title = 'تم رفض شهادتك';
+                $message = 'تم رفض الشهادة: ' . $certificate->title;
+                if ($request->input('note')) {
+                    $message .= ' — ' . $request->input('note');
+                }
+            }
+
             Notify::toUser(
                 $certificate->user_id,
-                $status === 'verified' ? 'تم اعتماد شهادتك' : 'تم رفض شهادتك',
-                ($status === 'verified' ? 'تم اعتماد الشهادة: ' : 'تم رفض الشهادة: ')
-                    . $certificate->title,
+                $title,
+                $message,
                 'certificate'
             );
 
             return response()->json([
                 'certificate' => DB::table('certificates')->find($id),
+                'verification' => $snapshot,
             ]);
         } catch (\Exception $e) {
             report($e);

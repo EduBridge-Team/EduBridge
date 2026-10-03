@@ -16,19 +16,35 @@ class VerificationReviewScopeTest extends TestCase
         parent::setUp();
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            foreach (['name', 'email', 'role', 'phone', 'national_id', 'id_document_url', 'verification_status', 'verification_note'] as $field) {
+            foreach (['name', 'email', 'role', 'phone', 'national_id', 'id_document_url', 'identity_status', 'verification_status', 'verification_note'] as $field) {
                 $table->string($field)->nullable();
             }
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
+        Schema::create('certificates', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('title')->nullable();
+            $table->string('url')->nullable();
+            $table->string('status')->default('pending');
+            $table->text('note')->nullable();
+            $table->timestamp('created_at')->nullable();
+        });
         foreach ([['parent', '/identity/parent'], ['teacher', null], ['specialist', ''], ['teacher', '/identity/teacher'], ['specialist', '/identity/specialist']] as $index => [$role, $document]) {
-            DB::table('users')->insert(['id' => $index + 1, 'role' => $role, 'id_document_url' => $document, 'verification_status' => 'pending']);
+            DB::table('users')->insert([
+                'id' => $index + 1,
+                'role' => $role,
+                'id_document_url' => $document,
+                'identity_status' => 'pending',
+                'verification_status' => 'pending',
+            ]);
         }
     }
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('certificates');
         Schema::dropIfExists('users');
         parent::tearDown();
     }
