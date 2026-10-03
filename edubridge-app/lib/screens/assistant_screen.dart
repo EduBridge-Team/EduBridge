@@ -6,6 +6,10 @@ import '../services/assistant_service.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
 import '../widgets/pet_avatar.dart';
+import 'children_screen.dart';
+import 'lessons_screen.dart';
+import 'chats_screen.dart';
+import 'notifications_screen.dart';
 part 'assistant_screen_view.dart';
 
 String _cleanAssistantText(String value) {
@@ -144,6 +148,55 @@ class _AssistantScreenState extends State<AssistantScreen> {
     return _followUpSuggestions;
   }
 
+  List<_NoorNavigationAction> get _navigationActions {
+    final lessons = _NoorNavigationAction(
+      label: 'الدروس',
+      icon: Icons.menu_book_rounded,
+      builder: () => const LessonsScreen(),
+    );
+    final homeworks = _NoorNavigationAction(
+      label: 'الواجبات',
+      icon: Icons.assignment_rounded,
+      builder: () => const ChildrenScreen(destination: 'homeworks'),
+    );
+    final progress = _NoorNavigationAction(
+      label: 'التقدم',
+      icon: Icons.trending_up_rounded,
+      builder: () => const ChildrenScreen(forProgress: true),
+    );
+    final weekly = _NoorNavigationAction(
+      label: 'التقدم الأسبوعي',
+      icon: Icons.calendar_view_week_rounded,
+      builder: () => const ChildrenScreen(destination: 'weekly-reports'),
+    );
+    final chats = _NoorNavigationAction(
+      label: 'المحادثات',
+      icon: Icons.chat_bubble_outline_rounded,
+      builder: () => const ChatsScreen(),
+    );
+    final notifications = _NoorNavigationAction(
+      label: 'الإشعارات',
+      icon: Icons.notifications_none_rounded,
+      builder: () => const NotificationsScreen(),
+    );
+
+    return switch (_role) {
+      'parent' => [lessons, homeworks, progress, chats],
+      'teacher' => [lessons, homeworks, weekly, chats],
+      'specialist' => [lessons, weekly, chats, notifications],
+      'admin' => [lessons, homeworks, chats, notifications],
+      'institution' || 'ministry' => [lessons, chats, notifications],
+      _ => [lessons, notifications],
+    };
+  }
+
+  Future<void> _openNavigationAction(_NoorNavigationAction action) async {
+    if (_sending) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => action.builder()),
+    );
+  }
+
   Future<void> _clearHistory() async {
     await AssistantService.clearHistory();
     if (!mounted) return;
@@ -212,6 +265,18 @@ class _AssistantScreenState extends State<AssistantScreen> {
 
   @override
   Widget build(BuildContext context) => buildView(context);
+}
+
+class _NoorNavigationAction {
+  final String label;
+  final IconData icon;
+  final Widget Function() builder;
+
+  const _NoorNavigationAction({
+    required this.label,
+    required this.icon,
+    required this.builder,
+  });
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -296,6 +361,25 @@ class _SuggestionChip extends StatelessWidget {
         avatar: const Icon(AppIcons.info, size: 18),
         label: Text(text),
         onPressed: () => onTap(text),
+      ),
+    );
+  }
+}
+
+class _NavigationActionChip extends StatelessWidget {
+  final _NoorNavigationAction action;
+  final ValueChanged<_NoorNavigationAction> onTap;
+
+  const _NavigationActionChip({required this.action, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 8),
+      child: ActionChip(
+        avatar: Icon(action.icon, size: 18),
+        label: Text('فتح ${action.label}'),
+        onPressed: () => onTap(action),
       ),
     );
   }
