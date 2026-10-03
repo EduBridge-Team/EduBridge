@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use App\Support\VerificationRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -37,6 +38,7 @@ trait VerificationSelfActions
             return response()->json(['error' => 'لا توجد بيانات لتحديثها'], 400);
         }
 
+        $updates['identity_status'] = 'pending';
         $updates['verification_status'] = 'pending';
         $updates['verification_note'] = null;
         $updates['verified_at'] = null;
@@ -52,11 +54,17 @@ trait VerificationSelfActions
                     'role',
                     'national_id',
                     'id_document_url',
+                    'identity_status',
                     'verification_status'
                 )
                 ->find($user->id);
 
-            return response()->json(['user' => $fresh]);
+            $snapshot = VerificationRequirements::snapshot($fresh);
+
+            return response()->json([
+                'user' => $fresh,
+                'verification' => $snapshot,
+            ]);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
@@ -68,7 +76,10 @@ trait VerificationSelfActions
         $user = $request->attributes->get('jwt_user');
         $row = DB::table('users')
             ->select(
+                'id',
+                'role',
                 'verification_status',
+                'identity_status',
                 'verification_note',
                 'national_id',
                 'id_document_url',
@@ -76,6 +87,12 @@ trait VerificationSelfActions
             )
             ->find($user->id);
 
-        return response()->json(['verification' => $row]);
+        if (!$row) {
+            return response()->json(['error' => 'المستخدم غير موجود'], 404);
+        }
+
+        $snapshot = VerificationRequirements::snapshot($row);
+
+        return response()->json(['verification' => array_merge((array) $row, $snapshot)]);
     }
 }
