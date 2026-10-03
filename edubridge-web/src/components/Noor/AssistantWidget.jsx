@@ -3,6 +3,8 @@ import { EyeOff, Send, Trash2, X } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
+import { assistantSuggestions, buildAssistantContext } from './assistantContext'
+import './assistant-context.css'
 import { useUserSettings } from '../../userSettings'
 
 const WELCOME = {
@@ -102,6 +104,7 @@ export default function AssistantWidget() {
   const inputRef = useRef(null)
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
+  const suggestions = assistantSuggestions(user, location.pathname)
 
   useEffect(() => {
     setOpen(false)
@@ -218,9 +221,9 @@ export default function AssistantWidget() {
     setOpen(true)
   }
 
-  const sendMessage = async (event) => {
-    event.preventDefault()
-    const content = input.trim()
+  const sendMessage = async (event, suggestedContent = null) => {
+    event?.preventDefault?.()
+    const content = (suggestedContent ?? input).trim()
     if (!content || sending) return
 
     const userMessage = { role: 'user', content }
@@ -236,7 +239,8 @@ export default function AssistantWidget() {
     saveHistory(next)
 
     try {
-      const data = await askAssistant(requestMessages)
+      const context = buildAssistantContext({ user, location })
+      const data = await askAssistant(requestMessages, context)
       const reply = { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
       setMessages((current) => {
         const updated = [...current, reply]
@@ -271,7 +275,7 @@ export default function AssistantWidget() {
             </button>
           </header>
 
-          <div className="noor-notice">لا تشارك معلومات شخصية أو حساسة.</div>
+          <div className="noor-notice">نور يفهم دورك والصفحة الحالية. لا تشارك معلومات شخصية أو حساسة.</div>
           <div className="noor-messages" aria-live="polite">
             {messages.map((message, index) => (
               <div key={message.id || `${message.role}-${index}`} className={`noor-message ${message.role === 'user' ? 'user' : 'assistant'}`}>
@@ -283,6 +287,20 @@ export default function AssistantWidget() {
           </div>
 
           {error && <div className="noor-error" role="alert">{error}</div>}
+
+          <div className="noor-quick-actions" aria-label="اقتراحات نور">
+            {suggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                className="noor-quick-action"
+                onClick={() => sendMessage(null, suggestion)}
+                disabled={sending}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
 
           <form className="noor-form" onSubmit={sendMessage}>
             <textarea

@@ -1,6 +1,7 @@
 // lib/screens/assistant_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
+import '../services/api_service.dart';
 import '../services/assistant_service.dart';
 import '../theme.dart';
 import '../utils/navigation.dart';
@@ -28,12 +29,13 @@ class _AssistantScreenState extends State<AssistantScreen> {
   List<AssistantMessage> _messages = const [_welcome];
   bool _loadingHistory = true;
   bool _sending = false;
+  String? _role;
 
   @override
   void initState() {
     super.initState();
     assistantScreenVisible.value = true;
-    _loadHistory();
+    _loadContext();
   }
 
   @override
@@ -44,14 +46,48 @@ class _AssistantScreenState extends State<AssistantScreen> {
     super.dispose();
   }
 
-  Future<void> _loadHistory() async {
+  Future<void> _loadContext() async {
     final history = await AssistantService.loadHistory();
+    final role = await ApiService.getRole();
     if (!mounted) return;
+
     setState(() {
       _messages = history.isEmpty ? const [_welcome] : history;
+      _role = role;
       _loadingHistory = false;
     });
     _scrollToBottom();
+  }
+
+  List<String> get _suggestions {
+    final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
+    final items = <String>[
+      if (hasLessonContext) 'اشرح هذا الدرس ببساطة',
+      ...switch (_role) {
+        'parent' => const [
+            'لخّص لي ما يمكنني متابعته اليوم',
+            'كيف أساعد طفلي في هذا الدرس؟',
+            'اقترح نشاطاً منزلياً قصيراً',
+          ],
+        'teacher' => const [
+            'اقترح طريقة أبسط لشرح الدرس',
+            'أنشئ أسئلة قصيرة على هذا الموضوع',
+            'ساعدني في صياغة تغذية راجعة تعليمية',
+          ],
+        'specialist' => const [
+            'ساعدني في تجهيز أهداف الجلسة القادمة',
+            'لخّص التقدم الموجود في السياق',
+            'اقترح نشاطاً تعليمياً مناسباً للمتابعة',
+          ],
+        _ => const [
+            'بسّط لي هذا الموضوع',
+            'اقترح نشاطاً تعليمياً',
+            'كيف أستخدم التطبيق؟',
+          ],
+      },
+    ];
+
+    return items.take(4).toList(growable: false);
   }
 
   Future<void> _clearHistory() async {
@@ -77,9 +113,15 @@ class _AssistantScreenState extends State<AssistantScreen> {
     _scrollToBottom();
 
     try {
+      final roleContext = _role == null ? '' : 'دور المستخدم داخل التطبيق: $_role.';
+      final lessonContext = widget.lessonContext?.trim() ?? '';
+      final context = [roleContext, lessonContext]
+          .where((value) => value.isNotEmpty)
+          .join('\n');
+
       final reply = await AssistantService.ask(
         messages: updated,
-        context: widget.lessonContext,
+        context: context.isEmpty ? null : context,
       );
       if (!mounted) return;
       setState(() {

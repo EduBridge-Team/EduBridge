@@ -1,0 +1,36 @@
+.noor-quick-actions {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 8px 10px 2px;
+  scrollbar-width: thin;
+}
+
+.noor-quick-action {
+  flex: 0 0 auto;
+  max-width: 240px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.noor-quick-action:hover {
+  border-color: var(--teal);
+  background: var(--tint-teal);
+}
+
+.noor-quick-action:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.noor-quick-action:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}

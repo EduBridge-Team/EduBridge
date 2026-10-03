@@ -57,6 +57,47 @@ class AssistantControllerTest extends TestCase
         );
     }
 
+    public function test_it_instructs_noor_not_to_invent_platform_facts_when_context_is_missing(): void
+    {
+        config([
+            'services.groq.key' => 'test-key',
+            'services.groq.model' => 'test-model',
+        ]);
+
+        Http::fake(fn () => Http::response([
+            'choices' => [[
+                'message' => [
+                    'role' => 'assistant',
+                    'content' => 'افتح صفحة التقدم حتى أتمكن من قراءة البيانات الفعلية.',
+                ],
+            ]],
+        ]));
+
+        $request = Request::create(
+            '/api/assistant/chat',
+            'POST',
+            content: json_encode([
+                'messages' => [[
+                    'role' => 'user',
+                    'content' => 'كيف كان تقدم ابني هذا الأسبوع؟',
+                ]],
+            ], JSON_THROW_ON_ERROR),
+        );
+        $request->headers->set('Content-Type', 'application/json');
+        $request->attributes->set('jwt_user', (object) ['id' => 9, 'role' => 'parent']);
+
+        $response = app(AssistantController::class)->chat($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        Http::assertSent(function (HttpRequest $sent): bool {
+            $system = (string) ($sent['messages'][0]['content'] ?? '');
+
+            return str_contains($system, 'يجب أن تكون موجودة صراحة في سياق الشاشة')
+                && str_contains($system, 'لا تخمّن')
+                && ! str_contains($system, 'سياق EduBridge الحالي (مرجعي فقط):');
+        });
+    }
+
     public function test_it_reports_when_the_server_key_is_not_configured(): void
     {
         config(['services.groq.key' => null]);

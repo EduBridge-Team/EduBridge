@@ -36,8 +36,8 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                   Expanded(
                     child: Text(
                       hasLessonContext
-                          ? 'نور يعرف الدرس المفتوح ويمكنه شرحه بطريقة أبسط.'
-                          : 'رفيق تعليمي ذكي — لا تشارك معلومات شخصية.',
+                          ? 'نور يعرف الدرس المفتوح ودورك داخل EduBridge ويمكنه شرحه بطريقة أبسط.'
+                          : 'نور يراعي دورك داخل EduBridge — لا تشارك معلومات شخصية.',
                       style: TextStyle(
                         color: c.onTint,
                         fontWeight: FontWeight.w700,
@@ -64,27 +64,14 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                   },
                 ),
               ),
-            if (!_loadingHistory && _messages.length <= 1)
+            if (!_loadingHistory)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
-                  children: [
-                    if (hasLessonContext)
-                      _SuggestionChip(
-                        text: 'اشرح هذا الدرس ببساطة',
-                        onTap: _send,
-                      ),
-                    _SuggestionChip(
-                      text: 'اقترح نشاطاً تعليمياً',
-                      onTap: _send,
-                    ),
-                    _SuggestionChip(
-                      text: 'كيف أستخدم التطبيق؟',
-                      onTap: _send,
-                    ),
-                  ],
+                  children: _suggestions
+                      .map((text) => _SuggestionChip(text: text, onTap: _send))
+                      .toList(growable: false),
                 ),
               ),
             Container(
@@ -135,6 +122,5 @@ extension _AssistantScreenStateView on _AssistantScreenState {
         ),
       ),
     );
-  
   }
 }
