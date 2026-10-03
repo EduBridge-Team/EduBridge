@@ -36,11 +36,17 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     _updateChildLessonsState(() => _specialistPhone = specialistPhone);
   }
 
-  Future<void> _loadLessons() async {
-    _updateChildLessonsState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshLessons() => _loadLessons(showLoader: false);
+
+  Future<void> _loadLessons({bool showLoader = true}) async {
+    if (showLoader) {
+      _updateChildLessonsState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      _updateChildLessonsState(() => _error = null);
+    }
 
     try {
       final responses = await Future.wait([
