@@ -19,6 +19,12 @@ class ChildCreationLinkingTest extends TestCase
             $table->id();
             $table->string('name');
             $table->unsignedInteger('age')->nullable();
+            foreach (['disability_type', 'disability_description', 'special_needs'] as $field) {
+                $table->text($field)->nullable();
+            }
+            foreach (['strengths', 'challenges'] as $field) {
+                $table->text($field)->nullable();
+            }
             foreach (['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url', 'medical_report_url'] as $field) {
                 $table->string($field)->nullable();
             }
@@ -41,15 +47,7 @@ class ChildCreationLinkingTest extends TestCase
     public function test_parent_can_create_child_and_is_linked_automatically(): void
     {
         $response = app(ChildController::class)->store(
-            $this->request(1, 'parent', [
-                'name' => 'طفل ولي الأمر',
-                'age' => 8,
-                'child_national_id' => '123456789',
-                'guardian_national_id' => '987654321',
-                'guardian_id_document_url' => '/api/private-files/user/1/id.jpg',
-                'kinship_document_url' => '/api/private-files/user/1/kinship.pdf',
-                'medical_report_url' => '/api/private-files/user/1/medical.pdf',
-            ])
+            $this->request(1, 'parent', $this->validPayload())
         );
 
         $this->assertSame(201, $response->getStatusCode());
@@ -62,6 +60,19 @@ class ChildCreationLinkingTest extends TestCase
         ]);
     }
 
+    public function test_parent_must_supply_required_learning_fields(): void
+    {
+        foreach (['disability_type', 'disability_description', 'special_needs', 'strengths', 'challenges'] as $field) {
+            $payload = $this->validPayload();
+            $payload[$field] = in_array($field, ['strengths', 'challenges'], true) ? [] : '';
+
+            $response = app(ChildController::class)->store($this->request(1, 'parent', $payload));
+
+            $this->assertSame(422, $response->getStatusCode(), "{$field} should be required");
+            $this->assertSame(0, DB::table('children')->count());
+        }
+    }
+
     public function test_admin_cannot_create_child(): void
     {
         $response = app(ChildController::class)->store($this->request(5, 'admin', ['name' => 'طفل الأدمن']));
@@ -72,28 +83,18 @@ class ChildCreationLinkingTest extends TestCase
     public function test_parent_must_supply_owned_identity_relationship_and_medical_documents(): void
     {
         foreach (['', '/api/private-files/user/99/id.jpg'] as $document) {
-            $response = app(ChildController::class)->store($this->request(1, 'parent', [
-                'name' => 'طفل غير موثق',
-                'age' => 7,
-                'child_national_id' => '123',
-                'guardian_national_id' => '456',
-                'guardian_id_document_url' => $document,
-                'kinship_document_url' => '/api/private-files/user/1/kinship.pdf',
-                'medical_report_url' => '/api/private-files/user/1/medical.pdf',
-            ]));
+            $payload = $this->validPayload();
+            $payload['name'] = 'طفل غير موثق';
+            $payload['guardian_id_document_url'] = $document;
+            $response = app(ChildController::class)->store($this->request(1, 'parent', $payload));
             $this->assertSame(422, $response->getStatusCode());
             $this->assertSame(0, DB::table('children')->count());
         }
 
-        $response = app(ChildController::class)->store($this->request(1, 'parent', [
-            'name' => 'طفل دون تقرير',
-            'age' => 7,
-            'child_national_id' => '123',
-            'guardian_national_id' => '456',
-            'guardian_id_document_url' => '/api/private-files/user/1/id.jpg',
-            'kinship_document_url' => '/api/private-files/user/1/kinship.pdf',
-            'medical_report_url' => '',
-        ]));
+        $payload = $this->validPayload();
+        $payload['name'] = 'طفل دون تقرير';
+        $payload['medical_report_url'] = '';
+        $response = app(ChildController::class)->store($this->request(1, 'parent', $payload));
         $this->assertSame(422, $response->getStatusCode());
     }
 
@@ -115,6 +116,24 @@ class ChildCreationLinkingTest extends TestCase
 
         $this->assertSame(403, $response->getStatusCode());
         $this->assertDatabaseMissing('children', ['name' => 'طفل المختص']);
+    }
+
+    private function validPayload(): array
+    {
+        return [
+            'name' => 'طفل ولي الأمر',
+            'age' => 8,
+            'disability_type' => 'إعاقة سمعية',
+            'disability_description' => 'وصف مختصر للحالة',
+            'special_needs' => 'دعم إضافي في القراءة',
+            'strengths' => ['الرسم'],
+            'challenges' => ['الكتابة'],
+            'child_national_id' => '123456789',
+            'guardian_national_id' => '987654321',
+            'guardian_id_document_url' => '/api/private-files/user/1/id.jpg',
+            'kinship_document_url' => '/api/private-files/user/1/kinship.pdf',
+            'medical_report_url' => '/api/private-files/user/1/medical.pdf',
+        ];
     }
 
     private function request(int $id, string $role, array $payload): Request
