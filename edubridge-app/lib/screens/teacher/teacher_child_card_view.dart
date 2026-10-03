@@ -1,162 +1,296 @@
 part of 'teacher_screen.dart';
 
-extension _TeacherChildCardView on _TeacherChildCard {
+extension _TeacherChildCardView on _TeacherChildCardState {
   Widget buildView(BuildContext context) {
     final name = (child['name'] ?? '').toString();
-    final status = child['status'];
-    final age = child['age'];
-    final disability = (child['disability_type'] ?? '').toString().trim();
+    final progress = _progressPercent;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Material(
-        color: c.card,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: c.line),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: c.line, width: 1.2),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => TeacherChildDetailsScreen(
-                  childId: child['id'],
-                  childName: name,
-                ),
-              ),
-            );
-            onReload();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: .14),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        name.isNotEmpty ? name.characters.first : '؟',
+                Container(
+                  width: 66,
+                  height: 66,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    name.isNotEmpty ? name.characters.first : '؟',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: color,
+                          fontSize: 21,
+                          fontWeight: FontWeight.w900,
+                          color: c.heading,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        _followStatus,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: c.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandBlue.withValues(alpha: .07),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${progress.toStringAsFixed(0)}%',
+                        style: const TextStyle(
+                          color: AppColors.brandBlue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      const Icon(
+                        AppIcons.starFilled,
+                        size: 20,
+                        color: AppColors.brandTeal,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 58,
+                    child: FilledButton.icon(
+                      onPressed: () => _openProfile(context),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.brandBlue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      icon: const Icon(Icons.folder_open_rounded, size: 23),
+                      label: const Text(
+                        'فتح ملف الطالب',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 13),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 17.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: c.heading,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              _buildStatusChip(status),
-                            ],
-                          ),
-                          const SizedBox(height: 7),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 6,
-                            children: [
-                              if (age != null)
-                                _metaChip(
-                                  icon: Icons.cake_outlined,
-                                  text: '$age سنة',
-                                ),
-                              if (disability.isNotEmpty)
-                                _metaChip(
-                                  icon: Icons.accessibility_new_rounded,
-                                  text: disability,
-                                ),
-                            ],
-                          ),
-                        ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 58,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _openApprovedPlan(context, child),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.brandBlue,
+                        side: BorderSide(color: c.line, width: 1.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      icon: const Icon(AppIcons.view, size: 22),
+                      label: const Text(
+                        'الخطة',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Icon(Icons.arrow_back_rounded, color: c.muted, size: 20),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 14),
-                _buildActionButtons(context, child),
               ],
             ),
-          ),
+            const SizedBox(height: 18),
+            InkWell(
+              onTap: () => setState(() => _expanded = !_expanded),
+              borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.tune_rounded,
+                      color: AppColors.brandBlue,
+                      size: 23,
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        'إجراءات سريعة',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                          color: c.heading,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      _expanded
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.brandBlue,
+                      size: 27,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedCrossFade(
+              duration: const Duration(milliseconds: 180),
+              crossFadeState: _expanded
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              secondChild: const SizedBox.shrink(),
+              firstChild: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _quickAction(
+                            context: context,
+                            icon: AppIcons.report,
+                            label: 'التقارير',
+                            color: AppColors.brandBlue,
+                            onTap: () => _openDetailsTab(context, 2),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _quickAction(
+                            context: context,
+                            icon: AppIcons.edit,
+                            label: 'الواجبات',
+                            color: AppColors.brandBlue,
+                            onTap: () => _openDetailsTab(context, 0),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _quickAction(
+                            context: context,
+                            icon: AppIcons.forum,
+                            label: 'دراسة الحالة',
+                            color: AppColors.brandBlue,
+                            onTap: () => _openDetailsTab(context, 3),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _quickAction(
+                            context: context,
+                            icon: AppIcons.lesson,
+                            label: 'الدروس',
+                            color: AppColors.brandBlue,
+                            onTap: () => _openDetailsTab(context, 1),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Material(
+                      color: c.card,
+                      borderRadius: BorderRadius.circular(18),
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChildProgressScreen(
+                              childId: child['id'] as int,
+                              childName: name,
+                            ),
+                          ),
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                        child: Container(
+                          width: double.infinity,
+                          minHeight: 62,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: AppColors.purple.withValues(alpha: .55),
+                              width: 1.4,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                AppIcons.specialist,
+                                size: 22,
+                                color: AppColors.purple,
+                              ),
+                              const SizedBox(width: 9),
+                              Text(
+                                'التقدم',
+                                style: TextStyle(
+                                  color: c.heading,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-
-  Widget _metaChip({required IconData icon, required String text}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: c.tintTeal.withValues(alpha: .55),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: c.muted),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w600,
-              color: c.muted,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusChip(String? status) {
-    final statusColor = _statusColor(status);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: .10),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(_statusIcon(status), size: 12, color: statusColor),
-          const SizedBox(width: 4),
-          Text(
-            _statusText(status),
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              color: statusColor,
-            ),
-          ),
-        ],
       ),
     );
   }
