@@ -31,5 +31,6 @@ class ChildController extends Controller
         'guardian_national_id',
         'guardian_id_document_url',
         'kinship_document_url',
+        'medical_report_url',
     ];
 }
