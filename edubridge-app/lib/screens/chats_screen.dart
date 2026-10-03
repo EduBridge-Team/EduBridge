@@ -35,19 +35,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
     _loadConversations();
   }
 
-  Future<void> _loadConversations() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshConversations() =>
+      _loadConversations(showLoader: false);
+
+  Future<void> _loadConversations({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final convs = await ApiService.getConversations();
+      if (!mounted) return;
       setState(() {
         _conversations = convs;
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر تحميل المحادثات';
         _loading = false;
