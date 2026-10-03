@@ -4,6 +4,7 @@ extension _AssistantScreenStateView on _AssistantScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
+    final visibleSuggestions = _visibleSuggestions;
 
     return Scaffold(
       appBar: JisrAppBar(
@@ -64,12 +65,12 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                   },
                 ),
               ),
-            if (!_loadingHistory)
+            if (!_loadingHistory && !_sending && visibleSuggestions.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
-                  children: _suggestions
+                  children: visibleSuggestions
                       .map((text) => _SuggestionChip(text: text, onTap: _send))
                       .toList(growable: false),
                 ),
