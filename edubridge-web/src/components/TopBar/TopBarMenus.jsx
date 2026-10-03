@@ -4,6 +4,7 @@ import {
   Home,
   Info,
   LayoutDashboard,
+  LifeBuoy,
   LogOut,
   Moon,
   Sun,
@@ -25,32 +26,35 @@ export function SignedInTopBarMenu({
         <NavLink to="/" end><Home size={16} /> الرئيسية</NavLink>
         <NavLink to="/about"><Info size={16} /> من نحن</NavLink>
         <NavLink to={dashboardPath}><LayoutDashboard size={16} /> {verified ? 'لوحتي' : 'توثيق الحساب'}</NavLink>
+        {!verified && <NavLink to="/support"><LifeBuoy size={16} /> الدعم الفني</NavLink>}
       </nav>
 
-      <div className="icon-strip">
-        {stripLinks.map(({ to, label, Icon }) => (
+      {verified && (
+        <div className="icon-strip">
+          {stripLinks.map(({ to, label, Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className="strip-btn"
+              title={label}
+              data-label={label}
+              aria-label={label}
+            >
+              <Icon size={16} />
+            </NavLink>
+          ))}
+          <span className="strip-sep" />
           <NavLink
-            key={to}
-            to={to}
+            to="/notifications"
             className="strip-btn"
-            title={label}
-            data-label={label}
-            aria-label={label}
+            title="الإشعارات"
+            data-label="الإشعارات"
+            aria-label="الإشعارات"
           >
-            <Icon size={16} />
+            <Bell size={16} /><span className="strip-dot" />
           </NavLink>
-        ))}
-        <span className="strip-sep" />
-        {verified && <NavLink
-          to="/notifications"
-          className="strip-btn"
-          title="الإشعارات"
-          data-label="الإشعارات"
-          aria-label="الإشعارات"
-        >
-          <Bell size={16} /><span className="strip-dot" />
-        </NavLink>}
-      </div>
+        </div>
+      )}
 
       <div className="topbar-actions">
         <button
