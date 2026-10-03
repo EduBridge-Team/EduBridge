@@ -24,7 +24,7 @@ class CaseDiscussionScreen extends StatefulWidget {
     this.discussionId,
     this.filterChildId,
     this.embedded = false,
-    this.showBottomNavigation = true,
+    this.showBottomNavigation = false,
   });
 
   @override
