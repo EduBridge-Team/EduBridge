@@ -53,7 +53,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
   }
 
   Future<void> _createHomework() async {
-    final created = await Navigator.push<bool>(
+    final result = await Navigator.push<dynamic>(
       context,
       MaterialPageRoute(
         builder: (_) => CreateHomeworkScreen(
@@ -63,11 +63,12 @@ class _HomeworkTabState extends State<_HomeworkTab>
               'name': widget.childName,
             },
           ],
+          initialChildId: widget.childId,
         ),
       ),
     );
 
-    if (created == true && mounted) {
+    if (result == true && mounted) {
       await _load();
     }
   }
