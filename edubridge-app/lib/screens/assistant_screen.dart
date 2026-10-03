@@ -111,7 +111,6 @@ class _AssistantScreenState extends State<AssistantScreen> {
         _ => const [
             'بسّط لي هذا الموضوع',
             'اقترح نشاطاً تعليمياً',
-            'كيف أستخدم التطبيق؟',
           ],
       },
     ];
