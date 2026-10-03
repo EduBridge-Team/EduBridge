@@ -1,1 +1,0 @@
-This file was created accidentally and should be removed in a follow-up cleanup.
