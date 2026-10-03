@@ -105,6 +105,19 @@ export default function ChildFormPage() {
       return
     }
 
+    const requiredLearningFields = [
+      ['disability_type', 'نوع الإعاقة'],
+      ['disability_description', 'وصف الإعاقة'],
+      ['special_needs', 'الاحتياجات الخاصة'],
+      ['strengths', 'نقاط القوة'],
+      ['challenges', 'التحديات'],
+    ]
+    const missingLearningField = requiredLearningFields.find(([key]) => !form[key].trim())
+    if (missingLearningField) {
+      setError(`${missingLearningField[1]} مطلوبة`)
+      return
+    }
+
     const requiredIdentityFields = [
       'child_national_id',
       'guardian_national_id',
