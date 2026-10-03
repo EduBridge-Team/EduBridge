@@ -1,7 +1,6 @@
 // lib/screens/create_weekly_report_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 part 'create_weekly_report_view.dart';
@@ -25,8 +24,6 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
-
-  // ─── الحقول ───
   final _lessonsCtrl = TextEditingController();
   final _teacherNotesCtrl = TextEditingController();
   final _achievementsCtrl = TextEditingController();
@@ -34,11 +31,8 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
 
   DateTime _weekStart = _lastMonday();
   int _progressPercent = 50;
-
-  // ─── القوائم ───
   final List<String> _achievements = [];
   final List<String> _concerns = [];
-
   bool _saving = false;
   String? _error;
 
@@ -76,7 +70,6 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() {
       _saving = true;
       _error = null;
@@ -94,7 +87,6 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
       });
 
       if (!mounted) return;
-
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -110,7 +102,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
           _saving = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _saving = false;
