@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Support\Notify;
+use App\Support\VerificationRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,7 @@ trait VerificationUserReviewActions
                     'phone',
                     'national_id',
                     'id_document_url',
+                    'identity_status',
                     'verification_status',
                     'verification_note',
                     'verified_at',
@@ -38,7 +40,11 @@ trait VerificationUserReviewActions
                 $query->where('role', $request->query('role'));
             }
 
-            return response()->json(['users' => $query->get()]);
+            $users = $query->get()->map(function ($user) {
+                return array_merge((array) $user, VerificationRequirements::snapshot($user));
+            })->values();
+
+            return response()->json(['users' => $users]);
         } catch (\Exception $e) {
             report($e);
 
@@ -64,20 +70,25 @@ trait VerificationUserReviewActions
             }
 
             DB::table('users')->where('id', $id)->update([
-                'verification_status' => $status,
+                'identity_status' => $status,
                 'verification_note' => $request->input('note'),
-                'verified_at' => $status === 'verified' ? now() : null,
             ]);
 
-            Notify::toUser(
-                $id,
-                $status === 'verified' ? 'تم توثيق حسابك' : 'لم يتم توثيق حسابك',
-                $status === 'verified'
-                    ? 'تم توثيق هويتك بنجاح، يمكنك الآن استخدام كامل الميزات.'
-                    : 'تم رفض التوثيق: '
-                        . ($request->input('note') ?: 'يرجى إعادة رفع مستندات صحيحة'),
-                'verification'
-            );
+            $snapshot = VerificationRequirements::syncUserStatus((int) $id);
+
+            if ($status === 'rejected') {
+                $title = 'لم يتم اعتماد هويتك';
+                $message = 'تم رفض الهوية: '
+                    . ($request->input('note') ?: 'يرجى إعادة رفع مستندات صحيحة');
+            } elseif ($snapshot['requirements_complete']) {
+                $title = 'تم توثيق حسابك';
+                $message = 'تم اعتماد الهوية والشهادة العلمية، ويمكنك الآن استخدام كامل الميزات.';
+            } else {
+                $title = 'تم اعتماد هويتك';
+                $message = 'تم اعتماد الهوية. سيكتمل توثيق الحساب بعد اعتماد شهادة علمية واحدة على الأقل.';
+            }
+
+            Notify::toUser($id, $title, $message, 'verification');
 
             $fresh = DB::table('users')
                 ->select(
@@ -85,13 +96,16 @@ trait VerificationUserReviewActions
                     'name',
                     'email',
                     'role',
+                    'identity_status',
                     'verification_status',
                     'verification_note',
                     'verified_at'
                 )
                 ->find($id);
 
-            return response()->json(['user' => $fresh]);
+            return response()->json([
+                'user' => array_merge((array) $fresh, $snapshot),
+            ]);
         } catch (\Exception $e) {
             report($e);
 
