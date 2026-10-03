@@ -83,11 +83,17 @@ class _TeacherScreenState extends State<TeacherScreen> {
     setState(() => _viewingLesson = lesson);
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshData() => _loadData(showLoader: false);
+
+  Future<void> _loadData({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       _currentUserId = await ApiService.getUserId();
@@ -156,7 +162,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
               ),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: _loadData,
+                  onRefresh: _refreshData,
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null
@@ -167,7 +173,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                               : _buildLessonsTab(context, c, _lessons, _types, _query,
                                   (v) => setState(() => _query = v),
                                   (lesson) => _setViewingLesson(lesson))),
-          ),
+                ),
               ),
             ],
           ),
