@@ -91,11 +91,17 @@ export function HomeworkCreateForm({
 }
 
 function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChange }) {
+  const [editingSubmissionId, setEditingSubmissionId] = useState(null)
   if ((homework.submissions || []).length === 0) return null
 
   return (
     <div className="fp-list" style={{ marginTop: 12 }}>
-      {homework.submissions.map((submission) => (
+      {homework.submissions.map((submission) => {
+        const evaluated = submission.grade != null
+        const editing = editingSubmissionId === submission.id
+        const readOnly = evaluated && !editing
+
+        return (
         <div className="fp-message" key={submission.id}>
           <small>
             {submission.child_name} — {new Date(submission.submitted_at).toLocaleString('ar')}
@@ -115,6 +121,7 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
                 required
                 placeholder="الدرجة"
                 value={grades[submission.id]?.grade ?? submission.grade ?? ''}
+                disabled={readOnly || busy}
                 onChange={(e) => onGradesChange({
                   ...grades,
                   [submission.id]: {
@@ -128,6 +135,7 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
               <input
                 placeholder="ملاحظات"
                 value={grades[submission.id]?.feedback ?? submission.feedback ?? ''}
+                disabled={readOnly || busy}
                 onChange={(e) => onGradesChange({
                   ...grades,
                   [submission.id]: {
@@ -137,16 +145,52 @@ function HomeworkSubmissionList({ busy, grades, homework, onGrade, onGradesChang
                 })}
               />
             </FormField>
-            <button
-              className="btn small"
-              onClick={() => onGrade(submission)}
-              disabled={busy || !homeworkGradePayload(submission, grades[submission.id])}
-            >
-              حفظ التقييم
-            </button>
+            {readOnly ? (
+              <div className="fp-actions" style={{ alignItems: 'center' }}>
+                <span className="success-box" role="status" style={{ margin: 0, padding: '8px 12px' }}>تم التقييم ✓</span>
+                <button
+                  type="button"
+                  className="btn outline small"
+                  onClick={() => setEditingSubmissionId(submission.id)}
+                  disabled={busy}
+                >
+                  تعديل التقييم
+                </button>
+              </div>
+            ) : (
+              <div className="fp-actions">
+                <button
+                  className="btn small"
+                  onClick={async () => {
+                    await onGrade(submission)
+                    if (evaluated) setEditingSubmissionId(null)
+                  }}
+                  disabled={busy || !homeworkGradePayload(submission, grades[submission.id])}
+                >
+                  {evaluated ? 'حفظ التعديل' : 'حفظ التقييم'}
+                </button>
+                {evaluated && (
+                  <button
+                    type="button"
+                    className="btn outline small"
+                    onClick={() => {
+                      setEditingSubmissionId(null)
+                      onGradesChange({
+                        ...grades,
+                        [submission.id]: undefined,
+                      })
+                    }}
+                    disabled={busy}
+                  >
+                    إلغاء
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
