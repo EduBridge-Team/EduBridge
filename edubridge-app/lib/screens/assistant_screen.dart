@@ -8,6 +8,35 @@ import '../utils/navigation.dart';
 import '../widgets/pet_avatar.dart';
 part 'assistant_screen_view.dart';
 
+String _cleanAssistantText(String value) {
+  final lines = value.replaceAll('\r\n', '\n').split('\n');
+  final cleaned = <String>[];
+
+  for (var line in lines) {
+    var current = line.trimRight();
+    current = current.replaceFirst(RegExp(r'^\s*#{1,6}\s*'), '');
+    current = current.replaceFirst(RegExp(r'^\s*[-*+]\s+'), '• ');
+    current = current.replaceFirst(RegExp(r'^\s*\d+[.)]\s+'), '• ');
+    current = current.replaceAll('**', '').replaceAll('__', '').replaceAll('`', '');
+
+    if (RegExp(r'^\s*[-_:| ]{3,}\s*$').hasMatch(current)) continue;
+
+    if (current.contains('|')) {
+      final cells = current
+          .split('|')
+          .map((cell) => cell.trim())
+          .where((cell) => cell.isNotEmpty)
+          .toList();
+      if (cells.isNotEmpty) current = cells.join(' — ');
+    }
+
+    if (current.isEmpty && cleaned.isNotEmpty && cleaned.last.isEmpty) continue;
+    cleaned.add(current);
+  }
+
+  return cleaned.join('\n').trim();
+}
+
 class AssistantScreen extends StatefulWidget {
   final String? lessonContext;
 
@@ -82,7 +111,6 @@ class _AssistantScreenState extends State<AssistantScreen> {
         _ => const [
             'بسّط لي هذا الموضوع',
             'اقترح نشاطاً تعليمياً',
-            'كيف أستخدم التطبيق؟',
           ],
       },
     ];
@@ -169,6 +197,8 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     final isUser = message.isUser;
+    final content = isUser ? message.content : _cleanAssistantText(message.content);
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -185,12 +215,16 @@ class _MessageBubble extends StatelessWidget {
           ),
           border: isUser ? null : Border.all(color: c.line),
         ),
-        child: Text(
-          message.content,
-          style: TextStyle(
-            color: isUser ? Colors.white : c.body,
-            fontSize: 16,
-            height: 1.45,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text(
+            content,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              color: isUser ? Colors.white : c.body,
+              fontSize: 16,
+              height: 1.55,
+            ),
           ),
         ),
       ),
