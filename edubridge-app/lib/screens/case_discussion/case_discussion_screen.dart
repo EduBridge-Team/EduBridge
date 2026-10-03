@@ -17,12 +17,14 @@ class CaseDiscussionScreen extends StatefulWidget {
   final int? discussionId;
   final int? filterChildId;
   final bool embedded;
+  final bool showBottomNavigation;
 
   const CaseDiscussionScreen({
     super.key,
     this.discussionId,
     this.filterChildId,
     this.embedded = false,
+    this.showBottomNavigation = true,
   });
 
   @override
@@ -36,6 +38,7 @@ class _CaseDiscussionScreenState extends State<CaseDiscussionScreen> {
       return _CaseDiscussionList(
         filterChildId: widget.filterChildId,
         embedded: widget.embedded,
+        showBottomNavigation: widget.showBottomNavigation,
       );
     }
     return _CaseDiscussionDetail(discussionId: widget.discussionId!);
