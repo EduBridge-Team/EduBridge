@@ -47,11 +47,17 @@ class _ParentScreenState extends State<ParentScreen> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshData() => _loadData(showLoader: false);
+
+  Future<void> _loadData({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final res = await ApiService.authGet('/children');
@@ -196,7 +202,7 @@ class _ParentScreenState extends State<ParentScreen> {
             _buildHeader(),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: _loadData,
+                onRefresh: _refreshData,
                 child: _buildBody(),
               ),
             ),
@@ -319,5 +325,4 @@ class _ParentScreenState extends State<ParentScreen> {
       ],
     );
   }
-
 }
