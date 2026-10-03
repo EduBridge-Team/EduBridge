@@ -91,24 +91,39 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               ],
               const SizedBox(height: 20),
 
-              TextFormField(controller: _childIdCtrl, keyboardType: TextInputType.number,
+              TextFormField(
+                controller: _childIdCtrl,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'رقم هوية الطفل *'),
-                validator: (value) => value == null || value.trim().isEmpty ? 'رقم الهوية مطلوب' : null),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'رقم الهوية مطلوب'
+                    : null,
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: _guardianIdCtrl, keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'رقم هوية ولي الأمر *'),
-                validator: (value) => value == null || value.trim().isEmpty ? 'رقم الهوية مطلوب' : null),
+              TextFormField(
+                controller: _guardianIdCtrl,
+                keyboardType: TextInputType.number,
+                decoration:
+                    const InputDecoration(labelText: 'رقم هوية ولي الأمر *'),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'رقم الهوية مطلوب'
+                    : null,
+              ),
               const SizedBox(height: 16),
               buildDocumentsSection(
                 context: context,
                 c: c,
                 idCardFile: _idCardFile,
                 birthCertFile: _birthCertFile,
+                medicalReportFiles: _medicalReportFiles,
                 onPickId: _pickIdCard,
                 onCaptureId: _captureIdCard,
                 onRemoveId: () => _refreshState(() => _idCardFile = null),
                 onPickBirth: _pickBirthCert,
                 onRemoveBirth: () => _refreshState(() => _birthCertFile = null),
+                onPickMedical: _pickMedicalReport,
+                onCaptureMedical: _captureMedicalReport,
+                onRemoveMedical: _removeMedicalReport,
               ),
               const SizedBox(height: 20),
 
@@ -124,7 +139,7 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                     : null,
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _specialNeedsCtrl,
                 maxLines: 2,
@@ -132,7 +147,7 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                   labelText: 'احتياجات خاصة *',
                   prefixIcon: Icon(AppIcons.info),
                 ),
-                 validator: (v) => (v == null || v.trim().isEmpty)
+                validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'احتياجات الخاصة مطلوب'
                     : null,
               ),
@@ -179,28 +194,27 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               if (_error != null) _buildErrorBox(_error!),
 
               FilledButton.icon(
-                  onPressed: _loading ? null : _submit,
-                  icon: _loading
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Icon(AppIcons.send),
-                  label: Text(
-                    _loading ? 'جارٍ الإرسال...' : 'إرسال للمراجعة',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
+                onPressed: _loading ? null : _submit,
+                icon: _loading
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Icon(AppIcons.send),
+                label: Text(
+                  _loading ? 'جارٍ الإرسال...' : 'إرسال للمراجعة',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  
   }
 }
