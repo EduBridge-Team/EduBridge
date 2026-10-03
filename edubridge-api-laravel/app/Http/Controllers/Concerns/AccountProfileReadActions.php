@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use App\Support\VerificationRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -39,6 +40,16 @@ trait AccountProfileReadActions
 
         if (Schema::hasColumn('users', 'avatar_url')) {
             $profile['avatar_url'] = $user->avatar_url ?? null;
+        }
+
+        if (in_array($profile['role'], ['teacher', 'specialist'], true)
+            && Schema::hasColumn('users', 'identity_status')) {
+            $snapshot = VerificationRequirements::snapshot($user);
+            $profile = array_merge($profile, $snapshot);
+        } else {
+            $profile['identity_status'] = $profile['verification_status'];
+            $profile['certificate_status'] = 'not_required';
+            $profile['requirements_complete'] = $profile['verification_status'] === 'verified';
         }
 
         $profile['is_verified'] =
