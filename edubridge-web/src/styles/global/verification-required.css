@@ -1,0 +1,216 @@
+.verification-gate {
+  min-height: calc(100dvh - 86px);
+  display: grid;
+  place-items: start center;
+  padding: clamp(28px, 7vh, 72px) 20px 48px;
+  background:
+    radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 32%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-ice) 72%, transparent), transparent 58%);
+}
+
+.verification-gate-card {
+  width: min(100%, 720px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  padding: clamp(28px, 5vw, 44px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  box-shadow: 0 18px 54px rgba(28, 83, 128, 0.09);
+}
+
+.verification-gate-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--brand-blue);
+  background: color-mix(in srgb, var(--brand-blue) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--brand-blue) 22%, var(--line));
+}
+
+.verification-gate-icon.is-pending {
+  color: var(--teal-deep);
+  background: color-mix(in srgb, var(--teal) 11%, var(--surface));
+  border-color: color-mix(in srgb, var(--teal) 24%, var(--line));
+}
+
+.verification-gate-icon.is-rejected {
+  color: var(--danger-deep);
+  background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--danger) 22%, var(--line));
+}
+
+.verification-gate-copy {
+  max-width: 590px;
+}
+
+.verification-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  color: var(--brand-blue-deep);
+  background: color-mix(in srgb, var(--brand-blue) 10%, var(--surface));
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.verification-status-pill.is-pending {
+  color: var(--teal-deep);
+  background: color-mix(in srgb, var(--teal) 11%, var(--surface));
+}
+
+.verification-status-pill.is-rejected {
+  color: var(--danger-deep);
+  background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+}
+
+.verification-gate h1 {
+  margin: 14px 0 8px;
+  color: var(--navy);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.verification-gate-lead,
+.verification-gate-status {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.9;
+}
+
+.verification-gate-lead {
+  font-size: clamp(15px, 2.2vw, 17px);
+}
+
+.verification-gate-status {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.verification-note {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--danger) 22%, var(--line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+  text-align: start;
+}
+
+.verification-note strong {
+  color: var(--danger-deep);
+  font-size: 13px;
+}
+
+.verification-note span {
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.verification-gate-error {
+  width: 100%;
+  margin: 0;
+  text-align: start;
+}
+
+.verification-gate-actions {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.verification-primary {
+  width: 100%;
+  min-height: 52px;
+  text-decoration: none;
+  border-radius: 15px;
+}
+
+.verification-secondary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.verification-secondary-actions .btn {
+  width: 100%;
+  min-height: 48px;
+  text-decoration: none;
+  border-radius: 14px;
+}
+
+:root[data-theme="dark"] .verification-gate {
+  background:
+    radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 34%),
+    linear-gradient(180deg, rgba(8, 31, 49, 0.44), transparent 62%);
+}
+
+:root[data-theme="dark"] .verification-gate-card {
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .verification-gate {
+    min-height: calc(100dvh - 76px);
+    place-items: start center;
+    padding: 28px 16px 34px;
+  }
+
+  .verification-gate-card {
+    gap: 14px;
+    padding: 26px 20px 22px;
+    border-radius: 24px;
+  }
+
+  .verification-gate-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 19px;
+  }
+
+  .verification-gate h1 {
+    margin-top: 12px;
+    font-size: 30px;
+  }
+
+  .verification-gate-lead {
+    font-size: 15px;
+    line-height: 1.85;
+  }
+
+  .verification-gate-status {
+    font-size: 13.5px;
+    line-height: 1.75;
+  }
+
+  .verification-secondary-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .verification-gate {
+    padding-inline: 12px;
+  }
+
+  .verification-gate-card {
+    padding-inline: 16px;
+  }
+
+  .verification-gate h1 {
+    font-size: 27px;
+  }
+}
