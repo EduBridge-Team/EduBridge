@@ -18,17 +18,28 @@ class PagedListController extends ChangeNotifier {
   bool _disposed = false;
   Timer? _debounce;
 
-  Future<void> load([int requestedPage = 1]) async {
+  Future<void> load([int requestedPage = 1]) =>
+      _loadInternal(requestedPage, showLoading: true);
+
+  Future<void> refresh([int requestedPage = 1]) =>
+      _loadInternal(requestedPage, showLoading: false);
+
+  Future<void> _loadInternal(
+    int requestedPage, {
+    required bool showLoading,
+  }) async {
     if (_disposed) return;
     _debounce?.cancel();
     final revision = ++_revision;
-    loading = true;
+    if (showLoading) loading = true;
     error = null;
-    notifyListeners();
+    if (showLoading) notifyListeners();
     try {
       final result = await fetchPage(requestedPage, query);
       if (_disposed || revision != _revision) return;
-      if (result.page != requestedPage) throw const FormatException('Unexpected page');
+      if (result.page != requestedPage) {
+        throw const FormatException('Unexpected page');
+      }
       items = result.items;
       page = result.page;
       total = result.total;
