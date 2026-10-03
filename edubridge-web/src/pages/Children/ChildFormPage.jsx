@@ -8,7 +8,6 @@ import { isAssignedToSpecialist } from '../Dashboards/specialistAssignment'
 import ChildIdentityFields from './ChildIdentityFields'
 import ChildLearningFields from './ChildLearningFields'
 
-// تحويل نص مفصول بفواصل إلى قائمة (أو null إن كان فارغاً)
 function toList(text) {
   const t = (text || '').trim()
   if (!t) return null
@@ -18,7 +17,6 @@ function toList(text) {
     .filter(Boolean)
 }
 
-// تحويل قائمة/قيمة إلى نص مفصول بفواصل لملء الحقل عند التعديل
 function fromList(value) {
   if (Array.isArray(value)) return value.join('، ')
   return value || ''
@@ -47,10 +45,11 @@ export default function ChildFormPage() {
     guardian_national_id: existing.guardian_national_id || '',
     guardian_id_document_url: existing.guardian_id_document_url || '',
     kinship_document_url: existing.kinship_document_url || '',
+    medical_report_url: existing.medical_report_url || '',
   })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState(null) // اسم الحقل الجاري رفعه
+  const [uploading, setUploading] = useState(null)
 
   useEffect(() => {
     if (!editing) return undefined
@@ -76,7 +75,6 @@ export default function ChildFormPage() {
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
-  // رفع مستند وتخزين رابطه في الحقل المناسب
   const upload = (key) => async (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -97,20 +95,28 @@ export default function ChildFormPage() {
     setError(null)
 
     if (!form.name.trim()) {
-      setError('الاسم مطلوب')
+      setError('اسم الطفل مطلوب')
       return
     }
-    if (!editing && ['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url'].some(key => !form[key].trim())) {
-      setError('هوية الطفل وولي الأمر ومستندات صلة القرابة مطلوبة')
-      return
-    }
+
     const age = parseInt(form.age.trim(), 10)
     if (isNaN(age)) {
       setError('أدخل عمراً صحيحاً')
       return
     }
 
-    // نبني الحمولة — الحقول الفارغة تُرسل null
+    const requiredIdentityFields = [
+      'child_national_id',
+      'guardian_national_id',
+      'guardian_id_document_url',
+      'kinship_document_url',
+      'medical_report_url',
+    ]
+    if (!editing && requiredIdentityFields.some((key) => !form[key].trim())) {
+      setError('رقم هوية الطفل وهوية ولي الأمر وصورة الهوية ومستند القرابة والتقرير الطبي جميعها مطلوبة')
+      return
+    }
+
     const clean = (v) => {
       const t = (v || '').trim()
       return t ? t : null
@@ -128,10 +134,11 @@ export default function ChildFormPage() {
       guardian_national_id: clean(form.guardian_national_id),
       guardian_id_document_url: clean(form.guardian_id_document_url),
       kinship_document_url: clean(form.kinship_document_url),
+      medical_report_url: clean(form.medical_report_url),
     }
 
     if (!canEditIdentity) {
-      for (const key of ['child_national_id', 'guardian_national_id', 'guardian_id_document_url', 'kinship_document_url']) delete payload[key]
+      for (const key of requiredIdentityFields) delete payload[key]
     }
     setLoading(true)
     try {
