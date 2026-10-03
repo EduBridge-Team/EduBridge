@@ -80,7 +80,7 @@ class _TeacherChildCard extends StatefulWidget {
 }
 
 class _TeacherChildCardState extends State<_TeacherChildCard> {
-  bool _expanded = true;
+  bool _expanded = false;
 
   Map<String, dynamic> get child => widget.child;
   Color get color => widget.color;
@@ -153,8 +153,8 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 76),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+          constraints: const BoxConstraints(minHeight: 72),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: c.line, width: 1.2),
