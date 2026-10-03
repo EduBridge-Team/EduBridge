@@ -18,7 +18,7 @@ class AddLessonScreen extends StatefulWidget {
     this.forParents = false,
     this.initialChildId,
     this.initialChildName,
-    this.showBottomNavigation = true,
+    this.showBottomNavigation = false,
   });
 
   @override
