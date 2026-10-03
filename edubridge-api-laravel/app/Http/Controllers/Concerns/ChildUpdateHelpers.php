@@ -57,7 +57,7 @@ trait ChildUpdateHelpers
             $identityChanged = $identityChanged || (string) ($child->$field ?? '') !== (string) ($value ?? '');
 
             if (
-                in_array($field, ['guardian_id_document_url', 'kinship_document_url'], true)
+                in_array($field, ['guardian_id_document_url', 'kinship_document_url', 'medical_report_url'], true)
                 && !$this->validateDocumentUrl(
                     $user,
                     is_string($value) ? $value : null,
