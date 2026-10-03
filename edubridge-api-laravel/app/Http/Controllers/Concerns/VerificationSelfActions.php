@@ -93,7 +93,8 @@ trait VerificationSelfActions
         $stillUsed = DB::table('users')->where('id_document_url', $url)->exists()
             || DB::table('certificates')->where('url', $url)->exists()
             || DB::table('children')->where('guardian_id_document_url', $url)->exists()
-            || DB::table('children')->where('kinship_document_url', $url)->exists();
+            || DB::table('children')->where('kinship_document_url', $url)->exists()
+            || DB::table('children')->where('medical_report_url', $url)->exists();
 
         if ($stillUsed) {
             return;

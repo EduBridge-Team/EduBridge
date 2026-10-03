@@ -62,6 +62,11 @@ export function VerificationChildrenList({ children, onDecide, onViewFile }) {
               <Paperclip size={14} /> مستند القرابة
             </button>
           )}
+          {child.medical_report_url && (
+            <button type="button" className="file-link" onClick={() => onViewFile(child.medical_report_url)}>
+              <Paperclip size={14} /> التقرير الطبي
+            </button>
+          )}
         </div>
       </div>
       <div className="verify-actions">

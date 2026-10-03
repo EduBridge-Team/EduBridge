@@ -88,24 +88,26 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
     if (result != null) setState(() => _selectedDisabilityType = result);
   }
-Future<void> _pickMedicalReport() async {
-  final picked = await _picker.pickMultiImage(imageQuality: 85);
-  if (picked.isEmpty) return;
-  setState(() {
-    _medicalReportFiles.addAll(picked.map((x) => File(x.path)));
-  });
-}
 
-Future<void> _captureMedicalReport() async {
-  final picked = await _picker.pickImage(
-      source: ImageSource.camera, imageQuality: 85);
-  if (picked == null) return;
-  setState(() => _medicalReportFiles.add(File(picked.path)));
-}
+  Future<void> _pickMedicalReport() async {
+    final picked = await _picker.pickMultiImage(imageQuality: 85);
+    if (picked.isEmpty) return;
+    setState(() {
+      _medicalReportFiles.addAll(picked.map((x) => File(x.path)));
+    });
+  }
 
-void _removeMedicalReport(int index) {
-  setState(() => _medicalReportFiles.removeAt(index));
-}
+  Future<void> _captureMedicalReport() async {
+    final picked = await _picker.pickImage(
+        source: ImageSource.camera, imageQuality: 85);
+    if (picked == null) return;
+    setState(() => _medicalReportFiles.add(File(picked.path)));
+  }
+
+  void _removeMedicalReport(int index) {
+    setState(() => _medicalReportFiles.removeAt(index));
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -123,7 +125,11 @@ void _removeMedicalReport(int index) {
       return;
     }
     if (_birthCertFile == null) {
-      setState(() => _error = 'صورة شهادة الميلاد مطلوبة');
+      setState(() => _error = 'مستند صلة القرابة مطلوب');
+      return;
+    }
+    if (_medicalReportFiles.isEmpty) {
+      setState(() => _error = 'التقرير الطبي مطلوب');
       return;
     }
 
@@ -216,7 +222,7 @@ void _removeMedicalReport(int index) {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'مطلوب رفع صورة هوية ولي الأمر وشهادة الميلاد لإتمام التسجيل.',
+              'رقم هوية الطفل وهوية ولي الأمر وصورة الهوية ومستند صلة القرابة والتقرير الطبي مطلوبة لإتمام التسجيل.',
               style: TextStyle(
                 color: c.onTint,
                 fontSize: 13.5,

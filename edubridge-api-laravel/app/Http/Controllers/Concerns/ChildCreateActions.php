@@ -18,10 +18,15 @@ trait ChildCreateActions
         if (!$request->input('name')) {
             return response()->json(['error' => 'اسم الطفل مطلوب'], 400);
         }
+        if (!$request->has('age') || !is_numeric($request->input('age'))) {
+            return response()->json(['error' => 'العمر مطلوب'], 422);
+        }
 
         foreach (self::IDENTITY_FIELDS as $field) {
             if (!is_string($request->input($field)) || trim($request->input($field)) === '') {
-                return response()->json(['error' => 'هوية الطفل وولي الأمر ومستندات صلة القرابة مطلوبة'], 422);
+                return response()->json([
+                    'error' => 'رقم هوية الطفل وهوية ولي الأمر وصورة الهوية ومستند القرابة والتقرير الطبي جميعها مطلوبة',
+                ], 422);
             }
         }
 
@@ -40,7 +45,7 @@ trait ChildCreateActions
         foreach (self::IDENTITY_FIELDS as $field) {
             if ($request->has($field) && $request->input($field) !== null) {
                 $value = $request->input($field);
-                if (in_array($field, ['guardian_id_document_url', 'kinship_document_url'], true)
+                if (in_array($field, ['guardian_id_document_url', 'kinship_document_url', 'medical_report_url'], true)
                     && !$this->validateDocumentUrl($user, is_string($value) ? $value : null)) {
                     return response()->json([
                         'error' => 'مستندات الطفل يجب رفعها من حسابك عبر التخزين الآمن',
