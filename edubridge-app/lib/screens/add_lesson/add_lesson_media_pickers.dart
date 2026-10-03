@@ -25,20 +25,13 @@ Widget buildImagesPicker({
             Expanded(
               child: Text(
                 'صور الدرس (اختياري)',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: c.onTint,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.onTint),
               ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Text(
-          'يمكن اختيار عدة صور ودمجها مع الفيديو أو الصوت',
-          style: TextStyle(fontSize: 11, color: c.muted),
-        ),
+        Text('يمكن اختيار عدة صور ودمجها مع الفيديو أو الصوت', style: TextStyle(fontSize: 11, color: c.muted)),
         const SizedBox(height: 8),
         if (imageFiles.isNotEmpty) ...[
           SizedBox(
@@ -53,12 +46,7 @@ Widget buildImagesPicker({
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        file,
-                        width: 86,
-                        height: 86,
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.file(file, width: 86, height: 86, fit: BoxFit.cover),
                     ),
                     Positioned(
                       top: 3,
@@ -67,12 +55,8 @@ Widget buildImagesPicker({
                         onTap: () => onRemove(index),
                         child: Container(
                           padding: const EdgeInsets.all(3),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(AppIcons.close,
-                              color: Colors.white, size: 15),
+                          decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                          child: const Icon(AppIcons.close, color: Colors.white, size: 15),
                         ),
                       ),
                     ),
@@ -85,14 +69,11 @@ Widget buildImagesPicker({
         ],
         SizedBox(
           width: double.infinity,
-          height: 38,
+          height: 42,
           child: FilledButton.icon(
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.brandBlue,
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(AppIcons.image, size: 18),
-            label: Text(imageFiles.isEmpty ? 'اختر صوراً' : 'تغيير الصور'),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.brandBlue, foregroundColor: Colors.white),
+            icon: const Icon(AppIcons.upload, size: 18),
+            label: Text(imageFiles.isEmpty ? 'رفع الصور' : 'إعادة رفع الصور'),
             onPressed: onPick,
           ),
         ),
@@ -125,16 +106,7 @@ Widget buildFilePicker({
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: c.onTint,
-                ),
-              ),
-            ),
+            Expanded(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.onTint))),
           ],
         ),
         const SizedBox(height: 4),
@@ -143,38 +115,43 @@ Widget buildFilePicker({
         if (file == null)
           SizedBox(
             width: double.infinity,
-            height: 38,
+            height: 42,
             child: FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: color,
-                foregroundColor: Colors.white,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
               icon: const Icon(AppIcons.upload, size: 18),
-              label: const Text('اختر ملف'),
+              label: const Text('رفع الملف'),
               onPressed: onPick,
             ),
           )
         else
-          Row(
+          Column(
             children: [
-              Icon(AppIcons.check, color: c.success, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  file.path.split('/').last,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: c.onTint,
-                    fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  Icon(AppIcons.check, color: c.success, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(file.path.split('/').last, overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: c.onTint, fontWeight: FontWeight.w600)),
                   ),
-                ),
+                  IconButton(
+                    icon: Icon(AppIcons.close, color: c.onTint, size: 18),
+                    onPressed: onClear,
+                    constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(AppIcons.close, color: c.onTint, size: 18),
-                onPressed: onClear,
-                constraints: const BoxConstraints(),
-                padding: EdgeInsets.zero,
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                height: 42,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
+                  icon: const Icon(AppIcons.upload, size: 18),
+                  label: const Text('إعادة رفع الملف'),
+                  onPressed: onPick,
+                ),
               ),
             ],
           ),
