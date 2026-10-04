@@ -80,6 +80,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
     return Stack(
       children: [
@@ -88,7 +89,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
             onRefresh: _load,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
               children: [
                 if (_loading)
                   const Padding(
@@ -147,7 +148,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'اكتب أول تقرير أسبوعي لهذا الطالب.',
+                          'أضف أول تقرير أسبوعي لهذا الطالب.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: c.muted, fontSize: 13.5),
                         ),
@@ -194,14 +195,14 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
         ),
         Positioned(
           left: 16,
-          bottom: 16,
+          bottom: 24 + bottomInset,
           child: FloatingActionButton.extended(
             heroTag: 'create-report-${widget.childId}',
             onPressed: _createReport,
             icon: const Icon(AppIcons.add),
             label: const Text(
-              'كتابة تقرير',
-              style: TextStyle(fontWeight: FontWeight.w800),
+              'إضافة تقرير',
+              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),
         ),
