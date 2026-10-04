@@ -39,10 +39,14 @@ done
 test "$ready" = true
 jq -e '.status == "ok" and (keys | sort) == ["status"]' "$runtime_tmp/health.json" >/dev/null
 
+# The production image must not execute its services as root.
+test "$(docker inspect -f '{{.Config.User}}' "$container")" = "www-data"
+test "$(docker exec "$container" id -u)" != "0"
+
 docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
 docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "384M" && extension_loaded("Zend OPcache") ? 0 : 1);'
-docker exec --user www-data "$container" php artisan migrate --force
+docker exec "$container" php artisan migrate --force
 
 # Authentication and Laravel's router must still work through FastCGI.
 test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/api/me)" = 401
@@ -50,18 +54,18 @@ python3 -c 'import json; print(json.dumps({"padding":"x" * (2 * 1024 * 1024)}))'
 test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' --data-binary @"$runtime_tmp/upload.json" http://127.0.0.1:8081/api/auth/login)" = 400
 
 # No direct execution or disclosure of PHP files, and no dotfile access.
-docker exec "$container" sh -c 'printf "%s" "<?php echo 12345;" > /app/public/runtime-probe.php'
+docker exec --user root "$container" sh -c 'printf "%s" "<?php echo 12345;" > /app/public/runtime-probe.php'
 test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/runtime-probe.php)" = 404
 test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/index.php)" = 404
 test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/.env)" = 403
 
 # Multiple requests remain healthy and signed-link query strings stay out of logs.
 seq 1 8 | xargs -P 4 -I '{}' curl -fsS -o /dev/null http://127.0.0.1:8081/api/health
-master_pid="$(docker exec "$container" cat /run/edubridge-php.pid)"
-docker exec "$container" sh -c 'kill -TERM "$(cat /run/edubridge-php.pid)"'
+master_pid="$(docker exec "$container" cat /tmp/edubridge-php.pid)"
+docker exec "$container" sh -c 'kill -TERM "$(cat /tmp/edubridge-php.pid)"'
 restarted=false
 for _ in {1..10}; do
-  new_pid="$(docker exec "$container" cat /run/edubridge-php.pid 2>/dev/null || true)"
+  new_pid="$(docker exec "$container" cat /tmp/edubridge-php.pid 2>/dev/null || true)"
   if [[ -n "$new_pid" && "$new_pid" != "$master_pid" ]] && curl -fsS -o /dev/null http://127.0.0.1:8081/api/health; then
     restarted=true
     break
@@ -83,4 +87,4 @@ if grep -Fq 'runtime-query-sentinel' "$runtime_tmp/access.log"; then
   exit 1
 fi
 runtime_ok=true
-echo 'API runtime smoke test passed: PostgreSQL, routing, upload limits, file restrictions, concurrent requests and process recovery.'
+echo 'API runtime smoke test passed: non-root runtime, PostgreSQL, routing, upload limits, file restrictions, concurrent requests and process recovery.'
