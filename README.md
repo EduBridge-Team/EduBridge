@@ -11,7 +11,7 @@
 | `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
 | `edubridge-web/`        | واجهة الويب (React + Vite) |
 | `deploy/`               | ملفات نشر Oracle ونسخ PostgreSQL الاحتياطية |
-| `دليل التحديث والنشر.docx` | دليل تحديث ونشر المشروع خطوة بخطوة |
+| `docs/ORACLE_DEPLOYMENT.md` | دليل تحديث ونشر Oracle خطوة بخطوة |
 | `branding/`             | ملفات الهوية (الشعار والأيقونات) |
 
 ## التقنيات
@@ -165,11 +165,32 @@ flutter test integration_test/login_test.dart \
 - Caddy الموجود على الخادم ينهي TLS ويعمل reverse proxy للدومينات العامة.
 - ملفات R2 تبقى على Cloudflare R2 حسب إعدادات البيئة.
 
-النشر المتكرر يتم عبر:
+النشر المتكرر على Oracle يتم عبر سكربت النشر المخصص:
 
 ```bash
+cd ~/EduBridge
+git fetch origin
 git pull --ff-only origin main
-bash deploy/oracle-deploy.sh
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
+```
+
+> لا تشغّل `docker compose build` أو `docker compose up -d` مباشرة من جذر المستودع؛ لا يوجد ملف Compose افتراضي في الجذر. السكربت يستخدم `deploy/oracle-compose.yml` تلقائيًا.
+
+إذا احتوى الإصدار على migrations تمت مراجعتها، خذ نسخة احتياطية ثم شغّلها بشكل منفصل:
+
+```bash
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
+docker exec edubridge-api php artisan migrate --force
+```
+
+وفحص النشر:
+
+```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
+curl -I https://edubridge.win
 ```
 
 راجع `docs/ORACLE_DEPLOYMENT.md` للتفاصيل والنسخ الاحتياطي والـrollback. مسار الإنتاج المدعوم هو Oracle فقط.
