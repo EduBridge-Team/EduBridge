@@ -116,6 +116,38 @@ class ConversationControllerTest extends TestCase
         $this->assertSame([3, 1], array_column($teacherUsers, 'id'));
     }
 
+    public function test_attachment_must_be_a_private_file_owned_by_sender(): void
+    {
+        $controller = app(ConversationController::class);
+        $created = $controller->store(
+            $this->request('POST', ['other_user_id' => 2], 1, 'parent')
+        );
+        $conversationId = json_decode($created->getContent(), true)['conversation']['id'];
+
+        $external = $controller->send(
+            $this->request('POST', ['file_url' => 'https://evil.example/payload.html'], 1, 'parent'),
+            $conversationId
+        );
+        $this->assertSame(422, $external->getStatusCode());
+
+        $otherUsersFile = $controller->send(
+            $this->request('POST', ['file_url' => '/api/private-files/user/2/file.pdf'], 1, 'parent'),
+            $conversationId
+        );
+        $this->assertSame(422, $otherUsersFile->getStatusCode());
+
+        $ownFile = $controller->send(
+            $this->request('POST', ['file_url' => '/api/private-files/user/1/file.pdf'], 1, 'parent'),
+            $conversationId
+        );
+        $this->assertSame(201, $ownFile->getStatusCode());
+        $this->assertDatabaseHas('conversation_messages', [
+            'conversation_id' => $conversationId,
+            'sender_id' => 1,
+            'file_url' => '/api/private-files/user/1/file.pdf',
+        ]);
+    }
+
     private function request(string $method, array $payload, int $id, string $role): Request
     {
         $request = Request::create('/api/conversations', $method, $payload);

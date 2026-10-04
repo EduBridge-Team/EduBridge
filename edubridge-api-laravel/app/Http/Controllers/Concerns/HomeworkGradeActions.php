@@ -11,7 +11,7 @@ trait HomeworkGradeActions
     public function grade(Request $request, $submissionId)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$user || !in_array($user->role, ['teacher','specialist','admin'], true)) {
+        if (!$user || !in_array($user->role, ['teacher','admin'], true)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
@@ -31,9 +31,6 @@ trait HomeworkGradeActions
             return response()->json(['error' => 'التسليم غير موجود'], 404);
         }
         if ($user->role === 'teacher' && (int) $submission->teacher_id !== (int) $user->id) {
-            return response()->json(['error' => 'غير مصرّح'], 403);
-        }
-        if ($user->role === 'specialist' && !$this->canViewChild($user, (int) $submission->child_id)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
