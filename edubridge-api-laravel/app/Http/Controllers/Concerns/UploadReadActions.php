@@ -46,27 +46,36 @@ trait UploadReadActions
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
+        if (!$this->validFilename($filename)) {
+            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
+        }
+
+        $url = '/api/private-files/user/' . $userId . '/' . $filename;
         $allowed = $user->role === 'admin' || (int) $user->id === $userId;
 
+        // Assigned specialists may read only the child's medical report, never identity/kinship documents.
         if (!$allowed && $user->role === 'specialist') {
-            $url = '/api/private-files/user/' . $userId . '/' . $filename;
             $allowed = DB::table('children as c')
                 ->join('child_specialist as cs', 'cs.child_id', '=', 'c.id')
                 ->where('cs.specialist_id', $user->id)
-                ->where(function ($query) use ($url) {
-                    $query->where('c.guardian_id_document_url', $url)
-                        ->orWhere('c.kinship_document_url', $url)
-                        ->orWhere('c.medical_report_url', $url);
+                ->where('c.medical_report_url', $url)
+                ->exists();
+        }
+
+        // A conversation attachment is readable only by a participant in that same conversation.
+        if (!$allowed) {
+            $allowed = DB::table('conversation_messages as cm')
+                ->join('conversations as c', 'c.id', '=', 'cm.conversation_id')
+                ->where('cm.file_url', $url)
+                ->where(function ($query) use ($user) {
+                    $query->where('c.participant_one_id', $user->id)
+                        ->orWhere('c.participant_two_id', $user->id);
                 })
                 ->exists();
         }
 
         if (!$allowed) {
             return response()->json(['error' => 'غير مصرّح'], 403);
-        }
-
-        if (!$this->validFilename($filename)) {
-            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
         }
 
         return $this->streamPrivateObject('user-files/' . $userId . '/' . $filename);
