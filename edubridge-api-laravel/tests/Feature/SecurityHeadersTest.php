@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class SecurityHeadersTest extends TestCase
@@ -37,6 +39,21 @@ class SecurityHeadersTest extends TestCase
 
         $this->assertCacheControlIsPrivateAndNonCacheable($response->headers->get('Cache-Control'));
         $response->assertHeader('Pragma', 'no-cache');
+    }
+
+    public function test_authenticated_api_responses_are_not_cacheable(): void
+    {
+        $request = Request::create('/api/children', 'GET');
+        $middleware = new SecurityHeaders();
+
+        $response = $middleware->handle($request, function (Request $request) {
+            $request->attributes->set('jwt_user', (object) ['id' => 1, 'role' => 'parent']);
+
+            return response()->json(['ok' => true]);
+        });
+
+        $this->assertCacheControlIsPrivateAndNonCacheable($response->headers->get('Cache-Control'));
+        $this->assertSame('no-cache', $response->headers->get('Pragma'));
     }
 
     public function test_cors_configuration_does_not_allow_arbitrary_methods(): void
