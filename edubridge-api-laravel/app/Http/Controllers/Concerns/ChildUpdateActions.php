@@ -10,7 +10,7 @@ trait ChildUpdateActions
     public function update(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$user || !in_array($user->role, ['parent', 'teacher', 'specialist', 'admin'], true)) {
+        if (!$user || !in_array($user->role, ['parent', 'specialist', 'admin'], true)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
         if ($user->role === 'specialist' && !DB::table('child_specialist')
@@ -36,13 +36,17 @@ trait ChildUpdateActions
             }
 
             $data = [];
-            if ($request->has('name') && $request->input('name') !== null) {
-                $data['name'] = $request->input('name');
-            }
 
-            foreach (['age', 'birth_date', 'gender', 'disability_type_id'] as $field) {
-                if ($request->has($field)) {
-                    $data[$field] = $request->input($field);
+            // Demographic/core profile fields are owned by the parent/admin, not teaching staff.
+            if (in_array($user->role, ['parent', 'admin'], true)) {
+                if ($request->has('name') && $request->input('name') !== null) {
+                    $data['name'] = $request->input('name');
+                }
+
+                foreach (['age', 'birth_date', 'gender', 'disability_type_id'] as $field) {
+                    if ($request->has($field)) {
+                        $data[$field] = $request->input($field);
+                    }
                 }
             }
 
@@ -51,28 +55,34 @@ trait ChildUpdateActions
                 return $adminError;
             }
 
-            foreach (self::TEXT_FIELDS as $field) {
-                if ($request->has($field)) {
-                    $data[$field] = $request->input($field);
+            // Educational/adaptation observations may be maintained by an assigned specialist.
+            if (in_array($user->role, ['parent', 'specialist', 'admin'], true)) {
+                foreach (self::TEXT_FIELDS as $field) {
+                    if ($request->has($field)) {
+                        $data[$field] = $request->input($field);
+                    }
+                }
+
+                foreach (['strengths', 'challenges'] as $field) {
+                    if ($request->has($field)) {
+                        $value = $request->input($field);
+                        $data[$field] = $value === null
+                            ? null
+                            : json_encode($value, JSON_UNESCAPED_UNICODE);
+                    }
                 }
             }
 
-            $identityError = $this->collectIdentityChildUpdates(
-                $request,
-                $user,
-                $child,
-                $data
-            );
-            if ($identityError) {
-                return $identityError;
-            }
-
-            foreach (['strengths', 'challenges'] as $field) {
-                if ($request->has($field)) {
-                    $value = $request->input($field);
-                    $data[$field] = $value === null
-                        ? null
-                        : json_encode($value, JSON_UNESCAPED_UNICODE);
+            // Identity/relationship documents remain parent/admin controlled.
+            if (in_array($user->role, ['parent', 'admin'], true)) {
+                $identityError = $this->collectIdentityChildUpdates(
+                    $request,
+                    $user,
+                    $child,
+                    $data
+                );
+                if ($identityError) {
+                    return $identityError;
                 }
             }
 
