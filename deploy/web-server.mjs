@@ -46,12 +46,13 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
   "form-action 'self'",
   "script-src 'self' https://accounts.google.com",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  "style-src 'self'",
+  "style-src-attr 'unsafe-inline'",
+  `img-src 'self' data: blob: ${apiOrigin.origin}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://api.edubridge.win https://accounts.google.com https://*.googleapis.com",
+  `connect-src 'self' ${apiOrigin.origin} https://accounts.google.com https://*.googleapis.com`,
   "frame-src https://accounts.google.com",
-  "media-src 'self' blob: https:",
+  `media-src 'self' blob: ${apiOrigin.origin}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
@@ -162,7 +163,7 @@ createServer((req, res) => {
   res.setHeader(
     "Cache-Control",
     isHtml || spaFallback
-      ? "no-cache"
+      ? "no-store, max-age=0, must-revalidate"
       : isHashedAsset
         ? "public, max-age=31536000, immutable"
         : "public, max-age=3600",
