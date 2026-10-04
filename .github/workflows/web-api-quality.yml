@@ -199,7 +199,6 @@ jobs:
         working-directory: .
         run: echo "No Laravel changes; required Laravel tests check passes."
 
-
   postgres-migration-smoke:
     name: Fresh PostgreSQL migration
     needs: changes
@@ -284,7 +283,17 @@ jobs:
       - name: Build production API image
         run: docker build -t edubridge-api-ci edubridge-api-laravel
       - name: Verify production container
-        run: bash scripts/test_api_runtime.sh edubridge-api-ci
+        run: |
+          set -o pipefail
+          bash scripts/test_api_runtime.sh edubridge-api-ci 2>&1 | tee api-runtime-smoke.log
+      - name: Upload API runtime diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-runtime-smoke-${{ github.run_id }}
+          path: api-runtime-smoke.log
+          if-no-files-found: error
+          retention-days: 3
 
   web-build:
     name: React production build
