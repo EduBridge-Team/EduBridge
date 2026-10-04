@@ -159,6 +159,29 @@ class HomeworkSpecialistScopeTest extends TestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
+    public function test_specialist_cannot_grade_submission_even_for_assigned_child(): void
+    {
+        DB::table('homework_submissions')->insert([
+            'id' => 501,
+            'homework_id' => 100,
+            'child_id' => 10,
+            'text_answer' => 'حل الطفل أ',
+            'file_urls' => json_encode([]),
+            'is_late' => false,
+            'submitted_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = app(HomeworkController::class)->grade(
+            $this->request('PUT', ['grade' => 95], 3, 'specialist'),
+            501
+        );
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertDatabaseHas('homework_submissions', ['id' => 501, 'grade' => null]);
+    }
+
     public function test_teacher_can_grade_own_homework_and_preserve_feedback(): void
     {
         $response = app(HomeworkController::class)->grade(
