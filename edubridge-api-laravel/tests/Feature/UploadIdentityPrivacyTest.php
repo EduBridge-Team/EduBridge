@@ -55,16 +55,29 @@ class UploadIdentityPrivacyTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_assigned_specialist_cannot_open_guardian_identity_or_kinship_documents(): void
+    public function test_assigned_specialist_can_pass_document_authorization_but_unassigned_specialist_cannot(): void
     {
         $controller = app(UploadController::class);
-        $request = Request::create('/api/private-files/user/1/id.jpg', 'GET');
-        $request->attributes->set('jwt_user', (object) ['id' => 7, 'role' => 'specialist']);
 
-        $identity = $controller->show($request, 1, 'id.jpg');
-        $kinship = $controller->show($request, 1, 'kinship.pdf');
+        $assignedRequest = Request::create('/api/private-files/user/1/id.jpg', 'GET');
+        $assignedRequest->attributes->set('jwt_user', (object) ['id' => 7, 'role' => 'specialist']);
 
-        $this->assertSame(403, $identity->getStatusCode());
-        $this->assertSame(403, $kinship->getStatusCode());
+        $identity = $controller->show($assignedRequest, 1, 'id.jpg');
+        $kinship = $controller->show($assignedRequest, 1, 'kinship.pdf');
+        $medical = $controller->show($assignedRequest, 1, 'medical.pdf');
+
+        // The test environment does not configure R2, so an authorized request may end in
+        // storage-layer 500. What matters here is that assigned specialists are not rejected
+        // by the authorization gate before streaming is attempted.
+        $this->assertNotSame(403, $identity->getStatusCode());
+        $this->assertNotSame(403, $kinship->getStatusCode());
+        $this->assertNotSame(403, $medical->getStatusCode());
+
+        $unassignedRequest = Request::create('/api/private-files/user/1/id.jpg', 'GET');
+        $unassignedRequest->attributes->set('jwt_user', (object) ['id' => 8, 'role' => 'specialist']);
+
+        $this->assertSame(403, $controller->show($unassignedRequest, 1, 'id.jpg')->getStatusCode());
+        $this->assertSame(403, $controller->show($unassignedRequest, 1, 'kinship.pdf')->getStatusCode());
+        $this->assertSame(403, $controller->show($unassignedRequest, 1, 'medical.pdf')->getStatusCode());
     }
 }

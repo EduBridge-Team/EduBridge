@@ -53,12 +53,17 @@ trait UploadReadActions
         $url = '/api/private-files/user/' . $userId . '/' . $filename;
         $allowed = $user->role === 'admin' || (int) $user->id === $userId;
 
-        // Assigned specialists may read only the child's medical report, never identity/kinship documents.
+        // Assigned specialists may read only documents that belong to a child assigned to them.
+        // The relation check prevents access before accepting the child and blocks unrelated files.
         if (!$allowed && $user->role === 'specialist') {
             $allowed = DB::table('children as c')
                 ->join('child_specialist as cs', 'cs.child_id', '=', 'c.id')
                 ->where('cs.specialist_id', $user->id)
-                ->where('c.medical_report_url', $url)
+                ->where(function ($query) use ($url) {
+                    $query->where('c.guardian_id_document_url', $url)
+                        ->orWhere('c.kinship_document_url', $url)
+                        ->orWhere('c.medical_report_url', $url);
+                })
                 ->exists();
         }
 

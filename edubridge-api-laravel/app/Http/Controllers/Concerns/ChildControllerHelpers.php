@@ -50,19 +50,18 @@ trait ChildControllerHelpers
                 ->exists();
         }
 
-        // Identity and relationship documents are never exposed to staff.
-        foreach ([
-            'child_national_id',
-            'guardian_national_id',
-            'guardian_id_document_url',
-            'kinship_document_url',
-        ] as $field) {
-            unset($child->$field);
-        }
-
-        // An assigned specialist may read the medical report for care follow-up.
+        // Assigned specialists may read the child's approved identity and relationship
+        // information needed for follow-up. Other staff roles never receive these fields.
         if (!$assignedSpecialist) {
-            unset($child->medical_report_url);
+            foreach ([
+                'child_national_id',
+                'guardian_national_id',
+                'guardian_id_document_url',
+                'kinship_document_url',
+                'medical_report_url',
+            ] as $field) {
+                unset($child->$field);
+            }
         }
 
         return $child;
