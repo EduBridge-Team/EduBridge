@@ -35,6 +35,30 @@ trait ChildUpdateActions
                 }
             }
 
+            if ($user->role === 'teacher') {
+                $forbidden = array_merge(
+                    ['age', 'birth_date', 'gender', 'disability_type_id', 'strengths', 'challenges'],
+                    self::TEXT_FIELDS,
+                    self::IDENTITY_FIELDS
+                );
+                foreach ($forbidden as $field) {
+                    if ($request->has($field)) {
+                        return response()->json(['error' => 'المعلم لا يملك صلاحية تعديل هذا الحقل'], 403);
+                    }
+                }
+            }
+
+            if ($user->role === 'specialist') {
+                foreach (array_merge(
+                    ['name', 'age', 'birth_date', 'gender', 'disability_type_id'],
+                    self::IDENTITY_FIELDS
+                ) as $field) {
+                    if ($request->has($field)) {
+                        return response()->json(['error' => 'المختص لا يملك صلاحية تعديل هذا الحقل'], 403);
+                    }
+                }
+            }
+
             $data = [];
 
             // Keep the existing teacher rename flow, but block broader demographic/profile edits.
@@ -72,18 +96,6 @@ trait ChildUpdateActions
                             : json_encode($value, JSON_UNESCAPED_UNICODE);
                     }
                 }
-            }
-
-            // Identity/relationship documents remain parent/admin controlled.
-            $identityFieldsPresent = false;
-            foreach (self::IDENTITY_FIELDS as $field) {
-                if ($request->has($field)) {
-                    $identityFieldsPresent = true;
-                    break;
-                }
-            }
-            if ($identityFieldsPresent && !in_array($user->role, ['parent', 'admin'], true)) {
-                return response()->json(['error' => 'غير مصرّح'], 403);
             }
 
             if (in_array($user->role, ['parent', 'admin'], true)) {
