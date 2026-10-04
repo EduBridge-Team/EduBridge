@@ -5,6 +5,7 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ChildAccessMiddleware;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\WebSessionBridge;
+use App\Support\TrustedProxyConfiguration;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,17 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Caddy is responsible for sanitizing forwarded headers and, when Cloudflare
         // proxying is enabled, replacing X-Forwarded-For with the parsed client IP.
         $middleware->trustProxies(
-            at: [
-                '127.0.0.1',
-                '::1',
-                '10.0.0.0/8',
-                '172.16.0.0/12',
-                '192.168.0.0/16',
-            ],
-            headers: Request::HEADER_X_FORWARDED_FOR
-                | Request::HEADER_X_FORWARDED_HOST
-                | Request::HEADER_X_FORWARDED_PORT
-                | Request::HEADER_X_FORWARDED_PROTO,
+            at: TrustedProxyConfiguration::PROXIES,
+            headers: TrustedProxyConfiguration::HEADERS,
         );
 
         $middleware->append(WebSessionBridge::class);
