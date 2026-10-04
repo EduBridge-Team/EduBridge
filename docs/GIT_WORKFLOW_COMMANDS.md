@@ -106,6 +106,47 @@ develop
 
 `main` يمثل نسخة الإنتاج.
 
+### تحديث Oracle بعد الدمج إلى `main`
+
+على خادم Oracle، استخدم سكربت النشر الموجود في المستودع بدل تشغيل `docker compose` مباشرة من جذر المشروع:
+
+```bash
+cd ~/EduBridge
+git fetch origin
+git pull --ff-only origin main
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
+```
+
+السكربت يستخدم `deploy/oracle-compose.yml` داخليًا، يبني صور API والويب، يعيد إنشاء حاويات التطبيق، يفحص الصحة، ويتأكد أن الحاوية تعمل على نفس Git SHA.
+
+إذا كان الإصدار يحتوي migrations تمت مراجعتها، خذ نسخة احتياطية أولًا ثم نفّذها بشكل منفصل:
+
+```bash
+cd ~/EduBridge
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
+
+docker exec edubridge-api php artisan migrate --force
+```
+
+فحص سريع بعد النشر:
+
+```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
+curl -I https://edubridge.win
+```
+
+لا تستخدم من جذر المستودع:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+لأنه لا يوجد ملف Compose افتراضي في الجذر؛ مسار الإنتاج المدعوم هو `deploy/oracle-deploy.sh`.
+
 ## 5. Hotfix لمشكلة عاجلة في الإنتاج
 
 ابدأ من `main`:
