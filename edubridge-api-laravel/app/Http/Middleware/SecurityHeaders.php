@@ -25,7 +25,11 @@ class SecurityHeaders
         );
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
 
-        if ($request->is('api/auth/*') || $request->is('api/private-files/*')) {
+        $isSensitiveApiResponse = $request->is('api/auth/*')
+            || $request->is('api/private-files/*')
+            || ($request->is('api/*') && $request->attributes->has('jwt_user'));
+
+        if ($isSensitiveApiResponse) {
             $response->headers->set('Cache-Control', 'no-store, private, max-age=0, must-revalidate');
             $response->headers->set('Pragma', 'no-cache');
         }
