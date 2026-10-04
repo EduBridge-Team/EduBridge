@@ -14,11 +14,29 @@ class SecurityHeadersTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        $response->assertHeader('X-Permitted-Cross-Domain-Policies', 'none');
+        $response->assertHeader('Origin-Agent-Cluster', '?1');
         $response->assertHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
         $response->assertHeader(
             'Permissions-Policy',
             'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()'
         );
+    }
+
+    public function test_auth_responses_are_not_cacheable(): void
+    {
+        $response = $this->postJson('/api/auth/login', []);
+
+        $response->assertHeader('Cache-Control', 'no-store, private, max-age=0, must-revalidate');
+        $response->assertHeader('Pragma', 'no-cache');
+    }
+
+    public function test_private_file_responses_are_not_cacheable_even_when_request_is_rejected(): void
+    {
+        $response = $this->get('/api/private-files/lesson/1/example.pdf');
+
+        $response->assertHeader('Cache-Control', 'no-store, private, max-age=0, must-revalidate');
+        $response->assertHeader('Pragma', 'no-cache');
     }
 
     public function test_cors_configuration_does_not_allow_arbitrary_methods(): void
