@@ -23,7 +23,7 @@ class ProductionSecurityConfigurationTest extends TestCase
 
         $this->assertIsString($cors);
         $this->assertStringContainsString("['local', 'testing']", $cors);
-        $this->assertStringContainsString("$allowLocalOrigins ? [", $cors);
+        $this->assertStringContainsString('$allowLocalOrigins ? [', $cors);
         $this->assertStringContainsString("'#^http://localhost:[0-9]+$#'", $cors);
         $this->assertStringContainsString("'#^http://127[.]0[.]1:[0-9]+$#'", $cors);
     }
