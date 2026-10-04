@@ -22,6 +22,24 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../app/Console/Commands',
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        // Public traffic reaches Laravel only through the host Caddy reverse proxy.
+        // Trust loopback/private Docker networks, but never arbitrary internet peers.
+        // Caddy is responsible for sanitizing forwarded headers and, when Cloudflare
+        // proxying is enabled, replacing X-Forwarded-For with the parsed client IP.
+        $middleware->trustProxies(
+            at: [
+                '127.0.0.1',
+                '::1',
+                '10.0.0.0/8',
+                '172.16.0.0/12',
+                '192.168.0.0/16',
+            ],
+            headers: Request::HEADER_X_FORWARDED_FOR
+                | Request::HEADER_X_FORWARDED_HOST
+                | Request::HEADER_X_FORWARDED_PORT
+                | Request::HEADER_X_FORWARDED_PROTO,
+        );
+
         $middleware->append(WebSessionBridge::class);
         $middleware->append(SecurityHeaders::class);
 
