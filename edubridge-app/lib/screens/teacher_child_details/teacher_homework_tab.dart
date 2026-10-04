@@ -127,6 +127,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
     return Column(
       children: [
         _buildFilterBar(),
@@ -141,14 +142,14 @@ class _HomeworkTabState extends State<_HomeworkTab>
               ),
               Positioned(
                 left: 16,
-                bottom: 16,
+                bottom: 24 + bottomInset,
                 child: FloatingActionButton.extended(
                   heroTag: 'create-homework-${widget.childId}',
                   onPressed: _createHomework,
                   icon: const Icon(AppIcons.add),
                   label: const Text(
                     'إنشاء واجب',
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                    style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
                   ),
                 ),
               ),
