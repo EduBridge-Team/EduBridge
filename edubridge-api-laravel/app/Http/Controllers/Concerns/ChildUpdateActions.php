@@ -10,7 +10,7 @@ trait ChildUpdateActions
     public function update(Request $request, $id)
     {
         $user = $request->attributes->get('jwt_user');
-        if (!$user || !in_array($user->role, ['parent', 'specialist', 'admin'], true)) {
+        if (!$user || !in_array($user->role, ['parent', 'teacher', 'specialist', 'admin'], true)) {
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
         if ($user->role === 'specialist' && !DB::table('child_specialist')
@@ -37,12 +37,13 @@ trait ChildUpdateActions
 
             $data = [];
 
-            // Demographic/core profile fields are owned by the parent/admin, not teaching staff.
-            if (in_array($user->role, ['parent', 'admin'], true)) {
-                if ($request->has('name') && $request->input('name') !== null) {
-                    $data['name'] = $request->input('name');
-                }
+            // Keep the existing teacher rename flow, but block broader demographic/profile edits.
+            if (in_array($user->role, ['parent', 'teacher', 'admin'], true)
+                && $request->has('name') && $request->input('name') !== null) {
+                $data['name'] = $request->input('name');
+            }
 
+            if (in_array($user->role, ['parent', 'admin'], true)) {
                 foreach (['age', 'birth_date', 'gender', 'disability_type_id'] as $field) {
                     if ($request->has($field)) {
                         $data[$field] = $request->input($field);
@@ -74,6 +75,17 @@ trait ChildUpdateActions
             }
 
             // Identity/relationship documents remain parent/admin controlled.
+            $identityFieldsPresent = false;
+            foreach (self::IDENTITY_FIELDS as $field) {
+                if ($request->has($field)) {
+                    $identityFieldsPresent = true;
+                    break;
+                }
+            }
+            if ($identityFieldsPresent && !in_array($user->role, ['parent', 'admin'], true)) {
+                return response()->json(['error' => 'غير مصرّح'], 403);
+            }
+
             if (in_array($user->role, ['parent', 'admin'], true)) {
                 $identityError = $this->collectIdentityChildUpdates(
                     $request,
