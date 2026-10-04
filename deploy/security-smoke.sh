@@ -18,6 +18,18 @@ header_value() {
   awk -v IGNORECASE=1 -v key="$name:" '$1 == key {sub(/^[^:]+:[[:space:]]*/, ""); gsub(/\r$/, ""); print; exit}' <<<"$headers"
 }
 
+csp_directive() {
+  local policy="$1"
+  local directive="$2"
+  tr ';' '\n' <<<"$policy" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | awk -v name="$directive" '$1 == name {print; exit}'
+}
+
+directive_has_token() {
+  local directive_value="$1"
+  local token="$2"
+  awk -v wanted="$token" '{for (i = 2; i <= NF; i++) if ($i == wanted) {found=1; exit}} END {exit found ? 0 : 1}' <<<"$directive_value"
+}
+
 echo "==> Checking HTTPS web response..."
 web_headers="$(curl -fsSI --max-time 15 "$WEB_URL" || true)"
 [[ -n "$web_headers" ]] || fail "Unable to fetch $WEB_URL"
@@ -27,11 +39,19 @@ csp="$(header_value "$web_headers" "Content-Security-Policy")"
 cto="$(header_value "$web_headers" "X-Content-Type-Options")"
 referrer="$(header_value "$web_headers" "Referrer-Policy")"
 cache="$(header_value "$web_headers" "Cache-Control")"
+img_src="$(csp_directive "$csp" "img-src")"
+media_src="$(csp_directive "$csp" "media-src")"
 
 [[ "$hsts" == *"max-age="* ]] || fail "HSTS header is missing or invalid"
 [[ "$csp" == *"default-src 'self'"* ]] || fail "CSP header is missing expected default-src"
-[[ "$csp" != *"img-src 'self' data: blob: https:"* ]] || fail "CSP still allows arbitrary HTTPS image origins"
-[[ "$csp" != *"media-src 'self' blob: https:"* ]] || fail "CSP still allows arbitrary HTTPS media origins"
+[[ -n "$img_src" ]] || fail "CSP img-src directive is missing"
+[[ -n "$media_src" ]] || fail "CSP media-src directive is missing"
+if directive_has_token "$img_src" "https:"; then
+  fail "CSP still allows arbitrary HTTPS image origins"
+fi
+if directive_has_token "$media_src" "https:"; then
+  fail "CSP still allows arbitrary HTTPS media origins"
+fi
 [[ "$cto" == "nosniff" ]] || fail "X-Content-Type-Options is not nosniff"
 [[ -n "$referrer" ]] || fail "Referrer-Policy header is missing"
 [[ "$cache" == *"no-store"* ]] || fail "HTML response is not marked no-store"
