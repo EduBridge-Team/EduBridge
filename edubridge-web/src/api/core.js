@@ -25,6 +25,7 @@ export function logout() {
   fetch(`${BASE_URL}/auth/logout`, {
     method: "POST",
     credentials: "same-origin",
+    keepalive: true,
     headers: { "Content-Type": "application/json", ...WEB_CLIENT_HEADER },
   }).catch(() => {});
 
