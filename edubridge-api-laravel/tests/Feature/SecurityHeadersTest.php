@@ -27,7 +27,7 @@ class SecurityHeadersTest extends TestCase
     {
         $response = $this->postJson('/api/auth/login', []);
 
-        $response->assertHeader('Cache-Control', 'no-store, private, max-age=0, must-revalidate');
+        $this->assertCacheControlIsPrivateAndNonCacheable($response->headers->get('Cache-Control'));
         $response->assertHeader('Pragma', 'no-cache');
     }
 
@@ -35,7 +35,7 @@ class SecurityHeadersTest extends TestCase
     {
         $response = $this->get('/api/private-files/lesson/1/example.pdf');
 
-        $response->assertHeader('Cache-Control', 'no-store, private, max-age=0, must-revalidate');
+        $this->assertCacheControlIsPrivateAndNonCacheable($response->headers->get('Cache-Control'));
         $response->assertHeader('Pragma', 'no-cache');
     }
 
@@ -48,5 +48,14 @@ class SecurityHeadersTest extends TestCase
             ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
             $methods
         );
+    }
+
+    private function assertCacheControlIsPrivateAndNonCacheable(?string $value): void
+    {
+        $this->assertNotNull($value);
+
+        foreach (['no-store', 'private', 'max-age=0', 'must-revalidate'] as $directive) {
+            $this->assertStringContainsString($directive, $value);
+        }
     }
 }
