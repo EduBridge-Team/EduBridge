@@ -45,6 +45,8 @@ RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
         /tmp/edubridge-nginx/client_body \
         /tmp/edubridge-nginx/proxy \
         /tmp/edubridge-nginx/fastcgi \
+        /tmp/edubridge-nginx/uwsgi \
+        /tmp/edubridge-nginx/scgi \
     && chown -R www-data:www-data storage bootstrap/cache /tmp/edubridge-nginx
 
 ENV APP_ENV=production \
