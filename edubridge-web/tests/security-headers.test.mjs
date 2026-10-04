@@ -13,6 +13,8 @@ test('web server sends the expected baseline security headers', () => {
     'X-Frame-Options',
     'Permissions-Policy',
     'Cross-Origin-Opener-Policy',
+    'X-Permitted-Cross-Domain-Policies',
+    'Origin-Agent-Cluster',
   ]) {
     assert.match(source, new RegExp(header))
   }
