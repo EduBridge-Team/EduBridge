@@ -69,11 +69,18 @@ Widget buildImagesPicker({
         ],
         SizedBox(
           width: double.infinity,
-          height: 42,
+          height: 50,
           child: FilledButton.icon(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.brandBlue, foregroundColor: Colors.white),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.brandBlue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
             icon: const Icon(AppIcons.upload, size: 18),
-            label: Text(imageFiles.isEmpty ? 'رفع الصور' : 'إعادة رفع الصور'),
+            label: Text(
+              imageFiles.isEmpty ? 'رفع الصور' : 'تغيير الصور',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, height: 1.2),
+            ),
             onPressed: onPick,
           ),
         ),
@@ -91,6 +98,7 @@ Widget buildFilePicker({
   required File? file,
   required VoidCallback onPick,
   required VoidCallback onClear,
+  String uploadLabel = 'رفع الملف',
 }) {
   return Container(
     padding: const EdgeInsets.all(12),
@@ -115,11 +123,18 @@ Widget buildFilePicker({
         if (file == null)
           SizedBox(
             width: double.infinity,
-            height: 42,
+            height: 50,
             child: FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
+              style: FilledButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
               icon: const Icon(AppIcons.upload, size: 18),
-              label: const Text('رفع الملف'),
+              label: Text(
+                uploadLabel,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, height: 1.2),
+              ),
               onPressed: onPick,
             ),
           )
@@ -145,11 +160,18 @@ Widget buildFilePicker({
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
-                height: 42,
+                height: 50,
                 child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: color,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
                   icon: const Icon(AppIcons.upload, size: 18),
-                  label: const Text('إعادة رفع الملف'),
+                  label: Text(
+                    'تغيير $uploadLabel',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, height: 1.2),
+                  ),
                   onPressed: onPick,
                 ),
               ),

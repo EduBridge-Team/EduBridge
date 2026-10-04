@@ -89,6 +89,7 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
     return Column(
       children: [
         SingleChildScrollView(
@@ -127,7 +128,7 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
                                   Center(child: Text('لا توجد واجبات ضمن هذا التصنيف', style: TextStyle(color: c.muted))),
                                 ])
                               : ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
+                                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
                                   itemCount: _filtered.length,
                                   itemBuilder: (_, i) {
                                     final h = _filtered[i];
@@ -161,12 +162,12 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
               ),
               Positioned(
                 left: 16,
-                bottom: 16,
+                bottom: 24 + bottomInset,
                 child: FloatingActionButton.extended(
                   heroTag: 'teacher-create-homework',
                   onPressed: _createHomework,
                   icon: const Icon(AppIcons.add),
-                  label: const Text('إنشاء واجب', style: TextStyle(fontWeight: FontWeight.w800)),
+                  label: const Text('إنشاء واجب', style: TextStyle(fontWeight: FontWeight.w800, height: 1.15)),
                 ),
               ),
             ],

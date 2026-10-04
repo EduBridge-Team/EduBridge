@@ -201,7 +201,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   Widget _formContent(JisrColors c) {
     return SingleChildScrollView(
       padding: widget.fullScreen
-          ? const EdgeInsets.fromLTRB(16, 16, 16, 112)
+          ? const EdgeInsets.fromLTRB(16, 16, 16, 128)
           : EdgeInsets.zero,
       child: Container(
         margin: widget.fullScreen
@@ -314,33 +314,36 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               c: c,
               icon: AppIcons.video,
               label: 'فيديو الدرس (اختياري)',
-              sublabel: 'ارفع شرحاً مرئياً للدرس',
+              sublabel: 'أرفق فيديو يشرح محتوى الدرس',
               color: AppColors.brandTeal,
               file: _videoFile,
               onPick: _pickVideo,
               onClear: () => setState(() => _videoFile = null),
+              uploadLabel: 'رفع الفيديو',
             ),
             const SizedBox(height: 12),
             buildFilePicker(
               c: c,
               icon: AppIcons.captions,
-              label: 'ملف ترجمات (اختياري)',
-              sublabel: 'ملف .vtt أو .srt — للصمّ وضعاف السمع',
+              label: 'ملف الترجمة (اختياري)',
+              sublabel: 'ملف VTT أو SRT للصم وضعاف السمع',
               color: AppColors.brandTeal,
               file: _captionFile,
               onPick: _pickCaption,
               onClear: () => setState(() => _captionFile = null),
+              uploadLabel: 'رفع ملف الترجمة',
             ),
             const SizedBox(height: 12),
             buildFilePicker(
               c: c,
               icon: AppIcons.signLanguage,
               label: 'فيديو لغة الإشارة (اختياري)',
-              sublabel: 'فيديو المترجم — للصمّ',
+              sublabel: 'أرفق فيديو مترجماً بلغة الإشارة',
               color: AppColors.brandTeal,
               file: _signLanguageFile,
               onPick: _pickSignLanguage,
               onClear: () => setState(() => _signLanguageFile = null),
+              uploadLabel: 'رفع فيديو الإشارة',
             ),
             const SizedBox(height: 12),
             TextField(
@@ -348,7 +351,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               maxLines: 3,
               decoration: const InputDecoration(
                 labelText: 'الوصف الصوتي (اختياري)',
-                hintText: 'وصف ما يحدث في الفيديو — للكفيف',
+                hintText: 'صف ما يحدث في الفيديو للمكفوفين وضعاف البصر',
                 alignLabelWithHint: true,
                 prefixIcon: Icon(AppIcons.speech),
               ),
@@ -358,11 +361,12 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               c: c,
               icon: AppIcons.audio,
               label: 'تسجيل صوتي (اختياري)',
-              sublabel: 'بديل عن الفيديو',
+              sublabel: 'أرفق تسجيلاً صوتياً بديلاً عن الفيديو',
               color: AppColors.brandTeal,
               file: _audioFile,
               onPick: _pickAudio,
               onClear: () => setState(() => _audioFile = null),
+              uploadLabel: 'رفع التسجيل الصوتي',
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
@@ -382,6 +386,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     final content = GestureDetector(onTap: () {}, child: _formContent(c));
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
     return GestureDetector(
       onTap: widget.fullScreen ? null : widget.onClose,
@@ -396,7 +401,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                   Positioned.fill(child: content),
                   Positioned(
                     left: 16,
-                    bottom: 16,
+                    bottom: 24 + bottomInset,
                     width: 220,
                     child: _buildSaveButton(),
                   ),

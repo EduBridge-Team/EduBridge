@@ -8,7 +8,7 @@ extension _LessonsTabStateView on _LessonsTabState {
       body = const Center(child: CircularProgressIndicator());
     } else if (_error != null) {
       body = ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 104),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         children: [
           const SizedBox(height: 90),
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
@@ -35,7 +35,7 @@ extension _LessonsTabStateView on _LessonsTabState {
     } else if (_lessons.isEmpty) {
       final c = JisrColors.of(context);
       body = ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 104),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         children: [
           const SizedBox(height: 100),
           Center(
@@ -69,7 +69,7 @@ extension _LessonsTabStateView on _LessonsTabState {
       body = RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 104),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 120),
           children: [
             _buildSummaryCard(),
             const SizedBox(height: 16),
@@ -84,19 +84,21 @@ extension _LessonsTabStateView on _LessonsTabState {
       );
     }
 
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
     return Stack(
       children: [
         Positioned.fill(child: body),
         PositionedDirectional(
           start: 20,
-          bottom: 20,
+          bottom: 24 + bottomInset,
           child: FloatingActionButton.extended(
             heroTag: 'add-lesson-${widget.childId}',
             onPressed: _addLesson,
             icon: const Icon(AppIcons.add),
             label: const Text(
               'إضافة درس',
-              style: TextStyle(fontWeight: FontWeight.w800),
+              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),
         ),
