@@ -5,6 +5,7 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ChildAccessMiddleware;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\WebSessionBridge;
+use App\Support\TrustedProxyConfiguration;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +23,15 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../app/Console/Commands',
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        // Public traffic reaches Laravel only through the host Caddy reverse proxy.
+        // Trust loopback/private Docker networks, but never arbitrary internet peers.
+        // Caddy is responsible for sanitizing forwarded headers and, when Cloudflare
+        // proxying is enabled, replacing X-Forwarded-For with the parsed client IP.
+        $middleware->trustProxies(
+            at: TrustedProxyConfiguration::PROXIES,
+            headers: TrustedProxyConfiguration::HEADERS,
+        );
+
         $middleware->append(WebSessionBridge::class);
         $middleware->append(SecurityHeaders::class);
 
