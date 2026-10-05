@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -15,6 +16,19 @@ Route::get('/health', function () {
         'status' => $statusCode === 200 ? 'ok' : 'degraded',
     ], $statusCode);
 })->middleware('throttle:120,1');
+
+// Temporary, signed-only diagnostic endpoint used to verify Cloudflare -> Caddy
+// client IP forwarding in production. Remove immediately after verification.
+Route::get('/_debug/client-ip', function (Request $request) {
+    return response()->json([
+        'ip' => $request->ip(),
+        'ips' => $request->ips(),
+        'remote_addr' => $request->server('REMOTE_ADDR'),
+        'x_forwarded_for' => $request->header('X-Forwarded-For'),
+        'x_real_ip' => $request->header('X-Real-IP'),
+        'cf_connecting_ip' => $request->header('CF-Connecting-IP'),
+    ]);
+})->name('debug.client-ip')->middleware(['signed:relative', 'throttle:5,1']);
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register'])
