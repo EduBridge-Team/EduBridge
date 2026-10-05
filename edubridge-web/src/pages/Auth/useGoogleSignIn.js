@@ -11,10 +11,12 @@ export function useGoogleSignIn({ navigate, setError, setLoading, googleRole }) 
     if (!googleClientId) return undefined
 
     let cancelled = false
+    let revealTimer
 
     const setupGoogle = () => {
       if (cancelled || !window.google?.accounts?.id) return false
 
+      setGoogleReady(false)
       window.google.accounts.id.initialize({
         client_id: googleClientId,
         callback: async (response) => {
@@ -42,7 +44,13 @@ export function useGoogleSignIn({ navigate, setError, setLoading, googleRole }) 
           width: 320,
           locale: 'ar',
         })
-        setGoogleReady(true)
+
+        // Google briefly paints an oversized intermediate state on some mobile
+        // browsers while its iframe/styles settle. Keep it clipped and hidden
+        // until the provider has had a moment to finish layout.
+        revealTimer = window.setTimeout(() => {
+          if (!cancelled) setGoogleReady(true)
+        }, 180)
       }
       return true
     }
@@ -54,6 +62,7 @@ export function useGoogleSignIn({ navigate, setError, setLoading, googleRole }) 
 
     return () => {
       cancelled = true
+      if (revealTimer) window.clearTimeout(revealTimer)
     }
   }, [navigate, setError, setLoading, googleRole])
 
