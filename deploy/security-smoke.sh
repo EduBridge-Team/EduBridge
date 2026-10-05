@@ -3,7 +3,8 @@ set -Eeuo pipefail
 
 WEB_URL="${EDUBRIDGE_WEB_URL:-https://edubridge.win}"
 HTTP_URL="${EDUBRIDGE_HTTP_URL:-http://edubridge.win}"
-API_URL="${EDUBRIDGE_API_URL:-https://api.edubridge.win/api/health}"
+API_ROOT_URL="${EDUBRIDGE_API_ROOT_URL:-https://api.edubridge.win}"
+API_URL="${EDUBRIDGE_API_URL:-${API_ROOT_URL%/}/api/health}"
 
 failures=0
 
@@ -102,6 +103,16 @@ if [[ "$http_status" != "301" && "$http_status" != "302" && "$http_status" != "3
 elif [[ "$location" != https://* ]]; then
   fail "$HTTP_URL redirect location is not HTTPS: ${location:-missing}"
 fi
+
+echo "==> Checking public API root is stateless..."
+api_root_headers="$(curl -fsSI --max-time 15 "$API_ROOT_URL" || true)"
+[[ -n "$api_root_headers" ]] || fail "Unable to fetch API root headers from $API_ROOT_URL"
+check_common_headers "$api_root_headers" "API root"
+api_root_cookie_count="$(header_count "$api_root_headers" "Set-Cookie")"
+[[ "$api_root_cookie_count" == "0" ]] || fail "API root unexpectedly sets $api_root_cookie_count cookie header(s)"
+
+actuator_status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "${API_ROOT_URL%/}/actuator/health" || true)"
+[[ "$actuator_status" == "404" ]] || fail "Unknown actuator probe should return 404, got ${actuator_status:-missing}"
 
 echo "==> Checking public API health..."
 api_headers="$(curl -fsSI --max-time 15 "$API_URL" || true)"
