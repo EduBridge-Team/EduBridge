@@ -12,7 +12,23 @@
     }
 }
 
+(edubridge_security_headers) {
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Permitted-Cross-Domain-Policies "none"
+        Origin-Agent-Cluster "?1"
+        Permissions-Policy "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()"
+        Cross-Origin-Opener-Policy "same-origin-allow-popups"
+        -Server
+    }
+}
+
 api.edubridge.win {
+    import edubridge_security_headers
+
     reverse_proxy 127.0.0.1:8081 {
         # Pass only Caddy's parsed client identity to Laravel. Requests that
         # arrive directly (not from a trusted Cloudflare range) use the actual
@@ -23,6 +39,13 @@ api.edubridge.win {
 }
 
 edubridge.win {
+    import edubridge_security_headers
+
+    # Keep the browser policy at the edge as well as in the Node web server so
+    # static assets and fallback responses cannot lose the policy during proxy
+    # or deployment changes.
+    header Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://accounts.google.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob: https://api.edubridge.win; font-src 'self' data:; connect-src 'self' https://api.edubridge.win https://accounts.google.com https://*.googleapis.com; frame-src https://accounts.google.com; media-src 'self' blob: https://api.edubridge.win; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+
     reverse_proxy 127.0.0.1:8082
 }
 
