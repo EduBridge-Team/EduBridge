@@ -63,7 +63,7 @@ test "$(docker exec "$container" id -u)" != "0"
 current_stage="service configuration"
 docker exec "$container" nginx -t
 docker exec "$container" php-fpm -t
-docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "384M" && extension_loaded("Zend OPcache") ? 0 : 1);'
+docker exec "$container" php -r 'exit(ini_get("upload_max_filesize") === "150M" && ini_get("post_max_size") === "170M" && extension_loaded("Zend OPcache") ? 0 : 1);'
 
 current_stage="database migration"
 docker exec "$container" php artisan migrate --force

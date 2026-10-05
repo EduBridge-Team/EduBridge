@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApiAbuseProtection;
 use App\Http\Middleware\JwtAuth;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ChildAccessMiddleware;
@@ -41,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'child.access' => ChildAccessMiddleware::class,
             'identity.verified' => \App\Http\Middleware\RequireIdentityVerification::class,
+            'api.abuse' => ApiAbuseProtection::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
