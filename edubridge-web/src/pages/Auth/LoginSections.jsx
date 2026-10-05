@@ -108,7 +108,11 @@ export function LoginCard({
                 إذا كان حسابك موجوداً مسبقاً فسيتم استخدام دوره الحالي ولن يتغير.
               </p>
             </div>
-            <div id="google-signin-button" className="google-btn-shell" />
+            <div
+              id="google-signin-button"
+              className={`google-btn-shell${googleReady ? ' is-ready' : ''}`}
+              aria-hidden={!googleReady}
+            />
             {!googleReady && <div className="auth-google-loading">جارِ تحميل Google…</div>}
           </div>
         </div>
