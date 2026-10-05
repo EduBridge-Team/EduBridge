@@ -3,7 +3,7 @@ import { googleLogin } from '../../api'
 import { dashboardFor } from '../../roleRoutes'
 import { loadGoogleIdentity } from './googleIdentity.js'
 
-export function useGoogleSignIn({ navigate, setError, setLoading }) {
+export function useGoogleSignIn({ navigate, setError, setLoading, googleRole }) {
   const [googleReady, setGoogleReady] = useState(false)
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function useGoogleSignIn({ navigate, setError, setLoading }) {
           setError(null)
           setLoading(true)
           try {
-            const user = await googleLogin(response.credential)
+            const user = await googleLogin(response.credential, googleRole)
             navigate(dashboardFor(user))
           } catch (err) {
             setError(err.message)
@@ -33,6 +33,7 @@ export function useGoogleSignIn({ navigate, setError, setLoading }) {
 
       const container = document.getElementById('google-signin-button')
       if (container) {
+        container.replaceChildren()
         window.google.accounts.id.renderButton(container, {
           theme: 'outline',
           size: 'large',
@@ -54,7 +55,7 @@ export function useGoogleSignIn({ navigate, setError, setLoading }) {
     return () => {
       cancelled = true
     }
-  }, [navigate, setError, setLoading])
+  }, [navigate, setError, setLoading, googleRole])
 
   return googleReady
 }

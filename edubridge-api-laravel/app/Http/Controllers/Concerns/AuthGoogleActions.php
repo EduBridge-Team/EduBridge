@@ -45,19 +45,32 @@ trait AuthGoogleActions
             }
 
             $user = DB::table('users')->where('email', $email)->first();
+            $isNewUser = false;
 
             if (!$user) {
+                $allowedRoles = ['parent', 'teacher', 'specialist'];
+                $role = (string) $request->input('role', '');
+
+                if (!in_array($role, $allowedRoles, true)) {
+                    return response()->json([
+                        'error' => 'اختر نوع الحساب للمتابعة باستخدام Google',
+                        'code' => 'GOOGLE_ROLE_REQUIRED',
+                        'allowed_roles' => $allowedRoles,
+                    ], 422);
+                }
+
                 $passwordHash = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT, ['cost' => 10]);
                 $insert = [
                     'name' => $name,
                     'email' => $email,
                     'password_hash' => $passwordHash,
-                    'role' => 'parent',
+                    'role' => $role,
                 ];
                 if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'email_verified_at')) {
                     $insert['email_verified_at'] = now();
                 }
                 $id = DB::table('users')->insertGetId($insert);
+                $isNewUser = true;
 
                 $user = DB::table('users')
                     ->select('id', 'name', 'email', 'role', 'phone', 'created_at')
@@ -80,6 +93,7 @@ trait AuthGoogleActions
 
             return response()->json([
                 'token' => $token,
+                'is_new_user' => $isNewUser,
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,

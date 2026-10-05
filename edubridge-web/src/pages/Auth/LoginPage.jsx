@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [params] = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [googleRole, setGoogleRole] = useState('parent')
   const [error, setError] = useState(null)
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,7 +35,7 @@ export default function LoginPage() {
     }
   }, [])
 
-  const googleReady = useGoogleSignIn({ navigate, setError, setLoading })
+  const googleReady = useGoogleSignIn({ navigate, setError, setLoading, googleRole })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -74,9 +75,11 @@ export default function LoginPage() {
           email={email}
           error={error}
           googleReady={googleReady}
+          googleRole={googleRole}
           loading={loading}
           notice={notice}
           onEmailChange={setEmail}
+          onGoogleRoleChange={setGoogleRole}
           onPasswordChange={setPassword}
           onResendVerification={resendVerification}
           onSubmit={handleSubmit}

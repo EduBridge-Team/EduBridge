@@ -199,7 +199,39 @@ extension _LoginScreenStateView on _LoginScreenState {
                                 child: const Text('نسيت كلمة المرور؟'),
                               ),
                               if (GoogleAuthService.isConfigured) ...[
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 10),
+                                DropdownButtonFormField<String>(
+                                  initialValue: _googleRole,
+                                  decoration: const InputDecoration(
+                                    labelText: 'نوع الحساب للحساب الجديد',
+                                    prefixIcon: Icon(Icons.badge_outlined),
+                                  ),
+                                  items: _LoginScreenState._googleRoles.entries
+                                      .map(
+                                        (entry) => DropdownMenuItem<String>(
+                                          value: entry.key,
+                                          child: Text(entry.value),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: _loading
+                                      ? null
+                                      : (value) {
+                                          if (value != null) {
+                                            _refreshState(
+                                                () => _googleRole = value);
+                                          }
+                                        },
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'إذا كان حسابك موجوداً مسبقاً فسيتم استخدام دوره الحالي ولن يتغير.',
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: colors.muted,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
                                 OutlinedButton.icon(
                                   onPressed: _loading ? null : _googleLogin,
                                   icon: const Icon(Icons.account_circle_outlined),
@@ -235,6 +267,5 @@ extension _LoginScreenStateView on _LoginScreenState {
         ],
       ),
     );
-  
   }
 }
