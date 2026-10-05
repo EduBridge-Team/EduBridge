@@ -25,12 +25,19 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
       <div className="auth-card-corner-dots" aria-hidden="true" />
       <BrandLogo className="auth-brand-logo" />
       <h1 className="auth-welcome-title">ابدأ رحلتك مع EduBridge</h1>
-      <p className="auth-welcome-copy">أنشئ حسابك خلال دقيقة، ويمكنك استكمال بياناتك لاحقًا.</p>
+      <p className="auth-welcome-copy">أنشئ حسابك الأساسي الآن، ويمكنك استكمال بياناتك لاحقًا.</p>
 
       <form className="auth-register-form" onSubmit={onSubmit}>
         <div className="auth-field">
-          <label htmlFor="name">الاسم</label>
-          <input id="name" autoComplete="name" placeholder="الاسم الكامل" value={form.name} onChange={onChange('name')} required />
+          <label htmlFor="name">الاسم الكامل</label>
+          <input
+            id="name"
+            autoComplete="name"
+            placeholder="اكتب اسمك الكامل"
+            value={form.name}
+            onChange={onChange('name')}
+            required
+          />
         </div>
 
         <div className="auth-field">
@@ -48,6 +55,16 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
         </div>
 
         <div className="auth-field">
+          <label htmlFor="role">نوع الحساب</label>
+          <select id="role" value={form.role} onChange={onChange('role')}>
+            <option value="parent">ولي أمر</option>
+            <option value="teacher">معلّم</option>
+            <option value="specialist">مختص</option>
+          </select>
+          <p className="auth-field-hint">اختر الدور الذي ستستخدم به المنصة. لا تظهر الأدوار الإدارية هنا.</p>
+        </div>
+
+        <div className="auth-field">
           <label htmlFor="national_id">رقم الهوية <small>(اختياري)</small></label>
           <input
             id="national_id"
@@ -55,31 +72,23 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             onChange={onChange('national_id')}
             inputMode="numeric"
             dir="ltr"
+            placeholder="يمكن إضافته لاحقًا"
             aria-describedby="national-id-hint"
           />
-          <p id="national-id-hint" className="auth-field-hint">يمكنك إضافة الهوية لاحقاً لتوثيق حسابك.</p>
-        </div>
-
-        <div className="auth-field">
-          <label htmlFor="role">نوع الحساب</label>
-          <select id="role" value={form.role} onChange={onChange('role')}>
-            <option value="parent">ولي أمر</option>
-            <option value="teacher">معلّم</option>
-            <option value="specialist">مختص</option>
-          </select>
+          <p id="national-id-hint" className="auth-field-hint">يُستخدم لاحقاً عند توثيق الحساب.</p>
         </div>
 
         {form.role === 'specialist' && (
-          <>
-            <div className="auth-field auth-field-wide">
-              <label htmlFor="specialty">التخصص</label>
-              <select id="specialty" value={form.specialty} onChange={onChange('specialty')}>
-                <option value="learning_support">مختص دعم تعليمي</option>
-                <option value="educational">مختص تعليمي</option>
-              </select>
-            </div>
-          </>
+          <div className="auth-field auth-field-wide">
+            <label htmlFor="specialty">التخصص</label>
+            <select id="specialty" value={form.specialty} onChange={onChange('specialty')}>
+              <option value="learning_support">مختص دعم تعليمي</option>
+              <option value="educational">مختص تعليمي</option>
+            </select>
+          </div>
         )}
+
+        <div className="auth-form-section-label auth-field-wide">تأمين الحساب</div>
 
         <div className="auth-field">
           <label htmlFor="password">كلمة المرور</label>
@@ -93,7 +102,7 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
             minLength={8}
             maxLength={128}
           />
-          <p id="password-hint" className="auth-field-hint">8 أحرف على الأقل.</p>
+          <p id="password-hint" className="auth-field-hint">استخدم 8 أحرف على الأقل.</p>
         </div>
 
         <div className="auth-field">
@@ -110,11 +119,11 @@ export function RegisterCard({ error, form, loading, onChange, onSubmit }) {
         {error && <div className="error-box" role="alert">{error}</div>}
 
         <button className="btn full" type="submit" disabled={loading}>
-          {loading ? 'جارِ الإنشاء...' : 'إنشاء الحساب'}
+          {loading ? 'جارِ إنشاء الحساب...' : 'إنشاء الحساب'}
         </button>
       </form>
 
-      <Link className="link-btn" to="/login">لديك حساب؟ سجّل دخولك</Link>
+      <Link className="link-btn" to="/login">لديك حساب؟ <strong>سجّل دخولك</strong></Link>
     </div>
   )
 }
