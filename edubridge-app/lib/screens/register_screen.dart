@@ -25,6 +25,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _role = 'parent';
   bool _loading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _error;
 
   static const _roles = {
