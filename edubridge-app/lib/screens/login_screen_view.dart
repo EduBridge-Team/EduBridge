@@ -201,12 +201,12 @@ extension _LoginScreenStateView on _LoginScreenState {
                               if (GoogleAuthService.isConfigured) ...[
                                 const SizedBox(height: 10),
                                 DropdownButtonFormField<String>(
-                                  value: _googleRole,
+                                  initialValue: _googleRole,
                                   decoration: const InputDecoration(
                                     labelText: 'نوع الحساب للحساب الجديد',
                                     prefixIcon: Icon(Icons.badge_outlined),
                                   ),
-                                  items: _googleRoles.entries
+                                  items: _LoginScreenState._googleRoles.entries
                                       .map(
                                         (entry) => DropdownMenuItem<String>(
                                           value: entry.key,
