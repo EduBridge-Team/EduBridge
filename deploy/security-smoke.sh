@@ -18,6 +18,12 @@ header_value() {
   awk -v IGNORECASE=1 -v key="$name:" '$1 == key {sub(/^[^:]+:[[:space:]]*/, ""); gsub(/\r$/, ""); print; exit}' <<<"$headers"
 }
 
+header_count() {
+  local headers="$1"
+  local name="$2"
+  awk -v IGNORECASE=1 -v key="$name:" '$1 == key {count++} END {print count+0}' <<<"$headers"
+}
+
 csp_directive() {
   local policy="$1"
   local directive="$2"
@@ -54,11 +60,13 @@ web_headers="$(curl -fsSI --max-time 15 "$WEB_URL" || true)"
 check_common_headers "$web_headers" "web HTML"
 
 csp="$(header_value "$web_headers" "Content-Security-Policy")"
+csp_count="$(header_count "$web_headers" "Content-Security-Policy")"
 cache="$(header_value "$web_headers" "Cache-Control")"
 img_src="$(csp_directive "$csp" "img-src")"
 media_src="$(csp_directive "$csp" "media-src")"
 frame_ancestors="$(csp_directive "$csp" "frame-ancestors")"
 
+[[ "$csp_count" == "1" ]] || fail "Expected exactly one Content-Security-Policy header, found $csp_count"
 [[ "$csp" == *"default-src 'self'"* ]] || fail "CSP header is missing expected default-src"
 [[ -n "$img_src" ]] || fail "CSP img-src directive is missing"
 [[ -n "$media_src" ]] || fail "CSP media-src directive is missing"
