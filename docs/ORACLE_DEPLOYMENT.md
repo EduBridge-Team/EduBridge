@@ -1,41 +1,26 @@
 # Oracle production deployment
 
-EduBridge production runs on the existing Oracle Linux/Ubuntu host alongside Yalla, using isolated Docker resources and the host-mode Caddy reverse proxy.
+> Last verified: 2026-10-05
+
+EduBridge production runs on the existing Oracle Ubuntu host alongside other services, using isolated Docker resources and the host-mode Caddy reverse proxy.
 
 ## Production topology
 
 - `edubridge-postgres`: PostgreSQL 17 on the private Docker network `edubridge-net`.
-- `edubridge-api`: Nginx + PHP 8.4 FPM, reachable on the host only at `127.0.0.1:8081`.
-  FPM uses a private Unix socket and up to four PHP workers; Supervisor manages
-  both services. Nginx forwards only Laravel's front controller to PHP and does
-  not log signed-link query strings. Upload limits are 150 MiB per file and
-  384 MiB per request. OPcache is enabled with timestamp checks disabled, so
-  rebuild/recreate the container for code changes. Compose allows up to 200
-  seconds for in-flight requests to finish during shutdown.
-- `edubridge-web`: built React/Vite SPA, reachable on the host only at `127.0.0.1:8082`.
-- Existing host-mode Caddy terminates TLS and proxies public traffic.
-- Public educational/private sensitive uploads continue to use the configured Cloudflare R2 buckets.
+- `edubridge-api`: Nginx + PHP 8.4 FPM, host-bound only to `127.0.0.1:8081`.
+- `edubridge-web`: production React/Vite build, host-bound only to `127.0.0.1:8082`.
+- Caddy: host networking, TLS termination, Cloudflare-aware real-IP handling and reverse proxy.
+- Public traffic: Cloudflare -> Caddy -> localhost-bound EduBridge services.
+- PostgreSQL is not published to the host or the internet.
+- Public/private object storage uses the configured Cloudflare R2 buckets.
 
-The PostgreSQL port is not published to the host or internet.
+The API production image runs Nginx and PHP-FPM under Supervisor. OPcache is enabled for the immutable image; rebuild/recreate the API container for application code changes.
 
-## One-time host resources
+## Server-side environment
 
-The Compose file uses the existing persistent resources:
+Maintain `edubridge-api-laravel/.env` only on the server. Never commit production secrets.
 
-```bash
-docker network create edubridge-net
-docker volume create edubridge-postgres-data
-```
-
-Both commands are idempotently handled by `deploy/oracle-deploy.sh`.
-
-The first run also detects the temporary containers that were created manually during the Oracle migration. It only replaces an unmanaged `edubridge-postgres` container after verifying that it uses the persistent `edubridge-postgres-data` volume, then hands the API/web/PostgreSQL container names over to Compose. This does not delete the PostgreSQL volume.
-
-## Environment
-
-Create and maintain `edubridge-api-laravel/.env` only on the server. Never commit it.
-
-Required production values include:
+Core values include:
 
 ```env
 APP_ENV=production
@@ -53,34 +38,24 @@ SESSION_DRIVER=file
 JWT_SECRET=<long-random-secret>
 ```
 
-Keep the existing R2, Google OAuth, Groq and other production secrets in the same server-side `.env`.
+Keep R2, Google OAuth, Groq, email and other production secrets server-side.
 
-The deployment script requires Python 3 and checks the API environment resolved by Docker Compose before modifying any containers. Empty values, including quoted empty values and whitespace, stop deployment without printing secrets.
+`SESSION_DRIVER=file` is intentional because EduBridge already has a domain table named `sessions` for specialist/child sessions.
 
-Noor requires these values on production:
+Noor production configuration includes:
 
 ```env
 GROQ_API_KEY=<server-side-secret>
 GROQ_MODEL=openai/gpt-oss-20b
 ```
 
-After changing Noor settings, recreate the API container or run:
+Verify Noor configuration without printing the secret:
 
 ```bash
-docker compose --project-name edubridge --env-file edubridge-api-laravel/.env -f deploy/oracle-compose.yml up -d --no-deps --force-recreate api
-docker exec edubridge-api php artisan optimize:clear
-```
-
-Verify without exposing the key:
-
-```bash
-curl -fsS https://api.edubridge.win/api/health
 docker exec edubridge-api php artisan tinker --execute='echo config("services.groq.key") ? "configured" : "missing";'
 ```
 
-`SESSION_DRIVER=file` is intentional. EduBridge already has a domain table named `sessions` for specialist sessions, so Laravel's database session driver would collide with that table.
-
-## Deploy
+## Standard deployment
 
 From the repository root:
 
@@ -89,52 +64,120 @@ git pull --ff-only origin main
 bash deploy/oracle-deploy.sh
 ```
 
-The script:
+The deployment script ensures the Docker network/volume exist, starts PostgreSQL, builds immutable API/web images, recreates the application containers, and verifies local health.
 
-1. Ensures the private Docker network and persistent PostgreSQL volume exist.
-2. Starts PostgreSQL without replacing its volume.
-3. Builds immutable API and web images.
-4. Recreates only the API and web containers.
-5. Verifies local health endpoints.
+It intentionally does **not** run destructive schema operations automatically. Back up the database and review migrations before applying production schema changes.
 
-It intentionally does **not** run `php artisan migrate` or any SQL upgrade automatically. Take a database backup and review schema changes before applying them in production.
-
-## Caddy
-
-The host Caddy container runs with host networking. The relevant entries are:
-
-```caddy
-api.edubridge.win {
-    reverse_proxy 127.0.0.1:8081
-}
-
-edubridge.win {
-    reverse_proxy 127.0.0.1:8082
-}
-```
-
-`www.edubridge.win` is redirected to the apex domain by Cloudflare.
-
-Validate and reload after changes:
+When migrations are required:
 
 ```bash
+docker exec edubridge-api php artisan migrate --force
+```
+
+Never run `migrate:fresh` against production.
+
+## Caddy deployment
+
+The tracked EduBridge production template is:
+
+```text
+deploy/caddy-cloudflare-snippet.caddy
+```
+
+The persistent host file is:
+
+```text
+/home/ubuntu/caddy/Caddyfile
+```
+
+Apply a reviewed template with:
+
+```bash
+sudo cp deploy/caddy-cloudflare-snippet.caddy /home/ubuntu/caddy/Caddyfile
 docker exec caddy caddy validate --config /etc/caddy/Caddyfile
 docker exec caddy caddy reload --config /etc/caddy/Caddyfile
 ```
 
-## Health checks
+The tracked file is kept in Caddy's canonical tab-indented style. If the live file is edited manually, normalize it before copying changes back to the repository:
 
 ```bash
-curl -fsS https://api.edubridge.win
-curl -I https://edubridge.win
-docker compose --env-file edubridge-api-laravel/.env -f deploy/oracle-compose.yml ps
+docker exec caddy caddy fmt --overwrite /etc/caddy/Caddyfile
 ```
 
-Expected public responses are HTTP 200 for the API root and the website.
+The Caddy configuration currently provides:
+
+- Cloudflare trusted proxy ranges and `trusted_proxies_strict`;
+- real client IP forwarding to Laravel;
+- HSTS and baseline browser security headers;
+- a single canonical public CSP for `edubridge.win`;
+- reverse proxy to `127.0.0.1:8081` and `127.0.0.1:8082` only.
+
+## Cloudflare/origin firewall
+
+`edubridge.win` and `api.edubridge.win` are proxied through Cloudflare. The Oracle origin is locked down so arbitrary public clients cannot connect directly to the origin HTTP/HTTPS listener.
+
+Keep:
+
+- Cloudflare SSL mode: **Full (strict)**;
+- inbound firewall default deny;
+- SSH explicitly allowed before firewall changes;
+- HTTP/HTTPS allowed from Cloudflare proxy CIDRs only;
+- Oracle InstanceServices/metadata rules intact.
+
+Direct-origin verification must be run from a machine outside the VPS:
+
+```bash
+curl -kI --connect-timeout 5 \
+  --resolve api.edubridge.win:443:<ORACLE_PUBLIC_IP> \
+  https://api.edubridge.win/api/health
+```
+
+Expected: timeout/failure.
+
+See `docs/CLOUDFLARE_PROXY_CUTOVER.md` and `deploy/cloudflare-edge-hardening.md` for the complete edge runbook.
+
+## Certificate renewal warning
+
+Caddy currently manages origin certificates automatically while inbound 80/443 are restricted to Cloudflare networks. Public ACME HTTP-01/TLS-ALPN-01 renewal may therefore fail in the future.
+
+Before certificate expiry, migrate to a renewal design that works with a Cloudflare-only origin, such as Cloudflare Origin CA or Caddy DNS-01 with the Cloudflare DNS provider.
+
+Inspect the current origin certificate locally:
+
+```bash
+echo | openssl s_client -connect 127.0.0.1:443 -servername api.edubridge.win 2>/dev/null \
+  | openssl x509 -noout -issuer -subject -dates
+```
+
+## Health and security verification
+
+After deployment:
+
+```bash
+curl -I https://edubridge.win
+curl -I https://api.edubridge.win/api/health
+./deploy/security-smoke.sh
+```
+
+Expected:
+
+- website HTTP 200;
+- API health HTTP 200;
+- `Server: cloudflare` on the public path;
+- HSTS and security headers present;
+- exactly one `Content-Security-Policy` header on the website.
+
+Check CSP count with:
+
+```bash
+curl -sSI https://edubridge.win | grep -ci '^content-security-policy:'
+```
+
+Expected: `1`.
 
 ## Database backup before schema work
 
-Create a custom-format PostgreSQL dump from the running container:
+Create a custom-format PostgreSQL dump:
 
 ```bash
 docker exec edubridge-postgres pg_dump \
@@ -145,34 +188,17 @@ docker exec edubridge-postgres pg_dump \
   --no-acl > "$HOME/edubridge-$(date +%Y%m%d-%H%M%S).dump"
 ```
 
-Verify the archive before relying on it:
+Verify it:
 
 ```bash
 pg_restore --list "$HOME"/edubridge-*.dump | head
 ```
 
-Store backups outside the server as well.
-
-## Rollback
-
-Application rollback does not require touching PostgreSQL. Check out the previously known-good commit and rerun:
-
-```bash
-bash deploy/oracle-deploy.sh
-```
-
-Do not restore an older database dump merely to roll back application code unless the deployed release included an incompatible schema migration.
-
+Store at least one backup outside the VPS.
 
 ## Automated PostgreSQL backups
 
-EduBridge includes `deploy/oracle-backup.sh`. Each run:
-
-1. Creates a PostgreSQL custom-format dump from `edubridge-postgres`.
-2. Verifies the archive with `pg_restore --list`.
-3. Writes a SHA-256 checksum.
-4. Uploads the dump to the private R2 bucket under `database-backups/YYYY/MM/DD/`.
-5. Keeps local copies for 7 days by default.
+`deploy/oracle-backup.sh` creates a custom-format dump, verifies it, writes a SHA-256 checksum and can upload the result to the configured private R2 backup location.
 
 Install the included systemd timer:
 
@@ -183,31 +209,19 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now edubridge-backup.timer
 ```
 
-The default schedule is once per day at 03:20 UTC with up to 10 minutes of randomized delay. Confirm it with:
+Confirm:
 
 ```bash
 systemctl list-timers edubridge-backup.timer
-```
-
-Run one backup immediately and inspect its log:
-
-```bash
-sudo systemctl start edubridge-backup.service
 sudo journalctl -u edubridge-backup.service -n 100 --no-pager
 ```
 
-Local backup settings can be overridden with environment variables such as `EDUBRIDGE_BACKUP_RETENTION_DAYS`, `EDUBRIDGE_BACKUP_DIR`, and `EDUBRIDGE_BACKUP_UPLOAD_R2`.
+## Rollback
 
-## Fresh database bootstrap
-
-Laravel migrations are now able to initialize a new **PostgreSQL** database from empty state. The early EduBridge domain baseline creates the historical core tables before later feature migrations run.
-
-The name `sessions` is reserved for EduBridge specialist/child sessions. Laravel HTTP sessions use `SESSION_DRIVER=file`; do not reintroduce Laravel's default database `sessions` table under that name.
-
-Validate a disposable database with:
+Application rollback normally does not require restoring PostgreSQL. Check out the previous known-good application commit and rerun:
 
 ```bash
-php artisan migrate:fresh --force
+bash deploy/oracle-deploy.sh
 ```
 
-Never run `migrate:fresh` against production. Production deployments still do not run schema changes automatically.
+Restore an older database only when a release introduced an incompatible schema change and the rollback plan explicitly requires it.

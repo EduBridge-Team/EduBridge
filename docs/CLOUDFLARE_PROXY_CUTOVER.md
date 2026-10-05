@@ -1,139 +1,141 @@
-# Cloudflare proxy cutover for EduBridge
+# Cloudflare proxy and origin lockdown
 
-This runbook prepares `edubridge.win` and `api.edubridge.win` for Cloudflare Orange Cloud proxying without changing DNS prematurely.
+> Last verified: 2026-10-05
 
-## Current production facts
+EduBridge has completed the Cloudflare proxy cutover for the public web and API hosts. This document records the current production state, validation commands, and the remaining certificate/upload follow-ups.
 
-- `edubridge.win` and `api.edubridge.win` currently resolve directly to the Oracle origin.
-- Caddy terminates TLS and proxies to localhost-only containers:
+## Current production state
+
+- `edubridge.win` is proxied through Cloudflare.
+- `api.edubridge.win` is proxied through Cloudflare.
+- Caddy runs on the Oracle host and reverse-proxies only to localhost-bound EduBridge containers:
   - web: `127.0.0.1:8082`
   - API: `127.0.0.1:8081`
-- Cloudflare SSL mode should remain **Full (strict)**.
-- HSTS is emitted by the application/origin and should remain a single-source policy.
-- `www.edubridge.win` and `media.edubridge.win` are already proxied.
-- Resend DNS records such as `send` and `rsend` must remain DNS-only because they are mail infrastructure, not web origins.
+- PostgreSQL is private to Docker and is not published to the internet.
+- Caddy trusts only Cloudflare proxy CIDRs and uses `CF-Connecting-IP`/forwarded headers to derive the real client address.
+- Caddy overwrites `X-Forwarded-For` and `X-Real-IP` with its parsed client IP before forwarding to Laravel.
+- Laravel real-IP behavior was verified in production: `$request->ip()` returned the external client IP while `REMOTE_ADDR` remained the internal proxy hop.
+- Direct HTTPS access to the Oracle origin by public IP is blocked; an external `curl --resolve` test times out.
+- HSTS and the common security headers are emitted at the origin and survive the Cloudflare edge.
+- The public website emits exactly one `Content-Security-Policy` header. Node keeps an internal/direct CSP, while Caddy strips the upstream copy and publishes the canonical edge policy.
+- Resend/mail records such as `send` and `rsend` are mail infrastructure and must not be converted into normal proxied web records.
 
-## Important blocker: large lesson uploads
+## Cloudflare TLS settings
 
-EduBridge intentionally supports lesson `video` and `sign_language` files up to **150 MiB**. Cloudflare's proxied request-body limit is **100 MB on Free and Pro**, **200 MB on Business**, and higher on Enterprise.
+Use:
 
-Therefore:
+- SSL/TLS encryption mode: **Full (strict)**.
+- Minimum TLS: **1.2** or newer.
+- TLS 1.3: enabled.
+- Always Use HTTPS: enabled.
+- Universal SSL: enabled.
 
-- The apex website can be proxied immediately after the preflight checks below.
-- Do **not** proxy `api.edubridge.win` on a Free/Pro zone while 150 MiB API uploads must continue to work.
-- Safe options for the API are:
-  1. use a Cloudflare plan whose request limit is >= the application limit;
-  2. move large lesson uploads to direct signed R2 uploads (preferred long-term); or
-  3. intentionally reduce the product's media limit below Cloudflare's plan limit.
+Caddy currently emits:
 
-Do not silently reduce the existing 150 MiB product limit merely to enable the proxy.
-
-## 1. Deploy proxy-awareness first
-
-Laravel is configured to trust forwarding headers only from loopback/private Docker networks. This preserves the real client IP for throttling once Caddy is Cloudflare-aware while ignoring spoofed forwarded headers from untrusted peers.
-
-Deploy this code before proxying the API.
-
-## 2. Prepare Caddy
-
-Check the running Caddy version:
-
-```bash
-docker exec caddy caddy version
+```text
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 ```
 
-`trusted_proxies_strict` requires Caddy 2.8 or newer.
+The `preload` token being present in the response does **not** mean the domain has been submitted to the browser preload list. Do not submit it until every required HTTPS subdomain has been reviewed.
 
-Use `deploy/caddy-cloudflare-snippet.caddy` as a template. Merge its global `servers` options into the existing host Caddyfile instead of replacing unrelated site blocks.
+## Caddy configuration
 
-The template:
+The tracked production template is:
 
-- trusts only Cloudflare's published HTTP proxy CIDRs;
-- uses `CF-Connecting-IP` first;
-- enables strict right-to-left forwarded-IP parsing;
-- passes Caddy's parsed client IP to Laravel;
-- keeps direct requests from trusting attacker-controlled forwarding headers.
+```text
+deploy/caddy-cloudflare-snippet.caddy
+```
 
-Validate before reload:
+It contains:
+
+- Cloudflare trusted proxy CIDRs;
+- `trusted_proxies_strict`;
+- `CF-Connecting-IP` support;
+- real-IP forwarding to Laravel;
+- HSTS and baseline browser security headers;
+- the canonical web CSP;
+- response-header de-duplication so the public response contains one CSP only.
+
+Apply and validate it with:
 
 ```bash
+sudo cp deploy/caddy-cloudflare-snippet.caddy /home/ubuntu/caddy/Caddyfile
 docker exec caddy caddy validate --config /etc/caddy/Caddyfile
-```
-
-Reload only after validation succeeds:
-
-```bash
 docker exec caddy caddy reload --config /etc/caddy/Caddyfile
 ```
 
-## 3. Cloudflare dashboard settings
-
-Keep:
-
-- SSL/TLS encryption mode: **Full (strict)**
-- Minimum TLS: **1.2**
-- TLS 1.3: **On**
-- Always Use HTTPS: **On**
-- Universal SSL: **On**
-- HSTS at Cloudflare edge: leave off while the origin/application owns the header
-
-If realtime WebSockets are introduced or used, Cloudflare supports proxied WebSockets; keep the zone WebSockets setting enabled.
-
-## 4. DNS cutover order
-
-### Stage A — apex web
-
-Change only the `edubridge.win` web record from DNS-only to **Proxied**.
-
-Wait for DNS propagation, then run:
+If formatting is changed manually, normalize it before committing:
 
 ```bash
-EDUBRIDGE_ORIGIN_IP=<oracle-public-ip> bash deploy/cloudflare-proxy-smoke.sh
+docker exec caddy caddy fmt --overwrite /etc/caddy/Caddyfile
 ```
 
-If the script fails, switch the apex record back to DNS-only and investigate before continuing.
+## Origin firewall
 
-### Stage B — API
+The production host uses a default-deny inbound policy. Keep SSH reachable before changing firewall rules. HTTP/HTTPS should be accepted from Cloudflare proxy ranges and rejected from arbitrary internet sources.
 
-Proxy `api.edubridge.win` only after the 150 MiB upload constraint is resolved by plan capacity or a direct-R2 upload flow.
+Do not remove Oracle-provided InstanceServices/metadata rules blindly.
 
-After switching the API record to **Proxied**, run the same smoke test again:
-
-```bash
-EDUBRIDGE_ORIGIN_IP=<oracle-public-ip> bash deploy/cloudflare-proxy-smoke.sh
-```
-
-Also test authenticated workflows and at least one real file upload from both web and mobile clients.
-
-## 5. Origin lock-down is a separate phase
-
-Orange Cloud by itself does not fully prevent bypass if the Oracle public IP is already known. Historical DNS has exposed the origin IP, so direct-origin traffic remains possible until network access is restricted.
-
-Do **not** immediately firewall ports 80/443 to Cloudflare-only while Caddy depends on public ACME validation for Let's Encrypt renewal. First choose and validate one of these approaches:
-
-- Cloudflare Origin CA certificate for proxied-only hostnames;
-- Caddy DNS-01 ACME using a Cloudflare DNS provider module; or
-- another renewal design that does not require arbitrary public ACME ingress.
-
-Only after certificate renewal is safe should the Oracle firewall allow Cloudflare proxy CIDRs on 80/443 and reject other public sources.
-
-## 6. Rollback
-
-If web or API traffic fails after proxying:
-
-1. set the affected DNS record back to **DNS only**;
-2. verify direct public health;
-3. leave Full (strict) and origin TLS intact;
-4. inspect Caddy and application logs;
-5. retry only after the cause is understood.
-
-Useful checks:
+External validation:
 
 ```bash
 curl -I https://edubridge.win
 curl -I https://api.edubridge.win/api/health
-curl -I http://edubridge.win
-curl -I http://api.edubridge.win/api/health
+
+curl -kI --connect-timeout 5 \
+  --resolve api.edubridge.win:443:<ORACLE_PUBLIC_IP> \
+  https://api.edubridge.win/api/health
 ```
 
-Expected after successful proxying: `Server: cloudflare`, a `CF-Ray` header, valid HTTPS, HSTS, HTTP-to-HTTPS redirects, and a healthy API response.
+Expected:
+
+- normal domain requests: HTTP 200 through Cloudflare;
+- direct-origin request: timeout/failure.
+
+Also test direct port 80 externally after firewall changes.
+
+## Important remaining TLS-renewal item
+
+The origin is currently locked to Cloudflare proxy networks, while Caddy manages public certificates automatically. Public HTTP-01/TLS-ALPN-01 validation may not be able to reach the origin during a future renewal.
+
+Before the current origin certificates approach expiry, choose and test one renewal design that works with a Cloudflare-only origin, for example:
+
+1. Cloudflare Origin CA certificate with Full (strict), or
+2. Caddy DNS-01 using a Cloudflare DNS provider build/API token.
+
+Do not rely on manually opening the origin firewall at renewal time.
+
+Inspect the origin certificate locally on the server with:
+
+```bash
+echo | openssl s_client -connect 127.0.0.1:443 -servername api.edubridge.win 2>/dev/null \
+  | openssl x509 -noout -issuer -subject -dates
+```
+
+Repeat for `edubridge.win`.
+
+## Large upload compatibility
+
+EduBridge supports large lesson media. Cloudflare request-body limits depend on the zone plan and can be lower than the application's media allowance. A proxied API request that exceeds the Cloudflare limit is rejected before Laravel sees it.
+
+Long-term preferred design: direct signed uploads to private R2, followed by an authenticated API finalize step. Until that flow exists, verify the largest supported upload on the active Cloudflare plan before considering the upload path fully validated.
+
+## Validation scripts
+
+After edge/origin changes run:
+
+```bash
+./deploy/security-smoke.sh
+EDUBRIDGE_ORIGIN_IP=<ORACLE_PUBLIC_IP> ./deploy/cloudflare-proxy-smoke.sh
+```
+
+The security smoke test verifies, among other things, that the website emits exactly one CSP header.
+
+## Rollback
+
+If the Cloudflare path fails:
+
+1. inspect Cloudflare status/rules and Caddy logs first;
+2. do not expose the Oracle origin as a routine workaround;
+3. if an emergency DNS-only rollback is absolutely required, restore public-origin firewall access in a controlled way first and remove it again after recovery;
+4. keep TLS verification enabled and do not use Flexible SSL.

@@ -1,144 +1,173 @@
 # EduBridge Cloudflare edge hardening
 
-This checklist complements the Laravel/Nginx abuse controls. It protects the public origin before requests reach Oracle.
+> Last verified: 2026-10-05
 
-## 1. Keep only proxied DNS for public app hosts
+This checklist records the active edge/origin security model. Cloudflare is the first public layer; Caddy and Laravel remain independent defense layers behind it.
 
-The public hosts below must stay proxied through Cloudflare (orange cloud):
+## Public hosts
+
+Keep these application hosts proxied through Cloudflare:
 
 - `edubridge.win`
 - `api.edubridge.win`
-- `www.edubridge.win` (redirect only)
+- `www.edubridge.win` if used only for redirecting to the apex
 
-Do not publish the Oracle origin IP in any A/AAAA record used by the application.
+Mail infrastructure records such as `send` and `rsend` are not normal web origins and should remain configured according to the mail provider requirements rather than being orange-clouded by default.
 
-## 2. Block direct access to the Oracle origin
+## Origin protection
 
-At the Oracle/host firewall, keep SSH access from the administrator network and allow inbound HTTP/HTTPS only from Cloudflare proxy ranges.
+The Oracle origin must not be directly reachable on public HTTP/HTTPS from arbitrary internet clients. The current host firewall model is:
 
-Do **not** blindly replace the server firewall over an SSH session. Preserve the current SSH allow rule first, then apply Cloudflare HTTP/HTTPS allow rules and finally deny other public traffic to ports 80/443.
+- default deny inbound;
+- SSH explicitly allowed;
+- TCP 80/443 and UDP 443 allowed only from Cloudflare proxy ranges;
+- EduBridge API/web containers bound to `127.0.0.1:8081` and `127.0.0.1:8082`;
+- PostgreSQL private to Docker.
 
-The definitive Cloudflare proxy ranges are maintained at:
+Preserve Oracle-provided InstanceServices/metadata rules. Do not replace firewall rules blindly over SSH.
 
-- https://www.cloudflare.com/ips-v4/
-- https://www.cloudflare.com/ips-v6/
-
-The Caddy template in `deploy/caddy-cloudflare-snippet.caddy` already trusts only these ranges when deriving the client IP.
-
-After changing the firewall, run the verification script from a machine **outside** the Oracle VPS:
+External verification:
 
 ```bash
-EDUBRIDGE_ORIGIN_IP=<oracle-public-ip> ./deploy/cloudflare-proxy-smoke.sh
+curl -I https://edubridge.win
+curl -I https://api.edubridge.win/api/health
+
+curl -kI --connect-timeout 5 \
+  --resolve api.edubridge.win:443:<ORACLE_PUBLIC_IP> \
+  https://api.edubridge.win/api/health
 ```
 
-A successful test means the normal domains work through Cloudflare and direct requests to the origin IP on ports 80/443 do not receive an HTTP response.
+Normal requests should succeed through Cloudflare; the direct-origin request should fail or time out.
 
-## 3. Cloudflare WAF custom rules
+## Caddy trusted-proxy model
 
-Create these rules under **Security → Security rules → Custom rules**.
+`deploy/caddy-cloudflare-snippet.caddy` is the tracked template. It:
 
-### A. Challenge suspicious auth traffic
+- trusts Cloudflare's published proxy CIDRs only;
+- enables `trusted_proxies_strict`;
+- reads `CF-Connecting-IP` before fallback forwarding headers;
+- forwards Caddy's parsed client IP to Laravel in `X-Forwarded-For` and `X-Real-IP`;
+- prevents attacker-supplied forwarding headers from becoming the application identity when a request does not arrive through a trusted proxy.
 
-Expression:
+Production verification confirmed Laravel receives the real public client IP while `REMOTE_ADDR` remains the internal proxy hop.
+
+## Active Cloudflare custom rules
+
+The current rule set is intentionally small because the zone plan has a limited custom-rule budget.
+
+### Block sensitive files
 
 ```text
-(http.host eq "api.edubridge.win" and starts_with(http.request.uri.path, "/api/auth/") and not cf.client.bot)
-```
-
-Action: **Managed Challenge** when Cloudflare's threat/bot signals mark the request as suspicious. Do not challenge every login request unconditionally because that can break the Flutter/API flow.
-
-### B. Block non-standard public HTTP ports
-
-Expression:
-
-```text
-(http.host in {"edubridge.win" "api.edubridge.win"} and not cf.edge.server_port in {80 443})
+(http.host in {"edubridge.win" "api.edubridge.win"}
+ and (
+   http.request.uri.path eq "/.env"
+   or starts_with(http.request.uri.path, "/.env.")
+   or http.request.uri.path eq "/.git"
+   or starts_with(http.request.uri.path, "/.git/")
+   or http.request.uri.path eq "/.svn"
+   or starts_with(http.request.uri.path, "/.svn/")
+   or http.request.uri.path eq "/.htaccess"
+   or http.request.uri.path eq "/composer.json"
+   or http.request.uri.path eq "/composer.lock"
+ ))
 ```
 
 Action: **Block**.
 
-### C. Protect accidental debug/sensitive paths
-
-Expression:
+### Block dangerous HTTP methods
 
 ```text
-(http.host in {"edubridge.win" "api.edubridge.win"} and
- (http.request.uri.path contains "/.env" or
-  http.request.uri.path contains "/.git" or
-  http.request.uri.path contains "/vendor/" or
-  http.request.uri.path contains "/storage/logs/"))
+(http.host in {"edubridge.win" "api.edubridge.win"}
+ and http.request.method in {"TRACE" "TRACK" "CONNECT"})
 ```
 
 Action: **Block**.
 
-The origin already denies these paths; the edge rule prevents them from reaching Oracle at all.
-
-## 4. Cloudflare rate limiting rules
-
-Cloudflare rate limiting should remain stricter on unauthenticated/high-risk endpoints and looser on normal authenticated API traffic. Laravel remains the second layer.
-
-### Login
-
-Match:
+### Block common exploit scans
 
 ```text
-(http.host eq "api.edubridge.win" and http.request.uri.path eq "/api/auth/login" and http.request.method eq "POST")
+(http.host in {"edubridge.win" "api.edubridge.win"}
+ and (
+   starts_with(http.request.uri.path, "/wp-admin")
+   or http.request.uri.path eq "/wp-login.php"
+   or starts_with(http.request.uri.path, "/phpmyadmin")
+   or http.request.uri.path eq "/adminer.php"
+   or http.request.uri.path eq "/server-status"
+   or starts_with(http.request.uri.path, "/cgi-bin/")
+ ))
 ```
 
-Suggested threshold: **10 requests / 60 seconds per IP**.
+Action: **Block**.
 
-Mitigation: **Block** or **Managed Challenge** for 10 minutes, depending on plan capabilities and mobile-client behavior.
+## Authentication protection
 
-### Registration and password recovery
-
-Match:
+The active edge rate-limit rule protects login:
 
 ```text
-(http.host eq "api.edubridge.win" and http.request.method eq "POST" and
- http.request.uri.path in {"/api/auth/register" "/api/auth/forgot-password" "/api/auth/reset-password"})
+(http.host eq "api.edubridge.win"
+ and http.request.uri.path eq "/api/auth/login"
+ and http.request.method eq "POST")
 ```
 
-Suggested threshold: **8 requests / 60 seconds per IP**.
+Current configured threshold: **10 requests / 10 seconds per IP**, action **Block**, mitigation period **10 seconds**.
 
-### General API burst control
+Laravel remains the authoritative second layer and applies stricter endpoint/account-aware limits for login, registration and recovery.
 
-Match:
+Do **not** put an unconditional Managed Challenge in front of ordinary JSON API authentication routes. Interactive Cloudflare challenges can break Flutter/mobile API clients. If a challenge rule is used for registration or password recovery, verify the real Flutter and web flows immediately; remove it if clients receive challenge HTML or auth failures.
+
+## Laravel abuse limits
+
+Current API hardening includes:
+
+- authenticated writes: actor and IP limits;
+- authenticated reads: higher actor and IP limits;
+- layered login throttling by IP, IP+email, and account window;
+- dedicated registration/recovery throttles;
+- `/api/health` throttled at 120/minute;
+- request body cap aligned with the application's supported media envelope;
+- `429` responses with retry metadata tested in regression coverage.
+
+Cloudflare protects the edge; Laravel still protects identities and application semantics.
+
+## Security headers
+
+Caddy emits the shared security headers, including:
 
 ```text
-(http.host eq "api.edubridge.win" and starts_with(http.request.uri.path, "/api/") and http.request.uri.path ne "/api/health")
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+X-Permitted-Cross-Domain-Policies: none
+Origin-Agent-Cluster: ?1
+Cross-Origin-Opener-Policy: same-origin-allow-popups
 ```
 
-Suggested threshold: **300 requests / 60 seconds per IP** at the edge.
+The public website must emit exactly **one** `Content-Security-Policy` header. Caddy removes the upstream Node CSP and publishes the canonical public policy.
 
-This intentionally stays above Laravel's per-user write limits so Cloudflare primarily absorbs floods while Laravel continues enforcing actor-aware limits.
-
-## 5. SSL/TLS and transport settings
-
-Keep:
-
-- SSL/TLS mode: **Full (strict)**.
-- Always Use HTTPS: enabled.
-- Minimum TLS: TLS 1.2 or newer.
-- HSTS is already emitted by Caddy as `max-age=31536000; includeSubDomains; preload`.
-
-Do not enable a setting that rewrites or strips the application's Content-Security-Policy.
-
-## 6. Validation after every edge change
-
-From an external machine:
+Check:
 
 ```bash
-EDUBRIDGE_ORIGIN_IP=<oracle-public-ip> ./deploy/cloudflare-proxy-smoke.sh
+curl -sSI https://edubridge.win | grep -ci '^content-security-policy:'
 ```
 
-Then verify normal product flows:
+Expected: `1`.
 
-1. Web login.
-2. Flutter login.
-3. Google sign-in.
-4. Password recovery.
-5. Lesson/media upload.
-6. Noor requests.
-7. Teacher/specialist/admin authenticated API calls.
+## TLS follow-up
 
-Finally run ZAP/Burp against the public Cloudflare hostname, not the Oracle IP.
+Keep Cloudflare SSL mode on **Full (strict)**. The origin firewall now permits only Cloudflare HTTP/HTTPS sources, so public ACME HTTP-01/TLS-ALPN-01 renewal may not be reachable in the future.
+
+Before certificate expiry, move to a renewal design compatible with a Cloudflare-only origin, preferably Cloudflare Origin CA or Caddy DNS-01 with the Cloudflare DNS provider.
+
+## Validation
+
+After any edge, firewall or Caddy change:
+
+```bash
+./deploy/security-smoke.sh
+EDUBRIDGE_ORIGIN_IP=<ORACLE_PUBLIC_IP> ./deploy/cloudflare-proxy-smoke.sh
+```
+
+Then test web login, Flutter login, Google sign-in, password recovery, representative uploads, Noor, and role-protected API flows.
+
+Run ZAP/Burp only against the public Cloudflare hostnames unless intentionally testing the origin firewall itself. Avoid uncontrolled volumetric stress against production.
