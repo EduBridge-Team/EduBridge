@@ -21,7 +21,7 @@ header_value() {
 check_proxy_host() {
   local host="$1"
   local path="${2:-/}"
-  local headers body server cf_ray hsts
+  local headers server cf_ray hsts
 
   echo "==> Checking https://${host}${path} through Cloudflare..."
   headers="$(curl -sSI --max-time 20 "https://${host}${path}" || true)"
@@ -61,10 +61,37 @@ check_dns_not_origin() {
   sed 's/^/  /' <<<"$resolved"
 }
 
+check_origin_bypass_blocked() {
+  local host="$1"
+  local path="${2:-/}"
+  local https_code http_code
+
+  [[ -n "$ORIGIN_IP" ]] || return 0
+
+  echo "==> Checking direct-origin bypass is blocked for ${host} (${ORIGIN_IP})..."
+
+  # Run this smoke test from a machine outside the Oracle VPS. If either direct
+  # request gets an HTTP response, the public origin still accepts traffic that
+  # can bypass Cloudflare WAF/rate limiting.
+  https_code="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 4 --max-time 7 \
+    --resolve "${host}:443:${ORIGIN_IP}" "https://${host}${path}" 2>/dev/null || true)"
+  http_code="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 4 --max-time 7 \
+    --resolve "${host}:80:${ORIGIN_IP}" "http://${host}${path}" 2>/dev/null || true)"
+
+  if [[ -n "$https_code" && "$https_code" != "000" ]]; then
+    fail "Direct HTTPS origin bypass is reachable for ${host} (status ${https_code})"
+  fi
+  if [[ -n "$http_code" && "$http_code" != "000" ]]; then
+    fail "Direct HTTP origin bypass is reachable for ${host} (status ${http_code})"
+  fi
+}
+
 check_dns_not_origin "$WEB_HOST"
 check_dns_not_origin "$API_HOST"
 check_proxy_host "$WEB_HOST" "/"
 check_proxy_host "$API_HOST" "/api/health"
+check_origin_bypass_blocked "$WEB_HOST" "/"
+check_origin_bypass_blocked "$API_HOST" "/api/health"
 
 echo "==> Checking API health body..."
 api_body="$(curl -fsS --max-time 20 "https://${API_HOST}/api/health" || true)"
