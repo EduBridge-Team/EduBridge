@@ -69,6 +69,7 @@ services:
       dockerfile: deploy/oracle-web.Dockerfile
       args:
         VITE_API_URL: /api
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     image: edubridge-web:latest
     container_name: edubridge-web
     restart: unless-stopped
