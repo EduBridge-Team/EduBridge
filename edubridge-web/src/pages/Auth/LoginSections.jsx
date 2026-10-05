@@ -11,9 +11,11 @@ export function LoginCard({
   email,
   error,
   googleReady,
+  googleRole,
   loading,
   notice,
   onEmailChange,
+  onGoogleRoleChange,
   onPasswordChange,
   onResendVerification,
   onSubmit,
@@ -78,6 +80,20 @@ export function LoginCard({
       {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
         <>
           <div className="auth-divider">أو تابع باستخدام</div>
+          <label htmlFor="google-role">نوع الحساب للحساب الجديد</label>
+          <select
+            id="google-role"
+            value={googleRole}
+            onChange={(e) => onGoogleRoleChange(e.target.value)}
+            disabled={loading}
+          >
+            <option value="parent">ولي أمر</option>
+            <option value="teacher">معلّم</option>
+            <option value="specialist">مختص</option>
+          </select>
+          <p className="muted" style={{ marginTop: 6 }}>
+            إذا كان حسابك موجوداً مسبقاً فسيتم استخدام دوره الحالي ولن يتغير.
+          </p>
           <div id="google-signin-button" className="google-btn-shell" />
         </>
       )}
