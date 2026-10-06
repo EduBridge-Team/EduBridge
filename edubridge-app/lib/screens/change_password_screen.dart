@@ -242,12 +242,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ),
                       )
                     : const Icon(AppIcons.check),
-                label: Text(
-                  _saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور',
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور'),
                 onPressed: _saving ? null : _save,
               ),
             ),
