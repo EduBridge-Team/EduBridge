@@ -129,12 +129,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                         ),
                       )
                     : const Icon(AppIcons.check),
-                label: Text(
-                  _saving ? 'جارٍ الحفظ...' : 'تأكيد التخصص',
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                label: Text(_saving ? 'جارٍ الحفظ...' : 'تأكيد التخصص'),
                 onPressed: _selected == null || _saving ? null : _save,
               ),
             ),
