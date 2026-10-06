@@ -58,6 +58,7 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Widget _buildAdminHeader() {
+    final textTheme = Theme.of(context).textTheme;
     final menuActions = <DashboardMenuAction>[
       DashboardMenuAction(
         id: 'search_identity',
@@ -143,9 +144,7 @@ class _AdminScreenState extends State<AdminScreen> {
                               'مرحباً، ${name.isEmpty ? 'الإدارة' : name}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
+                              style: textTheme.headlineSmall?.copyWith(
                                 color: Colors.white,
                               ),
                             ),
@@ -154,8 +153,7 @@ class _AdminScreenState extends State<AdminScreen> {
                               _adminSubtitle(),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13.5,
+                              style: textTheme.bodySmall?.copyWith(
                                 height: 1.35,
                                 color: Colors.white.withValues(alpha: 0.86),
                               ),
@@ -177,6 +175,7 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: Column(
@@ -213,8 +212,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       children: [
                         Text(
                           'لوحة التحكم الإدارية',
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: c.heading,
                           ),
@@ -222,10 +220,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         const SizedBox(height: 3),
                         Text(
                           'إدارة المستخدمين والتوثيق وطلبات الدعم.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: c.muted,
-                          ),
+                          style: textTheme.bodySmall?.copyWith(color: c.muted),
                         ),
                       ],
                     ),
@@ -271,6 +266,7 @@ class _AdminTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       padding: const EdgeInsets.all(6),
@@ -319,8 +315,7 @@ class _AdminTabBar extends StatelessWidget {
                         label,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: active ? Colors.white : c.muted,
                         ),
