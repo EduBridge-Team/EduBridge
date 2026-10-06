@@ -48,7 +48,7 @@ extension _ChatScreenStateView on _ChatScreenState {
             ),
             child: Icon(
               widget.childName.isNotEmpty ? AppIcons.child : AppIcons.chat,
-              color: AppColors.brandBlue,
+              color: c.infoText,
               size: 22,
             ),
           ),
@@ -83,12 +83,12 @@ extension _ChatScreenStateView on _ChatScreenState {
 
   Widget _buildMessagesArea(JisrColors c) {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_error != null) return _buildErrorState();
+    if (_error != null) return _buildErrorState(c);
     if (_messages.isEmpty) return _buildEmptyState(c);
     return _buildMessagesList(c);
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(JisrColors c) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -98,7 +98,7 @@ extension _ChatScreenStateView on _ChatScreenState {
         Text(
           _error!,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.red, fontWeight: FontWeight.w700),
+          style: TextStyle(color: c.dangerText, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 18),
         Center(
@@ -122,7 +122,7 @@ extension _ChatScreenStateView on _ChatScreenState {
             width: 82,
             height: 82,
             decoration: BoxDecoration(color: c.tintTeal, shape: BoxShape.circle),
-            child: const Icon(AppIcons.chat, size: 38, color: AppColors.brandBlue),
+            child: Icon(AppIcons.chat, size: 38, color: c.infoText),
           ),
         ),
         const SizedBox(height: 18),
