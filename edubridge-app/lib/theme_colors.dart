@@ -54,15 +54,17 @@ class AppColors {
     brandTealLight,
   ];
 
-  // Header colors are intentionally darker than the decorative brand colors
-  // so white title/subtitle text remains readable across the whole gradient.
+  // Header colors are deliberately deeper than the decorative brand palette.
+  // This keeps white and white70 text at accessible contrast throughout the
+  // gradient while preserving the blue/teal EduBridge identity.
+  static const headerBlueDeep = Color(0xFF0A4D9C);
   static const headerBlueMid = Color(0xFF124F91);
-  static const headerTealDeep = Color(0xFF06626E);
+  static const headerTealDeep = Color(0xFF055966);
 
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
-    colors: [brandBlueDeep, headerBlueMid, headerTealDeep],
+    colors: [headerBlueDeep, headerBlueMid, headerTealDeep],
     stops: [0.0, 0.55, 1.0],
   );
 
