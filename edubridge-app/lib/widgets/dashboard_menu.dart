@@ -176,16 +176,17 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final c = JisrColors.of(context);
     final normalIconColor =
         isDark ? AppColors.lightTeal : AppColors.navyDeep;
     final normalTextColor = Theme.of(context).colorScheme.onSurface;
-    final color = destructive ? AppColors.red : normalTextColor;
+    final color = destructive ? c.dangerText : normalTextColor;
 
     return Row(
       children: [
         Icon(
           icon,
-          color: destructive ? AppColors.red : normalIconColor,
+          color: destructive ? c.dangerText : normalIconColor,
           size: 23,
         ),
         const SizedBox(width: 12),
@@ -194,7 +195,7 @@ class _MenuRow extends StatelessWidget {
             label,
             style: TextStyle(
               color: color,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
