@@ -81,22 +81,24 @@ class _UserListTile extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: c.muted),
                       ),
                       if (phone != null && phone.isNotEmpty)
-                        Text(phone,
-                            style: TextStyle(fontSize: 11.5, color: c.muted)),
+                        Text(
+                          phone,
+                          style: TextStyle(fontSize: 11.5, color: c.muted),
+                        ),
                     ],
                   ),
                 ),
                 _ChildrenCountBadge(count: assignedChildrenCount),
                 const SizedBox(width: 4),
                 IconButton(
-                  icon: const Icon(AppIcons.edit, size: 20, color: AppColors.brandBlue),
+                  icon: Icon(AppIcons.edit, size: 20, color: c.infoText),
                   tooltip: 'تعديل',
                   onPressed: onEdit,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
                 ),
                 IconButton(
-                  icon: const Icon(AppIcons.delete, size: 20, color: AppColors.red),
+                  icon: Icon(AppIcons.delete, size: 20, color: c.dangerText),
                   tooltip: 'حذف',
                   onPressed: onDelete,
                   constraints: const BoxConstraints(),
@@ -130,15 +132,18 @@ class _ChildrenCountBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(AppIcons.child,
-              size: 14, color: active ? AppColors.brandBlue : c.muted),
+          Icon(
+            AppIcons.child,
+            size: 14,
+            color: active ? c.infoText : c.muted,
+          ),
           const SizedBox(width: 4),
           Text(
             '$count',
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: active ? AppColors.brandBlue : c.muted,
+              fontWeight: FontWeight.w700,
+              color: active ? c.infoText : c.muted,
             ),
           ),
         ],
@@ -231,27 +236,27 @@ class _ChildListTile extends StatelessWidget {
                         _MiniIconRow(
                           icon: AppIcons.teacher,
                           text: assignedTeacherName!,
-                          color: AppColors.brandBlue,
+                          color: c.infoText,
                         ),
                       if (assignedSpecialistName != null &&
                           assignedSpecialistName!.isNotEmpty)
                         _MiniIconRow(
                           icon: AppIcons.specialist,
                           text: assignedSpecialistName!,
-                          color: AppColors.brandTealDeep,
+                          color: c.successText,
                         ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(AppIcons.edit, size: 20, color: AppColors.brandBlue),
+                  icon: Icon(AppIcons.edit, size: 20, color: c.infoText),
                   tooltip: 'تعديل',
                   onPressed: onTap,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
                 ),
                 IconButton(
-                  icon: const Icon(AppIcons.delete, size: 20, color: AppColors.red),
+                  icon: Icon(AppIcons.delete, size: 20, color: c.dangerText),
                   tooltip: 'حذف',
                   onPressed: onDelete,
                   constraints: const BoxConstraints(),
@@ -288,7 +293,11 @@ class _MiniIconRow extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 11.5, color: color),
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
           ),
         ),
       ],
