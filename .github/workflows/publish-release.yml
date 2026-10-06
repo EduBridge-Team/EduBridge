@@ -151,4 +151,4 @@ jobs:
 
       - name: Show release
         shell: bash
-        run: gh release view "${{ steps.version.outputs.tag }}" --json name,tagName,url,isLatest
+        run: gh release view "${{ steps.version.outputs.tag }}" --json name,tagName,url
