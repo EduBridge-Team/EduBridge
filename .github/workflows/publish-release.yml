@@ -20,7 +20,7 @@ jobs:
   publish:
     name: Publish latest Android release
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     env:
       GH_TOKEN: ${{ github.token }}
@@ -52,44 +52,50 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "title=$title" >> "$GITHUB_OUTPUT"
 
-      - name: Skip if release already exists
-        id: existing
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if gh release view "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Release ${{ steps.version.outputs.tag }} already exists."
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Find latest successful Android build
-        if: steps.existing.outputs.exists != 'true'
+      - name: Find matching successful Android build
         id: android_run
         shell: bash
         run: |
           set -euo pipefail
 
-          run_id="$(gh run list \
-            --workflow android-build.yml \
-            --branch main \
-            --status success \
-            --limit 20 \
-            --json databaseId,createdAt \
-            --jq '.[0].databaseId')"
+          expected="${{ steps.version.outputs.version }}"
+          run_id=""
 
-          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
-            echo "::error::No successful Android build workflow run was found on main."
+          while IFS=$'\t' read -r candidate_id candidate_sha candidate_created; do
+            candidate_version="$(
+              gh api "repos/${GITHUB_REPOSITORY}/contents/edubridge-app/pubspec.yaml?ref=${candidate_sha}" \
+                --jq '.content' \
+              | tr -d '\n' \
+              | base64 --decode \
+              | awk '/^version:/ {print $2; exit}'
+            )"
+
+            echo "Checking Android run ${candidate_id} (${candidate_created}) -> ${candidate_version:-unknown}"
+
+            if [ "$candidate_version" = "$expected" ]; then
+              run_id="$candidate_id"
+              break
+            fi
+          done < <(
+            gh run list \
+              --workflow android-build.yml \
+              --branch main \
+              --status success \
+              --limit 100 \
+              --json databaseId,headSha,createdAt \
+              --jq 'sort_by(.createdAt) | reverse[] | [.databaseId, .headSha, .createdAt] | @tsv'
+          )
+
+          if [ -z "$run_id" ]; then
+            echo "::error::No successful Android build matching app version $expected was found on main."
             exit 1
           fi
 
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "Using Android build workflow run $run_id."
+          echo "Using Android build workflow run $run_id for version $expected."
 
       - name: Download APK and AAB artifacts
-        if: steps.existing.outputs.exists != 'true'
+        id: artifacts
         shell: bash
         run: |
           set -euo pipefail
@@ -112,11 +118,57 @@ jobs:
             exit 1
           fi
 
-          cp "$apk" "release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.apk"
-          cp "$aab" "release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.aab"
+          out_apk="release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.apk"
+          out_aab="release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.aab"
+
+          cp "$apk" "$out_apk"
+          cp "$aab" "$out_aab"
+
+          echo "apk=$out_apk" >> "$GITHUB_OUTPUT"
+          echo "aab=$out_aab" >> "$GITHUB_OUTPUT"
+
+      - name: Verify AAB version metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - "${{ steps.artifacts.outputs.aab }}" \
+            "${{ steps.version.outputs.version_name }}" \
+            "${{ steps.version.outputs.build_number }}" <<'PY'
+          import sys
+          import zipfile
+
+          aab_path, expected_name, expected_code = sys.argv[1:]
+
+          with zipfile.ZipFile(aab_path) as zf:
+              manifest = zf.read("base/manifest/AndroidManifest.xml")
+
+          def read_string_after(attribute: bytes) -> str:
+              start = manifest.find(attribute)
+              if start < 0:
+                  raise SystemExit(f"Missing {attribute.decode()} in AAB manifest")
+
+              marker = manifest.find(b"\x1a", start + len(attribute), start + len(attribute) + 96)
+              if marker < 0 or marker + 1 >= len(manifest):
+                  raise SystemExit(f"Unable to decode {attribute.decode()} from AAB manifest")
+
+              length = manifest[marker + 1]
+              value = manifest[marker + 2:marker + 2 + length]
+              return value.decode("utf-8")
+
+          actual_code = read_string_after(b"versionCode")
+          actual_name = read_string_after(b"versionName")
+
+          print(f"AAB versionName={actual_name}, versionCode={actual_code}")
+
+          if actual_name != expected_name or actual_code != expected_code:
+              raise SystemExit(
+                  f"AAB metadata mismatch: expected {expected_name}+{expected_code}, "
+                  f"got {actual_name}+{actual_code}"
+              )
+          PY
 
       - name: Write release notes
-        if: steps.existing.outputs.exists != 'true'
         shell: bash
         run: |
           cat > release-notes.md <<'EOF'
@@ -126,29 +178,41 @@ jobs:
 
           - Version: `${{ steps.version.outputs.version_name }}`
           - Build number: `${{ steps.version.outputs.build_number }}`
-          - Includes the latest application fixes, UI improvements, authentication updates, and security/CI hardening from `main`.
           - Signed APK included for direct installation/testing.
           - Signed AAB included for Google Play Console distribution.
+          - Android artifact metadata is verified before publishing.
 
           ### Verification
 
-          This release was published from the latest successful **Build Android APK and AAB** workflow on `main`.
+          Published from Android workflow run `${{ steps.android_run.outputs.run_id }}` whose source commit uses the same Flutter version as `main`.
           EOF
 
-      - name: Create GitHub release
-        if: steps.existing.outputs.exists != 'true'
+      - name: Create or update GitHub release
         shell: bash
         run: |
           set -euo pipefail
 
-          gh release create "${{ steps.version.outputs.tag }}" \
-            --target main \
-            --title "${{ steps.version.outputs.title }}" \
-            --notes-file release-notes.md \
-            --latest \
-            release-files/*.apk \
-            release-files/*.aab
+          tag="${{ steps.version.outputs.tag }}"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release edit "$tag" \
+              --title "${{ steps.version.outputs.title }}" \
+              --notes-file release-notes.md
+
+            gh release upload "$tag" \
+              "${{ steps.artifacts.outputs.apk }}" \
+              "${{ steps.artifacts.outputs.aab }}" \
+              --clobber
+          else
+            gh release create "$tag" \
+              --target main \
+              --title "${{ steps.version.outputs.title }}" \
+              --notes-file release-notes.md \
+              --latest \
+              "${{ steps.artifacts.outputs.apk }}" \
+              "${{ steps.artifacts.outputs.aab }}"
+          fi
 
       - name: Show release
         shell: bash
-        run: gh release view "${{ steps.version.outputs.tag }}" --json name,tagName,url
+        run: gh release view "${{ steps.version.outputs.tag }}" --json name,tagName,url,assets
