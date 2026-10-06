@@ -116,8 +116,7 @@ class _SupportSheetState extends State<SupportSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(AppIcons.support,
-                    color: AppColors.brandBlue, size: 26),
+                Icon(AppIcons.support, color: c.infoText, size: 26),
                 const SizedBox(width: 8),
                 Text(
                   'تواصل مع الدعم الفني',
@@ -159,13 +158,12 @@ class _SupportSheetState extends State<SupportSheet> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(AppIcons.error,
-                        color: AppColors.red, size: 20),
+                    Icon(AppIcons.error, color: c.dangerText, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: const TextStyle(color: AppColors.red),
+                        style: TextStyle(color: c.dangerText),
                       ),
                     ),
                   ],
