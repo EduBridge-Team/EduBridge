@@ -21,6 +21,7 @@ jobs:
     outputs:
       web: ${{ steps.filter.outputs.web }}
       api: ${{ steps.filter.outputs.api }}
+      app: ${{ steps.filter.outputs.app }}
       contract: ${{ steps.filter.outputs.contract }}
       deploy: ${{ steps.filter.outputs.deploy }}
     steps:
@@ -42,6 +43,7 @@ jobs:
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             echo "web=true" >> "$GITHUB_OUTPUT"
             echo "api=true" >> "$GITHUB_OUTPUT"
+            echo "app=true" >> "$GITHUB_OUTPUT"
             echo "contract=true" >> "$GITHUB_OUTPUT"
             echo "deploy=true" >> "$GITHUB_OUTPUT"
             exit 0
@@ -68,6 +70,7 @@ jobs:
 
           web=false
           api=false
+          app=false
           contract=false
           deploy=false
 
@@ -77,6 +80,10 @@ jobs:
 
           if matches '^(edubridge-api-laravel/|\.github/workflows/web-api-quality\.yml$)'; then
             api=true
+          fi
+
+          if matches '^(edubridge-app/|\.github/workflows/web-api-quality\.yml$)'; then
+            app=true
           fi
 
           if matches '^(edubridge-api-laravel/(app|routes)/|edubridge-app/lib/services/api[^/]*\.dart$|scripts/check_mobile_api_parity\.py$|\.github/workflows/web-api-quality\.yml$)'; then
@@ -89,6 +96,7 @@ jobs:
 
           echo "web=$web" >> "$GITHUB_OUTPUT"
           echo "api=$api" >> "$GITHUB_OUTPUT"
+          echo "app=$app" >> "$GITHUB_OUTPUT"
           echo "contract=$contract" >> "$GITHUB_OUTPUT"
           echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
 
@@ -132,19 +140,113 @@ jobs:
     name: Flutter ↔ Laravel API contract
     needs: changes
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
-        if: needs.changes.outputs.contract == 'true'
+        if: needs.changes.outputs.contract == 'true' || needs.changes.outputs.app == 'true'
+
       - uses: actions/setup-python@v6
         if: needs.changes.outputs.contract == 'true'
         with:
           python-version: "3.12"
+
       - name: Verify Flutter API calls have Laravel routes
         if: needs.changes.outputs.contract == 'true'
         run: python scripts/check_mobile_api_parity.py
-      - name: No API contract changes
-        if: needs.changes.outputs.contract != 'true'
-        run: echo "No Flutter/Laravel contract changes; required check passes."
+
+      - name: Set up Java 17
+        if: needs.changes.outputs.app == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Flutter
+        if: needs.changes.outputs.app == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Android NDK with retry
+        if: needs.changes.outputs.app == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ndk_version="28.2.13676358"
+          sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+
+          if [ -z "$sdk_root" ]; then
+            echo "::error::ANDROID_SDK_ROOT/ANDROID_HOME is not configured."
+            exit 1
+          fi
+
+          sdkmanager_bin="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$sdkmanager_bin" ]; then
+            sdkmanager_bin="$(command -v sdkmanager || true)"
+          fi
+
+          if [ -z "$sdkmanager_bin" ] || [ ! -x "$sdkmanager_bin" ]; then
+            echo "::error::sdkmanager was not found."
+            exit 1
+          fi
+
+          if [ -f "$sdk_root/ndk/$ndk_version/source.properties" ]; then
+            echo "Android NDK $ndk_version is already installed."
+            exit 0
+          fi
+
+          for attempt in 1 2 3; do
+            echo "Installing Android NDK $ndk_version (attempt $attempt/3)..."
+            rm -rf "$sdk_root/ndk/$ndk_version"
+
+            if "$sdkmanager_bin" "ndk;$ndk_version"; then
+              if [ -f "$sdk_root/ndk/$ndk_version/source.properties" ]; then
+                echo "Android NDK $ndk_version installed successfully."
+                exit 0
+              fi
+            fi
+
+            echo "::warning::Android NDK install attempt $attempt failed. Cleaning partial install before retry."
+            rm -rf "$sdk_root/ndk/$ndk_version"
+            sleep $((attempt * 5))
+          done
+
+          echo "::error::Failed to install Android NDK $ndk_version after 3 attempts."
+          exit 1
+
+      - name: Install Flutter dependencies
+        if: needs.changes.outputs.app == 'true'
+        working-directory: edubridge-app
+        run: |
+          flutter pub get
+          git diff --exit-code -- pubspec.lock
+
+      - name: Analyze Flutter code
+        if: needs.changes.outputs.app == 'true'
+        working-directory: edubridge-app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        if: needs.changes.outputs.app == 'true'
+        working-directory: edubridge-app
+        run: flutter test
+
+      - name: Build unsigned release APK
+        if: needs.changes.outputs.app == 'true'
+        working-directory: edubridge-app
+        run: flutter build apk --release
+
+      - name: Build unsigned release AAB
+        if: needs.changes.outputs.app == 'true'
+        working-directory: edubridge-app
+        run: flutter build appbundle --release
+
+      - name: No mobile or API contract changes
+        if: needs.changes.outputs.contract != 'true' && needs.changes.outputs.app != 'true'
+        run: echo "No Flutter/Laravel contract or mobile changes; required check passes."
 
   php-syntax:
     name: PHP syntax
@@ -167,7 +269,7 @@ jobs:
         run: echo "No Laravel changes; required PHP syntax check passes."
 
   api-tests:
-    name: Laravel tests
+    name: Laravel unit and feature tests
     needs: changes
     runs-on: ubuntu-latest
     defaults:
@@ -184,6 +286,9 @@ jobs:
       - name: Install Composer dependencies
         if: needs.changes.outputs.api == 'true'
         run: composer install --no-interaction --prefer-dist
+      - name: Audit locked PHP dependencies
+        if: needs.changes.outputs.api == 'true'
+        run: composer audit --locked --no-interaction
       - name: Prepare test environment
         if: needs.changes.outputs.api == 'true'
         run: |
@@ -197,7 +302,7 @@ jobs:
       - name: No API changes
         if: needs.changes.outputs.api != 'true'
         working-directory: .
-        run: echo "No Laravel changes; required Laravel tests check passes."
+        run: echo "No Laravel changes; unit/feature test detail job passes."
 
   postgres-migration-smoke:
     name: Fresh PostgreSQL migration
@@ -295,6 +400,47 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  api-required-gate:
+    name: Laravel tests
+    needs:
+      - changes
+      - api-tests
+      - postgres-migration-smoke
+      - api-runtime-smoke
+      - deploy-config
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce API and deployment quality gate
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          API_CHANGED: ${{ needs.changes.outputs.api }}
+          DEPLOY_CHANGED: ${{ needs.changes.outputs.deploy }}
+          API_TESTS_RESULT: ${{ needs.api-tests.result }}
+          MIGRATION_RESULT: ${{ needs.postgres-migration-smoke.result }}
+          RUNTIME_RESULT: ${{ needs.api-runtime-smoke.result }}
+          DEPLOY_RESULT: ${{ needs.deploy-config.result }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CHANGES_RESULT" != "success" ]; then
+            echo "::error::Changed-area detection failed."
+            exit 1
+          fi
+
+          if [ "$API_CHANGED" = "true" ]; then
+            [ "$API_TESTS_RESULT" = "success" ] || { echo "::error::Laravel unit/feature tests failed or were cancelled."; exit 1; }
+            [ "$MIGRATION_RESULT" = "success" ] || { echo "::error::Fresh PostgreSQL migration smoke failed or was cancelled."; exit 1; }
+            [ "$RUNTIME_RESULT" = "success" ] || { echo "::error::Production API container smoke failed or was cancelled."; exit 1; }
+          fi
+
+          if [ "$DEPLOY_CHANGED" = "true" ]; then
+            [ "$DEPLOY_RESULT" = "success" ] || { echo "::error::Deployment config validation failed or was cancelled."; exit 1; }
+            [ "$RUNTIME_RESULT" = "success" ] || { echo "::error::Production API container smoke failed or was cancelled."; exit 1; }
+          fi
+
+          echo "Required API/deployment quality gate passed."
+
   web-build:
     name: React production build
     needs: changes
@@ -314,6 +460,9 @@ jobs:
       - name: Install web dependencies
         if: needs.changes.outputs.web == 'true'
         run: npm ci
+      - name: Audit high and critical web dependency vulnerabilities
+        if: needs.changes.outputs.web == 'true'
+        run: npm audit --audit-level=high
       - name: Lint website
         if: needs.changes.outputs.web == 'true'
         run: npm run lint
