@@ -39,23 +39,23 @@ trait UserReadActions
                     $query->where('role', $role);
                 }
             } elseif (in_array($user->role, ['ministry', 'institution'], true)) {
+                // These roles have dedicated aggregate/domain endpoints and no tenant-safe
+                // users-to-organization relation. Do not expose a global user directory.
                 $query = DB::table('users')
                     ->select('id', 'name', 'role', 'verification_status')
-                    ->orderBy('name');
-
-                $role = $request->query('role');
-                if ($role) {
-                    $query->where('role', $role);
-                }
+                    ->whereRaw('1 = 0');
             } elseif ($user->role === 'parent') {
                 $query = DB::table('users')
                     ->select('id', 'name', 'role', 'verification_status')
                     ->whereIn('role', ['teacher', 'specialist'])
+                    ->whereIn('id', $this->parentCareTeamUserIds((int) $user->id))
                     ->orderBy('name');
             } else {
+                // Teacher/specialist workflows need a staff picker, but never the admin,
+                // ministry, institution, or parent directory.
                 $query = DB::table('users')
                     ->select('id', 'name', 'role', 'verification_status')
-                    ->whereIn('role', ['teacher', 'specialist', 'admin', 'ministry', 'institution'])
+                    ->whereIn('role', ['teacher', 'specialist'])
                     ->where('id', '!=', $user->id)
                     ->orderBy('name');
             }
@@ -70,5 +70,54 @@ trait UserReadActions
 
             return response()->json(['error' => 'خطأ في السيرفر'], 500);
         }
+    }
+
+    private function parentCareTeamUserIds(int $parentId): array
+    {
+        if (!Schema::hasTable('child_parent') || !Schema::hasTable('children')) {
+            return [];
+        }
+
+        $childIds = DB::table('child_parent')
+            ->where('parent_id', $parentId)
+            ->pluck('child_id');
+
+        if ($childIds->isEmpty()) {
+            return [];
+        }
+
+        $userIds = collect();
+
+        if (Schema::hasColumn('children', 'assigned_teacher_id')) {
+            $userIds = $userIds->merge(
+                DB::table('children')
+                    ->whereIn('id', $childIds)
+                    ->whereNotNull('assigned_teacher_id')
+                    ->pluck('assigned_teacher_id')
+            );
+        }
+
+        if (Schema::hasTable('child_teacher')) {
+            $userIds = $userIds->merge(
+                DB::table('child_teacher')
+                    ->whereIn('child_id', $childIds)
+                    ->pluck('teacher_id')
+            );
+        }
+
+        if (Schema::hasTable('child_specialist')) {
+            $userIds = $userIds->merge(
+                DB::table('child_specialist')
+                    ->whereIn('child_id', $childIds)
+                    ->pluck('specialist_id')
+            );
+        }
+
+        return $userIds
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
     }
 }
