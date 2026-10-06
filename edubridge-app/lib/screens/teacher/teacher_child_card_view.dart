@@ -31,7 +31,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                     name.isNotEmpty ? name.characters.first : '؟',
                     style: TextStyle(
                       fontSize: 28,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: color,
                     ),
                   ),
@@ -47,7 +47,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 21,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           color: c.heading,
                         ),
                       ),
@@ -75,10 +75,10 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                     children: [
                       Text(
                         '${progress.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          color: AppColors.brandBlue,
+                        style: TextStyle(
+                          color: c.infoText,
                           fontSize: 14,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 7),
@@ -116,7 +116,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14.5,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -130,7 +130,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                     child: OutlinedButton.icon(
                       onPressed: () => _openApprovedPlan(context, child),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.brandBlue,
+                        foregroundColor: c.infoText,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         side: BorderSide(color: c.line, width: 1.3),
                         shape: RoundedRectangleBorder(
@@ -143,7 +143,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         maxLines: 1,
                         style: TextStyle(
                           fontSize: 14.5,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -170,7 +170,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         'إجراءات سريعة',
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           color: c.heading,
                         ),
                       ),
@@ -179,7 +179,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                       _expanded
                           ? Icons.keyboard_arrow_up_rounded
                           : Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.brandBlue,
+                      color: c.infoText,
                       size: 27,
                     ),
                   ],
@@ -283,7 +283,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                                 style: TextStyle(
                                   color: c.heading,
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w900,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
