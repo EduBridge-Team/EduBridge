@@ -4,6 +4,7 @@ extension _HomeScreenView on HomeScreen {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: CustomScrollView(
@@ -85,49 +86,52 @@ extension _HomeScreenView on HomeScreen {
                                       name != null && name.isNotEmpty
                                           ? 'مرحباً، $name'
                                           : 'مرحباً بك في EduBridge',
-                                      style: const TextStyle(
-                                        fontSize: 23,
+                                      style: textTheme.headlineSmall?.copyWith(
                                         height: 1.2,
-                                        fontWeight: FontWeight.w800,
                                         color: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                  if (role != null)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 11,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: .14),
-                                        borderRadius: BorderRadius.circular(999),
-                                        border: Border.all(
-                                          color: Colors.white.withValues(alpha: .16),
+                                        if (role != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 11,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withValues(
+                                                alpha: .14,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                              border: Border.all(
+                                                color: Colors.white.withValues(
+                                                  alpha: .16,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              role,
+                                              style: textTheme.labelSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white,
+                                                  ),
+                                            ),
+                                          ),
+                                        if (role != null)
+                                          const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'كل ما تحتاجه لدعم رحلة التعلّم في مكان واحد.',
+                                            style: textTheme.bodySmall?.copyWith(
+                                              height: 1.5,
+                                              color: Colors.white70,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        role,
-                                        style: const TextStyle(
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  if (role != null) const SizedBox(width: 8),
-                                  const Expanded(
-                                    child: Text(
-                                      'كل ما تحتاجه لدعم رحلة التعلّم في مكان واحد.',
-                                      style: TextStyle(
-                                        fontSize: 13.5,
-                                        height: 1.5,
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                  ),
                                       ],
                                     ),
                                   ],
@@ -157,8 +161,7 @@ extension _HomeScreenView on HomeScreen {
                       children: [
                         Text(
                           'ابدأ من هنا',
-                          style: TextStyle(
-                            fontSize: 20,
+                          style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: c.heading,
                           ),
@@ -166,7 +169,7 @@ extension _HomeScreenView on HomeScreen {
                         const SizedBox(height: 5),
                         Text(
                           'وصول سريع لأهم مساحاتك التعليمية',
-                          style: TextStyle(fontSize: 14, color: c.muted),
+                          style: textTheme.bodySmall?.copyWith(color: c.muted),
                         ),
                         const SizedBox(height: 16),
                         if (isAdmin)
@@ -176,7 +179,8 @@ extension _HomeScreenView on HomeScreen {
                                 ? const Color(0xFF103A40)
                                 : AppColors.tintTeal,
                             title: 'لوحة التحكم الإدارية',
-                            subtitle: 'إدارة المستخدمين وربط الأطفال ومتابعة المنصة',
+                            subtitle:
+                                'إدارة المستخدمين وربط الأطفال ومتابعة المنصة',
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -193,7 +197,8 @@ extension _HomeScreenView on HomeScreen {
                               ? const Color(0xFF103A40)
                               : AppColors.tintTeal,
                           title: 'الأطفال',
-                          subtitle: 'الملفات التعليمية والدروس والتقدّم لكل طفل',
+                          subtitle:
+                              'الملفات التعليمية والدروس والتقدّم لكل طفل',
                           onTap: () => _openChildren(context),
                         ),
                         _MenuTile(
@@ -202,7 +207,8 @@ extension _HomeScreenView on HomeScreen {
                               ? const Color(0xFF183B26)
                               : AppColors.tintGreen,
                           title: 'تصفّح الدروس',
-                          subtitle: 'اكتشف المحتوى وابحث عن الدرس المناسب بسهولة',
+                          subtitle:
+                              'اكتشف المحتوى وابحث عن الدرس المناسب بسهولة',
                           onTap: () {
                             Navigator.push(
                               context,
@@ -218,7 +224,8 @@ extension _HomeScreenView on HomeScreen {
                               ? const Color(0xFF45311E)
                               : AppColors.tintOrange,
                           title: 'التقدّم والمكافآت',
-                          subtitle: 'تابع الإنجاز والنجوم والشارات في عرض واضح',
+                          subtitle:
+                              'تابع الإنجاز والنجوم والشارات في عرض واضح',
                           onTap: () {
                             Navigator.push(
                               context,
@@ -268,8 +275,7 @@ extension _HomeScreenView on HomeScreen {
                                   children: [
                                     Text(
                                       'رحلة أبسط، تركيز أكبر',
-                                      style: TextStyle(
-                                        fontSize: 15.5,
+                                      style: textTheme.bodyMedium?.copyWith(
                                         fontWeight: FontWeight.w800,
                                         color: c.heading,
                                       ),
@@ -277,8 +283,7 @@ extension _HomeScreenView on HomeScreen {
                                     const SizedBox(height: 3),
                                     Text(
                                       'أعدنا ترتيب الواجهة لتصل للمعلومة المهمة بخطوات أقل.',
-                                      style: TextStyle(
-                                        fontSize: 13,
+                                      style: textTheme.bodySmall?.copyWith(
                                         height: 1.45,
                                         color: c.muted,
                                       ),
