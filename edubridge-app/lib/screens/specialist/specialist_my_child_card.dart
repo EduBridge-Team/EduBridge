@@ -42,7 +42,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     name.isNotEmpty ? name.characters.first : '؟',
                     style: TextStyle(
                       fontSize: 21,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: color,
                     ),
                   ),
@@ -58,7 +58,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 17.5,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           color: c.heading,
                         ),
                       ),
@@ -95,10 +95,10 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                           const SizedBox(width: 4),
                           Text(
                             '${stats['pct']}%',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.brandBlue,
+                              fontWeight: FontWeight.w700,
+                              color: c.infoText,
                             ),
                           ),
                         ],
@@ -111,7 +111,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         style: TextStyle(
                           fontSize: 10.5,
                           color: c.muted,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -171,7 +171,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13.5,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -185,6 +185,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
+                        foregroundColor: c.infoText,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -198,7 +199,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         maxLines: 1,
                         style: const TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       onPressed: isPending
@@ -218,17 +219,17 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                   maintainState: false,
                   tilePadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   childrenPadding: const EdgeInsets.only(top: 6, bottom: 2),
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.tune_rounded,
                     size: 20,
-                    color: AppColors.brandBlue,
+                    color: c.infoText,
                   ),
                   title: Text(
                     'إجراءات سريعة',
                     style: TextStyle(
                       color: c.heading,
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   children: [

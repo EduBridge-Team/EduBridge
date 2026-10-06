@@ -43,8 +43,8 @@ class _StatsCard extends StatelessWidget {
               value,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: color,
+                fontWeight: FontWeight.w800,
+                color: c.heading,
               ),
             ),
             const SizedBox(height: 1),
@@ -69,6 +69,7 @@ class _CountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -79,8 +80,8 @@ class _CountBadge extends StatelessWidget {
         text,
         style: TextStyle(
           fontSize: 11.5,
-          fontWeight: FontWeight.w700,
-          color: color,
+          fontWeight: FontWeight.w600,
+          color: c.body,
         ),
       ),
     );

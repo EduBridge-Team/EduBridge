@@ -87,8 +87,8 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
               child: Text(
                 '${_children.length} ${_children.length == 1 ? 'طفل' : 'أطفال'}',
                 style: textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.brandBlue,
+                  fontWeight: FontWeight.w700,
+                  color: c.infoText,
                 ),
               ),
             ),
@@ -109,6 +109,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
   }
 
   Widget _buildErrorState() {
+    final c = JisrColors.of(context);
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -118,7 +119,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         AdaptiveText(
           _error!,
           textAlign: TextAlign.center,
-          color: AppColors.red,
+          color: c.dangerText,
           fontWeight: FontWeight.w700,
         ),
         const SizedBox(height: 18),
@@ -355,7 +356,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: c.heading,
                 ),
               ),
@@ -382,15 +383,15 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w800,
-          color: AppColors.brandBlue,
+          fontWeight: FontWeight.w700,
+          color: c.infoText,
         ),
       ),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(48),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         side: BorderSide(color: c.line),
-        foregroundColor: AppColors.brandBlue,
+        foregroundColor: c.infoText,
       ),
     );
   }
@@ -445,29 +446,45 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
   }
 
   Widget _buildStatusBadge(String? status) {
+    final c = JisrColors.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final (text, color, icon) = switch (status) {
-      'evaluated' => ('تم التقييم', AppColors.brandTealDeep, AppIcons.check),
-      'assigned' => ('تم التعيين', AppColors.brandBlue, AppIcons.verified),
-      _ => ('قيد الانتظار', AppColors.orangeDeep, AppIcons.clock),
+    final (text, accentColor, textColor, icon) = switch (status) {
+      'evaluated' => (
+          'تم التقييم',
+          AppColors.brandTealDeep,
+          c.successText,
+          AppIcons.check,
+        ),
+      'assigned' => (
+          'تم التعيين',
+          AppColors.brandBlue,
+          c.infoText,
+          AppIcons.verified,
+        ),
+      _ => (
+          'قيد الانتظار',
+          AppColors.orangeDeep,
+          c.warningText,
+          AppIcons.clock,
+        ),
     };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: .10),
+        color: accentColor.withValues(alpha: .10),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(icon, size: 12, color: textColor),
           const SizedBox(width: 4),
           Text(
             text,
             style: textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: color,
+              fontWeight: FontWeight.w700,
+              color: textColor,
             ),
           ),
         ],
