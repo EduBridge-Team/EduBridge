@@ -7,6 +7,9 @@ TextTheme _brandTextTheme(TextTheme base, {required bool dark}) {
   final muted = dark ? const Color(0xFF91A8BA) : AppColors.muted;
   final cairo = GoogleFonts.cairoTextTheme(base);
 
+  // Standard product scale: 12 / 14 / 16 / 18 / 20 / 24 / 28 / 32.
+  // Accessibility-specific themes intentionally remain free to use larger
+  // values where readability or interaction requirements call for them.
   return cairo.copyWith(
     displaySmall: cairo.displaySmall?.copyWith(
       fontSize: 32,
@@ -15,41 +18,47 @@ TextTheme _brandTextTheme(TextTheme base, {required bool dark}) {
       color: heading,
     ),
     headlineMedium: cairo.headlineMedium?.copyWith(
-      fontSize: 26,
+      fontSize: 28,
       height: 1.25,
       fontWeight: FontWeight.w800,
       color: heading,
     ),
     headlineSmall: cairo.headlineSmall?.copyWith(
-      fontSize: 22,
+      fontSize: 24,
       height: 1.3,
       fontWeight: FontWeight.w800,
       color: heading,
     ),
     titleLarge: cairo.titleLarge?.copyWith(
-      fontSize: 20,
+      fontSize: 24,
       height: 1.3,
       fontWeight: FontWeight.w700,
       color: heading,
     ),
     titleMedium: cairo.titleMedium?.copyWith(
-      fontSize: 17,
+      fontSize: 20,
       height: 1.35,
       fontWeight: FontWeight.w700,
       color: heading,
     ),
+    titleSmall: cairo.titleSmall?.copyWith(
+      fontSize: 18,
+      height: 1.4,
+      fontWeight: FontWeight.w700,
+      color: heading,
+    ),
     bodyLarge: cairo.bodyLarge?.copyWith(
-      fontSize: 17,
+      fontSize: 18,
       height: 1.55,
       color: body,
     ),
     bodyMedium: cairo.bodyMedium?.copyWith(
-      fontSize: 15.5,
+      fontSize: 16,
       height: 1.5,
       color: body,
     ),
     bodySmall: cairo.bodySmall?.copyWith(
-      fontSize: 13.5,
+      fontSize: 14,
       height: 1.45,
       color: muted,
     ),
@@ -57,6 +66,16 @@ TextTheme _brandTextTheme(TextTheme base, {required bool dark}) {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: heading,
+    ),
+    labelMedium: cairo.labelMedium?.copyWith(
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      color: body,
+    ),
+    labelSmall: cairo.labelSmall?.copyWith(
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      color: muted,
     ),
   );
 }
@@ -88,7 +107,7 @@ ThemeData buildJisrTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       titleTextStyle: TextStyle(
-        fontSize: 19,
+        fontSize: 20,
         fontWeight: FontWeight.w800,
         color: Colors.white,
       ),
@@ -138,7 +157,7 @@ ThemeData buildJisrTheme() {
       style: TextButton.styleFrom(
         foregroundColor: AppColors.brandBlue,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -218,7 +237,7 @@ ThemeData buildJisrTheme() {
       backgroundColor: AppColors.ink,
       insetPadding: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      contentTextStyle: const TextStyle(fontSize: 15, color: Colors.white),
+      contentTextStyle: const TextStyle(fontSize: 14, color: Colors.white),
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.surface,
@@ -262,7 +281,7 @@ ThemeData buildJisrDarkTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       titleTextStyle: TextStyle(
-        fontSize: 19,
+        fontSize: 20,
         fontWeight: FontWeight.w800,
         color: Colors.white,
       ),
@@ -302,12 +321,13 @@ ThemeData buildJisrDarkTheme() {
         minimumSize: const Size(56, 56),
         side: const BorderSide(color: border, width: 1.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.brandTealLight,
-        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -339,6 +359,18 @@ ThemeData buildJisrDarkTheme() {
       height: 74,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(
+          size: 24,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.brandTeal
+              : const Color(0xFF91A8BA),
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontSize: 12,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w800
+              : FontWeight.w600,
           color: states.contains(WidgetState.selected)
               ? AppColors.brandTeal
               : const Color(0xFF91A8BA),
@@ -359,7 +391,7 @@ ThemeData buildJisrDarkTheme() {
       behavior: SnackBarBehavior.floating,
       backgroundColor: const Color(0xFF20384B),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      contentTextStyle: const TextStyle(fontSize: 15, color: Colors.white),
+      contentTextStyle: const TextStyle(fontSize: 14, color: Colors.white),
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: surface,
