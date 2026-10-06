@@ -57,6 +57,53 @@ jobs:
           flutter --version
           java -version
 
+      - name: Install Android NDK with retry
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ndk_version="28.2.13676358"
+          sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+
+          if [ -z "$sdk_root" ]; then
+            echo "::error::ANDROID_SDK_ROOT/ANDROID_HOME is not configured."
+            exit 1
+          fi
+
+          sdkmanager_bin="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$sdkmanager_bin" ]; then
+            sdkmanager_bin="$(command -v sdkmanager || true)"
+          fi
+
+          if [ -z "$sdkmanager_bin" ] || [ ! -x "$sdkmanager_bin" ]; then
+            echo "::error::sdkmanager was not found."
+            exit 1
+          fi
+
+          if [ -f "$sdk_root/ndk/$ndk_version/source.properties" ]; then
+            echo "Android NDK $ndk_version is already installed."
+            exit 0
+          fi
+
+          for attempt in 1 2 3; do
+            echo "Installing Android NDK $ndk_version (attempt $attempt/3)..."
+            rm -rf "$sdk_root/ndk/$ndk_version"
+
+            if "$sdkmanager_bin" "ndk;$ndk_version"; then
+              if [ -f "$sdk_root/ndk/$ndk_version/source.properties" ]; then
+                echo "Android NDK $ndk_version installed successfully."
+                exit 0
+              fi
+            fi
+
+            echo "::warning::Android NDK install attempt $attempt failed. Cleaning partial install before retry."
+            rm -rf "$sdk_root/ndk/$ndk_version"
+            sleep $((attempt * 5))
+          done
+
+          echo "::error::Failed to install Android NDK $ndk_version after 3 attempts."
+          exit 1
+
       - name: Install Flutter dependencies
         run: |
           flutter pub get
