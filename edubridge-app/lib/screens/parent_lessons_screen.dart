@@ -103,6 +103,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
     return Scaffold(
       appBar: JisrAppBar(
         title: 'دروس لولي الأمر',
@@ -130,19 +131,18 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
             color: AppColors.brandBlue.withValues(alpha: 0.1),
             child: Row(
               children: [
-                const Icon(AppIcons.parent,
-                    color: AppColors.brandBlue, size: 32),
+                Icon(AppIcons.parent, color: c.infoText, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'دروس مخصصة لك',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.brandBlue,
+                          fontWeight: FontWeight.w700,
+                          color: c.infoText,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -150,7 +150,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                         'نصائح وإرشادات من المختصين لمساعدتك في التعامل مع ابنك',
                         style: TextStyle(
                           fontSize: 13,
-                          color: JisrColors.of(context).muted,
+                          color: c.muted,
                           height: 1.4,
                         ),
                       ),
