@@ -46,22 +46,35 @@ git push -u origin <branch-name>
 develop -> main
 ```
 
-بعد الدمج، على خادم Oracle:
+بعد الدمج، على خادم Oracle استخدم سكربت النشر المخصص، وليس `docker compose` مباشرة من جذر المستودع:
 
 ```bash
 cd ~/EduBridge
 git checkout main
+git fetch origin
 git pull --ff-only origin main
-bash deploy/oracle-deploy.sh
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
+```
+
+إذا كان الإصدار يحتوي migrations تمت مراجعتها، خذ نسخة احتياطية أولًا ثم نفّذها بشكل منفصل:
+
+```bash
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
+docker exec edubridge-api php artisan migrate --force
 ```
 
 ثم:
 
 ```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
 curl -I https://edubridge.win
-curl -I https://api.edubridge.win/api/health
 ./deploy/security-smoke.sh
 ```
+
+> لا تشغّل `docker compose build` أو `docker compose up -d` مباشرة من جذر المستودع؛ سكربت النشر يستخدم `deploy/oracle-compose.yml` صراحةً.
 
 ## Hotfix عاجل
 

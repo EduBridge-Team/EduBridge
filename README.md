@@ -115,19 +115,30 @@ See:
 
 ## Deploying `main`
 
+On the Oracle server, use the repository deployment script; do not run plain root-level `docker compose build` or `docker compose up -d` because the production Compose file is `deploy/oracle-compose.yml`.
+
 ```bash
 cd ~/EduBridge
+git fetch origin
 git pull --ff-only origin main
-bash deploy/oracle-deploy.sh
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
 ```
 
-The deploy script does not replace the need to review/apply database migrations safely.
+The deploy script intentionally does not apply Laravel migrations automatically. If the release contains reviewed migrations, create a verified backup first, then apply them separately:
+
+```bash
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
+docker exec edubridge-api php artisan migrate --force
+```
 
 After deployment:
 
 ```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
 curl -I https://edubridge.win
-curl -I https://api.edubridge.win/api/health
 ./deploy/security-smoke.sh
 ```
 

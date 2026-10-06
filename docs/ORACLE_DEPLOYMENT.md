@@ -4,6 +4,8 @@
 
 EduBridge production runs on the existing Oracle Ubuntu host alongside other services, using isolated Docker resources and the host-mode Caddy reverse proxy.
 
+> **Important:** production deployment is managed by `deploy/oracle-deploy.sh`, which uses `deploy/oracle-compose.yml` internally. Do **not** run plain `docker compose build` or `docker compose up -d` from the repository root because there is no default Compose file there.
+
 ## Production topology
 
 - `edubridge-postgres`: PostgreSQL 17 on the private Docker network `edubridge-net`.
@@ -57,24 +59,40 @@ docker exec edubridge-api php artisan tinker --execute='echo config("services.gr
 
 ## Standard deployment
 
-From the repository root:
+From the Oracle server, use this exact update flow:
 
 ```bash
+cd ~/EduBridge
+git fetch origin
 git pull --ff-only origin main
-bash deploy/oracle-deploy.sh
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
 ```
 
-The deployment script ensures the Docker network/volume exist, starts PostgreSQL, builds immutable API/web images, recreates the application containers, and verifies local health.
+The deployment script:
 
-It intentionally does **not** run destructive schema operations automatically. Back up the database and review migrations before applying production schema changes.
+1. Uses `deploy/oracle-compose.yml` explicitly; no root-level Compose file is required.
+2. Validates the resolved Noor configuration before changing running containers.
+3. Ensures the private Docker network and persistent PostgreSQL volume exist.
+4. Starts PostgreSQL and waits for it to become healthy without replacing its data volume.
+5. Builds the API and web images from the current Git commit.
+6. Recreates the API and web application containers.
+7. Clears Laravel runtime caches.
+8. Verifies the local API and web health endpoints.
+9. Verifies that the running API container reports the same `GIT_SHA` as the checked-out repository.
+10. Verifies that Noor's server configuration is loaded.
 
-When migrations are required:
+It intentionally does **not** run Laravel migrations or SQL upgrade scripts automatically. Production schema work must be reviewed and applied separately after a verified backup.
+
+When reviewed migrations are required:
 
 ```bash
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
 docker exec edubridge-api php artisan migrate --force
 ```
 
-Never run `migrate:fresh` against production.
+If Artisan reports `Nothing to migrate.`, the production schema is already current. Never run `migrate:fresh` against production.
 
 ## Caddy deployment
 
@@ -154,15 +172,17 @@ echo | openssl s_client -connect 127.0.0.1:443 -servername api.edubridge.win 2>/
 After deployment:
 
 ```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
 curl -I https://edubridge.win
-curl -I https://api.edubridge.win/api/health
 ./deploy/security-smoke.sh
 ```
 
 Expected:
 
+- `edubridge-api`, `edubridge-web`, and `edubridge-postgres` are running/healthy;
 - website HTTP 200;
-- API health HTTP 200;
+- API health returns successfully;
 - `Server: cloudflare` on the public path;
 - HSTS and security headers present;
 - exactly one `Content-Security-Policy` header on the website.
@@ -174,6 +194,16 @@ curl -sSI https://edubridge.win | grep -ci '^content-security-policy:'
 ```
 
 Expected: `1`.
+
+For Compose-level status, point Docker Compose at the production file explicitly:
+
+```bash
+docker compose \
+  --project-name edubridge \
+  --env-file edubridge-api-laravel/.env \
+  -f deploy/oracle-compose.yml \
+  ps
+```
 
 ## Database backup before schema work
 
@@ -221,7 +251,7 @@ sudo journalctl -u edubridge-backup.service -n 100 --no-pager
 Application rollback normally does not require restoring PostgreSQL. Check out the previous known-good application commit and rerun:
 
 ```bash
-bash deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
 ```
 
 Restore an older database only when a release introduced an incompatible schema change and the rollback plan explicitly requires it.
