@@ -381,7 +381,10 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
+        style: textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: AppColors.brandBlue,
+        ),
       ),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(48),
