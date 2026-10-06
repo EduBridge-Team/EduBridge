@@ -45,16 +45,16 @@ class UserDirectoryAccessTest extends TestCase
         });
 
         DB::table('users')->insert([
-            ['id' => 1, 'name' => 'Parent A', 'role' => 'parent', 'verification_status' => 'verified'],
-            ['id' => 2, 'name' => 'Parent B', 'role' => 'parent', 'verification_status' => 'verified'],
-            ['id' => 10, 'name' => 'Assigned Teacher', 'role' => 'teacher', 'verification_status' => 'verified'],
-            ['id' => 11, 'name' => 'Team Teacher', 'role' => 'teacher', 'verification_status' => 'verified'],
-            ['id' => 12, 'name' => 'Unrelated Teacher', 'role' => 'teacher', 'verification_status' => 'verified'],
+            ['id' => 1, 'name' => 'Parent A', 'role' => 'parent', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 2, 'name' => 'Parent B', 'role' => 'parent', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 10, 'name' => 'Assigned Teacher', 'role' => 'teacher', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 11, 'name' => 'Team Teacher', 'role' => 'teacher', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 12, 'name' => 'Unrelated Teacher', 'role' => 'teacher', 'verification_status' => 'verified', 'specialty' => null],
             ['id' => 20, 'name' => 'Assigned Specialist', 'role' => 'specialist', 'verification_status' => 'verified', 'specialty' => 'educational'],
             ['id' => 21, 'name' => 'Unrelated Specialist', 'role' => 'specialist', 'verification_status' => 'verified', 'specialty' => 'learning_support'],
-            ['id' => 30, 'name' => 'Admin', 'role' => 'admin', 'verification_status' => 'verified'],
-            ['id' => 31, 'name' => 'Ministry', 'role' => 'ministry', 'verification_status' => 'verified'],
-            ['id' => 32, 'name' => 'Institution', 'role' => 'institution', 'verification_status' => 'verified'],
+            ['id' => 30, 'name' => 'Admin', 'role' => 'admin', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 31, 'name' => 'Ministry', 'role' => 'ministry', 'verification_status' => 'verified', 'specialty' => null],
+            ['id' => 32, 'name' => 'Institution', 'role' => 'institution', 'verification_status' => 'verified', 'specialty' => null],
         ]);
 
         DB::table('children')->insert([
