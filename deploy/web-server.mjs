@@ -46,23 +46,26 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
   "form-action 'self'",
   "script-src 'self' https://accounts.google.com",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  "style-src 'self'",
+  "style-src-attr 'unsafe-inline'",
+  `img-src 'self' data: blob: ${apiOrigin.origin}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://api.edubridge.win https://accounts.google.com https://*.googleapis.com",
+  `connect-src 'self' ${apiOrigin.origin} https://accounts.google.com https://*.googleapis.com`,
   "frame-src https://accounts.google.com",
-  "media-src 'self' blob: https:",
+  `media-src 'self' blob: ${apiOrigin.origin}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
 ].join("; ");
 
 function setSecurityHeaders(res) {
-  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   res.setHeader("Content-Security-Policy", contentSecurityPolicy);
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  res.setHeader("Origin-Agent-Cluster", "?1");
   res.setHeader(
     "Permissions-Policy",
     "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()",
@@ -162,7 +165,7 @@ createServer((req, res) => {
   res.setHeader(
     "Cache-Control",
     isHtml || spaFallback
-      ? "no-cache"
+      ? "no-store, max-age=0, must-revalidate"
       : isHashedAsset
         ? "public, max-age=31536000, immutable"
         : "public, max-age=3600",

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/google_auth_service.dart';
+import '../services/google_role_login_service.dart';
 import '../theme.dart';
 import '../utils/home_router.dart';
 import '../widgets/brand_lockup.dart';
@@ -24,8 +25,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordCtrl = TextEditingController();
   bool _loading = false;
   bool _obscurePassword = true;
+  String _googleRole = 'parent';
   String? _error;
   String? _notice;
+
+  static const _googleRoles = {
+    'parent': 'ولي أمر',
+    'teacher': 'معلّم',
+    'specialist': 'مختص',
+  };
 
   @override
   void dispose() {
@@ -71,7 +79,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final idToken = await GoogleAuthService.authenticate();
-      final error = await ApiService.googleLogin(idToken);
+      final error = await GoogleRoleLoginService.login(
+        idToken,
+        role: _googleRole,
+      );
 
       if (!mounted) return;
       if (error != null) {

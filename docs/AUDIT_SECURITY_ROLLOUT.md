@@ -1,166 +1,186 @@
-# Audit security fixes
+# EduBridge security rollout and verification
 
-The API now resolves the current account on every authenticated request and
-rejects a token after account deletion, role changes or password changes.
-Tokens issued before this release lack a credential fingerprint and require
-one fresh sign-in. Changing a password returns a replacement token to the
-current web/mobile client; other tokens become invalid.
+> Last verified: 2026-10-05
 
-Private product APIs now require identity approval from the database. Profile,
-identity submission, settings, document uploads, certificates and support remain
-available during onboarding. Admin retains its existing exception. Email
-verification alone does not unlock product APIs.
+This document summarizes the security controls that are implemented in the current EduBridge stack, how they are deployed, and which operational items still require follow-up.
 
-New homework submission files are stored in private R2. Their API download path
-checks the child's parent/care team or the homework author/admin, as well as the
-exact file reference on the submission. The web opens these files through an
-authenticated fetch. Active HTML/SVG types are displayed as plain text before
-blob navigation, and API downloads carry sandbox/no-referrer headers. Existing public submission files require a separate storage
-migration; changing their database URLs alone does not remove public objects.
-Until that migration is performed, earlier shared links can remain accessible.
+## Authentication and account state
 
-Targeted lesson read policies are enforced on list/search/detail/media/ratings.
-The editor preserves specific-child audiences. All new uploaded lesson media is
-private, including non-targeted lessons so later audience changes remain safe.
-API serializers return signed playback links valid for 15 minutes. Each request
-rechecks the viewer's account, role, password fingerprint, identity approval and
-current child relationship. Video/audio byte ranges are streamed from R2.
-The link is a short-lived bearer capability: someone with a copied link can use
-it during that window while its original viewer remains authorized. No login
-JWT is placed in the URL. Reopen/reload a lesson after a link expires.
-External lesson links cannot be made private by the API. Targeted lessons reject
-new external media links, and changing a public lesson to specific children is
-blocked until all its media has private references. Existing external links
-must be replaced with uploaded files; the migration never fetches external URLs.
+Authenticated API requests resolve the current account state instead of trusting a stale token indefinitely. Tokens become invalid after security-relevant account changes such as deletion, role changes or credential changes. Password changes rotate the active client token and invalidate older credentials according to the current authentication flow.
 
-Lesson media replacement uploads new files before deleting the old objects.
-Rollback cleans up new uploads using an in-memory object journal. Old objects
-are deleted only after the database commit. Storage deletion failures are logged
-and leave an orphan for cleanup, rather than breaking the saved lesson.
+Private product APIs require the expected account/identity state. Onboarding-safe operations such as identity submission, profile/settings, certificates and support remain separately controlled.
 
-The first batch needed no database migration. This follow-up adds the
-engagement_events ledger. Deploy API, web and mobile together, run the migration
-before accepting engagement writes, then verify:
+## Authorization
 
-- An old token is rejected and fresh login works.
-- Pending/rejected identity accounts can upload documents and contact support,
-  but cannot call private product APIs directly.
-- Revoking identity approval takes effect on the next request.
-- Changing a password keeps the current updated client signed in and rejects
-  old tokens elsewhere.
-- A parent cannot read a lesson or submission belonging to an unrelated child.
-- Editing a targeted lesson title preserves its original target IDs.
+Backend authorization is authoritative. Frontend navigation visibility is not considered a security boundary.
 
-The child directory limits teacher access to assigned/team children. Specialists
-retain the shared directory but unassigned children expose only summary fields.
-Offline stars synchronize in batches of at most 20 and serialize local writes.
-Notification state resets on logout and ignores responses from prior sessions.
-Conversation requests cannot overwrite a newer selection. Arabic list separators
-round-trip correctly. PHP upload limits support the allowed media sizes, the
-production container uses Nginx and PHP-FPM with up to four PHP workers, and
-the health check uses the API endpoint. Web lockfile updates resolve the reported dependency advisories.
+Current protected areas include child/student access, targeted lessons, homework/submissions, reports/progress, certificates, verification workflows, specialist/teacher relationships, institution/ministry/admin operations, and private media/document retrieval.
 
-Retry protection uses a per-account/per-child event ID and request fingerprint.
-Duplicate events return the original receipt without adding stars or game rows.
-A reused ID with different input is rejected. The child row is locked before
-both first and subsequent reward writes. Older clients without event IDs remain
-compatible but do not gain retry protection until updated. Mobile queues persist
-the event before sending, retain the same ID after restart, and keep new queues
-and reward caches separate for each signed-in account. Legacy pending entries
-have no account metadata and are migrated once into the current account's queue.
+Child/lesson queries are scoped to the current actor and role. Signed/private file links are short-lived capabilities and the API re-checks the viewer's current authorization before issuing them.
 
-## Follow-up deployment
+## Private files and media
 
-Keep APP_KEY stable, set APP_URL=https://api.edubridge.win, and ensure
-R2_PRIVATE_BUCKET has no public access and differs from R2_MEDIA_BUCKET.
-Back up the database before the following commands:
+Sensitive identity/certificate/relationship documents are stored outside public web storage. Private lesson/homework media is served through authenticated or signed API flows with content-type and browser-sandbox protections where appropriate.
 
-```sh
-docker exec edubridge-api php artisan migrate --force
-docker exec edubridge-api php artisan edubridge:privatize-learning-files
-# Apply after reviewing the preview:
-docker exec edubridge-api php artisan edubridge:privatize-learning-files --apply
+Do not treat a database URL change as deletion of an old public object. Historical public storage objects must be migrated/removed explicitly and CDN caches purged when applicable.
+
+## API abuse protection
+
+The Laravel API has layered throttling:
+
+- authenticated writes: actor-aware and IP-aware limits;
+- authenticated reads: higher actor/IP limits;
+- login: layered IP, IP+email and account-window protection;
+- registration and recovery: dedicated throttles;
+- health: `120/minute`;
+- rate-limit responses include `429` behavior covered by regression tests.
+
+The production request-body ceiling is aligned with the supported upload envelope rather than allowing an unrestricted PHP/Nginx body size.
+
+## Cloudflare edge
+
+`edubridge.win` and `api.edubridge.win` are proxied through Cloudflare.
+
+Current edge protections include:
+
+- login rate limiting;
+- blocks for sensitive files (`.env`, `.git`, `.svn`, `.htaccess`, Composer metadata);
+- blocks for dangerous methods (`TRACE`, `TRACK`, `CONNECT`);
+- blocks for common exploit-scan paths such as WordPress/phpMyAdmin/Adminer/server-status/CGI probes.
+
+Avoid unconditional Managed Challenge rules on normal JSON API authentication paths because they can break Flutter/mobile clients. Laravel throttling remains the application-aware second layer.
+
+See `deploy/cloudflare-edge-hardening.md` for the current expressions and validation notes.
+
+## Real client IP chain
+
+The trusted request path is:
+
+```text
+Client -> Cloudflare -> Caddy -> Laravel
 ```
 
-The first file command is a dry run. Apply downloads owned public objects to
-temporary disk files, uploads/verifies private copies, locks the corresponding
-rows and updates references. A separate cleanup pass removes old public objects
-only after private copies exist and no old public reference remains. Shared
-objects are retained if another row's migration fails. Failures return a nonzero
-exit status; rerun --apply to retry copying or deleting without overwriting a
-successfully migrated reference. New private objects may be safely rescanned.
-The command handles only exact URLs under R2_MEDIA_PUBLIC_URL. External links
-and old objects no longer referenced in the database require manual review.
-Old public links remain accessible until their public objects are deleted.
-If a CDN cached those URLs, purge the old URLs after cleanup as well.
-This repository change does not itself run the production storage migration.
+Caddy:
 
-Lesson list/search/child-lesson responses load media in one query for the whole
-result set. Child directories load specialist assignments and latest approved
-plans in two relation queries, independent of the number of children. Plan
-queries include only children whose detailed records the viewer may see;
-unassigned specialist discovery records retain their summary-only fields.
-Regression checks cover constant query counts and the real PostgreSQL endpoints.
-This optimization adds no database migration and preserves response fields.
+- trusts only Cloudflare proxy CIDRs;
+- enables `trusted_proxies_strict`;
+- uses `CF-Connecting-IP`/forwarded headers only from trusted proxies;
+- overwrites `X-Forwarded-For` and `X-Real-IP` with Caddy's parsed client identity.
 
-Mobile login tokens now use flutter_secure_storage rather than plaintext shared
-preferences. Existing sessions migrate after secure write/read-back verification;
-the old plaintext key is removed only after that check. Failed migration keeps
-its source for retry but does not authenticate using plaintext. A persisted
-logout marker prevents an undeleted secure key from restoring a logged-out
-session, and cleanup retries on subsequent reads. New login replaces the token
-only after verification. Credential operations are serialized. Android requires
-API 23 or higher and continues to disable automatic backups. The dependency
-lockfile is checked in CI. These changes apply when users install the updated
-app; old installed versions retain their existing storage behavior.
+Production verification confirmed Laravel's request IP matched the real external client address while `REMOTE_ADDR` was the internal proxy hop. The temporary signed debug endpoint used for this verification was removed immediately afterward.
 
-The production image now runs Nginx and PHP-FPM under Supervisor rather than
-artisan serve. FPM listens on a private Unix socket and runs application code as
-www-data. Only the front controller can execute PHP. OPcache is enabled for the
-immutable image; rebuild/recreate containers when deploying code. Signed URL
-query strings are excluded from Nginx access logs. CI builds the real image and
-checks PostgreSQL health/migrations, routing, upload limits, concurrent requests,
-and restrictions on direct PHP/dotfile access. Deploy this change using the
-existing Oracle deployment script; ports and external Caddy routing are unchanged.
-This code change does not itself update the production server.
+## Origin isolation
 
-Notifications now support opt-in keyset pages: `limit` (1–100, default 30),
-`before_id` for older history, or `after_id` for ascending delivery batches.
-The cursors are mutually exclusive. History uses delivery ID order rather than
-creation timestamps. Responses include `pagination` and an owner-scoped global
-`unread_count`; requests without paging parameters retain the legacy full list.
-Two composite notification indexes are added by a database migration. Deploy
-and migrate the API before distributing the updated mobile app. Web and mobile
-load 30 items initially and offer a button for older pages. Mobile polling fetches
-only new deliveries, up to three pages per cycle, retaining its cursor for retry.
-WebSocket duplicates do not inflate the badge or advance the polling cursor.
-Page requests are serialized on mobile and invalidated on logout. Read failures
-no longer show false success. Tests cover account boundaries, tied timestamps,
-backlogs, retries, overlapping pages, and logout during pending requests.
+EduBridge services are not published directly to the internet:
 
-Child and lesson browsing now opt into `page` and `per_page` (default 30,
-maximum 100). Legacy requests remain complete for selection forms and older
-clients. Server-side `q` searches the authorized result set; child pages also
-support `active_only` and specialist `assigned_only`. Lesson pages retain target,
-disability and curriculum filters, normalize existing category aliases, and treat
-missing category data as uncategorized. Search wildcard characters are literal.
-The child name/ID and lesson creation/ID orders have deterministic tie breakers
-and composite indexes, added by a migration. Run migrations after deployment.
-Parent directory statistics remain account-wide while filters/paging change the
-visible cards. Relation/media loading is bounded to the returned page; paged
-lesson rating projections avoid grouping the whole catalogue. Targeted lesson
-visibility uses correlated assignment checks in SQL rather than unbounded PHP
-assignment arrays and generated OR clauses. Tests cover SQLite and real PostgreSQL.
+- API: `127.0.0.1:8081`;
+- web: `127.0.0.1:8082`;
+- PostgreSQL: private Docker network.
 
-Web children, lesson browsing and parent guidance pages, and the corresponding
-mobile browsing screens now show previous/next controls. Debounced searches reset
-to the first page; stale requests are invalidated on filter changes/unmount.
-Failed requests retain the last good page for retry. Mobile page responses also
-verify the account session before accepting data. Deploy the API/migrations before
-distributing the updated app.
+The Oracle host uses default-deny inbound filtering, with HTTP/HTTPS allowed from Cloudflare proxy ranges only. Direct external HTTPS access to the Oracle IP has been verified to time out while the public Cloudflare host remains healthy.
 
-Remaining audit work: paging embedded role dashboard lists, accessibility and
-child-specific lesson lists, and searching large selection forms without requiring
-a complete directory. These existing consumers still use the compatible legacy
-requests. Other list endpoints may still need query profiling. Production storage
-migration and updated mobile installation remain separate rollout steps.
+Do not remove Oracle InstanceServices/metadata firewall rules blindly.
+
+## Security headers
+
+Caddy emits the shared browser baseline, including HSTS, nosniff, anti-clickjacking, referrer policy, permissions policy, origin-agent isolation and cross-origin opener policy.
+
+The website CSP is intentionally single-source at the public edge:
+
+- the Node web server keeps a CSP for direct/internal responses;
+- Caddy removes the upstream CSP on the proxied public response;
+- Caddy publishes the canonical public CSP;
+- the public website must therefore contain exactly one `Content-Security-Policy` header.
+
+Regression check:
+
+```bash
+curl -sSI https://edubridge.win | grep -ci '^content-security-policy:'
+```
+
+Expected: `1`.
+
+`deploy/security-smoke.sh` fails if the public response contains zero or multiple CSP headers.
+
+## Production container hardening
+
+The API image runs Nginx + PHP-FPM under Supervisor instead of `artisan serve`. PHP execution is limited to Laravel's front controller. OPcache is enabled for immutable deployment images. Signed-link query strings are excluded from normal access logging where configured.
+
+CI builds and verifies the production API container instead of relying only on development/runtime assumptions.
+
+## Mobile credential storage
+
+Mobile authentication tokens use secure platform storage. Logout/session-restoration logic is designed to avoid restoring a token that should have been cleared, and credential operations are serialized to reduce race conditions.
+
+## Database and retry safety
+
+Security-sensitive writes use database transactions/locking where needed. Engagement/reward retry protection uses stable event identifiers/fingerprints so a retry does not duplicate rewards or state changes.
+
+Laravel migrations are the schema source of truth and CI validates a fresh PostgreSQL database.
+
+## Deployment verification
+
+After every production deploy or security configuration change run:
+
+```bash
+curl -I https://edubridge.win
+curl -I https://api.edubridge.win/api/health
+./deploy/security-smoke.sh
+```
+
+From a machine outside the Oracle VPS also run:
+
+```bash
+EDUBRIDGE_ORIGIN_IP=<ORACLE_PUBLIC_IP> ./deploy/cloudflare-proxy-smoke.sh
+```
+
+Expected results:
+
+- public web/API return HTTP 200 through Cloudflare;
+- security headers are present;
+- exactly one public CSP is present;
+- direct-origin access fails;
+- `/api/_debug/client-ip` returns 404 (the temporary diagnostic route must not exist).
+
+## ZAP/Burp testing
+
+Run security scanning against the public Cloudflare hosts. Start with controlled/ramped scanning rather than destructive or volumetric production stress.
+
+Priority authenticated checks:
+
+- role/ownership authorization (IDOR/BOLA);
+- cross-role access to child records, reports, lessons and files;
+- PUT/PATCH/DELETE ownership enforcement;
+- upload type/size/path validation;
+- signed/private file expiration and authorization;
+- CORS and browser security headers;
+- auth/recovery throttling and `429` behavior;
+- sensitive/debug path exposure.
+
+Scanner findings must be triaged as true positive, false positive, accepted risk or remediation required before changing production controls.
+
+## Remaining operational follow-ups
+
+### 1. Origin TLS renewal
+
+The firewall is Cloudflare-only while Caddy currently manages public certificates. Future public ACME HTTP-01/TLS-ALPN-01 validation may not be able to reach the origin.
+
+Before certificate expiry, move to a Cloudflare-only compatible renewal design, preferably Cloudflare Origin CA or Caddy DNS-01 with the Cloudflare DNS provider.
+
+### 2. Large uploads through Cloudflare
+
+Cloudflare request-size limits depend on plan and may be lower than EduBridge's largest lesson-media allowance. Verify the maximum supported upload on the active plan. Direct signed R2 upload is the preferred long-term architecture.
+
+### 3. HSTS preload submission
+
+The response contains the `preload` token, but do not submit the domain to the browser preload list until all required subdomains have been confirmed HTTPS-safe for long-term preload semantics.
+
+## References
+
+- `docs/ORACLE_DEPLOYMENT.md`
+- `docs/CLOUDFLARE_PROXY_CUTOVER.md`
+- `deploy/cloudflare-edge-hardening.md`
+- `deploy/caddy-cloudflare-snippet.caddy`
+- `deploy/security-smoke.sh`
+- `deploy/cloudflare-proxy-smoke.sh`
+- `docs/ROLES_AND_PERMISSIONS.md`

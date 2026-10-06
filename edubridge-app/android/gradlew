@@ -1,0 +1,64 @@
+#!/bin/sh
+set -eu
+
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROPS="$APP_HOME/gradle/wrapper/gradle-wrapper.properties"
+
+if [ ! -f "$PROPS" ]; then
+  echo "ERROR: Gradle wrapper properties not found: $PROPS" >&2
+  exit 1
+fi
+
+DIST_URL=$(sed -n 's/^distributionUrl=//p' "$PROPS" | head -n1 | sed 's/\\:/:/g')
+if [ -z "$DIST_URL" ]; then
+  echo "ERROR: distributionUrl is missing from $PROPS" >&2
+  exit 1
+fi
+
+ARCHIVE=$(basename "$DIST_URL")
+DIST_NAME=${ARCHIVE%.zip}
+GRADLE_HOME_BASE=${GRADLE_USER_HOME:-"$HOME/.gradle"}
+INSTALL_ROOT="$GRADLE_HOME_BASE/wrapper/dists/edubridge"
+INSTALL_DIR="$INSTALL_ROOT/$DIST_NAME"
+GRADLE_BIN="$INSTALL_DIR/bin/gradle"
+
+download() {
+  url=$1
+  out=$2
+  if command -v curl >/dev/null 2>&1; then
+    curl -fL --retry 3 --retry-delay 2 "$url" -o "$out"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -O "$out" "$url"
+  else
+    echo "ERROR: curl or wget is required to bootstrap Gradle." >&2
+    exit 1
+  fi
+}
+
+if [ ! -x "$GRADLE_BIN" ]; then
+  if ! command -v unzip >/dev/null 2>&1; then
+    echo "ERROR: unzip is required to bootstrap Gradle." >&2
+    exit 1
+  fi
+
+  mkdir -p "$INSTALL_ROOT"
+  TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/edubridge-gradle.XXXXXX")
+  trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
+
+  echo "Downloading Gradle from $DIST_URL"
+  download "$DIST_URL" "$TMP_DIR/$ARCHIVE"
+  unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"
+
+  EXTRACTED=$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d -name 'gradle-*' | head -n1)
+  if [ -z "$EXTRACTED" ] || [ ! -x "$EXTRACTED/bin/gradle" ]; then
+    echo "ERROR: downloaded Gradle distribution is invalid." >&2
+    exit 1
+  fi
+
+  rm -rf "$INSTALL_DIR"
+  mv "$EXTRACTED" "$INSTALL_DIR"
+  trap - EXIT HUP INT TERM
+  rm -rf "$TMP_DIR"
+fi
+
+exec "$GRADLE_BIN" "$@"

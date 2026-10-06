@@ -12,7 +12,7 @@ class RoleMiddleware
     {
         $user = $request->attributes->get('jwt_user');
 
-        if (!$user || !in_array($user->role, $roles)) {
+        if (!$user || !in_array($user->role, $roles, true)) {
             return response()->json(['error' => 'لا تملك صلاحية لهذا الإجراء'], 403);
         }
 

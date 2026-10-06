@@ -1,234 +1,130 @@
 # EduBridge — Branching Strategy
 
-EduBridge is a **monorepo** containing several components:
+> Last verified: 2026-10-05
 
-| Path | Component |
-|------|-----------|
-| `edubridge-api-laravel` | Backend API (Laravel) |
-| `edubridge-web` | Web frontend |
-| `edubridge-app` | Mobile / app |
-| `deploy` | Deployment configuration |
-
-To keep work organized across these components, we follow a **Git Flow–style**
-model: short-lived branches merge into `develop`, and `develop` is merged into
-`main` for each release.
+EduBridge is a monorepo containing Laravel API, React web, Flutter mobile, deployment/security configuration and documentation.
 
 ## Long-lived branches
 
 | Branch | Purpose | Rules |
-|--------|---------|-------|
-| `main` | Production — always deployable | Protected. Only updated via a PR from `develop` (or a `hotfix/*` branch). |
-| `develop` | Integration branch — where features land before release | Protected. All `feature/*` and `fix/*` PRs target this branch. |
+|---|---|---|
+| `main` | Production-ready code | Protected. Normal releases come from `develop`; urgent production fixes may come from `hotfix/*`. |
+| `develop` | Integration branch | Protected. Normal feature/fix/chore/refactor/docs work targets this branch. |
 
 ## Short-lived branches
 
-Create one branch per unit of work, branched off the latest `develop`
-(`hotfix/*` branches off `main` instead — see [Hotfixes](#hotfixes)), and
-delete it after the PR is merged.
+Use one branch per focused unit of work.
 
-### Naming convention
+| Prefix | Use | Normal target |
+|---|---|---|
+| `feature/` | New product functionality | `develop` |
+| `fix/` | Non-emergency bug fix | `develop` |
+| `chore/` | Tooling, dependencies, config, docs | `develop` |
+| `refactor/` | Internal code restructuring | `develop` |
+| `docs/` | Documentation-only change | `develop` |
+| `hotfix/` | Urgent production/security fix | `main` |
 
-Prefix every branch with its **type** and its **component**, so it is obvious what
-the branch touches:
+Recommended naming:
 
-```
+```text
 <type>/<component>-<short-description>
 ```
 
-**Types**
+Components commonly include `api`, `web`, `app`, `deploy`, `security`, `docs`.
 
-| Type | Use for |
-|------|---------|
-| `feature/` | New functionality |
-| `fix/` | Bug fixes |
-| `hotfix/` | Urgent production fixes (branched from `main`) |
-| `chore/` | Tooling, config, dependencies, docs |
-| `refactor/` | Code restructuring with no behavior change |
+Examples:
 
-**Components:** `api`, `web`, `app`, `deploy`
-
-### Examples
-
-```
+```text
 feature/web-consultation-form
-feature/api-verification-endpoint
-feature/app-login-screen
-fix/web-navbar-mobile
+fix/app-notification-navigation
 chore/deploy-ci-pipeline
-hotfix/api-auth-token-expiry
+docs/security-runbook
+hotfix/security-csp-header
 ```
 
-## Workflow
+## Normal workflow
 
-1. **Sync** with the latest `develop`:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   ```
-2. **Branch** for your work:
-   ```bash
-   git checkout -b feature/web-consultation-form
-   ```
-3. **Commit** in small, focused steps with clear messages.
-4. **Push** and open a Pull Request into `develop`:
-   ```bash
-   git push -u origin feature/web-consultation-form
-   ```
-5. **Review** — at least one approval before merge.
-6. **Merge** the PR, then delete the branch.
+```bash
+git checkout develop
+git pull --ff-only origin develop
+git checkout -b feature/web-example
+# work, test, commit
+git push -u origin feature/web-example
+```
 
-## Releases (`develop` → `main`)
+Open the Pull Request into `develop`, wait for CI/review, merge, and delete the short-lived branch.
 
-When `develop` has a stable batch of features ready to ship:
+## Release workflow
 
-1. Open a PR from `develop` into `main`.
-2. Review and merge.
-3. Tag the release on `main`, e.g.:
-   ```bash
-   git checkout main
-   git pull origin main
-   git tag -a v1.10.0 -m "Release v1.10.0"
-   git push origin v1.10.0
-   ```
+When `develop` is ready for production:
 
-## Hotfixes
+1. open `develop -> main`;
+2. wait for required CI and review;
+3. merge;
+4. deploy `main` using the documented Oracle procedure;
+5. run production smoke/security checks;
+6. tag a release when appropriate.
 
-For an urgent production issue that can't wait for the next `develop` → `main` release:
+Example tag:
 
 ```bash
 git checkout main
-git pull origin main
-git checkout -b hotfix/api-auth-token-expiry
-# ...fix, commit...
-git push -u origin hotfix/api-auth-token-expiry
+git pull --ff-only origin main
+git tag -a v1.10.0 -m "Release v1.10.0"
+git push origin v1.10.0
 ```
 
-Open a PR into `main`, fast-track the review, and merge. Then merge (or
-cherry-pick) the same fix into `develop` so it isn't lost on the next release.
+## Hotfix workflow
+
+Urgent production issues may branch from `main` and target `main` directly:
+
+```bash
+git checkout main
+git pull --ff-only origin main
+git checkout -b hotfix/security-example
+# make the smallest safe change
+git push -u origin hotfix/security-example
+```
+
+A hotfix still requires the relevant CI/security checks. After merge/deploy, reflect the change in `develop` if the branches have diverged.
+
+## Production/security configuration changes
+
+Changes to any of the following should use a narrowly scoped branch and update documentation in the same PR:
+
+- Cloudflare rules/DNS assumptions;
+- Caddy configuration;
+- trusted proxy/real-IP behavior;
+- firewall/origin exposure;
+- API authentication or rate limits;
+- upload/body limits;
+- Docker port publishing;
+- production backup/restore behavior.
+
+After deploy, run `deploy/security-smoke.sh`. For edge/origin changes also run `deploy/cloudflare-proxy-smoke.sh` from outside the VPS.
 
 ## Commit messages
 
-Keep messages short and descriptive. A conventional prefix is encouraged:
+Use short descriptive messages; Conventional Commit-style prefixes are encouraged:
 
-```
+```text
 feat(web): add consultation request form
-fix(api): correct verification token expiry
-chore(deploy): update CI cache configuration
+fix(api): enforce child ownership
+chore(deploy): update Caddy template
+docs: refresh production security runbook
 ```
 
 ---
 
 # EduBridge — استراتيجية الفروع
 
-EduBridge هو **مستودع موحّد (Monorepo)** يحتوي على عدة مكونات:
+> آخر مراجعة: 2026-10-05
 
-| المسار | المكوّن |
-|------|-----------|
-| `edubridge-api-laravel` | واجهة الـ API الخلفية (Laravel) |
-| `edubridge-web` | واجهة الويب |
-| `edubridge-app` | تطبيق الهاتف |
-| `deploy` | إعدادات النشر |
+- `main`: فرع الإنتاج؛ التغييرات العادية تصل إليه من `develop`، والإصلاحات العاجلة فقط من `hotfix/*`.
+- `develop`: فرع دمج التطوير العادي.
+- `feature/*` و`fix/*` و`chore/*` و`refactor/*` و`docs/*`: تستهدف `develop`.
+- `hotfix/*`: إصلاح إنتاج عاجل ويمكنه استهداف `main` مباشرة.
 
-للحفاظ على تنظيم العمل بين هذه المكونات، نتبع نموذجًا قريبًا من **Git Flow**:
-يتم دمج الفروع قصيرة العمر في `develop`، ثم يتم دمج `develop` في `main` عند كل إصدار.
+بعد أي Hotfix أمني/تشغيلي: انتظر CI، ادمج، حدّث الخادم، شغّل فحوصات الـsmoke، ثم أعد نفس الإصلاح إلى `develop` إذا كان الفرعان قد تباعدا.
 
-## الفروع طويلة العمر
-
-| الفرع | الغرض | القواعد |
-|--------|---------|-------|
-| `main` | الإنتاج — يجب أن يكون قابلًا للنشر دائمًا | محمي. يتم تحديثه فقط عبر Pull Request من `develop` أو من فرع `hotfix/*`. |
-| `develop` | فرع الدمج — تصل إليه الميزات قبل الإصدار | محمي. جميع Pull Requests من `feature/*` و`fix/*` تتجه إلى هذا الفرع. |
-
-## الفروع قصيرة العمر
-
-أنشئ فرعًا واحدًا لكل وحدة عمل، انطلاقًا من أحدث نسخة من `develop`.
-أما فروع `hotfix/*` فتنطلق من `main` بدلًا من ذلك — راجع قسم [الإصلاحات العاجلة](#الإصلاحات-العاجلة) — ثم احذف الفرع بعد دمج الـ Pull Request.
-
-### أسلوب تسمية الفروع
-
-ابدأ اسم كل فرع بـ **نوع العمل** ثم **المكوّن**، حتى يكون واضحًا مباشرة ما الذي يخصه الفرع:
-
-```
-<type>/<component>-<short-description>
-```
-
-**الأنواع**
-
-| النوع | يُستخدم من أجل |
-|------|---------|
-| `feature/` | إضافة وظائف أو ميزات جديدة |
-| `fix/` | إصلاح الأخطاء |
-| `hotfix/` | إصلاحات إنتاج عاجلة، وتُنشأ من `main` |
-| `chore/` | الأدوات والإعدادات والاعتماديات والتوثيق |
-| `refactor/` | إعادة هيكلة الكود بدون تغيير السلوك |
-
-**المكونات:** `api`، `web`، `app`، `deploy`
-
-### أمثلة
-
-```
-feature/web-consultation-form
-feature/api-verification-endpoint
-feature/app-login-screen
-fix/web-navbar-mobile
-chore/deploy-ci-pipeline
-hotfix/api-auth-token-expiry
-```
-
-## سير العمل
-
-1. **زامن** نسختك مع أحدث `develop`:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   ```
-2. **أنشئ فرعًا** للعمل:
-   ```bash
-   git checkout -b feature/web-consultation-form
-   ```
-3. **أنشئ commits** صغيرة ومركزة برسائل واضحة.
-4. **ادفع الفرع** وافتح Pull Request إلى `develop`:
-   ```bash
-   git push -u origin feature/web-consultation-form
-   ```
-5. **المراجعة** — يلزم موافقة واحدة على الأقل قبل الدمج.
-6. **ادمج** الـ Pull Request ثم احذف الفرع.
-
-## الإصدارات (`develop` → `main`)
-
-عندما يحتوي `develop` على مجموعة مستقرة من الميزات الجاهزة للنشر:
-
-1. افتح Pull Request من `develop` إلى `main`.
-2. راجع التغييرات ثم ادمجها.
-3. أضف وسمًا للإصدار على `main`، مثلًا:
-   ```bash
-   git checkout main
-   git pull origin main
-   git tag -a v1.10.0 -m "Release v1.10.0"
-   git push origin v1.10.0
-   ```
-
-## الإصلاحات العاجلة
-
-عند وجود مشكلة عاجلة في الإنتاج لا يمكنها انتظار إصدار `develop` → `main` التالي:
-
-```bash
-git checkout main
-git pull origin main
-git checkout -b hotfix/api-auth-token-expiry
-# ...fix, commit...
-git push -u origin hotfix/api-auth-token-expiry
-```
-
-افتح Pull Request مباشرة إلى `main`، وأعطِ المراجعة أولوية، ثم ادمج التغيير.
-بعد ذلك، ادمج نفس الإصلاح في `develop` أو استخدم `cherry-pick` حتى لا يضيع الإصلاح في الإصدار التالي.
-
-## رسائل الـ Commit
-
-حافظ على الرسائل قصيرة وواضحة. ويُفضّل استخدام بادئة اصطلاحية:
-
-```
-feat(web): add consultation request form
-fix(api): correct verification token expiry
-chore(deploy): update CI cache configuration
-```
+أي تغيير في Cloudflare أو Caddy أو الجدار الناري أو trusted proxies أو rate limits أو منافذ Docker يجب أن يحدّث التوثيق في نفس Pull Request.
