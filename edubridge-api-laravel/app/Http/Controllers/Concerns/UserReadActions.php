@@ -74,6 +74,10 @@ trait UserReadActions
 
     private function parentCareTeamUserIds(int $parentId): array
     {
+        if (!Schema::hasTable('child_parent') || !Schema::hasTable('children')) {
+            return [];
+        }
+
         $childIds = DB::table('child_parent')
             ->where('parent_id', $parentId)
             ->pluck('child_id');
@@ -82,20 +86,34 @@ trait UserReadActions
             return [];
         }
 
-        return DB::table('children')
-            ->whereIn('id', $childIds)
-            ->whereNotNull('assigned_teacher_id')
-            ->pluck('assigned_teacher_id')
-            ->merge(
+        $userIds = collect();
+
+        if (Schema::hasColumn('children', 'assigned_teacher_id')) {
+            $userIds = $userIds->merge(
+                DB::table('children')
+                    ->whereIn('id', $childIds)
+                    ->whereNotNull('assigned_teacher_id')
+                    ->pluck('assigned_teacher_id')
+            );
+        }
+
+        if (Schema::hasTable('child_teacher')) {
+            $userIds = $userIds->merge(
                 DB::table('child_teacher')
                     ->whereIn('child_id', $childIds)
                     ->pluck('teacher_id')
-            )
-            ->merge(
+            );
+        }
+
+        if (Schema::hasTable('child_specialist')) {
+            $userIds = $userIds->merge(
                 DB::table('child_specialist')
                     ->whereIn('child_id', $childIds)
                     ->pluck('specialist_id')
-            )
+            );
+        }
+
+        return $userIds
             ->map(fn ($id) => (int) $id)
             ->filter(fn ($id) => $id > 0)
             ->unique()
