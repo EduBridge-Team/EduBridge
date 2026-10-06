@@ -149,9 +149,9 @@ class _ChatBubble extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 initial,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.brandBlue,
+                  color: c.infoText,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -182,10 +182,10 @@ class _ChatBubble extends StatelessWidget {
                   if (!isMe)
                     Text(
                       senderName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.brandBlue,
+                        fontWeight: FontWeight.w700,
+                        color: c.infoText,
                       ),
                     ),
                   const SizedBox(height: 2),
@@ -196,7 +196,12 @@ class _ChatBubble extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     time,
-                    style: TextStyle(fontSize: 10, color: textColor.withValues(alpha: 0.6)),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isMe
+                          ? Colors.white.withValues(alpha: 0.90)
+                          : c.muted,
+                    ),
                   ),
                 ],
               ),
@@ -211,7 +216,7 @@ class _ChatBubble extends StatelessWidget {
                 color: AppColors.brandBlue.withValues(alpha: .12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(AppIcons.profile, size: 17, color: AppColors.brandBlue),
+              child: Icon(AppIcons.profile, size: 17, color: c.infoText),
             ),
         ],
       ),
