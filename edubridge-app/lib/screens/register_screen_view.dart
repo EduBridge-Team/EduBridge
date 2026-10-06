@@ -3,7 +3,9 @@ part of 'register_screen.dart';
 extension _RegisterScreenStateView on _RegisterScreenState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: const JisrAppBar(title: 'إنشاء حساب'),
@@ -19,17 +21,15 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                   children: [
                     const BrandLockup(
                       iconSize: 42,
-                      fontSize: 25,
+                      fontSize: 24,
                       gap: 6,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       'ابدأ رحلتك مع EduBridge',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 25,
+                      style: textTheme.headlineSmall?.copyWith(
                         height: 1.25,
-                        fontWeight: FontWeight.w800,
                         color: c.heading,
                       ),
                     ),
@@ -37,8 +37,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                     Text(
                       'أنشئ حسابك الآن، ويمكنك استكمال بياناتك وتوثيق حسابك لاحقًا.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: textTheme.bodySmall?.copyWith(
                         height: 1.5,
                         color: c.muted,
                       ),
@@ -65,8 +64,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                         children: [
                           Text(
                             'المعلومات الأساسية',
-                            style: TextStyle(
-                              fontSize: 17,
+                            style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
                             ),
@@ -112,8 +110,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           const SizedBox(height: 16),
                           Text(
                             'نوع الحساب',
-                            style: TextStyle(
-                              fontSize: 17,
+                            style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
                             ),
@@ -121,8 +118,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           const SizedBox(height: 5),
                           Text(
                             'اختر الدور الذي سيُستخدم للوصول إلى ميزات EduBridge المناسبة لك.',
-                            style: TextStyle(
-                              fontSize: 12.5,
+                            style: textTheme.bodySmall?.copyWith(
                               height: 1.5,
                               color: c.muted,
                             ),
@@ -194,8 +190,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           const SizedBox(height: 16),
                           Text(
                             'الأمان',
-                            style: TextStyle(
-                              fontSize: 17,
+                            style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
                             ),
@@ -203,8 +198,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           const SizedBox(height: 5),
                           Text(
                             'استخدم كلمة مرور لا تقل عن 8 أحرف.',
-                            style: TextStyle(
-                              fontSize: 12.5,
+                            style: textTheme.bodySmall?.copyWith(
                               height: 1.5,
                               color: c.muted,
                             ),
@@ -303,7 +297,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                   Expanded(
                                     child: Text(
                                       _error!,
-                                      style: const TextStyle(
+                                      style: textTheme.bodyMedium?.copyWith(
                                         color: AppColors.red,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -336,8 +330,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           Text(
                             'بإنشاء الحساب، ستحتاج إلى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: textTheme.labelSmall?.copyWith(
                               height: 1.5,
                               color: c.muted,
                             ),

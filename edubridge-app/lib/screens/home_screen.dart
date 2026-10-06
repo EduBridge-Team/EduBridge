@@ -61,6 +61,7 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -94,8 +95,7 @@ class _MenuTile extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 17,
+                        style: textTheme.titleSmall?.copyWith(
                           height: 1.25,
                           fontWeight: FontWeight.w800,
                           color: c.heading,
@@ -104,8 +104,7 @@ class _MenuTile extends StatelessWidget {
                       const SizedBox(height: 5),
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: 13.5,
+                        style: textTheme.bodySmall?.copyWith(
                           height: 1.45,
                           color: c.muted,
                         ),

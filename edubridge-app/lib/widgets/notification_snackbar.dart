@@ -55,6 +55,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
     final title = (notif['title'] ?? '').toString();
     final body = (notif['body'] ?? '').toString();
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     TtsService.instance.speakLine('$title. $body');
 
@@ -78,10 +79,9 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: c.heading,
-                      fontSize: 15,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -89,10 +89,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
                   if (body.isNotEmpty)
                     Text(
                       body,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: c.body,
-                      ),
+                      style: textTheme.bodySmall?.copyWith(color: c.body),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -155,11 +152,11 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
       case 'learning_support_request_cancelled':
         return '❌';
       case 'specialist_suggestion':
-         return '🤝';
+        return '🤝';
       case 'suggestion_accepted':
         return '✅';
       case 'suggestion_rejected':
-         return '❌';  
+        return '❌';
       default:
         return '🔔';
     }

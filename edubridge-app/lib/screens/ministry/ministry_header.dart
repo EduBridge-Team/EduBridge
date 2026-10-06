@@ -97,6 +97,7 @@ class _MinistryHeader extends StatelessWidget {
   }
 
   Widget _buildGreeting(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return FutureBuilder<String?>(
       future: ApiService.getName(),
       builder: (context, snap) {
@@ -115,17 +116,14 @@ class _MinistryHeader extends StatelessWidget {
                 children: [
                   Text(
                     'مرحباً، $name',
-                    style: const TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.w800,
+                    style: textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     'إدارة شاملة للمؤسسات والموافقات',
-                    style: TextStyle(
-                      fontSize: 13.5,
+                    style: textTheme.bodySmall?.copyWith(
                       color: Colors.white.withValues(alpha: 0.86),
                     ),
                   ),

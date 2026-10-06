@@ -3,7 +3,9 @@ part of 'login_screen.dart';
 extension _LoginScreenStateView on _LoginScreenState {
   Widget buildView(BuildContext context) {
     final colors = JisrColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       body: Stack(
@@ -36,17 +38,15 @@ extension _LoginScreenStateView on _LoginScreenState {
                     children: [
                       const BrandLockup(
                         iconSize: 50,
-                        fontSize: 29,
+                        fontSize: 32,
                         gap: 8,
                       ),
                       const SizedBox(height: 14),
                       Text(
                         'أهلاً بعودتك',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
+                        style: textTheme.headlineMedium?.copyWith(
                           height: 1.2,
-                          fontWeight: FontWeight.w800,
                           color: colors.heading,
                         ),
                       ),
@@ -54,8 +54,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                       Text(
                         'سجّل الدخول لمتابعة رحلة التعلّم',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
+                        style: textTheme.bodyMedium?.copyWith(
                           height: 1.5,
                           color: colors.muted,
                         ),
@@ -82,8 +81,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                             children: [
                               Text(
                                 'بيانات الدخول',
-                                style: TextStyle(
-                                  fontSize: 17,
+                                style: textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: colors.heading,
                                 ),
@@ -168,7 +166,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       Expanded(
                                         child: Text(
                                           _error!,
-                                          style: const TextStyle(
+                                          style: textTheme.bodyMedium?.copyWith(
                                             color: AppColors.red,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -202,7 +200,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       Expanded(
                                         child: Text(
                                           _notice!,
-                                          style: const TextStyle(
+                                          style: textTheme.bodyMedium?.copyWith(
                                             color: AppColors.green,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -242,8 +240,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       ),
                                       child: Text(
                                         'أو تابع باستخدام',
-                                        style: TextStyle(
-                                          fontSize: 12.5,
+                                        style: textTheme.labelSmall?.copyWith(
                                           color: colors.muted,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -277,7 +274,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                           Expanded(
                                             child: Text(
                                               'تسجيل الدخول باستخدام Google',
-                                              style: TextStyle(
+                                              style: textTheme.bodyMedium?.copyWith(
                                                 color: colors.heading,
                                                 fontWeight: FontWeight.w700,
                                               ),
@@ -318,8 +315,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       const SizedBox(height: 7),
                                       Text(
                                         'هذا الاختيار للحسابات الجديدة فقط. الحساب الموجود يحتفظ بدوره الحالي.',
-                                        style: TextStyle(
-                                          fontSize: 12.5,
+                                        style: textTheme.bodySmall?.copyWith(
                                           height: 1.5,
                                           color: colors.muted,
                                         ),
@@ -361,7 +357,9 @@ extension _LoginScreenStateView on _LoginScreenState {
                         children: [
                           Text(
                             'ليس لديك حساب؟',
-                            style: TextStyle(color: colors.muted),
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colors.muted,
+                            ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.push(

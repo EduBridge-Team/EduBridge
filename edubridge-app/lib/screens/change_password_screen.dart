@@ -63,6 +63,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: JisrAppBar(title: 'تغيير كلمة المرور'),
@@ -96,8 +97,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(height: 14),
                   Text(
                     'حماية حسابك',
-                    style: TextStyle(
-                      fontSize: 20,
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: c.heading,
                     ),
@@ -106,7 +106,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Text(
                     'اختر كلمة مرور قوية ومختلفة عن الحالية.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13.5, color: c.muted),
+                    style: textTheme.bodySmall?.copyWith(color: c.muted),
                   ),
                 ],
               ),
@@ -119,10 +119,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 labelText: 'كلمة المرور الحالية *',
                 prefixIcon: const Icon(AppIcons.lock),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscureCurrent
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
-                  onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                  icon: Icon(
+                    _obscureCurrent
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureCurrent = !_obscureCurrent),
                 ),
               ),
               validator: (v) {
@@ -138,16 +141,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 labelText: 'كلمة المرور الجديدة *',
                 prefixIcon: const Icon(AppIcons.lock),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscureNew
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
+                  icon: Icon(
+                    _obscureNew
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
                   onPressed: () => setState(() => _obscureNew = !_obscureNew),
                 ),
               ),
               validator: (v) {
                 if (v == null || v.isEmpty) return 'أدخل كلمة المرور الجديدة';
                 if (v.length < 6) return 'يجب أن تكون 6 أحرف على الأقل';
-                if (v == _currentCtrl.text) return 'يجب أن تختلف عن كلمة المرور الحالية';
+                if (v == _currentCtrl.text) {
+                  return 'يجب أن تختلف عن كلمة المرور الحالية';
+                }
                 return null;
               },
             ),
@@ -159,10 +166,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 labelText: 'تأكيد كلمة المرور *',
                 prefixIcon: const Icon(AppIcons.check),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscureConfirm
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
-                  onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  icon: Icon(
+                    _obscureConfirm
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
                 ),
               ),
               validator: (v) {
@@ -183,7 +193,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   children: [
                     const Icon(AppIcons.error, color: AppColors.red),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.red))),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.red,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -202,7 +219,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Expanded(
                     child: Text(
                       'يجب أن تكون كلمة المرور 6 أحرف على الأقل، ويُفضّل أن تحتوي على أرقام ورموز.',
-                      style: TextStyle(fontSize: 12.5, color: c.onTint),
+                      style: textTheme.bodySmall?.copyWith(color: c.onTint),
                     ),
                   ),
                 ],
@@ -212,18 +229,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             SizedBox(
               height: 56,
               child: FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: AppColors.brandBlue),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.brandBlue,
+                ),
                 icon: _saving
                     ? const SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(AppIcons.check),
-                label: Text(
-                  _saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                ),
+                label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور'),
                 onPressed: _saving ? null : _save,
               ),
             ),
