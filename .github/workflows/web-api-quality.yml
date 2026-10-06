@@ -249,7 +249,7 @@ jobs:
         run: echo "No Flutter/Laravel contract or mobile changes; required check passes."
 
   php-syntax:
-    name: PHP syntax
+    name: PHP syntax details
     needs: changes
     runs-on: ubuntu-latest
     steps:
@@ -266,7 +266,7 @@ jobs:
             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: No API PHP changes
         if: needs.changes.outputs.api != 'true'
-        run: echo "No Laravel changes; required PHP syntax check passes."
+        run: echo "No Laravel changes; PHP syntax detail job passes."
 
   api-tests:
     name: Laravel unit and feature tests
@@ -440,6 +440,41 @@ jobs:
           fi
 
           echo "Required API/deployment quality gate passed."
+
+  php-required-gate:
+    name: PHP syntax
+    needs:
+      - changes
+      - php-syntax
+      - api-required-gate
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce PHP and API quality gate
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          API_CHANGED: ${{ needs.changes.outputs.api }}
+          PHP_RESULT: ${{ needs.php-syntax.result }}
+          API_GATE_RESULT: ${{ needs.api-required-gate.result }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CHANGES_RESULT" != "success" ]; then
+            echo "::error::Changed-area detection failed."
+            exit 1
+          fi
+
+          if [ "$API_CHANGED" = "true" ] && [ "$PHP_RESULT" != "success" ]; then
+            echo "::error::PHP syntax validation failed or was cancelled."
+            exit 1
+          fi
+
+          if [ "$API_GATE_RESULT" != "success" ]; then
+            echo "::error::API/deployment quality gate failed or was cancelled."
+            exit 1
+          fi
+
+          echo "Required PHP/API quality gate passed."
 
   web-build:
     name: React production build
