@@ -95,3 +95,10 @@ or failures from replacing newer rows, and disposal invalidates pending work.
 The screens retain navigation, composer/send state and scrolling. Four regression
 tests cover overlapping loads, stale errors, retry and disposal. Notification
 operation-state extraction and device navigation QA remain outstanding.
+
+Phase 6 now also separates notification reload/pagination/mark-all operation
+state from rendering. Preserve pagination/mark-all mutual exclusion and existing
+Arabic feedback; disposal prevents follow-up refreshes and stale reload errors
+cannot replace a newer result. Five regression tests cover exclusion, operation
+ordering, retry, disposal and reload races. Session polling, cursor ownership,
+individual read updates and navigation remain with their existing owners.
