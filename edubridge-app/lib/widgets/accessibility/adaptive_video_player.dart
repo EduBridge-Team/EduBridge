@@ -2,7 +2,8 @@
 // مشغّل فيديو مع دعم الترجمات والوصف الصوتي
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:http/http.dart' as http;
+import '../../features/lessons/data/lesson_caption_repository.dart';
+import '../../features/lessons/domain/lesson_media_policy.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../services/lesson_captions.dart';
@@ -42,6 +43,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   bool _foreground = true;
   bool _showCaptions = false;
   bool _showSignLanguage = false;
+  final _captionRepository = LessonCaptionRepository();
   List<LessonCaption> _captions = [];
   String _currentCaption = '';
   String _signLanguagePosition = 'bottom_right';
@@ -96,12 +98,9 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   }
 
   Future<void> _loadCaptions(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        _captions = parseLessonCaptions(response.body);
-      }
-    } catch (_) {}
+    final captions = await _captionRepository.load(url);
+    if (!mounted) return;
+    _captions = captions;
   }
 
   Future<void> _initializeSign() async {
@@ -125,14 +124,16 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
     _syncingSign = true;
     try {
       final main = _controller.value;
-      final target = main.position > sign.value.duration ? sign.value.duration : main.position;
-      if ((sign.value.position - target).inMilliseconds.abs() > 350) {
+      final target = LessonMediaPolicy.signTarget(main.position, sign.value.duration);
+      if (LessonMediaPolicy.needsSignSeek(sign.value.position, target)) {
         await sign.seekTo(target);
       }
       if (!mounted) return;
       if (sign.value.playbackSpeed != main.playbackSpeed) await sign.setPlaybackSpeed(main.playbackSpeed);
       if (!mounted) return;
-      if (_foreground && _showSignLanguage && main.isPlaying && target < sign.value.duration) {
+      if (LessonMediaPolicy.shouldPlaySign(
+          foreground: _foreground, visible: _showSignLanguage,
+          mainPlaying: main.isPlaying, target: target, duration: sign.value.duration)) {
         if (!sign.value.isPlaying) await sign.play();
       } else if (sign.value.isPlaying) {
         await sign.pause();
@@ -157,15 +158,11 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
     if (!mounted || !_controller.value.isInitialized) return;
     final position = _controller.value.position;
 
-    final caption = _captions.firstWhere(
-      (c) => position >= c.start && position < c.end,
-      orElse: () => const LessonCaption(
-          start: Duration.zero, end: Duration.zero, text: ''),
-    );
+    final caption = LessonMediaPolicy.captionAt(_captions, position);
 
-    if (caption.text != _currentCaption || _lastPlaying != _controller.value.isPlaying) {
+    if (caption != _currentCaption || _lastPlaying != _controller.value.isPlaying) {
       setState(() {
-        _currentCaption = caption.text;
+        _currentCaption = caption;
         _lastPlaying = _controller.value.isPlaying;
       });
     }
@@ -185,10 +182,8 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
 
   void _cycleSignPosition() {
     AdaptiveHelper.hapticFeedback();
-    final positions = ['bottom_right', 'bottom_left', 'top_right', 'top_left'];
-    final currentIndex = positions.indexOf(_signLanguagePosition);
     setState(() {
-      _signLanguagePosition = positions[(currentIndex + 1) % positions.length];
+      _signLanguagePosition = LessonMediaPolicy.nextSignPosition(_signLanguagePosition);
     });
   }
 
