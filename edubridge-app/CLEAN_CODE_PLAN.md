@@ -71,3 +71,11 @@ still grants editing only for HTTP 200 with literal can_edit=true; server failur
 remain read-only. The screen retains saving and child-scope lifecycle behavior.
 Fifteen regression tests cover these boundaries. Media lifecycle and caption
 state extraction remain subsequent work, not completed by this change.
+
+Phase 5 media continuation extracts optional caption fetching and pure caption,
+sign-video synchronization and overlay-position decisions. Existing cue interval,
+350ms tolerance, playback gating and position order are preserved. Controllers,
+observer registration, disposal, audio descriptions and rendering stay in the
+widget. Eight regression tests cover timeline boundaries, overlap priority,
+synchronization and optional caption failures. Manual device media/lifecycle QA
+and broader settings persistence review remain outstanding.
