@@ -76,10 +76,16 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
     if (_showing || !mounted) return;
     _showing = true;
 
-    await BrainBreakDialog.show(context);
+    if (ModalRoute.of(context)?.isCurrent == false) {
+      _showing = false;
+      _reschedule();
+      return;
+    }
+    await BrainBreakDialog.show(context, profile:
+        (widget.profileListenable ?? AccessibilityService.instance.applicationProfile).value);
 
     _showing = false;
-    _reschedule();
+    if (mounted) _reschedule();
   }
 
   @override
@@ -90,14 +96,15 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
 //  BrainBreakDialog — نافذة الفاصل الذهني (عامّة الآن)
 // ═══════════════════════════════════════════════════════════
 class BrainBreakDialog extends StatefulWidget {
-  const BrainBreakDialog({super.key});
+  final AccessibilityProfile? profile;
+  const BrainBreakDialog({super.key, this.profile});
 
   /// ✅ استدعاء مباشر من أي مكان
-  static Future<void> show(BuildContext context) async {
+  static Future<void> show(BuildContext context, {AccessibilityProfile? profile}) async {
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const BrainBreakDialog(),
+      builder: (_) => BrainBreakDialog(profile: profile),
     );
   }
 
@@ -117,6 +124,8 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
     ('🌀', 'دُر حول نفسك مرتين'),
   ];
 
+  late final AccessibilityProfile _profile;
+  bool get _untimed => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
   int _secondsLeft = 30;
   Timer? _t;
   int _moveIndex = 0;
@@ -124,11 +133,13 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   @override
   void initState() {
     super.initState();
+    _profile = widget.profile ?? AccessibilityService.instance.profile.value;
     _moveIndex = DateTime.now().millisecond % _moves.length;
 
     // ✅ نطق الحركة بصوت هادئ
     TtsService.instance.speakLine('وقت الراحة! ${_moves[_moveIndex].$2}');
 
+    if (_untimed) return;
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       if (_secondsLeft <= 1) {
@@ -159,6 +170,8 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
     final c = JisrColors.of(context);
     final move = _moves[_moveIndex];
     final progress = 1 - (_secondsLeft / 30);
+    final still = _profile.reducedAnimations || _profile.noFlashing ||
+        MediaQuery.disableAnimationsOf(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
@@ -184,7 +197,8 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             const SizedBox(height: 20),
 
             // الحركة (متحركة)
-            TweenAnimationBuilder<double>(
+            if (still) Text(move.$1, style: const TextStyle(fontSize: 90))
+            else TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.9, end: 1.1),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeInOut,
@@ -209,7 +223,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             const SizedBox(height: 20),
 
             // شريط التقدّم
-            LinearProgressIndicator(
+            if (!_untimed) LinearProgressIndicator(
               value: progress,
               minHeight: 12,
               color: AppColors.orange,
@@ -219,7 +233,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             const SizedBox(height: 8),
 
             // العدّاد
-            Text(
+            if (!_untimed) Text(
               '$_secondsLeft ثانية',
               style: TextStyle(
                 fontSize: 15,

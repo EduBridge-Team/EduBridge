@@ -100,11 +100,14 @@ Future<String?> _apiCoreGetToken() async {
 
 Future<void> _apiCoreSaveUserData(Map<String, dynamic> user) async {
     final prefs = await SharedPreferences.getInstance();
+    final accountChanged = prefs.getInt('userId') != user['id'];
+    if (accountChanged) AccessibilityService.instance.resetSession();
     await prefs.setString('role', user['role'] ?? '');
     await prefs.setString('name', user['name'] ?? '');
     await prefs.setInt('userId', user['id'] ?? 0);
     final role = user['role'] ?? '';
     ApiService.userRole.value = role.isEmpty ? null : role;
+    if (accountChanged) await AccessibilityService.instance.load();
   }
 
 Future<String?> _apiCoreGetRole() async {
@@ -123,6 +126,7 @@ Future<int?> _apiCoreGetUserId() async {
   }
 
 Future<void> _apiCoreLogout() async {
+    AccessibilityService.instance.resetSession();
     WebSocketService().disconnect();
     NotificationListenerService.instance.dispose();
     ApiService.isAuthenticated.value = false;

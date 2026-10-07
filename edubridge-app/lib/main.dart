@@ -144,9 +144,7 @@ class EduBridgeApp extends StatelessWidget {
           title: 'EduBridge — جسر تعليمي',
           debugShowCheckedModeBanner: false,
           locale: const Locale('ar'),
-          theme: accProfile.highContrast
-              ? buildHighContrastTheme()
-              : buildJisrTheme(),
+          theme: buildJisrTheme(),
           darkTheme: buildJisrDarkTheme(),
           themeMode: mode,
           builder: (context, child) => Directionality(

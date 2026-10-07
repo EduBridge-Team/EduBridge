@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_helper.dart';
-import '../../theme.dart';
 
 /// غلاف شامل يطبّق كل ميزات التكييف على أي شاشة
 class AdaptiveWrapper extends StatefulWidget {
@@ -22,6 +21,7 @@ class AdaptiveWrapper extends StatefulWidget {
 
 class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
   final _focusNode = FocusNode();
+  String? _announcedTitle;
 
   @override
   void dispose() {
@@ -36,13 +36,7 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
       builder: (context, profile, child) {
         Widget result = widget.child;
 
-        // التباين العالي يُطبّق محلياً على الشاشة الحالية فقط، لا على التطبيق كله.
-        if (profile.highContrast) {
-          result = Theme(
-            data: buildHighContrastTheme(),
-            child: result,
-          );
-        }
+        // Keep the EduBridge palette for every adaptation.
 
         // ═══════════════════════════════════════════════
         //  1. وضع الأيقونات فقط (iconOnlyMode)
@@ -87,25 +81,18 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
         }
 
         // ═══════════════════════════════════════════════
-        //  6. مؤشر فأرة كبير (largeMouseCursor)
-        // ═══════════════════════════════════════════════
-        if (profile.largeMouseCursor) {
-          result = MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: result,
-          );
-        }
-
-        // ═══════════════════════════════════════════════
         //  7. تكرار المحتوى (repetitionMode)
         // ═══════════════════════════════════════════════
-        if (profile.repetitionMode && widget.screenTitle != null) {
+        if (profile.repetitionMode && widget.screenTitle != null &&
+            _announcedTitle != widget.screenTitle) {
+          _announcedTitle = widget.screenTitle;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            AdaptiveHelper.speak(widget.screenTitle!);
+            if (mounted) AdaptiveHelper.speak(widget.screenTitle!);
           });
         }
 
-        return result;
+        if (!profile.repetitionMode) _announcedTitle = null;
+        return FocusTraversalGroup(child: result);
       },
     );
   }
@@ -121,42 +108,11 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
       }
     }
 
-    // Alt+1..9 → اختصارات
-    if (HardwareKeyboard.instance.isAltPressed) {
-      final num = _getNumber(event.logicalKey);
-      if (num != null) {
-        AdaptiveHelper.hapticFeedback();
-        return KeyEventResult.handled;
-      }
-    }
 
     return KeyEventResult.ignored;
   }
 
-  int? _getNumber(LogicalKeyboardKey key) {
-    switch (key) {
-      case LogicalKeyboardKey.digit1:
-        return 1;
-      case LogicalKeyboardKey.digit2:
-        return 2;
-      case LogicalKeyboardKey.digit3:
-        return 3;
-      case LogicalKeyboardKey.digit4:
-        return 4;
-      case LogicalKeyboardKey.digit5:
-        return 5;
-      case LogicalKeyboardKey.digit6:
-        return 6;
-      case LogicalKeyboardKey.digit7:
-        return 7;
-      case LogicalKeyboardKey.digit8:
-        return 8;
-      case LogicalKeyboardKey.digit9:
-        return 9;
-      default:
-        return null;
-    }
-  }
+
 }
 
 // ═══════════════════════════════════════════════════════════

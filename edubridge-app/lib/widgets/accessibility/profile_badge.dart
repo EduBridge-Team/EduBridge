@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_theme.dart';
+import '../../theme.dart';
 
 class ProfileBadge extends StatelessWidget {
   final bool showFullLabel;
@@ -18,11 +19,11 @@ class ProfileBadge extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: visuals.profileBadgeColor,
+            color: AppColors.brandBlue,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: visuals.profileBadgeColor.withValues(alpha: 0.4),
+                color: AppColors.brandBlue.withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),

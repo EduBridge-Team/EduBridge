@@ -275,6 +275,8 @@ class AccessibilityProfile {
       eyeTrackingOptimized:
           eyeTrackingOptimized ?? this.eyeTrackingOptimized,
      
+      switchControl: switchControl ?? this.switchControl,
+      noTimedInteractions: noTimedInteractions ?? this.noTimedInteractions,
       iconOnlyMode: iconOnlyMode ?? this.iconOnlyMode,
       verySimpleLanguage: verySimpleLanguage ?? this.verySimpleLanguage,
       repetitionMode: repetitionMode ?? this.repetitionMode,

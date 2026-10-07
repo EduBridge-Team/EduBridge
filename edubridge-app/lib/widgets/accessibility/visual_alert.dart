@@ -1,4 +1,5 @@
 // تنبيه بصري بديل لكل صوت/إشعار — يظهر كشريط ملوّن مع وميض خفيف
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../theme.dart';
@@ -53,6 +54,37 @@ class _VisualAlertState extends State<VisualAlert>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   bool _visible = true;
+  Timer? _timeout;
+  bool _dismissed = false;
+  bool get _untimed {
+    final p = AccessibilityService.instance.profile.value;
+    return p.noTimedInteractions || p.noTimers || p.unlimitedTime;
+  }
+  void _dismiss() {
+    if (_dismissed || !mounted) return;
+    _dismissed = true;
+    setState(() => _visible = false);
+    widget.onDismiss?.call();
+  }
+  void _syncPreferences() {
+    if (!mounted) return;
+    final p = AccessibilityService.instance.profile.value;
+    final still = p.reducedAnimations || p.noFlashing || !p.flashAlerts ||
+        MediaQuery.disableAnimationsOf(context);
+    if (still) {
+      _ctrl.stop();
+      _ctrl.value = 0;
+    } else if (!_ctrl.isAnimating) {
+      _ctrl.repeat(reverse: true);
+    }
+    _timeout?.cancel();
+    if (!_untimed) _timeout = Timer(widget.duration, _dismiss);
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncPreferences();
+  }
 
   @override
   void initState() {
@@ -60,18 +92,14 @@ class _VisualAlertState extends State<VisualAlert>
     _ctrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    Future.delayed(widget.duration, () {
-      if (!mounted) return;
-      setState(() => _visible = false);
-      Future.delayed(const Duration(milliseconds: 250), () {
-        widget.onDismiss?.call();
-      });
-    });
+    );
+    AccessibilityService.instance.profile.addListener(_syncPreferences);
   }
 
   @override
   void dispose() {
+    AccessibilityService.instance.profile.removeListener(_syncPreferences);
+    _timeout?.cancel();
     _ctrl.dispose();
     super.dispose();
   }
@@ -117,6 +145,8 @@ class _VisualAlertState extends State<VisualAlert>
                 ),
               ),
             ),
+            IconButton(tooltip: 'إغلاق التنبيه', onPressed: _dismiss,
+              icon: const Icon(Icons.close, color: Colors.white)),
           ],
         ),
       ),

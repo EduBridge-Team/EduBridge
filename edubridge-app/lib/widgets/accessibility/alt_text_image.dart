@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_helper.dart';
+import 'adaptive_wrapper.dart';
 
 class AltTextImage extends StatelessWidget {
   final String imageUrl;
@@ -27,6 +28,10 @@ class AltTextImage extends StatelessWidget {
     return ValueListenableBuilder<AccessibilityProfile>(
       valueListenable: AccessibilityService.instance.profile,
       builder: (context, profile, _) {
+        if (profile.textOnlyMode || TextOnlyScope.of(context)) {
+          return Text(profile.detailedAltText
+              ? detailedDescription ?? altText : altText);
+        }
         final shouldDescribe = profile.detailedAltText ||
             profile.type == DisabilityType.blind ||
             profile.autoReadOnTap;
@@ -36,6 +41,7 @@ class AltTextImage extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
+          semanticLabel: altText,
           errorBuilder: (_, __, ___) => Container(
             width: width,
             height: height,
@@ -62,6 +68,7 @@ class AltTextImage extends StatelessWidget {
           },
           child: Semantics(
             label: altText,
+            excludeSemantics: true,
             image: true,
             child: Stack(
               children: [
