@@ -24,7 +24,7 @@ class _UserListTile extends StatelessWidget {
     final name = (user['name'] ?? '').toString();
     final email = (user['email'] ?? '').toString();
     final phone = user['phone']?.toString();
-    final initial = name.trim().isNotEmpty ? name.trim().characters.first : '؟';
+    final initial = PresentationText.initial(name, trim: true, fallback: '؟');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -175,7 +175,7 @@ class _ChildListTile extends StatelessWidget {
     final name = (child['name'] ?? '').toString();
     final age = child['age'] ?? '?';
     final disability = child['disability_type']?.toString();
-    final initial = name.trim().isNotEmpty ? name.trim().characters.first : '';
+    final initial = PresentationText.initial(name, trim: true, fallback: '');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),

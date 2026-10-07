@@ -171,7 +171,7 @@ class _MinistryUserTile extends StatelessWidget {
     final name = (user['name'] ?? '').toString();
     final email = (user['email'] ?? '').toString();
     final phone = user['phone']?.toString();
-    final initial = name.trim().isNotEmpty ? name.trim().characters.first : '؟';
+    final initial = PresentationText.initial(name, trim: true, fallback: '؟');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

@@ -80,6 +80,7 @@ class _TeacherChildCard extends StatefulWidget {
 }
 
 class _TeacherChildCardState extends State<_TeacherChildCard> {
+  void _toggleExpanded() => setState(() => _expanded = !_expanded);
   bool _expanded = false;
 
   Map<String, dynamic> get child => widget.child;
@@ -181,42 +182,6 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
         ),
       ),
     );
-  }
-
-  Color _statusColor(String? status) {
-    switch (status) {
-      case 'evaluated':
-        return AppColors.brandBlue;
-      case 'assigned':
-      case 'active':
-        return AppColors.brandTealDeep;
-      default:
-        return AppColors.orangeDeep;
-    }
-  }
-
-  IconData _statusIcon(String? status) {
-    switch (status) {
-      case 'evaluated':
-        return AppIcons.check;
-      case 'assigned':
-      case 'active':
-        return AppIcons.verified;
-      default:
-        return AppIcons.clock;
-    }
-  }
-
-  String _statusText(String? status) {
-    switch (status) {
-      case 'evaluated':
-        return 'تم التقييم';
-      case 'assigned':
-      case 'active':
-        return 'قيد المتابعة';
-      default:
-        return 'قيد الانتظار';
-    }
   }
 
   Future<void> _openApprovedPlan(BuildContext context, Map child) async {

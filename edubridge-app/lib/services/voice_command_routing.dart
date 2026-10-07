@@ -142,7 +142,4 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
     await TtsService.instance.speakLine(message);
   }
 
-  Future<void> _speak(String message) async {
-    await TtsService.instance.speakLine(message);
-  }
 }

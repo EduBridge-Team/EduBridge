@@ -11,13 +11,6 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     );
   }
 
-  void _openNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    );
-  }
-
   void _openCaseDiscussion({int? childId}) {
     Navigator.push(
       context,

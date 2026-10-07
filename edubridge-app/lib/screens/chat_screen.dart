@@ -1,3 +1,4 @@
+import '../utils/presentation_text.dart';
 // lib/screens/chat_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -120,9 +121,7 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final initial = senderName.trim().isNotEmpty
-        ? senderName.trim().characters.first
-        : '؟';
+    final initial = PresentationText.initial(senderName, trim: true, fallback: '؟');
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),

@@ -1,7 +1,6 @@
 // lib/models/case_discussion_model.dart
 // نموذج دراسة الحالة — نقاش بين المعلم والمختص بإشراف
 import 'package:edubridge_app/app_icons.dart';
-import 'package:flutter/widgets.dart';
 
 enum CaseMessageType {
   text, // رسالة عادية
