@@ -39,7 +39,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    name.isNotEmpty ? name.characters.first : '؟',
+                    PresentationText.initial(name, fallback: '؟'),
                     style: TextStyle(
                       fontSize: 21,
                       fontWeight: FontWeight.w800,

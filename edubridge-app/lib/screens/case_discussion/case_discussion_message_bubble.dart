@@ -92,7 +92,7 @@ class _MessageBubble extends StatelessWidget {
                   ),
                 const SizedBox(width: 6),
                 Text(
-                  '${message.createdAt.hour}:${message.createdAt.minute.toString().padLeft(2, '0')}',
+                  PresentationText.clock(message.createdAt),
                   style: TextStyle(fontSize: 11, color: c.muted),
                 ),
               ],

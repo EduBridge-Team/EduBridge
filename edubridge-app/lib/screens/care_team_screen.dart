@@ -1,3 +1,4 @@
+import '../utils/presentation_text.dart';
 // lib/screens/care_team_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -242,7 +243,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
           alignment: Alignment.center,
           child: Text(
-            name.isNotEmpty ? name.characters.first : '؟',
+            PresentationText.initial(name, fallback: '؟'),
             style: const TextStyle(
               color: AppColors.greenDeep,
               fontWeight: FontWeight.w800,
@@ -302,7 +303,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
           alignment: Alignment.center,
           child: Text(
-            name.isNotEmpty ? name.characters.first : '؟',
+            PresentationText.initial(name, fallback: '؟'),
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.w800,

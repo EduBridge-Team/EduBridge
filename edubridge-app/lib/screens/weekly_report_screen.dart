@@ -1,6 +1,5 @@
 // lib/screens/weekly_report_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
 import '../services/api_service.dart';

@@ -155,7 +155,7 @@ extension _ChatScreenStateView on _ChatScreenState {
           message: msg['content'] ?? '',
           isMe: isMe,
           senderName: isMe ? 'أنا' : widget.otherUserName,
-          time: date != null ? '${date.hour}:${date.minute.toString().padLeft(2, '0')}' : '',
+          time: date != null ? PresentationText.clock(date) : '',
           color: isMe ? AppColors.brandBlue : c.card,
           textColor: isMe ? Colors.white : c.body,
         );

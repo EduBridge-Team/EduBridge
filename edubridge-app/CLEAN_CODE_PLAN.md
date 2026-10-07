@@ -102,3 +102,14 @@ Arabic feedback; disposal prevents follow-up refreshes and stale reload errors
 cannot replace a newer result. Five regression tests cover exclusion, operation
 ordering, retry, disposal and reload races. Session polling, cursor ownership,
 individual read updates and navigation remain with their existing owners.
+
+Phase 7 is delivered as one shared-cleanup PR. A presentation-text utility replaces
+proven duplicate avatar initials and clock formatting while retaining caller
+trim/fallback policies, Unicode grapheme clusters and unpadded-hour conventions.
+No widget colors, sizes or spacing change. Baseline CI analyzer evidence identifies
+unused imports and private helper declarations; only those verified declarations
+are removed. Child-card expansion now calls a State-owned callback instead of
+protected setState from an extension. Three regression tests cover Unicode,
+whitespace/fallback differences and clock boundaries. All required CI and existing
+navigation/accessibility tests remain required; final device QA is not replaced
+by this cleanup. No entire screen, public widget or feature is removed.

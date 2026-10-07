@@ -1,3 +1,4 @@
+import '../../utils/presentation_text.dart';
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -14,14 +15,12 @@ import '../case_discussion/case_discussion_screen.dart';
 import '../chats_screen.dart';
 import '../child_progress_screen.dart';
 import '../create_homework_screen.dart';
-import '../create_weekly_report_screen.dart';
 import '../educational_plan_sheet.dart';
 import '../notifications_screen.dart';
 import '../support_sheet.dart';
 import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
 import 'teacher_child_profile_screen.dart';
 import '../verify_identity/verify_identity_screen.dart';
-import '../weekly_report_screen.dart';
 import '../login_screen.dart';
 
 part 'teacher_children_tab.dart';
@@ -74,11 +73,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       inlineModalOpen.value = false;
     }
     super.dispose();
-  }
-
-  void _setAdding(bool value) {
-    inlineModalOpen.value = value;
-    setState(() => _adding = value);
   }
 
   void _setViewingLesson(Map? lesson) {

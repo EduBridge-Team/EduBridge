@@ -1,3 +1,4 @@
+import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
@@ -430,7 +431,7 @@ class _SpecialistChildProfileScreenState
             radius: 31,
             backgroundColor: Colors.white,
             child: Text(
-              _childName.isNotEmpty ? _childName.characters.first : '؟',
+              PresentationText.initial(_childName, fallback: '؟'),
               style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w900,

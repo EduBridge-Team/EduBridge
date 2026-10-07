@@ -436,7 +436,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
       ),
       alignment: Alignment.center,
       child: Text(
-        name.isNotEmpty ? name.characters.first : '؟',
+        PresentationText.initial(name, fallback: '؟'),
         style: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w800,
           color: color,

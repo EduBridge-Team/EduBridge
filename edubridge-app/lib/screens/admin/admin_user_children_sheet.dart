@@ -145,7 +145,7 @@ class _UserChildrenSheet extends StatelessWidget {
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                name.isNotEmpty ? name.characters.first : '؟',
+                                PresentationText.initial(name, fallback: '؟'),
                                 style: TextStyle(
                                   color: color,
                                   fontWeight: FontWeight.w800,
