@@ -48,7 +48,7 @@ extension _WelcomePageContent on _WelcomeScreenState {
           TextButton(onPressed: _leaveTour, child: const Text('تخطي')),
         ])),
       Expanded(child: PageView.builder(controller: _controller, itemCount: 3,
-        onPageChanged: (index) { setState(() => _page = index); _reveal(); },
+        onPageChanged: _onTourPageChanged,
         itemBuilder: (_, index) => SingleChildScrollView(padding: const EdgeInsets.all(24),
           child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 480),
             child: Column(children: [
@@ -57,7 +57,7 @@ extension _WelcomePageContent on _WelcomeScreenState {
                 color: _WelcomeScreenState._blue, fontSize: 27, height: 1.4, fontWeight: FontWeight.w800)), active: index == _page),
               const SizedBox(height: 14), _motion(.3, Text(descriptions[index], textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 16, height: 1.8)), active: index == _page),
-            ]))))),
+            ])))))),
       Padding(padding: const EdgeInsets.fromLTRB(24, 12, 24, 16), child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: List.generate(3, (i) => AnimatedContainer(
           duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 200), margin: const EdgeInsets.symmetric(horizontal: 4),
