@@ -44,12 +44,14 @@ extension _WelcomePageContent on _WelcomeScreenState {
     return Column(children: [
       Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('الخطوة ${_page + 1} من 3'),
+          Flexible(child: Text('الخطوة ${_page + 1} من 3')),
+          const SizedBox(width: 12),
           TextButton(onPressed: _leaveTour, child: const Text('تخطي')),
         ])),
       Expanded(child: PageView.builder(controller: _controller, itemCount: 3,
         onPageChanged: _onTourPageChanged,
-        itemBuilder: (_, index) => SingleChildScrollView(padding: const EdgeInsets.all(24),
+        itemBuilder: (_, index) => SingleChildScrollView(
+          key: ValueKey('onboarding-step-${index + 1}'), padding: const EdgeInsets.all(24),
           child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 480),
             child: Column(children: [
               _motion(0, _floatingIllustration(index), active: index == _page), const SizedBox(height: 28),
@@ -65,13 +67,12 @@ extension _WelcomePageContent on _WelcomeScreenState {
             color: i == _page ? _WelcomeScreenState._blue : const Color(0xFFD9EBF0), borderRadius: BorderRadius.circular(8))))),
         const SizedBox(height: 16),
         _button(_page == 2 ? 'ابدأ' : 'التالي', _page == 2 ? Icons.check : Icons.arrow_back, () {
-          if (_page == 2) { _authenticate(); }
+          if (_page == 2) { _leaveTour(); }
           else { _movePage(1); }
         }),
-        TextButton(onPressed: () {
-          if (_page == 0) { _leaveTour(); }
-          else { _movePage(-1); }
-        }, child: Text(_page == 0 ? 'العودة' : 'السابق')),
+        if (_page > 0) TextButton(onPressed: () => _movePage(-1),
+          child: const Text('السابق'))
+        else const SizedBox(height: 48),
       ])),
     ]);
   }
@@ -83,9 +84,9 @@ extension _WelcomePageContent on _WelcomeScreenState {
         color: Colors.white, borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 20)]),
         child: const Column(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.account_circle, color: _WelcomeScreenState._blue, size: 54),
           SizedBox(height: 14), LinearProgressIndicator(value: .8), SizedBox(height: 16), Text('استمع', style: TextStyle(color: _WelcomeScreenState._blue))])),
-      Positioned(top: 12, right: 0, child: _label('قراءة صوتية', Icons.volume_up_outlined)),
-      Positioned(left: 0, top: 112, child: _label('ألوان هادئة', Icons.palette_outlined)),
-      Positioned(bottom: 8, right: 0, child: _label('رموز أكبر', Icons.text_fields)),
+      Positioned(top: 12, right: 0, child: _label('قراءة صوتية', Icons.volume_up_outlined, toggle: true)),
+      Positioned(left: 0, top: 112, child: _label('ألوان هادئة', Icons.palette_outlined, toggle: true)),
+      Positioned(bottom: 8, right: 0, child: _label('رموز أكبر', Icons.text_fields, toggle: true)),
     ] else if (index == 1) ...[
       const CircleAvatar(radius: 46, backgroundColor: _WelcomeScreenState._blue, child: Icon(Icons.person_outline, size: 54, color: Colors.white)),
       Positioned(top: 0, right: 16, child: _person('المعلم', Icons.school_outlined, _WelcomeScreenState._teal)),
@@ -94,15 +95,27 @@ extension _WelcomePageContent on _WelcomeScreenState {
     ] else ...[
       const Icon(Icons.verified_user, color: _WelcomeScreenState._blue, size: 142),
       Positioned(bottom: 40, right: 0, child: _label('استراحة حركية', Icons.accessibility_new)),
-      Positioned(bottom: 0, left: 0, child: _label('طوارئ', Icons.notifications_active_outlined)),
+      Positioned(bottom: 0, left: 0, child: _label('طوارئ', Icons.notifications_active_outlined, emergency: true)),
     ],
   ]));
 
-  Widget _label(String text, IconData icon) => Container(padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
+  Widget _label(String text, IconData icon, {bool toggle = false, bool emergency = false}) => Container(padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(color: emergency ? const Color(0xFFC73535) : Colors.white, borderRadius: BorderRadius.circular(14),
       boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 14)]),
-    child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, color: _WelcomeScreenState._teal, size: 22),
-      const SizedBox(width: 8), Text(text, style: const TextStyle(color: _WelcomeScreenState._blue, fontWeight: FontWeight.w700))]));
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, color: emergency ? Colors.white : _WelcomeScreenState._teal, size: 22),
+      const SizedBox(width: 8), Text(text, style: TextStyle(
+        color: emergency ? Colors.white : _WelcomeScreenState._blue, fontWeight: FontWeight.w700)),
+      if (toggle) ...[
+        const SizedBox(width: 8),
+        Container(width: 42, height: 24, alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(color: _WelcomeScreenState._teal,
+            borderRadius: BorderRadius.circular(20)),
+          child: const DecoratedBox(decoration: BoxDecoration(color: Colors.white,
+            shape: BoxShape.circle), child: SizedBox(width: 18, height: 18))),
+      ],
+    ]));
 
   Widget _person(String text, IconData icon, Color color) => Column(children: [
     CircleAvatar(radius: 30, backgroundColor: color, child: Icon(icon, color: Colors.white, size: 30)),

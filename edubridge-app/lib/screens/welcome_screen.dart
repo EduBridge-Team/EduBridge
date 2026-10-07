@@ -61,10 +61,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   }
 
   bool _expanded = false;
-  bool _tour = false;
+  // Show the three introduction pages before the authentication landing page.
+  bool _tour = true;
   int _page = 0;
-  static const _blue = Color(0xFF1769B8);
-  static const _teal = Color(0xFF169CA7);
+  static const _blue = AppColors.brandBlue;
+  static const _teal = AppColors.brandTealDeep;
 
   @override
   void dispose() {
@@ -111,6 +112,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
     return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
       backgroundColor: dark ? const Color(0xFF101F2C) : const Color(0xFFF6FCFE),
       body: SafeArea(child: _tour ? _buildTour() : SingleChildScrollView(
+        key: const ValueKey('onboarding-welcome'),
         padding: const EdgeInsets.all(24),
         child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -146,14 +148,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             const SizedBox(height: 12),
             TextButton(onPressed: () => setState(() => _expanded = !_expanded),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(_expanded ? 'إخفاء' : 'تعرّف على EduBridge',
-                  style: const TextStyle(color: _teal, fontWeight: FontWeight.w700)),
+                Flexible(child: Text(_expanded ? 'إخفاء' : 'تعرّف على EduBridge',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: _teal, fontWeight: FontWeight.w700))),
                 const SizedBox(width: 8), AnimatedRotation(
                   turns: _expanded ? .5 : 0,
                   duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 220),
                   child: const Icon(Icons.expand_more, color: _teal)),
               ])),
-            AnimatedSize(duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 250),
+            if (_reduceMotion)
+              (_expanded ? _buildAbout() : const SizedBox.shrink())
+            else AnimatedSize(duration: const Duration(milliseconds: 250),
               alignment: Alignment.topCenter,
               child: _expanded ? _buildAbout() : const SizedBox.shrink()),
           ]))),

@@ -18,10 +18,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
 
-    expect(find.text('تعليم ذكي\nوشامل\nلكل طفل'), findsOneWidget);
-    expect(find.text('تسجيل الدخول'), findsOneWidget);
-    expect(find.text('إنشاء حساب جديد'), findsOneWidget);
-    expect(find.text('تعرّف على EduBridge'), findsOneWidget);
+    expect(find.text('الخطوة 1 من 3'), findsOneWidget);
+    expect(find.text('تعليم يتكيف مع كل طفل'), findsOneWidget);
+    expect(find.text('التالي'), findsOneWidget);
+
   });
 
   test('الجلسة المحفوظة تحل إلى واجهة الدور الصحيح', () async {
