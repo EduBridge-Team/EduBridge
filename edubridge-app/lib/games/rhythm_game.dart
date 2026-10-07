@@ -1,6 +1,7 @@
 // لعبة الإيقاع — للتأتأة واضطرابات النطق
 // الطفل ينقر مع الكلمات بإيقاع بطيء — يقلّل التأتأة ويساعد على الطلاقة
 import 'dart:async';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,7 @@ class _RhythmGameState extends State<RhythmGame> {
     'ورد',
   ];
 
+  List<String> _sessionWords = [];
   int _currentIndex = 0;
   int _tapCount = 0;
   Timer? _beatTimer;
@@ -65,6 +67,7 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _start() {
     setState(() {
+      _sessionWords = GameContent.instance.take('rhythm', _words, _totalWords, (word) => word);
       _isPlaying = true;
       _isPaused = false;
       _currentIndex = 0;
@@ -93,7 +96,7 @@ class _RhythmGameState extends State<RhythmGame> {
     }
 
     // نطق الكلمة بصوت بطيء وواضح
-    final word = _words[_currentIndex % _words.length];
+    final word = _sessionWords[_currentIndex % _sessionWords.length];
     TtsService.instance.speakLineSlow(word);
 
     // بدء مؤقّت الانتقال للكلمة التالية

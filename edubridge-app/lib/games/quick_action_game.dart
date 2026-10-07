@@ -1,7 +1,7 @@
 // لعبة الحركة السريعة — للأطفال ذوي فرط الحركة (ADHD)
 // الطفل ينفّذ حركات سريعة بسيطة مع نقر زر
 import 'dart:async';
-import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -51,7 +51,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
 
   static const _totalSeconds = 30;
 
-  final _rnd = Random();
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -92,10 +91,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
   }
 
   void _newAction() {
-    (String, String) next;
-    do {
-      next = _actions[_rnd.nextInt(_actions.length)];
-    } while (next.$2 == _currentAction.$2 && _actions.length > 1);
+    final next = GameContent.instance.pick('quick_action', _actions, (item) => item.$2);
 
     _currentAction = next;
     HapticFeedback.mediumImpact();

@@ -1,6 +1,6 @@
 // لعبة لغة الإشارة — للأطفال الصمّ وضعاف السمع
 // تعلّم الطفل ربط الحرف بإشارته
-import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +32,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
 
   late List<(String, String, String)> _options;
   late (String, String, String) _target;
+  bool _transitioning = false;
   int _score = 0;
   int _round = 0;
   static const _totalRounds = 8;
@@ -43,12 +44,12 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   }
 
   void _newRound() {
+    if (!mounted) return;
+    _transitioning = false;
     if (_round >= _totalRounds) return;
-    final rnd = Random();
-    final shuffled =
-        List<(String, String, String)>.from(_signData)..shuffle();
-    _options = shuffled.take(4).toList();
-    _target = _options[rnd.nextInt(_options.length)];
+    _target = GameContent.instance.pick('sign_language', _signData, (item) => item.$1);
+    final distractors = [..._signData]..remove(_target)..shuffle();
+    _options = [_target, ...distractors.take(3)]..shuffle();
 
     // 📳 اهتزاز خفيف للإشارة بالبداية (بدل الصوت)
     HapticFeedback.lightImpact();
@@ -56,7 +57,9 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   }
 
   Future<void> _check((String, String, String) option) async {
+    if (_transitioning) return;
     if (option.$1 == _target.$1) {
+      _transitioning = true;
       // ✅ صحيح
       setState(() {
         _score++;

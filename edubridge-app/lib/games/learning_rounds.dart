@@ -3,7 +3,7 @@ import 'dart:math';
 /// Round state is independent of widgets so rapid taps cannot award twice.
 class LearningRounds {
   LearningRounds({required this.itemCount, required this.totalRounds,
-    required this.optionCount, Random? random}) : _random = random ?? Random() {
+    required this.optionCount, this.pickTarget, this.adaptiveOptions = false, Random? random}) : _random = random ?? Random() {
     if (itemCount < 2 || totalRounds < 1 || optionCount < 2 || optionCount > itemCount) {
       throw ArgumentError('Invalid learning round configuration');
     }
@@ -13,6 +13,10 @@ class LearningRounds {
   final int itemCount;
   final int totalRounds;
   final int optionCount;
+  final int Function()? pickTarget;
+  final bool adaptiveOptions;
+  int _successStreak = 0;
+  int? _activeOptionCount;
   final Random _random;
   final List<int> _deck = [];
   final Set<int> _tried = {};
@@ -37,11 +41,12 @@ class LearningRounds {
         _deck[_deck.length - 1] = first;
       }
     }
-    target = _deck.removeLast();
+    target = pickTarget?.call() ?? _deck.removeLast();
+    if (target < 0 || target >= itemCount) throw StateError('Target outside content bank');
     final distractors = List.generate(itemCount, (i) => i)
       ..remove(target)
       ..shuffle(_random);
-    _options = [target, ...distractors.take(optionCount - 1)]..shuffle(_random);
+    _options = [target, ...distractors.take((_activeOptionCount ?? optionCount) - 1)]..shuffle(_random);
     _tried.clear();
     answered = false;
     hinted = false;
@@ -63,6 +68,14 @@ class LearningRounds {
 
   bool next() {
     if (!answered || finished) return false;
+    if (adaptiveOptions) {
+      if (_tried.length > 1 || hinted) {
+        _successStreak = 0;
+        _activeOptionCount = 3.clamp(2, itemCount);
+      } else if (++_successStreak >= 2) {
+        _activeOptionCount = 4.clamp(2, itemCount);
+      }
+    }
     _prepare();
     return true;
   }
