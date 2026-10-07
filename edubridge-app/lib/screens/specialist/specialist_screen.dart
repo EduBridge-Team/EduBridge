@@ -1,10 +1,9 @@
+import '../../utils/presentation_text.dart';
 // lib/screens/specialist/specialist_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
-import '../../services/accessibility_service.dart';
 import '../../services/api_service.dart';
-import '../../services/notification_listener_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
@@ -14,8 +13,6 @@ import '../add_certificate_sheet.dart';
 import '../add_lesson/add_lesson_sheet.dart';
 import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
-import '../chat_screen.dart';
-import '../child_progress_screen.dart';
 import '../chats_screen.dart';
 import '../choose_specialty_screen.dart';
 import '../create_specialist_progress_screen.dart';

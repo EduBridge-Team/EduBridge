@@ -1,8 +1,8 @@
+import '../utils/presentation_text.dart';
 // lib/screens/specialist_picker_sheet.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../theme.dart';
-
 
 class SpecialistPickerSheet extends StatelessWidget {
   final List specialists;
@@ -63,7 +63,7 @@ class SpecialistPickerSheet extends StatelessWidget {
               leading: CircleAvatar(
                 backgroundColor: AppColors.orange,
                 child: Text(
-                  name.trim().isEmpty ? 'م' : name.trim().characters.first,
+                  PresentationText.initial(name, trim: true, fallback: 'م'),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

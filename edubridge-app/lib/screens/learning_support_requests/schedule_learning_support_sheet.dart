@@ -183,7 +183,7 @@ class _ScheduleLearningSupportSheetState
           Expanded(
             child: Text(
               'مجدولة: ${s.day}/${s.month} '
-              '${s.hour}:${s.minute.toString().padLeft(2, '0')}',
+              '${PresentationText.clock(s)}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,

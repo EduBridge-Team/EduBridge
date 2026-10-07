@@ -95,7 +95,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    name.isNotEmpty ? name.characters.first : '؟',
+                    PresentationText.initial(name, fallback: '؟'),
                     style: TextStyle(
                       fontSize: AdaptiveHelper.avatarSize * 0.4,
                       fontWeight: FontWeight.bold,

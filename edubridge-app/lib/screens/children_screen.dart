@@ -1,3 +1,4 @@
+import '../utils/presentation_text.dart';
 // lib/screens/children_screen.dart
 import 'package:flutter/material.dart';
 
@@ -222,7 +223,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          name.isNotEmpty ? name.characters.first : '؟',
+                          PresentationText.initial(name, fallback: '؟'),
                           style: TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.w800,
