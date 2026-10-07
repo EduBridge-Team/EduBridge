@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
+import '../../features/students/data/student_profile_repository.dart';
+import '../../features/students/domain/student_profile.dart';
+import '../../features/students/presentation/student_profile_labels.dart';
 import '../../theme.dart';
 import '../child_progress_screen.dart';
 import '../child_lessons/child_lessons_screen.dart';
@@ -31,7 +34,9 @@ class _SpecialistChildProfileScreenState
     extends State<SpecialistChildProfileScreen> {
   late final int _childId;
   late final String _childName;
-  late Map<String, dynamic> _child;
+  final _repository = StudentProfileRepository();
+  late StudentProfile _profile;
+  Map<String, dynamic> get _child => _profile.toJson();
   bool _loading = true;
   String? _error;
 
@@ -40,32 +45,8 @@ class _SpecialistChildProfileScreenState
     super.initState();
     _childId = widget.child['id'] as int;
     _childName = (widget.child['name'] ?? '').toString();
-    _child = Map<String, dynamic>.from(widget.child);
+    _profile = StudentProfile.fromJson(widget.child);
     _load();
-  }
-
-  String _text(dynamic value) => (value ?? '').toString().trim();
-
-  List<String> _list(dynamic value) =>
-      value is List ? value.map((e) => e.toString()).toList() : [];
-
-  String _names(dynamic value) {
-    if (value is! List) return '';
-    return value
-        .map((item) => item is Map ? _text(item['name']) : _text(item))
-        .where((name) => name.isNotEmpty)
-        .join('، ');
-  }
-
-  String _statusLabel(Map<String, dynamic> child) {
-    if (child['assignment_preview'] == true) return 'قبل التعيين';
-    final status = _text(child['status']).toLowerCase();
-    return switch (status) {
-      'pending' => 'بانتظار التقييم',
-      'active' => 'قيد المتابعة',
-      'completed' || 'done' => 'مكتمل',
-      _ => status.isEmpty ? 'قيد المتابعة' : _text(child['status']),
-    };
   }
 
   Future<void> _load() async {
@@ -74,16 +55,9 @@ class _SpecialistChildProfileScreenState
       _error = null;
     });
     try {
-      var response = await ApiService.authGet('/children/$_childId');
-      if (response.statusCode == 403) {
-        response = await ApiService.authGet('/children/$_childId/assignment-preview');
-      }
-      final data = ApiService.decodeMap(response.body);
-      if (response.statusCode != 200 || data['child'] is! Map) {
-        throw Exception('تعذّر تحميل معلومات الطالب');
-      }
+      final profile = await _repository.load(_childId, allowAssignmentPreview: true);
       if (!mounted) return;
-      setState(() => _child = Map<String, dynamic>.from(data['child'] as Map));
+      setState(() => _profile = profile);
     } catch (_) {
       if (mounted) {
         setState(() =>
@@ -122,34 +96,27 @@ class _SpecialistChildProfileScreenState
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final child = _child;
-    final age = child['age'];
-    final disability = _text(child['disability_type']);
-    final description = _text(child['disability_description']);
-    final specialNeeds = _text(child['special_needs']);
-    final preferredStyle = _text(child['preferred_learning_style']);
-    final notes = _text(child['notes']);
-    final plan = child['current_plan'];
-    final educationalPlan = plan is Map ? _text(plan['educational_plan']) : '';
-    final strengths = _list(child['strengths']);
-    final challenges = _list(child['challenges']);
-    final isPreview = child['assignment_preview'] == true;
-    final guardianNames = _names(child['guardians']);
-    final specialistNames = _names(child['specialists']);
-    final teacherName = _text(child['assigned_teacher_name']).isNotEmpty
-        ? _text(child['assigned_teacher_name'])
-        : _text(child['teacher_name']);
-    final organizationName = _text(child['organization_name']);
-    final childNationalId = _text(child['child_national_id']);
-    final guardianNationalId = _text(child['guardian_national_id']);
-    final guardianDocument = _text(child['guardian_id_document_url']);
-    final kinshipDocument = _text(child['kinship_document_url']);
-    final medicalReport = _text(child['medical_report_url']);
-    final hasDocuments = childNationalId.isNotEmpty ||
-        guardianNationalId.isNotEmpty ||
-        guardianDocument.isNotEmpty ||
-        kinshipDocument.isNotEmpty ||
-        medicalReport.isNotEmpty;
+    final child = _profile;
+    final age = child.age;
+    final disability = child.disability;
+    final description = child.description;
+    final specialNeeds = child.specialNeeds;
+    final preferredStyle = child.preferredStyle;
+    final notes = child.notes;
+    final educationalPlan = child.educationalPlan;
+    final strengths = child.strengths;
+    final challenges = child.challenges;
+    final guardianNames = child.guardianNames;
+    final specialistNames = child.specialistNames;
+    final teacherName = child.teacherName;
+    final organizationName = child.organizationName;
+    final isPreview = child.isAssignmentPreview;
+    final childNationalId = child.childNationalId;
+    final guardianNationalId = child.guardianNationalId;
+    final guardianDocument = child.guardianDocument;
+    final kinshipDocument = child.kinshipDocument;
+    final medicalReport = child.medicalReport;
+    final hasDocuments = child.hasDocuments;
 
     return Scaffold(
       appBar: AppBar(
@@ -235,13 +202,13 @@ class _SpecialistChildProfileScreenState
                 _row(c, 'الاسم', _childName.isEmpty ? 'غير مضاف' : _childName,
                     Icons.person_outline),
                 if (age != null) _row(c, 'العمر', '$age سنة', Icons.cake_outlined),
-                if (_text(child['birth_date']).isNotEmpty)
-                  _row(c, 'تاريخ الميلاد', _text(child['birth_date']), Icons.cake_outlined),
-                if (_text(child['gender']).isNotEmpty)
+                if (child.birthDate.isNotEmpty)
+                  _row(c, 'تاريخ الميلاد', child.birthDate, Icons.cake_outlined),
+                if (child.gender.isNotEmpty)
                   _row(
                     c,
                     'الجنس',
-                    switch (_text(child['gender'])) {
+                    switch (child.gender) {
                       'male' => 'ذكر',
                       'female' => 'أنثى',
                       final value => value,
@@ -292,7 +259,7 @@ class _SpecialistChildProfileScreenState
                   _row(c, 'المؤسسة', organizationName, Icons.business_outlined),
                 if (educationalPlan.isNotEmpty)
                   _row(c, 'الخطة التعليمية', educationalPlan, AppIcons.lesson),
-                _row(c, 'الحالة', _statusLabel(child), Icons.info_outline),
+                _row(c, 'الحالة', StudentProfileLabels.specialistStatus(child), Icons.info_outline),
                 if (notes.isNotEmpty)
                   _row(c, 'ملاحظات', notes, AppIcons.info),
               ],
@@ -407,7 +374,7 @@ class _SpecialistChildProfileScreenState
                 subtitle: 'إضافة أو مراجعة تقييم الطالب',
                 onTap: _evaluate,
               ),
-              if (child['current_plan_id'] is int)
+              if (child.currentPlanId != null)
                 _actionTile(
                   c,
                   icon: Icons.fact_check_outlined,
@@ -419,7 +386,7 @@ class _SpecialistChildProfileScreenState
                       builder: (_) => PlanEvaluationScreen(
                         childId: _childId,
                         childName: _childName,
-                        planId: child['current_plan_id'] as int,
+                        planId: child.currentPlanId!,
                       ),
                     ),
                   ),
