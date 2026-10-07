@@ -127,7 +127,9 @@ class _MathRaceGameState extends State<MathRaceGame> {
             ),
         ],
       ),
-      body: Column(
+      body: SafeArea(child: Center(child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: SingleChildScrollView(child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(14),
@@ -148,16 +150,17 @@ class _MathRaceGameState extends State<MathRaceGame> {
               ],
             ),
           ),
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$_a $_op $_b = ?',
+                  FittedBox(fit: BoxFit.scaleDown, child: Text('$_a $_op $_b = ?',
                       style: const TextStyle(
                         fontSize: 64, fontWeight: FontWeight.bold,
                         color: Color(0xFF12283A),
-                      )),
+                      ))),
                 ],
               ),
             ),
@@ -166,6 +169,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
             padding: const EdgeInsets.all(20),
             child: GridView.count(
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               mainAxisSpacing: 12, crossAxisSpacing: 12,
               childAspectRatio: 2,
@@ -186,7 +190,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
             ),
           ),
         ],
-      ),
+      ))))),
     );
   }
 }

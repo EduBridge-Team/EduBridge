@@ -67,6 +67,10 @@ void main() {
     final before = choices();
     expect(before.length, 4);
     expect(before.toSet().length, 4);
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pump(const Duration(seconds: 2));
     expect(choices(), before);
     await tester.pumpWidget(const SizedBox());
