@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../features/communication/data/conversation_repository.dart';
+import '../features/communication/presentation/communication_list_controller.dart';
 import '../theme.dart';
 import 'chat/chat_composer.dart';
 
@@ -27,47 +28,39 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _repository = ConversationRepository();
-  List _messages = [];
+  late final CommunicationListController _listController;
+  List get _messages => _listController.items;
+  bool get _loading => _listController.loading;
+  String? get _error => _listController.error;
+
+  void _onListChanged() {
+    if (mounted) setState(() {});
+  }
   final _messageCtrl = TextEditingController();
-  bool _loading = true;
   bool _sending = false;
-  String? _error;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _listController = CommunicationListController(
+      load: () => _repository.loadMessages(widget.conversationId), errorMessage: 'تعذّر تحميل الرسائل',
+    )..addListener(_onListChanged);
     _loadMessages();
   }
 
   @override
   void dispose() {
+    _listController.removeListener(_onListChanged);
+    _listController.dispose();
     _messageCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _loadMessages() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-
-    try {
-      final messages = await _repository.loadMessages(widget.conversationId);
-      if (!mounted) return;
-      setState(() {
-        _messages = messages;
-        _loading = false;
-      });
-      _scrollToBottom();
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر تحميل الرسائل';
-        _loading = false;
-      });
-    }
+    final loaded = await _listController.reload();
+    if (loaded && mounted) _scrollToBottom();
   }
 
   Future<void> _sendMessage({String? contentOverride}) async {
@@ -94,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) return;
+      if (!mounted || !_scrollController.hasClients) return;
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),

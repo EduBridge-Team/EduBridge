@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../features/communication/data/conversation_repository.dart';
+import '../features/communication/presentation/communication_list_controller.dart';
 import '../theme.dart';
 import 'chat_screen.dart';
 part 'chats_screen_view.dart';
@@ -16,9 +17,14 @@ class ChatsScreen extends StatefulWidget {
 
 class _ChatsScreenState extends State<ChatsScreen> {
   final _repository = ConversationRepository();
-  List _conversations = [];
-  bool _loading = true;
-  String? _error;
+  late final CommunicationListController _listController;
+  List get _conversations => _listController.items;
+  bool get _loading => _listController.loading;
+  String? get _error => _listController.error;
+
+  void _onListChanged() {
+    if (mounted) setState(() {});
+  }
 
   String _text(Object? value, {String fallback = ''}) {
     final text = value?.toString() ?? '';
@@ -33,36 +39,24 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     super.initState();
+    _listController = CommunicationListController(
+      load: _repository.loadConversations, errorMessage: 'تعذّر تحميل المحادثات',
+    )..addListener(_onListChanged);
     _loadConversations();
+  }
+
+  @override
+  void dispose() {
+    _listController.removeListener(_onListChanged);
+    _listController.dispose();
+    super.dispose();
   }
 
   Future<void> _refreshConversations() =>
       _loadConversations(showLoader: false);
 
   Future<void> _loadConversations({bool showLoader = true}) async {
-    if (showLoader) {
-      setState(() {
-        _loading = true;
-        _error = null;
-      });
-    } else if (_error != null) {
-      setState(() => _error = null);
-    }
-
-    try {
-      final convs = await _repository.loadConversations();
-      if (!mounted) return;
-      setState(() {
-        _conversations = convs;
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر تحميل المحادثات';
-        _loading = false;
-      });
-    }
+    await _listController.reload(showLoader: showLoader);
   }
 
   Future<void> _startNewConversation() async {
@@ -105,6 +99,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
               ),
             ).then((_) => _loadConversations());
           } catch (e) {
+            if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
             );

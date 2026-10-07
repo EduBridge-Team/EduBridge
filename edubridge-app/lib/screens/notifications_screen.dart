@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../features/notifications/presentation/notification_operations_controller.dart';
 import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
@@ -17,46 +18,45 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  bool _loading = true;
-  bool _markingAll = false;
-  bool _loadingMore = false;
-  String? _error;
+  late final NotificationOperationsController _operations;
+  bool get _loading => _operations.loading;
+  bool get _markingAll => _operations.markingAll;
+  bool get _loadingMore => _operations.loadingMore;
+  String? get _error => _operations.error;
+
+  void _onOperationsChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
+    final service = NotificationListenerService.instance;
+    _operations = NotificationOperationsController(
+      reload: service.reloadAll,
+      loadMore: service.loadMore,
+      markAllRead: service.markAllRead,
+      refresh: service.refresh,
+    )..addListener(_onOperationsChanged);
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      await NotificationListenerService.instance.reloadAll();
-      if (!mounted) return;
-      setState(() => _loading = false);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'تعذّر تحميل الإشعارات';
-        _loading = false;
-      });
-    }
+  @override
+  void dispose() {
+    _operations.removeListener(_onOperationsChanged);
+    _operations.dispose();
+    super.dispose();
   }
 
+  Future<void> _load() => _operations.reload();
+
   Future<void> _loadMore() async {
-    if (_loadingMore || _markingAll) return;
-    setState(() => _loadingMore = true);
     try {
-      await NotificationListenerService.instance.loadMore();
+      await _operations.loadMore();
     } catch (_) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
       );
-    } finally {
-      if (mounted) setState(() => _loadingMore = false);
     }
   }
 
@@ -79,16 +79,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _markAllRead() async {
-    if (_markingAll || _loadingMore) return;
-    setState(() => _markingAll = true);
-
     try {
-      await NotificationListenerService.instance.markAllRead();
-      if (!mounted) return;
-
-      await NotificationListenerService.instance.refresh();
-      if (!mounted) return;
-
+      final completed = await _operations.markAllRead();
+      if (!mounted || !completed) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديد جميع الإشعارات كمقروءة')),
       );
@@ -97,8 +90,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تعذّر تنفيذ العملية')),
       );
-    } finally {
-      if (mounted) setState(() => _markingAll = false);
     }
   }
 
