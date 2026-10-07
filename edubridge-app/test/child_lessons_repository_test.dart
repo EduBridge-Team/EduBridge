@@ -18,7 +18,7 @@ void main() {
     lessons.complete(http.Response(jsonEncode({'lessons': [
       {'id': 7, 'title': 'درس', 'video_url': 'video', 'caption_url': 'captions',
        'sign_language_url': 'sign', 'audio_description': 'وصف'}
-    ]}), 200));
+    ]}), 200, headers: {'content-type': 'application/json; charset=utf-8'}));
     progress.complete(http.Response(jsonEncode({'progress': [
       {'lesson_id': 7, 'status': 'done'},
       {'lesson_id': 7, 'status': 'done'},
