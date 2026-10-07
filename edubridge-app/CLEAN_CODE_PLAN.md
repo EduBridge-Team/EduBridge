@@ -79,3 +79,12 @@ observer registration, disposal, audio descriptions and rendering stay in the
 widget. Eight regression tests cover timeline boundaries, overlap priority,
 synchronization and optional caption failures. Manual device media/lifecycle QA
 and broader settings persistence review remain outstanding.
+
+Phase 6 begins by extracting notification page merging into a pure domain helper
+and conversation/message access into an injectable repository. Preserve ID order,
+monotonic read status, cursors, polling queue and session-generation guards.
+Screens retain composer, Arabic messages, navigation and loading behavior; a
+completed send no longer reloads a disposed chat widget. Seven regression tests
+cover merge overlap/read races, input immutability, message identity and errors.
+Existing notification-session tests remain the lifecycle regression gate. Broader
+screen loading-state and communication lifecycle cleanup is still outstanding.

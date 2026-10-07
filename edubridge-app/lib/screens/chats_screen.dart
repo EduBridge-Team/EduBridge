@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
-import '../services/api_service.dart';
+import '../features/communication/data/conversation_repository.dart';
 import '../theme.dart';
 import 'chat_screen.dart';
 part 'chats_screen_view.dart';
@@ -15,6 +15,7 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
+  final _repository = ConversationRepository();
   List _conversations = [];
   bool _loading = true;
   String? _error;
@@ -49,7 +50,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
     }
 
     try {
-      final convs = await ApiService.getConversations();
+      final convs = await _repository.loadConversations();
       if (!mounted) return;
       setState(() {
         _conversations = convs;
@@ -67,7 +68,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Future<void> _startNewConversation() async {
     List users;
     try {
-      users = await ApiService.getConversationUsers();
+      users = await _repository.availableUsers();
     } catch (e) {
       if (!mounted) return;
       final message = e.toString().replaceFirst('Exception: ', '');
@@ -87,7 +88,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         onSelect: (user) async {
           Navigator.pop(context);
           try {
-            final conversationId = await ApiService.createConversation(
+            final conversationId = await _repository.create(
               user['id'],
               'محادثة مع ${user['name']}',
             );
