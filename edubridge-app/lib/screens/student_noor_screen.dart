@@ -119,7 +119,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
             initialDescription: description,
             initialSubject: subject.isEmpty ? null : subject,
             initialDueDate: DateTime.now().add(
-              Duration(days: dueInDays.clamp(1, 30)),
+              Duration(days: dueInDays.clamp(1, 30).toInt()),
             ),
           ),
         ),
