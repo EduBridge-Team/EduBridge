@@ -1,10 +1,10 @@
 // lib/screens/child_lessons/child_lessons_screen.dart
-import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/api_service.dart';
+import '../../features/lessons/data/child_lessons_repository.dart';
 import '../../services/tts_service.dart';
 import '../../services/simple_language_service.dart';
 import '../../services/reward_service.dart';
@@ -54,6 +54,7 @@ class ChildLessonsScreen extends StatefulWidget {
 }
 
 class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
+  final _lessonsRepository = ChildLessonsRepository();
   List _lessons = [];
   bool _loading = true;
   String? _error;

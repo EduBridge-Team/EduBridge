@@ -1,9 +1,8 @@
 // lib/screens/child_accessibility/child_accessibility_settings_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
-import '../../services/api_service.dart';
+import '../../features/adaptation/data/adaptation_permission_repository.dart';
 import '../../theme.dart';
 import '../../widgets/disability/disability_catalog.dart';
 import '../../widgets/disability/disability_picker_sheet.dart';
@@ -35,6 +34,8 @@ class _ChildAccessibilitySettingsScreenState
     extends State<ChildAccessibilitySettingsScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
+  final _permissionRepository = AdaptationPermissionRepository();
+
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
   bool _canEdit = false;
@@ -56,15 +57,12 @@ class _ChildAccessibilitySettingsScreenState
   }
 
   Future<void> _loadEditPermission() async {
-    try {
-      final response = await ApiService.authGet('/children/${widget.childId}/accessibility-profile');
-      final data = jsonDecode(response.body);
-      if (mounted) setState(() => _canEdit = response.statusCode == 200 && data['can_edit'] == true);
-    } catch (_) {
-      if (mounted) setState(() => _canEdit = false);
-    } finally {
-      if (mounted) setState(() => _loadingPermission = false);
-    }
+    final canEdit = await _permissionRepository.canEdit(widget.childId);
+    if (!mounted) return;
+    setState(() {
+      _canEdit = canEdit;
+      _loadingPermission = false;
+    });
   }
 
   @override
