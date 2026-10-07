@@ -180,7 +180,7 @@ extension _RhythmGameView on _RhythmGameState {
   // ═══════════════════════════════════════════════════════
   Widget _buildPlaying(bool large) {
     final word = _currentIndex < _totalWords
-        ? _RhythmGameState._words[_currentIndex % _RhythmGameState._words.length]
+        ? _sessionWords[_currentIndex % _sessionWords.length]
         : '🎉';
 
     final progress = _currentIndex / _totalWords;

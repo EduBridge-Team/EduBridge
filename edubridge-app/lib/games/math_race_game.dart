@@ -1,6 +1,7 @@
 // لعبة سباق الحساب — للأعمار 7-14
 import 'dart:async';
 import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ class MathRaceGame extends StatefulWidget {
 
 class _MathRaceGameState extends State<MathRaceGame> {
   late int _a, _b;
+  late List<int> _options;
   late String _op;
   late int _answer;
   int _score = 0;
@@ -54,40 +56,20 @@ class _MathRaceGameState extends State<MathRaceGame> {
   }
 
   void _newQuestion() {
-    if (widget.age <= 8) {
-      _a = 1 + _rnd.nextInt(10);
-      _b = 1 + _rnd.nextInt(10);
-      _op = '+';
-      _answer = _a + _b;
-    } else if (widget.age <= 11) {
-      if (_rnd.nextBool()) {
-        _a = 5 + _rnd.nextInt(20);
-        _b = 1 + _rnd.nextInt(15);
-        _op = '+';
-        _answer = _a + _b;
-      } else {
-        _a = 10 + _rnd.nextInt(20);
-        _b = 1 + _rnd.nextInt(10);
-        _op = '-';
-        _answer = _a - _b;
-      }
-    } else {
-      final ops = ['+', '-', '×'];
-      _op = ops[_rnd.nextInt(ops.length)];
-      if (_op == '×') {
-        _a = 2 + _rnd.nextInt(10);
-        _b = 2 + _rnd.nextInt(10);
-        _answer = _a * _b;
-      } else if (_op == '+') {
-        _a = 20 + _rnd.nextInt(80);
-        _b = 10 + _rnd.nextInt(50);
-        _answer = _a + _b;
-      } else {
-        _a = 30 + _rnd.nextInt(70);
-        _b = 5 + _rnd.nextInt(25);
-        _answer = _a - _b;
+    final bank = <({int a, int b, String op})>[];
+    final max = widget.age <= 8 ? 10 : widget.age <= 11 ? 25 : 60;
+    for (var a = 1; a <= max; a++) {
+      for (var b = 1; b <= (widget.age <= 8 ? 10 : 15); b++) {
+        bank.add((a: a, b: b, op: '+'));
+        if (widget.age > 8 && a > b) bank.add((a: a, b: b, op: '-'));
+        if (widget.age > 11 && a <= 12 && b <= 12) bank.add((a: a, b: b, op: '×'));
       }
     }
+    final item = GameContent.instance.pick('math_${widget.age <= 8 ? 1 : widget.age <= 11 ? 2 : 3}',
+      bank, (item) => '${item.a}:${item.op}:${item.b}');
+    _a = item.a; _b = item.b; _op = item.op;
+    _answer = _op == '+' ? _a + _b : _op == '-' ? _a - _b : _a * _b;
+    _options = _generateOptions();
   }
 
   List<int> _generateOptions() {
@@ -127,7 +109,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
 
   @override
   Widget build(BuildContext context) {
-    final options = _generateOptions();
+    final options = _options;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8EE),
       appBar: AppBar(

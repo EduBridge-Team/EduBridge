@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../services/game_progress_service.dart';
@@ -23,13 +24,30 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     ('أحمر', Color(0xFFE53935)), ('أزرق', Color(0xFF1E88E5)),
     ('أخضر', Color(0xFF43A047)), ('أصفر', Color(0xFFFDD835)),
     ('بنفسجي', Color(0xFF8E24AA)), ('برتقالي', Color(0xFFFB8C00)),
+    ('وردي', Color(0xFFEC407A)), ('بني', Color(0xFF795548)),
+    ('رمادي', Color(0xFF757575)), ('أسود', Color(0xFF212121)),
   ];
   static const _shapes = [
     ('مثلث', '🔺', 'له ثلاثة أضلاع'), ('مربع', '🟦', 'له أربعة أضلاع متساوية'),
     ('دائرة', '⚫', 'شكل مستدير بلا زوايا'), ('نجمة', '⭐', 'لها خمسة رؤوس'),
     ('قلب', '❤️', 'شكل نعبّر به عن المحبة'), ('سداسي', '⬡', 'له ستة أضلاع'),
+    ('معين', '🔷', 'له أربعة أضلاع متساوية وزاويتان حادتان'),
+    ('مستطيل', '▭', 'له أربعة أضلاع وكل ضلعين متقابلين متساويان'),
+    ('بيضاوي', '⬭', 'شكل مستدير ممدود بلا زوايا'),
   ];
-  static const _digits = ['١', '٢', '٣', '٤', '٥', '٦'];
+  static const _shapeGlyphs = ['▲', '■', '●', '★', '♥', '⬡', '◆', '▭', '⬭'];
+  static const _digits = ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '١٠'];
+  static const _objects = [
+    (emoji: '🍎', name: 'تفاحة', plural: 'تفاحات'),
+    (emoji: '⭐', name: 'نجمة', plural: 'نجمات'),
+    (emoji: '⚽', name: 'كرة', plural: 'كرات'),
+    (emoji: '🌸', name: 'زهرة', plural: 'زهرات'),
+    (emoji: '🐟', name: 'سمكة', plural: 'سمكات'),
+    (emoji: '🦋', name: 'فراشة', plural: 'فراشات'),
+  ];
+  var _countObject = _objects.first;
+  int _visualStyle = 0;
+  int get _itemCount => _isColors ? _colors.length : _isShapes ? (_easy ? 6 : _shapes.length) : (_easy ? 6 : _digits.length);
   LearningRounds? _rounds;
   bool _easy = true;
   bool _sound = true;
@@ -43,7 +61,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
   String get _title => _isColors ? 'لعبة الألوان' : _isShapes ? 'لعبة الأشكال' : 'لعبة الأرقام';
   String _label(int index) => _isColors ? _colors[index].$1 : _isShapes ? _shapes[index].$1 : _digits[index];
   String get _question => widget.topic == LearningTopic.numbers
-    ? 'كم تفاحة ترى؟' : 'أين ${_label(_rounds!.target)}؟';
+    ? 'كم ${_countObject.name} ترى؟' : 'أين ${_label(_rounds!.target)}؟';
 
   @override
   void initState() {
@@ -69,14 +87,22 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   void _start() {
     setState(() {
-      _rounds = LearningRounds(itemCount: 6, totalRounds: _easy ? 6 : 8,
-        optionCount: _easy ? 3 : 4);
+      _varyVisual();
+      _rounds = LearningRounds(itemCount: _itemCount, totalRounds: _easy ? 6 : 8,
+        optionCount: _easy ? 3 : 4, adaptiveOptions: true,
+        pickTarget: () => GameContent.instance.pick('choice_${widget.topic.name}',
+          List.generate(_itemCount, (i) => i), (index) => _label(index)));
       _feedback = '';
       _saving = false;
       _saved = false;
       _saveError = null;
     });
     unawaited(_speak(_question));
+  }
+
+  void _varyVisual() {
+    _countObject = GameContent.instance.pick('count_objects', _objects, (item) => item.emoji);
+    _visualStyle = GameContent.instance.pick('choice_visual', [0, 1, 2, 3], (item) => '$item');
   }
 
   void _choose(int index) {
@@ -94,13 +120,13 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     final target = _rounds!.target;
     setState(() => _feedback = _isShapes ? _shapes[target].$3
       : _isColors ? 'ابحث عن اللون ${_label(target)}؛ أضفنا إطارًا حوله.'
-      : 'عدّ التفاحات واحدة واحدة: ${_digits.take(target + 1).join('، ')}.');
+      : 'عدّ ${_countObject.plural} واحدة واحدة: ${_digits.take(target + 1).join('، ')}.');
     unawaited(_speak(_feedback));
   }
 
   void _next() {
     if (!_rounds!.next()) return;
-    setState(() => _feedback = '');
+    setState(() { _feedback = ''; _varyVisual(); });
     unawaited(_speak(_question));
   }
 
@@ -145,16 +171,17 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     const SizedBox(height: 16), Text('هيا نتعلم يا ${widget.childName}!',
       textAlign: TextAlign.center, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
     const SizedBox(height: 12), Text(widget.topic == LearningTopic.numbers
-      ? 'عدّ التفاحات ثم اختر العدد. خذ وقتك، ويمكنك طلب تلميح.'
+      ? 'عدّ العناصر ثم اختر العدد. خذ وقتك، ويمكنك طلب تلميح.'
       : 'تعرّف على ${_isColors ? 'الألوان' : 'الأشكال'} واختر الإجابة. خذ وقتك، ويمكنك المحاولة من جديد.',
       textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, height: 1.6)),
     const SizedBox(height: 24),
     Wrap(alignment: WrapAlignment.center, spacing: 12, children: [
-      ChoiceChip(label: const Text('بداية سهلة • ٣ اختيارات'), selected: _easy,
+      ChoiceChip(label: const Text('بداية سهلة'), selected: _easy,
         onSelected: (_) => setState(() => _easy = true)),
-      ChoiceChip(label: const Text('تحدٍ جديد • ٤ اختيارات'), selected: !_easy,
+      ChoiceChip(label: const Text('تحدٍ جديد'), selected: !_easy,
         onSelected: (_) => setState(() => _easy = false)),
     ]),
+    const SizedBox(height: 12), const Text('الاختيارات تتكيف مع محاولاتك، وكل جولة تحمل محتوى متنوعاً.', textAlign: TextAlign.center),
     const SizedBox(height: 20), _soundToggle(),
     const SizedBox(height: 12), _action('ابدأ اللعب', Icons.play_arrow, _start),
   ], id: 'intro');
@@ -176,9 +203,9 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
       const SizedBox(height: 20),
       Card(child: Padding(padding: const EdgeInsets.all(22), child: Column(children: [
         if (widget.topic == LearningTopic.numbers)
-          Semantics(label: '${game.target + 1} تفاحات', child: ExcludeSemantics(child: Wrap(
+          Semantics(label: '${game.target + 1} ${_countObject.plural}', child: ExcludeSemantics(child: Wrap(
             alignment: WrapAlignment.center, spacing: 10, runSpacing: 10,
-            children: List.generate(game.target + 1, (_) => const Text('🍎', style: TextStyle(fontSize: 46))))))
+            children: List.generate(game.target + 1, (_) => Text(_countObject.emoji, style: TextStyle(fontSize: 46))))))
         else _symbol(game.target, size: 76),
         const SizedBox(height: 16), Text(_question, textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
@@ -224,10 +251,13 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   Widget _symbol(int index, {required double size}) {
     if (_isColors) return Semantics(label: _label(index), child: Container(width: size, height: size,
-      decoration: BoxDecoration(color: _colors[index].$2, borderRadius: BorderRadius.circular(16),
+      decoration: BoxDecoration(color: _colors[index].$2, borderRadius: BorderRadius.circular(_visualStyle.isEven ? 16 : size / 2),
         border: Border.all(color: Colors.black26))));
-    return Text(_isShapes ? _shapes[index].$2 : _digits[index],
-      semanticsLabel: _label(index), style: TextStyle(fontSize: size));
+    final symbol = Text(_isShapes ? (_visualStyle.isEven ? _shapes[index].$2 : _shapeGlyphs[index]) : _digits[index],
+      semanticsLabel: _label(index), style: TextStyle(fontSize: size,
+        color: _isShapes ? [AppColors.brandBlue, AppColors.brandTeal,
+          AppColors.orange, AppColors.pink][_visualStyle] : null));
+    return symbol;
   }
 
   Widget _summary() => _panel([

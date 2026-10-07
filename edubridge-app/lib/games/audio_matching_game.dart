@@ -1,5 +1,6 @@
 // لعبة مطابقة الأصوات — للأطفال المكفوفين
 import 'dart:async';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,8 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     ('🐱', 'قطة'),
     ('🐦', 'طائر'),
     ('🐄', 'بقرة'),
+    ('🐸', 'ضفدع'), ('🦁', 'أسد'), ('🐘', 'فيل'), ('🐎', 'حصان'),
+    ('🚗', 'سيارة'), ('🚲', 'دراجة'), ('🍎', 'تفاحة'), ('🍌', 'موز'),
   ];
 
   late List<_AudioCard> _cards;
@@ -36,7 +39,8 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   }
 
   void _startGame() {
-    final all = [..._pairs, ..._pairs]..shuffle();
+    final selected = GameContent.instance.take('audio_matching', _pairs, 4, (item) => item.$2);
+    final all = [...selected, ...selected]..shuffle();
     _cards = all
         .map((p) => _AudioCard(emoji: p.$1, name: p.$2))
         .toList();

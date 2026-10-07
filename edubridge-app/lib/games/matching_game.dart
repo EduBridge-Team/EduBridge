@@ -1,5 +1,6 @@
 // لعبة مطابقة الأزواج
 import 'dart:async';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import '../services/accessibility_service.dart';
@@ -24,9 +25,12 @@ class MatchingGame extends StatefulWidget {
 class _MatchingGameState extends State<MatchingGame> {
   static const _defaultItems = [
     '🐶', '🐱', '🐼', '🦊', '🐸', '🦁', '🐧', '🐨',
+    '🍎', '🍌', '🍓', '🍇', '🚗', '🚲', '✈️', '🚂',
+    '⚽', '🏀', '🧸', '🎈', '🌻', '🌳', '🦋', '🐢',
   ];
 
   late List<_Card> _cards;
+  int _generation = 0;
   int? _firstIndex;
   int? _secondIndex;
   bool _locked = false;
@@ -50,8 +54,9 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   void _startGame() {
-    final items = widget.items ?? _defaultItems;
-    final selected = (List<String>.from(items)..shuffle()).take(4).toList();
+    _generation++;
+    final items = (widget.items ?? _defaultItems).toSet().toList();
+    final selected = GameContent.instance.take('matching', items, 4, (item) => item);
     final all = [...selected, ...selected]..shuffle();
 
     _cards = all
@@ -95,8 +100,10 @@ class _MatchingGameState extends State<MatchingGame> {
 
   void _checkMatch() async {
     _locked = true;
+    final generation = _generation;
     await Future.delayed(const Duration(milliseconds: 700));
 
+    if (!mounted || generation != _generation) return;
     final first = _cards[_firstIndex!];
     final second = _cards[_secondIndex!];
 
@@ -114,9 +121,10 @@ class _MatchingGameState extends State<MatchingGame> {
         EncouragementService.instance.praiseSuccess();
       }
 
-      if (_matches == 4) {
+      if (_matches == _cards.length ~/ 2) {
         _timer?.cancel();
         await Future.delayed(const Duration(milliseconds: 400));
+        if (!mounted || generation != _generation) return;
         _onWin();
       }
     } else {
@@ -140,7 +148,7 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   Future<void> _onWin() async {
-    final score = ((4 / _attempts) * 100).round().clamp(0, 100).toInt();
+    final score = (((_cards.length ~/ 2) / _attempts) * 100).round().clamp(0, 100).toInt();
     await GameProgressService.instance.record(score);
 
     await VisualCelebration.show(
@@ -233,7 +241,7 @@ class _MatchingGameState extends State<MatchingGame> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _infoChip('⏱️', '$_secondsElapsed ث'),
-                _infoChip('🎯', '$_matches/4'),
+                _infoChip('🎯', '$_matches/${_cards.length ~/ 2}'),
                 _infoChip('❌', '$_mistakes'),
               ],
             ),
