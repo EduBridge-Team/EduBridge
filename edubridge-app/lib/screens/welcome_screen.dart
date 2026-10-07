@@ -148,14 +148,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             const SizedBox(height: 12),
             TextButton(onPressed: () => setState(() => _expanded = !_expanded),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(_expanded ? 'إخفاء' : 'تعرّف على EduBridge',
-                  style: const TextStyle(color: _teal, fontWeight: FontWeight.w700)),
+                Flexible(child: Text(_expanded ? 'إخفاء' : 'تعرّف على EduBridge',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: _teal, fontWeight: FontWeight.w700))),
                 const SizedBox(width: 8), AnimatedRotation(
                   turns: _expanded ? .5 : 0,
                   duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 220),
                   child: const Icon(Icons.expand_more, color: _teal)),
               ])),
-            AnimatedSize(duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 250),
+            if (_reduceMotion)
+              (_expanded ? _buildAbout() : const SizedBox.shrink())
+            else AnimatedSize(duration: const Duration(milliseconds: 250),
               alignment: Alignment.topCenter,
               child: _expanded ? _buildAbout() : const SizedBox.shrink()),
           ]))),

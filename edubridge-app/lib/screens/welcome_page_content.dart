@@ -44,7 +44,8 @@ extension _WelcomePageContent on _WelcomeScreenState {
     return Column(children: [
       Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('الخطوة ${_page + 1} من 3'),
+          Flexible(child: Text('الخطوة ${_page + 1} من 3')),
+          const SizedBox(width: 12),
           TextButton(onPressed: _leaveTour, child: const Text('تخطي')),
         ])),
       Expanded(child: PageView.builder(controller: _controller, itemCount: 3,
