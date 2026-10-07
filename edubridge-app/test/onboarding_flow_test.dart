@@ -26,6 +26,12 @@ Future<void> tapLabel(WidgetTester tester, String text) async {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('completing the old landing screen does not hide the corrected tour', () async {
+    SharedPreferences.setMockInitialValues({'edubridge_onboarding_seen_v1': true});
+    expect(await OnboardingService.hasSeen(), isFalse);
+    await OnboardingService.markSeen();
+    expect(await OnboardingService.hasSeen(), isTrue);
+  });
   testWidgets('all four reference screens are reachable in order', (tester) async {
     await showWelcome(tester, size: const Size(390, 844));
     addTearDown(tester.view.resetPhysicalSize);
