@@ -16,7 +16,7 @@ extension _SequenceGameView on _SequenceGameState {
             icon: const Icon(Icons.refresh),
             tooltip: 'جولة جديدة',
             onPressed: () {
-              _updateGame(() => _userOrder = []);
+              _updateGame(() => _ordered.reset());
               _speak('أعد ترتيب البطاقات');
             },
           ),
@@ -310,7 +310,7 @@ extension _SequenceGameView on _SequenceGameState {
                         style: TextStyle(fontSize: 16),
                       ),
                       onPressed: () {
-                        _updateGame(() => _userOrder = []);
+                        _updateGame(() => _ordered.reset());
                         _speak('أعد المحاولة');
                       },
                     ),

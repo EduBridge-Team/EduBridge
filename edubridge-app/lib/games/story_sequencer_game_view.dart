@@ -296,7 +296,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                         style: TextStyle(fontSize: 16),
                       ),
                       onPressed: () {
-                        _updateGame(() => _userOrder = []);
+                        _updateGame(() => _ordered.reset());
                         _speak('أعد المحاولة');
                       },
                     ),
