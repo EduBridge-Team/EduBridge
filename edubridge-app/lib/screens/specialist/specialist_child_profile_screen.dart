@@ -8,6 +8,7 @@ import '../weekly_report_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../plan_evaluation_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
+import '../student_noor_screen.dart';
 
 class SpecialistChildProfileScreen extends StatefulWidget {
   final Map<String, dynamic> child;
@@ -327,6 +328,21 @@ class _SpecialistChildProfileScreenState
                 ),
               ),
               const SizedBox(height: 10),
+              _actionTile(
+                c,
+                icon: Icons.auto_awesome_rounded,
+                title: 'اسأل نور عن هذا الطالب',
+                subtitle: 'ملخص ذكي وخطوات متابعة مبنية على بيانات الطالب',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => StudentNoorScreen(
+                      childId: _childId,
+                      childName: _childName,
+                    ),
+                  ),
+                ),
+              ),
               _actionTile(
                 c,
                 icon: AppIcons.progress,
