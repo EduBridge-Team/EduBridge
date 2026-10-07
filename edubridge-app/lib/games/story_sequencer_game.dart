@@ -2,6 +2,7 @@
 // الطفل يرى صوراً مبعثرة ويجب أن يرتّبها حسب ترتيب الأحداث
 import 'dart:math';
 import 'game_content.dart';
+import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -75,9 +76,10 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
 
   late List<String> _correctOrder;
   late List<String> _correctLabels;
-  late List<String> _shuffled;
+  late OrderedRound<String> _ordered;
+  List<String> get _shuffled => _ordered.choices;
   late String _title;
-  List<String> _userOrder = [];
+  List<String> get _userOrder => _ordered.selected;
 
   int _round = 0;
   int _score = 0;
@@ -119,13 +121,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     _correctLabels = story.labels.take(count).toList();
     _title = story.title;
 
-    // خلط البطاقات
-    _shuffled = List<String>.from(_correctOrder);
-    do {
-      _shuffled.shuffle(_rnd);
-    } while (_listEquals(_shuffled, _correctOrder));
-
-    _userOrder = [];
+    _ordered = OrderedRound(_correctOrder, random: _rnd);
 
     // نطق التعليمات
     _speak('رتّب قصة $_title. اضغط على الصور بالترتيب الصحيح');
@@ -141,22 +137,15 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     }
   }
 
-  bool _listEquals(List<String> a, List<String> b) {
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
-  }
 
   // ═══════════════════════════════════════════════════════
   //  ضغط على بطاقة
   // ═══════════════════════════════════════════════════════
   void _tapEmoji(String emoji) {
-    if (_userOrder.contains(emoji)) return;
+    if (_ordered.complete || _userOrder.contains(emoji)) return;
 
     HapticFeedback.lightImpact();
-    setState(() => _userOrder.add(emoji));
+    setState(() => _ordered.selectValue(emoji));
 
     // هل اكتمل الترتيب؟
     if (_userOrder.length == _correctOrder.length) {
@@ -168,7 +157,8 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
   //  فحص الترتيب
   // ═══════════════════════════════════════════════════════
   void _check() {
-    if (_listEquals(_userOrder, _correctOrder)) {
+    if (!mounted || !_ordered.complete) return;
+    if (_ordered.correct) {
       // ✅ ترتيب صحيح
       HapticFeedback.heavyImpact();
       setState(() {
@@ -192,7 +182,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
       _speak('حاول مرة أخرى. فكّر بترتيب الأحداث');
 
       setState(() {
-        _userOrder = [];
+        _ordered.reset();
         _streak = 0;
       });
     }
