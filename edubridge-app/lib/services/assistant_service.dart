@@ -24,6 +24,7 @@ class AssistantMessage {
 class AssistantService {
   static const _historyKeyPrefix = 'noor_assistant_history_v1';
   static const _maxStoredMessages = 20;
+  static const _maxContextLength = 4000;
 
   static Future<String> _historyKey() async {
     final userId = await ApiService.getUserId() ?? 0;
@@ -77,7 +78,9 @@ class AssistantService {
     final response = await ApiService.authPost('/assistant/chat', {
       'messages': recent.map((message) => message.toJson()).toList(),
       if (context != null && context.trim().isNotEmpty)
-        'context': context.length > 1200 ? context.substring(0, 1200) : context,
+        'context': context.length > _maxContextLength
+            ? context.substring(0, _maxContextLength)
+            : context,
     });
 
     Map<String, dynamic> data = {};
