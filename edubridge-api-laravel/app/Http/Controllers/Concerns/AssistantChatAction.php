@@ -15,7 +15,7 @@ trait AssistantChatAction
             'messages' => ['required', 'array', 'min:1', 'max:12'],
             'messages.*.role' => ['required', 'in:user,assistant'],
             'messages.*.content' => ['required', 'string', 'max:2000'],
-            'context' => ['nullable', 'string', 'max:1200'],
+            'context' => ['nullable', 'string', 'max:4000'],
         ]);
 
         $apiKey = config('services.groq.key');

@@ -9,6 +9,7 @@ import '../add_lesson/add_lesson_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../create_homework_screen.dart';
 import '../create_weekly_report_screen.dart';
+import '../student_noor_screen.dart';
 import '../weekly_report_screen.dart';
 
 part 'teacher_homework_tab.dart';
@@ -58,6 +59,17 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
     setState(() => _selectedTab = index);
   }
 
+  Future<void> _askNoorAboutStudent() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => StudentNoorScreen(
+          childId: widget.childId,
+          childName: widget.childName,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +111,14 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            onPressed: _askNoorAboutStudent,
+            tooltip: 'اسأل نور عن هذا الطالب',
+            icon: const Icon(Icons.auto_awesome_rounded),
+          ),
+          const SizedBox(width: 6),
+        ],
       ),
       body: IndexedStack(
         index: _selectedTab,
