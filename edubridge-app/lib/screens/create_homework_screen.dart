@@ -11,11 +11,19 @@ part 'create_homework_view.dart';
 class CreateHomeworkScreen extends StatefulWidget {
   final List children;
   final int? initialChildId;
+  final String? initialTitle;
+  final String? initialDescription;
+  final String? initialSubject;
+  final DateTime? initialDueDate;
 
   const CreateHomeworkScreen({
     super.key,
     required this.children,
     this.initialChildId,
+    this.initialTitle,
+    this.initialDescription,
+    this.initialSubject,
+    this.initialDueDate,
   });
 
   @override
@@ -41,6 +49,10 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
   @override
   void initState() {
     super.initState();
+    _titleCtrl.text = widget.initialTitle?.trim() ?? '';
+    _descCtrl.text = widget.initialDescription?.trim() ?? '';
+    _subjectCtrl.text = widget.initialSubject?.trim() ?? '';
+    _dueDate = widget.initialDueDate ?? DateTime.now().add(const Duration(days: 7));
     if (widget.initialChildId != null) {
       _selectedChildIds.add(widget.initialChildId!);
     }
