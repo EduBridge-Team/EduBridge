@@ -29,6 +29,15 @@ trait ConversationSendActions
             return response()->json(['error' => 'الرسالة فارغة'], 422);
         }
 
+        if ($fileUrl !== '') {
+            $pattern = '#^/api/private-files/user/' . preg_quote((string) $myId, '#') . '/[A-Za-z0-9._-]+$#';
+            if (!preg_match($pattern, $fileUrl)) {
+                return response()->json([
+                    'error' => 'المرفق يجب أن يكون ملفاً خاصاً مرفوعاً من حسابك',
+                ], 422);
+            }
+        }
+
         try {
             $message = DB::transaction(function () use ($conversation, $myId, $content, $fileUrl) {
                 $now = now();

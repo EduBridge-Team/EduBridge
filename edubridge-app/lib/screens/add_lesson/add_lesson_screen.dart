@@ -8,11 +8,17 @@ import '../../widgets/teacher_navigation_bar.dart';
 class AddLessonScreen extends StatefulWidget {
   final List types;
   final bool forParents;
+  final int? initialChildId;
+  final String? initialChildName;
+  final bool showBottomNavigation;
 
   const AddLessonScreen({
     super.key,
     required this.types,
     this.forParents = false,
+    this.initialChildId,
+    this.initialChildName,
+    this.showBottomNavigation = false,
   });
 
   @override
@@ -64,11 +70,11 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
         ),
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'إضافة درس جديد',
               style: TextStyle(
                 fontSize: 20,
@@ -76,10 +82,12 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              'أضف المحتوى وحدد الجمهور والوسائط المساندة',
-              style: TextStyle(
+              widget.initialChildName == null
+                  ? 'أضف المحتوى وحدد الجمهور والوسائط المساندة'
+                  : 'سيتم إضافة الدرس للطالب ${widget.initialChildName}',
+              style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w500,
                 color: Colors.white70,
@@ -145,11 +153,14 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                     types: widget.types,
                     fullScreen: true,
                     forParents: widget.forParents,
+                    initialChildId: widget.initialChildId,
+                    initialChildName: widget.initialChildName,
                     onClose: () => Navigator.pop(context),
                     onCreated: (lesson) => Navigator.pop(context, lesson),
                   ),
                 ),
-      bottomNavigationBar: const TeacherNavigationBar(),
+      bottomNavigationBar:
+          widget.showBottomNavigation ? const TeacherNavigationBar() : null,
     );
   }
 }

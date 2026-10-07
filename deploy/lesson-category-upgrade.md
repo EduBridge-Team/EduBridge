@@ -1,9 +1,22 @@
 # Lesson category upgrade
 
-Back up PostgreSQL, deploy the updated images, then run the additive migration:
+> Last verified: 2026-10-05
+
+Back up PostgreSQL, deploy the updated API/web images, then run the additive migration:
 
 ```bash
 docker exec edubridge-api php artisan migrate --force
 ```
 
-The Oracle deployment script does not run migrations. The new nullable category column preserves all existing lessons and any category column already present in older deployments. Existing lessons remain uncategorized until their author selects a category in the lesson editor; no category is inferred from lesson titles.
+`deploy/oracle-deploy.sh` intentionally does not run database migrations automatically.
+
+The nullable lesson category preserves existing lessons. Existing lessons remain uncategorized until their author selects a category in the editor; no category is inferred from lesson titles.
+
+After migration, verify the API health and the lesson filters from both web and Flutter clients:
+
+```bash
+curl -I https://api.edubridge.win/api/health
+./deploy/security-smoke.sh
+```
+
+Do not run `migrate:fresh` on production.

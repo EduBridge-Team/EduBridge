@@ -1,0 +1,54 @@
+# EduBridge Cloudflare proxy readiness template.
+# Merge the global `servers` block into the existing host Caddyfile; do not
+# replace unrelated Yalla/other site blocks.
+# Requires Caddy >= 2.8 for trusted_proxies_strict.
+
+{
+	servers {
+		# Definitive Cloudflare HTTP proxy ranges: https://www.cloudflare.com/ips/
+		trusted_proxies static 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 104.16.0.0/13 104.24.0.0/14 108.162.192.0/18 131.0.72.0/22 141.101.64.0/18 162.158.0.0/15 172.64.0.0/13 173.245.48.0/20 188.114.96.0/20 190.93.240.0/20 197.234.240.0/22 198.41.128.0/17 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+		trusted_proxies_strict
+		client_ip_headers CF-Connecting-IP X-Forwarded-For
+	}
+}
+
+(edubridge_security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Permitted-Cross-Domain-Policies "none"
+		Origin-Agent-Cluster "?1"
+		Permissions-Policy "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()"
+		Cross-Origin-Opener-Policy "same-origin-allow-popups"
+		-Server
+	}
+}
+
+api.edubridge.win {
+	import edubridge_security_headers
+
+	reverse_proxy 127.0.0.1:8081 {
+		# Pass only Caddy's parsed client identity to Laravel. Requests that
+		# arrive directly (not from a trusted Cloudflare range) use the actual
+		# remote peer instead of trusting spoofable incoming forwarding headers.
+		header_up X-Forwarded-For {client_ip}
+		header_up X-Real-IP {client_ip}
+	}
+}
+
+edubridge.win {
+	import edubridge_security_headers
+
+	# Caddy is the single public source of the browser CSP. The Node server keeps
+	# its own CSP for direct/internal responses, but Caddy removes that upstream
+	# copy before adding the canonical edge policy so only one CSP is emitted.
+	header Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://accounts.google.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob: https://api.edubridge.win; font-src 'self' data:; connect-src 'self' https://api.edubridge.win https://accounts.google.com https://*.googleapis.com; frame-src https://accounts.google.com; media-src 'self' blob: https://api.edubridge.win; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+
+	reverse_proxy 127.0.0.1:8082 {
+		header_down -Content-Security-Policy
+	}
+}
+
+# www.edubridge.win remains redirected to the apex by Cloudflare.

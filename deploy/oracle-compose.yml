@@ -41,6 +41,10 @@ services:
       DB_HOST: edubridge-postgres
       DB_PORT: "5432"
       SESSION_DRIVER: file
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_HTTP_ONLY: "true"
+      SESSION_SAME_SITE: lax
+      SESSION_ENCRYPT: "true"
       CACHE_STORE: file
     depends_on:
       postgres:
@@ -65,6 +69,7 @@ services:
       dockerfile: deploy/oracle-web.Dockerfile
       args:
         VITE_API_URL: /api
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     image: edubridge-web:latest
     container_name: edubridge-web
     restart: unless-stopped

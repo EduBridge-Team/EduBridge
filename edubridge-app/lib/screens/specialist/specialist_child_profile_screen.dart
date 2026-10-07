@@ -8,7 +8,6 @@ import '../weekly_report_screen.dart';
 import '../case_discussion/case_discussion_screen.dart';
 import '../plan_evaluation_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
-import '../../widgets/teacher_navigation_bar.dart';
 
 class SpecialistChildProfileScreen extends StatefulWidget {
   final Map<String, dynamic> child;
@@ -48,6 +47,25 @@ class _SpecialistChildProfileScreenState
 
   List<String> _list(dynamic value) =>
       value is List ? value.map((e) => e.toString()).toList() : [];
+
+  String _names(dynamic value) {
+    if (value is! List) return '';
+    return value
+        .map((item) => item is Map ? _text(item['name']) : _text(item))
+        .where((name) => name.isNotEmpty)
+        .join('، ');
+  }
+
+  String _statusLabel(Map<String, dynamic> child) {
+    if (child['assignment_preview'] == true) return 'قبل التعيين';
+    final status = _text(child['status']).toLowerCase();
+    return switch (status) {
+      'pending' => 'بانتظار التقييم',
+      'active' => 'قيد المتابعة',
+      'completed' || 'done' => 'مكتمل',
+      _ => status.isEmpty ? 'قيد المتابعة' : _text(child['status']),
+    };
+  }
 
   Future<void> _load() async {
     setState(() {
@@ -115,25 +133,52 @@ class _SpecialistChildProfileScreenState
     final strengths = _list(child['strengths']);
     final challenges = _list(child['challenges']);
     final isPreview = child['assignment_preview'] == true;
-    final guardianNames = (child['guardians'] as List? ?? [])
-        .map((guardian) => guardian['name'])
-        .where((name) => name != null && name.toString().trim().isNotEmpty)
-        .join('، ');
-    final hasMedicalReport = _text(child['medical_report_url']).isNotEmpty;
+    final guardianNames = _names(child['guardians']);
+    final specialistNames = _names(child['specialists']);
+    final teacherName = _text(child['assigned_teacher_name']).isNotEmpty
+        ? _text(child['assigned_teacher_name'])
+        : _text(child['teacher_name']);
+    final organizationName = _text(child['organization_name']);
+    final childNationalId = _text(child['child_national_id']);
+    final guardianNationalId = _text(child['guardian_national_id']);
+    final guardianDocument = _text(child['guardian_id_document_url']);
+    final kinshipDocument = _text(child['kinship_document_url']);
+    final medicalReport = _text(child['medical_report_url']);
+    final hasDocuments = childNationalId.isNotEmpty ||
+        guardianNationalId.isNotEmpty ||
+        guardianDocument.isNotEmpty ||
+        kinshipDocument.isNotEmpty ||
+        medicalReport.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'ملف الطالب',
-          style: TextStyle(fontWeight: FontWeight.w800),
+        toolbarHeight: 74,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          _childName.isEmpty ? 'ملف الطالب' : 'ملف $_childName',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 19,
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.headerGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
       ),
-      bottomNavigationBar: const TeacherNavigationBar(),
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
           children: [
             if (_loading) ...[
               const LinearProgressIndicator(),
@@ -163,14 +208,32 @@ class _SpecialistChildProfileScreenState
               disability: disability,
               isPreview: isPreview,
             ),
+            if (isPreview) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.brandBlue.withValues(alpha: .07),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: AppColors.brandBlue.withValues(alpha: .16),
+                  ),
+                ),
+                child: const Text(
+                  'هذه معلومات الحالة المتاحة قبل قبول المتابعة. بيانات الهوية والمستندات والتقرير الطبي تظهر للمختص بعد التعيين فقط.',
+                  style: TextStyle(height: 1.5, fontSize: 12.5),
+                ),
+              ),
+            ],
             const SizedBox(height: 14),
             _section(
               c,
-              title: 'المعلومات الأساسية',
+              title: 'معلومات الطالب',
               icon: Icons.badge_outlined,
               children: [
-                if (guardianNames.isNotEmpty)
-                  _row(c, 'ولي الأمر', guardianNames, AppIcons.parent),
+                _row(c, 'الاسم', _childName.isEmpty ? 'غير مضاف' : _childName,
+                    Icons.person_outline),
+                if (age != null) _row(c, 'العمر', '$age سنة', Icons.cake_outlined),
                 if (_text(child['birth_date']).isNotEmpty)
                   _row(c, 'تاريخ الميلاد', _text(child['birth_date']), Icons.cake_outlined),
                 if (_text(child['gender']).isNotEmpty)
@@ -184,39 +247,20 @@ class _SpecialistChildProfileScreenState
                     },
                     Icons.person_outline,
                   ),
-                if (disability.isNotEmpty)
-                  _row(c, 'نوع الإعاقة', disability, Icons.accessibility_new),
+                _row(
+                  c,
+                  'نوع الإعاقة',
+                  disability.isEmpty ? 'غير محدد' : disability,
+                  Icons.accessibility_new,
+                ),
                 if (description.isNotEmpty)
                   _row(c, 'وصف الإعاقة', description, AppIcons.info),
+                if (specialNeeds.isNotEmpty)
+                  _row(c, 'احتياجات خاصة', specialNeeds, AppIcons.support),
                 if (preferredStyle.isNotEmpty)
                   _row(c, 'أسلوب التعلم المفضّل', preferredStyle, AppIcons.lesson),
-                if (specialNeeds.isNotEmpty)
-                  _row(c, 'الاحتياجات الخاصة', specialNeeds, AppIcons.support),
-                if (hasMedicalReport)
-                  _row(c, 'التقرير الطبي', 'مرفق مع ملف الطالب', Icons.description_outlined),
               ],
             ),
-            if (notes.isNotEmpty ||
-                educationalPlan.isNotEmpty ||
-                _text(child['assigned_teacher_name']).isNotEmpty ||
-                _text(child['organization_name']).isNotEmpty) ...[
-              const SizedBox(height: 14),
-              _section(
-                c,
-                title: 'فريق المتابعة والخطة',
-                icon: Icons.groups_outlined,
-                children: [
-                  if (_text(child['assigned_teacher_name']).isNotEmpty)
-                    _row(c, 'المعلم', _text(child['assigned_teacher_name']), Icons.school_outlined),
-                  if (_text(child['organization_name']).isNotEmpty)
-                    _row(c, 'المؤسسة', _text(child['organization_name']), Icons.business_outlined),
-                  if (educationalPlan.isNotEmpty)
-                    _row(c, 'الخطة التعليمية', educationalPlan, AppIcons.lesson),
-                  if (notes.isNotEmpty)
-                    _row(c, 'ملاحظات', notes, AppIcons.info),
-                ],
-              ),
-            ],
             if (strengths.isNotEmpty || challenges.isNotEmpty) ...[
               const SizedBox(height: 14),
               _section(
@@ -228,6 +272,47 @@ class _SpecialistChildProfileScreenState
                     _chips(c, 'نقاط القوة', strengths, AppColors.greenDeep),
                   if (challenges.isNotEmpty)
                     _chips(c, 'التحديات', challenges, AppColors.orangeDeep),
+                ],
+              ),
+            ],
+            const SizedBox(height: 14),
+            _section(
+              c,
+              title: 'فريق المتابعة والخطة',
+              icon: Icons.groups_outlined,
+              children: [
+                if (guardianNames.isNotEmpty)
+                  _row(c, 'ولي الأمر', guardianNames, AppIcons.parent),
+                if (teacherName.isNotEmpty)
+                  _row(c, 'المعلم المسؤول', teacherName, Icons.school_outlined),
+                if (specialistNames.isNotEmpty)
+                  _row(c, 'المختصون', specialistNames, AppIcons.specialist),
+                if (organizationName.isNotEmpty)
+                  _row(c, 'المؤسسة', organizationName, Icons.business_outlined),
+                if (educationalPlan.isNotEmpty)
+                  _row(c, 'الخطة التعليمية', educationalPlan, AppIcons.lesson),
+                _row(c, 'الحالة', _statusLabel(child), Icons.info_outline),
+                if (notes.isNotEmpty)
+                  _row(c, 'ملاحظات', notes, AppIcons.info),
+              ],
+            ),
+            if (hasDocuments && !isPreview) ...[
+              const SizedBox(height: 14),
+              _section(
+                c,
+                title: 'بيانات التوثيق والمستندات',
+                icon: Icons.badge_outlined,
+                children: [
+                  if (childNationalId.isNotEmpty)
+                    _row(c, 'رقم هوية الطفل', childNationalId, Icons.badge_outlined),
+                  if (guardianNationalId.isNotEmpty)
+                    _row(c, 'رقم هوية ولي الأمر', guardianNationalId, Icons.badge_outlined),
+                  if (guardianDocument.isNotEmpty)
+                    _row(c, 'صورة هوية ولي الأمر', 'مرفقة', Icons.attachment_outlined),
+                  if (kinshipDocument.isNotEmpty)
+                    _row(c, 'مستند صلة القرابة', 'مرفق', Icons.attachment_outlined),
+                  if (medicalReport.isNotEmpty)
+                    _row(c, 'التقرير الطبي', 'مرفق ومتاح للمختص المعيّن', Icons.description_outlined),
                 ],
               ),
             ],

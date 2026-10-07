@@ -42,7 +42,12 @@ RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
         storage/framework/views \
         storage/logs \
         bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+        /tmp/edubridge-nginx/client_body \
+        /tmp/edubridge-nginx/proxy \
+        /tmp/edubridge-nginx/fastcgi \
+        /tmp/edubridge-nginx/uwsgi \
+        /tmp/edubridge-nginx/scgi \
+    && chown -R www-data:www-data storage bootstrap/cache /tmp/edubridge-nginx
 
 ENV APP_ENV=production \
     APP_DEBUG=false
@@ -50,5 +55,7 @@ ENV APP_ENV=production \
 EXPOSE 8081
 
 STOPSIGNAL SIGTERM
+
+USER www-data
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/edubridge.conf"]

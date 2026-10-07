@@ -32,84 +32,156 @@ class _AdminScreenState extends State<AdminScreen> {
   int _tab = 0;
 
   static const _tabs = [
-    (AppIcons.users,   'المستخدمون'),
-    (AppIcons.shield,  'مراجعة التوثيق'),
+    (AppIcons.users, 'المستخدمون'),
+    (AppIcons.shield, 'مراجعة التوثيق'),
     (AppIcons.support, 'الدعم الفني'),
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
+  String _adminSubtitle() {
+    switch (_tab) {
+      case 1:
+        return 'مراجعة طلبات التوثيق واعتماد الحسابات';
+      case 2:
+        return 'متابعة طلبات الدعم الفني';
+      default:
+        return 'إدارة المستخدمين وحسابات المنصة';
+    }
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 72,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-          ),
+  Future<void> _logout() async {
+    await ApiService.logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (_) => false,
+    );
+  }
+
+  Widget _buildAdminHeader() {
+    final textTheme = Theme.of(context).textTheme;
+    final menuActions = <DashboardMenuAction>[
+      DashboardMenuAction(
+        id: 'search_identity',
+        label: 'البحث بالهوية',
+        icon: AppIcons.search,
+        onSelected: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-        ),
-        title: const Text(
-          'الإدارة',
-          style: TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(AppIcons.search, color: Colors.white),
-            tooltip: 'البحث بالهوية',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Center(
-              child: ProfileAvatarButton(size: 38, backgroundColor: Colors.white),
-            ),
-          ),
-          DashboardMenu(
-            actions: [
-              DashboardMenuAction(
-                id: 'legal',
-                label: 'الخصوصية والحساب',
-                icon: AppIcons.privacy,
-                onSelected: () => const LegalLinksButton().show(context),
+      ),
+      DashboardMenuAction(
+        id: 'legal',
+        label: 'الخصوصية والحساب',
+        icon: AppIcons.privacy,
+        onSelected: () => const LegalLinksButton().show(context),
+      ),
+      DashboardMenuAction(
+        id: 'logout',
+        label: 'تسجيل الخروج',
+        icon: AppIcons.logout,
+        destructive: true,
+        onSelected: _logout,
+      ),
+    ];
+
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: AppColors.headerGradient,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 10, 18, 22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  DashboardMenu(
+                    actions: menuActions,
+                    iconSize: 26,
+                    iconColor: Colors.white,
+                  ),
+                  const Spacer(),
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(
+                      'assets/brand_logo.png',
+                      width: 124,
+                      height: 34,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ],
               ),
-              DashboardMenuAction(
-                id: 'logout',
-                label: 'تسجيل الخروج',
-                icon: AppIcons.logout,
-                destructive: true,
-                onSelected: () async {
-                  await ApiService.logout();
-                  if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (_) => false,
-                    );
-                  }
+              const SizedBox(height: 18),
+              FutureBuilder<String?>(
+                future: ApiService.getName(),
+                builder: (context, snap) {
+                  final fallbackName =
+                      (widget.admin['name'] ?? widget.admin['full_name'] ?? 'الإدارة')
+                          .toString();
+                  final name = (snap.data ?? fallbackName).trim();
+                  return Row(
+                    children: [
+                      const ProfileAvatarButton(
+                        size: 54,
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.brandTealDeep,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'مرحباً، ${name.isEmpty ? 'الإدارة' : name}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _adminSubtitle(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodySmall?.copyWith(
+                                height: 1.35,
+                                color: Colors.white.withValues(alpha: 0.86),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
                 },
               ),
             ],
           ),
-          const SizedBox(width: 4),
-        ],
+        ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
+
+    return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          _buildAdminHeader(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
             child: Container(
@@ -140,8 +212,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       children: [
                         Text(
                           'لوحة التحكم الإدارية',
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: c.heading,
                           ),
@@ -149,10 +220,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         const SizedBox(height: 3),
                         Text(
                           'إدارة المستخدمين والتوثيق وطلبات الدعم.',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: c.muted,
-                          ),
+                          style: textTheme.bodySmall?.copyWith(color: c.muted),
                         ),
                       ],
                     ),
@@ -198,6 +266,7 @@ class _AdminTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       padding: const EdgeInsets.all(6),
@@ -246,8 +315,7 @@ class _AdminTabBar extends StatelessWidget {
                         label,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: active ? Colors.white : c.muted,
                         ),

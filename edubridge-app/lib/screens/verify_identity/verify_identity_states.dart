@@ -1,16 +1,12 @@
 // lib/screens/verify_identity/verify_identity_states.dart
 part of 'verify_identity_screen.dart';
 
-// ═══════════════════════════════════════════════════════════
-//  State 0: موثّق — شاشة تأكيد (جديد من زميلك)
-// ═══════════════════════════════════════════════════════════
 Widget buildVerifiedState({
   required BuildContext context,
   required JisrColors c,
   required bool isTeacherOrSpecialist,
 }) {
   return Scaffold(
-    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Container(
@@ -24,19 +20,11 @@ Widget buildVerifiedState({
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.verified_user,
-              size: 76,
-              color: AppColors.green,
-            ),
+            const Icon(Icons.verified_user, size: 76, color: AppColors.green),
             const SizedBox(height: 16),
             Text(
               'تم توثيق حسابك',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: c.heading,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
@@ -44,11 +32,7 @@ Widget buildVerifiedState({
                   ? 'تم اعتماد الهوية وبياناتك المهنية. يمكنك استخدام صلاحياتك بشكل طبيعي.'
                   : 'تم اعتماد هويتك بنجاح.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: c.muted,
-                fontSize: 15,
-                height: 1.6,
-              ),
+              style: TextStyle(color: c.muted, fontSize: 15, height: 1.6),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -67,9 +51,6 @@ Widget buildVerifiedState({
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-//  State 1: قيد المراجعة
-// ═══════════════════════════════════════════════════════════
 Widget buildPendingState({
   required BuildContext context,
   required JisrColors c,
@@ -78,7 +59,6 @@ Widget buildPendingState({
   required Future<void> Function() onRefresh,
 }) {
   return Scaffold(
-    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Padding(
@@ -90,11 +70,7 @@ Widget buildPendingState({
             const SizedBox(height: 16),
             Text(
               'طلبك قيد المراجعة',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: c.heading,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
@@ -126,16 +102,12 @@ Widget buildPendingState({
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-//  State 2: مرفوض
-// ═══════════════════════════════════════════════════════════
 Widget buildRejectedState({
   required BuildContext context,
   required JisrColors c,
   required VoidCallback onRetry,
 }) {
   return Scaffold(
-    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: Center(
       child: Padding(
@@ -147,11 +119,7 @@ Widget buildRejectedState({
             const SizedBox(height: 16),
             Text(
               'تم رفض طلب التوثيق',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: c.heading,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
@@ -174,7 +142,3 @@ Widget buildRejectedState({
     ),
   );
 }
-
-// ═══════════════════════════════════════════════════════════
-//  State 3: نموذج جديد
-// ═══════════════════════════════════════════════════════════

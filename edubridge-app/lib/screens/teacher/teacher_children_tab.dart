@@ -54,7 +54,7 @@ Widget _buildChildrenTab(
     padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
     itemCount: children.length,
     itemBuilder: (context, i) => _TeacherChildCard(
-      child: children[i],
+      child: Map<String, dynamic>.from(children[i] as Map),
       color: AppColors.kidPalette[i % AppColors.kidPalette.length],
       c: c,
       onReload: reload,
@@ -62,8 +62,8 @@ Widget _buildChildrenTab(
   );
 }
 
-class _TeacherChildCard extends StatelessWidget {
-  final Map child;
+class _TeacherChildCard extends StatefulWidget {
+  final Map<String, dynamic> child;
   final Color color;
   final JisrColors c;
   final Future<void> Function() onReload;
@@ -76,121 +76,104 @@ class _TeacherChildCard extends StatelessWidget {
   });
 
   @override
+  State<_TeacherChildCard> createState() => _TeacherChildCardState();
+}
+
+class _TeacherChildCardState extends State<_TeacherChildCard> {
+  bool _expanded = false;
+
+  Map<String, dynamic> get child => widget.child;
+  Color get color => widget.color;
+  JisrColors get c => widget.c;
+  Future<void> Function() get onReload => widget.onReload;
+
+  @override
   Widget build(BuildContext context) => buildView(context);
 
-  Widget _buildSubtitle(String? status, JisrColors c) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (child['disability_type'] != null)
-          Text('الإعاقة: ${child['disability_type']}',
-              style: TextStyle(fontSize: 13, color: c.muted)),
-        if (child['age'] != null)
-          Text('العمر: ${child['age']} سنة',
-              style: TextStyle(fontSize: 13, color: c.muted)),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: _statusColor(status).withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(_statusIcon(status), size: 11, color: _statusColor(status)),
-              const SizedBox(width: 4),
-              Text(_statusText(status),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: _statusColor(status),
-                  )),
-            ],
-          ),
-        ),
-      ],
-    );
+  double get _progressPercent {
+    final candidates = [
+      child['progress_percentage'],
+      child['progress_percent'],
+      child['completion_rate'],
+      child['progress'],
+    ];
+    for (final value in candidates) {
+      if (value is num) return value.toDouble().clamp(0, 100).toDouble();
+      final parsed = double.tryParse('${value ?? ''}');
+      if (parsed != null) return parsed.clamp(0, 100).toDouble();
+    }
+    return 0;
   }
 
-  Widget _buildActionButtons(BuildContext context, Map child) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _compactAction(
-                icon: AppIcons.verified,
-                label: 'الخطة',
-                color: AppColors.brandBlue,
-                onTap: () => _openApprovedPlan(context, child),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _compactAction(
-                icon: AppIcons.progress,
-                label: 'التقدّم',
-                color: AppColors.brandTealDeep,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChildProgressScreen(
-                      childId: child['id'],
-                      childName: (child['name'] ?? '').toString(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _compactAction(
-                icon: AppIcons.view,
-                label: 'التقارير',
-                color: AppColors.brandBlue,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => WeeklyReportScreen(
-                      childId: child['id'],
-                      childName: (child['name'] ?? '').toString(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+  String get _followStatus {
+    final status = (child['status'] ?? '').toString().toLowerCase();
+    return switch (status) {
+      'completed' || 'done' => 'طالب مكتمل المتابعة',
+      'pending' => 'طالب بانتظار المتابعة',
+      _ => 'طالب قيد المتابعة',
+    };
   }
 
-  Widget _compactAction({
+  Future<void> _openProfile(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TeacherChildProfileScreen(child: child),
+      ),
+    );
+    await onReload();
+  }
+
+  Future<void> _openDetailsTab(BuildContext context, int tab) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TeacherChildDetailsScreen(
+          childId: child['id'] as int,
+          childName: (child['name'] ?? '').toString(),
+          initialTab: tab,
+          showBottomNavigation: false,
+        ),
+      ),
+    );
+    await onReload();
+  }
+
+  Widget _quickAction({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Color color,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: color.withValues(alpha: .08),
-      borderRadius: BorderRadius.circular(16),
+      color: c.card,
+      borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-          child: Column(
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 72),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: c.line, width: 1.2),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 19, color: color),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w800,
-                  color: color,
+              Icon(icon, size: 22, color: color),
+              const SizedBox(width: 9),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: c.heading,
+                  ),
                 ),
               ),
             ],
@@ -202,25 +185,37 @@ class _TeacherChildCard extends StatelessWidget {
 
   Color _statusColor(String? status) {
     switch (status) {
-      case 'evaluated': return AppColors.brandBlue;
-      case 'assigned': return AppColors.brandTeal;
-      default: return AppColors.orange;
+      case 'evaluated':
+        return AppColors.brandBlue;
+      case 'assigned':
+      case 'active':
+        return AppColors.brandTealDeep;
+      default:
+        return AppColors.orangeDeep;
     }
   }
 
   IconData _statusIcon(String? status) {
     switch (status) {
-      case 'evaluated': return AppIcons.check;
-      case 'assigned': return AppIcons.verified;
-      default: return AppIcons.clock;
+      case 'evaluated':
+        return AppIcons.check;
+      case 'assigned':
+      case 'active':
+        return AppIcons.verified;
+      default:
+        return AppIcons.clock;
     }
   }
 
   String _statusText(String? status) {
     switch (status) {
-      case 'evaluated': return 'تم التقييم';
-      case 'assigned': return 'تم التعيين';
-      default: return 'قيد الانتظار';
+      case 'evaluated':
+        return 'تم التقييم';
+      case 'assigned':
+      case 'active':
+        return 'قيد المتابعة';
+      default:
+        return 'قيد الانتظار';
     }
   }
 

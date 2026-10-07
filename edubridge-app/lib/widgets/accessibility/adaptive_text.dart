@@ -130,7 +130,7 @@ class AdaptiveText extends StatelessWidget {
       case AdaptiveTextType.subtitle:
         return FontWeight.w600;
       case AdaptiveTextType.label:
-        return FontWeight.w500;
+        return FontWeight.w600;
       default:
         return FontWeight.normal;
     }

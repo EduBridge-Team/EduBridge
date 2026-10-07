@@ -25,6 +25,7 @@ export function logout() {
   fetch(`${BASE_URL}/auth/logout`, {
     method: "POST",
     credentials: "same-origin",
+    keepalive: true,
     headers: { "Content-Type": "application/json", ...WEB_CLIENT_HEADER },
   }).catch(() => {});
 
@@ -159,11 +160,14 @@ export async function login(email, password) {
   return data.user;
 }
 
-// تسجيل الدخول عبر Google — نفس مسار الجلسة الآمنة للويب.
-export async function googleLogin(idToken) {
+// تسجيل الدخول عبر Google — الدور يُستخدم فقط عند إنشاء حساب Google لأول مرة.
+export async function googleLogin(idToken, role = null) {
   const data = await request("/auth/google", {
     method: "POST",
-    body: JSON.stringify({ id_token: idToken }),
+    body: JSON.stringify({
+      id_token: idToken,
+      ...(role ? { role } : {}),
+    }),
   });
   localStorage.removeItem("token");
   localStorage.setItem(SESSION_MARKER_KEY, "1");

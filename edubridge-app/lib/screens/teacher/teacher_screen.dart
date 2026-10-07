@@ -1,6 +1,7 @@
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
+import '../../model/homework_model.dart';
 import '../../services/approval_service.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/legal_links_button.dart';
@@ -18,12 +19,14 @@ import '../educational_plan_sheet.dart';
 import '../notifications_screen.dart';
 import '../support_sheet.dart';
 import '../teacher_child_details/teacher_child_details_screen.dart' show TeacherChildDetailsScreen;
+import 'teacher_child_profile_screen.dart';
 import '../verify_identity/verify_identity_screen.dart';
 import '../weekly_report_screen.dart';
 import '../login_screen.dart';
 
 part 'teacher_children_tab.dart';
 part 'teacher_lessons_tab.dart';
+part 'teacher_homeworks_tab.dart';
 part 'teacher_plan_sheet.dart';
 part 'teacher_shared_widgets.dart';
 part 'teacher_actions.dart';
@@ -61,7 +64,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
     super.initState();
     _tabIndex = widget.initialTab < 0
         ? 0
-        : (widget.initialTab > 1 ? 1 : widget.initialTab);
+        : (widget.initialTab > 2 ? 2 : widget.initialTab);
     _loadData().then((_) => _checkAndShowVerificationDialog());
   }
 
@@ -83,11 +86,17 @@ class _TeacherScreenState extends State<TeacherScreen> {
     setState(() => _viewingLesson = lesson);
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refreshData() => _loadData(showLoader: false);
+
+  Future<void> _loadData({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       _currentUserId = await ApiService.getUserId();
@@ -105,8 +114,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
           responses[2].statusCode == 200) {
-        // The server includes direct assignments and teaching-team membership.
-        // Re-filtering by the primary teacher would hide valid team assignments.
         final myChildren = List<dynamic>.from(childrenData['children'] ?? []);
 
         if (!mounted) return;
@@ -135,6 +142,16 @@ class _TeacherScreenState extends State<TeacherScreen> {
     }
   }
 
+  Widget _currentPrimaryTab(BuildContext context, JisrColors c) {
+    if (_tabIndex == 0) {
+      return _buildChildrenTab(context, c, _children, _query,
+          (v) => setState(() => _query = v), _typeName, _loadData);
+    }
+    return _buildLessonsTab(context, c, _lessons, _types, _query,
+        (v) => setState(() => _query = v),
+        (lesson) => _setViewingLesson(lesson));
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
@@ -150,24 +167,20 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 tabIndex: _tabIndex,
                 childrenCount: _children.length,
                 onLogout: _logout,
-                onOpenHomework: _openCreateHomework,
                 onVerify: _checkVerification,
                 onLoadData: _loadData,
               ),
               Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _loadData,
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error != null
-                          ? _buildTeacherError(_error!, _loadData)
-                          : (_tabIndex == 0
-                              ? _buildChildrenTab(context, c, _children, _query,
-                                  (v) => setState(() => _query = v), _typeName, _loadData)
-                              : _buildLessonsTab(context, c, _lessons, _types, _query,
-                                  (v) => setState(() => _query = v),
-                                  (lesson) => _setViewingLesson(lesson))),
-          ),
+                child: _tabIndex == 2
+                    ? _TeacherHomeworksTab(children: _children)
+                    : RefreshIndicator(
+                        onRefresh: _refreshData,
+                        child: _loading
+                            ? const Center(child: CircularProgressIndicator())
+                            : _error != null
+                                ? _buildTeacherError(_error!, _loadData)
+                                : _currentPrimaryTab(context, c),
+                      ),
               ),
             ],
           ),
@@ -189,6 +202,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
             icon: Icon(AppIcons.lesson),
             selectedIcon: Icon(Icons.menu_book),
             label: 'الدروس',
+          ),
+          NavigationDestination(
+            icon: Icon(AppIcons.homework),
+            selectedIcon: Icon(Icons.assignment),
+            label: 'الواجبات',
           ),
         ],
       ),
@@ -217,6 +235,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
               ),
             )
           : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

@@ -4,17 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('teacher detail screens retain both destinations', (tester) async {
+  testWidgets('teacher navigation shows children lessons and homework', (tester) async {
     SharedPreferences.setMockInitialValues({'role': 'teacher'});
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(bottomNavigationBar: TeacherNavigationBar()),
     ));
     await tester.pumpAndSettle();
-    expect(find.text('الطلاب'), findsOneWidget);
+    expect(find.text('الأطفال'), findsOneWidget);
     expect(find.text('الدروس'), findsOneWidget);
+    expect(find.text('الواجبات'), findsOneWidget);
   });
 
-  testWidgets('specialist detail screens show students and lessons', (tester) async {
+  testWidgets('specialist navigation shows students and lessons', (tester) async {
     SharedPreferences.setMockInitialValues({'role': 'specialist'});
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(bottomNavigationBar: TeacherNavigationBar()),

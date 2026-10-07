@@ -5,14 +5,27 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: '📊 تقرير أسبوعي — ${widget.childName}'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _saving ? null : _save,
+        icon: _saving
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Icon(Icons.save),
+        label: Text(
+          _saving ? 'جارِ الحفظ...' : 'حفظ التقرير',
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
           children: [
-            // ─── تاريخ بداية الأسبوع ───
             InkWell(
               onTap: () async {
                 final picked = await showDatePicker(
@@ -32,21 +45,16 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today,
-                        color: AppColors.teal),
+                    const Icon(Icons.calendar_today, color: AppColors.teal),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('بداية الأسبوع',
-                              style: TextStyle(fontSize: 12)),
+                          const Text('بداية الأسبوع', style: TextStyle(fontSize: 12)),
                           Text(
                             '${_weekStart.day}/${_weekStart.month}/${_weekStart.year}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -57,8 +65,6 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
               ),
             ),
             const SizedBox(height: 16),
-
-            // ─── عدد الدروس المكتملة ───
             TextFormField(
               controller: _lessonsCtrl,
               keyboardType: TextInputType.number,
@@ -66,12 +72,9 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 labelText: 'عدد الدروس المكتملة',
                 prefixIcon: Icon(Icons.menu_book),
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? 'مطلوب' : null,
             ),
             const SizedBox(height: 16),
-
-            // ─── نسبة التقدّم ───
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -83,25 +86,11 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.trending_up,
-                          color: AppColors.tealDeep),
+                      const Icon(Icons.trending_up, color: AppColors.tealDeep),
                       const SizedBox(width: 8),
-                      const Text(
-                        'نسبة تقدّم الطفل',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                      const Text('نسبة تقدّم الطفل', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       const Spacer(),
-                      Text(
-                        '$_progressPercent%',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.tealDeep,
-                        ),
-                      ),
+                      Text('$_progressPercent%', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.tealDeep)),
                     ],
                   ),
                   Slider(
@@ -111,15 +100,12 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     divisions: 20,
                     label: '$_progressPercent%',
                     activeColor: AppColors.tealDeep,
-                    onChanged: (v) =>
-                        _refreshState(() => _progressPercent = v.round()),
+                    onChanged: (v) => _refreshState(() => _progressPercent = v.round()),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-
-            // ─── ملاحظات المعلم ───
             TextFormField(
               controller: _teacherNotesCtrl,
               maxLines: 4,
@@ -129,20 +115,10 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 alignLabelWithHint: true,
                 hintText: 'كيف كان أداء الطفل هذا الأسبوع؟',
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? 'مطلوب' : null,
             ),
             const SizedBox(height: 20),
-
-            // ─── الإنجازات ───
-            Text(
-              '🏆 الإنجازات',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: c.heading,
-              ),
-            ),
+            Text('🏆 الإنجازات', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -158,9 +134,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.green,
-                  ),
+                  style: IconButton.styleFrom(backgroundColor: AppColors.green),
                   icon: const Icon(Icons.add, color: Colors.white),
                   onPressed: _addAchievement,
                 ),
@@ -176,23 +150,13 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     label: Text(e.value),
                     backgroundColor: c.tintGreen,
                     deleteIcon: const Icon(Icons.close, size: 18),
-                    onDeleted: () =>
-                        _refreshState(() => _achievements.removeAt(e.key)),
+                    onDeleted: () => _refreshState(() => _achievements.removeAt(e.key)),
                   );
                 }).toList(),
               ),
             ],
             const SizedBox(height: 20),
-
-            // ─── نقاط للانتباه ───
-            Text(
-              '⚠️ نقاط للانتباه',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: c.heading,
-              ),
-            ),
+            Text('⚠️ نقاط للانتباه', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -208,9 +172,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.orange,
-                  ),
+                  style: IconButton.styleFrom(backgroundColor: AppColors.orange),
                   icon: const Icon(Icons.add, color: Colors.white),
                   onPressed: _addConcern,
                 ),
@@ -226,13 +188,11 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     label: Text(e.value),
                     backgroundColor: c.tintOrange,
                     deleteIcon: const Icon(Icons.close, size: 18),
-                    onDeleted: () =>
-                        _refreshState(() => _concerns.removeAt(e.key)),
+                    onDeleted: () => _refreshState(() => _concerns.removeAt(e.key)),
                   );
                 }).toList(),
               ),
             ],
-
             if (_error != null) ...[
               const SizedBox(height: 16),
               Container(
@@ -241,40 +201,12 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                   color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(_error!,
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(_error!, style: const TextStyle(color: Colors.red)),
               ),
             ],
-
-            const SizedBox(height: 24),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
-                ),
-                icon: _saving
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.save),
-                label: Text(
-                  _saving ? 'جارِ الحفظ...' : 'حفظ التقرير',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                onPressed: _saving ? null : _save,
-              ),
-            ),
           ],
         ),
       ),
     );
-  
   }
 }

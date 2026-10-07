@@ -30,11 +30,17 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final teachers = await ApiService.getChildTeachers(widget.childId);
@@ -61,7 +67,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     return Scaffold(
       appBar: JisrAppBar(title: 'فريق ${widget.childName}'),
       body: RefreshIndicator(
-        onRefresh: _load,
+        onRefresh: _refresh,
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
@@ -131,11 +137,9 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
         ),
         const SizedBox(height: 20),
-
         if (totalSpecialists > 0) ...[
           _sectionTitle('المختصون', c),
           const SizedBox(height: 10),
-
           if (_specialists?['learning_support'] != null)
             _specialistCard(
               _specialists!['learning_support'],
@@ -143,7 +147,6 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               AppIcons.specialist,
               AppColors.purple,
             ),
-
           if (_specialists?['educational'] != null)
             _specialistCard(
               _specialists!['educational'],
@@ -151,21 +154,17 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               AppIcons.lesson,
               AppColors.brandBlue,
             ),
-
           if (_specialists?['others'] is List)
             ...(_specialists!['others'] as List).map((s) =>
                 _specialistCard(s, 'مختص', AppIcons.specialist,
                     AppColors.pink)),
-
           const SizedBox(height: 20),
         ],
-
         if (_teachers.isNotEmpty) ...[
           _sectionTitle('المعلمون (${_teachers.length})', c),
           const SizedBox(height: 10),
           ..._teachers.map((t) => _teacherCard(t)),
         ],
-
         if (_teachers.isEmpty && totalSpecialists == 0) ...[
           const SizedBox(height: 40),
           Center(

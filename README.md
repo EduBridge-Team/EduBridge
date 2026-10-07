@@ -1,148 +1,216 @@
 # EduBridge — جسر تعليمي لأطفال ذوي الاحتياجات الخاصة
 
-مشروع تدريب ميداني — تطبيق موبايل وواجهة ويب وواجهة خلفية بـ Laravel على قاعدة PostgreSQL.
+> Production/documentation review: 2026-10-05
 
-## محتوى المجلد
+EduBridge is a bilingual Arabic/English education and accessibility platform with a Laravel API, React/Vite web application, Flutter mobile application, PostgreSQL database, Cloudflare edge, and Oracle-hosted Docker production stack.
 
-| الملف / المجلد | الوصف |
-|----------------|-------|
-| `edubridge_erd.mermaid` | مخطّط قاعدة البيانات (العلاقات بين الجداول) |
-| `edubridge-api-laravel/`| الواجهة الخلفية (Laravel) |
-| `edubridge-app/`        | تطبيق الموبايل (Flutter — عربي RTL) |
-| `edubridge-web/`        | واجهة الويب (React + Vite) |
-| `deploy/`               | ملفات نشر Oracle ونسخ PostgreSQL الاحتياطية |
-| `دليل التحديث والنشر.docx` | دليل تحديث ونشر المشروع خطوة بخطوة |
-| `branding/`             | ملفات الهوية (الشعار والأيقونات) |
+## Repository layout
 
-## التقنيات
+| Path | Purpose |
+|---|---|
+| `edubridge-api-laravel/` | Laravel 13 API |
+| `edubridge-web/` | React + Vite web application |
+| `edubridge-app/` | Flutter mobile application |
+| `deploy/` | Oracle, Caddy, Cloudflare, backup and smoke-test assets |
+| `docs/` | Technical, security, deployment, schema and role documentation |
+| `branding/` | Logos, icons and visual references |
+| `edubridge_erd.mermaid` | Database ERD |
 
-- **Backend:** Laravel 13 (PHP 8.4+)
-- **الموبايل:** Flutter (مع قراءة صوتية flutter_tts)
-- **الويب:** React + Vite + React Router
-- **قاعدة البيانات:** PostgreSQL
-- **المصادقة:** JWT + bcrypt
+Start with [`docs/README.md`](docs/README.md) for the complete documentation map.
 
-## خطوات التشغيل
+## Technology stack
 
-### 1) الـ Backend + قاعدة البيانات
+- **Backend:** Laravel 13 / PHP 8.4
+- **Web:** React + Vite + React Router
+- **Mobile:** Flutter
+- **Database:** PostgreSQL 17
+- **Authentication:** JWT with server-side account/credential validation
+- **Reverse proxy:** Caddy
+- **Edge:** Cloudflare proxy/WAF/rate limiting
+- **Object storage:** Cloudflare R2
+- **AI assistant:** Noor using server-side Groq configuration
+- **Production:** Docker on Oracle Cloud
 
-للتطوير المحلي استخدم PostgreSQL مع Laravel. الـ migrations هي المصدر الرسمي الوحيد للمخطط، وCI يتحقق من إنشاء قاعدة PostgreSQL 17 فارغة باستخدام `migrate:fresh`. لا تستخدم `migrate:fresh` على قاعدة الإنتاج.
+## Local development
 
-### 2) الـ Backend (Laravel)
+### API
+
 ```bash
 cd edubridge-api-laravel
 composer install
 cp .env.example .env
 php artisan key:generate
-# عدّل .env: بيانات PostgreSQL + JWT_SECRET وباقي إعدادات البيئة
+# Configure PostgreSQL, JWT and service settings in .env
 php artisan migrate
 php artisan serve --host=0.0.0.0 --port=3000
 ```
 
-تحقّق: افتح `http://localhost:3000` — يجب أن يرد برسالة نجاح.
+Laravel migrations are the source of truth for the database schema. Never run `migrate:fresh` against production.
 
-### 3) واجهة الويب
+### Web
+
 ```bash
 cd edubridge-web
 npm install
-npm run dev            # → http://localhost:5173
+npm run dev
 ```
 
-### 4) تطبيق الموبايل
+Default Vite development URL: `http://localhost:5173`.
+
+### Mobile
+
 ```bash
 cd edubridge-app
 flutter pub get
 flutter run
 ```
-عنوان الـ API في `lib/config.dart`:
-- جهاز حقيقي عبر USB: `adb reverse tcp:3000 tcp:3000` مع `http://127.0.0.1:3000/api`
-- محاكي أندرويد: `http://10.0.2.2:3000/api`
 
-## المسارات الجاهزة
+For a USB-connected Android device, `adb reverse tcp:3000 tcp:3000` can expose the local API as `http://127.0.0.1:3000/api`. Android emulators can use `http://10.0.2.2:3000/api`.
 
-```
-POST /api/auth/register        إنشاء حساب
-POST /api/auth/login           تسجيل دخول (يرجّع token)
-GET  /api/me                   حمولة التوكن (محمي)
-POST /api/assistant/chat       محادثة آمنة مع مساعد «نور» (محمي، 20 طلب/دقيقة)
+## Major product areas
 
-POST /api/children             (parent/admin فقط)
-GET  /api/children             (حسب الدور والصلاحية؛ المعلّم يرى الأطفال المسندين إليه)
-GET  /api/children/:id         (محمي بصلاحية الوصول للطفل)
-PUT  /api/children/:id         (محمي بصلاحية الوصول للطفل)
-POST /api/children/:id/parents (teacher/specialist/admin)
-POST /api/children/:id/assign-teacher (teacher/specialist/admin)
-GET  /api/children/:id/lessons (مفلترة حسب إعاقة الطفل)
-GET  /api/children/:id/evaluations
+EduBridge supports role-aware experiences for Parent, Teacher, Specialist, Institution, Ministry and Admin accounts, including children/student records, lessons, homework, progress, reports, notifications, verification workflows, certificates, support, specialist follow-up, accessibility/adaptation data, educational content review, and Noor assistance.
 
-POST /api/lessons              (teacher/admin)
-GET  /api/lessons?disability_type_id=
-GET  /api/lessons/:id
+Authorization belongs on the API. Web/mobile navigation hiding is UX only and must never replace backend permission checks.
 
-POST /api/progress             (upsert — teacher/specialist/admin)
-GET  /api/progress/child/:childId
-GET  /api/progress/child/:childId/summary
+See [`docs/ROLES_AND_PERMISSIONS.md`](docs/ROLES_AND_PERMISSIONS.md) for the role model.
 
-GET  /api/evaluations/child/:childId
-POST /api/evaluations/child/:childId  (teacher/specialist/admin)
+## Production
 
-GET  /api/notifications
-GET  /api/notifications/unread/count
-PUT  /api/notifications/:id/read
-PUT  /api/notifications/read-all
+Public endpoints:
 
-# ===== بطاقات لوحة EduBridge =====
+- Web: <https://edubridge.win>
+- API: <https://api.edubridge.win>
 
-POST /api/uploads                         رفع ملف (هوية/شهادة/قرابة) → { url }
+Current topology:
 
-# توثيق الهوية (البطاقات 1، 4، 9)
-POST /api/me/identity                      إرسال رقم الهوية وصورتها للتوثيق
-GET  /api/me/verification                  حالة توثيق المستخدم الحالي
-GET  /api/verifications/users?status=       (admin) طلبات توثيق المستخدمين
-PUT  /api/verifications/users/:id           (admin) اعتماد/رفض مستخدم
-GET  /api/verifications/children?status=    (admin) توثيق بيانات الأطفال
-PUT  /api/verifications/children/:id        (admin) اعتماد/رفض بيانات طفل
-
-# الشهادات (البطاقة 9)
-GET  /api/certificates                      شهاداتي (admin: الكل، ?status=/?user_id=)
-POST /api/certificates                      (teacher/specialist) رفع شهادة
-PUT  /api/certificates/:id                  (admin) اعتماد/رفض شهادة
-DELETE /api/certificates/:id                حذف شهادة (صاحبها/admin)
-
-# البحث برقم الهوية (البطاقة 2)
-GET  /api/search/national-id?q=             (موظفون) بحث برقم الهوية
-
-# مراجعة المناهج (البطاقة 3)
-GET  /api/ministry/lessons?status=          (ministry/admin) دروس للمراجعة
-PUT  /api/ministry/lessons/:id              (ministry/admin) اعتماد/رفض درس
-
-# تقييمات الدروس (البطاقة 8)
-GET  /api/lessons/:id/ratings              تقييمات درس + المتوسط
-POST /api/lessons/:id/ratings              تقييم درس (نجوم 1..5 + تعليق)
-DELETE /api/ratings/:id                    حذف تقييم (صاحبه/admin)
-
-# الدعم الفني والشكاوى (البطاقة 11)
-GET  /api/support                          تذاكري (admin: الكل)
-POST /api/support                          إنشاء تذكرة/شكوى
-PUT  /api/support/:id                       (admin) رد/تغيير الحالة
-DELETE /api/users/:id                       (admin) حذف مستخدم
-
-# دراسة الحالة مع المختصين (البطاقة 7)
-GET  /api/consultations                     الاستشارات حسب الدور
-POST /api/consultations                     طلب دراسة حالة
-GET  /api/consultations/:id                 تفاصيل + ملاحظات المختص
-PUT  /api/consultations/:id                 (specialist/admin) استلام/حالة
-POST /api/consultations/:id/notes           (specialist/admin) إضافة توصية
-
-# قائمة المستخدمين — أصبحت متاحة للمعلّم/المختص (المعلّمون فقط)
-GET  /api/users                            (admin: الكل، teacher/specialist: المعلّمون)
+```text
+Internet
+  -> Cloudflare
+    -> Oracle firewall
+      -> Caddy (host network)
+        -> 127.0.0.1:8082  edubridge-web
+        -> 127.0.0.1:8081  edubridge-api
+          -> private Docker network
+            -> PostgreSQL 17
 ```
 
-كل المسارات ما عدا `register`/`login` تتطلب هيدر `Authorization: Bearer <token>`.
+Production facts:
 
-## اختبارات التكامل
+- `edubridge.win` and `api.edubridge.win` are Cloudflare-proxied.
+- API/web containers are bound to localhost only.
+- PostgreSQL is not publicly exposed.
+- Caddy trusts Cloudflare proxy ranges and forwards the verified real client IP to Laravel.
+- Direct external HTTPS access to the Oracle origin is expected to fail.
+- Cloudflare SSL mode should remain **Full (strict)**.
+- HSTS and other browser security headers are emitted by Caddy.
+- The public web response must contain exactly one `Content-Security-Policy` header.
 
-لا توجد بيانات دخول ثابتة داخل المستودع. عند تشغيل اختبار تسجيل الدخول مرّر حساب اختبار مخصص لبيئة التطوير فقط:
+See:
+
+- [`docs/ORACLE_DEPLOYMENT.md`](docs/ORACLE_DEPLOYMENT.md)
+- [`docs/CLOUDFLARE_PROXY_CUTOVER.md`](docs/CLOUDFLARE_PROXY_CUTOVER.md)
+- [`deploy/cloudflare-edge-hardening.md`](deploy/cloudflare-edge-hardening.md)
+- [`docs/AUDIT_SECURITY_ROLLOUT.md`](docs/AUDIT_SECURITY_ROLLOUT.md)
+
+## Deploying `main`
+
+On the Oracle server, use the repository deployment script; do not run plain root-level `docker compose build` or `docker compose up -d` because the production Compose file is `deploy/oracle-compose.yml`.
+
+```bash
+cd ~/EduBridge
+git fetch origin
+git pull --ff-only origin main
+chmod +x deploy/oracle-deploy.sh
+./deploy/oracle-deploy.sh
+```
+
+The deploy script intentionally does not apply Laravel migrations automatically. If the release contains reviewed migrations, create a verified backup first, then apply them separately:
+
+```bash
+chmod +x deploy/oracle-backup.sh
+./deploy/oracle-backup.sh
+docker exec edubridge-api php artisan migrate --force
+```
+
+After deployment:
+
+```bash
+docker ps --filter "name=edubridge"
+curl -fsS https://api.edubridge.win/api/health
+curl -I https://edubridge.win
+./deploy/security-smoke.sh
+```
+
+The security smoke test validates the public security baseline, including the single-CSP requirement.
+
+## Caddy configuration
+
+The tracked production template is:
+
+```text
+deploy/caddy-cloudflare-snippet.caddy
+```
+
+The persistent server file is `/home/ubuntu/caddy/Caddyfile`.
+
+Apply a reviewed version with:
+
+```bash
+sudo cp deploy/caddy-cloudflare-snippet.caddy /home/ubuntu/caddy/Caddyfile
+docker exec caddy caddy validate --config /etc/caddy/Caddyfile
+docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+The repository template is kept in canonical Caddy formatting. If the live file is edited manually, use `caddy fmt` before copying those changes back to Git.
+
+## Security baseline
+
+Current production protections include:
+
+- Cloudflare proxying and edge rules;
+- login rate limiting at Cloudflare plus Laravel endpoint/account-aware throttles;
+- default-deny origin firewall with HTTP/HTTPS restricted to Cloudflare ranges;
+- trusted real-client-IP propagation through Caddy;
+- localhost-only API/web container publishing;
+- HSTS, CSP, clickjacking, referrer and content-type protections;
+- private sensitive-document storage and authorization checks;
+- request-size limits and upload validation;
+- protected CI with dependency/security and production-container checks.
+
+Do not run uncontrolled DoS/stress tests against production. Use staged/ramped ZAP/Burp testing and stop if application health degrades.
+
+### Known operational follow-ups
+
+1. **Origin certificate renewal:** the firewall is Cloudflare-only while Caddy currently manages public certificates. Before certificate expiry, move to a renewal design compatible with the locked origin, such as Cloudflare Origin CA or Caddy DNS-01.
+2. **Large uploads:** Cloudflare request-size limits depend on plan. Verify the largest supported lesson upload through the proxied API. Direct signed R2 uploads are the preferred long-term design.
+3. **HSTS preload:** the response includes the `preload` token, but browser preload submission should not be performed until all required subdomains are confirmed HTTPS-safe.
+
+## Database backups
+
+Use `deploy/oracle-backup.sh` and the included systemd timer for verified PostgreSQL dumps. Before manual schema work, create and validate a PostgreSQL custom-format backup. See [`docs/ORACLE_DEPLOYMENT.md`](docs/ORACLE_DEPLOYMENT.md).
+
+## CI and contribution workflow
+
+The repository uses protected branch workflows. Normal development targets `develop`; urgent production fixes may use `hotfix/*` into `main`.
+
+CI covers areas such as:
+
+- Branch Guard
+- dependency security audit
+- React production build
+- PHP syntax
+- Laravel tests
+- Flutter ↔ Laravel API contract
+- fresh PostgreSQL migration
+- production API container verification
+- deployment/config checks when relevant
+
+See [`BRANCHING.md`](BRANCHING.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Integration tests
+
+Do not commit fixed production credentials. Use dedicated test accounts and environment/CLI definitions, for example:
 
 ```bash
 flutter test integration_test/login_test.dart \
@@ -150,63 +218,8 @@ flutter test integration_test/login_test.dart \
   --dart-define=EDUBRIDGE_TEST_PASSWORD='replace-with-test-password'
 ```
 
-لا تستخدم حساب إنتاج حقيقي في الاختبارات.
+Never use a real production account password in repository tests.
 
-## النشر
+## Documentation rule
 
-الإنتاج الأساسي يعمل على Oracle Cloud:
-
-- الموقع: <https://edubridge.win>
-- API: <https://api.edubridge.win>
-- المستودع: `EduBridge-Team/EduBridge`، الفرع `main`
-- PostgreSQL 17 يعمل داخل Docker على شبكة خاصة وغير منشور للإنترنت.
-- Laravel API منشور محليًا فقط على `127.0.0.1:8081`.
-- React/Vite web منشور محليًا فقط على `127.0.0.1:8082`.
-- Caddy الموجود على الخادم ينهي TLS ويعمل reverse proxy للدومينات العامة.
-- ملفات R2 تبقى على Cloudflare R2 حسب إعدادات البيئة.
-
-النشر المتكرر يتم عبر:
-
-```bash
-git pull --ff-only origin main
-bash deploy/oracle-deploy.sh
-```
-
-راجع `docs/ORACLE_DEPLOYMENT.md` للتفاصيل والنسخ الاحتياطي والـrollback. مسار الإنتاج المدعوم هو Oracle فقط.
-
-### ترحيل الملفات الحساسة القديمة
-
-ملفات الهوية والشهادات ومستندات القرابة الجديدة تُحفظ خارج `public/`. بعد تحديث الخادم، افحص الملفات القديمة أولاً بدون أي تغيير:
-
-```bash
-cd ~/EduBridge/edubridge-api-laravel
-php artisan edubridge:migrate-sensitive-uploads
-```
-
-إذا كانت نتيجة الـ dry run سليمة، نفّذ النقل وتحديث روابط قاعدة البيانات:
-
-```bash
-php artisan edubridge:migrate-sensitive-uploads --apply
-```
-
-بعد التحقق من أن الملفات الجديدة تفتح من لوحة التوثيق، يمكن حذف النسخ العامة القديمة التي لم يعد لها أي مرجع:
-
-```bash
-php artisan edubridge:migrate-sensitive-uploads --apply --delete-public
-```
-
-> لا تستخدم `--delete-public` قبل أخذ نسخة احتياطية والتحقق من فتح الملفات بعد خطوة `--apply`.
-
-## الحالة
-
-- [x] مسارات الأطفال والدروس والتقدّم (Laravel)
-- [x] لوحة ولي الأمر: إضافة/تعديل الأطفال، تفاصيل الطفل والتقييمات، الإشعارات (Laravel + الويب)
-- [x] تطبيق الموبايل: دخول/تسجيل، الأطفال، الدروس مع قراءة صوتية، زر «تمّ»، شاشة التقدّم، لوحة ولي الأمر، أيقونة وشاشة بداية بهوية «جسر»
-- [x] مساعد «نور» الذكي: رفيق متحرك، محادثة عربية، ذاكرة محلية قصيرة، ومساعدة مرتبطة بمحتوى الدرس
-- [x] واجهة الويب: لوحات لكل دور (ولي أمر/معلّم/مختص/أدمن) + الإشعارات + شريط علوي وبحث في الدروس وصفحة من نحن
-- [x] بطاقات اللوحة (باك + فرونت): توثيق هوية الطالب وولي الأمر (1)، البحث برقم الهوية (2)، حساب الوزارة ومراجعة المناهج (3)، توثيق هوية الموظفين (4)، دراسة الحالة مع المختصين (7)، تقييمات الدروس (8)، إثبات ملكية المعلّم/المختص بالشهادات (9)، حساب المؤسسة (10)، الدعم الفني والشكاوى وحذف المستخدمين (11)، وإصلاح ظهور المعلّمين عند تعيين معلّم من حساب المختص (12)
-- [x] وسائط الدروس واجتماعات الدعم التعليمي والتقارير والمتابعة
-- [ ] تحسينات اختيارية مستقبلية: توسيع الاختبارات، مراقبة الأداء، وتحسين تجربة الإدارة
-
-> الإنتاج الأساسي على Oracle Cloud. استخدم `deploy/oracle-deploy.sh` للنشر و`docs/ORACLE_DEPLOYMENT.md` للتشغيل والنسخ الاحتياطي.
-> تغييرات قاعدة البيانات لا تُطبّق تلقائيًا أثناء النشر؛ خذ نسخة احتياطية وراجع أي migration قبل تشغيله على الإنتاج.
+When production behavior changes, update the relevant documentation in the same pull request. The code/configuration in `main` remains authoritative when a document and implementation disagree.

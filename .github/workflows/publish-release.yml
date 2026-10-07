@@ -1,0 +1,197 @@
+name: Publish GitHub Release
+
+on:
+  workflow_run:
+    workflows:
+      - Build Android APK and AAB
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: publish-github-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish exact Android release
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Resolve source commit and Android run
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            source_sha="${{ github.event.workflow_run.head_sha }}"
+            run_id="${{ github.event.workflow_run.id }}"
+          else
+            source_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+            run_id="$(
+              gh run list \
+                --workflow android-build.yml \
+                --branch main \
+                --status success \
+                --limit 100 \
+                --json databaseId,headSha,createdAt \
+                --jq ".[] | select(.headSha == \"${source_sha}\") | .databaseId" \
+              | head -n 1
+            )"
+          fi
+
+          if [ -z "$source_sha" ] || [ "$source_sha" = "null" ]; then
+            echo "::error::Unable to resolve the source commit."
+            exit 1
+          fi
+
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "::error::No successful Android build exists for main commit $source_sha."
+            exit 1
+          fi
+
+          run_sha="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.head_sha')"
+          run_conclusion="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.conclusion')"
+          run_branch="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.head_branch')"
+
+          if [ "$run_sha" != "$source_sha" ]; then
+            echo "::error::Android run $run_id belongs to $run_sha, expected $source_sha."
+            exit 1
+          fi
+
+          if [ "$run_conclusion" != "success" ] || [ "$run_branch" != "main" ]; then
+            echo "::error::Android run $run_id is not a successful main-branch build."
+            exit 1
+          fi
+
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Check out exact built commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+
+      - name: Resolve app version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version_line="$(awk '/^version:/ {print $2; exit}' edubridge-app/pubspec.yaml)"
+          if [ -z "$version_line" ]; then
+            echo "::error::Unable to resolve Flutter app version from edubridge-app/pubspec.yaml"
+            exit 1
+          fi
+
+          version_name="${version_line%%+*}"
+          build_number="${version_line##*+}"
+          tag="v${version_line}"
+          title="EduBridge v${version_name} (Build ${build_number})"
+
+          echo "version=$version_line" >> "$GITHUB_OUTPUT"
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+
+      - name: Skip version already released
+        id: existing
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.version.outputs.tag }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $tag already exists. A new app commit must bump pubspec.yaml before publishing another release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download APK and AAB from exact Android run
+        if: steps.existing.outputs.exists != 'true'
+        id: artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf release-artifacts release-files
+          mkdir -p release-artifacts release-files
+
+          gh run download "${{ steps.source.outputs.run_id }}" --dir release-artifacts
+
+          apk="$(find release-artifacts -type f -name '*.apk' -print -quit)"
+          aab="$(find release-artifacts -type f -name '*.aab' -print -quit)"
+
+          if [ -z "$apk" ] || [ ! -f "$apk" ]; then
+            echo "::error::APK artifact was not found in workflow run ${{ steps.source.outputs.run_id }}."
+            exit 1
+          fi
+
+          if [ -z "$aab" ] || [ ! -f "$aab" ]; then
+            echo "::error::AAB artifact was not found in workflow run ${{ steps.source.outputs.run_id }}."
+            exit 1
+          fi
+
+          out_apk="release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.apk"
+          out_aab="release-files/EduBridge-${{ steps.version.outputs.version_name }}-build${{ steps.version.outputs.build_number }}.aab"
+
+          cp "$apk" "$out_apk"
+          cp "$aab" "$out_aab"
+
+          echo "apk=$out_apk" >> "$GITHUB_OUTPUT"
+          echo "aab=$out_aab" >> "$GITHUB_OUTPUT"
+
+      - name: Write release notes
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        run: |
+          cat > release-notes.md <<'EOF'
+          ## EduBridge Android Release
+
+          Latest production Android build for EduBridge.
+
+          - Version: `${{ steps.version.outputs.version_name }}`
+          - Build number: `${{ steps.version.outputs.build_number }}`
+          - Source commit: `${{ steps.source.outputs.sha }}`
+          - Android workflow run: `${{ steps.source.outputs.run_id }}`
+          - Signed APK included for direct installation/testing.
+          - Signed AAB included for Google Play Console distribution.
+
+          ### Verification
+
+          The release is created only from the exact successful Android workflow run for the source commit above. Artifacts from an older commit cannot be reused for a newer release.
+          EOF
+
+      - name: Create GitHub release at exact source commit
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --target "${{ steps.source.outputs.sha }}" \
+            --title "${{ steps.version.outputs.title }}" \
+            --notes-file release-notes.md \
+            --latest \
+            "${{ steps.artifacts.outputs.apk }}" \
+            "${{ steps.artifacts.outputs.aab }}"
+
+      - name: Show release state
+        shell: bash
+        run: gh release view "${{ steps.version.outputs.tag }}" --json name,tagName,url,assets

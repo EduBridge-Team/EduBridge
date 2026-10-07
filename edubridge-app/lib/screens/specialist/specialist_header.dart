@@ -8,6 +8,7 @@ Widget _buildHeader({
   required String? specialty,
   required List<DashboardMenuAction> menuActions,
 }) {
+  final textTheme = Theme.of(context).textTheme;
   final actions = <DashboardMenuAction>[
     DashboardMenuAction(
       id: 'notifications',
@@ -78,9 +79,7 @@ Widget _buildHeader({
                             'مرحباً، $name',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
+                            style: textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                             ),
                           ),
@@ -89,8 +88,7 @@ Widget _buildHeader({
                             _subtitleFor(tabIndex, specialty),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13.5,
+                            style: textTheme.bodySmall?.copyWith(
                               height: 1.35,
                               color: Colors.white.withValues(alpha: 0.86),
                             ),

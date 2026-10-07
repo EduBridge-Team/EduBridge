@@ -1,6 +1,5 @@
 // lib/screens/plan_evaluation_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -76,10 +75,9 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(title: 'تقييم الخطة — ${widget.childName}'),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
           Container(
             padding: const EdgeInsets.all(16),
@@ -92,8 +90,7 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
               children: [
                 const Text(
                   'هل الخطة مناسبة لتقدّم الطفل؟',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 RadioGroup<bool>(
@@ -103,18 +100,8 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                   },
                   child: const Row(
                     children: [
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          title: Text('مناسبة'),
-                          value: true,
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          title: Text('تحتاج تعديل'),
-                          value: false,
-                        ),
-                      ),
+                      Expanded(child: RadioListTile<bool>(title: Text('مناسبة'), value: true)),
+                      Expanded(child: RadioListTile<bool>(title: Text('تحتاج تعديل'), value: false)),
                     ],
                   ),
                 ),
@@ -148,12 +135,9 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
             height: 56,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    _isAppropriate ? AppColors.green : AppColors.orange,
+                backgroundColor: _isAppropriate ? AppColors.green : AppColors.orange,
               ),
-              icon: Icon(_isAppropriate
-                  ? AppIcons.check
-                  : AppIcons.warning),
+              icon: Icon(_isAppropriate ? AppIcons.check : AppIcons.warning),
               label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ التقييم'),
               onPressed: _saving ? null : _save,
             ),

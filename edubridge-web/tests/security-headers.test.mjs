@@ -13,6 +13,8 @@ test('web server sends the expected baseline security headers', () => {
     'X-Frame-Options',
     'Permissions-Policy',
     'Cross-Origin-Opener-Policy',
+    'X-Permitted-Cross-Domain-Policies',
+    'Origin-Agent-Cluster',
   ]) {
     assert.match(source, new RegExp(header))
   }
@@ -22,6 +24,23 @@ test('CSP allows required Google Identity resources without opening script-src g
   assert.match(source, /script-src 'self' https:\/\/accounts\.google\.com/)
   assert.doesNotMatch(source, /script-src[^\n]*'unsafe-eval'/)
   assert.doesNotMatch(source, /script-src[^\n]*\*/)
+})
+
+test('CSP keeps stylesheet loading strict while permitting React style attributes', () => {
+  assert.match(source, /"style-src 'self'"/)
+  assert.match(source, /"style-src-attr 'unsafe-inline'"/)
+  assert.doesNotMatch(source, /"style-src 'self' 'unsafe-inline'"/)
+})
+
+test('CSP does not allow arbitrary HTTPS image or media origins', () => {
+  assert.match(source, /img-src 'self' data: blob: \$\{apiOrigin\.origin\}/)
+  assert.match(source, /media-src 'self' blob: \$\{apiOrigin\.origin\}/)
+  assert.doesNotMatch(source, /img-src[^\n]*https:`/)
+  assert.doesNotMatch(source, /media-src[^\n]*https:`/)
+})
+
+test('HTML and SPA fallback responses are not stored by caches', () => {
+  assert.match(source, /no-store, max-age=0, must-revalidate/)
 })
 
 test('static content only accepts GET and HEAD', () => {

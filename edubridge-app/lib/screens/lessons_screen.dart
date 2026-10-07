@@ -53,7 +53,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   Future<void> _loadLessons() => _pages.load();
-
+  Future<void> _refreshLessons() => _pages.refresh();
 
   Future<void> _toggleSpeak(Map lesson) async {
     final lessonId = lesson['id'];
@@ -95,7 +95,6 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   List get _filtered => _lessons;
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +145,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _loadLessons,
+              onRefresh: _refreshLessons,
               child: _buildBody(),
             ),
           ),
@@ -165,8 +164,13 @@ class _LessonsScreenState extends State<LessonsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_error!,
-                style: const TextStyle(fontSize: 16, color: AppColors.red)),
+            Text(
+              _error!,
+              style: TextStyle(
+                fontSize: 16,
+                color: JisrColors.of(context).dangerText,
+              ),
+            ),
             const SizedBox(height: 16),
             SizedBox(
               height: 56,
@@ -242,7 +246,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                       (lesson['title'] ?? '').toString(),
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: c.heading,
                       ),
                     ),

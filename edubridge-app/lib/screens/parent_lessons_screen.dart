@@ -60,10 +60,9 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
   }
 
   Future<void> _load() => _pages.load();
-
+  Future<void> _refresh() => _pages.refresh();
 
   List get _filtered => _lessons;
-
 
   Future<void> _toggleSpeak(Map lesson) async {
     final id = lesson['id'];
@@ -104,6 +103,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
     return Scaffold(
       appBar: JisrAppBar(
         title: 'دروس لولي الأمر',
@@ -125,26 +125,24 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
       bottomNavigationBar: const TeacherNavigationBar(),
       body: Column(
         children: [
-          // رأس توضيحي
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             color: AppColors.brandBlue.withValues(alpha: 0.1),
             child: Row(
               children: [
-                const Icon(AppIcons.parent,
-                    color: AppColors.brandBlue, size: 32),
+                Icon(AppIcons.parent, color: c.infoText, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'دروس مخصصة لك',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.brandBlue,
+                          fontWeight: FontWeight.w700,
+                          color: c.infoText,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -152,7 +150,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                         'نصائح وإرشادات من المختصين لمساعدتك في التعامل مع ابنك',
                         style: TextStyle(
                           fontSize: 13,
-                          color: JisrColors.of(context).muted,
+                          color: c.muted,
                           height: 1.4,
                         ),
                       ),
@@ -162,8 +160,6 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               ],
             ),
           ),
-
-          // بحث
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
@@ -175,10 +171,9 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
               onChanged: (v) { setState(() => _query = v); _pages.search(v); },
             ),
           ),
-
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _load,
+              onRefresh: _refresh,
               child: _buildBody(),
             ),
           ),

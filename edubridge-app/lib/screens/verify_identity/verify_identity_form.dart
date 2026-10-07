@@ -20,7 +20,6 @@ Widget buildFormState({
   required VoidCallback onSubmit,
 }) {
   return Scaffold(
-    bottomNavigationBar: const TeacherNavigationBar(),
     appBar: JisrAppBar(title: 'توثيق الهوية'),
     body: SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
@@ -29,7 +28,6 @@ Widget buildFormState({
         children: [
           _buildInfoBanner(c, isTeacherOrSpecialist),
           const SizedBox(height: 20),
-
           TextField(
             controller: nationalIdCtrl,
             keyboardType: TextInputType.number,
@@ -40,7 +38,6 @@ Widget buildFormState({
             ),
           ),
           const SizedBox(height: 16),
-
           _buildFileCard(
             c: c,
             title: 'صورة الهوية *',
@@ -52,7 +49,6 @@ Widget buildFormState({
             onCapture: onCaptureId,
             onClear: onRemoveId,
           ),
-
           if (isTeacherOrSpecialist) ...[
             const SizedBox(height: 16),
             _buildCertificateSection(
@@ -64,14 +60,11 @@ Widget buildFormState({
               onClear: onRemoveCertificate,
             ),
           ],
-
           const SizedBox(height: 20),
-
           if (error != null) ...[
             _buildErrorBox(error),
             const SizedBox(height: 12),
           ],
-
           _buildSubmitButton(loading: loading, onSubmit: onSubmit),
         ],
       ),
@@ -95,11 +88,7 @@ Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
             isTeacherOrSpecialist
                 ? 'مطلوب توثيق الهوية + رفع الشهادة العلمية لتفعيل صلاحياتك الكاملة.'
                 : 'لا يمكنك استخدام الصلاحيات الكاملة قبل توثيق هويتك.',
-            style: TextStyle(
-              color: c.onTint,
-              fontWeight: FontWeight.w800,
-              height: 1.5,
-            ),
+            style: TextStyle(color: c.onTint, fontWeight: FontWeight.w800, height: 1.5),
           ),
         ),
       ],
@@ -120,27 +109,19 @@ Widget _buildCertificateSection({
     decoration: BoxDecoration(
       color: c.tintYellow,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(
-        color: AppColors.orange.withValues(alpha: 0.4),
-        width: 1.5,
-      ),
+      border: Border.all(color: AppColors.orange.withValues(alpha: 0.4), width: 1.5),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            const Icon(Icons.workspace_premium,
-                color: AppColors.orangeDeep, size: 24),
+            const Icon(Icons.workspace_premium, color: AppColors.orangeDeep, size: 24),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 'الشهادة العلمية *',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: c.heading,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.heading),
               ),
             ),
             Container(
@@ -151,11 +132,7 @@ Widget _buildCertificateSection({
               ),
               child: const Text(
                 'إلزامي',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.orangeDeep,
-                ),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.orangeDeep),
               ),
             ),
           ],
@@ -179,12 +156,9 @@ Widget _buildCertificateSection({
                 child: SizedBox(
                   height: 46,
                   child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.orange,
-                      foregroundColor: Colors.white,
-                    ),
+                    style: FilledButton.styleFrom(backgroundColor: AppColors.orange, foregroundColor: Colors.white),
                     icon: const Icon(Icons.upload_file, size: 18),
-                    label: const Text('من المعرض'),
+                    label: const Text('رفع من المعرض'),
                     onPressed: onPick,
                   ),
                 ),
@@ -196,8 +170,7 @@ Widget _buildCertificateSection({
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.orange,
-                      side: const BorderSide(
-                          color: AppColors.orange, width: 1.5),
+                      side: const BorderSide(color: AppColors.orange, width: 1.5),
                     ),
                     icon: const Icon(Icons.camera_alt, size: 18),
                     label: const Text('الكاميرا'),
@@ -219,23 +192,14 @@ Widget _buildSelectedFileRow(JisrColors c, File file, VoidCallback onClear) {
     children: [
       ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.file(
-          file,
-          width: 52,
-          height: 52,
-          fit: BoxFit.cover,
-        ),
+        child: Image.file(file, width: 52, height: 52, fit: BoxFit.cover),
       ),
       const SizedBox(width: 10),
       Expanded(
         child: Text(
           file.path.split('/').last,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: c.onTint,
-          ),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.onTint),
         ),
       ),
       IconButton(
@@ -258,16 +222,12 @@ Widget _buildFileCard({
   required VoidCallback onClear,
 }) {
   final hasFile = file != null;
-
   return Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: hasFile ? color.withValues(alpha: 0.08) : c.tintTeal,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(
-        color: hasFile ? color : c.line,
-        width: hasFile ? 2 : 1.2,
-      ),
+      border: Border.all(color: hasFile ? color : c.line, width: hasFile ? 2 : 1.2),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,18 +237,9 @@ Widget _buildFileCard({
             Icon(icon, color: color, size: 22),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: c.heading,
-                ),
-              ),
+              child: Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.heading)),
             ),
-            if (hasFile)
-              const Icon(Icons.check_circle,
-                  color: AppColors.green, size: 22),
+            if (hasFile) const Icon(Icons.check_circle, color: AppColors.green, size: 22),
           ],
         ),
         const SizedBox(height: 4),
@@ -301,12 +252,9 @@ Widget _buildFileCard({
                 child: SizedBox(
                   height: 44,
                   child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: color,
-                      foregroundColor: Colors.white,
-                    ),
+                    style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
                     icon: const Icon(Icons.upload_file, size: 18),
-                    label: const Text('من المعرض'),
+                    label: const Text('رفع من المعرض'),
                     onPressed: onPick,
                   ),
                 ),
@@ -353,11 +301,7 @@ Widget _buildFileCard({
                 child: Text(
                   file.path.split('/').last,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: c.onTint,
-                  ),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.onTint),
                 ),
               ),
               IconButton(
@@ -367,8 +311,7 @@ Widget _buildFileCard({
                 padding: const EdgeInsets.all(6),
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline,
-                    color: Colors.red, size: 20),
+                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
                 onPressed: onClear,
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(6),
@@ -386,20 +329,13 @@ Widget _buildErrorBox(String error) {
     decoration: BoxDecoration(
       color: Colors.red.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: Colors.red.withValues(alpha: 0.3),
-      ),
+      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
     ),
     child: Row(
       children: [
         const Icon(Icons.error_outline, color: Colors.red),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            error,
-            style: const TextStyle(color: Colors.red),
-          ),
-        ),
+        Expanded(child: Text(error, style: const TextStyle(color: Colors.red))),
       ],
     ),
   );
@@ -412,16 +348,13 @@ Widget _buildSubmitButton({
   return SizedBox(
     height: 56,
     child: FilledButton.icon(
-      style: FilledButton.styleFrom(
-        backgroundColor: AppColors.tealDeep,
-      ),
+      style: FilledButton.styleFrom(backgroundColor: AppColors.tealDeep),
       onPressed: loading ? null : onSubmit,
       icon: loading
           ? const SizedBox(
               width: 22,
               height: 22,
-              child: CircularProgressIndicator(
-                  color: Colors.white, strokeWidth: 2),
+              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
             )
           : const Icon(Icons.send),
       label: Text(

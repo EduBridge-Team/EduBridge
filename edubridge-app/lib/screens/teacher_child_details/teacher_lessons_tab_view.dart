@@ -2,11 +2,13 @@ part of 'teacher_child_details_screen.dart';
 
 extension _LessonsTabStateView on _LessonsTabState {
   Widget buildView(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    Widget body;
 
-    if (_error != null) {
-      return ListView(
-        padding: const EdgeInsets.all(24),
+    if (_loading) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (_error != null) {
+      body = ListView(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         children: [
           const SizedBox(height: 90),
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
@@ -30,12 +32,10 @@ extension _LessonsTabStateView on _LessonsTabState {
           ),
         ],
       );
-    }
-
-    if (_lessons.isEmpty) {
+    } else if (_lessons.isEmpty) {
       final c = JisrColors.of(context);
-      return ListView(
-        padding: const EdgeInsets.all(24),
+      body = ListView(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         children: [
           const SizedBox(height: 100),
           Center(
@@ -65,24 +65,44 @@ extension _LessonsTabStateView on _LessonsTabState {
           ),
         ],
       );
+    } else {
+      body = RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 120),
+          children: [
+            _buildSummaryCard(),
+            const SizedBox(height: 16),
+            const Text(
+              'تفاصيل الدروس',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            ..._lessons.map((l) => _buildLessonCard(l)),
+          ],
+        ),
+      );
     }
 
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
-        children: [
-          _buildSummaryCard(),
-          const SizedBox(height: 16),
-          const Text(
-            'تفاصيل الدروس',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
+    return Stack(
+      children: [
+        Positioned.fill(child: body),
+        PositionedDirectional(
+          start: 20,
+          bottom: 24 + bottomInset,
+          child: FloatingActionButton.extended(
+            heroTag: 'add-lesson-${widget.childId}',
+            onPressed: _addLesson,
+            icon: const Icon(AppIcons.add),
+            label: const Text(
+              'إضافة درس',
+              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+            ),
           ),
-          const SizedBox(height: 8),
-          ..._lessons.map((l) => _buildLessonCard(l)),
-        ],
-      ),
+        ),
+      ],
     );
-  
   }
 }

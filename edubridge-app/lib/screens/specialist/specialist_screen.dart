@@ -56,11 +56,7 @@ class SpecialistDashboardScreen extends StatefulWidget {
 class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
-  // ═══════════════════════════════════════════════════════════
-  //  State
-  // ═══════════════════════════════════════════════════════════
   int _tabIndex = 0;
-
   List<Map<String, dynamic>> _rows = [];
   List _lessons = [];
   List _types = [];
@@ -71,17 +67,12 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   int? _approvingId;
   bool _adding = false;
   String _searchQuery = '';
-
   bool _showOnlyMine = true;
   int? _currentUserId;
   String? _mySpecialty;
-
   bool _verificationDialogShown = false;
   bool _specialtyDialogShown = false;
 
-  // ═══════════════════════════════════════════════════════════
-  //  Lifecycle
-  // ═══════════════════════════════════════════════════════════
   @override
   void initState() {
     super.initState();
@@ -103,30 +94,28 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   }
 
   Future<void> _setAdding(bool value) async {
-    if (!value) { inlineModalOpen.value = false; setState(() => _adding = false); return; }
-    final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => AddLessonScreen(types: _types)));
+    if (!value) {
+      inlineModalOpen.value = false;
+      setState(() => _adding = false);
+      return;
+    }
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => AddLessonScreen(types: _types)),
+    );
     if (result != null && mounted) await _load();
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  التخصص — اختيار أول مرة
-  // ═══════════════════════════════════════════════════════════
   Future<void> _checkSpecialty() async {
-    if (_specialtyDialogShown) return;
-    if (_mySpecialty != null) return;
-    if (!mounted) return;
-
+    if (_specialtyDialogShown || _mySpecialty != null || !mounted) return;
     _specialtyDialogShown = true;
     await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
     final result = await Navigator.push<String>(
       context,
-      MaterialPageRoute(
-        builder: (_) => const ChooseSpecialtyScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const ChooseSpecialtyScreen()),
     );
-
     if (!mounted) return;
 
     if (result != null) {
@@ -137,14 +126,17 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  تحميل البيانات الرئيسية
-  // ═══════════════════════════════════════════════════════════
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _refresh() => _load(showLoader: false);
+
+  Future<void> _load({bool showLoader = true}) async {
+    if (showLoader) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    } else if (_error != null) {
+      setState(() => _error = null);
+    }
 
     try {
       final responses = await Future.wait([
@@ -172,13 +164,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
 
       final children = (childrenData['children'] ?? []) as List;
       final rows = <Map<String, dynamic>>[];
-
       for (final child in children) {
-        final pRes =
-            await ApiService.authGet('/progress/child/${child['id']}');
+        final pRes = await ApiService.authGet('/progress/child/${child['id']}');
         final pData = jsonDecode(pRes.body);
-        final progress =
-            pRes.statusCode == 200 ? (pData['progress'] ?? []) : [];
+        final progress = pRes.statusCode == 200 ? (pData['progress'] ?? []) : [];
         rows.add({
           'child': child,
           'progress': progress,
@@ -187,20 +176,16 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       }
 
       String? specialty;
-
       try {
         final meRes = await ApiService.authGet('/me');
         if (meRes.statusCode == 200) {
           final meData = jsonDecode(meRes.body);
           final me = meData['user'] ?? meData;
-          final spec =
-              (me['specialty'] ?? '').toString().toLowerCase().trim();
-          if (spec.isNotEmpty) {
-            if (spec == 'learning_support' || spec.contains('نفس')) {
-              specialty = 'learning_support';
-            } else if (spec == 'educational' || spec.contains('تعليم')) {
-              specialty = 'educational';
-            }
+          final spec = (me['specialty'] ?? '').toString().toLowerCase().trim();
+          if (spec == 'learning_support' || spec.contains('نفس')) {
+            specialty = 'learning_support';
+          } else if (spec == 'educational' || spec.contains('تعليم')) {
+            specialty = 'educational';
           }
         }
       } catch (e) {
@@ -212,8 +197,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           (u) => u['id'] == _currentUserId,
           orElse: () => <String, dynamic>{},
         );
-        final spec =
-            (meUser['specialty'] ?? '').toString().toLowerCase().trim();
+        final spec = (meUser['specialty'] ?? '').toString().toLowerCase().trim();
         if (spec == 'learning_support' || spec.contains('نفس')) {
           specialty = 'learning_support';
         } else if (spec == 'educational' || spec.contains('تعليم')) {
@@ -240,14 +224,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  التوثيق
-  // ═══════════════════════════════════════════════════════════
   Future<void> _checkAndShowVerificationDialog() async {
     if (_verificationDialogShown) return;
     final isVerified = await ApiService.isVerified();
-    if (isVerified) return;
-    if (!mounted) return;
+    if (isVerified || !mounted) return;
     _verificationDialogShown = true;
 
     await showDialog(
@@ -270,8 +250,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   color: AppColors.brandBlueLight.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(AppIcons.verified,
-                    size: 48, color: AppColors.brandBlueLight),
+                child: const Icon(
+                  AppIcons.verified,
+                  size: 48,
+                  color: AppColors.brandBlueLight,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
@@ -308,8 +291,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   icon: const Icon(AppIcons.verified, size: 22),
                   label: const Text(
                     'توثيق الهوية والشهادة',
-                    style: TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -353,11 +335,56 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return true;
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  القائمة الموحّدة (نفس المعلم)
-  // ═══════════════════════════════════════════════════════════
+  Future<void> _openChildSearch() async {
+    final controller = TextEditingController(text: _searchQuery);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('البحث عن طفل'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textInputAction: TextInputAction.search,
+          decoration: const InputDecoration(
+            hintText: 'اكتب اسم الطفل...',
+            prefixIcon: Icon(AppIcons.search),
+          ),
+          onSubmitted: (value) => Navigator.pop(dialogContext, value),
+        ),
+        actions: [
+          if (_searchQuery.isNotEmpty)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, ''),
+              child: const Text('مسح البحث'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
+            child: const Text('بحث'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (result != null && mounted) {
+      setState(() {
+        _searchQuery = result.trim();
+        _tabIndex = 0;
+      });
+    }
+  }
+
   List<DashboardMenuAction> _buildMenuActions() {
     return [
+      DashboardMenuAction(
+        id: 'search_children',
+        label: _searchQuery.isEmpty ? 'البحث عن طفل' : 'تعديل بحث الأطفال',
+        icon: AppIcons.search,
+        onSelected: _openChildSearch,
+      ),
       DashboardMenuAction(
         id: 'case_discussion',
         label: 'دراسات الحالة',
@@ -440,9 +467,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  Build
-  // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
@@ -459,30 +483,22 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 specialty: _mySpecialty,
                 menuActions: _buildMenuActions(),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: Row(
-                  children: [
-                    if (_tabIndex == 0)
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            hintText: 'ابحث عن طفل...',
-                            prefixIcon: Icon(AppIcons.search),
-                          ),
-                          onChanged: (v) =>
-                              setState(() => _searchQuery = v),
-                        ),
-                      )
-                    else
-                      const Spacer(),
-                    _buildNotificationBell(),
-                  ],
+              if (_tabIndex == 0 && _searchQuery.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: InputChip(
+                      avatar: const Icon(AppIcons.search, size: 17),
+                      label: Text('بحث: $_searchQuery'),
+                      onDeleted: () => setState(() => _searchQuery = ''),
+                    ),
+                  ),
                 ),
-              ),
               if (_tabIndex == 0 && !_loading) ...[
-                _buildFilterCard(c),
                 const SizedBox(height: 12),
+                _buildFilterCard(c),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -493,14 +509,14 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         label: 'بانتظار التقييم',
                         color: AppColors.blue,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 7),
                       _StatsCard(
                         icon: AppIcons.check,
                         value: '$_doneToday',
                         label: 'منجز اليوم',
                         color: AppColors.brandTealDeep,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 7),
                       _StatsCard(
                         icon: AppIcons.progress,
                         value: '$_pendingProgress',
@@ -513,7 +529,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ],
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: _load,
+                  onRefresh: _refresh,
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
                       : _error != null

@@ -7,10 +7,11 @@ Widget _buildTeacherHeader({
   required int tabIndex,
   required int childrenCount,
   required Future<void> Function() onLogout,
-  required Future<void> Function() onOpenHomework,
   required Future<bool> Function() onVerify,
   required Future<void> Function() onLoadData,
 }) {
+  final textTheme = Theme.of(context).textTheme;
+
   return Container(
     width: double.infinity,
     decoration: const BoxDecoration(
@@ -31,8 +32,17 @@ Widget _buildTeacherHeader({
                   iconSize: 26,
                   iconColor: Colors.white,
                   actions: [
-                    DashboardMenuAction(id: 'notifications', label: 'الإشعارات', icon: AppIcons.notifications,
-                      onSelected: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()))),
+                    DashboardMenuAction(
+                      id: 'notifications',
+                      label: 'الإشعارات',
+                      icon: AppIcons.notifications,
+                      onSelected: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      ),
+                    ),
                     DashboardMenuAction(
                       id: 'case_discussion',
                       label: 'دراسات الحالة',
@@ -40,14 +50,9 @@ Widget _buildTeacherHeader({
                       onSelected: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const CaseDiscussionScreen()),
+                          builder: (_) => const CaseDiscussionScreen(),
+                        ),
                       ),
-                    ),
-                    DashboardMenuAction(
-                      id: 'create_homework',
-                      label: 'إضافة واجب',
-                      icon: AppIcons.homework,
-                      onSelected: () => onOpenHomework(),
                     ),
                     DashboardMenuAction(
                       id: 'support',
@@ -109,6 +114,11 @@ Widget _buildTeacherHeader({
               future: ApiService.getName(),
               builder: (context, snap) {
                 final name = snap.data ?? 'المعلم';
+                final subtitle = switch (tabIndex) {
+                  0 => 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك',
+                  1 => 'أضف دروساً جديدة أو تصفّح الدروس الموجودة',
+                  _ => 'تابع الواجبات والتسليمات والتصحيح',
+                };
                 return Row(
                   children: [
                     const ProfileAvatarButton(size: 54),
@@ -117,19 +127,16 @@ Widget _buildTeacherHeader({
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('مرحباً، $name',
-                              style: const TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              )),
+                          Text(
+                            'مرحباً، $name',
+                            style: textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
                           const SizedBox(height: 3),
                           Text(
-                      tabIndex == 0
-                          ? 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك'
-                          : 'أضف دروساً جديدة أو صفّح الدروس الموجودة',
-                            style: TextStyle(
-                              fontSize: 13.5,
+                            subtitle,
+                            style: textTheme.bodySmall?.copyWith(
                               color: Colors.white.withValues(alpha: 0.86),
                             ),
                           ),
@@ -148,25 +155,36 @@ Widget _buildTeacherHeader({
 }
 
 Widget _buildTeacherError(String error, Future<void> Function() reload) {
-  return ListView(
-    children: [
-      const SizedBox(height: 80),
-      Center(
-        child: Column(
-          children: [
-            Text(error, style: const TextStyle(fontSize: 16, color: AppColors.red)),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                icon: const Icon(AppIcons.refresh, size: 28),
-                label: const Text('إعادة المحاولة', style: TextStyle(fontSize: 18)),
-                onPressed: reload,
-              ),
+  return Builder(
+    builder: (context) {
+      final textTheme = Theme.of(context).textTheme;
+      return ListView(
+        children: [
+          const SizedBox(height: 80),
+          Center(
+            child: Column(
+              children: [
+                Text(
+                  error,
+                  style: textTheme.bodyMedium?.copyWith(color: AppColors.red),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(AppIcons.refresh, size: 28),
+                    label: const Text(
+                      'إعادة المحاولة',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    onPressed: reload,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ],
+          ),
+        ],
+      );
+    },
   );
 }

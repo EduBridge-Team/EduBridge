@@ -22,7 +22,10 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CaseDiscussionScreen(filterChildId: childId),
+        builder: (_) => CaseDiscussionScreen(
+          filterChildId: childId,
+          showBottomNavigation: false,
+        ),
       ),
     );
   }

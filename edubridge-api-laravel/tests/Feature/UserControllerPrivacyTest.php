@@ -28,7 +28,10 @@ class UserControllerPrivacyTest extends TestCase
             $table->timestamps();
         });
 
-        Schema::create('children', fn (Blueprint $table) => $table->id());
+        Schema::create('children', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('assigned_teacher_id')->nullable();
+        });
         Schema::create('child_parent', function (Blueprint $table) {
             $table->unsignedBigInteger('child_id');
             $table->unsignedBigInteger('parent_id');
@@ -43,10 +46,26 @@ class UserControllerPrivacyTest extends TestCase
                 'phone' => '0599000000',
                 'national_id' => '123456789',
                 'verification_status' => 'verified',
+                'specialty' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'name' => 'معلم',
+                'email' => 'teacher@example.com',
+                'role' => 'teacher',
+                'phone' => '0599111111',
+                'national_id' => '987654321',
+                'verification_status' => 'verified',
+                'specialty' => 'تعليم خاص',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
+
+        DB::table('children')->insert(['id' => 10, 'assigned_teacher_id' => 2]);
+        DB::table('child_parent')->insert(['child_id' => 10, 'parent_id' => 1]);
     }
 
     protected function tearDown(): void
@@ -57,28 +76,47 @@ class UserControllerPrivacyTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_ministry_user_listing_omits_national_id(): void
+    public function test_ministry_does_not_receive_global_user_directory(): void
     {
         $response = app(UserController::class)->index(
             $this->request(10, 'ministry')
         );
 
         $this->assertSame(200, $response->getStatusCode());
-        $user = json_decode($response->getContent(), true)['users'][0];
-
-        $this->assertArrayNotHasKey('national_id', $user);
+        $this->assertSame([], json_decode($response->getContent(), true)['users']);
     }
 
-    public function test_admin_user_listing_can_include_national_id(): void
+    public function test_parent_directory_exposes_only_assigned_staff_directory_fields(): void
+    {
+        $response = app(UserController::class)->index(
+            $this->request(1, 'parent')
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $users = json_decode($response->getContent(), true)['users'];
+        $this->assertCount(1, $users);
+        $this->assertSame(2, $users[0]['id']);
+        $this->assertSame('معلم', $users[0]['name']);
+        $this->assertSame('teacher', $users[0]['role']);
+        $this->assertSame('تعليم خاص', $users[0]['specialty']);
+        $this->assertArrayNotHasKey('email', $users[0]);
+        $this->assertArrayNotHasKey('phone', $users[0]);
+        $this->assertArrayNotHasKey('national_id', $users[0]);
+    }
+
+    public function test_admin_user_listing_keeps_management_contact_and_identity_data(): void
     {
         $response = app(UserController::class)->index(
             $this->request(11, 'admin')
         );
 
         $this->assertSame(200, $response->getStatusCode());
-        $user = json_decode($response->getContent(), true)['users'][0];
+        $users = collect(json_decode($response->getContent(), true)['users'])->keyBy('id');
+        $parent = $users[1];
 
-        $this->assertSame('123456789', $user['national_id']);
+        $this->assertSame('123456789', $parent['national_id']);
+        $this->assertSame('parent@example.com', $parent['email']);
+        $this->assertSame('0599000000', $parent['phone']);
     }
 
     private function request(int $id, string $role): Request

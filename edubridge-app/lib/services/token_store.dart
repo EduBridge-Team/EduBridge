@@ -1,5 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../config.dart';
 
 class TokenStorageException implements Exception {
   const TokenStorageException();
@@ -16,11 +19,13 @@ class TokenStore {
     Future<String?> Function()? read,
     Future<void> Function(String)? write,
     Future<void> Function()? delete,
+    Future<void> Function(String)? revoke,
   })  : _read = read ?? (() => _storage.read(key: _key)),
         _write = write ?? ((token) => _storage.write(key: _key, value: token)),
-        _delete = delete ?? (() => _storage.delete(key: _key));
+        _delete = delete ?? (() => _storage.delete(key: _key)),
+        _revoke = revoke ?? ((_) async {});
 
-  static final instance = TokenStore();
+  static final instance = TokenStore(revoke: _revokeRemote);
   static const _key = 'edubridge.auth.token';
   static const _cleared = 'auth.token.cleared';
   static const _migrating = 'auth.token.migrating';
@@ -34,8 +39,24 @@ class TokenStore {
   final Future<String?> Function() _read;
   final Future<void> Function(String) _write;
   final Future<void> Function() _delete;
+  final Future<void> Function(String) _revoke;
   Future<void> _tail = Future<void>.value();
   bool _blocked = false;
+
+  static Future<void> _revokeRemote(String token) async {
+    try {
+      await http.post(
+        Uri.parse('${Config.baseUrl}/auth/logout'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (_) {
+      // Logout must still clear the local credential while offline. A failed
+      // best-effort revocation will naturally expire with the JWT lifetime.
+    }
+  }
 
   Future<T> _serialize<T>(Future<T> Function() action) {
     final next = _tail.then((_) => action());
@@ -101,6 +122,16 @@ class TokenStore {
     return _serialize(() async {
       final prefs = await SharedPreferences.getInstance();
       _require(await prefs.setBool(_cleared, true));
+
+      try {
+        final token = await _read();
+        if (token != null && token.isNotEmpty) {
+          await _revoke(token);
+        }
+      } catch (_) {
+        // Local logout must not be blocked by a storage/network revocation error.
+      }
+
       await _cleanup(prefs);
     });
   }

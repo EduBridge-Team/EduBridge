@@ -46,10 +46,16 @@ trait UploadReadActions
             return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
+        if (!$this->validFilename($filename)) {
+            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
+        }
+
+        $url = '/api/private-files/user/' . $userId . '/' . $filename;
         $allowed = $user->role === 'admin' || (int) $user->id === $userId;
 
+        // Assigned specialists may read only documents that belong to a child assigned to them.
+        // The relation check prevents access before accepting the child and blocks unrelated files.
         if (!$allowed && $user->role === 'specialist') {
-            $url = '/api/private-files/user/' . $userId . '/' . $filename;
             $allowed = DB::table('children as c')
                 ->join('child_specialist as cs', 'cs.child_id', '=', 'c.id')
                 ->where('cs.specialist_id', $user->id)
@@ -61,12 +67,20 @@ trait UploadReadActions
                 ->exists();
         }
 
+        // A conversation attachment is readable only by a participant in that same conversation.
         if (!$allowed) {
-            return response()->json(['error' => 'غير مصرّح'], 403);
+            $allowed = DB::table('conversation_messages as cm')
+                ->join('conversations as c', 'c.id', '=', 'cm.conversation_id')
+                ->where('cm.file_url', $url)
+                ->where(function ($query) use ($user) {
+                    $query->where('c.participant_one_id', $user->id)
+                        ->orWhere('c.participant_two_id', $user->id);
+                })
+                ->exists();
         }
 
-        if (!$this->validFilename($filename)) {
-            return response()->json(['error' => 'اسم ملف غير صالح'], 400);
+        if (!$allowed) {
+            return response()->json(['error' => 'غير مصرّح'], 403);
         }
 
         return $this->streamPrivateObject('user-files/' . $userId . '/' . $filename);

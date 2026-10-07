@@ -132,7 +132,12 @@ if [[ "$deployed_sha" != "$GIT_SHA" ]]; then
   exit 1
 fi
 
-noor_status="$(compose exec -T api php artisan tinker --execute='echo config("services.groq.key") ? "configured" : "missing";' 2>/dev/null | tail -n1 | tr -d '\r' || true)"
+noor_status="$(compose exec -T api php -r '
+require "vendor/autoload.php";
+$app = require "bootstrap/app.php";
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+echo config("services.groq.key") ? "configured" : "missing";
+' 2>/dev/null | tr -d '\r\n' || true)"
 if [[ "$noor_status" != "configured" ]]; then
   echo "ERROR: Noor is still not configured inside the running API container." >&2
   exit 1

@@ -16,7 +16,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
         .kidPalette[_rows.indexOf(row) % AppColors.kidPalette.length];
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
@@ -24,7 +24,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
       ),
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -42,7 +42,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     name.isNotEmpty ? name.characters.first : '؟',
                     style: TextStyle(
                       fontSize: 21,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: color,
                     ),
                   ),
@@ -58,7 +58,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 17.5,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           color: c.heading,
                         ),
                       ),
@@ -95,10 +95,10 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                           const SizedBox(width: 4),
                           Text(
                             '${stats['pct']}%',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.brandBlue,
+                              fontWeight: FontWeight.w700,
+                              color: c.infoText,
                             ),
                           ),
                         ],
@@ -111,7 +111,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         style: TextStyle(
                           fontSize: 10.5,
                           color: c.muted,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -120,16 +120,16 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
               ],
             ),
             if (child['has_pending_therapy_request'] == true) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               _buildPendingSupportBanner(),
             ],
             if (current != null ||
                 (stats['inProgress'] as int) > 0 ||
                 (stats['done'] as int) > 0) ...[
-              const SizedBox(height: 11),
+              const SizedBox(height: 12),
               Wrap(
-                spacing: 7,
-                runSpacing: 7,
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   if (current != null)
                     _CountBadge(
@@ -149,65 +149,87 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                 ],
               ),
             ],
-            const SizedBox(height: 13),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
-                  flex: 2,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 46),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                  flex: 3,
+                  child: SizedBox(
+                    height: 50,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
-                    ),
-                    onPressed: () => _openChildProfile(child),
-                    icon: const Icon(Icons.folder_open_outlined, size: 19),
-                    label: const Text(
-                      'فتح ملف الطالب',
-                      style: TextStyle(fontWeight: FontWeight.w800),
+                      onPressed: () => _openChildProfile(child),
+                      icon: const Icon(Icons.folder_open_outlined, size: 19),
+                      label: const Text(
+                        'فتح ملف الطالب',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 46),
-                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                  flex: 2,
+                  child: SizedBox(
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        foregroundColor: c.infoText,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
+                      icon: Icon(
+                        isPending ? AppIcons.evaluate : AppIcons.view,
+                        size: 18,
+                      ),
+                      label: Text(
+                        isPending ? 'تقييم' : 'التقييم',
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      onPressed: isPending
+                          ? () => _openEvaluation(row)
+                          : () => _viewEvaluation(childId),
                     ),
-                    icon: Icon(
-                      isPending ? AppIcons.evaluate : AppIcons.view,
-                      size: 18,
-                    ),
-                    label: Text(
-                      isPending ? 'تقييم' : 'التقييم',
-                      style: const TextStyle(fontSize: 12.5),
-                    ),
-                    onPressed: isPending
-                        ? () => _openEvaluation(row)
-                        : () => _viewEvaluation(childId),
                   ),
                 ),
               ],
             ),
             if (!isPending) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: 10),
               Theme(
                 data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-                  childrenPadding: const EdgeInsets.only(top: 2),
-                  leading: const Icon(Icons.tune_rounded, size: 20),
+                  initiallyExpanded: false,
+                  maintainState: false,
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  childrenPadding: const EdgeInsets.only(top: 6, bottom: 2),
+                  leading: Icon(
+                    Icons.tune_rounded,
+                    size: 20,
+                    color: c.infoText,
+                  ),
                   title: Text(
                     'إجراءات سريعة',
                     style: TextStyle(
                       color: c.heading,
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   children: [
@@ -215,14 +237,20 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                            ),
                             icon: const Icon(AppIcons.report, size: 17),
                             label: const Text('تقرير المعلم'),
                             onPressed: () => _openTeacherReport(row),
                           ),
                         ),
-                        const SizedBox(width: 7),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                            ),
                             icon: const Icon(AppIcons.edit, size: 17),
                             label: const Text('اكتب تقدّم'),
                             onPressed: () => _writeProgressBasedOnReport(row),
@@ -230,19 +258,25 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 7),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                            ),
                             icon: const Icon(AppIcons.forum, size: 17),
                             label: const Text('دراسة الحالة'),
                             onPressed: () => _openCaseDiscussion(childId: childId),
                           ),
                         ),
-                        const SizedBox(width: 7),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                            ),
                             icon: const Icon(AppIcons.specialist, size: 17),
                             label: const Text('اقترح دعم'),
                             onPressed: () => _recommendLearningSupport(row),
@@ -250,12 +284,16 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 2),
                     _buildSuggestSpecialistButtons(row, child),
                     if (child['current_plan_id'] != null) ...[
-                      const SizedBox(height: 7),
+                      const SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                          ),
                           icon: const Icon(AppIcons.evaluate),
                           label: const Text('تقييم الخطة الحالية'),
                           onPressed: () => _openPlanEvaluation(row),
@@ -263,10 +301,13 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                     ],
                     if (current != null) ...[
-                      const SizedBox(height: 7),
+                      const SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.tonalIcon(
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                          ),
                           icon: approving
                               ? const SizedBox(
                                   width: 16,

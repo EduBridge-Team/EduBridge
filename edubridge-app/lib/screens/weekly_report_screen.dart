@@ -10,11 +10,13 @@ part 'weekly_report_view.dart';
 class WeeklyReportScreen extends StatefulWidget {
   final int childId;
   final String childName;
+  final DateTime? weekStart;
 
   const WeeklyReportScreen({
     super.key,
     required this.childId,
     required this.childName,
+    this.weekStart,
   });
 
   @override
@@ -38,7 +40,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       _error = null;
     });
     try {
-      final data = await ApiService.getWeeklyReport(childId: widget.childId);
+      final data = await ApiService.getWeeklyReport(
+        childId: widget.childId,
+        weekStart: widget.weekStart,
+      );
       if (!mounted) return;
       setState(() {
         _report = data != null ? WeeklyReport.fromJson(data) : null;

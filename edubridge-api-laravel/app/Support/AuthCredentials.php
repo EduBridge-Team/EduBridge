@@ -7,8 +7,12 @@ final class AuthCredentials
     public static function issue(object $account, string $secret): string
     {
         return \Firebase\JWT\JWT::encode([
-            'id' => (int) $account->id, 'role' => $account->role, 'iat' => time(),
-            'exp' => time() + 7 * 24 * 3600, 'credential_stamp' => self::stamp($account, $secret),
+            'id' => (int) $account->id,
+            'role' => $account->role,
+            'iat' => time(),
+            'exp' => time() + 7 * 24 * 3600,
+            'session_version' => (int) ($account->session_version ?? 0),
+            'credential_stamp' => self::stamp($account, $secret),
         ], $secret, 'HS256');
     }
 

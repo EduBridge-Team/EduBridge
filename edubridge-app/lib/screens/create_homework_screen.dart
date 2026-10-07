@@ -10,8 +10,13 @@ part 'create_homework_view.dart';
 
 class CreateHomeworkScreen extends StatefulWidget {
   final List children;
+  final int? initialChildId;
 
-  const CreateHomeworkScreen({super.key, required this.children});
+  const CreateHomeworkScreen({
+    super.key,
+    required this.children,
+    this.initialChildId,
+  });
 
   @override
   State<CreateHomeworkScreen> createState() => _CreateHomeworkScreenState();
@@ -32,6 +37,14 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
   String? _error;
 
   final _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialChildId != null) {
+      _selectedChildIds.add(widget.initialChildId!);
+    }
+  }
 
   @override
   void dispose() {

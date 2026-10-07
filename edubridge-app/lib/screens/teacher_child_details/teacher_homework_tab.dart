@@ -39,8 +39,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
       if (!mounted) return;
       setState(() {
         _homeworks = list
-            .map((e) =>
-                Homework.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map((e) => Homework.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
         _loading = false;
       });
@@ -50,6 +49,27 @@ class _HomeworkTabState extends State<_HomeworkTab>
         _error = 'تعذّر تحميل الواجبات';
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _createHomework() async {
+    final result = await Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateHomeworkScreen(
+          children: [
+            {
+              'id': widget.childId,
+              'name': widget.childName,
+            },
+          ],
+          initialChildId: widget.childId,
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      await _load();
     }
   }
 
@@ -107,11 +127,34 @@ class _HomeworkTabState extends State<_HomeworkTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
     return Column(
       children: [
         _buildFilterBar(),
         Expanded(
-          child: RefreshIndicator(onRefresh: _load, child: _buildBody()),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: RefreshIndicator(
+                  onRefresh: _load,
+                  child: _buildBody(),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                bottom: 24 + bottomInset,
+                child: FloatingActionButton.extended(
+                  heroTag: 'create-homework-${widget.childId}',
+                  onPressed: _createHomework,
+                  icon: const Icon(AppIcons.add),
+                  label: const Text(
+                    'إنشاء واجب',
+                    style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

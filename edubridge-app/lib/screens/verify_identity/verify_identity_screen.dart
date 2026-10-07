@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../widgets/teacher_navigation_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
@@ -166,7 +165,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    // 1) موثّق — ابقَ في الشاشة واعرض الحالة بدلاً من إعادة التوجيه تلقائياً.
     if (_verificationStatus == 'verified') {
       return buildVerifiedState(
         context: context,
@@ -175,7 +173,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 2) قيد المراجعة
     if (_verificationStatus == 'pending') {
       return buildPendingState(
         context: context,
@@ -186,7 +183,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 3) مرفوض
     if (_verificationStatus == 'rejected') {
       return buildRejectedState(
         context: context,
@@ -200,7 +196,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
       );
     }
 
-    // 4) نموذج جديد
     return buildFormState(
       context: context,
       c: c,

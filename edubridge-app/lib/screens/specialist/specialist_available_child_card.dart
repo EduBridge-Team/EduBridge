@@ -29,7 +29,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
         ? 'مختص دعم تعليمي'
         : _mySpecialty == 'educational'
             ? 'مختص تعليمي'
-            : 'مختص (تخصصك غير محدد)';
+            : 'مختص';
 
     final specIcon = _mySpecialty == 'learning_support'
         ? AppIcons.specialist
@@ -65,12 +65,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             ),
             const SizedBox(height: 14),
-
-            // ─── نوع الإعاقة كشارة بارزة ───
-            if (disability.isNotEmpty)
-              _buildDisabilityBadge(disability, c),
-
-            // ─── كتل المعلومات ───
+            if (disability.isNotEmpty) _buildDisabilityBadge(disability, c),
             if (description.isNotEmpty)
               _buildInfoBlock(
                 label: 'وصف الإعاقة',
@@ -129,10 +124,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                 icon: AppIcons.warning,
                 c: c,
               ),
-
             const SizedBox(height: 12),
-
-            // ─── دعوة لاتخاذ القرار ───
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -150,7 +142,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'راجع المعلومات أعلاه لتحديد ما إذا كانت الحالة مناسبة لمتابعتك.',
+                      'راجع معلومات الحالة ثم قرر إن كانت مناسبة لتخصصك قبل قبول المتابعة.',
                       style: TextStyle(
                         fontSize: 12,
                         height: 1.4,
@@ -162,10 +154,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                 ],
               ),
             ),
-
             const SizedBox(height: 14),
-
-            // ─── زر الانضمام ───
             if (!hasSpecialty)
               SizedBox(
                 width: double.infinity,
@@ -217,7 +206,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                               strokeWidth: 2, color: Colors.white))
                       : Icon(specIcon, size: 20),
                   label: Text(
-                    isAdding ? 'جارٍ الإضافة...' : 'أضفني كـ$specType',
+                    isAdding ? 'جارٍ قبول المتابعة...' : 'متابعة الطفل كـ $specType',
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
@@ -231,9 +220,6 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  Header
-  // ═══════════════════════════════════════════════════════
   Widget _buildChildHeader({
     required String name,
     required dynamic age,
@@ -301,9 +287,6 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  شارة نوع الإعاقة
-  // ═══════════════════════════════════════════════════════
   Widget _buildDisabilityBadge(String disability, JisrColors c) {
     return Container(
       width: double.infinity,
@@ -336,9 +319,6 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  كتلة معلومات (label + value)
-  // ═══════════════════════════════════════════════════════
   Widget _buildInfoBlock({
     required String label,
     required String value,
@@ -389,9 +369,6 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  كتلة chips (نقاط قوة / تحديات)
-  // ═══════════════════════════════════════════════════════
   Widget _buildChipsBlock({
     required String label,
     required List<String> items,

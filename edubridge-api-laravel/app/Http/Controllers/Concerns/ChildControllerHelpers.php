@@ -18,7 +18,6 @@ trait ChildControllerHelpers
         return str_starts_with($url, $expectedPrefix);
     }
 
-    // فكّ ترميز أعمدة JSON (نقاط القوة/التحديات) وإرجاعها كمصفوفات
     private function decodeChild($child)
     {
         if (!$child) {
@@ -29,10 +28,8 @@ trait ChildControllerHelpers
                 $child->$key = json_decode($child->$key, true);
             }
         }
-        // لا نعيد الحقول الصحية القديمة في واجهات المنتج التعليمي.
         unset($child->medical_history, $child->psychologist_notes);
 
-        // للتوافق: لو ما فيه نوع إعاقة نصّي نستعمل اسم النوع من القائمة المرجعية
         if (empty($child->disability_type) && !empty($child->disability_name)) {
             $child->disability_type = $child->disability_name;
         }
@@ -45,20 +42,26 @@ trait ChildControllerHelpers
             return $child;
         }
 
-        // المختص المعيّن للطفل يحتاج بيانات الهوية والتقرير الطبي للمتابعة،
-        // لكن تبقى هذه البيانات للقراءة فقط ولا تظهر لباقي الطاقم.
+        $assignedSpecialist = false;
         if ($user->role === 'specialist' && !empty($child->id)) {
-            $assigned = DB::table('child_specialist')
+            $assignedSpecialist = DB::table('child_specialist')
                 ->where('child_id', (int) $child->id)
                 ->where('specialist_id', (int) $user->id)
                 ->exists();
-            if ($assigned) {
-                return $child;
-            }
         }
 
-        foreach (self::IDENTITY_FIELDS as $field) {
-            unset($child->$field);
+        // Assigned specialists may read the child's approved identity and relationship
+        // information needed for follow-up. Other staff roles never receive these fields.
+        if (!$assignedSpecialist) {
+            foreach ([
+                'child_national_id',
+                'guardian_national_id',
+                'guardian_id_document_url',
+                'kinship_document_url',
+                'medical_report_url',
+            ] as $field) {
+                unset($child->$field);
+            }
         }
 
         return $child;
@@ -176,7 +179,4 @@ trait ChildControllerHelpers
 
         return $child;
     }
-
-    // إضافة طفل (ولي أمر / أدمن)
-    // POST /api/children
 }

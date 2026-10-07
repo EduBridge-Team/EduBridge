@@ -62,6 +62,18 @@ void main() {
     expect((await SharedPreferences.getInstance()).getString('token'), 'legacy');
   });
 
+  test('logout revokes the secure token before deleting it', () async {
+    FlutterSecureStorage.setMockInitialValues({key: 'issued-session'});
+    String? revoked;
+    final store = TokenStore(revoke: (token) async => revoked = token);
+
+    await store.clear();
+
+    expect(revoked, 'issued-session');
+    expect(await storage.read(key: key), null);
+    expect(await store.get(), null);
+  });
+
   test('logout blocks failed deletion across restarts and permits new login', () async {
     SharedPreferences.setMockInitialValues({'token': 'old-plaintext'});
     FlutterSecureStorage.setMockInitialValues({key: 'old-secure'});
