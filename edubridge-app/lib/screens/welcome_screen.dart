@@ -114,10 +114,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
       body: SafeArea(child: _tour ? _buildTour() : SingleChildScrollView(
         key: const ValueKey('onboarding-welcome'),
         padding: const EdgeInsets.all(24),
-        child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
+        child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 420),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              const Flexible(child: BrandLockup(iconSize: 40, fontSize: 27)),
+              const Flexible(child: BrandLockup(iconSize: 64, fontSize: 30)),
               IconButton.filledTonal(onPressed: toggleThemeMode,
                 tooltip: dark ? 'الوضع الفاتح' : 'الوضع الداكن',
                 icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined)),
@@ -126,7 +126,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             _motion(0, Container(padding: const EdgeInsets.all(26), decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
               gradient: const LinearGradient(begin: Alignment.topRight, end: Alignment.bottomLeft,
-                colors: [_blue, Color(0xFF087E9A)]),
+                colors: [AppColors.brandBlueDeep, AppColors.brandBlue,
+                  AppColors.brandTealDeep, AppColors.brandTeal],
+                stops: [0, .4, .85, 1]),
               boxShadow: [BoxShadow(color: _blue.withValues(alpha: .18), blurRadius: 24, offset: const Offset(0, 10))]),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const Text('تعليم ذكي\nوشامل\nلكل طفل', style: TextStyle(color: Colors.white,
