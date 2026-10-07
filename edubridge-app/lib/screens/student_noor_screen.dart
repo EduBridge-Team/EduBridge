@@ -210,7 +210,7 @@ class _ActionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: c.surface,
+        color: c.card,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: c.line),
       ),
