@@ -234,6 +234,7 @@ class AccessibilityService {
     if (await ApiService.getRole() != 'specialist') {
       throw StateError('تعديل التكيف متاح للمختص فقط');
     }
+    if (_ownerId == null || session != _session) throw StateError('انتهت جلسة الحساب');
     // The API also checks assignment to this child. Persist locally only after
     // authorization succeeds, so read-only users cannot override the profile.
     final response = await ApiService.authPut(

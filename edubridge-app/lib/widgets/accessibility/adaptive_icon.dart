@@ -35,6 +35,7 @@ class AdaptiveIcon extends StatelessWidget {
           icon,
           size: effectiveSize,
           color: effectiveColor,
+          semanticLabel: semanticLabel,
         );
 
         if (!shouldRead) return iconWidget;
@@ -47,6 +48,7 @@ class AdaptiveIcon extends StatelessWidget {
           },
           child: Semantics(
             label: semanticLabel,
+            excludeSemantics: true,
             button: true,
             child: iconWidget,
           ),

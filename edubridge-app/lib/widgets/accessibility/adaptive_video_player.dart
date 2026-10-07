@@ -39,6 +39,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   bool _signFailed = false;
   bool _syncingSign = false;
   bool _lastPlaying = false;
+  bool _foreground = true;
   bool _showCaptions = false;
   bool _showSignLanguage = false;
   List<LessonCaption> _captions = [];
@@ -68,7 +69,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
       if (!mounted) return;
       // ✅ تفعيل الترجمات تلقائياً للصمّ
       final profile = AccessibilityService.instance.profile.value;
-      if (profile.videoCaptions || profile.type == DisabilityType.deaf) {
+      if (profile.videoCaptions) {
         _showCaptions = true;
       }
 
@@ -86,7 +87,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
 
       _controller.addListener(_onVideoUpdate);
       if (widget.signLanguageUrl != null) _initializeSign();
-      await _controller.play();
+      if (_foreground) await _controller.play();
 
       if (mounted) setState(() => _initialized = true);
     } catch (e) {
@@ -131,7 +132,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
       if (!mounted) return;
       if (sign.value.playbackSpeed != main.playbackSpeed) await sign.setPlaybackSpeed(main.playbackSpeed);
       if (!mounted) return;
-      if (_showSignLanguage && main.isPlaying && target < sign.value.duration) {
+      if (_foreground && _showSignLanguage && main.isPlaying && target < sign.value.duration) {
         if (!sign.value.isPlaying) await sign.play();
       } else if (sign.value.isPlaying) {
         await sign.pause();
@@ -145,7 +146,8 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed && _created) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground && _created) {
       _controller.pause();
       _signController?.pause();
     }
@@ -156,7 +158,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
     final position = _controller.value.position;
 
     final caption = _captions.firstWhere(
-      (c) => position >= c.start && position <= c.end,
+      (c) => position >= c.start && position < c.end,
       orElse: () => const LessonCaption(
           start: Duration.zero, end: Duration.zero, text: ''),
     );

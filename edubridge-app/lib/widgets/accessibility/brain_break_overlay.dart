@@ -39,6 +39,18 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   }
 
   @override
+  void didUpdateWidget(covariant BrainBreakScheduler oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.profileListenable != widget.profileListenable) {
+      (oldWidget.profileListenable ?? AccessibilityService.instance.applicationProfile)
+          .removeListener(_reschedule);
+      (widget.profileListenable ?? AccessibilityService.instance.applicationProfile)
+          .addListener(_reschedule);
+      _reschedule();
+    }
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     (widget.profileListenable ??
