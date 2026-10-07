@@ -48,45 +48,19 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
       _updateChildLessonsState(() => _error = null);
     }
 
-    try {
-      final responses = await Future.wait([
-        ApiService.authGet('/children/${widget.childId}/lessons'),
-        ApiService.authGet('/progress/child/${widget.childId}'),
-      ]);
-
-      final lessonsRes = responses[0];
-      final progressRes = responses[1];
-      final lessonsData = jsonDecode(lessonsRes.body);
-
-      if (lessonsRes.statusCode == 200) {
-        _doneLessonIds.clear();
-        if (progressRes.statusCode == 200) {
-          final progress = jsonDecode(progressRes.body)['progress'] ?? [];
-          for (final p in progress) {
-            if (p['status'] == 'done' && p['lesson_id'] is int) {
-              _doneLessonIds.add(p['lesson_id'] as int);
-            }
-          }
-        }
-        if (!mounted) return;
-        _updateChildLessonsState(() {
-          _lessons = lessonsData['lessons'] ?? [];
-          _loading = false;
-        });
+    final result = await _lessonsRepository.load(widget.childId);
+    if (!mounted) return;
+    _updateChildLessonsState(() {
+      if (result.error == null) {
+        _doneLessonIds
+          ..clear()
+          ..addAll(result.doneLessonIds);
+        _lessons = result.lessons;
       } else {
-        if (!mounted) return;
-        _updateChildLessonsState(() {
-          _error = lessonsData['error'] ?? 'تعذّر جلب الدروس';
-          _loading = false;
-        });
+        _error = result.error;
       }
-    } catch (e) {
-      if (!mounted) return;
-      _updateChildLessonsState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
-        _loading = false;
-      });
-    }
+      _loading = false;
+    });
   }
 
   Future<void> _markLessonDone(int lessonId) async {
