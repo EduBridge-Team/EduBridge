@@ -1,5 +1,6 @@
 // لعبة بناء الكلمة — للأعمار 7-14
 import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 
@@ -22,9 +23,9 @@ class WordBuilderGame extends StatefulWidget {
 
 class _WordBuilderGameState extends State<WordBuilderGame> {
   static const _wordsByAge = {
-    7: ['بيت', 'شمس', 'قمر', 'ماء', 'باب'],
-    10: ['كتاب', 'مدرسة', 'شجرة', 'زهرة', 'سماء'],
-    13: ['مكتبة', 'مستشفى', 'مطار', 'جامعة', 'مزرعة'],
+    7: ['بيت', 'شمس', 'قمر', 'ماء', 'باب', 'قلم', 'ورد', 'بحر', 'نجم', 'تمر', 'خبز', 'نهر'],
+    10: ['كتاب', 'مدرسة', 'شجرة', 'زهرة', 'سماء', 'تفاحة', 'سيارة', 'نافذة', 'حقيبة', 'حديقة', 'طائرة', 'دراجة'],
+    13: ['مكتبة', 'مستشفى', 'مطار', 'جامعة', 'مزرعة', 'موسيقى', 'رياضة', 'مهندس', 'معلمة', 'مختبر', 'مسرحية', 'مسابقة'],
   };
 
   late List<String> _words;
@@ -57,7 +58,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
       _onWin();
       return;
     }
-    _currentWord = _words[_rnd.nextInt(_words.length)];
+    _currentWord = GameContent.instance.pick('word_builder', _words, (word) => word);
     _scrambled = _currentWord.split('');
     do {
       _scrambled.shuffle(_rnd);

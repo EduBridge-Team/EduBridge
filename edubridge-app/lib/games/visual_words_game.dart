@@ -1,6 +1,6 @@
 // لعبة الكلمات البصرية — لمتلازمة داون والإعاقة الذهنية
 // الطفل يرى صورة ويكون عليه اختيار الكلمة الصحيحة من بين 4 خيارات
-import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -38,14 +38,17 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     ('✏️', 'قلم'),
     ('🧸', 'دبدوب'),
     ('🚲', 'دراجة'),
+    ('🍌', 'موز'), ('🍇', 'عنب'), ('🌸', 'زهرة'), ('🐘', 'فيل'),
+    ('🐢', 'سلحفاة'), ('🦋', 'فراشة'), ('✈️', 'طائرة'), ('🚂', 'قطار'),
+    ('⚽', 'كرة'), ('🔑', 'مفتاح'), ('⏰', 'ساعة'), ('🥕', 'جزر'),
   ];
 
   late (String, String) _target;
   late List<(String, String)> _options;
   int _round = 0;
+  bool _transitioning = false;
   int _score = 0;
   int _streak = 0;
-  final _rnd = Random();
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -68,17 +71,17 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   //  بدء جولة جديدة
   // ═══════════════════════════════════════════════════════
   void _newRound() {
+    if (!mounted) return;
+    _transitioning = false;
     if (_round >= _totalRounds) {
       _onWin();
       return;
     }
 
     // خلط الكلمات واختيار عدد مناسب
-    final shuffled = [..._words]..shuffle(_rnd);
-    _options = shuffled.take(_optionCount).toList();
-
-    // الهدف عشوائي من الخيارات
-    _target = _options[_rnd.nextInt(_options.length)];
+    _target = GameContent.instance.pick('visual_words', _words, (item) => item.$2);
+    final distractors = [..._words]..remove(_target)..shuffle();
+    _options = [_target, ...distractors.take(_optionCount - 1)]..shuffle();
 
     // ✅ نطق الكلمة بصوت بطيء للداون
     _speak(_target.$2);
@@ -98,7 +101,9 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   //  فحص الإجابة
   // ═══════════════════════════════════════════════════════
   Future<void> _check((String, String) option) async {
+    if (_transitioning) return;
     if (option.$2 == _target.$2) {
+      _transitioning = true;
       // ✅ صحيح
       HapticFeedback.heavyImpact();
       setState(() {

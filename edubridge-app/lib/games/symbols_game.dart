@@ -1,6 +1,6 @@
 // لعبة الرموز — لعمى الألوان
 // الطفل يتعلّم الألوان بالاعتماد على الرموز والأنماط بدلاً من الألوان فقط
-import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -35,9 +35,9 @@ class _SymbolsGameState extends State<SymbolsGame> {
   late List<(String, String, Color)> _options;
   late (String, String, Color) _target;
   int _round = 0;
+  bool _transitioning = false;
   int _score = 0;
   int _streak = 0;
-  final _rnd = Random();
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -54,17 +54,17 @@ class _SymbolsGameState extends State<SymbolsGame> {
   //  بدء جولة جديدة
   // ═══════════════════════════════════════════════════════
   void _newRound() {
+    if (!mounted) return;
+    _transitioning = false;
     if (_round >= _totalRounds) {
       _onWin();
       return;
     }
 
     // خلط الرموز واختيار 4
-    final shuffled = [..._symbols]..shuffle(_rnd);
-    _options = shuffled.take(4).toList();
-
-    // الهدف عشوائي من الخيارات
-    _target = _options[_rnd.nextInt(_options.length)];
+    _target = GameContent.instance.pick('symbols', _symbols, (item) => item.$2);
+    final distractors = [..._symbols]..remove(_target)..shuffle();
+    _options = [_target, ...distractors.take(3)]..shuffle();
 
     // نطق الهدف
     _speak('أين ${_target.$2}؟');
@@ -84,7 +84,9 @@ class _SymbolsGameState extends State<SymbolsGame> {
   //  فحص الإجابة
   // ═══════════════════════════════════════════════════════
   Future<void> _check((String, String, Color) option) async {
+    if (_transitioning) return;
     if (option.$2 == _target.$2) {
+      _transitioning = true;
       // ✅ صحيح
       HapticFeedback.heavyImpact();
       setState(() {

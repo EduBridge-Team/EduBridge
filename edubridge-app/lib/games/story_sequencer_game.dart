@@ -1,6 +1,7 @@
 // لعبة رتّب القصة — للأعمار 6-12
 // الطفل يرى صوراً مبعثرة ويجب أن يرتّبها حسب ترتيب الأحداث
 import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -42,13 +43,13 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     ),
     (
       title: 'يوم كامل',
-      emojis: ['☀️', '🌤️', '🌧️', '🌙'],
+      emojis: ['🌅', '☀️', '🌇', '🌙'],
       labels: ['الصباح', 'الظهر', 'المساء', 'الليل'],
     ),
     (
       title: 'دورة الماء',
-      emojis: ['💧', '🌊', '☁️', '☔'],
-      labels: ['التبخّر', 'البحر', 'السحاب', 'المطر'],
+      emojis: ['🌊', '☀️', '☁️', '☔'],
+      labels: ['البحر', 'التبخّر', 'السحاب', 'المطر'],
     ),
     (
       title: 'رحلة الفراشة',
@@ -110,7 +111,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
       return;
     }
 
-    final story = _stories[_rnd.nextInt(_stories.length)];
+    final story = GameContent.instance.pick('stories', _stories, (item) => item.title);
 
     // خذ عدد البطاقات المناسب للعمر
     final count = _cardCount;

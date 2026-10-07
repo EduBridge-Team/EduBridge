@@ -20,6 +20,8 @@ import '../games/word_builder_game.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
 import '../services/game_progress_service.dart';
+import '../games/game_content.dart';
+import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/game_catalog.dart';
 
@@ -198,6 +200,8 @@ class EducationalGamesScreen extends StatelessWidget {
         childId: childId,
         gameKey: game.id,
       );
+      await GameContent.instance.prepare(
+        ownerId: await ApiService.getUserId(), childId: childId);
       await GameProgressService.instance.flushPending();
       if (!context.mounted) return;
       await Navigator.push(

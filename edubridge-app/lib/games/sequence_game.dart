@@ -1,6 +1,7 @@
 // لعبة التسلسل والترتيب — للتوحّد والإعاقة الذهنية
 // الطفل يرى 3 صور مبعثرة ويجب أن يرتّبها حسب الترتيب الصحيح
 import 'dart:math';
+import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,7 @@ class _SequenceGameState extends State<SequenceGame> {
       labels: ['الصباح', 'الظهر', 'الليل'],
     ),
     (
-      emojis: ['🐣', '🐥', '🐔'],
+      emojis: ['🥚', '🐣', '🐔'],
       title: 'البيضة → الكتكوت → الدجاجة',
       labels: ['البيضة', 'الكتكوت', 'الدجاجة'],
     ),
@@ -84,7 +85,7 @@ class _SequenceGameState extends State<SequenceGame> {
       return;
     }
 
-    final seq = _sequences[_rnd.nextInt(_sequences.length)];
+    final seq = GameContent.instance.pick('sequences', _sequences, (item) => item.title);
     _correctOrder = List<String>.from(seq.emojis);
     _correctLabels = List<String>.from(seq.labels);
     _hint = seq.title;
