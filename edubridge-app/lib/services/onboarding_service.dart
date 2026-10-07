@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OnboardingService {
   OnboardingService._();
 
-  static const _seenKey = 'edubridge_onboarding_seen_v1';
+  static const _seenKey = 'edubridge_onboarding_seen_v2';
 
   static Future<bool> hasSeen() async {
     final prefs = await SharedPreferences.getInstance();
