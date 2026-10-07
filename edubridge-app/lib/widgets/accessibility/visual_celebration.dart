@@ -1,4 +1,5 @@
 // احتفال بصري — يتكيّف تلقائياً مع كل إعاقة
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,8 @@ class VisualCelebration extends StatefulWidget {
   final bool calmMode;
   final bool blindMode;
   final bool deafMode;
+  final bool noMotion;
+  final VoidCallback? onDismiss;
 
   const VisualCelebration({
     super.key,
@@ -23,6 +26,8 @@ class VisualCelebration extends StatefulWidget {
     this.calmMode = false,
     this.blindMode = false,
     this.deafMode = false,
+    this.noMotion = false,
+    this.onDismiss,
   });
 
   static Future<void> show(
@@ -38,12 +43,16 @@ class VisualCelebration extends StatefulWidget {
 
     final profile = AccessibilityService.instance.profile.value;
 
-    final isCalm = profile.sensoryCalmMode || profile.reducedAnimations;
+    final isCalm = profile.sensoryCalmMode || profile.reducedAnimations ||
+        profile.noFlashing || MediaQuery.disableAnimationsOf(context);
     final isBlind = profile.type == DisabilityType.blind;
     final isDeaf = profile.type == DisabilityType.deaf;
     final isDown = profile.type == DisabilityType.downSyndrome;
     final isAutismSevere = profile.type == DisabilityType.autismSevere;
 
+    final noMotion = profile.reducedAnimations || profile.noFlashing ||
+        MediaQuery.disableAnimationsOf(context);
+    final untimed = profile.noTimedInteractions || profile.noTimers || profile.unlimitedTime;
     // ─── الصوت ───
     if (playSound && !profile.sensoryCalmMode && !isDeaf) {
       if (isDown) {
@@ -58,7 +67,7 @@ class VisualCelebration extends StatefulWidget {
     }
 
     // ─── للأعمى ───
-    if (isBlind) {
+    if (isBlind && profile.vibrationAlerts && !profile.sensoryCalmMode) {
       HapticFeedback.heavyImpact();
       await Future.delayed(const Duration(milliseconds: 150));
       HapticFeedback.heavyImpact();
@@ -67,7 +76,7 @@ class VisualCelebration extends StatefulWidget {
     }
 
     // ─── للأصمّ ───
-    if (isDeaf) {
+    if (isDeaf && profile.vibrationAlerts && !profile.sensoryCalmMode) {
       for (var i = 0; i < 3; i++) {
         HapticFeedback.heavyImpact();
         await Future.delayed(const Duration(milliseconds: 120));
@@ -80,7 +89,13 @@ class VisualCelebration extends StatefulWidget {
             ? const Duration(seconds: 4)
             : duration;
 
+    final dismissed = Completer<void>();
     late OverlayEntry entry;
+    void close() {
+      if (dismissed.isCompleted) return;
+      entry.remove();
+      dismissed.complete();
+    }
     entry = OverlayEntry(
       builder: (_) => VisualCelebration(
         message: message,
@@ -89,6 +104,8 @@ class VisualCelebration extends StatefulWidget {
         calmMode: isCalm,
         blindMode: isBlind,
         deafMode: isDeaf,
+        noMotion: noMotion || untimed,
+        onDismiss: untimed ? close : null,
       ),
     );
 
@@ -98,12 +115,11 @@ class VisualCelebration extends StatefulWidget {
       return;
     }
 
-    await Future.delayed(actualDuration + const Duration(milliseconds: 500));
-
-    try {
-      entry.remove();
-    } catch (_) {
-      // الـ entry أُزيل مسبقاً — لا شيء لفعله
+    if (untimed) {
+      await dismissed.future;
+    } else {
+      await Future.delayed(actualDuration + const Duration(milliseconds: 500));
+      close();
     }
   }
 
@@ -122,7 +138,8 @@ class _VisualCelebrationState extends State<VisualCelebration>
     _ctrl = AnimationController(
       vsync: this,
       duration: widget.duration,
-    )..forward();
+    );
+    if (!widget.noMotion) _ctrl.forward();
 
     final int starCount;
     final List<String> emojis;
@@ -167,6 +184,18 @@ class _VisualCelebrationState extends State<VisualCelebration>
 
   @override
   Widget build(BuildContext context) {
+    if (widget.noMotion) {
+      return Positioned.fill(child: Center(child: Card(child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(widget.emoji ?? '⭐', style: const TextStyle(fontSize: 64)),
+          Text(widget.message, textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+          if (widget.onDismiss != null) TextButton(onPressed: widget.onDismiss,
+            child: const Text('متابعة')),
+        ]),
+      ))));
+    }
     final size = MediaQuery.of(context).size;
     final messageFontSize = widget.deafMode ? 32.0 : 26.0;
 

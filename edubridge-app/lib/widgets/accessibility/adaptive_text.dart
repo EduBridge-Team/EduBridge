@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/simple_language_service.dart';
 import '../../utils/adaptive_helper.dart';
-import 'adaptive_wrapper.dart';
 
 enum AdaptiveTextType { body, title, subtitle, caption, label }
 
@@ -37,13 +36,7 @@ class AdaptiveText extends StatelessWidget {
     return ValueListenableBuilder<AccessibilityProfile>(
       valueListenable: AccessibilityService.instance.profile,
       builder: (context, profile, _) {
-        // ═══════════════════════════════════════════════
-        //  1. وضع الأيقونات فقط → إخفاء النص (ما عدا العنوان)
-        // ═══════════════════════════════════════════════
-        if (IconOnlyScope.of(context) &&
-            type != AdaptiveTextType.title) {
-          return const SizedBox.shrink();
-        }
+        // A standalone text has no replacement icon: keep instructions readable.
 
         // ═══════════════════════════════════════════════
         //  2. تبسيط اللغة
@@ -84,6 +77,7 @@ class AdaptiveText extends StatelessWidget {
         final semanticWidget = profile.screenReaderOptimized
             ? Semantics(
                 label: finalText,
+                excludeSemantics: true,
                 child: textWidget,
               )
             : textWidget;

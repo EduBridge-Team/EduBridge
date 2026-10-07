@@ -28,9 +28,7 @@ class AdaptiveCard extends StatelessWidget {
         final radius = AdaptiveHelper.cardRadius;
         final bgColor = backgroundColor ?? AdaptiveHelper.cardColor(context);
         final effectiveBorder = borderColor ??
-            (profile.highContrast
-                ? const Color(0xFFFFD400)
-                : Theme.of(context).dividerColor);
+            Theme.of(context).dividerColor;
 
         final container = Container(
           padding: padding ?? EdgeInsets.all(AdaptiveHelper.spacing),

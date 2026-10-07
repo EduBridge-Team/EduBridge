@@ -72,7 +72,7 @@ final double? fontSize;
                       BorderRadius.circular(AdaptiveHelper.cardRadius - 4),
                 ),
               ),
-              onPressed: handleTap,
+              onPressed: onPressed == null ? null : handleTap,
               child: _buildChild(fontSize, iconSize, effectiveFg),
             );
             break;
@@ -91,7 +91,7 @@ final double? fontSize;
                       BorderRadius.circular(AdaptiveHelper.cardRadius - 4),
                 ),
               ),
-              onPressed: handleTap,
+              onPressed: onPressed == null ? null : handleTap,
               child: _buildChild(fontSize, iconSize, effectiveBg),
             );
             break;
@@ -102,7 +102,7 @@ final double? fontSize;
                 foregroundColor: effectiveBg,
                 minimumSize: Size(0, height * 0.8),
               ),
-              onPressed: handleTap,
+              onPressed: onPressed == null ? null : handleTap,
               child: _buildChild(fontSize, iconSize, effectiveBg),
             );
             break;

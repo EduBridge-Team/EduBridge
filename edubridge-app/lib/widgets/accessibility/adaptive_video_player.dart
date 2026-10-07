@@ -5,6 +5,7 @@ import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
+import '../../services/lesson_captions.dart';
 import '../../theme.dart';
 import '../../utils/adaptive_helper.dart';
 part 'adaptive_video_player_view.dart';
@@ -29,25 +30,35 @@ class AdaptiveVideoPlayer extends StatefulWidget {
   State<AdaptiveVideoPlayer> createState() => _AdaptiveVideoPlayerState();
 }
 
-class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
+class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsBindingObserver {
   late VideoPlayerController _controller;
   bool _initialized = false;
+  bool _created = false;
+  String? _error;
+  VideoPlayerController? _signController;
+  bool _signFailed = false;
+  bool _syncingSign = false;
+  bool _lastPlaying = false;
+  bool _foreground = true;
   bool _showCaptions = false;
   bool _showSignLanguage = false;
-  List<_Caption> _captions = [];
+  List<LessonCaption> _captions = [];
   String _currentCaption = '';
   String _signLanguagePosition = 'bottom_right';
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initialize();
   }
 
   Future<void> _initialize() async {
     try {
       _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+      _created = true;
       await _controller.initialize();
+      if (!mounted) return;
       await _controller.setLooping(false);
 
       // ✅ تحميل الترجمات إذا وُجدت
@@ -55,9 +66,10 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
         await _loadCaptions(widget.captionUrl!);
       }
 
+      if (!mounted) return;
       // ✅ تفعيل الترجمات تلقائياً للصمّ
       final profile = AccessibilityService.instance.profile.value;
-      if (profile.videoCaptions || profile.type == DisabilityType.deaf) {
+      if (profile.videoCaptions) {
         _showCaptions = true;
       }
 
@@ -74,11 +86,12 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
       }
 
       _controller.addListener(_onVideoUpdate);
-      await _controller.play();
+      if (widget.signLanguageUrl != null) _initializeSign();
+      if (_foreground) await _controller.play();
 
       if (mounted) setState(() => _initialized = true);
     } catch (e) {
-      if (mounted) setState(() => _initialized = false);
+      if (mounted) setState(() => _error = 'تعذّر تشغيل الفيديو. حاول فتح الدرس مجدداً.');
     }
   }
 
@@ -86,52 +99,58 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        _captions = _parseVTT(response.body);
+        _captions = parseLessonCaptions(response.body);
       }
     } catch (_) {}
   }
 
-  List<_Caption> _parseVTT(String content) {
-    final captions = <_Caption>[];
-    final blocks = content.split('\n\n');
-    for (final block in blocks) {
-      final lines = block.trim().split('\n');
-      for (final line in lines) {
-        if (line.contains('-->')) {
-          final times = line.split('-->');
-          if (times.length == 2) {
-            final start = _parseTime(times[0].trim());
-            final end = _parseTime(times[1].trim().split(' ')[0]);
-            final textLines = lines.sublist(lines.indexOf(line) + 1);
-            if (textLines.isNotEmpty) {
-              captions.add(_Caption(
-                start: start,
-                end: end,
-                text: textLines.join('\n'),
-              ));
-            }
-          }
-          break;
-        }
-      }
+  Future<void> _initializeSign() async {
+    try {
+      final sign = VideoPlayerController.networkUrl(Uri.parse(widget.signLanguageUrl!));
+      _signController = sign;
+      await sign.initialize();
+      if (!mounted) return;
+      await sign.setVolume(0);
+      if (!mounted) return;
+      setState(() {});
+      await _syncSign();
+    } catch (_) {
+      if (mounted) setState(() => _signFailed = true);
     }
-    return captions;
   }
 
-  Duration _parseTime(String time) {
-    final parts = time.split(':');
-    if (parts.length == 3) {
-      final hours = int.tryParse(parts[0]) ?? 0;
-      final minutes = int.tryParse(parts[1]) ?? 0;
-      final seconds = double.tryParse(parts[2].replaceAll(',', '.')) ?? 0;
-      return Duration(
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds.toInt(),
-        milliseconds: ((seconds - seconds.toInt()) * 1000).toInt(),
-      );
+  Future<void> _syncSign() async {
+    final sign = _signController;
+    if (_syncingSign || sign == null || !sign.value.isInitialized || !mounted) return;
+    _syncingSign = true;
+    try {
+      final main = _controller.value;
+      final target = main.position > sign.value.duration ? sign.value.duration : main.position;
+      if ((sign.value.position - target).inMilliseconds.abs() > 350) {
+        await sign.seekTo(target);
+      }
+      if (!mounted) return;
+      if (sign.value.playbackSpeed != main.playbackSpeed) await sign.setPlaybackSpeed(main.playbackSpeed);
+      if (!mounted) return;
+      if (_foreground && _showSignLanguage && main.isPlaying && target < sign.value.duration) {
+        if (!sign.value.isPlaying) await sign.play();
+      } else if (sign.value.isPlaying) {
+        await sign.pause();
+      }
+    } catch (_) {
+      if (mounted) setState(() => _signFailed = true);
+    } finally {
+      _syncingSign = false;
     }
-    return Duration.zero;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground && _created) {
+      _controller.pause();
+      _signController?.pause();
+    }
   }
 
   void _onVideoUpdate() {
@@ -139,14 +158,18 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
     final position = _controller.value.position;
 
     final caption = _captions.firstWhere(
-      (c) => position >= c.start && position <= c.end,
-      orElse: () => const _Caption(
+      (c) => position >= c.start && position < c.end,
+      orElse: () => const LessonCaption(
           start: Duration.zero, end: Duration.zero, text: ''),
     );
 
-    if (caption.text != _currentCaption) {
-      setState(() => _currentCaption = caption.text);
+    if (caption.text != _currentCaption || _lastPlaying != _controller.value.isPlaying) {
+      setState(() {
+        _currentCaption = caption.text;
+        _lastPlaying = _controller.value.isPlaying;
+      });
     }
+    _syncSign();
   }
 
   void _toggleCaptions() {
@@ -157,6 +180,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
   void _toggleSignLanguage() {
     AdaptiveHelper.hapticFeedback();
     setState(() => _showSignLanguage = !_showSignLanguage);
+    _syncSign();
   }
 
   void _cycleSignPosition() {
@@ -170,8 +194,12 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
 
   @override
   void dispose() {
-    _controller.removeListener(_onVideoUpdate);
-    _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    if (_created) {
+      _controller.removeListener(_onVideoUpdate);
+      _controller.dispose();
+    }
+    _signController?.dispose();
     super.dispose();
   }
 
@@ -218,25 +246,13 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            // فيديو لغة الإشارة (VideoPlayer آخر)
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.sign_language,
-                      color: AppColors.orange, size: 48),
-                  const SizedBox(height: 8),
-                  Text(
-                    'مترجم الإشارة',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            Center(child: _signFailed
+                ? const Text('تعذّر تحميل لغة الإشارة', textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white))
+                : _signController?.value.isInitialized == true
+                    ? AspectRatio(aspectRatio: _signController!.value.aspectRatio,
+                        child: VideoPlayer(_signController!))
+                    : const CircularProgressIndicator()),
             // زر إغلاق
             Positioned(
               top: 4,
@@ -292,7 +308,8 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
                 icon: const Icon(Icons.replay_10, color: Colors.white),
                 onPressed: () {
                   final pos = _controller.value.position;
-                  _controller.seekTo(pos - const Duration(seconds: 10));
+                  _controller.seekTo(pos < const Duration(seconds: 10)
+                      ? Duration.zero : pos - const Duration(seconds: 10));
                 },
               ),
               const SizedBox(width: 16),
@@ -318,7 +335,8 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
                 icon: const Icon(Icons.forward_10, color: Colors.white),
                 onPressed: () {
                   final pos = _controller.value.position;
-                  _controller.seekTo(pos + const Duration(seconds: 10));
+                  _controller.seekTo(pos + const Duration(seconds: 10) > _controller.value.duration
+                      ? _controller.value.duration : pos + const Duration(seconds: 10));
                 },
               ),
             ],
@@ -327,16 +345,4 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> {
       ),
     );
   }
-}
-
-class _Caption {
-  final Duration start;
-  final Duration end;
-  final String text;
-
-  const _Caption({
-    required this.start,
-    required this.end,
-    required this.text,
-  });
 }
