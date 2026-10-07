@@ -60,3 +60,14 @@ Phase 2 extracts matching-board resolution, position-based ordering (shared by
 sequences, stories and repeated-letter words), and rhythm progress/pause state.
 Widgets retain timing, speech, haptics, styling, age/content selection and saving.
 The matching widget's generation check still discards callbacks from a reset board.
+
+Phase 4 (authentication) is deferred at the user's request. Authentication,
+token storage and authenticated API helpers remain unchanged.
+
+Phase 5 begins with injectable child-lessons and adaptation-permission
+repositories. Lesson loading preserves endpoint paths, parallel requests, media
+fields, completed integer IDs and existing error messages. The settings screen
+still grants editing only for HTTP 200 with literal can_edit=true; server failures
+remain read-only. The screen retains saving and child-scope lifecycle behavior.
+Fifteen regression tests cover these boundaries. Media lifecycle and caption
+state extraction remain subsequent work, not completed by this change.
