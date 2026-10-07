@@ -55,3 +55,8 @@ After each PR: run `flutter analyze --no-fatal-warnings --no-fatal-infos`,
 `flutter test`, and the required CI builds. Visual/navigation checks are still
 needed for later UI refactors; passing unit tests alone is not evidence that every
 feature of the whole application has been manually exercised.
+
+Phase 2 extracts matching-board resolution, position-based ordering (shared by
+sequences, stories and repeated-letter words), and rhythm progress/pause state.
+Widgets retain timing, speech, haptics, styling, age/content selection and saving.
+The matching widget's generation check still discards callbacks from a reset board.

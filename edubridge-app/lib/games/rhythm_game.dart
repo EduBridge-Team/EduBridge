@@ -2,6 +2,7 @@
 // الطفل ينقر مع الكلمات بإيقاع بطيء — يقلّل التأتأة ويساعد على الطلاقة
 import 'dart:async';
 import 'game_content.dart';
+import '../features/games/domain/rhythm_session.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -39,12 +40,13 @@ class _RhythmGameState extends State<RhythmGame> {
     'ورد',
   ];
 
-  List<String> _sessionWords = [];
-  int _currentIndex = 0;
-  int _tapCount = 0;
+  final _session = RhythmSession();
+  List<String> get _sessionWords => _session.words;
+  int get _currentIndex => _session.index;
+  int get _tapCount => _session.tapCount;
+  bool get _isPlaying => _session.playing;
+  bool get _isPaused => _session.paused;
   Timer? _beatTimer;
-  bool _isPlaying = false;
-  bool _isPaused = false;
 
   // ✅ سرعة الإيقاع (بالثواني) — بطيئة جداً
   final int _beatDurationSeconds = 3;
@@ -67,11 +69,7 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _start() {
     setState(() {
-      _sessionWords = GameContent.instance.take('rhythm', _words, _totalWords, (word) => word);
-      _isPlaying = true;
-      _isPaused = false;
-      _currentIndex = 0;
-      _tapCount = 0;
+      _session.start(GameContent.instance.take('rhythm', _words, _totalWords, (word) => word));
     });
 
     // رسالة ترحيب
@@ -104,8 +102,7 @@ class _RhythmGameState extends State<RhythmGame> {
     _beatTimer = Timer(Duration(seconds: _beatDurationSeconds), () {
       if (!mounted || !_isPlaying || _isPaused) return;
       setState(() {
-        _currentIndex++;
-        _tapCount = 0;
+        _session.advance();
       });
       _speakCurrentWord();
     });
@@ -117,20 +114,20 @@ class _RhythmGameState extends State<RhythmGame> {
   void _tap() {
     if (!_isPlaying || _isPaused) return;
     HapticFeedback.lightImpact();
-    setState(() => _tapCount++);
+    setState(_session.tap);
   }
 
   // ═══════════════════════════════════════════════════════
   //  إيقاف / متابعة
   // ═══════════════════════════════════════════════════════
   void _pause() {
-    setState(() => _isPaused = true);
+    setState(_session.pause);
     _beatTimer?.cancel();
     TtsService.instance.speakLineSlow('توقفنا مؤقتاً');
   }
 
   void _resume() {
-    setState(() => _isPaused = false);
+    setState(_session.resume);
     _speakCurrentWord();
     TtsService.instance.speakLineSlow('نكمل');
   }
@@ -141,11 +138,6 @@ class _RhythmGameState extends State<RhythmGame> {
   void _restart() {
     _beatTimer?.cancel();
     TtsService.instance.stop();
-    setState(() {
-      _currentIndex = 0;
-      _tapCount = 0;
-      _isPaused = false;
-    });
     _start();
   }
 
@@ -154,7 +146,7 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _finish() async {
     _beatTimer?.cancel();
-    setState(() => _isPlaying = false);
+    setState(_session.finish);
 
     TtsService.instance.speakLineSlow(
       'أحسنت يا ${widget.childName}! أتممت التمرين',
