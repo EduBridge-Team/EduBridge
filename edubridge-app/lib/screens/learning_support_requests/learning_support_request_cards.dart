@@ -151,7 +151,7 @@ class LearningSupportRequestCard extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             'الموعد: ${s.day}/${s.month} '
-            PresentationText.clock(s),
+            '${PresentationText.clock(s)}',
             style: TextStyle(fontSize: 12, color: c.onTint),
           ),
         ],

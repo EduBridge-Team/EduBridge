@@ -295,7 +295,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
               const Spacer(),
               Text(
                 '${submission.submittedAt.day}/${submission.submittedAt.month} '
-                PresentationText.clock(submission.submittedAt),
+                '${PresentationText.clock(submission.submittedAt)}',
                 style: TextStyle(fontSize: 11, color: c.muted),
               ),
             ],
