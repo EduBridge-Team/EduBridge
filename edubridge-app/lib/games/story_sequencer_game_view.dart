@@ -18,7 +18,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
             tooltip: 'جولة جديدة',
             onPressed: () {
               _updateGame(() {
-                _userOrder = [];
+                _ordered.reset();
               });
               _speak('أعد ترتيب البطاقات');
             },

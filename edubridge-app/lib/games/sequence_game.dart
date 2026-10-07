@@ -2,6 +2,7 @@
 // الطفل يرى 3 صور مبعثرة ويجب أن يرتّبها حسب الترتيب الصحيح
 import 'dart:math';
 import 'game_content.dart';
+import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -55,14 +56,15 @@ class _SequenceGameState extends State<SequenceGame> {
     ),
   ];
 
-  late List<String> _shuffled;
+  late OrderedRound<String> _ordered;
+  List<String> get _shuffled => _ordered.choices;
   late List<String> _correctOrder;
   late List<String> _correctLabels;
   late String _hint;
   int _round = 0;
   int _score = 0;
   int _streak = 0;
-  List<String> _userOrder = [];
+  List<String> get _userOrder => _ordered.selected;
   final _rnd = Random();
 
   AccessibilityProfile get _profile =>
@@ -90,13 +92,7 @@ class _SequenceGameState extends State<SequenceGame> {
     _correctLabels = List<String>.from(seq.labels);
     _hint = seq.title;
 
-    // خلط الترتيب (مع ضمان ترتيب مختلف)
-    do {
-      _shuffled = List<String>.from(_correctOrder);
-      _shuffled.shuffle(_rnd);
-    } while (_listEquals(_shuffled, _correctOrder));
-
-    _userOrder = [];
+    _ordered = OrderedRound(_correctOrder, random: _rnd);
 
     // ✅ نطق التعليمات
     _speak('رتّب: $_hint');
@@ -112,22 +108,15 @@ class _SequenceGameState extends State<SequenceGame> {
     }
   }
 
-  bool _listEquals(List<String> a, List<String> b) {
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
-  }
 
   // ═══════════════════════════════════════════════════════
   //  ضغط على بطاقة
   // ═══════════════════════════════════════════════════════
   void _tapEmoji(String emoji) {
-    if (_userOrder.contains(emoji)) return;
+    if (_ordered.complete || _userOrder.contains(emoji)) return;
 
     HapticFeedback.lightImpact();
-    setState(() => _userOrder.add(emoji));
+    setState(() => _ordered.selectValue(emoji));
 
     if (_userOrder.length == _correctOrder.length) {
       Future.delayed(const Duration(milliseconds: 400), _check);
@@ -138,7 +127,8 @@ class _SequenceGameState extends State<SequenceGame> {
   //  فحص الترتيب
   // ═══════════════════════════════════════════════════════
   void _check() {
-    if (_listEquals(_userOrder, _correctOrder)) {
+    if (!mounted || !_ordered.complete) return;
+    if (_ordered.correct) {
       // ✅ صحيح
       HapticFeedback.heavyImpact();
       setState(() {
@@ -162,7 +152,7 @@ class _SequenceGameState extends State<SequenceGame> {
       _speak('حاول مرة أخرى — فكّر بالترتيب');
 
       setState(() {
-        _userOrder = [];
+        _ordered.reset();
         _streak = 0;
       });
     }

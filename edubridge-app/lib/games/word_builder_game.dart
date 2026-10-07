@@ -1,6 +1,7 @@
 // لعبة بناء الكلمة — للأعمار 7-14
 import 'dart:math';
 import 'game_content.dart';
+import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 
@@ -30,10 +31,10 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
 
   late List<String> _words;
   late String _currentWord;
-  late List<String> _scrambled;
-  List<String> _userOrder = [];
-  // ✅ إصلاح: نتتبّع الحروف بالـ index بدل القيمة → يدعم الحروف المكررة
-  final Set<int> _usedIndices = {};
+  late OrderedRound<String> _ordered;
+  List<String> get _scrambled => _ordered.choices;
+  List<String> get _userOrder => _ordered.selected;
+  Set<int> get _usedIndices => _ordered.usedIndices;
   int _round = 0;
   int _score = 0;
   final _rnd = Random();
@@ -59,13 +60,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
       return;
     }
     _currentWord = GameContent.instance.pick('word_builder', _words, (word) => word);
-    _scrambled = _currentWord.split('');
-    do {
-      _scrambled.shuffle(_rnd);
-    } while (_scrambled.join() == _currentWord && _currentWord.length > 1);
-
-    _userOrder = [];
-    _usedIndices.clear(); // ✅ إصلاح
+    _ordered = OrderedRound(_currentWord.split(''), random: _rnd);
 
     TtsService.instance.speakLine('رتّب الحروف لتكوين كلمة');
     setState(() {});
@@ -73,10 +68,9 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
 
   void _tapLetter(int index) {
     // ✅ إصلاح: التحقق بالـ index وليس بالقيمة
-    if (_usedIndices.contains(index)) return;
+    if (_ordered.complete || _usedIndices.contains(index)) return;
     setState(() {
-      _usedIndices.add(index);
-      _userOrder.add(_scrambled[index]);
+      _ordered.selectIndex(index);
     });
     if (_userOrder.length == _currentWord.length) {
       Future.delayed(const Duration(milliseconds: 300), _check);
@@ -84,8 +78,8 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
   }
 
   void _check() {
-    final attempt = _userOrder.join();
-    if (attempt == _currentWord) {
+    if (!mounted || !_ordered.complete) return;
+    if (_ordered.correct) {
       setState(() {
         _score++;
         _round++;
@@ -96,8 +90,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
       });
     } else {
       setState(() {
-        _userOrder = [];
-        _usedIndices.clear();
+        _ordered.reset();
       });
       TtsService.instance.speakLine('حاول مرة أخرى');
     }
