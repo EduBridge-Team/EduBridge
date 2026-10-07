@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
+import '../features/notifications/domain/notification_feed.dart';
 import 'notification_page.dart';
 import 'websocket_service.dart';
 
@@ -53,18 +54,7 @@ class NotificationListenerService {
   }
 
   List<dynamic> _merge(List<dynamic> incoming) {
-    final byId = <int, Map<String, dynamic>>{};
-    for (final row in notifications.value) {
-      byId[row['id'] as int] = Map<String, dynamic>.from(row as Map);
-    }
-    for (final row in incoming) {
-      final id = row['id'] as int;
-      byId[id] = {...Map<String, dynamic>.from(row as Map),
-        // Read status is monotonic; delayed responses must not undo a local read.
-        if (byId[id]?['is_read'] == true) 'is_read': true,
-      };
-    }
-    return byId.values.toList()..sort((a, b) => (b['id'] as int).compareTo(a['id'] as int));
+    return NotificationFeed.merge(notifications.value, incoming);
   }
 
   Future<void> reloadAll() => _serial((generation) async {
