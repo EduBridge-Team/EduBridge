@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'assistant_screen.dart';
+import 'create_homework_screen.dart';
 
 class StudentNoorScreen extends StatefulWidget {
   final int childId;
@@ -22,6 +23,7 @@ class StudentNoorScreen extends StatefulWidget {
 
 class _StudentNoorScreenState extends State<StudentNoorScreen> {
   late Future<_StudentNoorData> _contextFuture;
+  bool _generatingHomeworkDraft = false;
 
   @override
   void initState() {
@@ -50,8 +52,13 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         .where((item) => item.title.isNotEmpty)
         .take(3)
         .toList(growable: false);
+    final role = (await ApiService.getRole() ?? '').trim().toLowerCase();
 
-    return _StudentNoorData(context: context, actions: actions);
+    return _StudentNoorData(
+      context: context,
+      actions: actions,
+      role: role,
+    );
   }
 
   Future<void> _openChat(_StudentNoorData data, {_StudentNoorAction? action}) async {
@@ -72,6 +79,63 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         builder: (_) => AssistantScreen(lessonContext: context),
       ),
     );
+  }
+
+  Future<void> _createHomeworkDraft() async {
+    if (_generatingHomeworkDraft) return;
+    setState(() => _generatingHomeworkDraft = true);
+
+    try {
+      final response = await ApiService.authPost(
+        '/assistant/students/${widget.childId}/draft-homework',
+        const {},
+      );
+      final data = ApiService.decodeMap(response.body);
+      if (response.statusCode != 200 || data['draft'] is! Map) {
+        throw Exception(
+          data['error'] ?? data['message'] ?? 'تعذّر إنشاء مسودة الواجب.',
+        );
+      }
+
+      final draft = Map<String, dynamic>.from(data['draft'] as Map);
+      final title = (draft['title'] ?? '').toString().trim();
+      final description = (draft['description'] ?? '').toString().trim();
+      final subject = (draft['subject'] ?? '').toString().trim();
+      final dueInDays = (draft['due_in_days'] as num?)?.toInt() ?? 7;
+      if (title.isEmpty || description.isEmpty) {
+        throw Exception('وصلت مسودة غير مكتملة من نور.');
+      }
+
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CreateHomeworkScreen(
+            children: [
+              {'id': widget.childId, 'name': widget.childName},
+            ],
+            initialChildId: widget.childId,
+            initialTitle: title,
+            initialDescription: description,
+            initialSubject: subject.isEmpty ? null : subject,
+            initialDueDate: DateTime.now().add(
+              Duration(days: dueInDays.clamp(1, 30).toInt()),
+            ),
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _generatingHomeworkDraft = false);
+    }
   }
 
   @override
@@ -167,7 +231,37 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                   const SizedBox(height: 10),
                 ],
               ],
-              const SizedBox(height: 6),
+              if (data.role == 'teacher') ...[
+                const SizedBox(height: 4),
+                SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: _generatingHomeworkDraft
+                        ? null
+                        : _createHomeworkDraft,
+                    icon: _generatingHomeworkDraft
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.assignment_outlined),
+                    label: Text(
+                      _generatingHomeworkDraft
+                          ? 'نور تجهّز المسودة...'
+                          : 'إنشاء مسودة واجب بنور',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'ستفتح المسودة في نموذج الواجب لتراجعها وتعدّلها قبل النشر.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colors.muted, fontSize: 11.5),
+                ),
+                const SizedBox(height: 12),
+              ],
               SizedBox(
                 height: 52,
                 child: FilledButton.icon(
@@ -271,8 +365,13 @@ class _ActionCard extends StatelessWidget {
 class _StudentNoorData {
   final String context;
   final List<_StudentNoorAction> actions;
+  final String role;
 
-  const _StudentNoorData({required this.context, required this.actions});
+  const _StudentNoorData({
+    required this.context,
+    required this.actions,
+    required this.role,
+  });
 }
 
 class _StudentNoorAction {
