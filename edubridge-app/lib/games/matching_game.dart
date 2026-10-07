@@ -1,6 +1,7 @@
 // لعبة مطابقة الأزواج
 import 'dart:async';
 import 'game_content.dart';
+import '../features/games/domain/matching_board.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import '../services/accessibility_service.dart';
@@ -29,15 +30,12 @@ class _MatchingGameState extends State<MatchingGame> {
     '⚽', '🏀', '🧸', '🎈', '🌻', '🌳', '🦋', '🐢',
   ];
 
-  late List<_Card> _cards;
+  late MatchingBoard _board;
   int _generation = 0;
-  int? _firstIndex;
-  int? _secondIndex;
-  bool _locked = false;
-  int _matches = 0;
-  int _attempts = 0;
-  int _mistakes = 0;
-  int _streak = 0;
+  List<MatchingCard> get _cards => _board.cards;
+  int get _matches => _board.matches;
+  int get _attempts => _board.attempts;
+  int get _mistakes => _board.mistakes;
   Timer? _timer;
   int _secondsElapsed = 0;
 
@@ -59,18 +57,8 @@ class _MatchingGameState extends State<MatchingGame> {
     final selected = GameContent.instance.take('matching', items, 4, (item) => item);
     final all = [...selected, ...selected]..shuffle();
 
-    _cards = all
-        .map((emoji) => _Card(emoji: emoji, matched: false, flipped: false))
-        .toList();
-
-    _firstIndex = null;
-    _secondIndex = null;
-    _matches = 0;
-    _attempts = 0;
-    _mistakes = 0;
-    _streak = 0;
+    _board = MatchingBoard(all);
     _secondsElapsed = 0;
-    _locked = false;
 
     EncouragementService.instance.praiseGame();
 
@@ -83,72 +71,38 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   void _flip(int index) {
-    if (_locked || _cards[index].flipped || _cards[index].matched) return;
-
-    setState(() {
-      _cards[index] = _cards[index].copyWith(flipped: true);
-    });
-
-    if (_firstIndex == null) {
-      _firstIndex = index;
-    } else if (_secondIndex == null) {
-      _secondIndex = index;
-      _attempts++;
-      _checkMatch();
-    }
+    var ready = false;
+    setState(() => ready = _board.flip(index));
+    if (ready) _checkMatch();
   }
 
   void _checkMatch() async {
-    _locked = true;
     final generation = _generation;
     await Future.delayed(const Duration(milliseconds: 700));
-
     if (!mounted || generation != _generation) return;
-    final first = _cards[_firstIndex!];
-    final second = _cards[_secondIndex!];
-
-    if (first.emoji == second.emoji) {
-      setState(() {
-        _cards[_firstIndex!] = first.copyWith(matched: true);
-        _cards[_secondIndex!] = second.copyWith(matched: true);
-        _matches++;
-        _streak++;
-      });
-
-      if (_streak == 3) {
+    bool? matched;
+    setState(() => matched = _board.resolve());
+    if (matched == null) return;
+    if (matched!) {
+      if (_board.streak == 3) {
         EncouragementService.instance.praiseStreak();
       } else {
         EncouragementService.instance.praiseSuccess();
       }
-
-      if (_matches == _cards.length ~/ 2) {
+      if (_board.finished) {
         _timer?.cancel();
         await Future.delayed(const Duration(milliseconds: 400));
         if (!mounted || generation != _generation) return;
         _onWin();
       }
-    } else {
-      setState(() {
-        _cards[_firstIndex!] = first.copyWith(flipped: false);
-        _cards[_secondIndex!] = second.copyWith(flipped: false);
-        _mistakes++;
-        _streak = 0;
-      });
-
-      if (_mistakes % 2 == 0) {
-        EncouragementService.instance.gentleRetry();
-      }
+    } else if (_mistakes % 2 == 0) {
+      EncouragementService.instance.gentleRetry();
     }
-
-    setState(() {
-      _firstIndex = null;
-      _secondIndex = null;
-      _locked = false;
-    });
+    setState(_board.release);
   }
 
   Future<void> _onWin() async {
-    final score = (((_cards.length ~/ 2) / _attempts) * 100).round().clamp(0, 100).toInt();
+    final score = _board.scorePercent;
     await GameProgressService.instance.record(score);
 
     await VisualCelebration.show(
@@ -285,7 +239,7 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   Widget _buildCard(
-    _Card card,
+    MatchingCard card,
     int index,
     double fontSize,
     bool isCalm,
@@ -326,22 +280,4 @@ class _MatchingGameState extends State<MatchingGame> {
       ),
     );
   }
-}
-
-class _Card {
-  final String emoji;
-  final bool matched;
-  final bool flipped;
-
-  const _Card({
-    required this.emoji,
-    this.matched = false,
-    this.flipped = false,
-  });
-
-  _Card copyWith({bool? matched, bool? flipped}) => _Card(
-        emoji: emoji,
-        matched: matched ?? this.matched,
-        flipped: flipped ?? this.flipped,
-      );
 }

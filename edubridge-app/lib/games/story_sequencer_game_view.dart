@@ -18,7 +18,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
             tooltip: 'جولة جديدة',
             onPressed: () {
               _updateGame(() {
-                _userOrder = [];
+                _ordered.reset();
               });
               _speak('أعد ترتيب البطاقات');
             },
@@ -296,7 +296,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                         style: TextStyle(fontSize: 16),
                       ),
                       onPressed: () {
-                        _updateGame(() => _userOrder = []);
+                        _updateGame(() => _ordered.reset());
                         _speak('أعد المحاولة');
                       },
                     ),
