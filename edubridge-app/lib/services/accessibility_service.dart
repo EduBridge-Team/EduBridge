@@ -31,8 +31,25 @@ class AccessibilityService {
 
   final Map<int, AccessibilityProfile> _childProfiles = {};
 
-  static const _kParentKey = 'acc_parent_profile';
-  static const _kChildKeyPrefix = 'acc_child_profile_';
+  int? _ownerId;
+  int _session = 0;
+  String get _kParentKey => 'acc_user_${_ownerId}_parent';
+  String get _kChildKeyPrefix => 'acc_user_${_ownerId}_child_';
+
+  void resetSession() {
+    _session++;
+    _ownerId = null;
+    _childProfiles.clear();
+    _parentProfile = const AccessibilityProfile(type: DisabilityType.none);
+    activeChildId.value = null;
+    profile.value = _parentProfile;
+    applicationProfile.value = _parentProfile;
+  }
+
+  Future<void> _ensureAccount() async {
+    final owner = await ApiService.getUserId();
+    if (owner != _ownerId) await load();
+  }
 
   bool get isAdhd => profile.value.type == DisabilityType.adhd;
   bool get isAutism =>
@@ -46,8 +63,8 @@ class AccessibilityService {
   double get minTouchSize =>
       profile.value.extraLargeTouchTargets ? 88 : 56;
 
-  Duration get animationDuration => profile.value.reducedAnimations
-      ? const Duration(milliseconds: 80)
+  Duration get animationDuration => (profile.value.reducedAnimations || profile.value.noFlashing)
+      ? Duration.zero
       : const Duration(milliseconds: 260);
 
   AccessibilityProfile? profileForChild(int childId) =>
@@ -57,7 +74,20 @@ class AccessibilityService {
       Map.unmodifiable(_childProfiles);
 
   Future<void> load() async {
+    final pendingSession = _session;
+    final owner = await ApiService.getUserId();
+    if (pendingSession != _session) return;
+    resetSession();
+    _ownerId = owner;
+    final session = _session;
     final prefs = await SharedPreferences.getInstance();
+    if (session != _session || owner == null || owner <= 0) return;
+    // Legacy caches were shared across accounts and cannot be assigned safely.
+    for (final key in prefs.getKeys().where((key) =>
+        key == 'acc_parent_profile' || key.startsWith('acc_child_profile_'))) {
+      await prefs.remove(key);
+    }
+    if (session != _session) return;
 
     final parentRaw = prefs.getString(_kParentKey);
     if (parentRaw != null) {
@@ -85,14 +115,18 @@ class AccessibilityService {
   }
 
   Future<void> _persistParent(AccessibilityProfile p) async {
+    if (_ownerId == null) return;
+    final key = _kParentKey;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kParentKey, jsonEncode(p.toJson()));
+    await prefs.setString(key, jsonEncode(p.toJson()));
   }
 
   Future<void> _persistChild(int childId, AccessibilityProfile p) async {
+    if (_ownerId == null) return;
+    final key = '$_kChildKeyPrefix$childId';
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-      '$_kChildKeyPrefix$childId',
+      key,
       jsonEncode(p.toJson()),
     );
   }
@@ -104,6 +138,9 @@ class AccessibilityService {
     String? disabilityTypeHint,
     bool forceReload = false,
   }) async {
+    await _ensureAccount();
+    final session = _session;
+    if (_ownerId == null) return _parentProfile;
     if (!forceReload && _childProfiles.containsKey(childId)) {
       return _childProfiles[childId]!;
     }
@@ -111,6 +148,11 @@ class AccessibilityService {
     try {
       final res =
           await ApiService.authGet('/children/$childId/accessibility-profile');
+      if (session != _session) return const AccessibilityProfile(type: DisabilityType.none);
+      if ([401, 403, 404].contains(res.statusCode)) {
+        await removeChild(childId);
+        return const AccessibilityProfile(type: DisabilityType.none);
+      }
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         final raw = body is Map ? body['profile'] : null;
@@ -127,6 +169,7 @@ class AccessibilityService {
       // العمل دون اتصال: نستخدم النسخة المحلية/الموصى بها.
     }
 
+    if (session != _session) return const AccessibilityProfile(type: DisabilityType.none);
     final existing = _childProfiles[childId];
     if (existing != null) return existing;
 
@@ -147,7 +190,10 @@ class AccessibilityService {
     String? disabilityTypeHint,
     bool forceReload = false,
   }) async {
+    await _ensureAccount();
+    final session = _session;
     activeChildId.value = childId;
+    profile.value = _parentProfile;
 
     if (childId == null) {
       profile.value = _parentProfile;
@@ -161,12 +207,13 @@ class AccessibilityService {
     );
 
     // قد تُغلق الصفحة أثناء جلب الملف من الشبكة؛ لا تعِد تفعيل طفل قديم.
-    if (activeChildId.value == childId) {
+    if (session == _session && activeChildId.value == childId) {
       profile.value = childProfile;
     }
   }
 
   Future<void> updateActive(AccessibilityProfile next) async {
+    await _ensureAccount();
     if (activeChildId.value == null) {
       _parentProfile = next;
       profile.value = next;
@@ -182,9 +229,12 @@ class AccessibilityService {
     int childId,
     AccessibilityProfile next,
   ) async {
+    await _ensureAccount();
+    final session = _session;
     if (await ApiService.getRole() != 'specialist') {
       throw StateError('تعديل التكيف متاح للمختص فقط');
     }
+    if (_ownerId == null || session != _session) throw StateError('انتهت جلسة الحساب');
     // The API also checks assignment to this child. Persist locally only after
     // authorization succeeds, so read-only users cannot override the profile.
     final response = await ApiService.authPut(
@@ -194,9 +244,10 @@ class AccessibilityService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw StateError('تعذّر حفظ إعدادات التكيف');
     }
+    if (session != _session) throw StateError('انتهت جلسة الحساب');
     _childProfiles[childId] = next;
     await _persistChild(childId, next);
-    if (activeChildId.value == childId) profile.value = next;
+    if (session == _session && activeChildId.value == childId) profile.value = next;
   }
 
   Future<void> applyRecommendedForChild(
@@ -211,9 +262,10 @@ class AccessibilityService {
   }
 
   Future<void> removeChild(int childId) async {
+    final key = '$_kChildKeyPrefix$childId';
     _childProfiles.remove(childId);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('$_kChildKeyPrefix$childId');
+    await prefs.remove(key);
     if (activeChildId.value == childId) {
       await setActiveChild(null);
     }

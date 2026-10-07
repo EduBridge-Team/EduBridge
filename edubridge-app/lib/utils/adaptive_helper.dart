@@ -100,63 +100,23 @@ class AdaptiveHelper {
 
 
   /// لون الخلفية الرئيسي
-  static Color surfaceColor(BuildContext context) {
-    if (profile.highContrast) return Colors.black;
-    if (profile.type == DisabilityType.blind) return Colors.black;
-    if (profile.sensoryCalmMode) return const Color(0xFFF0F9FA);
-    if (profile.type == DisabilityType.autismMild) {
-      return const Color(0xFFF0F9FA);
-    }
-    if (profile.type == DisabilityType.downSyndrome) {
-      return const Color(0xFFF1FAF1);
-    }
-    return Theme.of(context).scaffoldBackgroundColor;
-  }
+  static Color surfaceColor(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
 
   /// لون النص الرئيسي
-  static Color textColor(BuildContext context) {
-    if (profile.highContrast) return Colors.white;
-    if (profile.type == DisabilityType.blind) return Colors.white;
-    return Theme.of(context).colorScheme.onSurface;
-  }
+  static Color textColor(BuildContext context) => Theme.of(context).colorScheme.onSurface;
 
   /// لون التمييز
-  static Color accentColor(BuildContext context) {
-    if (profile.highContrast) return const Color(0xFFFFD400);
-    if (profile.type == DisabilityType.blind) return const Color(0xFFFFD400);
-    if (profile.type == DisabilityType.downSyndrome) {
-      return const Color(0xFF57B25A);
-    }
-    if (profile.type == DisabilityType.adhd) return const Color(0xFFF2842B);
-    if (profile.type == DisabilityType.autismMild) {
-      return const Color(0xFF1AA9B2);
-    }
-    if (profile.type == DisabilityType.deaf) return const Color(0xFFF06C8B);
-    if (profile.type == DisabilityType.stuttering) {
-      return const Color(0xFF8B6DD4);
-    }
-    if (profile.type == DisabilityType.mildIntellectual) {
-      return const Color(0xFFD98B2B);
-    }
-    if (profile.type == DisabilityType.motorDisability) {
-      return const Color(0xFF5C6BC0);
-    }
-    return Theme.of(context).colorScheme.primary;
-  }
+  static Color accentColor(BuildContext context) => Theme.of(context).colorScheme.primary;
 
   /// لون الكارت
-  static Color cardColor(BuildContext context) {
-    if (profile.highContrast) return Colors.black;
-    if (profile.type == DisabilityType.blind) return const Color(0xFF1A1A1A);
-    return Theme.of(context).cardColor;
-  }
+  static Color cardColor(BuildContext context) => Theme.of(context).cardColor;
 
   // ═══════════════════════════════════════════════════════════
   //  ⚡ الأنيميشن
   // ═══════════════════════════════════════════════════════════
 
   static Duration get animationDuration {
-    if (profile.reducedAnimations) return const Duration(milliseconds: 80);
+    if (profile.reducedAnimations || profile.noFlashing) return Duration.zero;
     if (profile.type == DisabilityType.blind) {
       return const Duration(milliseconds: 100);
     }
@@ -194,13 +154,11 @@ class AdaptiveHelper {
 
   /// اهتزاز عند اللمس (للصمّ)
   static Future<void> hapticFeedback() async {
-    if (profile.vibrationAlerts ||
-        profile.type == DisabilityType.deaf ||
-        profile.type == DisabilityType.blind) {
+    if (profile.vibrationAlerts) {
       await HapticFeedback.mediumImpact();
     }
   }
 
   /// هل الأنيميشن مفعّل؟
-  static bool get isAnimated => !profile.reducedAnimations;
+  static bool get isAnimated => !profile.reducedAnimations && !profile.noFlashing;
 }

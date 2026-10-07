@@ -130,7 +130,8 @@ Widget buildAdaptiveHeader({
     ),
   );
 
-  if (profile.visualTimerEnabled && !profile.noTimers) {
+  if (profile.visualTimerEnabled && !profile.noTimers &&
+      !profile.noTimedInteractions && !profile.unlimitedTime) {
     final timerMinutes =
         (profile.timerRenewalMinutes > 0) ? profile.timerRenewalMinutes : 5;
     items.add(

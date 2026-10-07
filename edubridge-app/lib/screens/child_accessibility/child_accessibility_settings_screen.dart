@@ -38,6 +38,9 @@ class _ChildAccessibilitySettingsScreenState
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
   bool _canEdit = false;
+  bool _saving = false;
+  bool _loadingPermission = true;
+  bool get _canChange => _canEdit && !_saving;
 
   @override
   void initState() {
@@ -59,6 +62,8 @@ class _ChildAccessibilitySettingsScreenState
       if (mounted) setState(() => _canEdit = response.statusCode == 200 && data['can_edit'] == true);
     } catch (_) {
       if (mounted) setState(() => _canEdit = false);
+    } finally {
+      if (mounted) setState(() => _loadingPermission = false);
     }
   }
 
@@ -76,7 +81,8 @@ class _ChildAccessibilitySettingsScreenState
       const AccessibilityProfile(type: DisabilityType.none);
 
   Future<bool> _set(AccessibilityProfile next) async {
-    if (!_canEdit) return false;
+    if (!_canChange) return false;
+    setState(() => _saving = true);
     try {
       await AccessibilityService.instance.updateForChild(widget.childId, next);
       return true;
@@ -86,11 +92,13 @@ class _ChildAccessibilitySettingsScreenState
         const SnackBar(content: Text('تعذّر حفظ إعدادات التكيف')),
       );
       return false;
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _openDisabilityPicker() async {
-    if (!_canEdit) return;
+    if (!_canChange) return;
     final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -100,7 +108,8 @@ class _ChildAccessibilitySettingsScreenState
       ),
     );
 
-    if (result == null) return;
+    if (!mounted || result == null) return;
+    final previous = _selectedDisability;
 
     setState(() => _selectedDisability = result);
 
@@ -110,7 +119,10 @@ class _ChildAccessibilitySettingsScreenState
     final saved = await _set(AccessibilityProfile.recommendedFor(
       type, customName: type == DisabilityType.other ? result : null,
     ));
-    if (!saved) return;
+    if (!saved) {
+      if (mounted) setState(() => _selectedDisability = previous);
+      return;
+    }
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -124,7 +136,7 @@ class _ChildAccessibilitySettingsScreenState
   }
 
   Future<void> _applyCustom() async {
-    if (!_canEdit) return;
+    if (!_canChange) return;
     final name = _customNameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +161,10 @@ class _ChildAccessibilitySettingsScreenState
 
   @override
   Widget build(BuildContext context) {
+    if (_loadingPermission) {
+      return Scaffold(appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        body: const Center(child: CircularProgressIndicator()));
+    }
     if (!_canEdit) {
       return Scaffold(
         appBar: JisrAppBar(title: 'إعدادات التكيف'),

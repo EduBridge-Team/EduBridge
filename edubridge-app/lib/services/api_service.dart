@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 import 'google_auth_service.dart';
 import 'token_store.dart';
+import 'accessibility_service.dart';
 import 'notification_page.dart';
 import 'list_page.dart';
 import 'websocket_service.dart';
