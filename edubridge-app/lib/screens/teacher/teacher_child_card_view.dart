@@ -28,7 +28,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    name.isNotEmpty ? name.characters.first : '؟',
+                    PresentationText.initial(name, fallback: '؟'),
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -153,7 +153,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
             ),
             const SizedBox(height: 14),
             InkWell(
-              onTap: () => setState(() => _expanded = !_expanded),
+              onTap: _toggleExpanded,
               borderRadius: BorderRadius.circular(14),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),

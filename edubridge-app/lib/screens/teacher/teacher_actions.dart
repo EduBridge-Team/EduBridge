@@ -121,23 +121,4 @@ extension _TeacherActions on _TeacherScreenState {
     );
   }
 
-  void _openNotifications() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-  }
-
-  Future<void> _openCreateHomework() async {
-    if (!await _checkVerification()) return;
-    if (!mounted) return;
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => CreateHomeworkScreen(children: _children)),
-    );
-    if (result == true) {
-      _loadData();
-    } else if (result is int && mounted) {
-      setState(() => _tabIndex = result < 0 ? 0 : (result > 1 ? 1 : result));
-    }
-  }
 }

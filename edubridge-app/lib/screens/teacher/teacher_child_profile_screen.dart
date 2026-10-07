@@ -1,3 +1,4 @@
+import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../features/students/data/student_profile_repository.dart';
@@ -208,9 +209,8 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
     );
   }
 
-
   Widget _hero(JisrColors c, {dynamic age, required String disability}) {
-    final initial = _childName.trim().isEmpty ? '؟' : _childName.trim().characters.first;
+    final initial = PresentationText.initial(_childName, trim: true, fallback: '؟');
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(

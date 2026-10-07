@@ -2,7 +2,6 @@
 part of 'specialist_screen.dart';
 
 extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenState {
-  Widget _buildNotificationBell() => const SizedBox.shrink();
 
   Widget _buildFilterCard(JisrColors c) {
     return Padding(

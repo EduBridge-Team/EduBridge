@@ -233,7 +233,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
           radius: 26,
           backgroundColor: color,
           child: Text(
-            name.isNotEmpty ? name.characters.first : '؟',
+            PresentationText.initial(name, fallback: '؟'),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,

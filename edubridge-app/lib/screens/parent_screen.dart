@@ -1,3 +1,4 @@
+import '../utils/presentation_text.dart';
 // lib/screens/parent_screen.dart
 // لوحة ولي الأمر — بهوية EduBridge
 import 'dart:convert';
@@ -5,9 +6,6 @@ import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../utils/adaptive_helper.dart';
-import '../widgets/accessibility/adaptive_button.dart';
-import '../widgets/accessibility/adaptive_card.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';

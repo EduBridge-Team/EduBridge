@@ -1,3 +1,4 @@
+import '../utils/presentation_text.dart';
 // lib/screens/chats_screen.dart
 import 'package:flutter/material.dart';
 import '../widgets/teacher_navigation_bar.dart';
@@ -31,10 +32,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
     return text.isEmpty ? fallback : text;
   }
 
-  String _initial(Object? value) {
-    final text = _text(value, fallback: '؟').trim();
-    return text.isEmpty ? '؟' : text.characters.first;
-  }
+  String _initial(Object? value) =>
+      PresentationText.initial(value, trim: true);
 
   @override
   void initState() {
@@ -214,9 +213,7 @@ class _UserPickerSheet extends StatelessWidget {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  userName.trim().isEmpty
-                                      ? '؟'
-                                      : userName.trim().characters.first,
+                                  PresentationText.initial(userName, trim: true, fallback: '؟'),
                                   style: TextStyle(
                                     color: color,
                                     fontWeight: FontWeight.w800,
