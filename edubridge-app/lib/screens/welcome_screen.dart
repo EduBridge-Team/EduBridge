@@ -42,6 +42,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
     else { _entrance.forward(from: 0); }
   }
 
+  void _onTourPageChanged(int index) {
+    setState(() => _page = index);
+    _reveal();
+  }
+
   void _leaveTour() {
     _float.stop();
     setState(() => _tour = false);
