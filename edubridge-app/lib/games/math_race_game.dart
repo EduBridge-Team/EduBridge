@@ -1,7 +1,7 @@
 // لعبة سباق الحساب — للأعمار 7-14
 import 'dart:async';
-import 'dart:math';
-import 'game_content.dart';
+import '../features/games/application/game_question_factory.dart';
+import '../features/games/domain/arithmetic_question.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import 'package:flutter/services.dart';
@@ -19,15 +19,13 @@ class MathRaceGame extends StatefulWidget {
 }
 
 class _MathRaceGameState extends State<MathRaceGame> {
-  late int _a, _b;
+  final _questions = GameQuestionFactory();
+  late ArithmeticQuestion _question;
   late List<int> _options;
-  late String _op;
-  late int _answer;
   int _score = 0;
   int _wrong = 0;
   int _timeLeft = 60;
   Timer? _timer;
-  final _rnd = Random();
 
   AccessibilityProfile get _profile => AccessibilityService.instance.profile.value;
   bool get _noPressure => _profile.noTimers || _profile.type == DisabilityType.adhd;
@@ -56,35 +54,12 @@ class _MathRaceGameState extends State<MathRaceGame> {
   }
 
   void _newQuestion() {
-    final bank = <({int a, int b, String op})>[];
-    final max = widget.age <= 8 ? 10 : widget.age <= 11 ? 25 : 60;
-    for (var a = 1; a <= max; a++) {
-      for (var b = 1; b <= (widget.age <= 8 ? 10 : 15); b++) {
-        bank.add((a: a, b: b, op: '+'));
-        if (widget.age > 8 && a > b) bank.add((a: a, b: b, op: '-'));
-        if (widget.age > 11 && a <= 12 && b <= 12) bank.add((a: a, b: b, op: '×'));
-      }
-    }
-    final item = GameContent.instance.pick('math_${widget.age <= 8 ? 1 : widget.age <= 11 ? 2 : 3}',
-      bank, (item) => '${item.a}:${item.op}:${item.b}');
-    _a = item.a; _b = item.b; _op = item.op;
-    _answer = _op == '+' ? _a + _b : _op == '-' ? _a - _b : _a * _b;
-    _options = _generateOptions();
-  }
-
-  List<int> _generateOptions() {
-    final opts = <int>{_answer};
-    while (opts.length < 4) {
-      final diff = _rnd.nextInt(10) - 5;
-      final fake = _answer + diff;
-      if (fake > 0 && fake != _answer) opts.add(fake);
-    }
-    final list = opts.toList()..shuffle();
-    return list;
+    _question = _questions.arithmetic(widget.age);
+    _options = _questions.arithmeticChoices(_question);
   }
 
   Future<void> _check(int picked) async {
-    if (picked == _answer) {
+    if (picked == _question.answer) {
       setState(() => _score++);
       HapticFeedback.lightImpact();
       if (mounted) setState(() => _newQuestion());
@@ -156,7 +131,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FittedBox(fit: BoxFit.scaleDown, child: Text('$_a $_op $_b = ?',
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(_question.expression,
                       style: const TextStyle(
                         fontSize: 64, fontWeight: FontWeight.bold,
                         color: Color(0xFF12283A),
