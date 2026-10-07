@@ -30,7 +30,7 @@ void main() {
     await first.settled;
     final restarted = GameContent(random: Random(5));
     await restarted.prepare(ownerId: 1, childId: 10);
-    expect(used, isNot(contains(restarted.pick('words', bank, (item) => item))));
+    expect(used, isNot(contains(restarted.pick<String>('words', bank, (item) => item))));
     final otherChild = GameContent(random: Random(5));
     await otherChild.prepare(ownerId: 1, childId: 20);
     expect(otherChild.take('words', bank, 3, (item) => item), used);
