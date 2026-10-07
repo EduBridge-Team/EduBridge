@@ -20,6 +20,8 @@ Route::put('/settings', [\App\Http\Controllers\UserSettingsController::class, 'u
 
 Route::post('/assistant/chat', [\App\Http\Controllers\AssistantController::class, 'chat'])
     ->middleware('throttle:20,1');
+Route::get('/assistant/students/{child}/context', [\App\Http\Controllers\NoorStudentContextController::class, 'show'])
+    ->middleware('throttle:30,1');
 
 // المحادثات
 Route::get('/conversation-users', [\App\Http\Controllers\ConversationController::class, 'users']);
