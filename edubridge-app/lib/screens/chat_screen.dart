@@ -1,7 +1,7 @@
 // lib/screens/chat_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
-import '../services/api_service.dart';
+import '../features/communication/data/conversation_repository.dart';
 import '../theme.dart';
 import 'chat/chat_composer.dart';
 
@@ -26,6 +26,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final _repository = ConversationRepository();
   List _messages = [];
   final _messageCtrl = TextEditingController();
   bool _loading = true;
@@ -53,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     try {
-      final messages = await ApiService.getMessages(widget.conversationId);
+      final messages = await _repository.loadMessages(widget.conversationId);
       if (!mounted) return;
       setState(() {
         _messages = messages;
@@ -77,11 +78,9 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() => _sending = true);
 
     try {
-      await ApiService.sendMessage(
-        conversationId: widget.conversationId,
-        content: content,
-      );
+      await _repository.send(widget.conversationId, content);
 
+      if (!mounted) return;
       await _loadMessages();
     } catch (e) {
       if (!mounted) return;
