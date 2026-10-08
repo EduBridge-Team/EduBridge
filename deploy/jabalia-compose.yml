@@ -26,7 +26,7 @@ services:
     build:
       context: ../edubridge-api-laravel
       dockerfile: Dockerfile
-    image: edubridge-api:latest
+    image: edubridge-jabalia-api:latest
     container_name: edubridge-jabalia-api
     stop_grace_period: 200s
     restart: unless-stopped
@@ -74,12 +74,15 @@ services:
       args:
         VITE_API_URL: /api
         VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-    image: edubridge-web:latest
+    image: edubridge-jabalia-web:latest
     container_name: edubridge-jabalia-web
     restart: unless-stopped
     environment:
       PORT: "8080"
-      API_ORIGIN: https://api.edubridge.win
+      # Caddy should route /api directly to port 8091. If an API request ever
+      # reaches the web proxy, send it back through the Jabalia hostname rather
+      # than risking a fallback to the main EduBridge API/database.
+      API_ORIGIN: https://jabalia.edubridge.win
     depends_on:
       api:
         condition: service_healthy
