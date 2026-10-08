@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InstitutionAcademicController;
+use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionSchoolController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,5 +24,12 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/subjects', [InstitutionAcademicController::class, 'storeSubject']);
             Route::post('/teacher-assignments', [InstitutionAcademicController::class, 'assignTeacher']);
             Route::post('/student-enrollments', [InstitutionAcademicController::class, 'enrollStudent']);
+        });
+
+        Route::prefix('/schools/{school}/attendance')->whereNumber('school')->group(function () {
+            Route::get('/', [InstitutionAttendanceController::class, 'index']);
+            Route::post('/', [InstitutionAttendanceController::class, 'store']);
+            Route::get('/{attendanceSession}', [InstitutionAttendanceController::class, 'show'])->whereNumber('attendanceSession');
+            Route::put('/{attendanceSession}/records', [InstitutionAttendanceController::class, 'mark'])->whereNumber('attendanceSession');
         });
     });
