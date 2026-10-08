@@ -2,6 +2,8 @@ import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
+import '../../features/adaptation/data/adaptation_permission_repository.dart';
+import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../../features/students/data/student_profile_repository.dart';
 import '../../features/students/domain/student_profile.dart';
 import '../../features/students/presentation/student_profile_labels.dart';
@@ -37,6 +39,7 @@ class _SpecialistChildProfileScreenState
   final _repository = StudentProfileRepository();
   late StudentProfile _profile;
   Map<String, dynamic> get _child => _profile.toJson();
+  bool _canAdapt = false;
   bool _loading = true;
   String? _error;
 
@@ -52,12 +55,18 @@ class _SpecialistChildProfileScreenState
   Future<void> _load() async {
     setState(() {
       _loading = true;
+      _canAdapt = false;
       _error = null;
     });
     try {
       final profile = await _repository.load(_childId, allowAssignmentPreview: true);
+      final canAdapt = !profile.isAssignmentPreview &&
+          await AdaptationPermissionRepository().canEdit(_childId);
       if (!mounted) return;
-      setState(() => _profile = profile);
+      setState(() {
+        _profile = profile;
+        _canAdapt = canAdapt;
+      });
     } catch (_) {
       if (mounted) {
         setState(() =>
@@ -310,6 +319,23 @@ class _SpecialistChildProfileScreenState
                   ),
                 ),
               ),
+              if (_canAdapt)
+                _actionTile(
+                  c,
+                  icon: Icons.accessibility_new_rounded,
+                  title: 'تكييف التعلّم',
+                  subtitle: 'ضبط ميزات التكيّف المناسبة لهذا الطالب',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChildAccessibilitySettingsScreen(
+                        childId: _childId,
+                        childName: _childName,
+                        disabilityTypeHint: _profile.disability,
+                      ),
+                    ),
+                  ),
+                ),
               _actionTile(
                 c,
                 icon: AppIcons.lesson,
