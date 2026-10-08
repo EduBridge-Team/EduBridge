@@ -54,6 +54,31 @@ class AuthRegistrationPrivacyTest extends TestCase
         $this->assertSame('parent@example.com', $payload['user']['email']);
         $this->assertSame('parent', $payload['user']['role']);
     }
+    public function test_registration_populates_both_password_columns_when_legacy_password_is_required(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('password');
+        });
+
+        $request = Request::create('/api/auth/register', 'POST', [
+            'name' => 'Teacher',
+            'email' => 'teacher@example.com',
+            'password' => 'safe-password-123',
+            'role' => 'teacher',
+        ]);
+        $request->headers->set('Accept', 'application/json');
+
+        $response = app(AuthController::class)->register($request);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $account = \Illuminate\Support\Facades\DB::table('users')
+            ->where('email', 'teacher@example.com')
+            ->first();
+        $this->assertNotNull($account);
+        $this->assertSame($account->password, $account->password_hash);
+        $this->assertTrue(password_verify('safe-password-123', $account->password));
+    }
+
     public function test_public_registration_rejects_privileged_roles(): void
     {
         foreach (['admin', 'ministry', 'institution'] as $role) {
