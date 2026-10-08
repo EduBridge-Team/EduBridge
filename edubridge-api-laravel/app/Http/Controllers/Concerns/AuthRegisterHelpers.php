@@ -62,12 +62,22 @@ trait AuthRegisterHelpers
         array $input,
         string $passwordColumn
     ): array {
+        $passwordHash = password_hash($input['password'], PASSWORD_BCRYPT, ['cost' => 10]);
         $insert = [
             'name' => $input['name'],
             'email' => $input['email'],
-            $passwordColumn => password_hash($input['password'], PASSWORD_BCRYPT, ['cost' => 10]),
+            $passwordColumn => $passwordHash,
             'role' => $input['role'],
         ];
+
+        // Legacy deployments can have both columns, with password NOT NULL.
+        // Keep the hashes identical so authentication and credential revocation
+        // work regardless of which column a deployment reads.
+        if ($passwordColumn === 'password_hash' && Schema::hasColumn('users', 'password')) {
+            $insert['password'] = $passwordHash;
+        } elseif ($passwordColumn === 'password' && Schema::hasColumn('users', 'password_hash')) {
+            $insert['password_hash'] = $passwordHash;
+        }
 
         if (Schema::hasColumn('users', 'phone')) {
             $insert['phone'] = $input['phone'];
