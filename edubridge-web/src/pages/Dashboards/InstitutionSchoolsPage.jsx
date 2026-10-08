@@ -20,6 +20,7 @@ import {
   fetchInstitutionTimetable,
 } from '../../api'
 import { useInstitution } from '../../institutionContext'
+import '../../styles/institution-operations.css'
 
 const EMPTY_FORM = { name: '', slug: '', address: '', phone: '', email: '' }
 
@@ -136,7 +137,7 @@ export default function InstitutionSchoolsPage() {
   }
 
   return (
-    <div className="role-page role-institution">
+    <div className="role-page role-institution institution-operations-page">
       <main className="container container-wide role-dashboard institution-dashboard-v2">
         <section className="role-hero">
           <div className="role-hero-copy">
@@ -161,13 +162,13 @@ export default function InstitutionSchoolsPage() {
                 <p>لا تدخل بيانات تجريبية هنا؛ استخدم الاسم ووسائل التواصل المعتمدة من جمعية جباليا.</p>
               </div>
             </div>
-            <form className="form-grid" onSubmit={submitSchool}>
+            <form className="institution-school-form" onSubmit={submitSchool}>
               <label>اسم المدرسة<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
               <label>المعرّف الإنجليزي<input required dir="ltr" pattern="[a-z0-9][a-z0-9-]*" placeholder="school-slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })} /></label>
               <label>العنوان<input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></label>
               <label>الهاتف<input dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
               <label>البريد الإلكتروني<input dir="ltr" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
-              <div className="role-hero-actions">
+              <div className="role-hero-actions institution-school-form-actions">
                 <button className="btn" disabled={saving}>{saving ? 'جارِ الحفظ…' : 'حفظ المدرسة'}</button>
                 <button type="button" className="btn outline" onClick={() => setShowCreate(false)}>إلغاء</button>
               </div>
