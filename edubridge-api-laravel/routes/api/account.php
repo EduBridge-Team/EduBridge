@@ -22,6 +22,10 @@ Route::post('/assistant/chat', [\App\Http\Controllers\AssistantController::class
     ->middleware('throttle:20,1');
 Route::get('/assistant/students/{child}/context', [\App\Http\Controllers\NoorStudentContextController::class, 'show'])
     ->middleware('throttle:30,1');
+Route::post('/assistant/students/{child}/draft-homework', [\App\Http\Controllers\NoorHomeworkDraftController::class, 'store'])
+    ->middleware('throttle:10,1');
+Route::post('/assistant/students/{child}/draft-progress', [\App\Http\Controllers\NoorProgressDraftController::class, 'store'])
+    ->middleware('throttle:10,1');
 
 // المحادثات
 Route::get('/conversation-users', [\App\Http\Controllers\ConversationController::class, 'users']);

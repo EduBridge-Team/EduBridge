@@ -1,0 +1,70 @@
+:root {
+  --institution-primary: var(--primary, #2563eb);
+  --institution-secondary: var(--secondary, #14b8a6);
+}
+
+.institution-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  max-width: 100%;
+  padding: 0.55rem 0.8rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--institution-primary) 28%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--institution-primary) 8%, transparent);
+}
+
+.institution-brand-badge img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 9px;
+  background: white;
+}
+
+.institution-brand-badge-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  text-align: right;
+}
+
+.institution-brand-badge-text strong,
+.institution-topbar-name {
+  color: var(--institution-primary);
+}
+
+.institution-brand-badge-text span {
+  opacity: 0.76;
+  font-size: 0.86rem;
+}
+
+.institution-topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.institution-topbar-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: white;
+}
+
+.institution-topbar-name {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .institution-topbar-name { display: none; }
+}

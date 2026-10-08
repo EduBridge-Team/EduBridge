@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../theme.dart';
 import 'assistant_screen.dart';
+import 'create_homework_screen.dart';
 
 class StudentNoorScreen extends StatefulWidget {
   final int childId;
@@ -20,7 +22,8 @@ class StudentNoorScreen extends StatefulWidget {
 }
 
 class _StudentNoorScreenState extends State<StudentNoorScreen> {
-  late Future<String> _contextFuture;
+  late Future<_StudentNoorData> _contextFuture;
+  bool _generatingHomeworkDraft = false;
 
   @override
   void initState() {
@@ -28,7 +31,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
     _contextFuture = _loadContext();
   }
 
-  Future<String> _loadContext() async {
+  Future<_StudentNoorData> _loadContext() async {
     final response = await ApiService.authGet(
       '/assistant/students/${widget.childId}/context',
     );
@@ -36,16 +39,109 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
     if (response.statusCode != 200) {
       throw Exception(data['error'] ?? data['message'] ?? 'تعذّر تحميل سياق الطالب.');
     }
-    final context = (data['prompt_context'] ?? '').toString().trim();
-    return [
+
+    final promptContext = (data['prompt_context'] ?? '').toString().trim();
+    final context = [
       'أنت تتحدث الآن عن الطالب ${widget.childName}.',
-      context,
+      promptContext,
     ].where((value) => value.trim().isNotEmpty).join('\n');
+
+    final actions = (data['recommended_actions'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => _StudentNoorAction.fromMap(Map<String, dynamic>.from(item)))
+        .where((item) => item.title.isNotEmpty)
+        .take(3)
+        .toList(growable: false);
+    final role = (await ApiService.getRole() ?? '').trim().toLowerCase();
+
+    return _StudentNoorData(
+      context: context,
+      actions: actions,
+      role: role,
+    );
+  }
+
+  Future<void> _openChat(_StudentNoorData data, {_StudentNoorAction? action}) async {
+    final actionContext = action == null
+        ? ''
+        : [
+            'التوصية الحالية: ${action.title}.',
+            if (action.reason.isNotEmpty) 'السبب: ${action.reason}',
+            if (action.prompt.isNotEmpty) 'موضوع مقترح للنقاش: ${action.prompt}',
+          ].join('\n');
+    final context = [data.context, actionContext]
+        .where((value) => value.trim().isNotEmpty)
+        .join('\n');
+
+    await Navigator.push(
+      this.context,
+      MaterialPageRoute(
+        builder: (_) => AssistantScreen(lessonContext: context),
+      ),
+    );
+  }
+
+  Future<void> _createHomeworkDraft() async {
+    if (_generatingHomeworkDraft) return;
+    setState(() => _generatingHomeworkDraft = true);
+
+    try {
+      final response = await ApiService.authPost(
+        '/assistant/students/${widget.childId}/draft-homework',
+        const {},
+      );
+      final data = ApiService.decodeMap(response.body);
+      if (response.statusCode != 200 || data['draft'] is! Map) {
+        throw Exception(
+          data['error'] ?? data['message'] ?? 'تعذّر إنشاء مسودة الواجب.',
+        );
+      }
+
+      final draft = Map<String, dynamic>.from(data['draft'] as Map);
+      final title = (draft['title'] ?? '').toString().trim();
+      final description = (draft['description'] ?? '').toString().trim();
+      final subject = (draft['subject'] ?? '').toString().trim();
+      final dueInDays = (draft['due_in_days'] as num?)?.toInt() ?? 7;
+      if (title.isEmpty || description.isEmpty) {
+        throw Exception('وصلت مسودة غير مكتملة من نور.');
+      }
+
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CreateHomeworkScreen(
+            children: [
+              {'id': widget.childId, 'name': widget.childName},
+            ],
+            initialChildId: widget.childId,
+            initialTitle: title,
+            initialDescription: description,
+            initialSubject: subject.isEmpty ? null : subject,
+            initialDueDate: DateTime.now().add(
+              Duration(days: dueInDays.clamp(1, 30).toInt()),
+            ),
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _generatingHomeworkDraft = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
+    final colors = JisrColors.of(context);
+    return FutureBuilder<_StudentNoorData>(
       future: _contextFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
@@ -76,8 +172,227 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
             ),
           );
         }
-        return AssistantScreen(lessonContext: snapshot.data);
+
+        final data = snapshot.data!;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('نور • ${widget.childName}'),
+          ),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+            children: [
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: AppColors.headerGradient,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.auto_awesome_rounded, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'ملخص نور الذكي',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'هذه اقتراحات تعليمية مبنية على بيانات EduBridge المتاحة للطالب. لا تمثل تشخيصاً طبياً أو نفسياً، ولا يتم تنفيذ أي إجراء تلقائياً.',
+                      style: TextStyle(color: Colors.white, height: 1.55),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              if (data.actions.isNotEmpty) ...[
+                Text(
+                  'الخطوات التالية المقترحة',
+                  style: TextStyle(
+                    color: colors.heading,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                for (final action in data.actions) ...[
+                  _ActionCard(
+                    action: action,
+                    onAsk: () => _openChat(data, action: action),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ],
+              if (data.role == 'teacher') ...[
+                const SizedBox(height: 4),
+                SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: _generatingHomeworkDraft
+                        ? null
+                        : _createHomeworkDraft,
+                    icon: _generatingHomeworkDraft
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.assignment_outlined),
+                    label: Text(
+                      _generatingHomeworkDraft
+                          ? 'نور تجهّز المسودة...'
+                          : 'إنشاء مسودة واجب بنور',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'ستفتح المسودة في نموذج الواجب لتراجعها وتعدّلها قبل النشر.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colors.muted, fontSize: 11.5),
+                ),
+                const SizedBox(height: 12),
+              ],
+              SizedBox(
+                height: 52,
+                child: FilledButton.icon(
+                  onPressed: () => _openChat(data),
+                  icon: const Icon(Icons.chat_bubble_outline_rounded),
+                  label: const Text(
+                    'اسأل نور عن هذا الطالب',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  final _StudentNoorAction action;
+  final VoidCallback onAsk;
+
+  const _ActionCard({required this.action, required this.onAsk});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = JisrColors.of(context);
+    final priorityColor = switch (action.priority) {
+      'high' => AppColors.red,
+      'medium' => AppColors.orangeDeep,
+      _ => AppColors.brandTealDeep,
+    };
+    final priorityLabel = switch (action.priority) {
+      'high' => 'أولوية عالية',
+      'medium' => 'أولوية متوسطة',
+      _ => 'اقتراح متابعة',
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: c.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  action.title,
+                  style: TextStyle(
+                    color: c.heading,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: priorityColor.withValues(alpha: .10),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  priorityLabel,
+                  style: TextStyle(
+                    color: priorityColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (action.reason.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              action.reason,
+              style: TextStyle(color: c.body, height: 1.5, fontSize: 13),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton.icon(
+              onPressed: onAsk,
+              icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+              label: const Text('ناقشها مع نور'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StudentNoorData {
+  final String context;
+  final List<_StudentNoorAction> actions;
+  final String role;
+
+  const _StudentNoorData({
+    required this.context,
+    required this.actions,
+    required this.role,
+  });
+}
+
+class _StudentNoorAction {
+  final String priority;
+  final String title;
+  final String reason;
+  final String prompt;
+
+  const _StudentNoorAction({
+    required this.priority,
+    required this.title,
+    required this.reason,
+    required this.prompt,
+  });
+
+  factory _StudentNoorAction.fromMap(Map<String, dynamic> map) {
+    return _StudentNoorAction(
+      priority: (map['priority'] ?? 'low').toString().trim().toLowerCase(),
+      title: (map['title'] ?? '').toString().trim(),
+      reason: (map['reason'] ?? '').toString().trim(),
+      prompt: (map['suggested_prompt'] ?? '').toString().trim(),
     );
   }
 }

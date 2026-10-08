@@ -9,11 +9,17 @@ part 'create_specialist_progress_view.dart';
 class CreateSpecialistProgressScreen extends StatefulWidget {
   final int childId;
   final String childName;
+  final String? initialNotes;
+  final String? initialRecommendations;
+  final String? initialPlanEvaluation;
 
   const CreateSpecialistProgressScreen({
     super.key,
     required this.childId,
     required this.childName,
+    this.initialNotes,
+    this.initialRecommendations,
+    this.initialPlanEvaluation,
   });
 
   @override
@@ -41,6 +47,9 @@ class _CreateSpecialistProgressScreenState
   @override
   void initState() {
     super.initState();
+    _notesCtrl.text = widget.initialNotes?.trim() ?? '';
+    _recommendationsCtrl.text = widget.initialRecommendations?.trim() ?? '';
+    _planEvalCtrl.text = widget.initialPlanEvaluation?.trim() ?? '';
     _loadTeacherReport();
   }
 
