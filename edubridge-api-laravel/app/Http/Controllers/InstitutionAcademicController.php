@@ -143,6 +143,10 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'الصف أو السنة الدراسية لا يتبعان هذه المدرسة'], 422);
         }
 
+        if (!empty($data['homeroom_teacher_id']) && !$this->teacherWithinOrganization($request, (int) $data['homeroom_teacher_id'])) {
+            return response()->json(['error' => 'معلم الصف لا يتبع هذه المؤسسة'], 422);
+        }
+
         $exists = DB::table('sections')->where('grade_id', $data['grade_id'])->where('academic_year_id', $data['academic_year_id'])->where('name', $data['name'])->exists();
         if ($exists) {
             return response()->json(['error' => 'الشعبة موجودة مسبقاً'], 409);
@@ -195,12 +199,16 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'الشعبة أو المادة لا تتبع هذه المدرسة'], 422);
         }
 
-        $id = DB::table('teacher_assignments')->updateOrInsert(
+        if (!$this->teacherWithinOrganization($request, (int) $data['teacher_id'])) {
+            return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
+        }
+
+        DB::table('teacher_assignments')->updateOrInsert(
             ['section_id' => $data['section_id'], 'subject_id' => $data['subject_id'], 'teacher_id' => $data['teacher_id']],
             ['updated_at' => now(), 'created_at' => now()]
         );
 
-        return response()->json(['assigned' => (bool) $id], 201);
+        return response()->json(['assigned' => true], 201);
     }
 
     public function enrollStudent(Request $request, string $organizationSlug, int $school): JsonResponse
@@ -257,6 +265,17 @@ class InstitutionAcademicController extends Controller
             ->join('grades as g', 'g.id', '=', 's.grade_id')
             ->where('s.id', $section)
             ->where('g.school_id', $school)
+            ->exists();
+    }
+
+    private function teacherWithinOrganization(Request $request, int $teacher): bool
+    {
+        $organization = $request->attributes->get('organization');
+        return DB::table('organization_user')
+            ->where('organization_id', $organization->id)
+            ->where('user_id', $teacher)
+            ->where('is_active', true)
+            ->whereIn('role', ['teacher', 'owner', 'admin', 'school_admin'])
             ->exists();
     }
 }
