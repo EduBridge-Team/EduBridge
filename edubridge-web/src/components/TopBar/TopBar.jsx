@@ -94,6 +94,7 @@ export default function TopBar() {
           />
         ) : (
           <GuestTopBarMenu
+            allowRegistration={!institution}
             dark={dark}
             onLogin={() => {
               setOpen(false)
