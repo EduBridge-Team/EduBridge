@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
+import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';

@@ -284,6 +284,18 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        ),
+                        icon: const Icon(Icons.accessibility_new_rounded, size: 19),
+                        label: const Text('تكييف التعلّم'),
+                        onPressed: () => _openChildAdaptation(child),
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     _buildSuggestSpecialistButtons(row, child),
                     if (child['current_plan_id'] != null) ...[
