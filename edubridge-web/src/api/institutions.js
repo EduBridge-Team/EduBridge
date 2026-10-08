@@ -23,6 +23,10 @@ export function createInstitutionSchool(slug, payload) {
   })
 }
 
+export function fetchInstitutionParticipants(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/participants'))
+}
+
 export function fetchInstitutionAcademicOverview(slug, schoolId) {
   return request(schoolPath(slug, schoolId, '/academic'))
 }
