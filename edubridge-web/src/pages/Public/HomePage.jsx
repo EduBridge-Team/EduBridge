@@ -24,6 +24,7 @@ import '../../homepage-reference.css'
 const HERO_TITLE_LINE_ONE = 'تعليم يناسب قدرات'
 const HERO_TITLE_LINE_TWO = 'كل طفل'
 const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
+const JABALIA_LOGO = '/jabalia-logo.webp'
 
 const INSTITUTION_FEATURES = [
   {
@@ -62,6 +63,8 @@ function InstitutionHome({ institution, loggedIn, navigate, user }) {
   const displayName = institution?.settings?.display_name || institution?.name || 'المؤسسة التعليمية'
   const loginTitle = institution?.settings?.login_title || 'النظام الإلكتروني الذكي لإدارة المدرسة والتعليم البصري'
   const loginSubtitle = institution?.settings?.login_subtitle || 'بدعم من منصة EduBridge'
+  const isJabalia = institution?.slug === 'jabalia'
+  const institutionLogo = institution?.logo_url || (isJabalia ? JABALIA_LOGO : null)
 
   return (
     <div className="institution-home" dir="rtl">
@@ -70,8 +73,8 @@ function InstitutionHome({ institution, loggedIn, navigate, user }) {
           <span className="institution-home-kicker"><GraduationCap size={18} /> بوابة تعليمية مؤسسية</span>
           <div className="institution-home-identity">
             <div className="institution-home-logo-wrap">
-              {institution?.logo_url ? (
-                <img src={institution.logo_url} alt={`شعار ${displayName}`} />
+              {institutionLogo ? (
+                <img src={institutionLogo} alt={`شعار ${displayName}`} />
               ) : (
                 <div className="institution-home-logo-fallback" aria-hidden="true"><School size={34} /></div>
               )}
@@ -103,7 +106,11 @@ function InstitutionHome({ institution, loggedIn, navigate, user }) {
 
         <div className="institution-home-visual" aria-label={`هوية ${displayName}`}>
           <div className="institution-home-visual-card">
-            <div className="institution-home-visual-mark"><School size={52} /></div>
+            {institutionLogo ? (
+              <img className="institution-home-visual-logo" src={institutionLogo} alt={`شعار ${displayName}`} />
+            ) : (
+              <div className="institution-home-visual-mark"><School size={52} /></div>
+            )}
             <strong>{displayName}</strong>
             <span>Jabalia Rehabilitation Society</span>
             <div className="institution-home-visual-divider" />

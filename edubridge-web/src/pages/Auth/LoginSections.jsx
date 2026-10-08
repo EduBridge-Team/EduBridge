@@ -4,6 +4,8 @@ import PasswordField from './PasswordField'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
 import { useInstitution } from '../../institutionContext'
 
+const JABALIA_LOGO = '/jabalia-logo.webp'
+
 export function LoginVisual() {
   return <AuthVisual />
 }
@@ -30,6 +32,7 @@ export function LoginCard({
   const loginTitle = institution?.settings?.login_title
   const loginSubtitle = institution?.settings?.login_subtitle
   const isInstitutionPortal = Boolean(institution)
+  const institutionLogo = institution?.logo_url || (institution?.slug === 'jabalia' ? JABALIA_LOGO : null)
 
   return (
     <div className={`auth-card auth-card-branded${isInstitutionPortal ? ' institution-login-card' : ''}`}>
@@ -39,8 +42,12 @@ export function LoginCard({
             <strong>{displayName}</strong>
             <span>{loginSubtitle || 'بدعم من منصة EduBridge'}</span>
           </div>
-          <div className="institution-platform-mark" aria-label="EduBridge">
-            {institution.logo_url ? <img src={institution.logo_url} alt="" /> : <BrandLogo className="institution-platform-logo" />}
+          <div className="institution-platform-mark">
+            {institutionLogo ? (
+              <img className="institution-brand-badge-logo" src={institutionLogo} alt={`شعار ${displayName}`} />
+            ) : (
+              <BrandLogo className="institution-platform-logo" />
+            )}
           </div>
         </div>
       ) : (

@@ -1,0 +1,68 @@
+.institution-home-copy h1 {
+  font-size: clamp(32px, 4.25vw, 54px);
+  line-height: 1.22;
+}
+
+.institution-home-logo-wrap {
+  width: 78px;
+  height: 58px;
+  padding: 5px;
+  border-radius: 16px;
+}
+
+.institution-home-logo-wrap img,
+.institution-topbar-logo,
+.institution-brand-badge-logo {
+  object-fit: contain;
+  background: transparent;
+}
+
+.institution-home-visual-logo {
+  width: min(82%, 260px);
+  max-height: 130px;
+  object-fit: contain;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 8px 20px rgba(15, 35, 60, .08));
+}
+
+.institution-home-visual-card {
+  padding-top: 32px;
+}
+
+.institution-topbar-logo {
+  width: 54px;
+  height: 38px;
+  border-radius: 0;
+}
+
+.institution-brand-badge-logo {
+  width: 126px !important;
+  height: 58px !important;
+  border-radius: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .institution-home-copy h1 {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+
+  .institution-home-logo-wrap {
+    width: 68px;
+    height: 50px;
+  }
+
+  .institution-home-visual-logo {
+    width: min(78%, 220px);
+    max-height: 110px;
+  }
+
+  .institution-topbar-logo {
+    width: 46px;
+    height: 32px;
+  }
+
+  .institution-brand-badge-logo {
+    width: 112px !important;
+    height: 52px !important;
+  }
+}

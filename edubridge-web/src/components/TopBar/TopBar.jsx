@@ -11,6 +11,8 @@ import { useVerification } from '../../verification'
 import { canOpenUnverifiedPath } from '../../verificationPolicy'
 import { useInstitution } from '../../institutionContext'
 
+const JABALIA_LOGO = '/jabalia-logo.webp'
+
 export default function TopBar() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -40,6 +42,7 @@ export default function TopBar() {
   const userInitial = String(user?.name || '؟').trim().charAt(0) || '؟'
   const profileImage = user?.avatar_url || user?.avatar || user?.photo_url || user?.profile_photo_url || ''
   const institutionName = institution?.settings?.display_name || institution?.name
+  const institutionLogo = institution?.logo_url || (institution?.slug === 'jabalia' ? JABALIA_LOGO : null)
 
   const stripLinks = buildTopBarStripLinks(user).filter((link) => verified || canOpenUnverifiedPath(link.to))
 
@@ -48,7 +51,7 @@ export default function TopBar() {
       <div className="topbar-brand" onClick={() => navigate('/')}>
         {institution ? (
           <div className="institution-topbar-brand">
-            {institution.logo_url ? <img className="institution-topbar-logo" src={institution.logo_url} alt="" /> : <BrandLogo className="topbar-brand-logo" />}
+            {institutionLogo ? <img className="institution-topbar-logo" src={institutionLogo} alt={`شعار ${institutionName}`} /> : <BrandLogo className="topbar-brand-logo" />}
             <span className="institution-topbar-name">{institutionName}</span>
           </div>
         ) : (
