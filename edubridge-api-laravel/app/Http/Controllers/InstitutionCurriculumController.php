@@ -228,12 +228,38 @@ PROMPT;
         }
 
         $actor = $request->attributes->get('jwt_user');
-        DB::table('noor_lesson_generations')->where('id', $generation)->update([
+        if (!$actor) {
+            return response()->json(['error' => 'غير مصرح'], 403);
+        }
+
+        $organization = $request->attributes->get('organization');
+        $membership = DB::table('organization_user')
+            ->where('organization_id', $organization->id)
+            ->where('user_id', $actor->id)
+            ->where('is_active', true)
+            ->first();
+        if (!$membership || !in_array($membership->role, ['owner', 'admin', 'school_admin', 'teacher'], true)) {
+            return response()->json(['error' => 'ليس لديك صلاحية اعتماد المسودة'], 403);
+        }
+        // Teachers may approve only their own generations. Institution admins
+        // retain the existing ability to review other teachers' drafts.
+        if ($membership->role === 'teacher' && (int) $row->requested_by !== (int) $actor->id) {
+            return response()->json(['error' => 'لا يمكنك اعتماد مسودة معلم آخر'], 403);
+        }
+        if ($row->status !== 'draft') {
+            return response()->json(['error' => 'المسودة ليست قيد المراجعة'], 409);
+        }
+
+        $updated = DB::table('noor_lesson_generations')->where('id', $generation)->where('school_id', $school)->where('status', 'draft')->update([
             'status' => 'approved',
             'approved_by' => $actor->id,
             'approved_at' => now(),
             'updated_at' => now(),
         ]);
+
+        if ($updated !== 1) {
+            return response()->json(['error' => 'المسودة ليست قيد المراجعة'], 409);
+        }
 
         return response()->json(['message' => 'تم اعتماد مسودة نور', 'generation_id' => $generation]);
     }
