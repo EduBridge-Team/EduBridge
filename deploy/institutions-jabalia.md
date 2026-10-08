@@ -14,7 +14,7 @@ Point it to the same public origin used by `edubridge.win`.
 
 ## 2. Caddy
 
-Route the institution hostname to the existing EduBridge web container/service. The web server already proxies same-origin `/api/*` requests to `https://api.edubridge.win`, so no separate API deployment is required.
+Route the institution hostname to the existing EduBridge web service. The web server already proxies same-origin `/api/*` requests to `https://api.edubridge.win`, so no separate API deployment is required.
 
 Example host block for the host-level Caddyfile:
 
@@ -32,6 +32,8 @@ Validate and reload Caddy after editing:
 caddy validate --config /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
+
+> DNS and the host-level Caddyfile are infrastructure operations and are not changed automatically by this repository PR.
 
 ## 3. Database migrations
 
@@ -77,7 +79,7 @@ Open:
 https://jabalia.edubridge.win/login
 ```
 
-The login view and top bar should resolve the hostname to the `jabalia` tenant and display the institution identity while preserving EduBridge as the platform.
+The login view and top bar resolve the hostname to the `jabalia` tenant and display the institution identity while preserving EduBridge as the platform.
 
 ## 7. Data onboarding
 
