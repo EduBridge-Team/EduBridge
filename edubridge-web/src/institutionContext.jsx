@@ -4,6 +4,7 @@ import { BASE_URL } from './api/core'
 const InstitutionContext = createContext({ institution: null, loading: false, error: null })
 
 const RESERVED_SUBDOMAINS = new Set(['www', 'app', 'api', 'staging'])
+const DEFAULT_TITLE = 'EduBridge'
 
 export function resolveInstitutionSlug(hostname = window.location.hostname) {
   const explicit = import.meta.env.VITE_INSTITUTION_SLUG?.trim()
@@ -53,6 +54,7 @@ export function InstitutionProvider({ children }) {
       root.removeAttribute('data-institution')
       root.style.removeProperty('--institution-primary')
       root.style.removeProperty('--institution-secondary')
+      if (!slug) document.title = DEFAULT_TITLE
       return
     }
 
@@ -62,7 +64,7 @@ export function InstitutionProvider({ children }) {
 
     const displayName = institution.settings?.display_name || institution.name
     document.title = `${displayName} | EduBridge`
-  }, [state.institution])
+  }, [slug, state.institution])
 
   return <InstitutionContext.Provider value={{ ...state, slug }}>{children}</InstitutionContext.Provider>
 }
