@@ -32,6 +32,75 @@ class InstitutionAttendanceController extends Controller
         return response()->json(['attendance_sessions' => $query->limit(200)->get()]);
     }
 
+    public function report(Request $request, string $organizationSlug, int $school): JsonResponse
+    {
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
+
+        $data = $request->validate([
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+            'section_id' => ['nullable', 'integer'],
+        ]);
+
+        if (!empty($data['section_id']) && !$this->sectionWithinSchool($school, (int) $data['section_id'])) {
+            return response()->json(['error' => 'الشعبة لا تتبع هذه المدرسة'], 422);
+        }
+
+        $base = DB::table('attendance_records as r')
+            ->join('attendance_sessions as a', 'a.id', '=', 'r.attendance_session_id')
+            ->join('sections as s', 's.id', '=', 'a.section_id')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->where('g.school_id', $school);
+
+        if (!empty($data['from'])) {
+            $base->whereDate('a.attendance_date', '>=', $data['from']);
+        }
+        if (!empty($data['to'])) {
+            $base->whereDate('a.attendance_date', '<=', $data['to']);
+        }
+        if (!empty($data['section_id'])) {
+            $base->where('a.section_id', $data['section_id']);
+        }
+
+        $summary = (clone $base)
+            ->select('r.status', DB::raw('COUNT(*) as total'))
+            ->groupBy('r.status')
+            ->pluck('total', 'status');
+
+        $students = (clone $base)
+            ->join('children as c', 'c.id', '=', 'r.child_id')
+            ->select(
+                'c.id as child_id',
+                'c.name as child_name',
+                DB::raw("COUNT(*) as total_sessions"),
+                DB::raw("SUM(CASE WHEN r.status = 'present' THEN 1 ELSE 0 END) as present_count"),
+                DB::raw("SUM(CASE WHEN r.status = 'absent' THEN 1 ELSE 0 END) as absent_count"),
+                DB::raw("SUM(CASE WHEN r.status = 'late' THEN 1 ELSE 0 END) as late_count"),
+                DB::raw("SUM(CASE WHEN r.status = 'excused' THEN 1 ELSE 0 END) as excused_count")
+            )
+            ->groupBy('c.id', 'c.name')
+            ->orderBy('c.name')
+            ->get()
+            ->map(function ($row) {
+                $row->attendance_rate = (int) $row->total_sessions > 0
+                    ? round(((int) $row->present_count / (int) $row->total_sessions) * 100, 1)
+                    : 0;
+                return $row;
+            });
+
+        return response()->json([
+            'summary' => [
+                'present' => (int) ($summary['present'] ?? 0),
+                'absent' => (int) ($summary['absent'] ?? 0),
+                'late' => (int) ($summary['late'] ?? 0),
+                'excused' => (int) ($summary['excused'] ?? 0),
+            ],
+            'students' => $students,
+        ]);
+    }
+
     public function store(Request $request, string $organizationSlug, int $school): JsonResponse
     {
         $data = $request->validate([
@@ -42,6 +111,10 @@ class InstitutionAttendanceController extends Controller
             'period_number' => ['nullable', 'integer', 'min:1', 'max:20'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
 
         if (!$this->sectionWithinSchool($school, (int) $data['section_id'])) {
             return response()->json(['error' => 'الشعبة لا تتبع هذه المدرسة'], 422);
@@ -127,8 +200,9 @@ class InstitutionAttendanceController extends Controller
         ]);
 
         $actor = $request->attributes->get('jwt_user');
+        $session = $this->sessionWithinSchool($school, $attendanceSession);
         $validChildren = DB::table('student_enrollments')
-            ->where('section_id', $this->sessionWithinSchool($school, $attendanceSession)->section_id)
+            ->where('section_id', $session->section_id)
             ->where('status', 'active')
             ->pluck('child_id')
             ->map(fn ($id) => (int) $id)
@@ -140,8 +214,13 @@ class InstitutionAttendanceController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data, $attendanceSession, $actor) {
+        DB::transaction(function () use ($data, $attendanceSession, $actor, $session) {
             foreach ($data['records'] as $record) {
+                $previous = DB::table('attendance_records')
+                    ->where('attendance_session_id', $attendanceSession)
+                    ->where('child_id', $record['child_id'])
+                    ->value('status');
+
                 DB::table('attendance_records')->updateOrInsert(
                     ['attendance_session_id' => $attendanceSession, 'child_id' => $record['child_id']],
                     [
@@ -153,6 +232,10 @@ class InstitutionAttendanceController extends Controller
                         'created_at' => now(),
                     ]
                 );
+
+                if (in_array($record['status'], ['absent', 'late'], true) && $previous !== $record['status']) {
+                    $this->notifyParents((int) $record['child_id'], $record['status'], $session);
+                }
             }
 
             if ($data['close_session'] ?? false) {
@@ -161,6 +244,34 @@ class InstitutionAttendanceController extends Controller
         });
 
         return response()->json(['message' => 'تم حفظ الحضور بنجاح']);
+    }
+
+    private function notifyParents(int $childId, string $status, object $session): void
+    {
+        $childName = DB::table('children')->where('id', $childId)->value('name') ?? 'الطالب';
+        $parents = DB::table('child_parent')->where('child_id', $childId)->pluck('parent_id');
+        $label = $status === 'absent' ? 'غياب' : 'تأخر';
+        $message = "تم تسجيل {$label} {$childName} بتاريخ {$session->attendance_date}"
+            . ($session->period_number ? " في الحصة {$session->period_number}" : '');
+
+        foreach ($parents as $parentId) {
+            $exists = DB::table('notifications')
+                ->where('user_id', $parentId)
+                ->where('type', 'school_attendance')
+                ->where('message', $message)
+                ->exists();
+
+            if (!$exists) {
+                DB::table('notifications')->insert([
+                    'user_id' => $parentId,
+                    'title' => "تنبيه {$label}",
+                    'message' => $message,
+                    'type' => 'school_attendance',
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            }
+        }
     }
 
     private function schoolWithinTenant(Request $request, int $school): ?object
