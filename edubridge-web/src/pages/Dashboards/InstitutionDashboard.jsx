@@ -6,11 +6,13 @@ import {
   IdCard,
   LifeBuoy,
   MessageCircle,
+  School,
   Search,
 } from 'lucide-react'
 import { getUser } from '../../api'
 
 const QUICK_ACTIONS = [
+  { Icon: School, title: 'إدارة المدارس', text: 'إدخال المدرسة الرسمية ومراجعة جاهزية الهيكل والحضور والجدول والمناهج', to: '/institution/schools' },
   { Icon: Search, title: 'البحث عن طالب', text: 'البحث في الملفات المسموح بعرضها باستخدام رقم الهوية', to: '/search' },
   { Icon: BookOpen, title: 'مكتبة الدروس', text: 'استعراض المحتوى التعليمي المتاح في المنصة', to: '/lessons' },
   { Icon: MessageCircle, title: 'المحادثات', text: 'التواصل مع الجهات والمستخدمين المتاحين لك', to: '/conversations' },
@@ -31,7 +33,7 @@ export default function InstitutionDashboard() {
             <h1>أهلاً، {user?.name || 'المؤسسة التعليمية'}</h1>
             <p>استخدم الأدوات المتاحة للمؤسسة للوصول إلى المحتوى، البحث والتواصل دون عرض بيانات أو إحصاءات غير موثقة.</p>
             <div className="role-hero-actions">
-              <button className="btn" onClick={() => navigate('/search')}><Search size={17} /> البحث عن طالب</button>
+              <button className="btn" onClick={() => navigate('/institution/schools')}><School size={17} /> إدارة المدارس</button>
               <button className="btn outline" onClick={() => navigate('/conversations')}><MessageCircle size={17} /> المحادثات</button>
             </div>
           </div>
@@ -64,7 +66,7 @@ export default function InstitutionDashboard() {
             </div>
           </div>
           <div className="state">
-            الإحصاءات الخاصة بالمؤسسة ستظهر هنا عند توفر ربط موثوق بين حساب المؤسسة وأعضائها وحالاتها.
+            استخدم «إدارة المدارس» لإدخال بيانات مدرسة التجربة الرسمية ومتابعة جاهزية تشغيلها.
           </div>
         </section>
       </main>

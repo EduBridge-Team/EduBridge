@@ -5,6 +5,9 @@ vendor/
 # ملفات الأسرار — لا تُرفع أبداً
 .env
 edubridge-api-laravel/.env
+edubridge-api-laravel/.env.jabalia
+edubridge-api-laravel/.env.*
+!edubridge-api-laravel/.env.example
 
 # قاعدة البيانات المحلية وثنائياتها
 .pgdata/

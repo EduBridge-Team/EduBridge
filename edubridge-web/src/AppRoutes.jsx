@@ -39,6 +39,7 @@ const AccessibilityPage = lazy(() => import('./pages/Children/AccessibilityPage'
 const AccessibilityOverviewPage = lazy(() => import('./pages/Children/AccessibilityOverviewPage'))
 const ConversationsPage = lazy(() => import('./pages/Communication/ConversationsPage'))
 const InstitutionDashboard = lazy(() => import('./pages/Dashboards/InstitutionDashboard'))
+const InstitutionSchoolsPage = lazy(() => import('./pages/Dashboards/InstitutionSchoolsPage'))
 const HomeworkPage = lazy(() => import('./pages/Learning/HomeworkPage'))
 const WeeklyReportsPage = lazy(() => import('./pages/Learning/WeeklyReportsPage'))
 const LearningSupportPage = lazy(() => import('./pages/Support/LearningSupportPage'))
@@ -115,6 +116,7 @@ export default function AppRoutes() {
           <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
           <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
           <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
+          <Route path="/institution/schools" element={<RolePage roles={['institution']}><InstitutionSchoolsPage /></RolePage>} />
           <Route path="/ministry" element={<RolePage roles={['ministry']}><MinistryPage /></RolePage>} />
 
           <Route path="/notifications" element={<Protected><Page><NotificationsPage /></Page></Protected>} />

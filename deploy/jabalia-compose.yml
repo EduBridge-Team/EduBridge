@@ -1,0 +1,109 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: edubridge-jabalia-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:?DB_DATABASE is required}
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - edubridge-jabalia-postgres-data:/var/lib/postgresql/data
+    networks:
+      - edubridge-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: ../edubridge-api-laravel
+      dockerfile: Dockerfile
+    image: edubridge-jabalia-api:latest
+    container_name: edubridge-jabalia-api
+    stop_grace_period: 200s
+    restart: unless-stopped
+    env_file:
+      - ../edubridge-api-laravel/.env.jabalia
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://jabalia.edubridge.win
+      GIT_SHA: ${GIT_SHA:-unknown}
+      DB_CONNECTION: pgsql
+      DB_HOST: edubridge-jabalia-postgres
+      DB_PORT: "5432"
+      DB_DATABASE: ${DB_DATABASE:?DB_DATABASE is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      SESSION_DRIVER: file
+      SESSION_DOMAIN: ""
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_HTTP_ONLY: "true"
+      SESSION_SAME_SITE: lax
+      SESSION_ENCRYPT: "true"
+      CACHE_STORE: file
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8091:8081"
+    networks:
+      - edubridge-net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          php -r '$$body=@file_get_contents("http://127.0.0.1:8081/api/health"); exit($$body === false ? 1 : 0);'
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/oracle-web.Dockerfile
+      args:
+        VITE_API_URL: /api
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    image: edubridge-jabalia-web:latest
+    container_name: edubridge-jabalia-web
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      # Caddy should route /api directly to port 8091. If an API request ever
+      # reaches the web proxy, send it back through the Jabalia hostname rather
+      # than risking a fallback to the main EduBridge API/database.
+      API_ORIGIN: https://jabalia.edubridge.win
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8092:8080"
+    networks:
+      - edubridge-net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node -e 'fetch("http://127.0.0.1:8080/").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))'
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+networks:
+  edubridge-net:
+    external: true
+
+volumes:
+  edubridge-jabalia-postgres-data:
+    external: true

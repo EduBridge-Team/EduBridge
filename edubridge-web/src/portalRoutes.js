@@ -21,6 +21,10 @@ export function isPortalPathForRole(pathname, role) {
   if (pathname === '/lessons/new') return ['teacher', 'specialist', 'admin'].includes(role)
   if (COMMON_PORTAL_PATHS.has(pathname)) return true
 
+  if (pathname.startsWith('/institution/')) {
+    return role === 'institution'
+  }
+
   if (pathname.startsWith('/children')) {
     if (pathname === '/children/new') return role === 'parent'
     if (/^\/children\/[^/]+\/accessibility$/.test(pathname)) return role === 'specialist'
