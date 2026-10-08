@@ -13,9 +13,9 @@ class ProvisionJabaliaInstitution extends Command
 
     public function handle(): int
     {
-        $domain = trim((string) $this->option('domain'));
-        if ($domain === '') {
-            $this->error('Domain cannot be empty.');
+        $domain = strtolower(trim((string) $this->option('domain')));
+        if (!preg_match('/^(?:[a-z0-9-]+\.)+edubridge\.win$/', $domain)) {
+            $this->error('Domain must be an edubridge.win subdomain.');
             return self::FAILURE;
         }
 
@@ -35,7 +35,6 @@ class ProvisionJabaliaInstitution extends Command
         ];
 
         $existing = DB::table('organizations')->where('slug', 'jabalia')->first();
-
         $values = [
             'name' => 'جمعية جباليا للتأهيل',
             'domain' => $domain,
