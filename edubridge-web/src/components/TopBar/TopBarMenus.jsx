@@ -82,7 +82,7 @@ export function SignedInTopBarMenu({
   )
 }
 
-export function GuestTopBarMenu({ dark, onLogin, onRegister, toggleTheme }) {
+export function GuestTopBarMenu({ allowRegistration = true, dark, onLogin, onRegister, toggleTheme }) {
   const { pathname, hash } = useLocation()
   const sectionActive = (anchor) => pathname === '/' && hash === anchor
   return (
@@ -104,7 +104,7 @@ export function GuestTopBarMenu({ dark, onLogin, onRegister, toggleTheme }) {
           {dark ? <Sun size={17} /> : <Moon size={17} />}
         </button>
         <button className="topbar-btn login-btn" onClick={onLogin}>تسجيل الدخول</button>
-        <button className="topbar-btn signup-btn" onClick={onRegister}>إنشاء حساب</button>
+        {allowRegistration && <button className="topbar-btn signup-btn" onClick={onRegister}>إنشاء حساب</button>}
       </div>
     </>
   )
