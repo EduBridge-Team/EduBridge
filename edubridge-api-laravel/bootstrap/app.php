@@ -4,6 +4,7 @@ use App\Http\Middleware\ApiAbuseProtection;
 use App\Http\Middleware\JwtAuth;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ChildAccessMiddleware;
+use App\Http\Middleware\OrganizationMembershipMiddleware;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\WebSessionBridge;
 use App\Support\TrustedProxyConfiguration;
@@ -41,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.jwt' => JwtAuth::class,
             'role' => RoleMiddleware::class,
             'child.access' => ChildAccessMiddleware::class,
+            'organization.member' => OrganizationMembershipMiddleware::class,
             'identity.verified' => \App\Http\Middleware\RequireIdentityVerification::class,
             'api.abuse' => ApiAbuseProtection::class,
         ]);
