@@ -3,6 +3,7 @@
 use App\Http\Controllers\InstitutionAcademicController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionSchoolController;
+use App\Http\Controllers\InstitutionSubstitutionController;
 use App\Http\Controllers\InstitutionTimetableController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,5 +40,9 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::get('/', [InstitutionTimetableController::class, 'index']);
             Route::post('/', [InstitutionTimetableController::class, 'store']);
             Route::delete('/{entry}', [InstitutionTimetableController::class, 'destroy'])->whereNumber('entry');
+            Route::get('/{entry}/available-substitutes', [InstitutionSubstitutionController::class, 'availableTeachers'])->whereNumber('entry');
+            Route::post('/{entry}/substitutions', [InstitutionSubstitutionController::class, 'assign'])->whereNumber('entry');
         });
+
+        Route::post('/schools/{school}/teacher-absences', [InstitutionSubstitutionController::class, 'reportAbsence'])->whereNumber('school');
     });
