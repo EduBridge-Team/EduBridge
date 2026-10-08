@@ -250,12 +250,16 @@ PROMPT;
             return response()->json(['error' => 'المسودة ليست قيد المراجعة'], 409);
         }
 
-        DB::table('noor_lesson_generations')->where('id', $generation)->where('school_id', $school)->where('status', 'draft')->update([
+        $updated = DB::table('noor_lesson_generations')->where('id', $generation)->where('school_id', $school)->where('status', 'draft')->update([
             'status' => 'approved',
             'approved_by' => $actor->id,
             'approved_at' => now(),
             'updated_at' => now(),
         ]);
+
+        if ($updated !== 1) {
+            return response()->json(['error' => 'المسودة ليست قيد المراجعة'], 409);
+        }
 
         return response()->json(['message' => 'تم اعتماد مسودة نور', 'generation_id' => $generation]);
     }
