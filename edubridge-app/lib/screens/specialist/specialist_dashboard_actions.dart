@@ -11,6 +11,19 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     );
   }
 
+  Future<void> _openChildAdaptation(Map<String, dynamic> child) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChildAccessibilitySettingsScreen(
+          childId: child['id'] as int,
+          childName: (child['name'] ?? '').toString(),
+          disabilityTypeHint: child['disability_type']?.toString(),
+        ),
+      ),
+    );
+  }
+
   void _openCaseDiscussion({int? childId}) {
     Navigator.push(
       context,
