@@ -19,11 +19,30 @@ class InstitutionAcademicController extends Controller
         $years = DB::table('academic_years')->where('school_id', $school)->orderByDesc('starts_on')->get();
         $grades = DB::table('grades')->where('school_id', $school)->orderBy('position')->orderBy('name')->get();
         $subjects = DB::table('subjects')->where('school_id', $school)->orderBy('name')->get();
+        $terms = DB::table('academic_terms as t')
+            ->join('academic_years as y', 'y.id', '=', 't.academic_year_id')
+            ->where('y.school_id', $school)
+            ->select('t.*', 'y.name as academic_year_name')
+            ->orderByDesc('y.starts_on')
+            ->orderBy('t.position')
+            ->get();
+        $sections = DB::table('sections as s')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->join('academic_years as y', 'y.id', '=', 's.academic_year_id')
+            ->leftJoin('users as u', 'u.id', '=', 's.homeroom_teacher_id')
+            ->where('g.school_id', $school)
+            ->select('s.*', 'g.name as grade_name', 'y.name as academic_year_name', 'u.name as homeroom_teacher_name')
+            ->orderByDesc('y.starts_on')
+            ->orderBy('g.position')
+            ->orderBy('s.name')
+            ->get();
 
         return response()->json([
             'school' => $schoolRecord,
             'academic_years' => $years,
+            'academic_terms' => $terms,
             'grades' => $grades,
+            'sections' => $sections,
             'subjects' => $subjects,
         ]);
     }
