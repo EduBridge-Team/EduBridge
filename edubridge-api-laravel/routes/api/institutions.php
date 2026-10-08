@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\InstitutionAcademicController;
 use App\Http\Controllers\InstitutionAttendanceController;
+use App\Http\Controllers\InstitutionCurriculumController;
 use App\Http\Controllers\InstitutionSchoolController;
 use App\Http\Controllers\InstitutionSubstitutionController;
 use App\Http\Controllers\InstitutionTimetableController;
@@ -45,4 +46,23 @@ Route::prefix('/institutions/{organizationSlug}')
         });
 
         Route::post('/schools/{school}/teacher-absences', [InstitutionSubstitutionController::class, 'reportAbsence'])->whereNumber('school');
+
+        Route::prefix('/schools/{school}/curriculum')->whereNumber('school')->group(function () {
+            Route::get('/', [InstitutionCurriculumController::class, 'overview']);
+            Route::post('/books', [InstitutionCurriculumController::class, 'storeBook']);
+            Route::post('/books/{book}/units', [InstitutionCurriculumController::class, 'storeUnit'])->whereNumber('book');
+            Route::post('/units/{unit}/lessons', [InstitutionCurriculumController::class, 'storeLesson'])->whereNumber('unit');
+            Route::post('/generations/{generation}/approve', [InstitutionCurriculumController::class, 'approveGeneration'])->whereNumber('generation');
+        });
+    });
+
+Route::prefix('/institutions/{organizationSlug}/schools/{school}/teaching')
+    ->where([
+        'organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}',
+        'school' => '[0-9]+',
+    ])
+    ->middleware('organization.member:owner,admin,school_admin,teacher')
+    ->group(function () {
+        Route::get('/lessons/{lesson}', [InstitutionCurriculumController::class, 'showLesson'])->whereNumber('lesson');
+        Route::post('/lessons/{lesson}/noor-plan', [InstitutionCurriculumController::class, 'generateNoorPlan'])->whereNumber('lesson');
     });
