@@ -134,7 +134,6 @@ const recommended = {
     "audioDescriptions": true,
     "keyboardShortcuts": true,
     "textOnlyMode": true,
-    "largeMouseCursor": true,
     "keyboardOnlyNavigation": true
   },
   "deaf": {
@@ -192,7 +191,6 @@ const recommended = {
   "colorBlindness": {
     "colorSymbols": true,
     "colorPatterns": true,
-    "colorFiltersEnabled": true,
     "timerRenewalMinutes": 5,
     "detailedAltText": true
   },
@@ -213,10 +211,8 @@ const recommended = {
     "keyboardOnlyNavigation": true,
     "keyboardShortcuts": true,
     "voiceControl": true,
-    "eyeTrackingOptimized": true,
     "switchControl": true,
-    "noTimedInteractions": true,
-    "largeMouseCursor": true
+    "noTimedInteractions": true
   },
   "multipleDisabilities": {
     "extraLargeTouchTargets": true,
