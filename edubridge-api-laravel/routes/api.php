@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InstitutionContextController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -15,6 +16,10 @@ Route::get('/health', function () {
         'status' => $statusCode === 200 ? 'ok' : 'degraded',
     ], $statusCode);
 })->middleware('throttle:120,1');
+
+Route::get('/institutions/{slug}/context', [InstitutionContextController::class, 'show'])
+    ->where('slug', '[a-z0-9][a-z0-9-]{1,79}')
+    ->middleware('throttle:120,1');
 
 // المصادقة (بدون توكن)
 Route::post('/auth/register', [AuthController::class, 'register'])
@@ -42,4 +47,5 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
+    require __DIR__ . '/api/institutions.php';
 });

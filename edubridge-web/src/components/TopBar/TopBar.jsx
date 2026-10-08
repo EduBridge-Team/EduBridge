@@ -9,11 +9,13 @@ import { GuestTopBarMenu, SignedInTopBarMenu } from './TopBarMenus'
 import { buildTopBarStripLinks } from './topBarLinks'
 import { useVerification } from '../../verification'
 import { canOpenUnverifiedPath } from '../../verificationPolicy'
+import { useInstitution } from '../../institutionContext'
 
 export default function TopBar() {
   const navigate = useNavigate()
   const location = useLocation()
   const user = getUser()
+  const { institution } = useInstitution()
   const { verified: identityVerified } = useVerification()
   const verified = identityVerified || getUser()?.role === 'parent'
   const [open, setOpen] = useState(false)
@@ -37,13 +39,21 @@ export default function TopBar() {
     && isPortalPathForRole(location.pathname, user.role)
   const userInitial = String(user?.name || '؟').trim().charAt(0) || '؟'
   const profileImage = user?.avatar_url || user?.avatar || user?.photo_url || user?.profile_photo_url || ''
+  const institutionName = institution?.settings?.display_name || institution?.name
 
   const stripLinks = buildTopBarStripLinks(user).filter((link) => verified || canOpenUnverifiedPath(link.to))
 
   return (
     <header className={'topbar ' + (user ? 'topbar-' + user.role : 'topbar-guest') + (isRolePortal ? ' role-portal-global-topbar' : '')}>
       <div className="topbar-brand" onClick={() => navigate('/')}>
-        <BrandLogo className="topbar-brand-logo" />
+        {institution ? (
+          <div className="institution-topbar-brand">
+            {institution.logo_url ? <img className="institution-topbar-logo" src={institution.logo_url} alt="" /> : <BrandLogo className="topbar-brand-logo" />}
+            <span className="institution-topbar-name">{institutionName}</span>
+          </div>
+        ) : (
+          <BrandLogo className="topbar-brand-logo" />
+        )}
       </div>
 
       <button className={'hamburger ' + (open ? 'is-open' : '')} aria-label="فتح القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>

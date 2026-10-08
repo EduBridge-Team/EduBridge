@@ -2,6 +2,7 @@ import AuthVisual from './AuthVisual'
 import { Link } from 'react-router-dom'
 import PasswordField from './PasswordField'
 import BrandLogo from '../../components/BrandLogo/BrandLogo'
+import { useInstitution } from '../../institutionContext'
 
 export function LoginVisual() {
   return <AuthVisual />
@@ -24,12 +25,26 @@ export function LoginCard({
   successMsg,
 }) {
   const googleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID)
+  const { institution } = useInstitution()
+  const displayName = institution?.settings?.display_name || institution?.name
+  const loginTitle = institution?.settings?.login_title
+  const loginSubtitle = institution?.settings?.login_subtitle
 
   return (
     <div className="auth-card auth-card-branded">
-      <BrandLogo className="auth-brand-logo" />
-      <h1 className="auth-welcome-title">أهلاً بعودتك</h1>
-      <p className="auth-welcome-copy">سجّل الدخول لمتابعة رحلة التعلّم</p>
+      {institution ? (
+        <div className="institution-brand-badge" aria-label={`بوابة ${displayName}`}>
+          {institution.logo_url ? <img src={institution.logo_url} alt="" /> : <BrandLogo className="auth-brand-logo" />}
+          <div className="institution-brand-badge-text">
+            <strong>{displayName}</strong>
+            <span>{loginSubtitle || 'Powered by EduBridge'}</span>
+          </div>
+        </div>
+      ) : (
+        <BrandLogo className="auth-brand-logo" />
+      )}
+      <h1 className="auth-welcome-title">{loginTitle || 'أهلاً بعودتك'}</h1>
+      <p className="auth-welcome-copy">{institution ? 'سجّل الدخول إلى بوابة المؤسسة' : 'سجّل الدخول لمتابعة رحلة التعلّم'}</p>
 
       {successMsg && (
         <div className={successIsError ? 'error-box' : 'success-box'}>
