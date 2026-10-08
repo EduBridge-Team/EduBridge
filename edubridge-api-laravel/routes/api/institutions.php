@@ -3,6 +3,7 @@
 use App\Http\Controllers\InstitutionAcademicController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionCurriculumController;
+use App\Http\Controllers\InstitutionParticipantController;
 use App\Http\Controllers\InstitutionSchoolController;
 use App\Http\Controllers\InstitutionSubstitutionController;
 use App\Http\Controllers\InstitutionTimetableController;
@@ -17,6 +18,7 @@ Route::prefix('/institutions/{organizationSlug}')
         Route::get('/schools/{school}', [InstitutionSchoolController::class, 'show'])->whereNumber('school');
         Route::patch('/schools/{school}', [InstitutionSchoolController::class, 'update'])->whereNumber('school');
         Route::delete('/schools/{school}', [InstitutionSchoolController::class, 'destroy'])->whereNumber('school');
+        Route::get('/schools/{school}/participants', [InstitutionParticipantController::class, 'index'])->whereNumber('school');
 
         Route::prefix('/schools/{school}/academic')->whereNumber('school')->group(function () {
             Route::get('/', [InstitutionAcademicController::class, 'overview']);

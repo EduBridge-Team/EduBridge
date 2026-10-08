@@ -1,0 +1,193 @@
+.institution-operations-page .institution-school-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.institution-operations-page .institution-school-form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.institution-operations-page .institution-school-form input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border, #d8dee8);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--text, #172033);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.institution-operations-page .institution-school-form input:focus {
+  outline: 3px solid color-mix(in srgb, var(--institution-primary, #1f6feb) 18%, transparent);
+  border-color: var(--institution-primary, #1f6feb);
+}
+
+.institution-operations-page .institution-school-form-actions {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.institution-operations-page .role-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.institution-operations-page .role-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border, #e1e6ef);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+}
+
+.institution-operations-page .role-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  color: var(--institution-primary, #1f6feb);
+  background: color-mix(in srgb, var(--institution-primary, #1f6feb) 10%, transparent);
+}
+
+.institution-operations-page .role-stat-card b,
+.institution-operations-page .role-stat-card small {
+  display: block;
+}
+
+.institution-operations-page .role-stat-card b {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.institution-operations-page .role-stat-card small {
+  margin-top: 4px;
+  color: var(--muted, #667085);
+}
+
+.institution-operations-page .institution-actions button[aria-pressed='true'] {
+  border-color: var(--institution-primary, #1f6feb);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--institution-primary, #1f6feb) 12%, transparent);
+}
+
+.institution-operations-page .academic-setup-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.institution-operations-page .academic-setup-summary span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--institution-primary, #1f6feb) 8%, transparent);
+  color: var(--text, #172033);
+  font-size: .9rem;
+}
+
+.institution-operations-page .academic-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.institution-operations-page .academic-setup-card {
+  padding: 16px;
+  border: 1px solid var(--border, #e1e6ef);
+  border-radius: 18px;
+  background: var(--surface, #fff);
+}
+
+.institution-operations-page .academic-setup-card > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.institution-operations-page .academic-setup-card > header > span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 11px;
+  color: var(--institution-primary, #1f6feb);
+  background: color-mix(in srgb, var(--institution-primary, #1f6feb) 10%, transparent);
+}
+
+.institution-operations-page .academic-setup-card h3,
+.institution-operations-page .academic-setup-card p {
+  margin: 0;
+}
+
+.institution-operations-page .academic-setup-card p {
+  margin-top: 4px;
+  color: var(--muted, #667085);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.institution-operations-page .academic-setup-card form {
+  display: grid;
+  gap: 10px;
+}
+
+.institution-operations-page .academic-setup-card label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  font-size: .92rem;
+}
+
+.institution-operations-page .academic-setup-card input,
+.institution-operations-page .academic-setup-card select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--border, #d8dee8);
+  border-radius: 11px;
+  background: var(--surface, #fff);
+  color: var(--text, #172033);
+  padding: 9px 11px;
+  font: inherit;
+}
+
+.institution-operations-page .academic-setup-card input:focus,
+.institution-operations-page .academic-setup-card select:focus {
+  outline: 3px solid color-mix(in srgb, var(--institution-primary, #1f6feb) 18%, transparent);
+  border-color: var(--institution-primary, #1f6feb);
+}
+
+.institution-operations-page .academic-checkbox {
+  grid-template-columns: auto 1fr !important;
+  align-items: center;
+  justify-content: start;
+}
+
+.institution-operations-page .academic-checkbox input {
+  width: 18px;
+  min-height: 18px;
+}
+
+.institution-operations-page .academic-current-state {
+  margin-top: 14px;
+}
+
+@media (max-width: 720px) {
+  .institution-operations-page .institution-school-form {
+    grid-template-columns: 1fr;
+  }
+
+  .institution-operations-page .academic-setup-grid {
+    grid-template-columns: 1fr;
+  }
+}
