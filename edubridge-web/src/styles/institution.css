@@ -4,20 +4,23 @@
 }
 
 .institution-brand-badge {
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.65rem;
+  gap: 1rem;
+  width: 100%;
   max-width: 100%;
-  padding: 0.55rem 0.8rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--institution-primary) 28%, transparent);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--institution-primary) 8%, transparent);
+  box-sizing: border-box;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--institution-primary) 24%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--institution-primary) 7%, transparent);
 }
 
 .institution-brand-badge img {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   border-radius: 9px;
   background: white;
@@ -27,7 +30,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.12rem;
+  gap: 0.2rem;
   text-align: right;
 }
 
@@ -36,9 +39,40 @@
   color: var(--institution-primary);
 }
 
+.institution-brand-badge-text strong {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
 .institution-brand-badge-text span {
   opacity: 0.76;
-  font-size: 0.86rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.institution-platform-mark {
+  display: grid;
+  place-items: center;
+  min-width: 116px;
+}
+
+.institution-platform-logo {
+  width: 118px !important;
+  max-width: 118px !important;
+  height: 34px !important;
+  margin: 0 !important;
+  object-fit: contain;
+}
+
+.institution-login-note {
+  margin: 14px auto 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--institution-primary) 6%, transparent);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
 }
 
 .institution-topbar-brand {
@@ -66,5 +100,43 @@
 }
 
 @media (max-width: 760px) {
-  .institution-topbar-name { display: none; }
+  .institution-topbar-brand {
+    max-width: min(58vw, 280px);
+  }
+
+  .institution-topbar-name {
+    display: block;
+    max-width: 155px;
+    font-size: 0.78rem;
+  }
+
+  .institution-brand-badge {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.55rem;
+    padding: 0.8rem;
+  }
+
+  .institution-brand-badge-text {
+    text-align: center;
+  }
+
+  .institution-platform-mark {
+    min-width: 0;
+  }
+
+  .institution-platform-logo {
+    width: 104px !important;
+    max-width: 104px !important;
+    height: 30px !important;
+  }
+
+  .institution-login-card .auth-welcome-title {
+    font-size: 22px;
+    line-height: 1.45;
+  }
+
+  .institution-login-card .auth-welcome-copy {
+    margin-bottom: 12px;
+  }
 }
