@@ -47,4 +47,5 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
+    require __DIR__ . '/api/institutions.php';
 });
