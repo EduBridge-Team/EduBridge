@@ -3,6 +3,7 @@
 use App\Http\Controllers\InstitutionAcademicController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionSchoolController;
+use App\Http\Controllers\InstitutionTimetableController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/institutions/{organizationSlug}')
@@ -28,8 +29,15 @@ Route::prefix('/institutions/{organizationSlug}')
 
         Route::prefix('/schools/{school}/attendance')->whereNumber('school')->group(function () {
             Route::get('/', [InstitutionAttendanceController::class, 'index']);
+            Route::get('/report', [InstitutionAttendanceController::class, 'report']);
             Route::post('/', [InstitutionAttendanceController::class, 'store']);
             Route::get('/{attendanceSession}', [InstitutionAttendanceController::class, 'show'])->whereNumber('attendanceSession');
             Route::put('/{attendanceSession}/records', [InstitutionAttendanceController::class, 'mark'])->whereNumber('attendanceSession');
+        });
+
+        Route::prefix('/schools/{school}/timetable')->whereNumber('school')->group(function () {
+            Route::get('/', [InstitutionTimetableController::class, 'index']);
+            Route::post('/', [InstitutionTimetableController::class, 'store']);
+            Route::delete('/{entry}', [InstitutionTimetableController::class, 'destroy'])->whereNumber('entry');
         });
     });
