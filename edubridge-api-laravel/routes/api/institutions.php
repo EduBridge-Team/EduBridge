@@ -54,7 +54,6 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/books', [InstitutionCurriculumController::class, 'storeBook']);
             Route::post('/books/{book}/units', [InstitutionCurriculumController::class, 'storeUnit'])->whereNumber('book');
             Route::post('/units/{unit}/lessons', [InstitutionCurriculumController::class, 'storeLesson'])->whereNumber('unit');
-            Route::post('/generations/{generation}/approve', [InstitutionCurriculumController::class, 'approveGeneration'])->whereNumber('generation');
         });
     });
 
@@ -67,4 +66,5 @@ Route::prefix('/institutions/{organizationSlug}/schools/{school}/teaching')
     ->group(function () {
         Route::get('/lessons/{lesson}', [InstitutionCurriculumController::class, 'showLesson'])->whereNumber('lesson');
         Route::post('/lessons/{lesson}/noor-plan', [InstitutionCurriculumController::class, 'generateNoorPlan'])->whereNumber('lesson');
+        Route::post('/generations/{generation}/approve', [InstitutionCurriculumController::class, 'approveGeneration'])->whereNumber('generation');
     });
