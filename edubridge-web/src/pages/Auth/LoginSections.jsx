@@ -29,15 +29,18 @@ export function LoginCard({
   const displayName = institution?.settings?.display_name || institution?.name
   const loginTitle = institution?.settings?.login_title
   const loginSubtitle = institution?.settings?.login_subtitle
+  const isInstitutionPortal = Boolean(institution)
 
   return (
-    <div className="auth-card auth-card-branded">
+    <div className={`auth-card auth-card-branded${isInstitutionPortal ? ' institution-login-card' : ''}`}>
       {institution ? (
         <div className="institution-brand-badge" aria-label={`بوابة ${displayName}`}>
-          {institution.logo_url ? <img src={institution.logo_url} alt="" /> : <BrandLogo className="auth-brand-logo" />}
           <div className="institution-brand-badge-text">
             <strong>{displayName}</strong>
-            <span>{loginSubtitle || 'Powered by EduBridge'}</span>
+            <span>{loginSubtitle || 'بدعم من منصة EduBridge'}</span>
+          </div>
+          <div className="institution-platform-mark" aria-label="EduBridge">
+            {institution.logo_url ? <img src={institution.logo_url} alt="" /> : <BrandLogo className="institution-platform-logo" />}
           </div>
         </div>
       ) : (
@@ -99,7 +102,13 @@ export function LoginCard({
         إعادة إرسال رسالة تأكيد البريد
       </button>
 
-      {googleEnabled && (
+      {isInstitutionPortal && (
+        <p className="institution-login-note">
+          الدخول مخصص للحسابات المعتمدة من المؤسسة. لطلب حساب أو تعديل الصلاحيات تواصل مع إدارة المؤسسة.
+        </p>
+      )}
+
+      {googleEnabled && !isInstitutionPortal && (
         <div className="auth-provider-section">
           <div className="auth-divider"><span>أو</span></div>
           <div className="auth-provider-panel">
@@ -133,9 +142,11 @@ export function LoginCard({
         </div>
       )}
 
-      <Link className="link-btn" to="/register">
-        ليس لديك حساب؟ <strong>أنشئ حساباً جديداً</strong>
-      </Link>
+      {!isInstitutionPortal && (
+        <Link className="link-btn" to="/register">
+          ليس لديك حساب؟ <strong>أنشئ حساباً جديداً</strong>
+        </Link>
+      )}
     </div>
   )
 }
