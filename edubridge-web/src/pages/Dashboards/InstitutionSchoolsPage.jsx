@@ -19,6 +19,7 @@ import {
   fetchInstitutionSchools,
   fetchInstitutionTimetable,
 } from '../../api'
+import InstitutionAcademicSetup from '../../components/Institution/InstitutionAcademicSetup'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -71,36 +72,31 @@ export default function InstitutionSchoolsPage() {
     }
   }
 
-  useEffect(() => { loadSchools() }, [slug])
-
-  useEffect(() => {
+  async function loadDetails({ quiet = false } = {}) {
     if (!slug || !selectedId) {
       setDetails(null)
       return
     }
 
-    let active = true
-    setDetailsLoading(true)
+    if (!quiet) setDetailsLoading(true)
     setDetailsError('')
+    try {
+      const [academic, attendance, timetable, curriculum] = await Promise.all([
+        fetchInstitutionAcademicOverview(slug, selectedId),
+        fetchInstitutionAttendance(slug, selectedId),
+        fetchInstitutionTimetable(slug, selectedId),
+        fetchInstitutionCurriculum(slug, selectedId),
+      ])
+      setDetails({ academic, attendance, timetable, curriculum })
+    } catch (err) {
+      setDetailsError(err.message)
+    } finally {
+      if (!quiet) setDetailsLoading(false)
+    }
+  }
 
-    Promise.all([
-      fetchInstitutionAcademicOverview(slug, selectedId),
-      fetchInstitutionAttendance(slug, selectedId),
-      fetchInstitutionTimetable(slug, selectedId),
-      fetchInstitutionCurriculum(slug, selectedId),
-    ])
-      .then(([academic, attendance, timetable, curriculum]) => {
-        if (active) setDetails({ academic, attendance, timetable, curriculum })
-      })
-      .catch((err) => {
-        if (active) setDetailsError(err.message)
-      })
-      .finally(() => {
-        if (active) setDetailsLoading(false)
-      })
-
-    return () => { active = false }
-  }, [slug, selectedId])
+  useEffect(() => { loadSchools() }, [slug])
+  useEffect(() => { loadDetails() }, [slug, selectedId])
 
   async function submitSchool(event) {
     event.preventDefault()
@@ -146,7 +142,7 @@ export default function InstitutionSchoolsPage() {
             <p>ابدأ بإدخال بيانات المدرسة الرسمية فقط، ثم راقب جاهزية الهيكل الأكاديمي والحضور والجدول والمناهج قبل بدء التجربة الميدانية.</p>
             <div className="role-hero-actions">
               <button className="btn" onClick={() => setShowCreate((value) => !value)}><Plus size={17} /> إضافة مدرسة</button>
-              <button className="btn outline" onClick={loadSchools} disabled={loading}><RefreshCw size={17} /> تحديث</button>
+              <button className="btn outline" onClick={() => { loadSchools(); loadDetails() }} disabled={loading || detailsLoading}><RefreshCw size={17} /> تحديث</button>
             </div>
           </div>
           <div className="role-hero-mark" aria-hidden="true"><Building2 size={68} /></div>
@@ -199,30 +195,39 @@ export default function InstitutionSchoolsPage() {
         </section>
 
         {selectedSchool && (
-          <section className="institution-panel activity-panel">
-            <div className="section-heading compact">
-              <div><h2>جاهزية {selectedSchool.name}</h2><p>ملخص حي من البيانات الفعلية الموجودة في قاعدة البيانات.</p></div>
-            </div>
+          <>
+            <section className="institution-panel activity-panel">
+              <div className="section-heading compact">
+                <div><h2>جاهزية {selectedSchool.name}</h2><p>ملخص حي من البيانات الفعلية الموجودة في قاعدة البيانات.</p></div>
+              </div>
 
-            {detailsError && <div className="state error">{detailsError}</div>}
-            {detailsLoading ? (
-              <div className="state"><LoaderCircle className="spin" size={20} /> جارِ تحميل بيانات التشغيل…</div>
-            ) : details ? (
-              <>
-                <div className="role-stats-grid">
-                  <Stat Icon={CalendarDays} label="السنوات الدراسية" value={count(details.academic.academic_years)} />
-                  <Stat Icon={GraduationCap} label="الصفوف" value={count(details.academic.grades)} />
-                  <Stat Icon={BookOpen} label="المواد" value={count(details.academic.subjects)} />
-                  <Stat Icon={ClipboardCheck} label="سجلات الحضور" value={count(details.attendance.attendance_sessions)} />
-                  <Stat Icon={CalendarDays} label="حصص الجدول" value={count(details.timetable.timetable)} />
-                  <Stat Icon={BookOpen} label="كتب المنهاج" value={count(details.curriculum.books)} />
-                </div>
-                <div className="state">
-                  المرحلة التالية لهذه المدرسة: تثبيت السنة الدراسية والصفوف والمواد الرسمية، ثم ربط المعلمين والطلاب، وبعدها إدخال كتب الوزارة وتشغيل Noor للمعلمين على محتوى موثّق.
-                </div>
-              </>
-            ) : null}
-          </section>
+              {detailsError && <div className="state error">{detailsError}</div>}
+              {detailsLoading ? (
+                <div className="state"><LoaderCircle className="spin" size={20} /> جارِ تحميل بيانات التشغيل…</div>
+              ) : details ? (
+                <>
+                  <div className="role-stats-grid">
+                    <Stat Icon={CalendarDays} label="السنوات الدراسية" value={count(details.academic.academic_years)} />
+                    <Stat Icon={GraduationCap} label="الصفوف" value={count(details.academic.grades)} />
+                    <Stat Icon={School} label="الشعب" value={count(details.academic.sections)} />
+                    <Stat Icon={BookOpen} label="المواد" value={count(details.academic.subjects)} />
+                    <Stat Icon={ClipboardCheck} label="سجلات الحضور" value={count(details.attendance.attendance_sessions)} />
+                    <Stat Icon={CalendarDays} label="حصص الجدول" value={count(details.timetable.timetable)} />
+                    <Stat Icon={BookOpen} label="كتب المنهاج" value={count(details.curriculum.books)} />
+                  </div>
+                </>
+              ) : null}
+            </section>
+
+            {details?.academic && (
+              <InstitutionAcademicSetup
+                slug={slug}
+                schoolId={selectedId}
+                academic={details.academic}
+                onRefresh={() => loadDetails({ quiet: true })}
+              />
+            )}
+          </>
         )}
       </main>
     </div>
