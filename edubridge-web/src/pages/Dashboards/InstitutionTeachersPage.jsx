@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
+import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -13,6 +13,8 @@ export default function InstitutionTeachersPage() {
   const [form, setForm] = useState({ teacher_id: '', section_id: '', subject_id: '' })
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [invitations, setInvitations] = useState([])
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
@@ -27,6 +29,39 @@ export default function InstitutionTeachersPage() {
     }).catch((err) => { if (active) setError(err.message) })
     return () => { active = false }
   }, [slug])
+
+  const reloadInvitations = useCallback(async () => {
+    if (!slug) return
+    try {
+      const result = await fetchInstitutionTeacherInvitations(slug)
+      setInvitations(result.invitations || [])
+    } catch (err) { setError(err.message) }
+  }, [slug])
+
+  useEffect(() => { reloadInvitations() }, [reloadInvitations])
+
+  async function sendInvitation(event) {
+    event.preventDefault()
+    setSaving(true); setError(''); setMessage('')
+    try {
+      await inviteInstitutionTeacher(slug, inviteEmail.trim())
+      setInviteEmail('')
+      setMessage('تم إرسال دعوة المعلم بالبريد الإلكتروني.')
+      await reloadInvitations()
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
+  async function revokeInvitation(id) {
+    if (!window.confirm('هل تريد إلغاء هذه الدعوة؟')) return
+    setSaving(true); setError(''); setMessage('')
+    try {
+      await revokeInstitutionTeacherInvitation(slug, id)
+      setMessage('تم إلغاء الدعوة.')
+      await reloadInvitations()
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
 
   const refresh = useCallback(async () => {
     if (!slug || !schoolId) return
@@ -119,6 +154,22 @@ export default function InstitutionTeachersPage() {
             <p>اعرض المعلمين المعتمدين في المؤسسة واربطهم بالمواد والشعب المسجلة فعليًا.</p>
             <div className="role-hero-actions"><Link className="btn outline" to="/institution/schools">إدارة المدارس</Link></div>
           </div>
+        </section>
+        <section className="institution-panel">
+          <h2>دعوة معلم جديد</h2>
+          <p>يجب أن يسجّل المعلم بحساب معلم ويؤكد بريده الإلكتروني قبل قبول الدعوة.</p>
+          <form className="institution-school-form" onSubmit={sendInvitation}>
+            <label>البريد الإلكتروني<input type="email" required maxLength={190} value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} /></label>
+            <button className="btn" disabled={saving || !slug}>إرسال الدعوة</button>
+          </form>
+          <h3>الدعوات السابقة</h3>
+          {invitations.length === 0 ? <p>لا توجد دعوات بعد.</p> : <ul>
+            {invitations.map((item) => <li key={item.id}>
+              {item.email} — {item.accepted_at ? 'مقبولة' : item.revoked_at ? 'ملغاة' : new Date(item.expires_at).getTime() <= Date.now() ? 'منتهية' : 'بانتظار القبول'}
+              {!item.accepted_at && !item.revoked_at && new Date(item.expires_at).getTime() > Date.now() &&
+                <button type="button" className="btn outline" disabled={saving} onClick={() => revokeInvitation(item.id)}>إلغاء الدعوة</button>}
+            </li>)}
+          </ul>}
         </section>
         <section className="institution-panel">
           <div className="section-heading compact"><div><h2>اختر المدرسة</h2><p>تُعرض التعيينات الخاصة بالمدرسة المحددة فقط.</p></div></div>
