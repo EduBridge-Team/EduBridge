@@ -50,4 +50,50 @@ class InstitutionTeacherInvitationController extends Controller
         }
         return response()->json(['message' => 'تم إرسال الدعوة'], 201);
     }
+    public function revoke(Request $request, string $organizationSlug, int $invitation)
+    {
+        $org = $request->attributes->get('organization');
+        $updated = DB::table('institution_teacher_invitations')
+            ->where('organization_id', $org->id)->where('id', $invitation)
+            ->whereNull('accepted_at')->whereNull('revoked_at')
+            ->update(['revoked_at' => now(), 'updated_at' => now()]);
+        return $updated ? response()->json(['revoked' => true])
+            : response()->json(['error' => 'الدعوة غير نشطة أو غير موجودة'], 404);
+    }
+
+    public function accept(Request $request)
+    {
+        $actor = $request->attributes->get('jwt_user');
+        $data = $request->validate(['token' => ['required', 'string', 'size:64']]);
+        if (!$actor) return response()->json(['error' => 'غير مصرح'], 403);
+        return DB::transaction(function () use ($actor, $data) {
+            $user = DB::table('users')->where('id', $actor->id)->first();
+            $invite = DB::table('institution_teacher_invitations')
+                ->where('token_hash', hash('sha256', $data['token']))->lockForUpdate()->first();
+            if (!$user || $user->role !== 'teacher' || !$user->email_verified_at)
+                return response()->json(['error' => 'يجب استخدام حساب معلم مؤكد البريد'], 403);
+            if (!$invite || $invite->accepted_at || $invite->revoked_at
+                || now()->gte($invite->expires_at)
+                || mb_strtolower(trim($user->email)) !== $invite->email)
+                return response()->json(['error' => 'الدعوة غير صالحة أو منتهية'], 422);
+            $member = DB::table('organization_user')
+                ->where('organization_id', $invite->organization_id)->where('user_id', $user->id)->first();
+            if ($member && $member->role !== 'teacher')
+                return response()->json(['error' => 'لديك صلاحية مختلفة في المؤسسة'], 409);
+            if ($member) {
+                DB::table('organization_user')->where('id', $member->id)->update([
+                    'is_active' => true, 'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('organization_user')->insert([
+                    'organization_id' => $invite->organization_id,
+                    'user_id' => $user->id, 'role' => 'teacher', 'is_active' => true,
+                    'created_at' => now(), 'updated_at' => now(),
+                ]);
+            }
+            DB::table('institution_teacher_invitations')->where('id', $invite->id)
+                ->update(['accepted_at' => now(), 'updated_at' => now()]);
+            return response()->json(['message' => 'تم تفعيل عضوية المعلم']);
+        });
+    }
 }
