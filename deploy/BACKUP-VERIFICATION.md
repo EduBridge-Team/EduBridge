@@ -35,3 +35,9 @@ sudo journalctl -u edubridge-backup.service -n 25 --no-pager
 Look for `Uploaded and verified database backup in private R2`, `Backup complete`, `Result=success`, and `ExecMainStatus=0`. A failed R2 read-back must not be interpreted as a successful remote backup; the local dump remains available.
 
 **This is a byte-integrity test of the remote object, not a remote disaster-recovery drill.** Recovering an R2 object into an isolated PostgreSQL instance remains a separate required test. The Jabalia host backup service is independently managed; its retention and remote-storage configuration must be checked on the host.
+
+## Completed isolated restore evidence — 2026-10-09
+
+Main and Jabalia local PostgreSQL 17 dump restores each succeeded with 65 public base tables and zero unvalidated constraints. A main database dump downloaded from private R2 (edubridge-20261009T173102Z.dump) matched SHA256 dd70a7296a347b4899b9e89cd97d3dbdf9ba213937f8ecc79acad5c13666f8a8 and restored to disposable PG17 with exit code 0; the test resources were removed afterward. PostgreSQL 16 restore utilities previously rejected the archive header version 1.16.
+
+**Not established:** restored-app functional test, offsite Jabalia DB recovery, independent media backups, media-object restore test, RPO/RTO. See [disaster recovery](../docs/DISASTER_RECOVERY.md).
