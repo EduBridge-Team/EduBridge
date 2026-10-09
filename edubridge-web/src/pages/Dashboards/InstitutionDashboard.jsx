@@ -7,11 +7,13 @@ import {
   LifeBuoy,
   MessageCircle,
   School,
+  Users,
   Search,
 } from 'lucide-react'
 import { getUser } from '../../api'
 
 const QUICK_ACTIONS = [
+  { Icon: Users, title: 'إدارة المعلمين', text: 'عرض المعلمين وربطهم بالمواد والشعب', to: '/institution/teachers' },
   { Icon: School, title: 'إدارة المدارس', text: 'إدخال المدرسة الرسمية ومراجعة جاهزية الهيكل والحضور والجدول والمناهج', to: '/institution/schools' },
   { Icon: Search, title: 'البحث عن طالب', text: 'البحث في الملفات المسموح بعرضها باستخدام رقم الهوية', to: '/search' },
   { Icon: BookOpen, title: 'مكتبة الدروس', text: 'استعراض المحتوى التعليمي المتاح في المنصة', to: '/lessons' },

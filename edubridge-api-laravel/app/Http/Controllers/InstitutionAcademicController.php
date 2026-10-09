@@ -211,6 +211,29 @@ class InstitutionAcademicController extends Controller
         return response()->json(['assigned' => true], 201);
     }
 
+    public function removeTeacherAssignment(Request $request, string $organizationSlug, int $school, int $assignment): JsonResponse
+    {
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
+
+        $belongsToSchool = DB::table('teacher_assignments as ta')
+            ->join('sections as s', 's.id', '=', 'ta.section_id')
+            ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->join('subjects as sub', 'sub.id', '=', 'ta.subject_id')
+            ->where('ta.id', $assignment)
+            ->where('g.school_id', $school)
+            ->where('sub.school_id', $school)
+            ->exists();
+
+        if (!$belongsToSchool) {
+            return response()->json(['error' => 'التعيين غير موجود'], 404);
+        }
+
+        DB::table('teacher_assignments')->where('id', $assignment)->delete();
+        return response()->json(['removed' => true]);
+    }
+
     public function enrollStudent(Request $request, string $organizationSlug, int $school): JsonResponse
     {
         $organization = $request->attributes->get('organization');

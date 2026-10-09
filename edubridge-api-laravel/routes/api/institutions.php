@@ -28,6 +28,7 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/sections', [InstitutionAcademicController::class, 'storeSection']);
             Route::post('/subjects', [InstitutionAcademicController::class, 'storeSubject']);
             Route::post('/teacher-assignments', [InstitutionAcademicController::class, 'assignTeacher']);
+            Route::delete('/teacher-assignments/{assignment}', [InstitutionAcademicController::class, 'removeTeacherAssignment'])->whereNumber('assignment');
             Route::post('/student-enrollments', [InstitutionAcademicController::class, 'enrollStudent']);
         });
 

@@ -73,6 +73,12 @@ export function assignInstitutionTeacher(slug, schoolId, payload) {
   })
 }
 
+export function removeInstitutionTeacherAssignment(slug, schoolId, assignmentId) {
+  return request(schoolPath(slug, schoolId, `/academic/teacher-assignments/${assignmentId}`), {
+    method: 'DELETE',
+  })
+}
+
 export function enrollInstitutionStudent(slug, schoolId, payload) {
   return request(schoolPath(slug, schoolId, '/academic/student-enrollments'), {
     method: 'POST',
