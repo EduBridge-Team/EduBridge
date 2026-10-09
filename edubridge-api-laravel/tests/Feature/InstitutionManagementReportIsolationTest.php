@@ -92,6 +92,32 @@ class InstitutionManagementReportIsolationTest extends TestCase
         $this->assertCount(1, $data['schools']);
     }
 
+    public function test_attendance_excludes_foreign_organization_student_in_same_section(): void
+    {
+        DB::table('student_enrollments')->insert([
+            'id' => 3, 'section_id' => 1, 'child_id' => 2, 'status' => 'active',
+        ]);
+
+        $request = Request::create('/attendance', 'POST', [
+            'section_id' => 1, 'attendance_date' => '2026-10-11', 'period_number' => 1,
+        ]);
+        $request->attributes->set('organization', (object) ['id' => 1]);
+        $controller = app(InstitutionAttendanceController::class);
+        $created = $controller->store($request, 'school-a', 1);
+        $this->assertSame(201, $created->getStatusCode());
+        $this->assertSame(1, $created->getData(true)['students_initialized']);
+        $sessionId = $created->getData(true)['attendance_session']['id'];
+        $this->assertDatabaseMissing('attendance_records', [
+            'attendance_session_id' => $sessionId, 'child_id' => 2,
+        ]);
+
+        $mark = Request::create('/attendance/records', 'PUT', [
+            'records' => [['child_id' => 2, 'status' => 'absent']],
+        ]);
+        $mark->attributes->set('organization', (object) ['id' => 1]);
+        $this->assertSame(422, $controller->mark($mark, 'school-a', 1, $sessionId)->getStatusCode());
+    }
+
     public function test_report_only_contains_own_institution(): void
     {
         $data = $this->report();
