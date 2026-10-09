@@ -166,3 +166,13 @@ export function fetchInstitutionAttendanceReport(slug, schoolId, filters = {}) {
   const suffix = query.toString()
   return request(schoolPath(slug, schoolId, `/attendance/report${suffix ? '?'+suffix : ''}`))
 }
+
+export function createInstitutionTimetableEntry(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/timetable'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function deleteInstitutionTimetableEntry(slug, schoolId, entryId) {
+  return request(schoolPath(slug, schoolId, `/timetable/${entryId}`), { method: 'DELETE' })
+}
