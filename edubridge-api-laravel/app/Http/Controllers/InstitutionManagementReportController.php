@@ -10,6 +10,7 @@ class InstitutionManagementReportController extends Controller
 {
     public function index(Request $request, string $organizationSlug): JsonResponse
     {
+        $filters = $request->validate(['from' => ['nullable', 'date'], 'to' => ['nullable', 'date', 'after_or_equal:from']]);
         $organization = $request->attributes->get('organization');
         $schools = DB::table('schools')->where('organization_id', $organization->id)
             ->select('id', 'name')->orderBy('name')->get();
@@ -20,7 +21,7 @@ class InstitutionManagementReportController extends Controller
 
         $students = DB::table('children')->where('organization_id', $organization->id)->count();
 
-        $results = $schools->map(function ($school) use ($organization) {
+        $results = $schools->map(function ($school) use ($organization, $filters) {
             $sectionIds = DB::table('sections as s')
                 ->join('grades as g', 'g.id', '=', 's.grade_id')
                 ->where('g.school_id', $school->id)->pluck('s.id');
@@ -33,6 +34,8 @@ class InstitutionManagementReportController extends Controller
 
             $sessions = DB::table('attendance_sessions')
                 ->whereIn('section_id', $sectionIds);
+            if (!empty($filters['from'])) $sessions->whereDate('attendance_date', '>=', $filters['from']);
+            if (!empty($filters['to'])) $sessions->whereDate('attendance_date', '<=', $filters['to']);
             $sessionCount = (clone $sessions)->count();
 
             $attendance = DB::table('attendance_records as r')
@@ -41,6 +44,8 @@ class InstitutionManagementReportController extends Controller
                 ->whereIn('a.section_id', $sectionIds)
                 ->where('c.organization_id', $organization->id)
                 ->select('r.status', DB::raw('COUNT(*) as total'))
+                ->when(!empty($filters['from']), fn ($q) => $q->whereDate('a.attendance_date', '>=', $filters['from']))
+                ->when(!empty($filters['to']), fn ($q) => $q->whereDate('a.attendance_date', '<=', $filters['to']))
                 ->groupBy('r.status')->pluck('total', 'status');
 
             return [
