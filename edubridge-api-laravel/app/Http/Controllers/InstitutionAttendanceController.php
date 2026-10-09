@@ -180,8 +180,10 @@ class InstitutionAttendanceController extends Controller
             return response()->json(['error' => 'جلسة الحضور غير موجودة'], 404);
         }
 
+        $organization = $request->attributes->get('organization');
         $records = DB::table('attendance_records as r')
             ->join('children as c', 'c.id', '=', 'r.child_id')
+            ->where('c.organization_id', $organization->id)
             ->where('r.attendance_session_id', $attendanceSession)
             ->select('r.*', 'c.name as child_name')
             ->orderBy('c.name')
