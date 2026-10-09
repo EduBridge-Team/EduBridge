@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\MediaController;
+use Tests\Concerns\MocksPrivateR2;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,9 +13,12 @@ use Tests\TestCase;
 
 class MediaControllerAuthorizationTest extends TestCase
 {
+    use MocksPrivateR2;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->configureR2();
 
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
@@ -45,6 +50,7 @@ class MediaControllerAuthorizationTest extends TestCase
     {
         Schema::dropIfExists('media');
         Schema::dropIfExists('lessons');
+        $this->restoreR2();
 
         parent::tearDown();
     }
@@ -99,6 +105,40 @@ class MediaControllerAuthorizationTest extends TestCase
         $response = app(MediaController::class)->destroy(
             $this->request('DELETE', [], 99, 'admin'),
             100
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('media', ['id' => 100]);
+    }
+
+    public function test_failed_r2_delete_preserves_media_reference(): void
+    {
+        DB::table('media')->where('id', 100)->update([
+            'url' => '/api/private-files/lesson/10/image.jpg',
+        ]);
+        $this->mockR2([new Response(500)]);
+
+        $response = app(MediaController::class)->destroy(
+            $this->request('DELETE', [], 1, 'teacher'), 100
+        );
+
+        $this->assertSame(502, $response->getStatusCode());
+        $this->assertDatabaseHas('media', [
+            'id' => 100, 'url' => '/api/private-files/lesson/10/image.jpg',
+        ]);
+        $this->assertCount(1, $this->r2History);
+        $this->assertSame('DELETE', $this->r2History[0]['request']->getMethod());
+    }
+
+    public function test_successful_r2_delete_removes_media_reference(): void
+    {
+        DB::table('media')->where('id', 100)->update([
+            'url' => '/api/private-files/lesson/10/image.jpg',
+        ]);
+        $this->mockR2([new Response(204)]);
+
+        $response = app(MediaController::class)->destroy(
+            $this->request('DELETE', [], 1, 'teacher'), 100
         );
 
         $this->assertSame(200, $response->getStatusCode());
