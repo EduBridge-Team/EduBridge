@@ -145,7 +145,7 @@ class InstitutionTimetableController extends Controller
             ->where('organization_id', $organization->id)
             ->where('user_id', $teacher)
             ->where('is_active', true)
-            ->whereIn('role', ['teacher', 'owner', 'admin', 'school_admin'])
+            ->where('role', 'teacher')
             ->exists();
     }
 }
