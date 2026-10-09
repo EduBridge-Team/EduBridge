@@ -7,13 +7,15 @@ import '../../styles/institution-operations.css'
 export default function InstitutionReportsPage() {
   const { slug, loading: contextLoading } = useInstitution()
   const [data, setData] = useState(null)
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function reload() {
     if (!slug) return
     setLoading(true); setError('')
-    try { setData(await fetchInstitutionManagementReport(slug)) }
+    try { setData(await fetchInstitutionManagementReport(slug, { from, to })) }
     catch (err) { setError(err.message) }
     finally { setLoading(false) }
   }
@@ -43,6 +45,7 @@ export default function InstitutionReportsPage() {
           <Link className="btn outline" to="/institution/attendance">تقارير الحضور التفصيلية</Link>
         </div>
       </div></section>
+      <section className="institution-panel"><h2>فترة إحصاءات الحضور</h2><form className="institution-school-form" onSubmit={(e) => { e.preventDefault(); if (from && to && from > to) { setError('تاريخ البداية بعد النهاية'); return } reload() }}><label>من<input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label><label>إلى<input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label><button className="btn" disabled={loading}>تطبيق الفترة</button></form><p>تُطبق الفترة على جلسات الحضور وحالاتها فقط؛ أما بيانات المدارس والمعلمين والطلاب فهي أعداد حالية.</p></section>
       {error && <div className="state error" role="alert">{error}</div>}
       {loading && <div className="state">جارِ تحميل المؤشرات…</div>}
       {!loading && data && <>
