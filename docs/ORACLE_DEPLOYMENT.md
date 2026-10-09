@@ -255,3 +255,11 @@ Application rollback normally does not require restoring PostgreSQL. Check out t
 ```
 
 Restore an older database only when a release introduced an incompatible schema change and the rollback plan explicitly requires it.
+
+## Independent Jabalia stack — operational note (2026-10-09)
+
+This document primarily covers the main stack. Jabalia has separate services on localhost:8091/8092, a dedicated PostgreSQL volume and distinct R2 buckets. Use [Jabalia deploy instructions](../deploy/institutions-jabalia.md), not the main database migration or backup commands, for its changes. Do not overwrite the live Caddyfile with a single-stack snippet without preserving existing Jabalia routes.
+
+The main DB backup script now verifies private R2 object bytes by reading back and comparing SHA256. Main and Jabalia isolated PG17 restores were successful; main R2 database archive recovery was also tested. This does not back up R2 media. See [recovery guide](DISASTER_RECOVERY.md) and [media guide](STORAGE_AND_MEDIA.md).
+
+Production PsySH/Tinker may warn that /var/www/.config/psysh is not writable. Prefer reviewed CLI diagnostic commands that do not expose secrets.
