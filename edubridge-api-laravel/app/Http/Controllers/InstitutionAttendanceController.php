@@ -48,10 +48,13 @@ class InstitutionAttendanceController extends Controller
             return response()->json(['error' => 'الشعبة لا تتبع هذه المدرسة'], 422);
         }
 
+        $organization = $request->attributes->get('organization');
         $base = DB::table('attendance_records as r')
             ->join('attendance_sessions as a', 'a.id', '=', 'r.attendance_session_id')
             ->join('sections as s', 's.id', '=', 'a.section_id')
             ->join('grades as g', 'g.id', '=', 's.grade_id')
+            ->join('children as c', 'c.id', '=', 'r.child_id')
+            ->where('c.organization_id', $organization->id)
             ->where('g.school_id', $school);
 
         if (!empty($data['from'])) {
@@ -70,7 +73,6 @@ class InstitutionAttendanceController extends Controller
             ->pluck('total', 'status');
 
         $students = (clone $base)
-            ->join('children as c', 'c.id', '=', 'r.child_id')
             ->select(
                 'c.id as child_id',
                 'c.name as child_name',
@@ -146,10 +148,13 @@ class InstitutionAttendanceController extends Controller
             'updated_at' => now(),
         ]);
 
-        $students = DB::table('student_enrollments')
-            ->where('section_id', $data['section_id'])
-            ->where('status', 'active')
-            ->pluck('child_id');
+        $organization = $request->attributes->get('organization');
+        $students = DB::table('student_enrollments as e')
+            ->join('children as c', 'c.id', '=', 'e.child_id')
+            ->where('c.organization_id', $organization->id)
+            ->where('e.section_id', $data['section_id'])
+            ->where('e.status', 'active')
+            ->pluck('e.child_id');
 
         if ($students->isNotEmpty()) {
             $rows = $students->map(fn ($childId) => [
@@ -204,10 +209,13 @@ class InstitutionAttendanceController extends Controller
         if ($session->status === 'closed') {
             return response()->json(['error' => 'سجل الحضور مغلق ولا يمكن تعديله'], 409);
         }
-        $validChildren = DB::table('student_enrollments')
-            ->where('section_id', $session->section_id)
-            ->where('status', 'active')
-            ->pluck('child_id')
+        $organization = $request->attributes->get('organization');
+        $validChildren = DB::table('student_enrollments as e')
+            ->join('children as c', 'c.id', '=', 'e.child_id')
+            ->where('e.section_id', $session->section_id)
+            ->where('c.organization_id', $organization->id)
+            ->where('e.status', 'active')
+            ->pluck('e.child_id')
             ->map(fn ($id) => (int) $id)
             ->all();
 
