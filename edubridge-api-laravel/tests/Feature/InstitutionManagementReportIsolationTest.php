@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\InstitutionManagementReportController;
+use App\Http\Controllers\InstitutionAttendanceController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +22,10 @@ class InstitutionManagementReportIsolationTest extends TestCase
         Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); });
         Schema::create('student_enrollments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
-        Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->date('attendance_date'); });
-        Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); });
+        Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->date('attendance_date'); $t->unsignedBigInteger('subject_id')->nullable(); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedInteger('period_number')->nullable(); $t->string('status')->default('open'); $t->text('notes')->nullable(); $t->timestamps(); });
+        Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); $t->text('note')->nullable(); $t->unsignedBigInteger('marked_by')->nullable(); $t->dateTime('marked_at')->nullable(); $t->timestamps(); });
+        Schema::create('child_parent', function (Blueprint $t) { $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('parent_id'); });
+        Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title'); $t->text('message'); $t->string('type'); $t->boolean('is_read'); $t->timestamp('created_at')->nullable(); });
 
         DB::table('schools')->insert([['id' => 1, 'organization_id' => 1, 'name' => 'School A'], ['id' => 2, 'organization_id' => 2, 'name' => 'School B']]);
         DB::table('organization_user')->insert([['organization_id' => 1, 'user_id' => 1, 'role' => 'teacher', 'is_active' => true], ['organization_id' => 2, 'user_id' => 2, 'role' => 'teacher', 'is_active' => true]]);
@@ -45,7 +48,7 @@ class InstitutionManagementReportIsolationTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['attendance_records', 'attendance_sessions', 'timetable_entries', 'student_enrollments', 'sections', 'grades', 'children', 'organization_user', 'schools'] as $table) {
+        foreach (['notifications', 'child_parent', 'attendance_records', 'attendance_sessions', 'timetable_entries', 'student_enrollments', 'sections', 'grades', 'children', 'organization_user', 'schools'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
@@ -56,6 +59,37 @@ class InstitutionManagementReportIsolationTest extends TestCase
         $request = Request::create('/management-report', 'GET', $filters);
         $request->attributes->set('organization', (object) ['id' => 1]);
         return app(InstitutionManagementReportController::class)->index($request, 'school-a')->getData(true);
+    }
+
+
+    public function test_attendance_session_updates_management_report_without_leaking_other_school(): void
+    {
+        $controller = app(InstitutionAttendanceController::class);
+        $request = Request::create('/attendance', 'POST', [
+            'section_id' => 1,
+            'attendance_date' => '2026-10-10',
+            'period_number' => 1,
+        ]);
+        $request->attributes->set('organization', (object) ['id' => 1]);
+        $created = $controller->store($request, 'school-a', 1);
+        $this->assertSame(201, $created->getStatusCode());
+        $this->assertSame(1, $created->getData(true)['students_initialized']);
+        $sessionId = $created->getData(true)['attendance_session']['id'];
+
+        $mark = Request::create('/attendance/records', 'PUT', [
+            'records' => [['child_id' => 1, 'status' => 'late']],
+            'close_session' => true,
+        ]);
+        $mark->attributes->set('organization', (object) ['id' => 1]);
+        $this->assertSame(200, $controller->mark($mark, 'school-a', 1, $sessionId)->getStatusCode());
+        $this->assertSame(409, $controller->mark($mark, 'school-a', 1, $sessionId)->getStatusCode());
+
+        $data = $this->report(['from' => '2026-10-10', 'to' => '2026-10-10']);
+        $this->assertSame(1, $data['summary']['attendance_sessions']);
+        $this->assertSame(1, $data['schools'][0]['attendance']['late']);
+        $this->assertSame(0, $data['schools'][0]['attendance']['absent']);
+        $this->assertSame(1, $data['summary']['active_enrollments']);
+        $this->assertCount(1, $data['schools']);
     }
 
     public function test_report_only_contains_own_institution(): void
