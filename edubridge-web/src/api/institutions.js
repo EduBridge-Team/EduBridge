@@ -176,3 +176,19 @@ export function createInstitutionTimetableEntry(slug, schoolId, payload) {
 export function deleteInstitutionTimetableEntry(slug, schoolId, entryId) {
   return request(schoolPath(slug, schoolId, `/timetable/${entryId}`), { method: 'DELETE' })
 }
+
+export function reportInstitutionTeacherAbsence(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/teacher-absences'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function fetchInstitutionAvailableSubstitutes(slug, schoolId, entryId, date) {
+  return request(schoolPath(slug, schoolId, `/timetable/${entryId}/available-substitutes?date=${encodeURIComponent(date)}`))
+}
+
+export function assignInstitutionSubstitute(slug, schoolId, entryId, payload) {
+  return request(schoolPath(slug, schoolId, `/timetable/${entryId}/substitutions`), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
