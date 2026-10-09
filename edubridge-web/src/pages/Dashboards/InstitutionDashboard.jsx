@@ -13,6 +13,7 @@ import {
 import { getUser } from '../../api'
 
 const QUICK_ACTIONS = [
+  { Icon: Users, title: 'غياب المعلمين والبدائل', text: 'متابعة غياب المعلمين وتغطية الحصص بمعلمين بدلاء', to: '/institution/substitutions' },
   { Icon: BookOpen, title: 'الجدول المدرسي', text: 'إدارة الحصص الأسبوعية وتوزيعها على المعلمين والشعب', to: '/institution/timetable' },
   { Icon: BookOpen, title: 'الحضور والغياب', text: 'تسجيل حضور الطلاب يوميًا وعرض التقارير', to: '/institution/attendance' },
   { Icon: Users, title: 'إدارة الطلاب', text: 'تسجيل الطلاب الموجودين في المؤسسة داخل الشعب الدراسية', to: '/institution/students' },
