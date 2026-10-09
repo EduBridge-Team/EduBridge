@@ -24,7 +24,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
         Schema::create('grades', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
         Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); $t->unsignedBigInteger('academic_year_id'); $t->string('name'); });
         Schema::create('subjects', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); $t->string('name'); });
-        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); });
+        Schema::create('children', function (Blueprint $t) { $t->id(); $t->string('name'); $t->unsignedBigInteger('organization_id'); });
         Schema::create('student_enrollments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('section_id'); $t->string('status')->default('active'); });
         Schema::create('child_parent', function (Blueprint $t) { $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('parent_id'); });
         Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title')->nullable(); $t->string('message'); $t->string('type')->nullable(); $t->boolean('is_read')->default(false); $t->timestamp('created_at')->nullable(); });
@@ -40,7 +40,7 @@ class InstitutionTimetableAttendanceTest extends TestCase
         DB::table('grades')->insert(['id' => 1, 'school_id' => 1, 'name' => 'Grade 4']);
         DB::table('sections')->insert([['id' => 1, 'grade_id' => 1, 'academic_year_id' => 1, 'name' => 'A'], ['id' => 2, 'grade_id' => 1, 'academic_year_id' => 1, 'name' => 'B']]);
         DB::table('subjects')->insert(['id' => 1, 'school_id' => 1, 'name' => 'Science']);
-        DB::table('children')->insert(['id' => 1, 'name' => 'Student']);
+        DB::table('children')->insert(['id' => 1, 'name' => 'Student', 'organization_id' => 1]);
         DB::table('student_enrollments')->insert(['child_id' => 1, 'section_id' => 1, 'status' => 'active']);
         DB::table('child_parent')->insert(['child_id' => 1, 'parent_id' => 20]);
     }
