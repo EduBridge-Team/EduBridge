@@ -37,7 +37,7 @@ path="$BACKUP_DIR/$filename"
 sha_path="$path.sha256"
 
 cleanup_tmp() {
-  docker exec edubridge-api rm -f "/tmp/$filename" >/dev/null 2>&1 || true
+  docker exec --user root edubridge-api rm -f "/tmp/$filename" >/dev/null 2>&1 || true
 }
 trap cleanup_tmp EXIT
 
@@ -59,6 +59,10 @@ chmod 600 "$path" "$sha_path"
 if [[ "$UPLOAD_TO_R2" == "1" ]]; then
   echo "==> Uploading backup to private R2..."
   docker cp "$path" "edubridge-api:/tmp/$filename"
+  # docker cp preserves restrictive permissions but copies as root. The Laravel
+  # command runs as www-data; grant access to this temporary file only.
+  docker exec --user root edubridge-api chown www-data:www-data "/tmp/$filename"
+  docker exec --user root edubridge-api chmod 600 "/tmp/$filename"
   remote_key="$REMOTE_PREFIX/$(date -u +%Y/%m/%d)/$filename"
   docker exec edubridge-api     php artisan edubridge:upload-database-backup "/tmp/$filename" --key="$remote_key"
 fi
