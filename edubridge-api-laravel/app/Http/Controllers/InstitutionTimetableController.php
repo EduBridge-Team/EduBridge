@@ -55,12 +55,18 @@ class InstitutionTimetableController extends Controller
             return response()->json(['error' => 'بيانات الجدول لا تتبع هذه المدرسة'], 422);
         }
 
+        $sectionYear = DB::table('sections')->where('id', $data['section_id'])->value('academic_year_id');
+        if ((int) $sectionYear !== (int) $data['academic_year_id']) {
+            return response()->json(['error' => 'الشعبة لا تتبع السنة الدراسية المحددة'], 422);
+        }
+
         if (!empty($data['teacher_id']) && !$this->teacherWithinOrganization($request, (int) $data['teacher_id'])) {
             return response()->json(['error' => 'المعلم لا يتبع هذه المؤسسة'], 422);
         }
 
         $conflict = DB::table('timetable_entries')
             ->where('school_id', $school)
+            ->where('academic_year_id', $data['academic_year_id'])
             ->where('weekday', $data['weekday'])
             ->where('period_number', $data['period_number'])
             ->where(function ($query) use ($data) {
