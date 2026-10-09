@@ -141,3 +141,28 @@ export function transferInstitutionStudent(slug, schoolId, enrollmentId, section
     method: 'POST', body: JSON.stringify({ section_id: Number(sectionId) }),
   })
 }
+
+export function createInstitutionAttendanceSession(slug, schoolId, payload) {
+  return request(schoolPath(slug, schoolId, '/attendance'), {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function fetchInstitutionAttendanceSession(slug, schoolId, sessionId) {
+  return request(schoolPath(slug, schoolId, `/attendance/${sessionId}`))
+}
+
+export function markInstitutionAttendance(slug, schoolId, sessionId, payload) {
+  return request(schoolPath(slug, schoolId, `/attendance/${sessionId}/records`), {
+    method: 'PUT', body: JSON.stringify(payload),
+  })
+}
+
+export function fetchInstitutionAttendanceReport(slug, schoolId, filters = {}) {
+  const query = new URLSearchParams()
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== '' && value != null) query.set(key, String(value))
+  }
+  const suffix = query.toString()
+  return request(schoolPath(slug, schoolId, `/attendance/report${suffix ? '?'+suffix : ''}`))
+}
