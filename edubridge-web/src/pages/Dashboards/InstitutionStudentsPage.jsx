@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { enrollInstitutionStudent, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
+import { enrollInstitutionStudent, fetchInstitutionStudentHistory, closeInstitutionStudentEnrollment, transferInstitutionStudent, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -11,6 +11,8 @@ export default function InstitutionStudentsPage() {
   const [academic, setAcademic] = useState(null)
   const [participants, setParticipants] = useState(null)
   const [studentId, setStudentId] = useState('')
+  const [history, setHistory] = useState([])
+  const [transferTargets, setTransferTargets] = useState({})
   const [sectionId, setSectionId] = useState('')
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -38,10 +40,12 @@ export default function InstitutionStudentsPage() {
     Promise.all([
       fetchInstitutionAcademicOverview(slug, schoolId),
       fetchInstitutionParticipants(slug, schoolId),
-    ]).then(([academicData, participantData]) => {
+      fetchInstitutionStudentHistory(slug, schoolId),
+    ]).then(([academicData, participantData, records]) => {
       if (!active) return
       setAcademic(academicData)
       setParticipants(participantData)
+      setHistory(records.enrollments || [])
       setError('')
     }).catch((err) => { if (active) setError(err.message) })
       .finally(() => { if (active) setLoading(false) })
@@ -58,11 +62,48 @@ export default function InstitutionStudentsPage() {
       await enrollInstitutionStudent(slug, schoolId, {
         child_id: Number(studentId), section_id: Number(sectionId),
       })
-      const latest = await fetchInstitutionParticipants(slug, schoolId)
+      const [latest, records] = await Promise.all([
+        fetchInstitutionParticipants(slug, schoolId),
+        fetchInstitutionStudentHistory(slug, schoolId),
+      ])
       setParticipants(latest)
+      setHistory(records.enrollments || [])
       setStudentId('')
       setSectionId('')
       setMessage('تم تسجيل الطالب في الشعبة بنجاح.')
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
+  async function refreshRecords() {
+    const [people, records] = await Promise.all([
+      fetchInstitutionParticipants(slug, schoolId),
+      fetchInstitutionStudentHistory(slug, schoolId),
+    ])
+    setParticipants(people)
+    setHistory(records.enrollments || [])
+  }
+
+  async function closeEnrollment(item, status) {
+    if (saving || !window.confirm(status === 'withdrawn' ? 'تأكيد انسحاب الطالب من الشعبة؟' : 'تأكيد إنهاء تسجيل الطالب بصفته منقولًا؟')) return
+    setSaving(true); setError(''); setMessage('')
+    try {
+      await closeInstitutionStudentEnrollment(slug, schoolId, item.id, status)
+      await refreshRecords()
+      setMessage('تم تحديث حالة التسجيل.')
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
+  async function transferEnrollment(item) {
+    const target = transferTargets[item.id]
+    if (!target || saving || !window.confirm('هل تريد نقل الطالب إلى الشعبة المحددة؟')) return
+    setSaving(true); setError(''); setMessage('')
+    try {
+      await transferInstitutionStudent(slug, schoolId, item.id, target)
+      await refreshRecords()
+      setMessage('تم نقل الطالب مع الاحتفاظ بسجل الشعبة السابقة.')
+      setTransferTargets((previous) => ({ ...previous, [item.id]: '' }))
     } catch (err) { setError(err.message) }
     finally { setSaving(false) }
   }
@@ -127,6 +168,39 @@ export default function InstitutionStudentsPage() {
               <b>{item.child_name}</b>
               <p>{item.grade_name} / {item.section_name}</p>
               <small>تاريخ التسجيل: {item.enrolled_on || 'غير محدد'}</small>
+            </div>)}</div>
+          )}
+          <h3>إدارة التسجيلات النشطة</h3>
+          {enrollments.length === 0 ? <p>لا توجد تسجيلات نشطة لإدارتها.</p> : (
+            <div className="institution-actions">
+              {enrollments.map((item) => {
+                const current = history.find((record) => record.id === item.id)
+                const choices = sections.filter((section) =>
+                  current && section.academic_year_id === current.academic_year_id && section.id !== item.section_id)
+                return <div className="institution-panel" key={item.id}>
+                  <b>{item.child_name}</b>
+                  <p>{item.grade_name} / {item.section_name}</p>
+                  <label>نقل إلى شعبة أخرى من السنة نفسها
+                    <select value={transferTargets[item.id] || ''} onChange={(event) => setTransferTargets((previous) => ({ ...previous, [item.id]: event.target.value }))}>
+                      <option value="">اختر الشعبة الجديدة</option>
+                      {choices.map((section) => <option key={section.id} value={section.id}>{section.grade_name} — {section.name}</option>)}
+                    </select>
+                  </label>
+                  <button type="button" className="btn outline" disabled={saving || !transferTargets[item.id]}
+                    onClick={() => transferEnrollment(item)}>نقل الطالب</button>
+                  <button type="button" className="btn outline" disabled={saving}
+                    onClick={() => closeEnrollment(item, 'withdrawn')}>تسجيل انسحاب</button>
+                </div>
+              })}
+            </div>
+          )}
+          <h3>سجل التسجيلات والانتقالات</h3>
+          {history.length === 0 ? <p>لا توجد سجلات سابقة.</p> : (
+            <div className="institution-actions">{history.map((item) => <div className="institution-panel" key={item.id}>
+              <b>{item.child_name}</b>
+              <p>{item.grade_name} / {item.section_name}</p>
+              <p>{item.status === 'active' ? 'نشط' : item.status === 'transferred' ? 'منقول' : item.status === 'withdrawn' ? 'منسحب' : item.status}</p>
+              <small>تاريخ التسجيل: {item.enrolled_on || 'غير محدد'}{item.left_on ? ` — تاريخ المغادرة: ${item.left_on}` : ''}</small>
             </div>)}</div>
           )}
           <h3>طلاب المؤسسة</h3>

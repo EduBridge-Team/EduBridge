@@ -125,3 +125,19 @@ export function setInstitutionTeacherActive(slug, teacherId, isActive) {
     method: 'PATCH', body: JSON.stringify({ is_active: isActive }),
   })
 }
+
+export function fetchInstitutionStudentHistory(slug, schoolId) {
+  return request(schoolPath(slug, schoolId, '/academic/student-enrollments'))
+}
+
+export function closeInstitutionStudentEnrollment(slug, schoolId, enrollmentId, status) {
+  return request(schoolPath(slug, schoolId, `/academic/student-enrollments/${enrollmentId}/status`), {
+    method: 'PATCH', body: JSON.stringify({ status }),
+  })
+}
+
+export function transferInstitutionStudent(slug, schoolId, enrollmentId, sectionId) {
+  return request(schoolPath(slug, schoolId, `/academic/student-enrollments/${enrollmentId}/transfer`), {
+    method: 'POST', body: JSON.stringify({ section_id: Number(sectionId) }),
+  })
+}

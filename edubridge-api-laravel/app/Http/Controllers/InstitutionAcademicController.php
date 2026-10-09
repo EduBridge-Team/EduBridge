@@ -252,12 +252,29 @@ class InstitutionAcademicController extends Controller
             return response()->json(['error' => 'الطالب لا يتبع هذه المؤسسة'], 422);
         }
 
-        DB::table('student_enrollments')->updateOrInsert(
-            ['section_id' => $data['section_id'], 'child_id' => $data['child_id']],
-            ['status' => 'active', 'enrolled_on' => $data['enrolled_on'] ?? now()->toDateString(), 'left_on' => null, 'updated_at' => now(), 'created_at' => now()]
-        );
-
-        return response()->json(['enrolled' => true], 201);
+        return DB::transaction(function () use ($data, $school) {
+            // Serialize competing enrollments for the same child across schools/sections.
+            DB::table('children')->where('id', $data['child_id'])->lockForUpdate()->first();
+            $targetYear = DB::table('sections')->where('id', $data['section_id'])->value('academic_year_id');
+            $existing = DB::table('student_enrollments as se')
+                ->join('sections as s', 's.id', '=', 'se.section_id')
+                ->where('se.child_id', $data['child_id'])
+                ->where('s.academic_year_id', $targetYear)
+                ->where('se.status', 'active')->first();
+            if ($existing) {
+                return response()->json(['error' => 'الطالب مسجل بالفعل في شعبة لهذه السنة. استخدم النقل بين الشعب.'], 409);
+            }
+            if (DB::table('student_enrollments')->where('section_id', $data['section_id'])
+                ->where('child_id', $data['child_id'])->exists()) {
+                return response()->json(['error' => 'يوجد سجل سابق لهذا الطالب في الشعبة؛ اختر شعبة أخرى.'], 409);
+            }
+            DB::table('student_enrollments')->insert([
+                'section_id' => $data['section_id'], 'child_id' => $data['child_id'],
+                'status' => 'active', 'enrolled_on' => $data['enrolled_on'] ?? now()->toDateString(),
+                'left_on' => null, 'updated_at' => now(), 'created_at' => now(),
+            ]);
+            return response()->json(['enrolled' => true], 201);
+        });
     }
 
     private function schoolWithinTenant(Request $request, int $school): ?object

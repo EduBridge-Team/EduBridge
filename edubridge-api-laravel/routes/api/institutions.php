@@ -6,6 +6,7 @@ use App\Http\Controllers\InstitutionTeacherMembershipController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionCurriculumController;
 use App\Http\Controllers\InstitutionParticipantController;
+use App\Http\Controllers\InstitutionStudentEnrollmentController;
 use App\Http\Controllers\InstitutionSchoolController;
 use App\Http\Controllers\InstitutionSubstitutionController;
 use App\Http\Controllers\InstitutionTimetableController;
@@ -37,6 +38,9 @@ Route::prefix('/institutions/{organizationSlug}')
             Route::post('/teacher-assignments', [InstitutionAcademicController::class, 'assignTeacher']);
             Route::delete('/teacher-assignments/{assignment}', [InstitutionAcademicController::class, 'removeTeacherAssignment'])->whereNumber('assignment');
             Route::post('/student-enrollments', [InstitutionAcademicController::class, 'enrollStudent']);
+            Route::get('/student-enrollments', [InstitutionStudentEnrollmentController::class, 'history']);
+            Route::patch('/student-enrollments/{enrollment}/status', [InstitutionStudentEnrollmentController::class, 'close'])->whereNumber('enrollment');
+            Route::post('/student-enrollments/{enrollment}/transfer', [InstitutionStudentEnrollmentController::class, 'transfer'])->whereNumber('enrollment');
         });
 
         Route::prefix('/schools/{school}/attendance')->whereNumber('school')->group(function () {
