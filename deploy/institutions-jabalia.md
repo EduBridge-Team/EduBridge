@@ -201,3 +201,17 @@ Use the Jabalia institution UI/APIs for onboarding instead of direct SQL inserts
 Treat the database as an independent production database. Back up `edubridge-jabalia-postgres-data` separately and test restore independently from EduBridge.
 
 A future migration of Jabalia to another server can move this database and its media without exporting unrelated EduBridge users or student records.
+
+## Verified operational addendum — 2026-10-09
+
+- Runtime Compose project is edubridge-jabalia. Always include --project-name edubridge-jabalia when directly recreating API to load edited .env.jabalia; omitting it has caused a container-name conflict.
+- Jabalia media/private buckets are edubridge-jabalia-media and edubridge-jabalia-private. Public media domain media.jabalia.edubridge.win reached Active status and the R2 disposable-object check passed for both buckets. Never attach a public domain to the private bucket.
+- The Jabalia database backup timer reported success and local dump passed an isolated PostgreSQL 17 restore. Offsite Jabalia DB recovery and R2 media-object backups are not yet verified.
+- Provisioning the institution and initial migrations are first-deployment operations only; do not repeat provisioning for routine releases.
+- Live Caddy runs in a Docker container; preserve all site definitions and validate/reload using the running deployment configuration.
+
+To recreate Jabalia API only after changing R2 environment settings:
+
+    docker compose --project-name edubridge-jabalia --env-file edubridge-api-laravel/.env.jabalia -f deploy/jabalia-compose.yml up -d --no-deps --force-recreate api
+
+Check https://jabalia.edubridge.win/api/health afterward. Never use down -v. See [storage](../docs/STORAGE_AND_MEDIA.md).
