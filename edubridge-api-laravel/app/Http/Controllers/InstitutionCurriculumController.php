@@ -22,7 +22,7 @@ class InstitutionCurriculumController extends Controller
             ->join('subjects as s', 's.id', '=', 'b.subject_id')
             ->where('b.school_id', $school)
             ->select('b.*', 'g.name as grade_name', 's.name as subject_name')
-            ->orderBy('g.level')
+            ->orderBy('g.position')
             ->orderBy('s.name')
             ->get();
 

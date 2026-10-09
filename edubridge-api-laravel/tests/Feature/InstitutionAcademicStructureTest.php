@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\InstitutionAcademicController;
+use App\Http\Controllers\InstitutionCurriculumController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,43 @@ class InstitutionAcademicStructureTest extends TestCase
         Schema::dropIfExists('schools');
         Schema::dropIfExists('organizations');
         parent::tearDown();
+    }
+
+    public function test_curriculum_overview_orders_by_grade_position_not_nonexistent_level(): void
+    {
+        Schema::create('curriculum_books', function (Blueprint $t) {
+            $t->id();
+            $t->foreignId('school_id');
+            $t->foreignId('grade_id');
+            $t->foreignId('subject_id');
+            $t->string('title');
+        });
+
+        try {
+            DB::table('grades')->insert([
+                ['id' => 1, 'school_id' => 10, 'name' => 'Second', 'position' => 2],
+                ['id' => 2, 'school_id' => 10, 'name' => 'First', 'position' => 1],
+            ]);
+            DB::table('subjects')->insert([
+                ['id' => 1, 'school_id' => 10, 'name' => 'Arabic'],
+            ]);
+            DB::table('curriculum_books')->insert([
+                ['id' => 1, 'school_id' => 10, 'grade_id' => 1, 'subject_id' => 1, 'title' => 'Second book'],
+                ['id' => 2, 'school_id' => 10, 'grade_id' => 2, 'subject_id' => 1, 'title' => 'First book'],
+            ]);
+
+            $request = Request::create('/api/institutions/jabalia/schools/10/curriculum', 'GET');
+            $request->attributes->set('organization', (object) ['id' => 1, 'slug' => 'jabalia']);
+
+            $response = app(InstitutionCurriculumController::class)->overview($request, 'jabalia', 10);
+
+            $this->assertSame(200, $response->getStatusCode());
+            $this->assertSame(['First book', 'Second book'], array_column(
+                json_decode($response->getContent(), true)['books'], 'title'
+            ));
+        } finally {
+            Schema::dropIfExists('curriculum_books');
+        }
     }
 
     public function test_academic_year_is_created_inside_current_tenant_school(): void
