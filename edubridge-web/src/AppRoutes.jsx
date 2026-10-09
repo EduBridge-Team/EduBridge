@@ -43,6 +43,7 @@ const InstitutionSchoolsPage = lazy(() => import('./pages/Dashboards/Institution
 const InstitutionTeachersPage = lazy(() => import('./pages/Dashboards/InstitutionTeachersPage'))
 const InstitutionStudentsPage = lazy(() => import('./pages/Dashboards/InstitutionStudentsPage'))
 const InstitutionAttendancePage = lazy(() => import('./pages/Dashboards/InstitutionAttendancePage'))
+const InstitutionTimetablePage = lazy(() => import('./pages/Dashboards/InstitutionTimetablePage'))
 const TeacherInvitationPage = lazy(() => import('./pages/Dashboards/TeacherInvitationPage'))
 const HomeworkPage = lazy(() => import('./pages/Learning/HomeworkPage'))
 const WeeklyReportsPage = lazy(() => import('./pages/Learning/WeeklyReportsPage'))
@@ -122,6 +123,7 @@ export default function AppRoutes() {
           <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />
           <Route path="/institution" element={<RolePage roles={['institution']}><InstitutionDashboard /></RolePage>} />
           <Route path="/institution/schools" element={<RolePage roles={['institution']}><InstitutionSchoolsPage /></RolePage>} />
+          <Route path="/institution/timetable" element={<RolePage roles={['institution']}><InstitutionTimetablePage /></RolePage>} />
           <Route path="/institution/attendance" element={<RolePage roles={['institution']}><InstitutionAttendancePage /></RolePage>} />
           <Route path="/institution/students" element={<RolePage roles={['institution']}><InstitutionStudentsPage /></RolePage>} />
           <Route path="/institution/teachers" element={<RolePage roles={['institution']}><InstitutionTeachersPage /></RolePage>} />
