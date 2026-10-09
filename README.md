@@ -223,3 +223,9 @@ Never use a real production account password in repository tests.
 ## Documentation rule
 
 When production behavior changes, update the relevant documentation in the same pull request. The code/configuration in `main` remains authoritative when a document and implementation disagree.
+
+## Jabalia deployment and object storage (2026-10-09)
+
+Jabalia runs the same codebase but independent runtime API/web containers, PostgreSQL data, credentials, authentication and R2 buckets. The institution site is <https://jabalia.edubridge.win>. Routes go to localhost:8091 (API) and localhost:8092 (web); see [architecture](docs/ARCHITECTURE.md) and [Jabalia runbook](deploy/institutions-jabalia.md).
+
+Successful PostgreSQL restore tests for main and Jabalia, including a main private-R2-downloaded database archive, **do not cover images/videos stored in R2**. See [media/storage guide](docs/STORAGE_AND_MEDIA.md), [disaster recovery](docs/DISASTER_RECOVERY.md), and [release checklist](docs/RELEASE_CHECKLIST.md). The production deployment commands above are scoped to the main stack; use the Jabalia deployment script for Jabalia.
