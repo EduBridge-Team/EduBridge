@@ -67,6 +67,15 @@ class InstitutionTeacherAssignmentsTest extends TestCase
         return $request;
     }
 
+    public function test_other_school_is_not_writable(): void
+    {
+        $controller = app(InstitutionAcademicController::class);
+        $request = $this->request();
+        $this->assertSame(404, $controller->storeSection($request, 'jabalia', 2)->getStatusCode());
+        $this->assertSame(404, $controller->assignTeacher($request, 'jabalia', 2)->getStatusCode());
+        $this->assertSame(404, $controller->enrollStudent($request, 'jabalia', 2)->getStatusCode());
+    }
+
     public function test_assignment_can_only_be_removed_from_its_school(): void
     {
         $controller = app(InstitutionAcademicController::class);
