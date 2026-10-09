@@ -97,3 +97,21 @@ export function fetchInstitutionTimetable(slug, schoolId) {
 export function fetchInstitutionCurriculum(slug, schoolId) {
   return request(schoolPath(slug, schoolId, '/curriculum'))
 }
+
+export function fetchInstitutionTeacherInvitations(slug) {
+  return request(tenantPath(slug, '/teacher-invitations'))
+}
+
+export function inviteInstitutionTeacher(slug, email) {
+  return request(tenantPath(slug, '/teacher-invitations'), {
+    method: 'POST', body: JSON.stringify({ email }),
+  })
+}
+
+export function revokeInstitutionTeacherInvitation(slug, id) {
+  return request(tenantPath(slug, `/teacher-invitations/${id}`), { method: 'DELETE' })
+}
+
+export function acceptInstitutionTeacherInvitation(token) {
+  return request('/teacher-invitations/accept', { method: 'POST', body: JSON.stringify({ token }) })
+}
