@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InstitutionAcademicController;
+use App\Http\Controllers\InstitutionTeacherInvitationController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionCurriculumController;
 use App\Http\Controllers\InstitutionParticipantController;
@@ -13,6 +14,9 @@ Route::prefix('/institutions/{organizationSlug}')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:owner,admin,school_admin')
     ->group(function () {
+        Route::get('/teacher-invitations', [InstitutionTeacherInvitationController::class, 'index']);
+        Route::post('/teacher-invitations', [InstitutionTeacherInvitationController::class, 'store'])->middleware('throttle:10,1');
+        Route::delete('/teacher-invitations/{invitation}', [InstitutionTeacherInvitationController::class, 'revoke'])->whereNumber('invitation');
         Route::get('/schools', [InstitutionSchoolController::class, 'index']);
         Route::post('/schools', [InstitutionSchoolController::class, 'store']);
         Route::get('/schools/{school}', [InstitutionSchoolController::class, 'show'])->whereNumber('school');
