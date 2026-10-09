@@ -34,6 +34,11 @@ RUN composer install \
 
 COPY . .
 
+# Normalize application source permissions: local Git checkout may contain
+# mode 600 PHP files, but the runtime executes as the non-root www-data user.
+RUN find app routes -type d -exec chmod 755 {} + \
+    && find app routes -type f -exec chmod 644 {} +
+
 RUN composer dump-autoload --optimize --no-dev --no-interaction --no-scripts \
     && php artisan package:discover --ansi \
     && mkdir -p \
