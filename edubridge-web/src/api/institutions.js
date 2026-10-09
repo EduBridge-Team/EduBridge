@@ -193,6 +193,9 @@ export function assignInstitutionSubstitute(slug, schoolId, entryId, payload) {
   })
 }
 
-export function fetchInstitutionManagementReport(slug) {
-  return request(tenantPath(slug, '/management-report'))
+export function fetchInstitutionManagementReport(slug, filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.from) params.set('from', filters.from)
+  if (filters.to) params.set('to', filters.to)
+  return request(tenantPath(slug, '/management-report' + (params.toString() ? '?' + params : '')))
 }
