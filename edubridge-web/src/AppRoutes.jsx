@@ -41,6 +41,7 @@ const ConversationsPage = lazy(() => import('./pages/Communication/Conversations
 const InstitutionDashboard = lazy(() => import('./pages/Dashboards/InstitutionDashboard'))
 const InstitutionSchoolsPage = lazy(() => import('./pages/Dashboards/InstitutionSchoolsPage'))
 const InstitutionTeachersPage = lazy(() => import('./pages/Dashboards/InstitutionTeachersPage'))
+const TeacherInvitationPage = lazy(() => import('./pages/Dashboards/TeacherInvitationPage'))
 const HomeworkPage = lazy(() => import('./pages/Learning/HomeworkPage'))
 const WeeklyReportsPage = lazy(() => import('./pages/Learning/WeeklyReportsPage'))
 const LearningSupportPage = lazy(() => import('./pages/Support/LearningSupportPage'))
@@ -113,6 +114,7 @@ export default function AppRoutes() {
           <Route path="/" element={<HomeRedirect />} />
 
           <Route path="/parent" element={<RolePage roles={['parent']}><ParentDashboard /></RolePage>} />
+          <Route path="/teacher/invitation" element={<RolePage roles={['teacher']}><TeacherInvitationPage /></RolePage>} />
           <Route path="/teacher" element={<RolePage roles={['teacher']}><TeacherDashboard /></RolePage>} />
           <Route path="/specialist" element={<RolePage roles={['specialist']}><SpecialistDashboard /></RolePage>} />
           <Route path="/admin" element={<RolePage roles={['admin']}><AdminPage /></RolePage>} />

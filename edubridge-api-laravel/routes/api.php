@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InstitutionContextController;
+use App\Http\Controllers\InstitutionTeacherInvitationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -47,5 +48,6 @@ Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(functio
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
+    Route::post('/teacher-invitations/accept', [InstitutionTeacherInvitationController::class, 'accept'])->middleware('throttle:10,1');
     require __DIR__ . '/api/institutions.php';
 });
