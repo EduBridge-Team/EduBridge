@@ -93,11 +93,17 @@ trait MediaWriteActions
                 return response()->json(['error' => 'لا يمكنك حذف وسائط درس لم تقم بإنشائه'], 403);
             }
 
-            DB::table('media')->where('id', $id)->delete();
-
             try {
-                \App\Support\LessonFiles::delete((string) $media->url);
-            } catch (\Throwable $e) { report($e); }
+                DB::transaction(function () use ($id, $media) {
+                    DB::table('media')->where('id', $id)->delete();
+                    // Roll back the media reference if R2 refuses to delete the file.
+                    // LessonFiles checks for other references before deleting shared objects.
+                    \App\Support\LessonFiles::delete((string) $media->url);
+                });
+            } catch (\Throwable $e) {
+                report($e);
+                return response()->json(['error' => 'تعذّر حذف الملف من التخزين، لم يُحذف الوسيط'], 502);
+            }
 
             return response()->json(['message' => 'تم الحذف']);
         } catch (\Exception $e) {
