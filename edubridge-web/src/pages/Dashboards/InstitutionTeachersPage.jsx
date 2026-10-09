@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
+import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionTeacherInvitations, fetchInstitutionTeacherMemberships, setInstitutionTeacherActive, inviteInstitutionTeacher, revokeInstitutionTeacherInvitation, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -15,6 +15,7 @@ export default function InstitutionTeachersPage() {
   const [saving, setSaving] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
   const [invitations, setInvitations] = useState([])
+  const [memberships, setMemberships] = useState([])
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
@@ -40,6 +41,28 @@ export default function InstitutionTeachersPage() {
 
   useEffect(() => { reloadInvitations() }, [reloadInvitations])
 
+  const reloadMemberships = useCallback(async () => {
+    if (!slug) return
+    try {
+      const data = await fetchInstitutionTeacherMemberships(slug)
+      setMemberships(data.teachers || [])
+    } catch (err) { setError(err.message) }
+  }, [slug])
+
+  useEffect(() => { reloadMemberships() }, [reloadMemberships])
+
+  async function changeTeacherActive(teacher) {
+    const next = !teacher.is_active
+    if (!window.confirm(next ? 'إعادة تفعيل عضوية هذا المعلم؟' : 'تعطيل عضوية هذا المعلم؟ يجب إزالة تعييناته أولًا.')) return
+    setSaving(true); setError(''); setMessage('')
+    try {
+      await setInstitutionTeacherActive(slug, teacher.id, next)
+      setMessage(next ? 'تم تفعيل عضوية المعلم.' : 'تم تعطيل عضوية المعلم.')
+      await Promise.all([reloadMemberships(), refresh()])
+    } catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
   async function sendInvitation(event) {
     event.preventDefault()
     setSaving(true); setError(''); setMessage('')
@@ -48,6 +71,7 @@ export default function InstitutionTeachersPage() {
       setInviteEmail('')
       setMessage('تم إرسال دعوة المعلم بالبريد الإلكتروني.')
       await reloadInvitations()
+      await reloadMemberships()
     } catch (err) { setError(err.message) }
     finally { setSaving(false) }
   }
@@ -219,9 +243,19 @@ export default function InstitutionTeachersPage() {
                   ))}
                 </div>
               )}
-              <h3>معلمو المؤسسة</h3>
-              {teachers.length === 0 ? <p>لا توجد عضويات معلمين مفعّلة بعد.</p> : (
-                <ul>{teachers.map((teacher) => <li key={teacher.id}>{teacher.name}</li>)}</ul>
+              <h3>عضويات المعلمين في المؤسسة</h3>
+              {memberships.length === 0 ? <p>لا توجد عضويات معلمين بعد.</p> : (
+                <div className="institution-actions">
+                  {memberships.map((teacher) => <div className="institution-panel" key={teacher.id}>
+                    <b>{teacher.name}</b>
+                    <p>{teacher.email}</p>
+                    <p>{teacher.is_active ? 'عضوية مفعّلة' : 'عضوية معطلة'}</p>
+                    <button type="button" className="btn outline" disabled={saving}
+                      onClick={() => changeTeacherActive(teacher)}>
+                      {teacher.is_active ? 'تعطيل العضوية' : 'إعادة التفعيل'}
+                    </button>
+                  </div>)}
+                </div>
               )}
             </>
           )}
