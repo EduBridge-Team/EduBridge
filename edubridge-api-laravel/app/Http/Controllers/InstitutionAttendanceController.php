@@ -201,6 +201,9 @@ class InstitutionAttendanceController extends Controller
 
         $actor = $request->attributes->get('jwt_user');
         $session = $this->sessionWithinSchool($school, $attendanceSession);
+        if ($session->status === 'closed') {
+            return response()->json(['error' => 'سجل الحضور مغلق ولا يمكن تعديله'], 409);
+        }
         $validChildren = DB::table('student_enrollments')
             ->where('section_id', $session->section_id)
             ->where('status', 'active')
