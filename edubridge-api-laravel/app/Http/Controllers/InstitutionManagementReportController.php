@@ -44,6 +44,8 @@ class InstitutionManagementReportController extends Controller
                 ->whereIn('a.section_id', $sectionIds)
                 ->where('c.organization_id', $organization->id)
                 ->select('r.status', DB::raw('COUNT(*) as total'))
+                ->when(!empty($filters['from']), fn ($q) => $q->whereDate('a.attendance_date', '>=', $filters['from']))
+                ->when(!empty($filters['to']), fn ($q) => $q->whereDate('a.attendance_date', '<=', $filters['to']))
                 ->groupBy('r.status')->pluck('total', 'status');
 
             return [
