@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { assignInstitutionTeacher, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
+import { assignInstitutionTeacher, removeInstitutionTeacherAssignment, fetchInstitutionAcademicOverview, fetchInstitutionParticipants, fetchInstitutionSchools } from '../../api'
 import { useInstitution } from '../../institutionContext'
 import '../../styles/institution-operations.css'
 
@@ -85,6 +85,22 @@ export default function InstitutionTeachersPage() {
     }
   }
 
+  async function removeAssignment(id) {
+    if (!window.confirm('هل تريد إلغاء تعيين هذا المعلم لهذه المادة والشعبة؟')) return
+    setSaving(true)
+    setError('')
+    setMessage('')
+    try {
+      await removeInstitutionTeacherAssignment(slug, schoolId, id)
+      setMessage('تم إلغاء التعيين.')
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (contextLoading) return <main className="container">جارِ تحميل المؤسسة…</main>
   if (!slug) return <main className="container state error">هذه الصفحة متاحة من نطاق المؤسسة المخصص فقط.</main>
 
@@ -147,6 +163,7 @@ export default function InstitutionTeachersPage() {
                     <div className="institution-panel" key={item.id}>
                       <b>{item.teacher_name}</b>
                       <p>{item.subject_name} — {item.grade_name} / {item.section_name}</p>
+                      <button type="button" className="btn outline" disabled={saving} onClick={() => removeAssignment(item.id)}>إلغاء التعيين</button>
                     </div>
                   ))}
                 </div>
