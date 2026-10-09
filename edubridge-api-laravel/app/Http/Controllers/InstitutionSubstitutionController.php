@@ -81,7 +81,16 @@ class InstitutionSubstitutionController extends Controller
             ->where('status', 'confirmed')
             ->pluck('teacher_id');
 
-        $excluded = $busyIds->merge($absentIds)->push($slot->teacher_id)->filter()->unique()->values();
+        $substituteIds = DB::table('class_substitutions as cs')
+            ->join('timetable_entries as t', 't.id', '=', 'cs.timetable_entry_id')
+            ->where('t.school_id', $school)
+            ->where('t.weekday', $slot->weekday)
+            ->where('t.period_number', $slot->period_number)
+            ->whereDate('cs.class_date', $date)
+            ->where('cs.status', 'assigned')
+            ->pluck('cs.substitute_teacher_id');
+
+        $excluded = $busyIds->merge($absentIds)->merge($substituteIds)->push($slot->teacher_id)->filter()->unique()->values();
 
         $teachers = DB::table('organization_user as ou')
             ->join('users as u', 'u.id', '=', 'ou.user_id')
@@ -136,7 +145,18 @@ class InstitutionSubstitutionController extends Controller
             ->where('status', 'confirmed')
             ->exists();
 
-        if ($busy || $absent) {
+        $assignedElsewhere = DB::table('class_substitutions as cs')
+            ->join('timetable_entries as t', 't.id', '=', 'cs.timetable_entry_id')
+            ->where('t.school_id', $school)
+            ->where('t.weekday', $slot->weekday)
+            ->where('t.period_number', $slot->period_number)
+            ->whereDate('cs.class_date', $data['class_date'])
+            ->where('cs.substitute_teacher_id', $data['substitute_teacher_id'])
+            ->where('cs.status', 'assigned')
+            ->where('cs.timetable_entry_id', '!=', $entry)
+            ->exists();
+
+        if ($busy || $absent || $assignedElsewhere || (int) $slot->teacher_id === (int) $data['substitute_teacher_id']) {
             return response()->json(['error' => 'المعلم البديل غير متاح في هذه الحصة'], 409);
         }
 
@@ -172,7 +192,7 @@ class InstitutionSubstitutionController extends Controller
             ->where('organization_id', $organization->id)
             ->where('user_id', $teacher)
             ->where('is_active', true)
-            ->whereIn('role', ['teacher', 'owner', 'admin', 'school_admin'])
+            ->where('role', 'teacher')
             ->exists();
     }
 }
