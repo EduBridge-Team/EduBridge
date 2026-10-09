@@ -71,3 +71,17 @@ EDUBRIDGE_ORIGIN_IP=<ORACLE_PUBLIC_IP> ./deploy/cloudflare-proxy-smoke.sh
 ```
 
 Do not record secrets, private keys, real user data, JWTs, database passwords or Cloudflare API tokens in documentation.
+
+## Current institutions, storage and recovery docs (2026-10-09)
+
+| Guide | Purpose |
+| --- | --- |
+| [Architecture](ARCHITECTURE.md) | Independent main and Jabalia deployments, database and R2 bucket mapping |
+| [Storage and media](STORAGE_AND_MEDIA.md) | Privacy, deletion failure modes, media backup requirements |
+| [Disaster recovery](DISASTER_RECOVERY.md) | Verified PostgreSQL restores and unverified media recovery |
+| [Incident response](INCIDENT_RESPONSE.md) | Evidence, containment and escalation |
+| [Release checklist](RELEASE_CHECKLIST.md) | PR, deployment, field pilot verification |
+| [Documentation policy](DOCUMENTATION_POLICY.md) | Source of truth, ownership and maintenance |
+| [Jabalia deployment](../deploy/institutions-jabalia.md) | Isolated stack, first-time onboarding vs repeat deploy |
+
+Important: the main site and Jabalia currently have **separate PostgreSQL containers and R2 buckets**. Older descriptions of only the main ports/API are not complete descriptions of all production deployments. PostgreSQL dump backups do not include R2 objects.
