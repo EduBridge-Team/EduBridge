@@ -6,6 +6,7 @@ use App\Http\Controllers\InstitutionTeacherMembershipController;
 use App\Http\Controllers\InstitutionAttendanceController;
 use App\Http\Controllers\InstitutionCurriculumController;
 use App\Http\Controllers\InstitutionParticipantController;
+use App\Http\Controllers\InstitutionManagementReportController;
 use App\Http\Controllers\InstitutionStudentEnrollmentController;
 use App\Http\Controllers\InstitutionSchoolController;
 use App\Http\Controllers\InstitutionSubstitutionController;
@@ -16,6 +17,7 @@ Route::prefix('/institutions/{organizationSlug}')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:owner,admin,school_admin')
     ->group(function () {
+        Route::get('/management-report', [InstitutionManagementReportController::class, 'index']);
         Route::get('/teachers', [InstitutionTeacherMembershipController::class, 'index']);
         Route::patch('/teachers/{teacher}', [InstitutionTeacherMembershipController::class, 'update'])->whereNumber('teacher');
         Route::get('/teacher-invitations', [InstitutionTeacherInvitationController::class, 'index']);

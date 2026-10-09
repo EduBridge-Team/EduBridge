@@ -192,3 +192,7 @@ export function assignInstitutionSubstitute(slug, schoolId, entryId, payload) {
     method: 'POST', body: JSON.stringify(payload),
   })
 }
+
+export function fetchInstitutionManagementReport(slug) {
+  return request(tenantPath(slug, '/management-report'))
+}
