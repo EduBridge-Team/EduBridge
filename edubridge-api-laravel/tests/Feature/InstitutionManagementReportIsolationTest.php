@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\InstitutionManagementReportController;
+use App\Http\Controllers\InstitutionAttendanceController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +22,10 @@ class InstitutionManagementReportIsolationTest extends TestCase
         Schema::create('sections', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('grade_id'); });
         Schema::create('student_enrollments', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); });
         Schema::create('timetable_entries', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('school_id'); });
-        Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->date('attendance_date'); });
-        Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); });
+        Schema::create('attendance_sessions', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('section_id'); $t->date('attendance_date'); $t->unsignedBigInteger('subject_id')->nullable(); $t->unsignedBigInteger('teacher_id')->nullable(); $t->unsignedInteger('period_number')->nullable(); $t->string('status')->default('open'); $t->text('notes')->nullable(); $t->timestamps(); });
+        Schema::create('attendance_records', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('attendance_session_id'); $t->unsignedBigInteger('child_id'); $t->string('status'); $t->text('note')->nullable(); $t->unsignedBigInteger('marked_by')->nullable(); $t->dateTime('marked_at')->nullable(); $t->timestamps(); });
+        Schema::create('child_parent', function (Blueprint $t) { $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('parent_id'); });
+        Schema::create('notifications', function (Blueprint $t) { $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title'); $t->text('message'); $t->string('type'); $t->boolean('is_read'); $t->timestamp('created_at')->nullable(); });
 
         DB::table('schools')->insert([['id' => 1, 'organization_id' => 1, 'name' => 'School A'], ['id' => 2, 'organization_id' => 2, 'name' => 'School B']]);
         DB::table('organization_user')->insert([['organization_id' => 1, 'user_id' => 1, 'role' => 'teacher', 'is_active' => true], ['organization_id' => 2, 'user_id' => 2, 'role' => 'teacher', 'is_active' => true]]);
@@ -45,7 +48,7 @@ class InstitutionManagementReportIsolationTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['attendance_records', 'attendance_sessions', 'timetable_entries', 'student_enrollments', 'sections', 'grades', 'children', 'organization_user', 'schools'] as $table) {
+        foreach (['notifications', 'child_parent', 'attendance_records', 'attendance_sessions', 'timetable_entries', 'student_enrollments', 'sections', 'grades', 'children', 'organization_user', 'schools'] as $table) {
             Schema::dropIfExists($table);
         }
         parent::tearDown();
