@@ -131,6 +131,10 @@ class InstitutionAcademicController extends Controller
 
     public function storeSection(Request $request, string $organizationSlug, int $school): JsonResponse
     {
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
+
         $data = $request->validate([
             'grade_id' => ['required', 'integer'],
             'academic_year_id' => ['required', 'integer'],
@@ -189,6 +193,10 @@ class InstitutionAcademicController extends Controller
 
     public function assignTeacher(Request $request, string $organizationSlug, int $school): JsonResponse
     {
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
+
         $data = $request->validate([
             'section_id' => ['required', 'integer'],
             'subject_id' => ['required', 'integer'],
@@ -236,6 +244,10 @@ class InstitutionAcademicController extends Controller
 
     public function enrollStudent(Request $request, string $organizationSlug, int $school): JsonResponse
     {
+        if (!$this->schoolWithinTenant($request, $school)) {
+            return response()->json(['error' => 'المدرسة غير موجودة'], 404);
+        }
+
         $organization = $request->attributes->get('organization');
         $data = $request->validate([
             'section_id' => ['required', 'integer'],
@@ -315,7 +327,7 @@ class InstitutionAcademicController extends Controller
             ->where('organization_id', $organization->id)
             ->where('user_id', $teacher)
             ->where('is_active', true)
-            ->whereIn('role', ['teacher', 'owner', 'admin', 'school_admin'])
+            ->where('role', 'teacher')
             ->exists();
     }
 }
