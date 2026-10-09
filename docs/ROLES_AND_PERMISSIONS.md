@@ -336,3 +336,7 @@ GET /api/private-files/child/{childId}/{filename}
 ```
 
 يفضل اتباع مبدأ **أقل صلاحية ممكنة (Least Privilege)** وعدم منح دور صلاحية أوسع من حاجته الفعلية.
+
+## Institution membership model addendum (2026-10-09)
+
+Global user roles and institution memberships are separate. In Jabalia an account can have global role parent while an active organization membership grants owner; do not change global role merely to make an institution owner. Institution pages and endpoints must check active scoped membership plus the relevant organization/school ownership. Teacher invitations must check the invited verified email and teacher account before creating teacher membership. Review [institution architecture](ARCHITECTURE.md) and [release checklist](RELEASE_CHECKLIST.md) for acceptance tests.
