@@ -118,6 +118,20 @@ class InstitutionManagementReportIsolationTest extends TestCase
         $this->assertSame(422, $controller->mark($mark, 'school-a', 1, $sessionId)->getStatusCode());
     }
 
+    public function test_attendance_session_detail_excludes_foreign_student(): void
+    {
+        DB::table('attendance_records')->insert([
+            'id' => 4, 'attendance_session_id' => 1, 'child_id' => 2, 'status' => 'absent',
+        ]);
+        $request = Request::create('/attendance/1', 'GET');
+        $request->attributes->set('organization', (object) ['id' => 1]);
+        $response = app(InstitutionAttendanceController::class)->show($request, 'school-a', 1, 1);
+        $this->assertSame(200, $response->getStatusCode());
+        $data = $response->getData(true);
+        $this->assertCount(1, $data['records']);
+        $this->assertSame(1, $data['records'][0]['child_id']);
+    }
+
     public function test_report_only_contains_own_institution(): void
     {
         $data = $this->report();
