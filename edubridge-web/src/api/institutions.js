@@ -115,3 +115,13 @@ export function revokeInstitutionTeacherInvitation(slug, id) {
 export function acceptInstitutionTeacherInvitation(token) {
   return request('/teacher-invitations/accept', { method: 'POST', body: JSON.stringify({ token }) })
 }
+
+export function fetchInstitutionTeacherMemberships(slug) {
+  return request(tenantPath(slug, '/teachers'))
+}
+
+export function setInstitutionTeacherActive(slug, teacherId, isActive) {
+  return request(tenantPath(slug, `/teachers/${teacherId}`), {
+    method: 'PATCH', body: JSON.stringify({ is_active: isActive }),
+  })
+}
