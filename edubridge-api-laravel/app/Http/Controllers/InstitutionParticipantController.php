@@ -42,6 +42,7 @@ class InstitutionParticipantController extends Controller
             ->join('subjects as sub', 'sub.id', '=', 'ta.subject_id')
             ->join('users as u', 'u.id', '=', 'ta.teacher_id')
             ->where('g.school_id', $school)
+            ->where('sub.school_id', $school)
             ->select(
                 'ta.id',
                 'ta.section_id',
@@ -63,6 +64,7 @@ class InstitutionParticipantController extends Controller
             ->join('children as c', 'c.id', '=', 'se.child_id')
             ->where('g.school_id', $school)
             ->where('se.status', 'active')
+            ->where('c.organization_id', $organization->id)
             ->select(
                 'se.id',
                 'se.section_id',
