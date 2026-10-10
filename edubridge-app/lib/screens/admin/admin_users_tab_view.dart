@@ -38,6 +38,14 @@ extension _UsersTabStateView on _UsersTabState {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
         children: [
+          if ((widget.admin['role'] ?? '').toString() == 'admin') ...[
+            FilledButton.icon(
+              onPressed: _openCreateAccount,
+              icon: const Icon(Icons.add_business_outlined),
+              label: const Text('إنشاء حساب مؤسسة أو وزارة'),
+            ),
+            const SizedBox(height: 16),
+          ],
           _buildSearchBar(c),
           const SizedBox(height: 16),
           _buildUserSection(
@@ -51,6 +59,14 @@ extension _UsersTabStateView on _UsersTabState {
           _buildUserSection(
             icon: AppIcons.parent, title: 'أولياء الأمور',
             users: _parents, color: AppColors.brandBlue, bgTint: c.tintTeal,
+          ),
+          _buildUserSection(
+            icon: Icons.business_outlined, title: 'المؤسسات',
+            users: _byRole('institution'), color: AppColors.brandBlue, bgTint: c.tintTeal,
+          ),
+          _buildUserSection(
+            icon: Icons.account_balance_outlined, title: 'الوزارة',
+            users: _byRole('ministry'), color: AppColors.brandTealDeep, bgTint: c.tintOrange,
           ),
           _buildChildrenSection(),
         ],

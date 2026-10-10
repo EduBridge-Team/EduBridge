@@ -317,32 +317,38 @@ class _UsersTabState extends State<_UsersTab> {
                 )),
         ],
       ),
-    );…806 tokens truncated…    _buildSearchBar(c),
-          const SizedBox(height: 16),
-          _buildUserSection(
-            icon: AppIcons.teacher, title: 'المعلّمون',
-            users: _teachers, color: AppColors.brandGreen, bgTint: c.tintGreen,
-          ),
-          _buildUserSection(
-            icon: AppIcons.specialist, title: 'المختصون',
-            users: _specialists, color: AppColors.brandTealDeep, bgTint: c.tintOrange,
-          ),
-          _buildUserSection(
-            icon: AppIcons.parent, title: 'أولياء الأمور',
-            users: _parents, color: AppColors.brandBlue, bgTint: c.tintTeal,
-          ),
-          _buildUserSection(
-            icon: Icons.business_outlined, title: 'المؤسسات',
-            users: _byRole('institution'), color: AppColors.brandBlue, bgTint: c.tintTeal,
-          ),
-          _buildUserSection(
-            icon: Icons.account_balance_outlined, title: 'الوزارة',
-            users: _byRole('ministry'), color: AppColors.brandTealDeep, bgTint: c.tintOrange,
-          ),
-          _buildChildrenSection(),
-        ],
-      ),
     );
-  
+  }
+
+  Widget _buildChildrenSection() {
+    final c = JisrColors.of(context);
+    final children = _filteredChildren;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          icon: AppIcons.child, title: 'الأطفال', count: children.length,
+          color: AppColors.brandTealDeep, bgTint: c.tintYellow,
+        ),
+        const SizedBox(height: 10),
+        if (children.isEmpty)
+          const _EmptyBox(text: 'لا يوجد أطفال مسجّلون')
+        else
+          ...List.generate(children.length, (i) {
+            final child = children[i];
+            return _ChildListTile(
+              child: child,
+              color: AppColors.kidPalette[i % AppColors.kidPalette.length],
+              assignedTeacherName: _teacherNameFor(child),
+              assignedSpecialistName: _specialistNameFor(child),
+              onTap: () => _openEditChild(child),
+              onDelete: () => _deleteChild(child),
+            );
+          }),
+      ],
+    );
   }
 }
+
+// ─── Bottom Sheet: أطفال المستخدم ───
