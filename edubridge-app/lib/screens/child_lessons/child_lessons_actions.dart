@@ -186,9 +186,6 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
     if (profile.verySimpleLanguage) {
       text = SimpleLanguageService.instance.simplify(text);
     }
-    if (profile.shortSentences) {
-      text = SimpleLanguageService.instance.shorten(text, maxWords: 10);
-    }
 
     if (profile.slowSpeech) {
       await TtsService.instance.speakLineSlow(text);

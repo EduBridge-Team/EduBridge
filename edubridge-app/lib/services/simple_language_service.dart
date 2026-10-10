@@ -7,31 +7,6 @@ class SimpleLanguageService {
 
   /// قاموس التبسيط
   static const Map<String, String> _dictionary = {
-    // مصطلحات تعليمية
-    'المحتوى التعليمي': 'الدرس',
-    'التقييم': 'الفحص',
-    'الأهداف التعليمية': 'ما نتعلمه',
-    'المهارات': 'القدرات',
-    'الكفايات': 'المهارات',
-    'المنهج': 'الدروس',
-    'المراجعة': 'إعادة',
-    'التطبيق': 'التمرين',
-    'التحصيل': 'الفهم',
-    'الاستيعاب': 'الفهم',
-
-    // مصطلحات طبية
-    'طيف التوحّد': 'التوحد',
-    'اضطراب': 'حالة',
-    'تشخيص': 'معرفة',
-    'علاج': 'مساعدة',
-    'تأهيل': 'تدريب',
-
-    // مصطلحات نفسية
-    'القلق': 'الخوف',
-    'الاكتئاب': 'الحزن',
-    'السلوك العدواني': 'العصبية',
-    'التفاعل الاجتماعي': 'الكلام مع الناس',
-
     // جمل طويلة
     'الرجاء الانتظار': 'انتظر',
     'تم بنجاح': 'تمام!',
@@ -48,6 +23,21 @@ class SimpleLanguageService {
     return result;
   }
 
+  /// Divide reading into manageable visual lines without deleting words.
+  String readingLines(String text, {int wordsPerLine = 8}) {
+    final limit = wordsPerLine < 1 ? 1 : wordsPerLine;
+    return text.split('\n').map((paragraph) {
+      final words = paragraph.trim().split(RegExp(r'\s+'));
+      if (paragraph.trim().isEmpty) return '';
+      final lines = <String>[];
+      for (var start = 0; start < words.length; start += limit) {
+        final end = (start + limit).clamp(0, words.length);
+        lines.add(words.sublist(start, end).join(' '));
+      }
+      return lines.join('\n');
+    }).join('\n');
+  }
+
   /// تقصير الجمل (حد أقصى 5 كلمات)
   String shorten(String text, {int maxWords = 5}) {
     final words = text.split(' ');
@@ -57,6 +47,6 @@ class SimpleLanguageService {
 
   /// تبسيط + تقصير
   String process(String text) {
-    return shorten(simplify(text));
+    return readingLines(simplify(text));
   }
 }

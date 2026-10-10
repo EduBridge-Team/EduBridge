@@ -33,7 +33,7 @@ Widget buildLessonCard({
     content = SimpleLanguageService.instance.simplify(content);
   }
   if (profile.shortSentences) {
-    content = SimpleLanguageService.instance.shorten(content, maxWords: 10);
+    content = SimpleLanguageService.instance.readingLines(content, wordsPerLine: 8);
   }
 
   return Padding(

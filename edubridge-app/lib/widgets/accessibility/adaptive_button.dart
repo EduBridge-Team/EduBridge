@@ -15,7 +15,7 @@ class AdaptiveButton extends StatelessWidget {
   final Color? foregroundColor;
   final bool fullWidth;
   final bool enableReadOnTap;
-final double? fontSize;   
+  final double? fontSize;
   const AdaptiveButton({
     super.key,
     required this.label,
@@ -66,14 +66,15 @@ final double? fontSize;
               style: ElevatedButton.styleFrom(
                 backgroundColor: effectiveBg,
                 foregroundColor: effectiveFg,
-                minimumSize: Size(0, height),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                minimumSize: Size(48, height),
                 shape: RoundedRectangleBorder(
                   borderRadius:
                       BorderRadius.circular(AdaptiveHelper.cardRadius - 4),
                 ),
               ),
               onPressed: onPressed == null ? null : handleTap,
-              child: _buildChild(fontSize, iconSize, effectiveFg),
+              child: _buildChild(fontSize, iconSize),
             );
             break;
 
@@ -81,7 +82,8 @@ final double? fontSize;
             button = OutlinedButton(
               style: OutlinedButton.styleFrom(
                 foregroundColor: effectiveBg,
-                minimumSize: Size(0, height),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                minimumSize: Size(48, height),
                 side: BorderSide(
                   color: effectiveBg,
                   width: AdaptiveHelper.borderWidth,
@@ -92,7 +94,7 @@ final double? fontSize;
                 ),
               ),
               onPressed: onPressed == null ? null : handleTap,
-              child: _buildChild(fontSize, iconSize, effectiveBg),
+              child: _buildChild(fontSize, iconSize),
             );
             break;
 
@@ -100,10 +102,11 @@ final double? fontSize;
             button = TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: effectiveBg,
-                minimumSize: Size(0, height * 0.8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                minimumSize: Size(48, height * 0.8),
               ),
               onPressed: onPressed == null ? null : handleTap,
-              child: _buildChild(fontSize, iconSize, effectiveBg),
+              child: _buildChild(fontSize, iconSize),
             );
             break;
         }
@@ -114,13 +117,12 @@ final double? fontSize;
     );
   }
 
-  Widget _buildChild(double fontSize, double iconSize, Color color) {
+  Widget _buildChild(double fontSize, double iconSize) {
     final text = Text(
       label,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
-        color: color,
       ),
       textAlign: TextAlign.center,
     );
@@ -131,7 +133,7 @@ final double? fontSize;
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: iconSize, color: color),
+        Icon(icon, size: iconSize),
         const SizedBox(width: 10),
         Flexible(child: text),
       ],
