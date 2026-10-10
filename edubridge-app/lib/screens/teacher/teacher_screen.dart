@@ -52,9 +52,8 @@ class _TeacherScreenState extends State<TeacherScreen> {
   String? _error;
   String _query = '';
   Map? _viewingLesson;
-  bool _adding = false;
+  final bool _adding = false;
   bool _verificationDialogShown = false;
-  int? _currentUserId;
 
   void _refreshTeacherState(VoidCallback callback) => setState(callback);
 
@@ -93,8 +92,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
     }
 
     try {
-      _currentUserId = await ApiService.getUserId();
-
       final responses = await Future.wait([
         ApiService.authGet('/children'),
         ApiService.authGet('/lessons'),

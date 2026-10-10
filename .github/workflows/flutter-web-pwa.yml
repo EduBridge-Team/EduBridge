@@ -1,0 +1,41 @@
+name: Flutter Web PWA
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'edubridge-app/**'
+      - '.github/workflows/flutter-web-pwa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'edubridge-app/**'
+      - '.github/workflows/flutter-web-pwa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: edubridge-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Analyze Flutter project
+        run: flutter analyze --no-fatal-infos
+      - name: Build web application
+        run: flutter build web --release --base-href /
+      - name: Upload static web bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: edubridge-flutter-web
+          path: edubridge-app/build/web/
+          retention-days: 14
