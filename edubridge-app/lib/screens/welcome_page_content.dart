@@ -98,9 +98,21 @@ extension _WelcomePageContent on _WelcomeScreenState {
     ));
   }
 
-  Widget _illustration(int index) => SizedBox(
+  Widget _illustration(int index) {
+    final artwork = _illustrationArtwork(index);
+    if (index != 1) return artwork;
+    // Reserve real layout space for the specialist label and floating motion.
+    // Its positioned card can grow when the system text size is increased.
+    return Padding(
+      padding: EdgeInsets.only(top: 8,
+        bottom: math.max(48.0, MediaQuery.textScalerOf(context).scale(13) * 4)),
+      child: _artMotion(index, 1, artwork, vertical: 4, horizontal: 1.5),
+    );
+  }
+
+  Widget _illustrationArtwork(int index) => SizedBox(
     height: index == 1 ? 300 : 280, width: 300,
-    child: Stack(alignment: Alignment.center, children: [
+    child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: [
       _artMotion(index, 0, Container(width: index == 1 ? 196 : 220, height: index == 1 ? 196 : 220,
         decoration: const BoxDecoration(color: Color(0xFFE3F8FA),
           shape: BoxShape.circle)), vertical: 0, pulse: true, pulseAmplitude: index == 1 ? .08 : .012),
