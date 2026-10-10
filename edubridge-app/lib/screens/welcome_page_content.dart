@@ -101,7 +101,7 @@ extension _WelcomePageContent on _WelcomeScreenState {
   Widget _illustration(int index) => SizedBox(
     height: index == 1 ? 300 : 280, width: 300,
     child: Stack(alignment: Alignment.center, children: [
-      _artMotion(index, 0, Container(width: 220, height: 220,
+      _artMotion(index, 0, Container(width: index == 1 ? 196 : 220, height: index == 1 ? 196 : 220,
         decoration: const BoxDecoration(color: Color(0xFFE3F8FA),
           shape: BoxShape.circle)), vertical: 0, pulse: true, pulseAmplitude: index == 1 ? .08 : .012),
       if (index == 0) ...[
@@ -124,15 +124,19 @@ extension _WelcomePageContent on _WelcomeScreenState {
       ] else if (index == 1) ...[
         const Positioned.fill(child: IgnorePointer(child: CustomPaint(
           painter: _FamilyConnectionsPainter()))),
-        _artMotion(index, 1, const CircleAvatar(radius: 46,
-          backgroundColor: _WelcomeScreenState._blue,
-          child: Icon(Icons.person_outline, size: 54, color: Colors.white)), vertical: 2),
-        Positioned(top: 0, right: 16, child: _artMotion(index, 2,
-          _person('المعلم', Icons.school_outlined, _WelcomeScreenState._teal), horizontal: 2)),
-        Positioned(top: 0, left: 16, child: _artMotion(index, 3,
-          _person('ولي الأمر', Icons.family_restroom, _WelcomeScreenState._blue), horizontal: -2)),
-        Positioned(bottom: 0, left: 72, child: _artMotion(index, 4,
-          _person('المختص', Icons.psychology_outlined, AppColors.brandGreenDeep), vertical: 2)),
+        Container(width: 94, height: 94,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white,
+            boxShadow: [BoxShadow(color: _WelcomeScreenState._blue.withValues(alpha: .12),
+              blurRadius: 18, offset: const Offset(0, 5))]),
+          padding: const EdgeInsets.all(5),
+          child: const CircleAvatar(backgroundColor: _WelcomeScreenState._blue,
+            child: Icon(Icons.person_outline, size: 46, color: Colors.white))),
+        Positioned(top: 4, right: 8, width: 96,
+          child: _person('المعلم', Icons.school_outlined, _WelcomeScreenState._teal)),
+        Positioned(top: 4, left: 8, width: 96,
+          child: _person('ولي الأمر', Icons.family_restroom, _WelcomeScreenState._blue)),
+        Positioned(top: 220, left: 126, width: 96,
+          child: _person('المختص', Icons.psychology_outlined, AppColors.brandGreenDeep)),
       ] else ...[
         _artMotion(index, 1, const Icon(Icons.verified_user,
           color: _WelcomeScreenState._blue, size: 142), vertical: 2, pulse: true),
@@ -162,10 +166,24 @@ extension _WelcomePageContent on _WelcomeScreenState {
       ],
     ]));
 
-  Widget _person(String text, IconData icon, Color color) => Column(children: [
-    CircleAvatar(radius: 30, backgroundColor: color, child: Icon(icon, color: Colors.white, size: 30)),
-    const SizedBox(height: 6), Text(text, style: const TextStyle(color: _WelcomeScreenState._blue)),
-  ]);
+  Widget _person(String text, IconData icon, Color color) => Column(
+    mainAxisSize: MainAxisSize.min, children: [
+      Container(width: 58, height: 58,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle,
+          boxShadow: [BoxShadow(color: color.withValues(alpha: .1),
+            blurRadius: 12, offset: const Offset(0, 3))]),
+        child: CircleAvatar(backgroundColor: color,
+          child: Icon(icon, color: Colors.white, size: 27))),
+      const SizedBox(height: 6),
+      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12)),
+        child: Text(text, textAlign: TextAlign.center,
+          style: const TextStyle(color: _WelcomeScreenState._blue,
+            fontSize: 13, fontWeight: FontWeight.w600))),
+    ]);
+
 }
 
 // Draw behind the avatars, stopping at their edges so the icons stay clear.
@@ -176,24 +194,24 @@ class _FamilyConnectionsPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final origin = Offset(size.width / 2, size.height / 2);
     final targets = [
-      Offset(size.width - 46, 30),
-      const Offset(46, 30),
-      Offset(102, size.height - 54),
+      Offset(size.width - 56, 33),
+      const Offset(56, 33),
+      Offset(174, size.height - 51),
     ];
     final paint = Paint()
-      ..color = AppColors.brandTealDeep.withValues(alpha: .65)
-      ..strokeWidth = 2.5
+      ..color = AppColors.brandTealDeep.withValues(alpha: .38)
+      ..strokeWidth = 1.8
       ..strokeCap = StrokeCap.round;
     for (final target in targets) {
       final vector = target - origin;
       final length = vector.distance;
       final direction = vector / length;
       final start = origin + direction * 49;
-      final end = target - direction * 33;
+      final end = target - direction * 32;
       final distance = (end - start).distance;
-      for (double offset = 0; offset < distance; offset += 12) {
+      for (double offset = 0; offset < distance; offset += 10) {
         canvas.drawLine(start + direction * offset,
-          start + direction * math.min(offset + 6, distance), paint);
+          start + direction * math.min(offset + 4, distance), paint);
       }
     }
   }
