@@ -18,7 +18,7 @@ extension _WelcomeMotion on _WelcomeScreenState {
   // Each item has its own entrance, phase and direction. Sharing a clock
   // avoids extra tickers while the artwork elements move independently.
   Widget _artMotion(int page, int order, Widget child, {
-    double horizontal = 0, double vertical = 3, bool pulse = false,
+    double horizontal = 0, double vertical = 3, bool pulse = false, double pulseAmplitude = .012,
   }) {
     if (_reduceMotion || page != _page) return child;
     return _motion(order * .07, AnimatedBuilder(
@@ -28,7 +28,7 @@ extension _WelcomeMotion on _WelcomeScreenState {
         final angle = _float.value * math.pi * 2 + order * 1.3;
         return Transform.translate(
           offset: Offset(math.cos(angle) * horizontal, math.sin(angle) * vertical),
-          child: Transform.scale(scale: pulse ? 1 + math.sin(angle) * .012 : 1,
+          child: Transform.scale(scale: pulse ? 1 + math.sin(angle) * pulseAmplitude : 1,
             child: content),
         );
       },

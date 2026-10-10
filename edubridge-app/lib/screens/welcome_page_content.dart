@@ -103,7 +103,7 @@ extension _WelcomePageContent on _WelcomeScreenState {
     child: Stack(alignment: Alignment.center, children: [
       _artMotion(index, 0, Container(width: 220, height: 220,
         decoration: const BoxDecoration(color: Color(0xFFE3F8FA),
-          shape: BoxShape.circle)), vertical: 0, pulse: true),
+          shape: BoxShape.circle)), vertical: 0, pulse: true, pulseAmplitude: index == 1 ? .08 : .012),
       if (index == 0) ...[
         _artMotion(index, 1, Container(width: 180,
           padding: const EdgeInsets.all(20),
@@ -122,6 +122,8 @@ extension _WelcomePageContent on _WelcomeScreenState {
         Positioned(bottom: 8, right: 0, child: _artMotion(index, 4,
           _label('رموز أكبر', Icons.text_fields, toggle: true), vertical: 3)),
       ] else if (index == 1) ...[
+        const Positioned.fill(child: IgnorePointer(child: CustomPaint(
+          painter: _FamilyConnectionsPainter()))),
         _artMotion(index, 1, const CircleAvatar(radius: 46,
           backgroundColor: _WelcomeScreenState._blue,
           child: Icon(Icons.person_outline, size: 54, color: Colors.white)), vertical: 2),
@@ -129,7 +131,7 @@ extension _WelcomePageContent on _WelcomeScreenState {
           _person('المعلم', Icons.school_outlined, _WelcomeScreenState._teal), horizontal: 2)),
         Positioned(top: 0, left: 16, child: _artMotion(index, 3,
           _person('ولي الأمر', Icons.family_restroom, _WelcomeScreenState._blue), horizontal: -2)),
-        Positioned(bottom: 0, child: _artMotion(index, 4,
+        Positioned(bottom: 0, left: 72, child: _artMotion(index, 4,
           _person('المختص', Icons.psychology_outlined, AppColors.brandGreenDeep), vertical: 2)),
       ] else ...[
         _artMotion(index, 1, const Icon(Icons.verified_user,
@@ -164,4 +166,38 @@ extension _WelcomePageContent on _WelcomeScreenState {
     CircleAvatar(radius: 30, backgroundColor: color, child: Icon(icon, color: Colors.white, size: 30)),
     const SizedBox(height: 6), Text(text, style: const TextStyle(color: _WelcomeScreenState._blue)),
   ]);
+}
+
+// Draw behind the avatars, stopping at their edges so the icons stay clear.
+class _FamilyConnectionsPainter extends CustomPainter {
+  const _FamilyConnectionsPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final origin = Offset(size.width / 2, size.height / 2);
+    final targets = [
+      Offset(size.width - 46, 30),
+      const Offset(46, 30),
+      Offset(102, size.height - 54),
+    ];
+    final paint = Paint()
+      ..color = AppColors.brandTealDeep.withValues(alpha: .65)
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round;
+    for (final target in targets) {
+      final vector = target - origin;
+      final length = vector.distance;
+      final direction = vector / length;
+      final start = origin + direction * 49;
+      final end = target - direction * 33;
+      final distance = (end - start).distance;
+      for (double offset = 0; offset < distance; offset += 12) {
+        canvas.drawLine(start + direction * offset,
+          start + direction * math.min(offset + 6, distance), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FamilyConnectionsPainter oldDelegate) => false;
 }
