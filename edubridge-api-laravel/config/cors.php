@@ -8,6 +8,7 @@ return [
     'allowed_origins' => [
         'https://edubridge.win',
         'https://www.edubridge.win',
+        'https://app.edubridge.win',
     ],
     'allowed_origins_patterns' => $allowLocalOrigins ? [
         '#^http://localhost:[0-9]+$#',
