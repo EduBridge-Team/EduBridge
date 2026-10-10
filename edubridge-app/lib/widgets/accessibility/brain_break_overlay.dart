@@ -126,14 +126,9 @@ class BrainBreakDialog extends StatefulWidget {
 
 class _BrainBreakDialogState extends State<BrainBreakDialog> {
   static const _moves = [
-    ('🙆', 'قف ومدّد ذراعيك للأعلى'),
-    ('🤸', 'قفزة صغيرة 5 مرات'),
-    ('🤚', 'حرّك أصابعك بسرعة'),
-    ('👀', 'انظر لشيء بعيد 10 ثوان'),
-    ('🧘', 'خذ نفساً عميقاً 3 مرات'),
-    ('🦘', 'اقفز في مكانك 10 قفزات'),
-    ('💪', 'شدّ عضلات ذراعيك ثم أرخِها'),
-    ('🌀', 'دُر حول نفسك مرتين'),
+    ('🌿', 'استرح بالطريقة المريحة لك'),
+    ('🤲', 'يمكنك طلب مساعدة شخص معك'),
+    ('💧', 'يمكنك أخذ استراحة قصيرة بعيداً عن الشاشة'),
   ];
 
   late final AccessibilityProfile _profile;
@@ -146,17 +141,17 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   void initState() {
     super.initState();
     _profile = widget.profile ?? AccessibilityService.instance.profile.value;
-    _moveIndex = DateTime.now().millisecond % _moves.length;
+    _moveIndex = 0;
 
     // ✅ نطق الحركة بصوت هادئ
-    TtsService.instance.speakLine('وقت الراحة! ${_moves[_moveIndex].$2}');
+    _readSuggestion();
 
     if (_untimed) return;
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       if (_secondsLeft <= 1) {
         _t?.cancel();
-        Navigator.of(context).pop();
+        setState(() => _secondsLeft = 0);
       } else {
         setState(() => _secondsLeft--);
       }
@@ -172,9 +167,18 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   void _shuffle() {
     setState(() {
       _moveIndex = (_moveIndex + 1) % _moves.length;
-      _secondsLeft = 30;
     });
-    TtsService.instance.speakLine(_moves[_moveIndex].$2);
+    _readSuggestion();
+  }
+
+  void _readSuggestion() {
+    if (!_profile.autoReadOnTap || _profile.sensoryCalmMode) return;
+    final text = 'وقت الراحة. ${_moves[_moveIndex].$2}';
+    if (_profile.slowSpeech) {
+      TtsService.instance.speakLineSlow(text);
+    } else {
+      TtsService.instance.speakLine(text);
+    }
   }
 
   @override
@@ -182,19 +186,20 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
     final c = JisrColors.of(context);
     final move = _moves[_moveIndex];
     final progress = 1 - (_secondsLeft / 30);
-    final still = _profile.reducedAnimations || _profile.noFlashing ||
+    final still = _profile.sensoryCalmMode || _profile.reducedAnimations || _profile.noFlashing ||
         MediaQuery.disableAnimationsOf(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: Padding(
+      child: SingleChildScrollView(
+        child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // العنوان
             Text(
-              'وقت الراحة 🎉',
+              'وقت الراحة',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -203,7 +208,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              'استرخِ قليلاً لتعود أقوى',
+              'خذ وقتك. نكمل عندما تكون جاهزاً.',
               style: TextStyle(fontSize: 13, color: c.muted),
             ),
             const SizedBox(height: 20),
@@ -246,7 +251,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
 
             // العدّاد
             if (!_untimed) Text(
-              '$_secondsLeft ثانية',
+              _secondsLeft == 0 ? 'يمكنك الاستمرار في الراحة' : 'وقت مقترح: $_secondsLeft ثانية',
               style: TextStyle(
                 fontSize: 15,
                 color: c.muted,
@@ -256,21 +261,26 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             const SizedBox(height: 16),
 
             // الأزرار
-            Row(
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
               children: [
-                Expanded(
+                SizedBox(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.shuffle),
-                    label: const Text('حركة أخرى'),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56)),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('اقتراح آخر'),
                     onPressed: _shuffle,
                   ),
                 ),
                 const SizedBox(width: 10),
-                Expanded(
+                SizedBox(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
                     label: const Text('جاهز'),
                     style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(48, 56),
                       backgroundColor: AppColors.green,
                       foregroundColor: Colors.white,
                     ),
@@ -281,6 +291,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

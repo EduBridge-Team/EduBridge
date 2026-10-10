@@ -48,7 +48,7 @@ class AdaptiveText extends StatelessWidget {
         if (profile.shortSentences &&
             type == AdaptiveTextType.body) {
           finalText =
-              SimpleLanguageService.instance.shorten(finalText, maxWords: 6);
+              SimpleLanguageService.instance.readingLines(finalText, wordsPerLine: 8);
         }
 
         // ═══════════════════════════════════════════════
@@ -62,7 +62,7 @@ class AdaptiveText extends StatelessWidget {
           finalText,
           textAlign: textAlign,
           maxLines: maxLines,
-          overflow: overflow ?? TextOverflow.ellipsis,
+          overflow: overflow ?? (maxLines == null ? TextOverflow.visible : TextOverflow.ellipsis),
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: effectiveWeight,
