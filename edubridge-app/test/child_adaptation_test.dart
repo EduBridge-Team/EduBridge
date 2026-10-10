@@ -13,7 +13,7 @@ void main() {
     const text = 'اقرأ السؤال ثم اختر الصورة المناسبة وبعد ذلك اضغط على الزر لإرسال الإجابة';
     final result = SimpleLanguageService.instance.readingLines(text, wordsPerLine: 4);
     expect(result.replaceAll('\n', ' '), text);
-    expect(result, contains('لإرسال الإجابة'));
+    expect(result.replaceAll('\n', ' '), endsWith('لإرسال الإجابة'));
     expect(SimpleLanguageService.instance.readingLines(''), '');
     expect(SimpleLanguageService.instance.readingLines('واحد اثنان', wordsPerLine: 0), 'واحد\nاثنان');
   });
