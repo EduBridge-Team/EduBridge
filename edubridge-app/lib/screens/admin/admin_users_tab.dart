@@ -212,6 +212,16 @@ class _UsersTabState extends State<_UsersTab> {
     }
   }
 
+  Future<void> _openCreateAccount() async {
+    if ((widget.admin['role'] ?? '').toString() != 'admin') return;
+    final created = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _CreateAccountSheet(),
+    );
+    if (created == true && mounted) await _load();
+  }
+
   void _openEdit(Map user) {
     showModalBottomSheet(
       context: context,

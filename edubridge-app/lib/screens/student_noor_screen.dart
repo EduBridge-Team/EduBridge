@@ -152,7 +152,11 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         if (snapshot.hasError) {
           final message = snapshot.error.toString().replaceFirst('Exception: ', '');
           return Scaffold(
-            appBar: AppBar(title: const Text('نور')),
+            appBar: AppBar(
+              backgroundColor: colors.card,
+              foregroundColor: colors.heading,
+              title: Text('نور', style: TextStyle(color: colors.heading)),
+            ),
             body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -176,7 +180,10 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         final data = snapshot.data!;
         return Scaffold(
           appBar: AppBar(
-            title: Text('نور • ${widget.childName}'),
+            backgroundColor: colors.card,
+            foregroundColor: colors.heading,
+            title: Text('نور • ${widget.childName}',
+                style: TextStyle(color: colors.heading)),
           ),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
@@ -194,14 +201,14 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                       children: [
                         Icon(Icons.auto_awesome_rounded, color: Colors.white),
                         SizedBox(width: 8),
-                        Text(
+                        Expanded(child: Text(
                           'ملخص نور الذكي',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 19,
                             fontWeight: FontWeight.w900,
                           ),
-                        ),
+                        )),
                       ],
                     ),
                     SizedBox(height: 8),

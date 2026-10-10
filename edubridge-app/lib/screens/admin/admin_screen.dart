@@ -12,6 +12,7 @@ import '../edit_child_screen.dart';
 import '../login_screen.dart';
 
 part 'admin_users_tab.dart';
+part 'admin_create_account_sheet.dart';
 part 'admin_user_children_sheet.dart';
 part 'admin_user_tiles.dart';
 part 'admin_shared_widgets.dart';
