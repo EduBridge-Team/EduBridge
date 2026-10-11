@@ -11,6 +11,7 @@ import 'token_store.dart';
 import 'accessibility_service.dart';
 import 'notification_page.dart';
 import 'list_page.dart';
+import 'weekly_report_repository.dart';
 import 'websocket_service.dart';
 import 'notification_listener_service.dart';
 
