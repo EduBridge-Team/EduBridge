@@ -63,7 +63,28 @@ void main() {
     expect(tester.getSize(find.byType(ElevatedButton)).height, greaterThanOrEqualTo(56));
   });
 
-  testWidgets('suggested rest duration never forces a child back to learning', (tester) async {
+  testWidgets('untimed rest waits for explicit readiness', (tester) async {
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
+      builder: (context) => TextButton(
+        onPressed: () => BrainBreakDialog.show(context,
+          profile: const AccessibilityProfile(type: DisabilityType.none, sensoryCalmMode: true, noTimers: true)),
+        child: const Text('راحة'),
+      ),
+    ))));
+    await tester.tap(find.text('راحة'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 31));
+    expect(find.text('وقت الراحة'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.text('استرح بالطريقة المريحة لك'), findsOneWidget);
+    await tester.tap(find.text('اقتراح آخر'));
+    await tester.pump();
+    expect(find.text('يمكنك طلب مساعدة شخص معك'), findsOneWidget);
+    await tester.tap(find.text('جاهز'));
+    await tester.pumpAndSettle();
+    expect(find.text('وقت الراحة'), findsNothing);
+  });
+  testWidgets('timed break permits two extensions and resumes at ninety seconds', (tester) async {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
       builder: (context) => TextButton(
         onPressed: () => BrainBreakDialog.show(context,
@@ -73,15 +94,18 @@ void main() {
     ))));
     await tester.tap(find.text('راحة'));
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(seconds: 31));
-    expect(find.text('وقت الراحة'), findsOneWidget);
-    expect(find.text('يمكنك الاستمرار في الراحة'), findsOneWidget);
-    expect(find.text('استرح بالطريقة المريحة لك'), findsOneWidget);
-    await tester.tap(find.text('اقتراح آخر'));
+    await tester.tap(find.text('أحتاج وقتاً أكثر (+30 ثانية)'));
     await tester.pump();
-    expect(find.text('يمكنك طلب مساعدة شخص معك'), findsOneWidget);
-    await tester.tap(find.text('جاهز'));
+    await tester.tap(find.text('أحتاج وقتاً أكثر (+30 ثانية)'));
+    await tester.pump();
+    expect(tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton,
+      'اكتملت التمديدات')).onPressed, isNull);
+    await tester.pump(const Duration(seconds: 85));
+    expect(find.text('سنكمل بعد 5 ثوانٍ'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
     expect(find.text('وقت الراحة'), findsNothing);
+    expect(find.text('راحة'), findsOneWidget);
   });
+
 }
