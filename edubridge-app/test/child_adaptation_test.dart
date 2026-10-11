@@ -4,6 +4,7 @@ import 'package:edubridge_app/widgets/accessibility/adaptive_button.dart';
 import 'package:edubridge_app/widgets/accessibility/adaptive_text.dart';
 import 'package:edubridge_app/widgets/accessibility/brain_break_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:edubridge_app/widgets/accessibility/step_by_step_lesson.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -16,6 +17,22 @@ void main() {
     expect(result.replaceAll('\n', ' '), endsWith('لإرسال الإجابة'));
     expect(SimpleLanguageService.instance.readingLines(''), '');
     expect(SimpleLanguageService.instance.readingLines('واحد اثنان', wordsPerLine: 0), 'واحد\nاثنان');
+  });
+
+  test('reading lines separate complete sentences without dropping punctuation', () {
+    const text = 'اقرأ السؤال. اختر الصورة؟ ثم اضغط تأكيد!';
+    expect(SimpleLanguageService.instance.readingLines(text),
+      'اقرأ السؤال.\nاختر الصورة؟\nثم اضغط تأكيد!');
+  });
+
+  testWidgets('empty step lesson stays readable after initial reading delay', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: StepByStepLesson(
+      lessonTitle: 'درس', steps: [], childName: 'طفل',
+    )));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('لا توجد خطوات لهذا الدرس بعد.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   test('simplification retains educational and clinical meaning', () {

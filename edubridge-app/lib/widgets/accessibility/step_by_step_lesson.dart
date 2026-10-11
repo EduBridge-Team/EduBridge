@@ -1,7 +1,9 @@
 
 // درس خطوة بخطوة — للإعاقة الذهنية البسيطة
 // يقسّم الدرس لخطوات صغيرة + يربط بالحياة اليومية
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'adaptive_text.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
@@ -39,6 +41,7 @@ class StepByStepLesson extends StatefulWidget {
 
 class _StepByStepLessonState extends State<StepByStepLesson> {
   int _currentStep = 0;
+  Timer? _initialReading;
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -47,15 +50,28 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
   void initState() {
     super.initState();
     // قراءة الخطوة الأولى بعد تحميل الشاشة
-    Future.delayed(const Duration(milliseconds: 600), _readCurrentStep);
+    _initialReading = Timer(const Duration(milliseconds: 600), _autoReadCurrentStep);
+  }
+
+  @override
+  void dispose() {
+    _initialReading?.cancel();
+    super.dispose();
+  }
+
+  void _autoReadCurrentStep() {
+    if (!mounted || !_profile.autoReadOnTap || _profile.sensoryCalmMode) return;
+    _readCurrentStep();
   }
 
   void _readCurrentStep() {
+    if (!mounted || widget.steps.isEmpty) return;
+    _initialReading?.cancel();
     final step = widget.steps[_currentStep];
     final text = [
       step.title,
       step.content,
-      if (step.realLifeExample != null)
+      if (step.realLifeExample != null && _profile.realLifeLinking)
         'مثال من الحياة: ${step.realLifeExample}',
     ].join('. ');
 
@@ -70,7 +86,7 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
   void _nextStep() {
     if (_currentStep < widget.steps.length - 1) {
       setState(() => _currentStep++);
-      _readCurrentStep();
+      _autoReadCurrentStep();
     } else {
       _finishLesson();
     }
@@ -79,7 +95,7 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
   void _previousStep() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
-      _readCurrentStep();
+      _autoReadCurrentStep();
     }
   }
 

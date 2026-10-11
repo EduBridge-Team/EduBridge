@@ -3,6 +3,15 @@ part of 'step_by_step_lesson.dart';
 extension _StepByStepLessonStateView on _StepByStepLessonState {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
+    if (widget.steps.isEmpty) {
+      return Scaffold(
+        appBar: JisrAppBar(title: widget.lessonTitle),
+        body: const Center(child: Padding(
+          padding: EdgeInsets.all(24),
+          child: AdaptiveText('لا توجد خطوات لهذا الدرس بعد.', enableTap: false),
+        )),
+      );
+    }
     final step = widget.steps[_currentStep];
     final progress = (_currentStep + 1) / widget.steps.length;
 
@@ -75,13 +84,9 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: c.line, width: 1.5),
                         ),
-                        child: Text(
+                        child: AdaptiveText(
                           step.content,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            height: 1.6,
-                          ),
                         ),
                       ),
 
