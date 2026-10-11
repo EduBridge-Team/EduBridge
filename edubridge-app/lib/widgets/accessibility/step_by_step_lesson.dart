@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'adaptive_text.dart';
+import 'adaptive_button.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
@@ -42,6 +43,7 @@ class StepByStepLesson extends StatefulWidget {
 class _StepByStepLessonState extends State<StepByStepLesson> {
   int _currentStep = 0;
   Timer? _initialReading;
+  bool _showingCompletion = false;
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -99,40 +101,47 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
     }
   }
 
-  void _finishLesson() {
-    showDialog(
+  Future<void> _finishLesson() async {
+    if (_showingCompletion || widget.steps.isEmpty) return;
+    _showingCompletion = true;
+    _initialReading?.cancel();
+    final finish = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          '🎉 أحسنت!',
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const AdaptiveText(
+          'أحسنت على المحاولة!',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          enableTap: false,
         ),
-        content: Text(
-          'أكملت درس "${widget.lessonTitle}" بنجاح يا ${widget.childName}!',
+        content: SingleChildScrollView(child: AdaptiveText(
+          'وصلت إلى آخر خطوة في درس "${widget.lessonTitle}". '
+          'يمكنك مراجعة الخطوات أو الرجوع للدروس.',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16, height: 1.6),
-        ),
+          enableTap: false,
+        )),
         actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text('رائع!'),
-            ),
+          AdaptiveButton(
+            label: 'أراجع الخطوات',
+            style: AdaptiveButtonStyle.outlined,
+            onPressed: () => Navigator.pop(dialogContext, false),
+          ),
+          const SizedBox(height: 8),
+          AdaptiveButton(
+            label: 'أرجع للدروس',
+            onPressed: () => Navigator.pop(dialogContext, true),
           ),
         ],
       ),
     );
+    if (!mounted) return;
+    _showingCompletion = false;
+    if (finish == true) {
+      Navigator.pop(context);
+    } else if (finish == false) {
+      setState(() => _currentStep = 0);
+      _autoReadCurrentStep();
+    }
   }
 
   @override

@@ -35,6 +35,24 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('last step offers review without claiming mastery', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: StepByStepLesson(
+      lessonTitle: 'الأعداد', childName: 'نور', steps: [
+        LessonStep(title: 'واحد', content: 'عد شيئاً واحداً'),
+      ],
+    )));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.tap(find.text('أنهي المراجعة'));
+    await tester.pumpAndSettle();
+    expect(find.text('أحسنت على المحاولة!'), findsOneWidget);
+    expect(find.text('أراجع الخطوات'), findsOneWidget);
+    await tester.tap(find.text('أراجع الخطوات'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text('الخطوة 1 من 1'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   test('simplification retains educational and clinical meaning', () {
     const text = 'التقييم ليس تشخيص اضطراب أو علاج القلق والاكتئاب';
     expect(SimpleLanguageService.instance.simplify(text), text);

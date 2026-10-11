@@ -34,12 +34,15 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              Semantics(
+                liveRegion: true,
+                child: Text(
                 'الخطوة ${_currentStep + 1} من ${widget.steps.length}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
               ),
               const SizedBox(height: 24),
 
@@ -140,88 +143,32 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
               ),
               const SizedBox(height: 16),
 
-              // ─── زر الاستماع ───
-              SizedBox(
-                width: double.infinity,
-                height: 70,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orange,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  icon: const Icon(Icons.volume_up, size: 32),
-                  label: const Text(
-                    'استمع مرة أخرى',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  onPressed: _readCurrentStep,
-                ),
+              AdaptiveButton(
+                label: 'أسمع هذه الخطوة',
+                icon: Icons.volume_up,
+                enableReadOnTap: false,
+                onPressed: _readCurrentStep,
               ),
               const SizedBox(height: 12),
-
-              // ─── أزرار التنقّل ───
-              Row(
-                children: [
-                  if (_currentStep > 0) ...[
-                    Expanded(
-                      child: SizedBox(
-                        height: 70,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          icon: const Icon(Icons.arrow_back, size: 28),
-                          label: const Text(
-                            'السابق',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          onPressed: _previousStep,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: SizedBox(
-                      height: 70,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.green,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        icon: Icon(
-                          _currentStep == widget.steps.length - 1
-                              ? Icons.check_circle
-                              : Icons.arrow_forward,
-                          size: 28,
-                        ),
-                        label: Text(
-                          _currentStep == widget.steps.length - 1
-                              ? 'أكملت!'
-                              : 'التالي',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        onPressed: _nextStep,
-                      ),
-                    ),
-                  ),
+              Row(children: [
+                if (_currentStep > 0) ...[
+                  Expanded(child: AdaptiveButton(
+                    label: 'السابق',
+                    style: AdaptiveButtonStyle.outlined,
+                    onPressed: _previousStep,
+                  )),
+                  const SizedBox(width: 12),
                 ],
-              ),
+                Expanded(child: AdaptiveButton(
+                  label: _currentStep == widget.steps.length - 1
+                      ? 'أنهي المراجعة' : 'التالي',
+                  onPressed: _nextStep,
+                )),
+              ]),
             ],
           ),
         ),
       ),
     );
-  
   }
 }
