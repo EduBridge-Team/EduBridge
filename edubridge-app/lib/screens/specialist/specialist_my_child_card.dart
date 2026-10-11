@@ -298,27 +298,27 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     ),
                     const SizedBox(height: 2),
                     _buildSuggestSpecialistButtons(row, child),
-                    if (child['current_plan_id'] != null) ...[
+                    if (child['current_plan_id'] != null || current != null) ...[
                       const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
+                      LayoutBuilder(builder: (context, constraints) {
+                        final actionWidth = (constraints.maxWidth - 10) / 2;
+                        return Wrap(spacing: 10, runSpacing: 10, children: [
+                        if (child['current_plan_id'] != null) SizedBox(
+                        width: actionWidth,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                           ),
-                          icon: const Icon(AppIcons.evaluate),
+                          icon: const Icon(AppIcons.evaluate, size: 17),
                           label: const Text('تقييم الخطة الحالية'),
                           onPressed: () => _openPlanEvaluation(row),
                         ),
                       ),
-                    ],
-                    if (current != null) ...[
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.tonalIcon(
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        if (current != null) SizedBox(
+                        width: actionWidth,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                           ),
                           icon: approving
                               ? const SizedBox(
@@ -326,11 +326,14 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                                   height: 16,
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
-                              : const Icon(AppIcons.check),
+                              : const Icon(AppIcons.check, size: 17),
                           label: Text(approving ? 'جارٍ الاعتماد...' : 'اعتماد النشاط الحالي'),
                           onPressed: approving ? null : () => _approve(row),
                         ),
                       ),
+
+                        ]);
+                      }),
                     ],
                   ],
                 ),
