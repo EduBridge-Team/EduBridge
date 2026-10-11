@@ -81,7 +81,7 @@ void main() {
     expect(tester.getSize(find.byType(ElevatedButton)).height, greaterThanOrEqualTo(56));
   });
 
-  testWidgets('untimed rest waits for explicit readiness', (tester) async {
+  testWidgets('hidden countdown rest remains bounded', (tester) async {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
       builder: (context) => TextButton(
         onPressed: () => BrainBreakDialog.show(context,
@@ -91,14 +91,14 @@ void main() {
     ))));
     await tester.tap(find.text('راحة'));
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(seconds: 31));
+    await tester.pump(const Duration(seconds: 10));
     expect(find.text('وقت الراحة'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsNothing);
     expect(find.text('استرح بالطريقة المريحة لك'), findsOneWidget);
     await tester.tap(find.text('اقتراح آخر'));
     await tester.pump();
     expect(find.text('يمكنك طلب مساعدة شخص معك'), findsOneWidget);
-    await tester.tap(find.text('جاهز'));
+    await tester.pump(const Duration(seconds: 20));
     await tester.pumpAndSettle();
     expect(find.text('وقت الراحة'), findsNothing);
   });

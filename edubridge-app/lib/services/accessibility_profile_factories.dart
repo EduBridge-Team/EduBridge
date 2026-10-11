@@ -237,6 +237,8 @@ AccessibilityProfile _accessibilityProfileFromJson(Map<String, dynamic> j) {
       customDisabilityName: j['customDisabilityName'] is String ? j['customDisabilityName'] as String : null,
       brainBreaksEnabled: flag('brainBreaksEnabled'),
       brainBreakIntervalMinutes: minutes('brainBreakIntervalMinutes', 15, 120),
+      brainBreakDurationSeconds: (j['brainBreakDurationSeconds'] is num
+          ? (j['brainBreakDurationSeconds'] as num).toInt() : 30).clamp(15, 120),
       visualTimerEnabled: flag('visualTimerEnabled'),
       timerRenewalMinutes: minutes('timerRenewalMinutes', 5, 60),
       reducedAnimations: flag('reducedAnimations'),
