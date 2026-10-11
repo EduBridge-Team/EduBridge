@@ -165,16 +165,15 @@ Widget buildFeatureSection({
   required JisrColors c,
   required List<Widget> children,
 }) {
-  return Container(
-    margin: const EdgeInsets.only(bottom: 20),
-    decoration: BoxDecoration(
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 20),
+    child: Material(
       color: c.card,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(
-        color: color.withValues(alpha: 0.3),
-        width: 1.5,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: color.withValues(alpha: 0.3), width: 1.5),
       ),
-    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,6 +205,7 @@ Widget buildFeatureSection({
           child: Column(children: children),
         ),
       ],
+    ),
     ),
   );
 }
