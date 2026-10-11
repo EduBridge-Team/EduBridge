@@ -124,7 +124,8 @@ class BrainBreakDialog extends StatefulWidget {
   State<BrainBreakDialog> createState() => _BrainBreakDialogState();
 }
 
-class _BrainBreakDialogState extends State<BrainBreakDialog> {
+class _BrainBreakDialogState extends State<BrainBreakDialog>
+    with WidgetsBindingObserver {
   static const _moves = [
     ('🌿', 'استرح بالطريقة المريحة لك'),
     ('🤲', 'يمكنك طلب مساعدة شخص معك'),
@@ -134,24 +135,31 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   late final AccessibilityProfile _profile;
   bool get _untimed => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
   int _secondsLeft = 30;
+  int _extensions = 0;
+  int get _duration => 30 * (1 + _extensions);
   Timer? _t;
   int _moveIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _profile = widget.profile ?? AccessibilityService.instance.profile.value;
     _moveIndex = 0;
 
     // ✅ نطق الحركة بصوت هادئ
     _readSuggestion();
 
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _t?.cancel();
     if (_untimed) return;
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
+      if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
       if (_secondsLeft <= 1) {
-        _t?.cancel();
-        setState(() => _secondsLeft = 0);
+        _finish();
       } else {
         setState(() => _secondsLeft--);
       }
@@ -159,8 +167,31 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _startTimer();
+    } else {
+      _t?.cancel();
+    }
+  }
+
+  void _extend() {
+    if (_untimed || _extensions >= 2) return;
+    setState(() {
+      _extensions++;
+      _secondsLeft += 30;
+    });
+  }
+
+  void _finish() {
+    _t?.cancel();
+    Navigator.of(context).pop();
+  }
+
+  @override
   void dispose() {
     _t?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -185,7 +216,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     final move = _moves[_moveIndex];
-    final progress = 1 - (_secondsLeft / 30);
+    final progress = 1 - (_secondsLeft / _duration);
     final still = _profile.sensoryCalmMode || _profile.reducedAnimations || _profile.noFlashing ||
         MediaQuery.disableAnimationsOf(context);
 
@@ -208,7 +239,8 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              'خذ وقتك. نكمل عندما تكون جاهزاً.',
+              _untimed ? 'خذ وقتك. نكمل عندما تكون جاهزاً.'
+                  : 'استراحة قصيرة، ثم نكمل من نفس المكان.',
               style: TextStyle(fontSize: 13, color: c.muted),
             ),
             const SizedBox(height: 20),
@@ -251,7 +283,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
 
             // العدّاد
             if (!_untimed) Text(
-              _secondsLeft == 0 ? 'يمكنك الاستمرار في الراحة' : 'وقت مقترح: $_secondsLeft ثانية',
+              _secondsLeft <= 5 ? 'سنكمل بعد $_secondsLeft ثوانٍ' : 'باقي $_secondsLeft ثانية',
               style: TextStyle(
                 fontSize: 15,
                 color: c.muted,
@@ -274,7 +306,12 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
                     onPressed: _shuffle,
                   ),
                 ),
-                const SizedBox(width: 10),
+                if (!_untimed) OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56)),
+                  icon: const Icon(Icons.more_time),
+                  label: Text(_extensions >= 2 ? 'اكتملت التمديدات' : 'أحتاج وقتاً أكثر (+30 ثانية)'),
+                  onPressed: _extensions >= 2 ? null : _extend,
+                ),
                 SizedBox(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
@@ -284,7 +321,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog> {
                       backgroundColor: AppColors.green,
                       foregroundColor: Colors.white,
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: _finish,
                   ),
                 ),
               ],
