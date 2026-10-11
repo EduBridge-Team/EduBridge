@@ -172,7 +172,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                     ListTile(
                       title: const Text('مدة الاستراحة'),
                       subtitle: Text(p.noTimedInteractions || p.noTimers || p.unlimitedTime
-                          ? 'التوقيت معطّل حسب إعدادات الطفل؛ يعود عند الاستعداد.'
+                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
                           : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.'),
                       trailing: DropdownButton<int>(
                         value: p.brainBreakDurationSeconds,
@@ -180,7 +180,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                             .map((seconds) => DropdownMenuItem(
                               value: seconds, child: Text('$seconds ثانية'),
                             )).toList(),
-                        onChanged: _canChange && !p.noTimedInteractions && !p.noTimers && !p.unlimitedTime
+                        onChanged: _canChange
                             ? (value) {
                                 if (value != null) _set(p.copyWith(brainBreakDurationSeconds: value));
                               }

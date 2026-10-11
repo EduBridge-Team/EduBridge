@@ -133,7 +133,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
   ];
 
   late final AccessibilityProfile _profile;
-  bool get _untimed => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
+  bool get _hideCountdown => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
   late int _secondsLeft;
   int get _baseDuration => _profile.brainBreakDurationSeconds.clamp(15, 120);
   int _extensions = 0;
@@ -157,7 +157,6 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
 
   void _startTimer() {
     _t?.cancel();
-    if (_untimed) return;
     _t = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
       if (_secondsLeft <= 1) {
@@ -178,7 +177,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
   }
 
   void _extend() {
-    if (_untimed || _extensions >= 2) return;
+    if (_extensions >= 2) return;
     setState(() {
       _extensions++;
       _secondsLeft += 30;
@@ -241,8 +240,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
             ),
             const SizedBox(height: 8),
             Text(
-              _untimed ? 'خذ وقتك. نكمل عندما تكون جاهزاً.'
-                  : 'استراحة قصيرة، ثم نكمل من نفس المكان.',
+              'استراحة قصيرة، ثم نكمل من نفس المكان. يمكنك الرجوع بزر جاهز.',
               style: TextStyle(fontSize: 13, color: c.muted),
             ),
             const SizedBox(height: 20),
@@ -274,7 +272,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
             const SizedBox(height: 20),
 
             // شريط التقدّم
-            if (!_untimed) LinearProgressIndicator(
+            if (!_hideCountdown) LinearProgressIndicator(
               value: progress,
               minHeight: 12,
               color: AppColors.orange,
@@ -284,7 +282,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
             const SizedBox(height: 8),
 
             // العدّاد
-            if (!_untimed) Text(
+            if (!_hideCountdown) Text(
               _secondsLeft <= 5 ? 'سنكمل بعد $_secondsLeft ثوانٍ' : 'باقي $_secondsLeft ثانية',
               style: TextStyle(
                 fontSize: 15,
@@ -308,7 +306,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
                     onPressed: _shuffle,
                   ),
                 ),
-                if (!_untimed) OutlinedButton.icon(
+                OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56)),
                   icon: const Icon(Icons.more_time),
                   label: Text(_extensions >= 2 ? 'اكتملت التمديدات' : 'أحتاج وقتاً أكثر (+30 ثانية)'),
