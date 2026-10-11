@@ -7,6 +7,7 @@ import '../../services/accessibility_service.dart';
 import '../../services/encouragement_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
+import '../../utils/adaptive_feedback_policy.dart';
 
 class VisualCelebration extends StatefulWidget {
   final String message;
@@ -43,15 +44,15 @@ class VisualCelebration extends StatefulWidget {
 
     final profile = AccessibilityService.instance.profile.value;
 
-    final isCalm = profile.sensoryCalmMode || profile.reducedAnimations ||
-        profile.noFlashing || MediaQuery.disableAnimationsOf(context);
+    final feedback = AdaptiveFeedbackPolicy(profile,
+        systemReduceMotion: MediaQuery.disableAnimationsOf(context));
+    final isCalm = !feedback.allowMotion;
     final isBlind = profile.type == DisabilityType.blind;
     final isDeaf = profile.type == DisabilityType.deaf;
     final isDown = profile.type == DisabilityType.downSyndrome;
     final isAutismSevere = profile.type == DisabilityType.autismSevere;
 
-    final noMotion = profile.reducedAnimations || profile.noFlashing ||
-        MediaQuery.disableAnimationsOf(context);
+    final noMotion = !feedback.allowMotion;
     final untimed = profile.noTimedInteractions || profile.noTimers || profile.unlimitedTime;
     // ─── الصوت ───
     if (playSound && !profile.sensoryCalmMode && !isDeaf) {
@@ -67,7 +68,7 @@ class VisualCelebration extends StatefulWidget {
     }
 
     // ─── للأعمى ───
-    if (isBlind && profile.vibrationAlerts && !profile.sensoryCalmMode) {
+    if (isBlind && feedback.allowHaptics) {
       HapticFeedback.heavyImpact();
       await Future.delayed(const Duration(milliseconds: 150));
       HapticFeedback.heavyImpact();
@@ -76,7 +77,7 @@ class VisualCelebration extends StatefulWidget {
     }
 
     // ─── للأصمّ ───
-    if (isDeaf && profile.vibrationAlerts && !profile.sensoryCalmMode) {
+    if (isDeaf && feedback.allowHaptics) {
       for (var i = 0; i < 3; i++) {
         HapticFeedback.heavyImpact();
         await Future.delayed(const Duration(milliseconds: 120));
@@ -139,7 +140,7 @@ class _VisualCelebrationState extends State<VisualCelebration>
       vsync: this,
       duration: widget.duration,
     );
-    if (!widget.noMotion) _ctrl.forward();
+    if (!widget.noMotion && !widget.calmMode) _ctrl.forward();
 
     final int starCount;
     final List<String> emojis;
@@ -184,7 +185,7 @@ class _VisualCelebrationState extends State<VisualCelebration>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.noMotion) {
+    if (widget.noMotion || widget.calmMode || MediaQuery.disableAnimationsOf(context)) {
       return Positioned.fill(child: Center(child: Card(child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(mainAxisSize: MainAxisSize.min, children: [

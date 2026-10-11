@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
+import 'adaptive_feedback_policy.dart';
 
 class AdaptiveHelper {
   AdaptiveHelper._();
@@ -137,7 +138,7 @@ class AdaptiveHelper {
   // ═══════════════════════════════════════════════════════════
 
   /// هل نقرأ النص عند اللمس؟
-  static bool get shouldReadOnTap => profile.autoReadOnTap;
+  static bool get shouldReadOnTap => AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech;
 
   /// هل نستخدم النطق البطيء؟
   static bool get useSlowSpeech => profile.slowSpeech;
@@ -154,11 +155,11 @@ class AdaptiveHelper {
 
   /// اهتزاز عند اللمس (للصمّ)
   static Future<void> hapticFeedback() async {
-    if (profile.vibrationAlerts) {
+    if (AdaptiveFeedbackPolicy(profile).allowHaptics) {
       await HapticFeedback.mediumImpact();
     }
   }
 
   /// هل الأنيميشن مفعّل؟
-  static bool get isAnimated => !profile.reducedAnimations && !profile.noFlashing;
+  static bool get isAnimated => AdaptiveFeedbackPolicy(profile).allowMotion;
 }
