@@ -30,6 +30,7 @@ class AccessibilityProfile {
   // ═══════════════════════════════════════════════════════════
   final bool brainBreaksEnabled;
   final int brainBreakIntervalMinutes;
+  final int brainBreakDurationSeconds;
   final bool visualTimerEnabled;
   final int timerRenewalMinutes;
   final bool reducedAnimations;
@@ -107,6 +108,7 @@ class AccessibilityProfile {
     this.customDisabilityName,
     this.brainBreaksEnabled = false,
     this.brainBreakIntervalMinutes = 15,
+    this.brainBreakDurationSeconds = 30,
     this.visualTimerEnabled = false,
     this.timerRenewalMinutes = 5,
     this.reducedAnimations = false,
@@ -165,6 +167,7 @@ class AccessibilityProfile {
     String? customDisabilityName,
     bool? brainBreaksEnabled,
     int? brainBreakIntervalMinutes,
+    int? brainBreakDurationSeconds,
     bool? visualTimerEnabled,
     int? timerRenewalMinutes,
     bool? reducedAnimations,
@@ -222,6 +225,7 @@ class AccessibilityProfile {
       type: type ?? this.type,
       customDisabilityName: customDisabilityName ?? this.customDisabilityName,
       brainBreaksEnabled: brainBreaksEnabled ?? this.brainBreaksEnabled,
+      brainBreakDurationSeconds: brainBreakDurationSeconds ?? this.brainBreakDurationSeconds,
       brainBreakIntervalMinutes:
           brainBreakIntervalMinutes ?? this.brainBreakIntervalMinutes,
       visualTimerEnabled: visualTimerEnabled ?? this.visualTimerEnabled,
@@ -299,6 +303,7 @@ class AccessibilityProfile {
         'customDisabilityName': customDisabilityName,
         'brainBreaksEnabled': brainBreaksEnabled,
         'brainBreakIntervalMinutes': brainBreakIntervalMinutes,
+        'brainBreakDurationSeconds': brainBreakDurationSeconds,
         'visualTimerEnabled': visualTimerEnabled,
         'timerRenewalMinutes': timerRenewalMinutes,
         'reducedAnimations': reducedAnimations,

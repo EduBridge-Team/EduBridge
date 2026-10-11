@@ -161,6 +161,36 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 ),
 
                 buildFeatureSection(
+                  title: 'الاستراحة',
+                  icon: Icons.pause_circle_outline,
+                  color: AppColors.teal,
+                  c: c,
+                  children: [
+                    sw('استراحات أثناء التعلم', 'اقتراح استراحة خلال الدروس',
+                        p.brainBreaksEnabled,
+                        (v) => _set(p.copyWith(brainBreaksEnabled: v)), enabled: _canChange),
+                    ListTile(
+                      title: const Text('مدة الاستراحة'),
+                      subtitle: Text(p.noTimedInteractions || p.noTimers || p.unlimitedTime
+                          ? 'التوقيت معطّل حسب إعدادات الطفل؛ يعود عند الاستعداد.'
+                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.'),
+                      trailing: DropdownButton<int>(
+                        value: p.brainBreakDurationSeconds,
+                        items: {15, 30, 60, 90, 120, p.brainBreakDurationSeconds}
+                            .map((seconds) => DropdownMenuItem(
+                              value: seconds, child: Text('$seconds ثانية'),
+                            )).toList(),
+                        onChanged: _canChange && !p.noTimedInteractions && !p.noTimers && !p.unlimitedTime
+                            ? (value) {
+                                if (value != null) _set(p.copyWith(brainBreakDurationSeconds: value));
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+
+                buildFeatureSection(
                   title: 'خصائص عامة',
                   icon: AppIcons.settings,
                   color: AppColors.muted,

@@ -134,9 +134,10 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
 
   late final AccessibilityProfile _profile;
   bool get _untimed => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
-  int _secondsLeft = 30;
+  late int _secondsLeft;
+  int get _baseDuration => _profile.brainBreakDurationSeconds.clamp(15, 120);
   int _extensions = 0;
-  int get _duration => 30 * (1 + _extensions);
+  int get _duration => _baseDuration + 30 * _extensions;
   Timer? _t;
   int _moveIndex = 0;
 
@@ -145,6 +146,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _profile = widget.profile ?? AccessibilityService.instance.profile.value;
+    _secondsLeft = _baseDuration;
     _moveIndex = 0;
 
     // ✅ نطق الحركة بصوت هادئ
