@@ -108,4 +108,24 @@ void main() {
     expect(find.text('راحة'), findsOneWidget);
   });
 
+  testWidgets('adaptive button blocks accidental repeat taps and exposes busy state', (tester) async {
+    var presses = 0;
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: AdaptiveButton(
+      label: 'التالي', enableReadOnTap: false, onPressed: () => presses++,
+    ))));
+    await tester.tap(find.text('التالي'));
+    await tester.tap(find.text('التالي'));
+    expect(presses, 1);
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.tap(find.text('التالي'));
+    expect(presses, 2);
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: AdaptiveButton(
+      label: 'جارٍ الحفظ', isBusy: true, onPressed: () => presses++,
+    ))));
+    await tester.tap(find.text('جارٍ الحفظ'));
+    expect(presses, 2);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
 }

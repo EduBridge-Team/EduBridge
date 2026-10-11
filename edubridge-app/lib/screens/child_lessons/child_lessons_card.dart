@@ -146,6 +146,7 @@ Widget buildLessonCard({
               Expanded(
                 child: AdaptiveButton(
                   label: isSpeaking ? 'إيقاف' : 'استمع',
+                  enableReadOnTap: false,
                   icon: isSpeaking ? Icons.stop_circle : AppIcons.volumeUp,
                   style: AdaptiveButtonStyle.outlined,
                   fullWidth: true,
@@ -156,7 +157,8 @@ Widget buildLessonCard({
                 SizedBox(width: AdaptiveHelper.spacing / 2),
                 Expanded(
                   child: AdaptiveButton(
-                    label: isDone ? 'مكتمل' : 'تمّ',
+                    label: isSaving ? 'جارٍ الحفظ' : isDone ? 'مكتمل' : 'تمّ',
+                    isBusy: isSaving,
                     icon: isDone ? AppIcons.check : Icons.check,
                     backgroundColor:
                         isDone ? AppColors.brandTealDeep : AppColors.brandTeal,
