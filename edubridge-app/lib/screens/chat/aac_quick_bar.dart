@@ -3,10 +3,11 @@
 //  شريط التواصل بالصور (AAC) — يظهر فوق حقل الإدخال
 //  - 5 تصنيفات قابلة للتبديل
 //  - شريط أفقي من البطاقات
-//  - اضغط = أضف + نطق | اضغط مطوّلاً = تكبير البطاقة
+//  - اضغط = أضف + نطق | اضغط مطوّلاً = سماع العبارة
 // ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../services/accessibility_service.dart';
 import '../../data/aac_data.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
@@ -17,11 +18,13 @@ class AacQuickBar extends StatefulWidget {
 
   /// زر إغلاق الشريط
   final VoidCallback? onClose;
+  final bool enabled;
 
   const AacQuickBar({
     super.key,
     required this.onItemSelected,
     this.onClose,
+    this.enabled = true,
   });
 
   @override
@@ -38,6 +41,25 @@ class _AacQuickBarState extends State<AacQuickBar> {
     _activeCategoryKey = kAacCategories.keys.first;
   }
 
+  AccessibilityProfile get _profile =>
+      AccessibilityService.instance.applicationProfile.value;
+
+  void _feedback() {
+    // The chat uses the account profile, never a child opened elsewhere.
+    if (_profile.vibrationAlerts && !_profile.sensoryCalmMode) {
+      HapticFeedback.selectionClick();
+    }
+  }
+
+  void _speak(String text) {
+    // Selecting a communication symbol is an explicit speech request.
+    if (_profile.slowSpeech) {
+      TtsService.instance.speakLineSlow(text);
+    } else {
+      TtsService.instance.speakLine(text);
+    }
+  }
+
   List<AacItem> get _activeItems =>
       kAacCategories[_activeCategoryKey] ?? const [];
 
@@ -45,8 +67,9 @@ class _AacQuickBarState extends State<AacQuickBar> {
   //  عند ضغط بطاقة
   // ═══════════════════════════════════════════════════════════
   void _onTapItem(AacItem item) {
-    HapticFeedback.lightImpact();
-    TtsService.instance.speakLine(item.spoken);
+    if (!widget.enabled) return;
+    _feedback();
+    _speak(item.spoken);
     widget.onItemSelected(item.label, item.spoken);
   }
 
@@ -54,7 +77,9 @@ class _AacQuickBarState extends State<AacQuickBar> {
   //  عند ضغط مطوّل — عرض تفاصيل البطاقة
   // ═══════════════════════════════════════════════════════════
   void _onLongPressItem(AacItem item) {
-    HapticFeedback.mediumImpact();
+    if (!widget.enabled) return;
+    _feedback();
+    _speak(item.spoken);
     if (!mounted) return;
 
     ScaffoldMessenger.of(context)
@@ -99,18 +124,21 @@ class _AacQuickBarState extends State<AacQuickBar> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: c.card,
-        border: Border(top: BorderSide(color: c.line, width: 1.2)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildHeader(c),
-          _buildCategoryTabs(c),
-          _buildItemsRow(c),
-        ],
+    return ValueListenableBuilder<AccessibilityProfile>(
+      valueListenable: AccessibilityService.instance.applicationProfile,
+      builder: (context, profile, _) => Container(
+        decoration: BoxDecoration(
+          color: c.card,
+          border: Border(top: BorderSide(color: c.line, width: 1.2)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(c),
+            _buildCategoryTabs(c),
+            _buildItemsRow(c),
+          ],
+        ),
       ),
     );
   }
@@ -152,7 +180,7 @@ class _AacQuickBarState extends State<AacQuickBar> {
                   ),
                 ),
                 Text(
-                  'اضغط = إضافة | اضغط مطوّلاً = سماع الصوت',
+                  'اضغط للإضافة والنطق • اضغط مطوّلاً لسماع العبارة',
                   style: TextStyle(fontSize: 10.5, color: c.muted),
                 ),
               ],
@@ -165,8 +193,8 @@ class _AacQuickBarState extends State<AacQuickBar> {
               onPressed: widget.onClose,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(
-                minWidth: 36,
-                minHeight: 36,
+                minWidth: 48,
+                minHeight: 48,
               ),
             ),
         ],
@@ -181,7 +209,7 @@ class _AacQuickBarState extends State<AacQuickBar> {
     final keys = kAacCategories.keys.toList();
 
     return SizedBox(
-      height: 40,
+      height: 24 + MediaQuery.textScalerOf(context).scale(14) * 2,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -193,12 +221,14 @@ class _AacQuickBarState extends State<AacQuickBar> {
           return Padding(
             padding: const EdgeInsetsDirectional.only(end: 6),
             child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
+              onTap: !widget.enabled ? null : () {
+                _feedback();
                 setState(() => _activeCategoryKey = key);
               },
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
+                duration: _profile.sensoryCalmMode || _profile.reducedAnimations ||
+                    _profile.noFlashing || MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero : const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 6,
@@ -234,7 +264,7 @@ class _AacQuickBarState extends State<AacQuickBar> {
   // ═══════════════════════════════════════════════════════════
   Widget _buildItemsRow(JisrColors c) {
     return SizedBox(
-      height: 96,
+      height: 72 + MediaQuery.textScalerOf(context).scale(14) * 3,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
@@ -245,8 +275,9 @@ class _AacQuickBarState extends State<AacQuickBar> {
             padding: const EdgeInsetsDirectional.only(end: 8),
             child: _AacCard(
               item: item,
-              onTap: () => _onTapItem(item),
-              onLongPress: () => _onLongPressItem(item),
+              onTap: widget.enabled ? () => _onTapItem(item) : null,
+              onLongPress: widget.enabled ? () => _onLongPressItem(item) : null,
+              largeTargets: _profile.extraLargeTouchTargets,
             ),
           );
         },
@@ -260,75 +291,85 @@ class _AacQuickBarState extends State<AacQuickBar> {
 // ═══════════════════════════════════════════════════════════
 class _AacCard extends StatelessWidget {
   final AacItem item;
-  final VoidCallback onTap;
-  final VoidCallback onLongPress;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final bool largeTargets;
 
   const _AacCard({
     required this.item,
     required this.onTap,
     required this.onLongPress,
+    required this.largeTargets,
   });
 
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: item.spoken,
+      excludeSemantics: true,
       onTap: onTap,
       onLongPress: onLongPress,
-      child: Container(
-        width: 78,
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: AppColors.orange.withValues(alpha: 0.4),
-            width: 1.5,
+      child: GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Container(
+          width: (largeTargets ? 112.0 : 96.0) *
+              (MediaQuery.textScalerOf(context).scale(14) / 14).clamp(1.0, 2.0),
+          decoration: BoxDecoration(
+            color: c.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.orange.withValues(alpha: 0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.orange.withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.orange.withValues(alpha: 0.08),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // الأيقونة
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.orange.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              alignment: Alignment.center,
-              child: Icon(
-                item.icon,
-                size: 22,
-                color: AppColors.orangeDeep,
-              ),
-            ),
-            const SizedBox(height: 4),
-
-            // النص
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                item.label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.bold,
-                  color: c.heading,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // الأيقونة
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Icon(
+                  item.icon,
+                  size: 22,
+                  color: AppColors.orangeDeep,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+
+              // النص
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  item.label,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: c.heading,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
