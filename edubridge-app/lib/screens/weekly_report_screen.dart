@@ -24,12 +24,15 @@ class WeeklyReportScreen extends StatefulWidget {
 
 class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   WeeklyReport? _report;
+  List<WeeklyReport> _history = [];
+  DateTime? _selectedWeek;
   bool _loading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    _selectedWeek = widget.weekStart;
     _load();
   }
 
@@ -37,14 +40,23 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _report = null;
     });
     try {
-      final data = await ApiService.getWeeklyReport(
-        childId: widget.childId,
-        weekStart: widget.weekStart,
-      );
+      final results = await Future.wait([
+        ApiService.getWeeklyReport(
+          childId: widget.childId,
+          weekStart: _selectedWeek,
+        ),
+        ApiService.getChildWeeklyReports(widget.childId),
+      ]);
+      final data = results[0] as Map<String, dynamic>?;
+      final history = (results[1] as List)
+          .map((row) => WeeklyReport.fromJson(Map<String, dynamic>.from(row as Map)))
+          .toList();
       if (!mounted) return;
       setState(() {
+        _history = history;
         _report = data != null ? WeeklyReport.fromJson(data) : null;
         _loading = false;
       });
@@ -62,6 +74,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
 
   Widget _buildError() {
     return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
       children: [
         const SizedBox(height: 100),
@@ -91,6 +104,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   Widget _buildEmpty() {
     final c = JisrColors.of(context);
     return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
       children: [
         const SizedBox(height: 110),
@@ -121,7 +135,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'سيظهر هنا التقرير الذي يكتبه المعلم.',
+          'سيظهر هنا تقرير المعلم أو تقييم المختص.\nيمكنك اختيار أسبوع سابق من الأعلى.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13.5, color: c.muted),
         ),
@@ -134,6 +148,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     final c = JisrColors.of(context);
 
     return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
         Container(

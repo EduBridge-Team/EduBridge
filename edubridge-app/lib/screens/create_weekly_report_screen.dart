@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../utils/report_week.dart';
 import '../theme.dart';
 part 'create_weekly_report_view.dart';
 
@@ -37,8 +38,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
   String? _error;
 
   static DateTime _lastMonday() {
-    final now = DateTime.now();
-    return now.subtract(Duration(days: now.weekday - 1));
+    return reportWeekStart(DateTime.now());
   }
 
   @override

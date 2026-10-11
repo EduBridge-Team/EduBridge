@@ -182,28 +182,12 @@ Future<Map<String, dynamic>?> _apiGetWeeklyReport({
     required int childId,
     DateTime? weekStart,
   }) async {
-    try {
-      final week = weekStart ?? _apiLastMonday();
-      final res = await ApiService.authGet(
-        '/reports/weekly?child_id=$childId&week_start=${week.toIso8601String()}',
-      );
-      final data = ApiService._decodeBody(res);
-      if (res.statusCode == 200) return ApiService._asStringMap(data['report']);
-      return null;
-    } catch (e) {
-      return null;
-    }
+    return WeeklyReportRepository(get: ApiService.authGet)
+        .getReport(childId: childId, weekStart: weekStart);
   }
 
 Future<List<dynamic>> _apiGetChildWeeklyReports(int childId) async {
-    try {
-      final res = await ApiService.authGet('/reports/weekly/child/$childId');
-      final data = ApiService._decodeBody(res);
-      if (res.statusCode == 200) return data['reports'] ?? [];
-      return [];
-    } catch (e) {
-      return [];
-    }
+    return WeeklyReportRepository(get: ApiService.authGet).getHistory(childId);
   }
 
 Future<Map<String, dynamic>?> _apiGetCareTeam(int childId) async {
@@ -379,8 +363,3 @@ Future<bool> _apiCancelLearningSupportRequest(int requestId) async {
       return false;
     }
   }
-
-DateTime _apiLastMonday() {
-  final now = DateTime.now();
-  return now.subtract(Duration(days: now.weekday - 1));
-}
