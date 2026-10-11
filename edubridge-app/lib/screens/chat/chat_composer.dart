@@ -8,6 +8,8 @@
 // ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import '../../theme.dart';
+import '../../services/accessibility_service.dart';
+import '../../services/tts_service.dart';
 import 'aac_quick_bar.dart';
 import 'composer_mode.dart';
 import 'composer_switcher.dart';
@@ -103,12 +105,45 @@ class _ChatComposerState extends State<ChatComposer> {
                   onClose: _closeAssistBar,
                 ),
 
+              if (mode == ComposerMode.aac) _buildMessagePreview(),
+
               // ─── حقل الإدخال + الأزرار ───
               _buildInputRow(c, mode),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildMessagePreview() {
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: widget.controller,
+      builder: (context, value, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(48, 52),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            icon: const Icon(Icons.volume_up_outlined),
+            label: const Text('أسمع رسالتي', textAlign: TextAlign.center),
+            onPressed: widget.isSending || value.text.trim().isEmpty
+                ? null
+                : () {
+                    final text = widget.controller.text.trim();
+                    final profile = AccessibilityService.instance.applicationProfile.value;
+                    if (profile.slowSpeech) {
+                      TtsService.instance.speakLineSlow(text);
+                    } else {
+                      TtsService.instance.speakLine(text);
+                    }
+                  },
+          ),
+        ),
+      ),
     );
   }
 
