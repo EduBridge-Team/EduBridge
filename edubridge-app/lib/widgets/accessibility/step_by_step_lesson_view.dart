@@ -12,6 +12,10 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
         )),
       );
     }
+    if (_loadingPosition) {
+      return Scaffold(appBar: JisrAppBar(title: widget.lessonTitle),
+          body: const Center(child: CircularProgressIndicator()));
+    }
     final step = widget.steps[_currentStep];
     final progress = (_currentStep + 1) / widget.steps.length;
 

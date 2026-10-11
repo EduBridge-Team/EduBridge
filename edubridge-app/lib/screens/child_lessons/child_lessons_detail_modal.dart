@@ -6,6 +6,7 @@ Widget _buildLessonDetailModal({
   required String title,
   required String content,
   required Map lesson,
+  VoidCallback? onReadSteps,
   required String? activeAudioUrl,
   required Future<void> Function(String url) onToggleAudio,
   required void Function(String title, String content) onOpenAssistant,
@@ -88,6 +89,10 @@ Widget _buildLessonDetailModal({
               ),
             ],
 
+            if (onReadSteps != null) ...[
+              SizedBox(height: AdaptiveHelper.spacing),
+              AdaptiveButton(label: 'أقرأ بسهولة', onPressed: onReadSteps),
+            ],
             if (content.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveText(content, type: AdaptiveTextType.body),
