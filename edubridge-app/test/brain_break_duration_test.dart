@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(builder: (context) =>
       TextButton(onPressed: () => BrainBreakDialog.show(context, profile: const AccessibilityProfile(
         type: DisabilityType.none, brainBreakDurationSeconds: 60,
-      )), child: const Text('open')))))));
+      )), child: const Text('open'))))));
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 30));
