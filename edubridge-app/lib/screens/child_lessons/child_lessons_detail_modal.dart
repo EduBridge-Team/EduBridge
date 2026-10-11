@@ -91,7 +91,7 @@ Widget _buildLessonDetailModal({
 
             if (onReadSteps != null) ...[
               SizedBox(height: AdaptiveHelper.spacing),
-              AdaptiveButton(label: 'أقرأ خطوة بخطوة', onPressed: onReadSteps),
+              AdaptiveButton(label: 'أقرأ بسهولة', onPressed: onReadSteps),
             ],
             if (content.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),
