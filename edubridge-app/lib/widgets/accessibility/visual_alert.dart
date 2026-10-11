@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../theme.dart';
+import '../../utils/adaptive_feedback_policy.dart';
 
 class VisualAlert extends StatefulWidget {
   final String message;
@@ -69,8 +70,8 @@ class _VisualAlertState extends State<VisualAlert>
   void _syncPreferences() {
     if (!mounted) return;
     final p = AccessibilityService.instance.profile.value;
-    final still = p.reducedAnimations || p.noFlashing || !p.flashAlerts ||
-        MediaQuery.disableAnimationsOf(context);
+    final still = !AdaptiveFeedbackPolicy(p,
+        systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowFlash;
     if (still) {
       _ctrl.stop();
       _ctrl.value = 0;
