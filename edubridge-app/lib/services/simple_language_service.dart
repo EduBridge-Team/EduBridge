@@ -30,10 +30,16 @@ class SimpleLanguageService {
       final words = paragraph.trim().split(RegExp(r'\s+'));
       if (paragraph.trim().isEmpty) return '';
       final lines = <String>[];
-      for (var start = 0; start < words.length; start += limit) {
-        final end = (start + limit).clamp(0, words.length);
-        lines.add(words.sublist(start, end).join(' '));
+      final line = <String>[];
+      for (final word in words) {
+        line.add(word);
+        // Prefer sentence boundaries; retain every word and punctuation mark.
+        if (line.length >= limit || RegExp(r'[.!?؟؛]$').hasMatch(word)) {
+          lines.add(line.join(' '));
+          line.clear();
+        }
       }
+      if (line.isNotEmpty) lines.add(line.join(' '));
       return lines.join('\n');
     }).join('\n');
   }
