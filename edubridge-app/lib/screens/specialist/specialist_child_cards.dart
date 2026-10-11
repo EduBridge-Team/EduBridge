@@ -57,114 +57,36 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
     );
   }
 
-  // ─── Helper: أزرار اقتراح مختص ───
-  Widget _buildSuggestSpecialistButtons(
+  Widget _buildAdaptationAndSpecialistActions(
     Map<String, dynamic> row,
     Map<String, dynamic> child,
   ) {
-    final hasLearningSupport =
-        _hasSpecialistOfType(child, 'learning_support');
-    final hasEducational = _hasSpecialistOfType(child, 'educational');
-
-    if (hasLearningSupport && hasEducational) {
-      return const SizedBox.shrink();
-    }
-
-    if (!hasLearningSupport) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(0, 42),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              foregroundColor: AppColors.purple,
-              side: const BorderSide(
-                  color: AppColors.purple, width: 1.5),
-            ),
-            icon: const Icon(AppIcons.specialist, size: 18),
-            label: const Text(
-              'اقترح مختص دعم تعليمي',
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () =>
-                _openSuggestSpecialist(row, 'learning_support'),
-          ),
-        ),
-      );
-    }
-
-    if (!hasEducational) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(0, 42),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              foregroundColor: AppColors.brandBlue,
-              side: const BorderSide(
-                  color: AppColors.brandBlue, width: 1.5),
-            ),
-            icon: const Icon(AppIcons.lesson, size: 18),
-            label: const Text(
-              'اقترح مختص تعليمي',
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () =>
-                _openSuggestSpecialist(row, 'educational'),
-          ),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(0, 40),
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                foregroundColor: AppColors.brandTealDeep,
-                side: const BorderSide(
-                    color: AppColors.brandTeal, width: 1.5),
-              ),
-              icon: const Icon(AppIcons.specialist, size: 16),
-              label: const Text('اقترح مختص دعم تعليمي',
-                  style: TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.bold)),
-              onPressed: () =>
-                  _openSuggestSpecialist(row, 'learning_support'),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(0, 40),
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                foregroundColor: AppColors.brandBlue,
-                side: const BorderSide(
-                    color: AppColors.brandBlue, width: 1.5),
-              ),
-              icon: const Icon(AppIcons.lesson, size: 16),
-              label: const Text('اقترح مختص تعليمي',
-                  style: TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.bold)),
-              onPressed: () =>
-                  _openSuggestSpecialist(row, 'educational'),
-            ),
-          ),
-        ],
-      ),
+    final needsSupport = !_hasSpecialistOfType(child, 'learning_support');
+    final needsEducational = !_hasSpecialistOfType(child, 'educational');
+    final suggestionType = needsSupport ? 'learning_support' : 'educational';
+    final showSuggestion = needsSupport || needsEducational;
+    final style = OutlinedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
     );
+
+    return Row(children: [
+      Expanded(child: OutlinedButton.icon(
+        style: style,
+        icon: const Icon(Icons.accessibility_new_rounded, size: 17),
+        label: const Text('تكييف التعلّم'),
+        onPressed: () => _openChildAdaptation(child),
+      )),
+      const SizedBox(width: 10),
+      Expanded(child: showSuggestion ? OutlinedButton.icon(
+        style: style,
+        icon: Icon(needsSupport ? AppIcons.specialist : AppIcons.lesson, size: 17),
+        label: Text(needsSupport ? 'اقترح مختص دعم تعليمي' : 'اقترح مختص تعليمي',
+            textAlign: TextAlign.center),
+        onPressed: () => _openSuggestSpecialist(row, suggestionType),
+      ) : const SizedBox.shrink()),
+    ]);
   }
+
 }
 
 // ═══════════════════════════════════════════════════════════
