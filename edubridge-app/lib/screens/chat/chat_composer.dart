@@ -55,7 +55,8 @@ class _ChatComposerState extends State<ChatComposer> {
   //  إضافة رمز/بطاقة إلى حقل الإدخال
   // ═══════════════════════════════════════════════════════════
   void _appendToInput(String insertion) {
-    final current = widget.controller.text;
+    if (widget.isSending) return;
+    final current = widget.controller.text.trimRight();
     final next = current.isEmpty ? insertion : '$current $insertion';
 
     widget.controller.text = next;
@@ -92,7 +93,8 @@ class _ChatComposerState extends State<ChatComposer> {
               // ─── شريط المساعدة (AAC أو إشارة) ───
               if (mode == ComposerMode.aac)
                 AacQuickBar(
-                  onItemSelected: (label, _) => _appendToInput('$label '),
+                  enabled: !widget.isSending,
+                  onItemSelected: (_, spoken) => _appendToInput(spoken),
                   onClose: _closeAssistBar,
                 )
               else if (mode == ComposerMode.sign)
