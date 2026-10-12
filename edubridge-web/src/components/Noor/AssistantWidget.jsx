@@ -3,6 +3,7 @@ import { Copy, EyeOff, RotateCcw, Mic, MicOff, ImagePlus, Volume2, VolumeX, Send
 import { useLocation, useNavigate } from 'react-router-dom'
 import { analyzeNoorImage, askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
+import NoorRoleDraftTools from './NoorRoleDraftTools'
 import { createVoiceRecognition } from '../VoiceCommandWidget/voiceRecognition.js'
 import { assistantNavigationActions, assistantSuggestions, buildAssistantContext } from './assistantContext'
 import './assistant-context.css'
@@ -526,6 +527,7 @@ export default function AssistantWidget() {
           </header>
 
           <div className="noor-notice">نور يفهم دورك والصفحة الحالية. لا تشارك معلومات شخصية أو حساسة.</div>
+          <NoorRoleDraftTools key={`${user?.id}-${user?.role}`} role={user?.role} />
           <div className="noor-messages" aria-live="polite">
             {messages.map((message, index) => {
               const isAssistant = message.role === 'assistant'
