@@ -135,3 +135,40 @@
   opacity: .5;
   cursor: not-allowed;
 }
+
+/* Noor keyboard access and reduced motion support. */
+.noor-panel :is(button, input, textarea, summary):focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+.noor-role-draft-tools {
+  margin: 8px 10px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.noor-role-draft-tools summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.noor-role-draft-tools input {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.noor-role-draft-tools button {
+  min-height: 40px;
+  border-radius: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .noor-panel *, .noor-panel *::before, .noor-panel *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
