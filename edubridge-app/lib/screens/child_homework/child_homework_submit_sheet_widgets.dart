@@ -25,9 +25,11 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
   }
 
   Widget _buildAnswerField(bool large) {
-    return TextField(
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      TextField(
       controller: _answerCtrl,
       maxLines: 4,
+      enabled: !_saving,
       style: TextStyle(fontSize: large ? 18 : 16),
       decoration: InputDecoration(
         labelText: 'الإجابة النصية (اختياري)',
@@ -38,7 +40,9 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           borderRadius: BorderRadius.circular(18),
         ),
       ),
-    );
+      ),
+      WordPredictionBar(controller: _answerCtrl, enabled: _wordPrediction && !_saving),
+    ]);
   }
 
   Widget _buildAttachHeader(JisrColors c, bool large) {
