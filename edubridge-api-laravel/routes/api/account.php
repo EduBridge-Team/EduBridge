@@ -26,6 +26,8 @@ Route::patch('/assistant/students/{child}/memory/preferences', [\App\Http\Contro
 Route::delete('/assistant/students/{child}/memory/{memory}', [\App\Http\Controllers\NoorMemoryController::class, 'destroy'])
     ->middleware('throttle:10,1');
 
+Route::post('/assistant/vision/analyze', [\App\Http\Controllers\NoorImageAnalysisController::class, 'analyze'])
+    ->middleware('throttle:5,1');
 Route::post('/assistant/chat', [\App\Http\Controllers\AssistantController::class, 'chat'])
     ->middleware('throttle:20,1');
 Route::get('/assistant/students/{child}/context', [\App\Http\Controllers\NoorStudentContextController::class, 'show'])
