@@ -162,6 +162,15 @@ class AccessibilityProfile {
     this.maxOptionsCount3 = false,
   });
 
+  /// Update classification without replacing specialist-selected adaptations.
+  AccessibilityProfile withDisability(DisabilityType nextType, {String? customName}) {
+    return AccessibilityProfile.fromJson({
+      ...toJson(),
+      'type': nextType.name,
+      'customDisabilityName': customName,
+    });
+  }
+
   AccessibilityProfile copyWith({
     DisabilityType? type,
     String? customDisabilityName,

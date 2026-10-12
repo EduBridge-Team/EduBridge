@@ -218,6 +218,12 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
 
                 const SizedBox(height: 24),
                 OutlinedButton.icon(
+                  icon: const Icon(Icons.tune),
+                  label: const Text('تطبيق إعدادات مقترحة'),
+                  onPressed: _canChange ? _applyRecommendations : null,
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
                   icon: const Icon(AppIcons.refresh),
                   label: const Text('إعادة الضبط'),
                   onPressed: !_canChange ? null : () {
