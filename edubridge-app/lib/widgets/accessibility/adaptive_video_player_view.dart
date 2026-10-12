@@ -15,6 +15,10 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
         foregroundColor: Colors.white,
         title: Text(widget.title ?? 'فيديو', style: const TextStyle(fontSize: 16)),
         actions: [
+          if (widget.audioDescription?.trim().isNotEmpty == true)
+            IconButton(tooltip: 'سماع وصف الفيديو',
+              icon: const Icon(Icons.record_voice_over),
+              onPressed: _readDescription),
           // ترجمات
           if (_captions.isNotEmpty)
             IconButton(

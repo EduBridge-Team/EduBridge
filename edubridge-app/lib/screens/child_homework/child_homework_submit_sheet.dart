@@ -53,12 +53,13 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   Future<void> _pickFromGallery() async {
     try {
       final images = await _picker.pickMultiImage(imageQuality: 85);
-      if (images.isEmpty) return;
+      if (!mounted || images.isEmpty) return;
       setState(() {
         _files.addAll(images.map((x) => File(x.path)));
         _error = null;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'تعذّر فتح المعرض');
     }
   }
@@ -69,12 +70,13 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
         source: ImageSource.camera,
         imageQuality: 85,
       );
-      if (image == null) return;
+      if (!mounted || image == null) return;
       setState(() {
         _files.add(File(image.path));
         _error = null;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'تعذّر فتح الكاميرا');
     }
   }
@@ -82,12 +84,13 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   Future<void> _pickAnyFile() async {
     try {
       final file = await _picker.pickMedia();
-      if (file == null) return;
+      if (!mounted || file == null) return;
       setState(() {
         _files.add(File(file.path));
         _error = null;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'تعذّر اختيار الملف');
     }
   }
@@ -132,7 +135,14 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
 
       if (!mounted) return;
 
-      TtsService.instance.speakLine('أحسنت! تم تسليم الواجب');
+      final profile = _childProfile;
+      if (profile != null && !profile.sensoryCalmMode && profile.autoReadOnTap) {
+        if (profile.slowSpeech) {
+          TtsService.instance.speakLineSlow('أحسنت! تم تسليم الواجب');
+        } else {
+          TtsService.instance.speakLine('أحسنت! تم تسليم الواجب');
+        }
+      }
 
       Navigator.pop(context, true);
     } catch (e) {
@@ -147,8 +157,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    final large = AccessibilityService.instance
-        .profile.value.extraLargeTouchTargets;
+    final large = _childProfile?.extraLargeTouchTargets ?? false;
 
     return Padding(
       padding: EdgeInsets.only(

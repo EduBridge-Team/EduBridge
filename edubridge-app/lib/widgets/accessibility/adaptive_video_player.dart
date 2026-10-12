@@ -48,17 +48,30 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   List<LessonCaption> _captions = [];
   String _currentCaption = '';
   String _signLanguagePosition = 'bottom_right';
+  late AccessibilityProfile _lastProfile;
 
   @override
   void initState() {
     super.initState();
+    _lastProfile = AccessibilityService.instance.profile.value;
     WidgetsBinding.instance.addObserver(this);
     AccessibilityService.instance.profile.addListener(_refreshProfile);
     _initialize();
   }
 
   void _refreshProfile() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    final next = AccessibilityService.instance.profile.value;
+    setState(() {
+      if (next.videoCaptions != _lastProfile.videoCaptions) {
+        _showCaptions = next.videoCaptions;
+      }
+      if (next.signLanguageTranslation != _lastProfile.signLanguageTranslation) {
+        _showSignLanguage = next.signLanguageTranslation;
+      }
+      _lastProfile = next;
+    });
+    if (_initialized) _syncSign();
   }
 
   String get _displayCaption => _showCaptions ? _currentCaption
@@ -93,8 +106,9 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
 
       // ✅ الوصف الصوتي للأعمى
       if (profile.audioDescriptions &&
+          !profile.sensoryCalmMode &&
           widget.audioDescription != null) {
-        TtsService.instance.speakLine(widget.audioDescription!);
+        _readDescription();
       }
 
       _controller.addListener(_onVideoUpdate);
@@ -104,6 +118,16 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
       if (mounted) setState(() => _initialized = true);
     } catch (e) {
       if (mounted) setState(() => _error = 'تعذّر تشغيل الفيديو. حاول فتح الدرس مجدداً.');
+    }
+  }
+
+  void _readDescription() {
+    final text = widget.audioDescription?.trim();
+    if (text == null || text.isEmpty) return;
+    if (AccessibilityService.instance.profile.value.slowSpeech) {
+      TtsService.instance.speakLineSlow(text);
+    } else {
+      TtsService.instance.speakLine(text);
     }
   }
 
@@ -263,16 +287,11 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
             Positioned(
               top: 4,
               right: 4,
-              child: GestureDetector(
-                onTap: _toggleSignLanguage,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.7),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.close, color: Colors.white, size: 16),
-                ),
+              child: IconButton(
+                tooltip: 'إغلاق لغة الإشارة',
+                onPressed: _toggleSignLanguage,
+                style: IconButton.styleFrom(backgroundColor: Colors.black.withValues(alpha: 0.7)),
+                icon: const Icon(Icons.close, color: Colors.white, size: 24),
               ),
             ),
           ],
@@ -310,6 +329,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
+                tooltip: 'إعادة عشر ثوانٍ',
                 iconSize: 36,
                 icon: const Icon(Icons.replay_10, color: Colors.white),
                 onPressed: () {
@@ -320,6 +340,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
               ),
               const SizedBox(width: 16),
               IconButton(
+                tooltip: _controller.value.isPlaying ? 'إيقاف الفيديو مؤقتاً' : 'تشغيل الفيديو',
                 iconSize: 72,
                 icon: Icon(
                   _controller.value.isPlaying
@@ -337,6 +358,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
               ),
               const SizedBox(width: 16),
               IconButton(
+                tooltip: 'تقديم عشر ثوانٍ',
                 iconSize: 36,
                 icon: const Icon(Icons.forward_10, color: Colors.white),
                 onPressed: () {
