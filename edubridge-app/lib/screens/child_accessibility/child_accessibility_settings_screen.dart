@@ -114,7 +114,7 @@ class _ChildAccessibilitySettingsScreenState
     if (result == 'أخرى') return;
 
     final type = disabilityTypeForCategory(result);
-    final saved = await _set(AccessibilityProfile.recommendedFor(
+    final saved = await _set(_p.withDisability(
       type, customName: type == DisabilityType.other ? result : null,
     ));
     if (!saved) {
@@ -125,7 +125,7 @@ class _ChildAccessibilitySettingsScreenState
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('تم تطبيق التكييف الموصى به لـ "$result"'),
+        content: Text('تم حفظ التصنيف مع الحفاظ على إعدادات التكيف لـ "$result"'),
         backgroundColor: AppColors.brandBlueLight,
         duration: const Duration(seconds: 2),
       ),
@@ -145,7 +145,7 @@ class _ChildAccessibilitySettingsScreenState
       );
       return;
     }
-    final saved = await _set(AccessibilityProfile.recommendedFor(DisabilityType.other, customName: name));
+    final saved = await _set(_p.withDisability(DisabilityType.other, customName: name));
     if (!saved) return;
     if (!mounted) return;
     setState(() => _selectedDisability = name);
@@ -155,6 +155,25 @@ class _ChildAccessibilitySettingsScreenState
         backgroundColor: AppColors.brandBlueLight,
       ),
     );
+  }
+
+  Future<void> _applyRecommendations() async {
+    if (!_canChange) return;
+    final profile = _p;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('تطبيق الإعدادات المقترحة؟'),
+        content: const Text('سيستبدل هذا إعدادات التكيف الحالية باقتراحات أولية. راجعها وعدّلها حسب احتياج الطفل.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('إلغاء')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('تطبيق')),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true || !_canChange) return;
+    await _set(AccessibilityProfile.recommendedFor(profile.type,
+        customName: profile.customDisabilityName));
   }
 
   @override

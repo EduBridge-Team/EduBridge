@@ -173,13 +173,8 @@ class AccessibilityService {
     final existing = _childProfiles[childId];
     if (existing != null) return existing;
 
-    final type = disabilityTypeFromString(disabilityTypeHint);
-    final customName =
-        type == DisabilityType.other ? disabilityTypeHint : null;
-    final created = AccessibilityProfile.recommendedFor(
-      type,
-      customName: customName,
-    );
+    // No saved specialist configuration: do not infer adaptations from diagnosis.
+    const created = AccessibilityProfile(type: DisabilityType.none);
     _childProfiles[childId] = created;
     await _persistChild(childId, created);
     return created;
