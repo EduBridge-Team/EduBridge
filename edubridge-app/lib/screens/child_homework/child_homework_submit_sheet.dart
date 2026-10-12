@@ -16,6 +16,23 @@ class _SubmitHomeworkSheet extends StatefulWidget {
 
 class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   final _answerCtrl = TextEditingController();
+  bool _wordPrediction = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdaptation();
+  }
+
+  Future<void> _loadAdaptation() async {
+    try {
+      final profile = await AccessibilityService.instance.ensureChildProfile(widget.childId);
+      if (mounted) setState(() => _wordPrediction = profile.wordPrediction);
+    } catch (_) {
+      // Writing remains available if adaptation settings cannot be loaded.
+    }
+  }
+
   final List<File> _files = [];
   bool _saving = false;
   String? _error;
