@@ -7,6 +7,11 @@ class AdaptiveFeedbackPolicy {
 
   const AdaptiveFeedbackPolicy(this.profile, {this.systemReduceMotion = false});
 
+  // Hide clocks without treating every time preference as the same feature.
+  bool get showCountdown => !profile.noTimers && !profile.noTimedInteractions;
+  bool get allowTaskDeadline => showCountdown && !profile.unlimitedTime;
+  bool get allowAutoDismiss => !profile.noTimedInteractions;
+
   bool get allowMotion => !systemReduceMotion && !profile.sensoryCalmMode &&
       !profile.reducedAnimations && !profile.noFlashing;
   bool get allowFlash => allowMotion && profile.flashAlerts;

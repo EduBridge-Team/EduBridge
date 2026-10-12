@@ -24,4 +24,15 @@ void main() {
     expect(feedback.allowAutomaticSpeech, isTrue);
     expect(feedback.allowHaptics, isTrue);
   });
+  test('time settings have independent meanings', () {
+    const hidden = AdaptiveFeedbackPolicy(AccessibilityProfile(type: DisabilityType.none, noTimers: true));
+    expect(hidden.showCountdown, isFalse);
+    expect(hidden.allowAutoDismiss, isTrue);
+    const unlimited = AdaptiveFeedbackPolicy(AccessibilityProfile(type: DisabilityType.none, unlimitedTime: true));
+    expect(unlimited.showCountdown, isTrue);
+    expect(unlimited.allowTaskDeadline, isFalse);
+    expect(unlimited.allowAutoDismiss, isTrue);
+    const persistent = AdaptiveFeedbackPolicy(AccessibilityProfile(type: DisabilityType.none, noTimedInteractions: true));
+    expect(persistent.allowAutoDismiss, isFalse);
+  });
 }

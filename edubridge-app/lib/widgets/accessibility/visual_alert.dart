@@ -59,7 +59,7 @@ class _VisualAlertState extends State<VisualAlert>
   bool _dismissed = false;
   bool get _untimed {
     final p = AccessibilityService.instance.profile.value;
-    return p.noTimedInteractions || p.noTimers || p.unlimitedTime;
+    return !AdaptiveFeedbackPolicy(p).allowAutoDismiss;
   }
   void _dismiss() {
     if (_dismissed || !mounted) return;

@@ -96,7 +96,7 @@ Widget buildAdaptiveHeader({
         child: Row(
           children: [
             Icon(
-              profile.type == DisabilityType.blind
+              profile.screenReaderOptimized
                   ? AppIcons.deaf
                   : AppIcons.game,
               size: AdaptiveHelper.iconSize + 10,
@@ -108,7 +108,7 @@ Widget buildAdaptiveHeader({
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AdaptiveText(
-                    profile.type == DisabilityType.blind
+                    profile.screenReaderOptimized
                         ? 'ألعاب سمعية'
                         : 'الألعاب التعليمية',
                     type: AdaptiveTextType.subtitle,
@@ -130,20 +130,21 @@ Widget buildAdaptiveHeader({
     ),
   );
 
-  if (profile.visualTimerEnabled && !profile.noTimers &&
-      !profile.noTimedInteractions && !profile.unlimitedTime) {
+  if (profile.visualTimerEnabled && AdaptiveFeedbackPolicy(profile).allowTaskDeadline) {
     final timerMinutes =
         (profile.timerRenewalMinutes > 0) ? profile.timerRenewalMinutes : 5;
     items.add(
       Padding(
         padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
-        child: profile.type == DisabilityType.blind
+        child: profile.screenReaderOptimized
             ? AudioTimer(
                 key: ValueKey('audio_timer_cycle_$timerCycle'),
                 total: Duration(minutes: timerMinutes),
                 childName: childName,
                 onFinished: () async {
-                  TtsService.instance.speakLine('انتهى الوقت! وقت الراحة');
+                  if (AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech) {
+                    AdaptiveHelper.speak('انتهى الوقت! وقت الراحة');
+                  }
                   await BrainBreakDialog.show(context);
                   onTimerFinished();
                 },

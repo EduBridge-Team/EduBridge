@@ -10,6 +10,7 @@ import '../../services/simple_language_service.dart';
 import '../../services/reward_service.dart';
 import '../../theme.dart';
 import '../../utils/adaptive_helper.dart';
+import '../../utils/adaptive_feedback_policy.dart';
 import '../../widgets/accessibility/adaptive_button.dart';
 import '../../widgets/accessibility/step_by_step_lesson.dart';
 import '../../widgets/accessibility/adaptive_card.dart';

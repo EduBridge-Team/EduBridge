@@ -121,11 +121,9 @@ class _AdaptiveTextFieldState extends State<AdaptiveTextField> {
       valueListenable: AccessibilityService.instance.profile,
       builder: (context, profile, _) {
         final showVoice = widget.enableVoice &&
-            (profile.voiceToText || profile.type == DisabilityType.motorDisability);
+            profile.voiceToText;
         final showPrediction = widget.enablePrediction &&
-            (profile.wordPrediction ||
-                profile.shortSentences ||
-                profile.type == DisabilityType.stuttering);
+            profile.wordPrediction;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

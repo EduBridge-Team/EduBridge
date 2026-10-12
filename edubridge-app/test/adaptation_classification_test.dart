@@ -1,5 +1,6 @@
 import 'package:edubridge_app/services/accessibility_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:edubridge_app/utils/adaptive_helper.dart';
 
 void main() {
   test('changing classification preserves every adaptation field', () {
@@ -18,5 +19,13 @@ void main() {
     final changed = original.withDisability(DisabilityType.deaf);
     expect(changed.customDisabilityName, isNull);
     expect(changed.extraLargeTouchTargets, isTrue);
+  });
+  test('classification alone does not change adaptive sizing', () {
+    for (final type in DisabilityType.values) {
+      AccessibilityService.instance.profile.value = AccessibilityProfile(type: type);
+      expect(AdaptiveHelper.bodyFontSize, 16);
+      expect(AdaptiveHelper.buttonHeight, 56);
+    }
+    AccessibilityService.instance.resetSession();
   });
 }

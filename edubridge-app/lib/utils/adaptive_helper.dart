@@ -16,34 +16,20 @@ class AdaptiveHelper {
   /// حجم النص الأساسي
   static double get bodyFontSize {
     final p = profile;
-    if (p.type == DisabilityType.blind) return 24;
-    if (p.type == DisabilityType.downSyndrome) return 22;
     if (p.extraLargeTouchTargets) return 20;
-    if (p.type == DisabilityType.mildIntellectual) return 20;
-    if (p.type == DisabilityType.motorDisability) return 20;
-    if (p.type == DisabilityType.autismSevere) return 22;
-    if (p.type == DisabilityType.multipleDisabilities) return 22;
-    if (p.type == DisabilityType.deaf) return 18;
-    if (p.type == DisabilityType.stuttering) return 18;
-    if (p.type == DisabilityType.speechDisorders) return 18;
     return 16;
   }
 
   /// حجم العنوان الرئيسي
   static double get titleFontSize {
     final p = profile;
-    if (p.type == DisabilityType.blind) return 32;
-    if (p.type == DisabilityType.downSyndrome) return 28;
     if (p.extraLargeTouchTargets) return 26;
-    if (p.type == DisabilityType.mildIntellectual) return 26;
-    if (p.type == DisabilityType.autismSevere) return 26;
     return 22;
   }
 
   /// حجم العنوان الفرعي
   static double get subtitleFontSize {
     final p = profile;
-    if (p.type == DisabilityType.blind) return 26;
     if (p.extraLargeTouchTargets) return 22;
     return 18;
   }
@@ -51,45 +37,30 @@ class AdaptiveHelper {
   /// ارتفاع الزر
   static double get buttonHeight {
     if (profile.extraLargeTouchTargets) return 88;
-    if (profile.type == DisabilityType.blind) return 80;
-    if (profile.type == DisabilityType.downSyndrome) return 88;
-    if (profile.type == DisabilityType.motorDisability) return 80;
-    if (profile.type == DisabilityType.mildIntellectual) return 72;
-    if (profile.type == DisabilityType.autismSevere) return 72;
     return 56;
   }
 
   /// حجم الأيقونة
   static double get iconSize {
     if (profile.extraLargeTouchTargets) return 44;
-    if (profile.type == DisabilityType.blind) return 48;
-    if (profile.type == DisabilityType.downSyndrome) return 44;
-    if (profile.type == DisabilityType.mildIntellectual) return 40;
     return 28;
   }
 
   /// حجم الأفاتار
   static double get avatarSize {
     if (profile.extraLargeTouchTargets) return 72;
-    if (profile.type == DisabilityType.downSyndrome) return 72;
-    if (profile.type == DisabilityType.blind) return 68;
     return 56;
   }
 
   /// المسافة بين العناصر
   static double get spacing {
     if (profile.extraLargeTouchTargets) return 20;
-    if (profile.type == DisabilityType.blind) return 20;
-    if (profile.type == DisabilityType.downSyndrome) return 20;
-    if (profile.type == DisabilityType.motorDisability) return 20;
     return 12;
   }
 
   /// حواف الكروت
   static double get cardRadius {
-    if (profile.type == DisabilityType.downSyndrome) return 32;
     if (profile.extraLargeTouchTargets) return 24;
-    if (profile.type == DisabilityType.autismMild) return 16;
     return 20;
   }
 
@@ -116,22 +87,10 @@ class AdaptiveHelper {
   //  ⚡ الأنيميشن
   // ═══════════════════════════════════════════════════════════
 
-  static Duration get animationDuration {
-    if (profile.reducedAnimations || profile.noFlashing) return Duration.zero;
-    if (profile.type == DisabilityType.blind) {
-      return const Duration(milliseconds: 100);
-    }
-    if (profile.type == DisabilityType.autismMild ||
-        profile.type == DisabilityType.autismSevere) {
-      return const Duration(milliseconds: 500);
-    }
-    return const Duration(milliseconds: 250);
-  }
+  static Duration get animationDuration => AdaptiveFeedbackPolicy(profile).allowMotion
+      ? const Duration(milliseconds: 250) : Duration.zero;
 
-  static Curve get animationCurve {
-    if (profile.reducedAnimations) return Curves.linear;
-    return Curves.easeInOut;
-  }
+  static Curve get animationCurve => isAnimated ? Curves.easeInOut : Curves.linear;
 
   // ═══════════════════════════════════════════════════════════
   //  🔊 الصوت

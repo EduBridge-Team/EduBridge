@@ -47,48 +47,19 @@ class VisualCelebration extends StatefulWidget {
     final feedback = AdaptiveFeedbackPolicy(profile,
         systemReduceMotion: MediaQuery.disableAnimationsOf(context));
     final isCalm = !feedback.allowMotion;
-    final isBlind = profile.type == DisabilityType.blind;
-    final isDeaf = profile.type == DisabilityType.deaf;
-    final isDown = profile.type == DisabilityType.downSyndrome;
-    final isAutismSevere = profile.type == DisabilityType.autismSevere;
-
     final noMotion = !feedback.allowMotion;
-    final untimed = profile.noTimedInteractions || profile.noTimers || profile.unlimitedTime;
-    // ─── الصوت ───
-    if (playSound && !profile.sensoryCalmMode && !isDeaf) {
-      if (isDown) {
-        EncouragementService.instance.praiseForDown(childName: childName);
-      } else if (isAutismSevere) {
-        TtsService.instance.speakLine('أحسنت');
+    final untimed = !feedback.allowAutoDismiss;
+    if (playSound && feedback.allowAutomaticSpeech) {
+      if (profile.slowSpeech) {
+        TtsService.instance.speakLineSlow('أحسنت على جهودك');
       } else if (childName != null && childName.isNotEmpty) {
         EncouragementService.instance.praiseByName(childName);
       } else {
         EncouragementService.instance.praiseSuccess();
       }
     }
-
-    // ─── للأعمى ───
-    if (isBlind && feedback.allowHaptics) {
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 150));
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 150));
-      HapticFeedback.mediumImpact();
-    }
-
-    // ─── للأصمّ ───
-    if (isDeaf && feedback.allowHaptics) {
-      for (var i = 0; i < 3; i++) {
-        HapticFeedback.heavyImpact();
-        await Future.delayed(const Duration(milliseconds: 120));
-      }
-    }
-
-    final actualDuration = isCalm
-        ? const Duration(seconds: 2)
-        : isDeaf || isBlind
-            ? const Duration(seconds: 4)
-            : duration;
+    if (feedback.allowHaptics) HapticFeedback.mediumImpact();
+    final actualDuration = duration;
 
     final dismissed = Completer<void>();
     late OverlayEntry entry;
@@ -103,8 +74,8 @@ class VisualCelebration extends StatefulWidget {
         emoji: emoji,
         duration: actualDuration,
         calmMode: isCalm,
-        blindMode: isBlind,
-        deafMode: isDeaf,
+        blindMode: profile.screenReaderOptimized,
+        deafMode: profile.extraLargeTouchTargets,
         noMotion: noMotion || untimed,
         onDismiss: untimed ? close : null,
       ),
