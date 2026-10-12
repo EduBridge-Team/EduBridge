@@ -17,6 +17,13 @@ void main() {
     expect(restored.isUser, isTrue);
   });
 
+  test('assistant response role survives serialization', () {
+    const message = AssistantMessage(role: 'assistant', content: 'خطوة أولى');
+    final restored = AssistantMessage.fromJson(message.toJson());
+    expect(restored.isUser, isFalse);
+    expect(restored.content, 'خطوة أولى');
+  });
+
   test('chat history is stored for the current account', () async {
     const messages = [
       AssistantMessage(role: 'user', content: 'مرحباً'),
