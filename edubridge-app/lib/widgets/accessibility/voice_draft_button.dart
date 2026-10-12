@@ -66,6 +66,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
     }
     final generation = ++_generation;
     setState(() => _starting = true);
+    var recordingRequested = false;
     try {
       final available = await _speech.initialize(
         owner: _owner,
@@ -89,6 +90,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
       if (!mounted || generation != _generation || !widget.enabled) return;
       if (arabic == null) { _error('التعرف على الكلام العربي غير متاح على الجهاز.'); return; }
       setState(() => _listening = true);
+      recordingRequested = true;
       await _speech.listen(
         owner: _owner,
         options: stt.SpeechListenOptions(localeId: arabic,
@@ -109,12 +111,13 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
     } catch (_) {
       if (mounted && generation == _generation) {
         setState(() => _listening = false);
+        unawaited(_speech.cancel(_owner));
         _error('تعذّر تشغيل الميكروفون. يمكنك كتابة الإجابة.');
       }
     } finally {
       if (mounted && generation == _generation) {
         setState(() => _starting = false);
-        if (!_listening) unawaited(_speech.cancel(_owner));
+        if (!recordingRequested) unawaited(_speech.cancel(_owner));
       }
     }
   }

@@ -157,6 +157,24 @@ void main() {
     controller.dispose();
   });
 
+  testWidgets('backgrounding the app cancels dictation without changing text', (tester) async {
+    final engine = FakeRecognizer();
+    final controller = TextEditingController(text: 'إجابتي');
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: VoiceDraftButton(
+      controller: controller, enabled: true, speechInput: SpeechInputService.forTesting(engine)))));
+    await tester.tap(find.text('أكتب بصوتي'));
+    await tester.pump();
+    final stale = engine.result!;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    stale(FakeResult('متأخر'));
+    expect(controller.text, 'إجابتي');
+    expect(engine.isListening, isFalse);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpWidget(const SizedBox.shrink());
+    controller.dispose();
+  });
+
   testWidgets('missing Arabic speech keeps typing available', (tester) async {
     final engine = FakeRecognizer()..locale = null;
     final controller = TextEditingController(text: 'إجابتي');

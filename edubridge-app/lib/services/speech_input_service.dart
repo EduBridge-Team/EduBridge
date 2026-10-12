@@ -77,7 +77,12 @@ class SpeechInputService {
   }
 
   Future<void> _cancel(Object owner) async {
-    try { await _speech.cancel(); } catch (_) {}
+    try {
+      // Permission/initialization may still be pending when a sheet is closed.
+      // Cancel after it completes, before allowing the next owner to start.
+      if (_initialization != null) await _initialization;
+      await _speech.cancel();
+    } catch (_) {}
     if (identical(_owner, owner)) _owner = null;
   }
 }
