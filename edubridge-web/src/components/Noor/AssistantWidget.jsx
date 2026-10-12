@@ -216,6 +216,8 @@ export default function AssistantWidget() {
   const [feedback, setFeedback] = useState({})
   const endRef = useRef(null)
   const inputRef = useRef(null)
+  const closeRef = useRef(null)
+  const previousFocusRef = useRef(null)
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
   const suggestions = assistantSuggestions(user, location.pathname)
@@ -352,6 +354,7 @@ export default function AssistantWidget() {
       event.preventDefault()
       return
     }
+    previousFocusRef.current = document.activeElement
     setOpen(true)
   }
 
@@ -528,7 +531,7 @@ export default function AssistantWidget() {
 
           <div className="noor-notice">نور يفهم دورك والصفحة الحالية. لا تشارك معلومات شخصية أو حساسة.</div>
           <NoorRoleDraftTools key={`${user?.id}-${user?.role}`} role={user?.role} />
-          <div className="noor-messages" aria-live="polite">
+          <div className="noor-messages" role="log" aria-label="رسائل نور" aria-live="polite" aria-relevant="additions">
             {messages.map((message, index) => {
               const isAssistant = message.role === 'assistant'
               const showTools = isAssistant && message.id !== WELCOME.id
@@ -581,7 +584,7 @@ export default function AssistantWidget() {
                 </div>
               )
             })}
-            {sending && <div className="noor-message assistant noor-typing">نور يكتب…</div>}
+            {sending && <div className="noor-message assistant noor-typing" role="status">نور يكتب…</div>}
             <div ref={endRef} />
           </div>
 
@@ -623,7 +626,7 @@ export default function AssistantWidget() {
               <button type="button" onClick={() => setSelectedImage(null)} aria-label="إزالة الصورة">×</button>
             </div>
           )}
-          <form className="noor-form" onSubmit={sendMessage}>
+          <form className="noor-form" onSubmit={sendMessage} aria-label="كتابة سؤال إلى نور">
             <button type="button" onClick={() => imageInputRef.current?.click()} disabled={sending} aria-label="اختيار صورة تعليمية" title="اختيار صورة تعليمية">
               <ImagePlus size={20} aria-hidden="true" />
             </button>
@@ -650,7 +653,7 @@ export default function AssistantWidget() {
               value={input}
               onChange={(event) => setInput(event.target.value.slice(0, 2000))}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && !event.shiftKey) sendMessage(event)
+                if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) sendMessage(event)
               }}
               placeholder="اكتب سؤالك لنور..."
               rows={1}
