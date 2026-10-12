@@ -56,8 +56,17 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
             ),
           ),
 
+          if (AccessibilityService.instance.profile.value.visualNotifications)
+            Positioned(top: 12, left: 20, right: 20,
+              child: Center(child: Semantics(liveRegion: true,
+                child: Chip(
+                  avatar: Icon(_controller.value.isPlaying ? Icons.play_arrow : Icons.pause),
+                  label: Text(_controller.value.isPlaying ? 'الفيديو يعمل' : 'الفيديو متوقف'),
+                ),
+              )),
+            ),
           // الترجمات
-          if (_showCaptions && _currentCaption.isNotEmpty)
+          if (_displayCaption.isNotEmpty)
             Positioned(
               left: 20,
               right: 20,
@@ -69,7 +78,7 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  _currentCaption,
+                  _displayCaption,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
