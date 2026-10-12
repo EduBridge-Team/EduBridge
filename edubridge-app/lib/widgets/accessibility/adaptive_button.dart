@@ -148,6 +148,12 @@ class _AdaptiveButtonState extends State<AdaptiveButton> {
       textAlign: TextAlign.center,
     );
 
+    if (AdaptiveHelper.profile.iconOnlyMode && widget.icon != null && !widget.isBusy) {
+      return Tooltip(message: widget.label, child: Semantics(
+        label: widget.label, excludeSemantics: true,
+        child: Icon(widget.icon, size: iconSize),
+      ));
+    }
     if (widget.isBusy) {
       return Semantics(label: 'جارٍ التنفيذ', liveRegion: true,
         child: Row(mainAxisSize: MainAxisSize.min, children: [

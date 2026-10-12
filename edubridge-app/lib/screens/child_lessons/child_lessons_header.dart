@@ -173,18 +173,17 @@ Widget buildAdaptiveHeader({
     );
   }
 
-  if (profile.predictableTimeline) {
+  if (profile.predictableTimeline || profile.routineStructure) {
     items.add(
       Padding(
         padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
         child: VisualTimeline(
           title: 'خطوات الدرس',
           steps: [
-            const TimelineStep(emoji: '📖', label: 'اقرأ العنوان', done: true),
-            TimelineStep(
-                emoji: '🎧', label: 'استمع للشرح', current: !canMarkDone),
-            TimelineStep(emoji: '✍️', label: 'حلّ التمرين', done: canMarkDone),
-            const TimelineStep(emoji: '⭐', label: 'احصل على نجمة'),
+            const TimelineStep(emoji: '📖', label: 'اختر الدرس واقرأ العنوان'),
+            const TimelineStep(emoji: '🎧', label: 'استمع للشرح إذا احتجت'),
+            const TimelineStep(emoji: '✍️', label: 'جرّب النشاط'),
+            const TimelineStep(emoji: '🌿', label: 'راجع أو خذ استراحة'),
           ],
         ),
       ),

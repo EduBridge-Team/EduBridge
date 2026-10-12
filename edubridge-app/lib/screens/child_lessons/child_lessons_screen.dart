@@ -152,6 +152,15 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       );
     }
 
+    final displayedLessons = List<Map>.from(_lessons);
+    if (AccessibilityService.instance.profile.value.routineStructure) {
+      displayedLessons.sort((a, b) {
+        final aId = int.tryParse('${a['id']}') ?? 0;
+        final bId = int.tryParse('${b['id']}') ?? 0;
+        final order = aId.compareTo(bId);
+        return order != 0 ? order : '${a['title']}'.compareTo('${b['title']}');
+      });
+    }
     return ListView.builder(
       padding: EdgeInsets.all(AdaptiveHelper.spacing),
       itemCount: _lessons.length + (_lessons.isEmpty ? 2 : 1),
@@ -193,7 +202,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         final lessonIndex = i - 1;
         return buildLessonCard(
           context: context,
-          lesson: _lessons[lessonIndex],
+          lesson: displayedLessons[lessonIndex],
           doneLessonIds: _doneLessonIds,
           speakingLessonId: _speakingLessonId,
           savingLessonId: _savingLessonId,
