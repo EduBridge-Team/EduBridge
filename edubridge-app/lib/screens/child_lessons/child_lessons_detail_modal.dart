@@ -62,30 +62,35 @@ Widget _buildLessonDetailModal({
 
             if (images.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),
-              SizedBox(
-                height: 190,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: images.length,
-                  separatorBuilder: (_, __) =>
-                      SizedBox(width: AdaptiveHelper.spacing / 2),
-                  itemBuilder: (_, index) => ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.network(
-                      images[index],
-                      width: 250,
-                      height: 190,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 250,
-                        height: 190,
-                        color: Colors.black12,
-                        alignment: Alignment.center,
-                        child: const Icon(AppIcons.image, size: 42),
-                      ),
+              ValueListenableBuilder<AccessibilityProfile>(
+                valueListenable: AccessibilityService.instance.profile,
+                builder: (context, profile, _) {
+                  final rawDescriptions = lesson['image_descriptions'];
+                  String descriptionFor(int index) {
+                    if (rawDescriptions is List && index < rawDescriptions.length) {
+                      final description = rawDescriptions[index]?.toString().trim();
+                      if (description != null && description.isNotEmpty) return description;
+                    }
+                    return 'صورة ${index + 1} في درس $title. لا يوجد وصف لمحتوى الصورة.';
+                  }
+                  if (profile.textOnlyMode) {
+                    return Column(crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [for (var i = 0; i < images.length; i++)
+                        Padding(padding: const EdgeInsets.only(bottom: 8),
+                          child: AltTextImage(imageUrl: images[i], altText: descriptionFor(i)))],
+                    );
+                  }
+                  return SizedBox(height: 190, child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: images.length,
+                    separatorBuilder: (_, __) => SizedBox(width: AdaptiveHelper.spacing / 2),
+                    itemBuilder: (_, index) => ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: AltTextImage(imageUrl: images[index],
+                        altText: descriptionFor(index), width: 250, height: 190),
                     ),
-                  ),
-                ),
+                  ));
+                },
               ),
             ],
 

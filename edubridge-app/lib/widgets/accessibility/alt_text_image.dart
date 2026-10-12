@@ -29,12 +29,10 @@ class AltTextImage extends StatelessWidget {
       valueListenable: AccessibilityService.instance.profile,
       builder: (context, profile, _) {
         if (profile.textOnlyMode || TextOnlyScope.of(context)) {
-          return Text(profile.detailedAltText
-              ? detailedDescription ?? altText : altText);
+          final description = profile.detailedAltText ? detailedDescription ?? altText : altText;
+          return Text(description, style: TextStyle(fontSize: AdaptiveHelper.bodyFontSize));
         }
-        final shouldDescribe = profile.detailedAltText ||
-            profile.type == DisabilityType.blind ||
-            profile.autoReadOnTap;
+        final shouldDescribe = profile.detailedAltText || AdaptiveHelper.shouldReadOnTap;
 
         final imageWidget = Image.network(
           imageUrl,
@@ -63,13 +61,15 @@ class AltTextImage extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            final description = detailedDescription ?? altText;
+            final description = profile.detailedAltText ? detailedDescription ?? altText : altText;
             AdaptiveHelper.speak(description);
           },
           child: Semantics(
             label: altText,
             excludeSemantics: true,
             image: true,
+            onTap: () => AdaptiveHelper.speak(profile.detailedAltText
+                ? detailedDescription ?? altText : altText),
             child: Stack(
               children: [
                 imageWidget,
