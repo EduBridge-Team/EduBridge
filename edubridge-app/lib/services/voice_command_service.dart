@@ -51,6 +51,7 @@ import '../utils/navigation.dart';
 import 'api_service.dart';
 import 'tts_service.dart';
 import 'voice_command_text.dart';
+import 'speech_input_service.dart';
 
 part 'voice_command_routing.dart';
 part 'voice_command_execution.dart';
@@ -60,8 +61,8 @@ class VoiceCommandService {
   VoiceCommandService._();
   static final VoiceCommandService instance = VoiceCommandService._();
 
-  final stt.SpeechToText _speech = stt.SpeechToText();
-  bool _initialized = false;
+  final _speech = SpeechInputService.instance;
+  final _speechOwner = Object();
   bool _available = false;
   bool _starting = false;
   bool _acceptResults = false;
@@ -84,26 +85,18 @@ class VoiceCommandService {
   bool get isAvailable => _available;
 
   Future<bool> initialize() async {
-    if (_initialized) return _available;
     try {
       _available = await _speech.initialize(
+        owner: _speechOwner,
         onStatus: _onStatus,
         onError: _onError,
       );
-      _initialized = _available;
       if (_available) {
-        final locales = await _speech.locales();
-        for (final locale in locales) {
-          if (locale.localeId.toLowerCase().startsWith('ar')) {
-            _localeId = locale.localeId;
-            break;
-          }
-        }
+        _localeId = await _speech.arabicLocale(_speechOwner);
       }
       return _available;
     } catch (_) {
       _available = false;
-      _initialized = false;
       return false;
     }
   }
@@ -117,6 +110,7 @@ class VoiceCommandService {
   void _onError(dynamic error) {
     isListening.value = false;
     _acceptResults = false;
+    unawaited(_speech.cancel(_speechOwner));
     lastReply.value = 'تعذّر سماع الأمر. تأكد من إذن الميكروفون ثم حاول مجدداً';
   }
 
@@ -145,8 +139,9 @@ class VoiceCommandService {
       _commandHandled = false;
       isListening.value = true;
       await _speech.listen(
+        owner: _speechOwner,
         onResult: (result) { if (session == _session) _onResult(result); },
-        listenOptions: stt.SpeechListenOptions(
+        options: stt.SpeechListenOptions(
           localeId: _localeId,
           listenFor: const Duration(seconds: 10),
           pauseFor: const Duration(seconds: 4),
@@ -159,6 +154,7 @@ class VoiceCommandService {
       await _reply('تعذّر تشغيل الميكروفون. حاول مجدداً');
     } finally {
       _starting = false;
+      if (!isListening.value) await _speech.cancel(_speechOwner);
     }
   }
 
@@ -171,7 +167,7 @@ class VoiceCommandService {
     _acceptResults = false;
     isListening.value = false;
     try {
-      await _speech.cancel();
+      await _speech.cancel(_speechOwner);
     } catch (_) {}
   }
 
@@ -182,6 +178,7 @@ class VoiceCommandService {
     lastHeard.value = text;
     if (result.finalResult) {
       _commandHandled = true;
+      unawaited(_speech.cancel(_speechOwner));
       _acceptResults = false;
       isListening.value = false;
       unawaited(_executeCommand(text).catchError((Object _) => _reply('تعذّر تنفيذ الأمر. حاول مجدداً')));

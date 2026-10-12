@@ -17,6 +17,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           ),
         ),
         IconButton(
+          tooltip: 'إغلاق',
           icon: const Icon(AppIcons.close, size: 28),
           onPressed: () => Navigator.pop(context),
         ),

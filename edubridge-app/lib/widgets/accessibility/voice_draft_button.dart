@@ -1,17 +1,21 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../services/speech_input_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// Dictation requires an explicit tap; it only edits the draft.
 class VoiceDraftButton extends StatefulWidget {
   final TextEditingController controller;
   final bool enabled;
-  const VoiceDraftButton({super.key, required this.controller, required this.enabled});
+  final SpeechInputService? speechInput;
+  const VoiceDraftButton({super.key, required this.controller, required this.enabled, this.speechInput});
   @override
   State<VoiceDraftButton> createState() => _VoiceDraftButtonState();
 }
 
 class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBindingObserver {
-  final _speech = stt.SpeechToText();
+  late final _speech = widget.speechInput ?? SpeechInputService.instance;
+  final _owner = Object();
   bool _listening = false;
   bool _starting = false;
   int _generation = 0;
@@ -24,14 +28,15 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
 
   void _cancel() {
     _generation++;
-    _speech.cancel();
+    unawaited(_speech.cancel(_owner));
     if (mounted) setState(() { _listening = false; _starting = false; });
   }
 
   @override
   void didUpdateWidget(covariant VoiceDraftButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.enabled && oldWidget.enabled) _cancel();
+    if ((!widget.enabled && oldWidget.enabled) ||
+        !identical(widget.controller, oldWidget.controller)) _cancel();
   }
 
   @override
@@ -43,7 +48,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
   void dispose() {
     _generation++;
     WidgetsBinding.instance.removeObserver(this);
-    _speech.cancel();
+    unawaited(_speech.cancel(_owner));
     super.dispose();
   }
 
@@ -53,35 +58,48 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
 
   Future<void> _toggle() async {
     if (!widget.enabled || _starting) return;
-    if (_listening) { await _speech.stop(); return; }
+    if (_listening) {
+      try { await _speech.stop(_owner); }
+      catch (_) { _cancel(); _error('تعذّر إيقاف التسجيل. يمكنك كتابة الإجابة.'); }
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
     final generation = ++_generation;
     setState(() => _starting = true);
+    var recordingRequested = false;
     try {
       final available = await _speech.initialize(
+        owner: _owner,
         onStatus: (status) {
-          if (mounted && generation == _generation && (status == 'done' || status == 'notListening')) {
+          if (mounted && widget.enabled && (status == 'done' || status == 'notListening')) {
             setState(() => _listening = false);
           }
         },
         onError: (_) {
-          if (mounted && generation == _generation) {
-            setState(() => _listening = false);
+          if (mounted && widget.enabled && (_starting || _listening)) {
+            setState(() { _listening = false; _starting = false; });
+            _generation++;
+            unawaited(_speech.cancel(_owner));
             _error('تعذّر سماع الصوت. يمكنك كتابة الإجابة.');
           }
         },
       );
       if (!mounted || generation != _generation || !widget.enabled) return;
       if (!available) { _error('الميكروفون غير متاح. يمكنك كتابة الإجابة.'); return; }
-      final locales = await _speech.locales();
+      final arabic = await _speech.arabicLocale(_owner);
       if (!mounted || generation != _generation || !widget.enabled) return;
-      final arabic = locales.where((locale) => locale.localeId.toLowerCase().startsWith('ar')).toList();
-      if (arabic.isEmpty) { _error('التعرف على الكلام العربي غير متاح على الجهاز.'); return; }
+      if (arabic == null) { _error('التعرف على الكلام العربي غير متاح على الجهاز.'); return; }
       setState(() => _listening = true);
+      recordingRequested = true;
       await _speech.listen(
-        listenOptions: stt.SpeechListenOptions(localeId: arabic.first.localeId,
+        owner: _owner,
+        options: stt.SpeechListenOptions(localeId: arabic,
           partialResults: false, listenFor: const Duration(seconds: 30)),
         onResult: (result) {
           if (!mounted || generation != _generation || !widget.enabled || !result.finalResult) return;
+          setState(() { _listening = false; _starting = false; });
+          _generation++;
+          unawaited(_speech.cancel(_owner));
           final words = result.recognizedWords.trim();
           if (words.isEmpty) return;
           final current = widget.controller.text.trimRight();
@@ -93,10 +111,14 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
     } catch (_) {
       if (mounted && generation == _generation) {
         setState(() => _listening = false);
+        unawaited(_speech.cancel(_owner));
         _error('تعذّر تشغيل الميكروفون. يمكنك كتابة الإجابة.');
       }
     } finally {
-      if (mounted && generation == _generation) setState(() => _starting = false);
+      if (mounted && generation == _generation) {
+        setState(() => _starting = false);
+        if (!recordingRequested) unawaited(_speech.cancel(_owner));
+      }
     }
   }
 
