@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../../features/lessons/data/lesson_caption_repository.dart';
 import '../../features/lessons/domain/lesson_media_policy.dart';
+import '../../features/lessons/domain/caption_sound_cues.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../services/lesson_captions.dart';
@@ -52,8 +53,17 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    AccessibilityService.instance.profile.addListener(_refreshProfile);
     _initialize();
   }
+
+  void _refreshProfile() {
+    if (mounted) setState(() {});
+  }
+
+  String get _displayCaption => _showCaptions ? _currentCaption
+      : AccessibilityService.instance.profile.value.soundDescriptions
+          ? captionSoundCues(_currentCaption) : '';
 
   Future<void> _initialize() async {
     try {
@@ -190,6 +200,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    AccessibilityService.instance.profile.removeListener(_refreshProfile);
     if (_created) {
       _controller.removeListener(_onVideoUpdate);
       _controller.dispose();
