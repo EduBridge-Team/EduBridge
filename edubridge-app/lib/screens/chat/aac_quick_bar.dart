@@ -19,12 +19,14 @@ class AacQuickBar extends StatefulWidget {
   /// زر إغلاق الشريط
   final VoidCallback? onClose;
   final bool enabled;
+  final AccessibilityProfile? profile;
 
   const AacQuickBar({
     super.key,
     required this.onItemSelected,
     this.onClose,
     this.enabled = true,
+    this.profile,
   });
 
   @override
@@ -34,6 +36,7 @@ class AacQuickBar extends StatefulWidget {
 class _AacQuickBarState extends State<AacQuickBar> {
   /// التصنيف المفتوح حالياً
   late String _activeCategoryKey;
+  int _page = 0;
 
   @override
   void initState() {
@@ -42,7 +45,7 @@ class _AacQuickBarState extends State<AacQuickBar> {
   }
 
   AccessibilityProfile get _profile =>
-      AccessibilityService.instance.applicationProfile.value;
+      widget.profile ?? AccessibilityService.instance.applicationProfile.value;
 
   void _feedback() {
     // The chat uses the account profile, never a child opened elsewhere.
@@ -137,6 +140,19 @@ class _AacQuickBarState extends State<AacQuickBar> {
             _buildHeader(c),
             _buildCategoryTabs(c),
             _buildItemsRow(c),
+            if (_profile.maxOptionsCount3 && _activeItems.length > 3)
+              Row(children: [
+                Expanded(child: TextButton(
+                  onPressed: widget.enabled && _page > 0
+                      ? () => setState(() => _page--) : null,
+                  child: const Text('السابق'),
+                )),
+                Expanded(child: TextButton(
+                  onPressed: widget.enabled && (_page + 1) * 3 < _activeItems.length
+                      ? () => setState(() => _page++) : null,
+                  child: const Text('صور أخرى'),
+                )),
+              ]),
           ],
         ),
       ),
@@ -223,7 +239,7 @@ class _AacQuickBarState extends State<AacQuickBar> {
             child: GestureDetector(
               onTap: !widget.enabled ? null : () {
                 _feedback();
-                setState(() => _activeCategoryKey = key);
+                setState(() { _activeCategoryKey = key; _page = 0; });
               },
               child: AnimatedContainer(
                 duration: _profile.sensoryCalmMode || _profile.reducedAnimations ||
@@ -263,14 +279,16 @@ class _AacQuickBarState extends State<AacQuickBar> {
   //  صف البطاقات
   // ═══════════════════════════════════════════════════════════
   Widget _buildItemsRow(JisrColors c) {
+    final items = _profile.maxOptionsCount3
+        ? _activeItems.skip(_page * 3).take(3).toList() : _activeItems;
     return SizedBox(
       height: 72 + MediaQuery.textScalerOf(context).scale(14) * 3,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 10),
-        itemCount: _activeItems.length,
+        itemCount: items.length,
         itemBuilder: (context, i) {
-          final item = _activeItems[i];
+          final item = items[i];
           return Padding(
             padding: const EdgeInsetsDirectional.only(end: 8),
             child: _AacCard(
