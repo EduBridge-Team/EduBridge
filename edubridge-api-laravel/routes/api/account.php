@@ -18,6 +18,14 @@ Route::put('/me/specialty', [\App\Http\Controllers\SpecialistSuggestionControlle
 Route::get('/settings', [\App\Http\Controllers\UserSettingsController::class, 'show']);
 Route::put('/settings', [\App\Http\Controllers\UserSettingsController::class, 'update']);
 
+// Noor learning memory: read, opt in/out, and delete are restricted to the assigned parent.
+Route::get('/assistant/students/{child}/memory', [\App\Http\Controllers\NoorMemoryController::class, 'index'])
+    ->middleware('throttle:30,1');
+Route::patch('/assistant/students/{child}/memory/preferences', [\App\Http\Controllers\NoorMemoryController::class, 'preferences'])
+    ->middleware('throttle:10,1');
+Route::delete('/assistant/students/{child}/memory/{memory}', [\App\Http\Controllers\NoorMemoryController::class, 'destroy'])
+    ->middleware('throttle:10,1');
+
 Route::post('/assistant/chat', [\App\Http\Controllers\AssistantController::class, 'chat'])
     ->middleware('throttle:20,1');
 Route::get('/assistant/students/{child}/context', [\App\Http\Controllers\NoorStudentContextController::class, 'show'])
