@@ -1,6 +1,6 @@
 # EduBridge documentation index
 
-> Documentation review: 2026-10-05
+> Documentation review: 2026-10-12
 
 This directory is the entry point for EduBridge technical and operational documentation. Production behavior is defined by the code and deployment configuration in `main`; documentation should be updated in the same pull request whenever production architecture, security controls, roles, schema, or release procedures change.
 
@@ -78,7 +78,8 @@ Do not record secrets, private keys, real user data, JWTs, database passwords or
 | --- | --- |
 | [Architecture](ARCHITECTURE.md) | Independent main and Jabalia deployments, database and R2 bucket mapping |
 | [Storage and media](STORAGE_AND_MEDIA.md) | Privacy, deletion failure modes, media backup requirements |
-| [Disaster recovery](DISASTER_RECOVERY.md) | Verified PostgreSQL restores and unverified media recovery |
+| [Disaster recovery](DISASTER_RECOVERY.md) | PostgreSQL restore evidence, recovery limitations and isolated-drill requirements |
+| [Offsite backup operations](OFFSITE_BACKUP_OPERATIONS.md) | Live backup VM, encrypted R2/Jabalia/Google Drive replication, systemd, Telegram/Healthchecks.io and secure recovery keys |
 | [Incident response](INCIDENT_RESPONSE.md) | Evidence, containment and escalation |
 | [Release checklist](RELEASE_CHECKLIST.md) | PR, deployment, field pilot verification |
 | [Documentation policy](DOCUMENTATION_POLICY.md) | Source of truth, ownership and maintenance |

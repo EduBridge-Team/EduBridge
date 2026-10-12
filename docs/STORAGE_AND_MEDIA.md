@@ -17,16 +17,13 @@ PR #773 changed lesson media deletion to return failure and roll back DB referen
 ## Private data and keys
 Private student/guardian documents must remain in private buckets, served only after API authorization. Public URLs are not access control. Scope each R2 token to the two buckets required, without Admin rights. Never print keys into logs or paste them into documentation. Main and Jabalia credentials should be independent.
 
-## Missing media backup (not yet implemented)
-PostgreSQL dumps do not capture R2 objects. Existing R2 bucket healthchecks do not establish replication, versioning, retention or recoverability.
-Before sensitive production upload:
-1. Approve data ownership, consent, retention, RPO/RTO and encryption policies.
-2. Choose a second restricted backup destination or proven independent recovery mechanism with separate credentials.
-3. Inventory keys, object sizes and timestamps without exposing student data.
-4. Copy using non-destructive behavior: no source delete, no overwrite without versioning, no public URL for private objects.
-5. Record manifest and hashes where possible, then restore a disposable single object and verify integrity and authorization.
-6. Only after validation, schedule the backup and monitor failures/cost.
-7. Document lifecycle policies and periodic recovery drills.
+## Offsite media backups (implemented on backup VM; verified 2026-10-12)
+
+PostgreSQL dumps do not capture R2 objects. A separate Oracle backup VM now uses a read-only R2 remote to copy the main and Jabalia media/private buckets into an encrypted rclone crypt backing directory, with timestamped versions and no source deletion. The raw encrypted directory is also copied to Google Drive using `rclone copy --backup-dir` and download-based integrity checking. The Google Drive copy was verified byte-for-byte for 32 encrypted objects (3.984 MiB) on 2026-10-11/12; this is a point-in-time result, not proof that future inventories are complete.
+
+An independent Healthchecks.io heartbeat and Telegram alerts supplement on-host hourly checks for stale R2, Jabalia and Google Drive success markers and disk usage. Read the [offsite runbook](OFFSITE_BACKUP_OPERATIONS.md) for verified timers, paths and non-destructive diagnostics.
+
+**Still outstanding:** approve/record retention and recovery objectives, perform complete isolated restore of R2 media/private objects **from Google Drive**, test application authorization of restored private media, validate inventory completeness and conduct recurring recovery drills. R2 media backup is implemented, but end-to-end media **recovery** has not yet been proven.
 
 If a file is missing, preserve the DB reference and logs while investigating. Never make a private bucket public as a workaround.
 
