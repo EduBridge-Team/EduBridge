@@ -18,7 +18,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     expect(finishes, 0);
-    await tester.pump(const Duration(seconds: 9));
+    await tester.pump(const Duration(seconds: 8));
+    expect(finishes, 0);
+    // Completion is reported on a rendered frame, not at an exact wall-clock edge.
+    await tester.pump(const Duration(seconds: 2));
     expect(finishes, 1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
