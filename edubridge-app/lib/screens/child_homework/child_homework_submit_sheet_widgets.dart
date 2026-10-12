@@ -42,6 +42,10 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
       ),
       ),
       WordPredictionBar(controller: _answerCtrl, enabled: _wordPrediction && !_saving),
+      if (_voiceToText) ...[
+        const SizedBox(height: 8),
+        VoiceDraftButton(controller: _answerCtrl, enabled: !_saving),
+      ],
     ]);
   }
 
