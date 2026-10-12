@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/accessibility_service.dart';
 import '../../theme.dart';
+import '../../utils/adaptive_feedback_policy.dart';
 
 class VisualTimer extends StatefulWidget {
   final Duration total;
@@ -39,7 +40,8 @@ class _VisualTimerState extends State<VisualTimer>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: widget.total)
+    _ctrl = AnimationController(vsync: this, duration: widget.total,
+      animationBehavior: AnimationBehavior.preserve)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           _finish();
@@ -96,16 +98,9 @@ class _VisualTimerState extends State<VisualTimer>
     _isFinished = true;
     if (mounted) setState(() {});
 
-    // ✅ للأصمّ: اهتزاز قوي لجذب الانتباه
     final profile = AccessibilityService.instance.profile.value;
-    if (profile.type == DisabilityType.deaf) {
-      HapticFeedback.heavyImpact();
-      Future.delayed(const Duration(milliseconds: 200), () {
-        HapticFeedback.heavyImpact();
-      });
-      Future.delayed(const Duration(milliseconds: 400), () {
-        HapticFeedback.heavyImpact();
-      });
+    if (AdaptiveFeedbackPolicy(profile).allowHaptics) {
+      HapticFeedback.mediumImpact();
     }
 
     widget.onFinished?.call();

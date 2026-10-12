@@ -17,6 +17,9 @@ preferences and account preferences remain separate.
 - Homework touch targets use the loaded child profile. Optional success speech
   respects sensory calm mode, automatic speech and slow speech preferences.
   Async attachment selection checks whether the screen is still mounted.
+- Visual timer feedback follows the specialist haptic/calm preferences instead
+  of the disability classification. Reduced system animation does not shorten
+  the real countdown duration.
 - Video caption and sign-language preferences respond to profile changes without
   resetting manual controls when an unrelated setting changes. Calm mode suppresses
   automatic audio description; an explicit description button remains available.
