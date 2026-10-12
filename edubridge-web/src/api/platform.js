@@ -196,6 +196,21 @@ export function askAssistant(messages, context) {
   });
 }
 
+// Review-only Noor tools: the student authorization is rechecked by Laravel.
+export function createNoorActivityDraft(childId, topic, durationMinutes) {
+  return request(`/assistant/students/${encodeURIComponent(childId)}/draft-activity`, {
+    method: 'POST',
+    body: JSON.stringify({ topic, duration_minutes: durationMinutes }),
+  });
+}
+
+export function createNoorSessionDraft(childId, goal, durationMinutes) {
+  return request(`/assistant/students/${encodeURIComponent(childId)}/draft-session`, {
+    method: 'POST',
+    body: JSON.stringify({ goal, duration_minutes: durationMinutes }),
+  });
+}
+
 // Noor vision: only explicitly selected images are transmitted; no permanent upload.
 export async function analyzeNoorImage(image, question) {
   const body = new FormData();
