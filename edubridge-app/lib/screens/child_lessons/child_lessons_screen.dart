@@ -12,6 +12,7 @@ import '../../theme.dart';
 import '../../utils/adaptive_helper.dart';
 import '../../utils/adaptive_feedback_policy.dart';
 import '../../widgets/accessibility/adaptive_button.dart';
+import '../../widgets/accessibility/alt_text_image.dart';
 import '../../widgets/accessibility/step_by_step_lesson.dart';
 import '../../widgets/accessibility/adaptive_card.dart';
 import '../../widgets/accessibility/adaptive_text.dart';
