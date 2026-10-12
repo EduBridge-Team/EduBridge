@@ -87,7 +87,7 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
             _announcedTitle != widget.screenTitle) {
           _announcedTitle = widget.screenTitle;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) AdaptiveHelper.speak(widget.screenTitle!);
+            if (mounted && AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(widget.screenTitle!);
           });
         }
 

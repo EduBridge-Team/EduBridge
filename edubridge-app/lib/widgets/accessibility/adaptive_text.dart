@@ -85,10 +85,10 @@ class AdaptiveText extends StatelessWidget {
         // ═══════════════════════════════════════════════
         //  5. نطق عند اللمس
         // ═══════════════════════════════════════════════
-        if ((profile.autoReadOnTap && enableTap) || onTap != null) {
+        if ((AdaptiveHelper.shouldReadOnTap && enableTap) || onTap != null) {
           return GestureDetector(
             onTap: () {
-              if (profile.autoReadOnTap && enableTap) {
+              if (AdaptiveHelper.shouldReadOnTap && enableTap) {
                 AdaptiveHelper.speak(finalText);
               }
               onTap?.call();

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
+import '../../utils/adaptive_feedback_policy.dart';
 
 class BrainBreakScheduler extends StatefulWidget {
   final Widget child;
@@ -133,7 +134,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
   ];
 
   late final AccessibilityProfile _profile;
-  bool get _hideCountdown => _profile.noTimedInteractions || _profile.noTimers || _profile.unlimitedTime;
+  bool get _hideCountdown => !AdaptiveFeedbackPolicy(_profile).showCountdown;
   late int _secondsLeft;
   int get _baseDuration => _profile.brainBreakDurationSeconds.clamp(15, 120);
   int _extensions = 0;
@@ -204,7 +205,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
   }
 
   void _readSuggestion() {
-    if (!_profile.autoReadOnTap || _profile.sensoryCalmMode) return;
+    if (!AdaptiveFeedbackPolicy(_profile).allowAutomaticSpeech) return;
     final text = 'وقت الراحة. ${_moves[_moveIndex].$2}';
     if (_profile.slowSpeech) {
       TtsService.instance.speakLineSlow(text);

@@ -58,7 +58,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
     Widget wrapped = BrainBreakScheduler(child: widget.child);
 
-    if (profile.autoReadOnTap || profile.type == DisabilityType.blind) {
+    if (profile.screenReaderOptimized) {
       wrapped = Semantics(
         container: true,
         explicitChildNodes: true,

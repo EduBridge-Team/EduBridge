@@ -28,7 +28,7 @@ class AdaptiveIcon extends StatelessWidget {
         final effectiveSize = size ?? AdaptiveHelper.iconSize;
         final effectiveColor = color ?? AdaptiveHelper.textColor(context);
         final shouldRead = enableReadOnTap &&
-            profile.autoReadOnTap &&
+            AdaptiveHelper.shouldReadOnTap &&
             semanticLabel != null;
 
         final iconWidget = Icon(
