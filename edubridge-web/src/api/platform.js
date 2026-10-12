@@ -196,6 +196,22 @@ export function askAssistant(messages, context) {
   });
 }
 
+// Noor vision: only explicitly selected images are transmitted; no permanent upload.
+export async function analyzeNoorImage(image, question) {
+  const body = new FormData();
+  body.append('image', image);
+  body.append('question', question);
+  const response = await fetch(`${BASE_URL}/assistant/vision/analyze`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-EduBridge-Client': 'web' },
+    body,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || data.message || 'تعذّر تحليل الصورة.');
+  return data;
+}
+
 // ===== المحادثات بين مستخدمي المنصة =====
 export function fetchConversationUsers() {
   return request('/conversation-users');
