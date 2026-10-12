@@ -8,6 +8,7 @@ import '../../services/api_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 import '../../widgets/accessibility/word_prediction_bar.dart';
+import '../../widgets/accessibility/voice_draft_button.dart';
 import '../../model/homework_model.dart';
 
 part 'child_homework_card.dart';
