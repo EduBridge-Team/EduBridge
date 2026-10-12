@@ -24,6 +24,7 @@ export const defaultProfile = {
   "customDisabilityName": "",
   "brainBreaksEnabled": false,
   "brainBreakIntervalMinutes": 15,
+  "brainBreakDurationSeconds": 30,
   "visualTimerEnabled": false,
   "timerRenewalMinutes": 5,
   "reducedAnimations": false,

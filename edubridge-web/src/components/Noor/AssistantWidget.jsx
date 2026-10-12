@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Copy, EyeOff, RotateCcw, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
+import { Copy, EyeOff, RotateCcw, Mic, MicOff, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
+import { createVoiceRecognition } from '../VoiceCommandWidget/voiceRecognition.js'
 import { assistantNavigationActions, assistantSuggestions, buildAssistantContext } from './assistantContext'
 import './assistant-context.css'
 import { useUserSettings } from '../../userSettings'
@@ -202,6 +203,8 @@ export default function AssistantWidget() {
   const [messages, setMessages] = useState(() => [WELCOME, ...loadHistory(user)])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [listening, setListening] = useState(false)
+  const voiceRef = useRef(null)
   const [error, setError] = useState('')
   const [launcherPosition, setLauncherPosition] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -221,7 +224,11 @@ export default function AssistantWidget() {
       ? assistantFollowUps(user, location.pathname)
       : []
 
+  useEffect(() => () => voiceRef.current?.stop(), [])
+
   useEffect(() => {
+    voiceRef.current?.stop()
+    setListening(false)
     setOpen(false)
     setMessages([WELCOME, ...loadHistory(getUser())])
     setInput('')
@@ -348,6 +355,33 @@ export default function AssistantWidget() {
     const context = buildAssistantContext({ user, location })
     const data = await askAssistant(requestMessages, context)
     return { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+  }
+
+  const toggleDictation = () => {
+    if (listening) {
+      voiceRef.current?.stop()
+      setListening(false)
+      return
+    }
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!Recognition) {
+      setError('الإملاء الصوتي غير متاح في هذا المتصفح. يمكنك الكتابة بدلًا منه.')
+      return
+    }
+    if (!voiceRef.current) {
+      voiceRef.current = createVoiceRecognition(Recognition, {
+        onStatus: (active, message) => {
+          setListening(active)
+          if (!active && message) setError(message)
+        },
+        onCommand: (spoken) => {
+          setInput((current) => [current.trim(), spoken.trim()].filter(Boolean).join(' ').slice(0, 2000))
+          setError('')
+        },
+      })
+    }
+    setError('')
+    voiceRef.current.start()
   }
 
   const sendMessage = async (event, suggestedContent = null) => {
@@ -542,6 +576,11 @@ export default function AssistantWidget() {
           )}
 
           <form className="noor-form" onSubmit={sendMessage}>
+            <button type="button" onClick={toggleDictation} disabled={sending}
+              aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال صوتيًا'}
+              aria-pressed={listening} title={listening ? 'إيقاف التسجيل' : 'الإملاء الصوتي'}>
+              {listening ? <MicOff size={20} /> : <Mic size={20} />}
+            </button>
             <textarea
               ref={inputRef}
               value={input}
