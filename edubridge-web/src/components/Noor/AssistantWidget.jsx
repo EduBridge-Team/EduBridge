@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Copy, EyeOff, RotateCcw, Mic, MicOff, Volume2, VolumeX, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
+import { Copy, EyeOff, RotateCcw, Mic, MicOff, ImagePlus, Volume2, VolumeX, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { askAssistant, getToken, getUser } from '../../api'
+import { analyzeNoorImage, askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
 import { createVoiceRecognition } from '../VoiceCommandWidget/voiceRecognition.js'
 import { assistantNavigationActions, assistantSuggestions, buildAssistantContext } from './assistantContext'
@@ -203,6 +203,7 @@ export default function AssistantWidget() {
   const [messages, setMessages] = useState(() => [WELCOME, ...loadHistory(user)])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
   const [listening, setListening] = useState(false)
   const [speakingIndex, setSpeakingIndex] = useState(null)
   const voiceRef = useRef(null)
@@ -238,6 +239,7 @@ export default function AssistantWidget() {
     setOpen(false)
     setMessages([WELCOME, ...loadHistory(getUser())])
     setInput('')
+    setSelectedImage(null)
     setError('')
     setFeedback({})
   }, [location.pathname, user?.id])
@@ -393,9 +395,11 @@ export default function AssistantWidget() {
   const sendMessage = async (event, suggestedContent = null) => {
     event?.preventDefault?.()
     const content = (suggestedContent ?? input).trim()
-    if (!content || sending) return
+    const image = suggestedContent === null ? selectedImage : null
+    if ((!content && !image) || sending) return
 
-    const userMessage = { role: 'user', content }
+    const question = content || 'اشرح محتوى الصورة التعليمية.'
+    const userMessage = { role: 'user', content: image ? `[سؤال عن صورة] ${question}` : question }
     const next = [...messages, userMessage]
     const requestMessages = next
       .filter((message) => message.id !== WELCOME.id)
@@ -403,12 +407,15 @@ export default function AssistantWidget() {
 
     setMessages(next)
     setInput('')
+    setSelectedImage(null)
     setError('')
     setSending(true)
     saveHistory(next)
 
     try {
-      const reply = await requestAssistant(requestMessages)
+      const reply = image
+        ? { role: 'assistant', content: (await analyzeNoorImage(image, question)).reply }
+        : await requestAssistant(requestMessages)
       setMessages((current) => {
         const updated = [...current, reply]
         saveHistory(updated)
@@ -607,7 +614,29 @@ export default function AssistantWidget() {
             </div>
           )}
 
+          {selectedImage && (
+            <div className="noor-notice" role="status">
+              صورة جاهزة للتحليل: {selectedImage.name} (تُرسل فقط عند الضغط على إرسال)
+              <button type="button" onClick={() => setSelectedImage(null)} aria-label="إزالة الصورة">×</button>
+            </div>
+          )}
           <form className="noor-form" onSubmit={sendMessage}>
+            <label title="اختيار صورة تعليمية" aria-label="اختيار صورة تعليمية" style={{ cursor: 'pointer' }}>
+              <ImagePlus size={20} aria-hidden="true" />
+              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={sending}
+                aria-label="اختر صورة للسؤال" style={{ display: 'none' }}
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  event.target.value = ''
+                  if (!file) return
+                  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 3 * 1024 * 1024) {
+                    setError('اختر صورة JPEG أو PNG أو WebP بحجم لا يتجاوز 3 ميجابايت.')
+                    return
+                  }
+                  setSelectedImage(file)
+                  setError('')
+                }} />
+            </label>
             <button type="button" onClick={toggleDictation} disabled={sending}
               aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال صوتيًا'}
               aria-pressed={listening} title={listening ? 'إيقاف التسجيل' : 'الإملاء الصوتي'}>
@@ -625,7 +654,7 @@ export default function AssistantWidget() {
               disabled={sending}
               aria-label="رسالتك إلى نور"
             />
-            <button type="submit" disabled={sending || !input.trim()} aria-label="إرسال">
+            <button type="submit" disabled={sending || (!input.trim() && !selectedImage)} aria-label="إرسال">
               <Send size={20} />
             </button>
           </form>
