@@ -207,6 +207,7 @@ export default function AssistantWidget() {
   const [listening, setListening] = useState(false)
   const [speakingIndex, setSpeakingIndex] = useState(null)
   const voiceRef = useRef(null)
+  const imageInputRef = useRef(null)
   const [error, setError] = useState('')
   const [launcherPosition, setLauncherPosition] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -621,9 +622,10 @@ export default function AssistantWidget() {
             </div>
           )}
           <form className="noor-form" onSubmit={sendMessage}>
-            <label title="اختيار صورة تعليمية" aria-label="اختيار صورة تعليمية" style={{ cursor: 'pointer' }}>
+            <button type="button" onClick={() => imageInputRef.current?.click()} disabled={sending} aria-label="اختيار صورة تعليمية" title="اختيار صورة تعليمية">
               <ImagePlus size={20} aria-hidden="true" />
-              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={sending}
+            </button>
+              <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" disabled={sending}
                 aria-label="اختر صورة للسؤال" style={{ display: 'none' }}
                 onChange={(event) => {
                   const file = event.target.files?.[0]
@@ -636,7 +638,6 @@ export default function AssistantWidget() {
                   setSelectedImage(file)
                   setError('')
                 }} />
-            </label>
             <button type="button" onClick={toggleDictation} disabled={sending}
               aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال صوتيًا'}
               aria-pressed={listening} title={listening ? 'إيقاف التسجيل' : 'الإملاء الصوتي'}>
