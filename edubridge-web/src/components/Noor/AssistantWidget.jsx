@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Copy, EyeOff, RotateCcw, Mic, MicOff, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
+import { Copy, EyeOff, RotateCcw, Mic, MicOff, Volume2, VolumeX, Send, ThumbsDown, ThumbsUp, Trash2, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { askAssistant, getToken, getUser } from '../../api'
 import NoorPet from './NoorPet'
@@ -204,6 +204,7 @@ export default function AssistantWidget() {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [listening, setListening] = useState(false)
+  const [speakingIndex, setSpeakingIndex] = useState(null)
   const voiceRef = useRef(null)
   const [error, setError] = useState('')
   const [launcherPosition, setLauncherPosition] = useState(null)
@@ -224,10 +225,15 @@ export default function AssistantWidget() {
       ? assistantFollowUps(user, location.pathname)
       : []
 
-  useEffect(() => () => voiceRef.current?.stop(), [])
+  useEffect(() => () => {
+    voiceRef.current?.stop()
+    window.speechSynthesis?.cancel()
+  }, [])
 
   useEffect(() => {
     voiceRef.current?.stop()
+    window.speechSynthesis?.cancel()
+    setSpeakingIndex(null)
     setListening(false)
     setOpen(false)
     setMessages([WELCOME, ...loadHistory(getUser())])
@@ -415,6 +421,26 @@ export default function AssistantWidget() {
     }
   }
 
+  const toggleSpeech = (content, index) => {
+    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+      setError('القراءة الصوتية غير متاحة في هذا المتصفح.')
+      return
+    }
+    window.speechSynthesis.cancel()
+    if (speakingIndex === index) {
+      setSpeakingIndex(null)
+      return
+    }
+    const utterance = new SpeechSynthesisUtterance(content)
+    utterance.lang = 'ar'
+    utterance.rate = settings.slow_speech ? 0.75 : 0.9
+    utterance.onend = () => setSpeakingIndex((current) => current === index ? null : current)
+    utterance.onerror = () => setSpeakingIndex((current) => current === index ? null : current)
+    setError('')
+    setSpeakingIndex(index)
+    window.speechSynthesis.speak(utterance)
+  }
+
   const copyResponse = async (content, index) => {
     try {
       await navigator.clipboard.writeText(content)
@@ -509,6 +535,12 @@ export default function AssistantWidget() {
                       <button type="button" onClick={() => copyResponse(message.content, index)} aria-label="نسخ الرد" title="نسخ الرد">
                         <Copy size={14} />
                         <span>{copiedIndex === index ? 'تم النسخ' : 'نسخ'}</span>
+                      </button>
+                      <button type="button" onClick={() => toggleSpeech(message.content, index)}
+                        aria-label={speakingIndex === index ? 'إيقاف قراءة الرد' : 'قراءة الرد صوتيًا'}
+                        title={speakingIndex === index ? 'إيقاف القراءة' : 'قراءة الرد'}>
+                        {speakingIndex === index ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                        <span>{speakingIndex === index ? 'إيقاف' : 'استمع'}</span>
                       </button>
                       {isLastAssistant && (
                         <button type="button" onClick={regenerateLastResponse} disabled={sending} aria-label="إعادة توليد الرد" title="إعادة توليد الرد">
