@@ -83,6 +83,7 @@ Do not record secrets, private keys, real user data, JWTs, database passwords or
 | [Incident response](INCIDENT_RESPONSE.md) | Evidence, containment and escalation |
 | [Release checklist](RELEASE_CHECKLIST.md) | PR, deployment, field pilot verification |
 | [Documentation policy](DOCUMENTATION_POLICY.md) | Source of truth, ownership and maintenance |
+| [Jabalia completion audit](JABALIA_COMPLETION_AUDIT.md) | Phase-by-phase repository evidence, missing pilot checks, prioritized P0–P2 acceptance gates |
 | [Jabalia deployment](../deploy/institutions-jabalia.md) | Isolated stack, first-time onboarding vs repeat deploy |
 
 Important: the main site and Jabalia currently have **separate PostgreSQL containers and R2 buckets**. Older descriptions of only the main ports/API are not complete descriptions of all production deployments. PostgreSQL dump backups do not include R2 objects.
