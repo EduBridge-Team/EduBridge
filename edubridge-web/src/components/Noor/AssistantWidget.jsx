@@ -216,8 +216,6 @@ export default function AssistantWidget() {
   const [feedback, setFeedback] = useState({})
   const endRef = useRef(null)
   const inputRef = useRef(null)
-  const closeRef = useRef(null)
-  const previousFocusRef = useRef(null)
   const dragRef = useRef(null)
   const suppressClickRef = useRef(false)
   const suggestions = assistantSuggestions(user, location.pathname)
@@ -354,7 +352,6 @@ export default function AssistantWidget() {
       event.preventDefault()
       return
     }
-    previousFocusRef.current = document.activeElement
     setOpen(true)
   }
 
