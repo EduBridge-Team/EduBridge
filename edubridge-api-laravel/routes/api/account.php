@@ -34,6 +34,8 @@ Route::get('/assistant/students/{child}/context', [\App\Http\Controllers\NoorStu
     ->middleware('throttle:30,1');
 Route::post('/assistant/students/{child}/draft-homework', [\App\Http\Controllers\NoorHomeworkDraftController::class, 'store'])
     ->middleware('throttle:10,1');
+Route::post('/assistant/students/{child}/draft-session', [\App\Http\Controllers\NoorSessionDraftController::class, 'store'])
+    ->middleware('throttle:10,1');
 Route::post('/assistant/students/{child}/draft-progress', [\App\Http\Controllers\NoorProgressDraftController::class, 'store'])
     ->middleware('throttle:10,1');
 
