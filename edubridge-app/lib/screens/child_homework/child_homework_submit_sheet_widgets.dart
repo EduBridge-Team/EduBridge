@@ -41,6 +41,18 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         ),
       ),
       ),
+      if (_childProfile?.pictureCommunication == true) ...[
+        const SizedBox(height: 8),
+        AacQuickBar(profile: _childProfile, enabled: !_saving,
+          onItemSelected: (_, spoken) {
+            if (_saving) return;
+            final current = _answerCtrl.text.trimRight();
+            final text = current.isEmpty ? spoken : '$current $spoken';
+            _answerCtrl.value = TextEditingValue(text: text,
+                selection: TextSelection.collapsed(offset: text.length));
+          },
+        ),
+      ],
       WordPredictionBar(controller: _answerCtrl, enabled: _wordPrediction && !_saving),
       if (_voiceToText) ...[
         const SizedBox(height: 8),

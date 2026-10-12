@@ -18,6 +18,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   final _answerCtrl = TextEditingController();
   bool _wordPrediction = false;
   bool _voiceToText = false;
+  AccessibilityProfile? _childProfile;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
     try {
       final profile = await AccessibilityService.instance.ensureChildProfile(widget.childId);
       if (mounted) setState(() {
+        _childProfile = profile;
         _wordPrediction = profile.wordPrediction;
         _voiceToText = profile.voiceToText;
       });
