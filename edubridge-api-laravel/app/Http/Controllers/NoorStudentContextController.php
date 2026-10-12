@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Services\Noor\StudentContextService;
 use App\Services\Noor\StudentInsightService;
+use App\Services\Noor\MemoryStore;
+use App\Services\Noor\MemoryContextFormatter;
 use Illuminate\Http\Request;
 
 class NoorStudentContextController extends Controller
@@ -13,10 +15,21 @@ class NoorStudentContextController extends Controller
         int $child,
         StudentContextService $contextService,
         StudentInsightService $insightService,
+        MemoryStore $memoryStore,
+        MemoryContextFormatter $memoryFormatter,
     ) {
         $user = $request->attributes->get('jwt_user');
         if (!$user) {
-            return response()->json(['error' => 'غير مصرح.'], 401);
+            // Only assigned parents with explicit opt-in can inject bounded learning memory.
+        // StudentContextService::build has already enforced child assignment.
+        if (($user->role ?? '') === 'parent' && $memoryStore->enabled((int) $user->id, $child)) {
+            $memoryText = $memoryFormatter->format($memoryStore->list((int) $user->id, $child));
+            if ($memoryText !== '') {
+                $promptContext = mb_substr($promptContext."\n".$memoryText, 0, 3900);
+            }
+        }
+
+        return response()->json(['error' => 'غير مصرح.'], 401);
         }
 
         $context = $contextService->build($child, $user);
