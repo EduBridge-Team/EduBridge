@@ -367,6 +367,11 @@ class _AssistantScreenState extends State<AssistantScreen> {
     }
   }
 
+  void _removeSelectedImage() {
+    if (_sending) return;
+    setState(() => _selectedImage = null);
+  }
+
   Future<void> _chooseImage() async {
     if (_sending) return;
     try {
