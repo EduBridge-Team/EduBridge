@@ -172,3 +172,30 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Keep Noor controls usable on compact screens and aligned with Flutter touch targets. */
+.noor-response-tools {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.noor-response-tools button {
+  min-height: 40px;
+  min-width: 40px;
+  padding-inline: 10px;
+}
+.noor-quick-action {
+  min-height: 40px;
+  line-height: 1.4;
+}
+.noor-form button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.noor-form textarea {
+  min-height: 44px;
+}
+@media (max-width: 520px) {
+  .noor-message-group { max-width: 94%; }
+  .noor-quick-actions { padding-inline: 8px; }
+  .noor-response-tools { gap: 6px; }
+}
