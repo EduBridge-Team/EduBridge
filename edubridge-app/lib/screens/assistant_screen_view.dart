@@ -60,7 +60,11 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                   itemCount: _messages.length + (_sending ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == _messages.length) {
-                      return const _TypingBubble();
+                      return Semantics(
+                        liveRegion: true,
+                        label: 'نور يكتب الرد',
+                        child: _TypingBubble(),
+                      );
                     }
 
                     final message = _messages[index];
@@ -71,7 +75,10 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                         index == _messages.length - 1 &&
                         !_sending;
 
-                    return _MessageBubble(
+                    return Semantics(
+                      container: true,
+                      label: message.isUser ? 'رسالة المستخدم' : 'رد نور',
+                      child: _MessageBubble(
                       message: message,
                       showActions: showActions,
                       isLastAssistant: isLastAssistant,
@@ -82,6 +89,7 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                       onFeedback: showActions
                           ? (helpful) => _rateResponse(index, helpful)
                           : null,
+                      ),
                     );
                   },
                 ),
@@ -135,9 +143,11 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                       minLines: 1,
                       maxLines: 4,
                       maxLength: 2000,
+                      textDirection: TextDirection.rtl,
                       textInputAction: TextInputAction.newline,
                       decoration: const InputDecoration(
                         hintText: 'اكتب سؤالك لنور...',
+                        labelText: 'السؤال إلى نور',
                         counterText: '',
                       ),
                     ),
