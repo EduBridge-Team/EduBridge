@@ -679,10 +679,13 @@ class _SuggestionChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
-      child: ActionChip(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 44),
+        child: ActionChip(
         avatar: const Icon(AppIcons.info, size: 18),
         label: Text(text),
         onPressed: () => onTap(text),
+        ),
       ),
     );
   }
@@ -698,10 +701,13 @@ class _NavigationActionChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 8),
-      child: ActionChip(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 44),
+        child: ActionChip(
         avatar: Icon(action.icon, size: 18),
         label: Text('فتح ${action.label}'),
         onPressed: () => onTap(action),
+        ),
       ),
     );
   }
