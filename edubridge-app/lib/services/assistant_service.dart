@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../config.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,6 +69,38 @@ class AssistantService {
   static Future<void> clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(await _historyKey());
+  }
+
+  /// Images are submitted on demand and are never added to persisted chat history.
+  static Future<String> analyzeImage({
+    required XFile image,
+    required String question,
+  }) async {
+    final bytes = await image.readAsBytes();
+    if (bytes.isEmpty || bytes.length > 3 * 1024 * 1024) {
+      throw Exception('حجم الصورة يجب ألا يتجاوز 3 ميجابايت.');
+    }
+    final extension = image.name.split('.').last.toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp'].contains(extension)) {
+      throw Exception('اختر صورة JPEG أو PNG أو WebP.');
+    }
+    final token = await ApiService.getToken();
+    if (token == null || token.isEmpty) throw Exception('يرجى تسجيل الدخول أولاً.');
+    final request = http.MultipartRequest(
+      'POST', Uri.parse('${Config.baseUrl}/assistant/vision/analyze'),
+    )..headers['Authorization'] = 'Bearer $token';
+    request.fields['question'] = question.trim().isEmpty
+        ? 'اشرح محتوى هذه الصورة التعليمية.'
+        : question.trim().substring(0, question.trim().length > 1200 ? 1200 : question.trim().length);
+    request.files.add(http.MultipartFile.fromBytes(
+      'image', bytes, filename: image.name,
+    ));
+    final response = await request.send().timeout(const Duration(seconds: 45));
+    final data = ApiService.decodeMap(await response.stream.bytesToString());
+    if (response.statusCode == 200 && data['reply'] is String) {
+      return (data['reply'] as String).trim();
+    }
+    throw Exception(data['error'] ?? 'تعذّر تحليل الصورة.');
   }
 
   static Future<String> ask({

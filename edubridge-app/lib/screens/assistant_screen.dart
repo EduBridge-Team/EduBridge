@@ -1,6 +1,7 @@
 // lib/screens/assistant_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/assistant_service.dart';
@@ -130,6 +131,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
   final Map<int, bool> _responseFeedback = {};
   bool _loadingHistory = true;
   bool _sending = false;
+  XFile? _selectedImage;
   String? _role;
 
   @override
@@ -365,24 +367,56 @@ class _AssistantScreenState extends State<AssistantScreen> {
     }
   }
 
+  void _removeSelectedImage() {
+    if (_sending) return;
+    setState(() => _selectedImage = null);
+  }
+
+  Future<void> _chooseImage() async {
+    if (_sending) return;
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null || !mounted) return;
+      if (await image.length() > 3 * 1024 * 1024) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('الصورة يجب ألا تتجاوز 3 ميجابايت.')),
+        );
+        return;
+      }
+      if (!mounted) return;
+      setState(() => _selectedImage = image);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر اختيار الصورة.')),
+      );
+    }
+  }
+
   Future<void> _send([String? suggestedText]) async {
     final text = (suggestedText ?? _inputController.text).trim();
-    if (text.isEmpty || _sending) return;
+    final image = suggestedText == null ? _selectedImage : null;
+    if ((text.isEmpty && image == null) || _sending) return;
 
     _inputController.clear();
+    final question = text.isEmpty ? 'اشرح محتوى هذه الصورة التعليمية.' : text;
     final updated = [
       ..._messages.where((message) => message != _welcome),
-      AssistantMessage(role: 'user', content: text),
+      AssistantMessage(role: 'user', content: image == null ? question : '[سؤال عن صورة] $question'),
     ];
     setState(() {
       _messages = updated;
+      _selectedImage = null;
       _sending = true;
     });
     await AssistantService.saveHistory(updated);
     _scrollToBottom();
 
     try {
-      final reply = await _requestReply(updated);
+      final reply = image == null
+          ? await _requestReply(updated)
+          : await AssistantService.analyzeImage(image: image, question: question);
       if (!mounted) return;
       setState(() {
         _messages = [

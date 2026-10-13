@@ -120,6 +120,19 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                       .toList(growable: false),
                 ),
               ),
+            if (_selectedImage != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(children: [
+                  Expanded(child: Text('صورة محددة: ${_selectedImage!.name}',
+                    overflow: TextOverflow.ellipsis)),
+                  IconButton(
+                    tooltip: 'إزالة الصورة',
+                    onPressed: _sending ? null : _removeSelectedImage,
+                    icon: const Icon(Icons.close),
+                  ),
+                ]),
+              ),
             Container(
               margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
               padding: EdgeInsets.fromLTRB(
@@ -136,6 +149,11 @@ extension _AssistantScreenStateView on _AssistantScreenState {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  IconButton(
+                    tooltip: 'إرفاق صورة تعليمية',
+                    onPressed: _sending ? null : _chooseImage,
+                    icon: const Icon(Icons.add_photo_alternate_outlined),
+                  ),
                   Expanded(
                     child: TextField(
                       controller: _inputController,
