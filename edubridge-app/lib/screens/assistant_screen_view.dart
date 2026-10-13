@@ -128,7 +128,7 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                     overflow: TextOverflow.ellipsis)),
                   IconButton(
                     tooltip: 'إزالة الصورة',
-                    onPressed: _sending ? null : () => setState(() => _selectedImage = null),
+                    onPressed: _sending ? null : _removeSelectedImage,
                     icon: const Icon(Icons.close),
                   ),
                 ]),
