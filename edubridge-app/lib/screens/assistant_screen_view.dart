@@ -154,6 +154,12 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                     onPressed: _sending ? null : _chooseImage,
                     icon: const Icon(Icons.add_photo_alternate_outlined),
                   ),
+                  IconButton(
+                    tooltip: _listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال صوتيًا',
+                    onPressed: _sending ? null : _toggleDictation,
+                    icon: Icon(_listening ? Icons.mic_off_rounded : Icons.mic_rounded),
+                    color: _listening ? Theme.of(context).colorScheme.error : null,
+                  ),
                   Expanded(
                     child: TextField(
                       controller: _inputController,
