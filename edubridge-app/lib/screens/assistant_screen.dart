@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/assistant_service.dart';
@@ -129,6 +130,8 @@ class _AssistantScreenState extends State<AssistantScreen> {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
   final stt.SpeechToText _speech = stt.SpeechToText();
+  final FlutterTts _tts = FlutterTts();
+  int? _speakingIndex;
   bool _listening = false;
   List<AssistantMessage> _messages = const [_welcome];
   final Map<int, bool> _responseFeedback = {};
@@ -142,12 +145,19 @@ class _AssistantScreenState extends State<AssistantScreen> {
     super.initState();
     assistantScreenVisible.value = true;
     _loadContext();
+    _tts.setCompletionHandler(() {
+      if (mounted) setState(() => _speakingIndex = null);
+    });
+    _tts.setErrorHandler((_) {
+      if (mounted) setState(() => _speakingIndex = null);
+    });
   }
 
   @override
   void dispose() {
     assistantScreenVisible.value = false;
     _speech.stop();
+    _tts.stop();
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -288,12 +298,36 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 
   Future<void> _clearHistory() async {
+    await _tts.stop();
+    if (mounted) setState(() => _speakingIndex = null);
     await AssistantService.clearHistory();
     if (!mounted) return;
     setState(() {
       _messages = const [_welcome];
       _responseFeedback.clear();
     });
+  }
+
+  Future<void> _toggleReadAloud(int index) async {
+    if (index < 0 || index >= _messages.length || _messages[index].isUser) return;
+    final wasSpeaking = _speakingIndex == index;
+    await _tts.stop();
+    if (!mounted) return;
+    setState(() => _speakingIndex = null);
+    if (wasSpeaking) return;
+    try {
+      await _tts.setLanguage('ar-SA');
+      await _tts.setSpeechRate(0.45);
+      if (!mounted) return;
+      setState(() => _speakingIndex = index);
+      await _tts.speak(_cleanAssistantText(_messages[index].content));
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _speakingIndex = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر تشغيل القراءة الصوتية على هذا الجهاز.')),
+      );
+    }
   }
 
   Future<void> _copyResponse(int index) async {
@@ -448,6 +482,10 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 
   Future<void> _send([String? suggestedText]) async {
+    if (_speakingIndex != null) {
+      await _tts.stop();
+      if (mounted) setState(() => _speakingIndex = null);
+    }
     final text = (suggestedText ?? _inputController.text).trim();
     final image = suggestedText == null ? _selectedImage : null;
     if ((text.isEmpty && image == null) || _sending) return;
@@ -543,6 +581,8 @@ class _MessageBubble extends StatelessWidget {
   final bool isLastAssistant;
   final bool? feedback;
   final VoidCallback? onCopy;
+  final VoidCallback? onReadAloud;
+  final bool isSpeaking;
   final VoidCallback? onRegenerate;
   final ValueChanged<bool>? onFeedback;
 
@@ -552,6 +592,8 @@ class _MessageBubble extends StatelessWidget {
     this.isLastAssistant = false,
     this.feedback,
     this.onCopy,
+    this.onReadAloud,
+    this.isSpeaking = false,
     this.onRegenerate,
     this.onFeedback,
   });
@@ -660,14 +702,21 @@ class _MessageBubble extends StatelessWidget {
             bubble,
             if (!isUser && showActions) ...[
               const SizedBox(height: 3),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                spacing: 3,
+                runSpacing: 3,
                 children: [
                   _ResponseToolButton(
                     tooltip: 'نسخ الرد',
                     icon: Icons.copy_rounded,
                     label: 'نسخ',
                     onPressed: onCopy,
+                  ),
+                  _ResponseToolButton(
+                    tooltip: isSpeaking ? 'إيقاف قراءة الرد' : 'قراءة الرد صوتيًا',
+                    icon: isSpeaking ? Icons.stop_circle_outlined : Icons.volume_up_outlined,
+                    label: isSpeaking ? 'إيقاف' : 'استمع',
+                    onPressed: onReadAloud,
                   ),
                   if (isLastAssistant)
                     _ResponseToolButton(

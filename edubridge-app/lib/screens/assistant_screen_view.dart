@@ -84,6 +84,8 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                       isLastAssistant: isLastAssistant,
                       feedback: _responseFeedback[index],
                       onCopy: showActions ? () => _copyResponse(index) : null,
+                      onReadAloud: showActions ? () => _toggleReadAloud(index) : null,
+                      isSpeaking: _speakingIndex == index,
                       onRegenerate:
                           isLastAssistant ? _regenerateLastResponse : null,
                       onFeedback: showActions
