@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/assistant_service.dart';
@@ -127,6 +128,8 @@ class _AssistantScreenState extends State<AssistantScreen> {
 
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _listening = false;
   List<AssistantMessage> _messages = const [_welcome];
   final Map<int, bool> _responseFeedback = {};
   bool _loadingHistory = true;
@@ -144,6 +147,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
   @override
   void dispose() {
     assistantScreenVisible.value = false;
+    _speech.stop();
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -370,6 +374,55 @@ class _AssistantScreenState extends State<AssistantScreen> {
   void _removeSelectedImage() {
     if (_sending) return;
     setState(() => _selectedImage = null);
+  }
+
+  Future<void> _toggleDictation() async {
+    if (_sending) return;
+    if (_listening) {
+      await _speech.stop();
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
+    try {
+      final available = await _speech.initialize(
+        onStatus: (status) {
+          if (mounted && (status == 'done' || status == 'notListening')) {
+            setState(() => _listening = false);
+          }
+        },
+        onError: (_) {
+          if (mounted) setState(() => _listening = false);
+        },
+      );
+      if (!mounted) return;
+      if (!available) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('التعرف الصوتي غير متاح على هذا الجهاز.')),
+        );
+        return;
+      }
+      setState(() => _listening = true);
+      await _speech.listen(
+        localeId: 'ar_SA',
+        onResult: (result) {
+          if (!mounted || !result.finalResult) return;
+          final spoken = result.recognizedWords.trim();
+          if (spoken.isEmpty) return;
+          final existing = _inputController.text.trim();
+          final combined = [existing, spoken].where((text) => text.isNotEmpty).join(' ');
+          _inputController.value = TextEditingValue(
+            text: combined.length > 2000 ? combined.substring(0, 2000) : combined,
+            selection: TextSelection.collapsed(offset: combined.length > 2000 ? 2000 : combined.length),
+          );
+        },
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _listening = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر بدء الإملاء الصوتي. تحقق من إذن الميكروفون.')),
+      );
+    }
   }
 
   Future<void> _chooseImage() async {
