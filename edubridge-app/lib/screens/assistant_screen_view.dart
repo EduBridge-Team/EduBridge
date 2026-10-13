@@ -60,7 +60,7 @@ extension _AssistantScreenStateView on _AssistantScreenState {
                   itemCount: _messages.length + (_sending ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == _messages.length) {
-                      return const Semantics(
+                      return Semantics(
                         liveRegion: true,
                         label: 'نور يكتب الرد',
                         child: _TypingBubble(),
