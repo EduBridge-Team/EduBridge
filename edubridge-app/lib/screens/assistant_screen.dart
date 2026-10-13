@@ -451,6 +451,10 @@ class _AssistantScreenState extends State<AssistantScreen> {
     final text = (suggestedText ?? _inputController.text).trim();
     final image = suggestedText == null ? _selectedImage : null;
     if ((text.isEmpty && image == null) || _sending) return;
+    if (_listening) {
+      await _speech.stop();
+      if (mounted) setState(() => _listening = false);
+    }
 
     _inputController.clear();
     final question = text.isEmpty ? 'اشرح محتوى هذه الصورة التعليمية.' : text;
