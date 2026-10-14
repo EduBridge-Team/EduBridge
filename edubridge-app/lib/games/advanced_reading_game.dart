@@ -4,6 +4,7 @@ import '../features/games/domain/quiz_session.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 
 class AdvancedReadingGame extends StatefulWidget {
   final String childName;
@@ -14,6 +15,8 @@ class AdvancedReadingGame extends StatefulWidget {
 
 class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
   late final QuizSession _session;
+  String _feedback = '';
+  bool _resultRecorded = false;
 
   @override
   void initState() {
@@ -25,19 +28,26 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
   void _choose(int option) {
     final correct = _session.answer(option);
     if (correct == null) return;
-    setState(() {});
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(correct ? 'ممتاز، فهمت النص جيداً' : 'ارجع للنص وابحث عن الفكرة الأساسية');
-    Future.delayed(const Duration(milliseconds: 900), () async {
-      if (!mounted) return;
-      if (_session.finished) {
+    setState(() => _feedback = correct ? 'ممتاز، فهمت النص جيداً' : 'ارجع للنص وابحث عن الفكرة الأساسية');
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(_feedback);
+  }
+
+  Future<void> _advance() async {
+    if (!mounted) return;
+    if (_session.finished) {
+      if (!_resultRecorded) {
         await GameProgressService.instance.record(_session.scorePercent);
-        if (!mounted) return;
-        await VisualCelebration.show(context, message: 'فهم قرائي رائع! ${_session.correctAnswers} من ${_session.totalRounds}', emoji: '📚', childName: widget.childName, duration: const Duration(seconds: 3));
-        if (mounted) Navigator.pop(context);
-      } else {
-        setState(() { _session.next(); });
+        _resultRecorded = true;
       }
-    });
+      if (!mounted) return;
+      await VisualCelebration.show(context,
+        message: 'فهم قرائي رائع! ${_session.correctAnswers} من ${_session.totalRounds}',
+        emoji: '📚', childName: widget.childName,
+        duration: const Duration(seconds: 3));
+      if (mounted) Navigator.pop(context);
+    } else {
+      setState(() { _session.next(); _feedback = ''; });
+    }
   }
 
   @override
@@ -45,9 +55,9 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
     final item = _session.current;
     return Scaffold(
       appBar: AppBar(title: const Text('القراءة المتقدمة 📚')),
-      body: ListView(
+      body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(20),
-        children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           LinearProgressIndicator(value: _session.roundNumber / _session.totalRounds),
           const SizedBox(height: 20),
           Card(child: Padding(padding: const EdgeInsets.all(18), child: Text(item.passage!, style: const TextStyle(fontSize: 19, height: 1.8)))),
@@ -59,8 +69,16 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
             padding: const EdgeInsets.only(bottom: 10),
             child: OutlinedButton(onPressed: _session.answered ? null : () => _choose(i), child: Padding(padding: const EdgeInsets.symmetric(vertical: 14), child: Text(item.choices[i], style: const TextStyle(fontSize: 16)))),
           )),
+            if (_feedback.isNotEmpty)
+              Semantics(liveRegion: true, child: Text(_feedback, textAlign: TextAlign.center)),
+            GameRoundContinuation(
+              key: ValueKey('round_${_session.roundNumber}'),
+              answered: _session.answered,
+              delay: const Duration(milliseconds: 900),
+              onContinue: _advance,
+            ),
         ],
-      ),
+      ))),
     );
   }
 }
