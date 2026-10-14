@@ -32,11 +32,14 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
       AdaptiveFeedbackPolicy(AccessibilityService.instance.profile.value);
 
   void _announce(String text) {
-    if (_feedback.allowAutomaticSpeech) AdaptiveHelper.speak(text);
+    if (_feedback.allowAutomaticSpeech) unawaited(AdaptiveHelper.speak(text));
   }
 
   void _profileChanged() {
-    if (!_feedback.allowTaskDeadline && _isRunning) _pause(announce: false);
+    if (!_feedback.allowTaskDeadline && _isRunning) {
+      _ticker?.cancel();
+      _isRunning = false;
+    }
     if (mounted) setState(() {});
   }
 
@@ -49,6 +52,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _remaining = widget.total;
+    _lifecycle = WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed;
     WidgetsBinding.instance.addObserver(this);
     AccessibilityService.instance.profile.addListener(_profileChanged);
   }
@@ -80,10 +84,10 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
     });
   }
 
-  void _pause({bool announce = true}) {
+  void _pause() {
     _ticker?.cancel();
     setState(() => _isRunning = false);
-    if (announce) _announce('تم الإيقاف مؤقتاً');
+    _announce('تم الإيقاف مؤقتاً');
   }
 
   void _reset() {

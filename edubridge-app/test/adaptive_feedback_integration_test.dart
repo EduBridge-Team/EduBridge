@@ -63,6 +63,26 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('audio countdown pauses while another route covers it', (tester) async {
+    final navigator = GlobalKey<NavigatorState>();
+    var finishes = 0;
+    await tester.pumpWidget(MaterialApp(navigatorKey: navigator,
+      home: Scaffold(body: AudioTimer(total: const Duration(seconds: 10),
+        childName: 'محمود', onFinished: () => finishes++))));
+    await tester.tap(find.text('ابدأ'));
+    await tester.pump(const Duration(seconds: 1));
+    final covered = navigator.currentState!.push(MaterialPageRoute<void>(
+      builder: (_) => const Scaffold(body: Text('صفحة أخرى'))));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 20));
+    expect(finishes, 0);
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    await covered;
+    expect(find.text('0:09'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('untimed calm reward remains visible until Continue', (tester) async {
     service.profile.value = const AccessibilityProfile(type: DisabilityType.none,
       noTimedInteractions: true, sensoryCalmMode: true);
@@ -115,7 +135,7 @@ void main() {
     addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
     service.profile.value = const AccessibilityProfile(type: DisabilityType.none, vibrationAlerts: true);
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: EmergencyButton(childName: 'محمود'))));
-    await tester.tap(find.byType(EmergencyButton));
+    await tester.tap(find.text('إرسال تنبيه طوارئ')); 
     await tester.pumpAndSettle();
     expect(find.text('تأكيد الطوارئ'), findsOneWidget);
     await tester.tap(find.text('إلغاء'));
