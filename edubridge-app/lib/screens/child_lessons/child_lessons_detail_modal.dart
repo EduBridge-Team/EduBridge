@@ -18,6 +18,7 @@ Widget _buildLessonDetailModal({
     required String title,
   }) onOpenVideo,
 }) {
+  final realLifeExample = LessonReadingContent.example(lesson);
   final videoUrl = lesson['video_url']?.toString();
   final audioUrl = lesson['audio_url']?.toString();
   final captionUrl = lesson['caption_url']?.toString();
@@ -102,6 +103,15 @@ Widget _buildLessonDetailModal({
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveText(content, type: AdaptiveTextType.body),
             ],
+
+            if (realLifeExample != null)
+              ValueListenableBuilder<AccessibilityProfile>(
+                valueListenable: AccessibilityService.instance.profile,
+                builder: (context, profile, _) => profile.realLifeLinking
+                  ? Padding(padding: EdgeInsets.only(top: AdaptiveHelper.spacing),
+                      child: AdaptiveText('مثال من الحياة: $realLifeExample', type: AdaptiveTextType.body))
+                  : const SizedBox.shrink(),
+              ),
 
             if (audioDescription != null && audioDescription.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),

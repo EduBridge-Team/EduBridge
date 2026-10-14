@@ -218,6 +218,8 @@ Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
   File? captionFile,
   File? signLanguageFile,
   String? audioDescription,
+  List<String>? imageDescriptions,
+  String? realLifeExample,
   String? targetType,
   List<int>? targetChildIds,
 }) async {
@@ -245,8 +247,21 @@ Future<Map<String, dynamic>?> _apiCreateLessonWithMedia({
       request.fields['audio_description'] = audioDescription.trim();
     }
 
+    if (imageDescriptions != null) {
+      if (imageDescriptions.length != (imageFiles?.length ?? 0)) {
+        throw ArgumentError('عدد أوصاف الصور لا يطابق الصور المختارة');
+      }
+      request.fields['image_descriptions'] = jsonEncode(imageDescriptions);
+    }
+    if (realLifeExample != null) {
+      request.fields['real_life_example'] = realLifeExample.trim();
+    }
+
     if (imageFiles != null) {
       for (final image in imageFiles) {
+        if (imageDescriptions != null && !await image.exists()) {
+          throw StateError('تعذّر قراءة صورة، اختر الصور مجدداً');
+        }
         if (await image.exists()) {
           request.files.add(
             await http.MultipartFile.fromPath('images[]', image.path),

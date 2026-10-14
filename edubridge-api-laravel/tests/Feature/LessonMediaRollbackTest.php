@@ -33,11 +33,12 @@ class LessonMediaRollbackTest extends TestCase
             $table->integer('teacher_id'); $table->integer('disability_type_id')->nullable();
             $table->string('education_level')->nullable(); $table->string('target_type');
             $table->text('target_child_ids')->nullable(); $table->text('audio_description')->nullable();
+            $table->json('image_descriptions')->nullable();
         });
         Schema::create('media', function (Blueprint $table) {
             $table->id(); $table->integer('lesson_id'); $table->string('type'); $table->text('url');
         });
-        DB::table('lessons')->insert(['id' => 1, 'title' => 'Existing', 'teacher_id' => 2, 'target_type' => 'everyone']);
+        DB::table('lessons')->insert(['id' => 1, 'title' => 'Existing', 'teacher_id' => 2, 'target_type' => 'everyone', 'image_descriptions' => json_encode(['Old image'])]);
         DB::table('media')->insert(['id' => 10, 'lesson_id' => 1, 'type' => 'image', 'url' => 'https://media.example.test/lessons/1/old.jpg']);
     }
 
@@ -74,6 +75,7 @@ class LessonMediaRollbackTest extends TestCase
         $this->assertSame(500, $response->getStatusCode());
         $this->assertDatabaseHas('lessons', ['id' => 1, 'title' => 'Existing']);
         $this->assertDatabaseHas('media', ['id' => 10, 'url' => 'https://media.example.test/lessons/1/old.jpg']);
+        $this->assertSame(['Old image'], json_decode(DB::table('lessons')->find(1)->image_descriptions, true));
         $this->assertCount(3, $this->history);
         $this->assertSame('DELETE', $this->history[2]['request']->getMethod());
         $this->assertStringNotContainsString('old.jpg', (string) $this->history[2]['request']->getUri());
@@ -84,6 +86,7 @@ class LessonMediaRollbackTest extends TestCase
         $this->storage([new Response(200), new Response(204)]);
         $this->assertSame(200, app(LessonController::class)->update($this->request(1), 1)->getStatusCode());
         $this->assertDatabaseMissing('media', ['id' => 10]);
+        $this->assertSame([null], json_decode(DB::table('lessons')->find(1)->image_descriptions, true));
         $this->assertSame('PUT', $this->history[0]['request']->getMethod());
         $this->assertSame('DELETE', $this->history[1]['request']->getMethod());
         $this->assertStringContainsString('old.jpg', (string) $this->history[1]['request']->getUri());

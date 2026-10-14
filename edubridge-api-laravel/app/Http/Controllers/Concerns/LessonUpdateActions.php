@@ -25,6 +25,8 @@ trait LessonUpdateActions
             return response()->json(['error' => 'عنوان الدرس مطلوب'], 400);
         }
 
+        \App\Support\LessonAccessibleContent::validate($request);
+
         $request->validate(['category' => ['nullable', 'string', 'max:100']]);
 
         $targetType = (string) $request->input('target_type', $lesson->target_type ?? 'everyone');
@@ -56,6 +58,13 @@ trait LessonUpdateActions
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
+        $newImages = $this->imageFiles($request);
+        $imageCount = count($newImages);
+        if ($imageCount === 0 && $request->has('image_descriptions')) {
+            $imageCount = DB::table('media')->where('lesson_id', $id)->where('type', 'image')->count();
+        }
+        $accessibleContent = \App\Support\LessonAccessibleContent::payload($request, $imageCount, count($newImages) > 0);
+
         $payload = $this->lessonUpdatePayload(
             $request,
             $lesson,
@@ -63,6 +72,8 @@ trait LessonUpdateActions
             $targetType,
             $targetChildIds
         );
+
+        $payload = array_merge($payload, $accessibleContent);
 
         $this->beginLessonMedia();
         DB::beginTransaction();

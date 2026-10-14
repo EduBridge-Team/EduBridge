@@ -5,6 +5,7 @@ Widget buildImagesPicker({
   required BuildContext context,
   required JisrColors c,
   required List<File> imageFiles,
+  required List<TextEditingController> descriptionControllers,
   required VoidCallback onPick,
   required ValueChanged<int> onRemove,
 }) {
@@ -49,6 +50,12 @@ Widget buildImagesPicker({
                       child: Image.file(file, width: 86, height: 86, fit: BoxFit.cover),
                     ),
                     Positioned(
+                      bottom: 3, left: 3,
+                      child: Container(color: Colors.black54,
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text('${index + 1}', style: const TextStyle(color: Colors.white))),
+                    ),
+                    Positioned(
                       top: 3,
                       right: 3,
                       child: InkWell(
@@ -65,6 +72,19 @@ Widget buildImagesPicker({
               },
             ),
           ),
+          for (var i = 0; i < descriptionControllers.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: TextField(
+                controller: descriptionControllers[i],
+                maxLines: 2,
+                maxLength: 1000,
+                decoration: InputDecoration(
+                  labelText: 'وصف الصورة ${i + 1} (اختياري)',
+                  hintText: 'صف ما يظهر في الصورة بكلمات بسيطة',
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
         ],
         SizedBox(

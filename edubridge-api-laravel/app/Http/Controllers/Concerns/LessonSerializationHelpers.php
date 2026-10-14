@@ -68,6 +68,10 @@ trait LessonSerializationHelpers
         $data['media'] = $media;
         $data['images'] = $images;
         $data['image_urls'] = $images;
+        $data['image_descriptions'] = \App\Support\LessonAccessibleContent::descriptions(
+            $data['image_descriptions'] ?? null, count($images)
+        );
+        $data['real_life_example'] = $data['real_life_example'] ?? null;
         $data['video_url'] = $firstUrl('video');
         $data['audio_url'] = $firstUrl('audio');
         $data['caption_url'] = $firstUrl('caption');

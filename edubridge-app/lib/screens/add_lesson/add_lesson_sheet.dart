@@ -42,6 +42,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   final _titleCtrl = TextEditingController();
   final _contentCtrl = TextEditingController();
   final _audioDescriptionCtrl = TextEditingController();
+  final _realLifeExampleCtrl = TextEditingController();
+  final List<TextEditingController> _imageDescriptionCtrls = [];
 
   String? _typeId;
   final List<File> _imageFiles = [];
@@ -83,6 +85,10 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     _titleCtrl.dispose();
     _contentCtrl.dispose();
     _audioDescriptionCtrl.dispose();
+    _realLifeExampleCtrl.dispose();
+    for (final controller in _imageDescriptionCtrls) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -103,6 +109,12 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
     final images = await _picker.pickMultiImage(imageQuality: 90);
     if (images.isNotEmpty && mounted) {
       setState(() {
+        for (final controller in _imageDescriptionCtrls) {
+          controller.dispose();
+        }
+        _imageDescriptionCtrls
+          ..clear()
+          ..addAll(images.map((_) => TextEditingController()));
         _imageFiles
           ..clear()
           ..addAll(images.map((image) => File(image.path)));
@@ -167,6 +179,8 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             : _contentCtrl.text.trim(),
         disabilityTypeId: _typeId != null ? int.parse(_typeId!) : null,
         imageFiles: _imageFiles,
+        imageDescriptions: _imageDescriptionCtrls.map((controller) => controller.text.trim()).toList(),
+        realLifeExample: _realLifeExampleCtrl.text.trim(),
         videoFile: _videoFile,
         audioFile: _audioFile,
         captionFile: _captionFile,
@@ -253,6 +267,16 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               ),
             ),
             const SizedBox(height: 16),
+            TextField(
+              controller: _realLifeExampleCtrl,
+              maxLines: 2,
+              maxLength: 2000,
+              decoration: const InputDecoration(
+                labelText: 'مثال من الحياة اليومية (اختياري)',
+                hintText: 'مثلاً: نعدّ الملاعق عند ترتيب مائدة الطعام',
+              ),
+            ),
+            const SizedBox(height: 16),
             if (_isChildLocked) ...[
               Container(
                 width: double.infinity,
@@ -306,8 +330,12 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
               context: context,
               c: c,
               imageFiles: _imageFiles,
+              descriptionControllers: _imageDescriptionCtrls,
               onPick: _pickImages,
-              onRemove: (i) => setState(() => _imageFiles.removeAt(i)),
+              onRemove: (i) => setState(() {
+                _imageFiles.removeAt(i);
+                _imageDescriptionCtrls.removeAt(i).dispose();
+              }),
             ),
             const SizedBox(height: 12),
             buildFilePicker(

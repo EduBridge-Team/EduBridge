@@ -278,15 +278,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
         onReadSteps: profile.stepByStepLessons && content.trim().isNotEmpty
             ? () {
                 Navigator.pop(context);
-                final chunks = SimpleLanguageService.instance.readingLines(content, wordsPerLine: 24)
-                    .split('\n').where((line) => line.trim().isNotEmpty).toList();
                 Navigator.push(context, MaterialPageRoute(builder: (_) => StepByStepLesson(
                   lessonTitle: title,
                   childName: widget.childName,
                   childId: widget.childId,
                   lessonId: int.tryParse('${lesson['id']}'),
-                  steps: [for (var i = 0; i < chunks.length; i++)
-                    LessonStep(title: 'الخطوة ${i + 1}', content: chunks[i])],
+                  steps: LessonReadingContent.steps(content,
+                    realLifeExample: LessonReadingContent.example(lesson)),
                 )));
               }
             : null,

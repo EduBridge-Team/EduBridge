@@ -11,6 +11,7 @@ import '../../services/simple_language_service.dart';
 import '../../services/reward_service.dart';
 import '../../theme.dart';
 import '../../utils/adaptive_helper.dart';
+import '../../utils/lesson_reading_content.dart';
 import '../../utils/adaptive_feedback_policy.dart';
 import '../../widgets/accessibility/adaptive_button.dart';
 import '../../widgets/accessibility/alt_text_image.dart';

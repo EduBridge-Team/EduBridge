@@ -178,9 +178,11 @@ class ApiService {
     File? captionFile,
     File? signLanguageFile,
     String? audioDescription,
+    List<String>? imageDescriptions,
+    String? realLifeExample,
     String? targetType,
     List<int>? targetChildIds,
-  }) => _apiCreateLessonWithMedia(title: title, content: content, disabilityTypeId: disabilityTypeId, imageFiles: imageFiles, videoFile: videoFile, audioFile: audioFile, captionFile: captionFile, signLanguageFile: signLanguageFile, audioDescription: audioDescription, targetType: targetType, targetChildIds: targetChildIds);
+  }) => _apiCreateLessonWithMedia(title: title, content: content, disabilityTypeId: disabilityTypeId, imageFiles: imageFiles, videoFile: videoFile, audioFile: audioFile, captionFile: captionFile, signLanguageFile: signLanguageFile, audioDescription: audioDescription, imageDescriptions: imageDescriptions, realLifeExample: realLifeExample, targetType: targetType, targetChildIds: targetChildIds);
 
     static Future<List<dynamic>> getDisabilityTypes() => _apiGetDisabilityTypes();
 

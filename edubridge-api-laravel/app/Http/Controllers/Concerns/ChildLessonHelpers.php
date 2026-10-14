@@ -58,6 +58,10 @@ trait ChildLessonHelpers
         $data['media'] = $media;
         $data['images'] = $images;
         $data['image_urls'] = $images;
+        $data['image_descriptions'] = \App\Support\LessonAccessibleContent::descriptions(
+            $data['image_descriptions'] ?? null, count($images)
+        );
+        $data['real_life_example'] = $data['real_life_example'] ?? null;
         $data['video_url'] = $first('video');
         $data['audio_url'] = $first('audio');
         $data['caption_url'] = $first('caption');

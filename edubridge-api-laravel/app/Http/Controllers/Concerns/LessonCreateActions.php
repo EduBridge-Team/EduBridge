@@ -17,6 +17,8 @@ trait LessonCreateActions
             return response()->json(['error' => 'عنوان الدرس مطلوب'], 400);
         }
 
+        \App\Support\LessonAccessibleContent::validate($request);
+
         $request->validate(['category' => ['nullable', 'string', 'max:100']]);
 
         $targetType = (string) $request->input('target_type', 'everyone');
@@ -40,6 +42,10 @@ trait LessonCreateActions
             return response()->json(['error' => $e->getMessage()], 422);
         }
 
+        $accessibleContent = \App\Support\LessonAccessibleContent::payload(
+            $request, count($this->imageFiles($request))
+        );
+
         $lessonId = null;
         $this->beginLessonMedia();
         DB::beginTransaction();
@@ -57,6 +63,7 @@ trait LessonCreateActions
                     ? null
                     : json_encode(array_values($targetChildIds)),
                 'audio_description' => $request->input('audio_description'),
+                ...$accessibleContent,
             ]);
 
             foreach ($this->imageFiles($request) as $image) {
