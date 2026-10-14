@@ -95,16 +95,28 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   }
 
   @override
-  Widget build(BuildContext context) => !widget.answered
-    ? const SizedBox.shrink()
-    : Padding(padding: const EdgeInsets.only(top: 12), child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        if (_failed) const Semantics(liveRegion: true,
-          child: Text('تعذّر متابعة اللعبة، حاول مرة أخرى', textAlign: TextAlign.center)),
-        FilledButton(
-        onPressed: _busy || _continued ? null : _continue,
-        child: Padding(padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text(_busy ? 'جارٍ المتابعة' : 'متابعة')),
+  Widget build(BuildContext context) {
+    if (!widget.answered) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (_failed)
+            Semantics(
+              liveRegion: true,
+              child: const Text('تعذّر متابعة اللعبة، حاول مرة أخرى',
+                textAlign: TextAlign.center),
+            ),
+          FilledButton(
+            onPressed: _busy || _continued ? null : _continue,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(_busy ? 'جارٍ المتابعة' : 'متابعة'),
+            ),
+          ),
+        ],
       ),
-    ]));
+    );
+  }
 }
