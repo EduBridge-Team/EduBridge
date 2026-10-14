@@ -84,16 +84,32 @@ void main() {
   });
 
   testWidgets('scope builds content only after the child profile is loaded', (tester) async {
-    await http.runWithClient(() async {
-      await tester.pumpWidget(MaterialApp(home: ChildAdaptationScope(childId: 9,
-        builder: (_) => Text(service.profile.value.extraLargeTouchTargets ? 'كبير' : 'عادي'))));
-      await tester.pumpAndSettle();
-      expect(find.text('كبير'), findsOneWidget);
-      expect(find.text('عادي'), findsNothing);
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pumpAndSettle();
-      expect(service.activeChildId.value, isNull);
-    }, client);
+    // HTTP and platform storage finish in real async time, while widget pumps
+    // use the test clock. Wait for the profile notification before settling UI.
+    await tester.runAsync(() async {
+      await http.runWithClient(() async {
+        final loaded = Completer<void>();
+        void onProfile() {
+          if (service.profile.value.extraLargeTouchTargets && !loaded.isCompleted) {
+            loaded.complete();
+          }
+        }
+        service.profile.addListener(onProfile);
+        try {
+          await tester.pumpWidget(MaterialApp(home: ChildAdaptationScope(childId: 9,
+            builder: (_) => Text(service.profile.value.extraLargeTouchTargets ? 'كبير' : 'عادي'))));
+          await loaded.future.timeout(const Duration(seconds: 10));
+        } finally {
+          service.profile.removeListener(onProfile);
+        }
+      }, client);
+    });
+    await tester.pumpAndSettle();
+    expect(find.text('كبير'), findsOneWidget);
+    expect(find.text('عادي'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    expect(service.activeChildId.value, isNull);
   });
 
   testWidgets('account break scheduler pauses while a child owns the session', (tester) async {
