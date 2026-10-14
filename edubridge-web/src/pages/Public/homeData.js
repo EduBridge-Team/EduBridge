@@ -9,6 +9,24 @@ import {
   Users,
 } from 'lucide-react'
 
+export const INCLUSION_DIFFERENTIATORS = [
+  {
+    Icon: Accessibility,
+    title: 'تجربة تراعي اختلاف القدرات',
+    text: 'إعدادات وصول وأدوات تعليم بصري تساعد على تقديم محتوى أقرب إلى احتياجات الطالب.',
+  },
+  {
+    Icon: BookOpen,
+    title: 'أنشطة ودروس قابلة للتكييف',
+    text: 'أدوات تتيح للمعلم والمختص تكييف الدروس والأنشطة بما يناسب قدرات الطالب وتقدّمه.',
+  },
+  {
+    Icon: Users,
+    title: 'متابعة مشتركة حول الطفل',
+    text: 'تواصل وتنسيق بين الأسرة والمعلم والمختص لمتابعة التقدم وتحديد الخطوة التعليمية التالية.',
+  },
+]
+
 export const AUDIENCES = [
   {
     Icon: Users,
@@ -61,7 +79,7 @@ export const SERVICES = [
 ]
 
 export const FEATURES = [
-  { Icon: Accessibility, title: 'وصول أسهل', text: 'واجهة تراعي اختلاف القدرات وتدعم تجربة استخدام أكثر شمولاً' },
+  { Icon: Accessibility, title: 'وصول أسهل', text: 'خيارات تدعم احتياجات الوصول والتعلّم البصري للطلبة ذوي الإعاقة' },
   { Icon: ShieldCheck, title: 'خصوصية وصلاحيات', text: 'وصول منظم للمعلومات بحسب دور المستخدم وصلاحياته' },
 ]
 
