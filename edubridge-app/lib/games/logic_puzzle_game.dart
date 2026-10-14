@@ -4,6 +4,7 @@ import '../features/games/domain/quiz_session.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 
 class LogicPuzzleGame extends StatefulWidget {
   final String childName;
@@ -14,6 +15,8 @@ class LogicPuzzleGame extends StatefulWidget {
 
 class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
   late final QuizSession _session;
+  String _feedback = '';
+  bool _resultRecorded = false;
 
   @override
   void initState() {
@@ -26,19 +29,26 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
     final correct = _session.answer(option);
     if (correct == null) return;
     AdaptiveHelper.hapticFeedback();
-    setState(() {});
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(correct ? 'إجابة صحيحة' : 'حاول أن تفكر في العلاقة بين المعلومات');
-    Future.delayed(const Duration(milliseconds: 850), () async {
-      if (!mounted) return;
-      if (_session.finished) {
+    setState(() => _feedback = correct ? 'إجابة صحيحة' : 'حاول أن تفكر في العلاقة بين المعلومات');
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(_feedback);
+  }
+
+  Future<void> _advance() async {
+    if (!mounted) return;
+    if (_session.finished) {
+      if (!_resultRecorded) {
         await GameProgressService.instance.record(_session.scorePercent);
-        if (!mounted) return;
-        await VisualCelebration.show(context, message: 'أحسنت! ${_session.correctAnswers} من ${_session.totalRounds}', emoji: '🧠', childName: widget.childName, duration: const Duration(seconds: 3));
-        if (mounted) Navigator.pop(context);
-      } else {
-        setState(() { _session.next(); });
+        _resultRecorded = true;
       }
-    });
+      if (!mounted) return;
+      await VisualCelebration.show(context,
+        message: 'أحسنت! ${_session.correctAnswers} من ${_session.totalRounds}',
+        emoji: '🧠', childName: widget.childName,
+        duration: const Duration(seconds: 3));
+      if (mounted) Navigator.pop(context);
+    } else {
+      setState(() { _session.next(); _feedback = ''; });
+    }
   }
 
   @override
@@ -64,6 +74,14 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
             )),
             const SizedBox(height: 20),
             Text('النتيجة: ${_session.correctAnswers}', textAlign: TextAlign.center),
+            if (_feedback.isNotEmpty)
+              Semantics(liveRegion: true, child: Text(_feedback, textAlign: TextAlign.center)),
+            GameRoundContinuation(
+              key: ValueKey('round_${_session.roundNumber}'),
+              answered: _session.answered,
+              delay: const Duration(milliseconds: 850),
+              onContinue: _advance,
+            ),
           ],
         ),
       )),
