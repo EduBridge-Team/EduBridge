@@ -52,7 +52,7 @@ void main() {
     const AccessibilityProfile(type: DisabilityType.none, noTimedInteractions: true),
     const AccessibilityProfile(type: DisabilityType.none, noTimers: true),
   ]) {
-    testWidgets('math game preserves an untimed session ${profile.toJson()}', (tester) async {
+    testWidgets('math untimed preferences unlimited=${profile.unlimitedTime} noTimed=${profile.noTimedInteractions} noTimers=${profile.noTimers}', (tester) async {
       accessibility.profile.value = profile;
       await tester.pumpWidget(const MaterialApp(home: MathRaceGame(childName: 'محمود', age: 8)));
       await tester.pump(const Duration(seconds: 70));
@@ -114,7 +114,8 @@ void main() {
       sensoryCalmMode: true, slowSpeech: true);
     await tester.pumpWidget(const MaterialApp(home: ChoiceLearningGame(
       topic: LearningTopic.colors, childName: 'محمود', age: 6)));
-    final switcher = tester.widget<AnimatedSwitcher>(find.byType(AnimatedSwitcher));
+    final switcher = tester.widget<AnimatedSwitcher>(find.byWidgetPredicate(
+      (widget) => widget is AnimatedSwitcher && widget.child?.key == const ValueKey('intro')));
     expect(switcher.duration, Duration.zero);
     await tester.ensureVisible(find.text('ابدأ اللعب'));
     await tester.tap(find.text('ابدأ اللعب'));
