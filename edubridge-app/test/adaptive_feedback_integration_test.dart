@@ -76,10 +76,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 20));
     expect(finishes, 0);
+    expect(find.text('0:09', skipOffstage: false), findsOneWidget);
     navigator.currentState!.pop();
     await tester.pumpAndSettle();
     await covered;
-    expect(find.text('0:09'), findsOneWidget);
+    expect(finishes, 0);
+    // Route exit animations may consume part of a foreground second.
+    await tester.pump(const Duration(seconds: 10));
+    expect(finishes, 1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
