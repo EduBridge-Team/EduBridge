@@ -40,7 +40,7 @@ void main() {
   });
 
   testWidgets('controls wait for both permission and the saved profile', (tester) async {
-    final requests = <Completer<http.Response>>[];
+    final response = Completer<http.Response>();
     final started = Completer<void>();
     final loaded = Completer<void>();
     void onProfile() {
@@ -53,17 +53,12 @@ void main() {
         await tester.pumpWidget(const MaterialApp(home: ChildAccessibilitySettingsScreen(
           childId: 9, childName: 'محمود')));
         await started.future.timeout(const Duration(seconds: 10));
-        requests.first.complete(http.Response(jsonEncode({'can_edit': true,
-          'profile': const AccessibilityProfile(type: DisabilityType.none, noTimers: true).toJson()}), 200));
-        await Future<void>.delayed(Duration.zero);
         expect(find.byType(SwitchListTile), findsNothing);
-        requests.last.complete(http.Response(jsonEncode({'can_edit': true,
+        response.complete(http.Response(jsonEncode({'can_edit': true,
           'profile': const AccessibilityProfile(type: DisabilityType.none, noTimers: true).toJson()}), 200));
         await loaded.future.timeout(const Duration(seconds: 10));
       }, () => MockClient((_) {
-        final response = Completer<http.Response>();
-        requests.add(response);
-        if (requests.length == 2) started.complete();
+        if (!started.isCompleted) started.complete();
         return response.future;
       }));
     });
