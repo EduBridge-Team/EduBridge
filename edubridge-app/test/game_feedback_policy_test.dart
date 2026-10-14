@@ -2,6 +2,7 @@ import 'package:edubridge_app/services/accessibility_service.dart';
 import 'package:edubridge_app/services/encouragement_service.dart';
 import 'package:edubridge_app/screens/educational_games_screen.dart';
 import 'package:edubridge_app/games/math_race_game.dart';
+import 'package:edubridge_app/games/choice_learning_game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,4 +101,32 @@ void main() {
     expect(vibrations, ['HapticFeedbackType.mediumImpact']);
     await tester.pumpWidget(const SizedBox.shrink());
   });
+  testWidgets('choice games use child calm preferences without disabling explicit listening', (tester) async {
+    final speech = <MethodCall>[];
+    const channel = MethodChannel('flutter_tts');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      speech.add(call);
+      return 1;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, null));
+    accessibility.applicationProfile.value = const AccessibilityProfile(type: DisabilityType.none);
+    accessibility.profile.value = const AccessibilityProfile(type: DisabilityType.none,
+      sensoryCalmMode: true, slowSpeech: true);
+    await tester.pumpWidget(const MaterialApp(home: ChoiceLearningGame(
+      topic: LearningTopic.colors, childName: 'محمود', age: 6)));
+    final switcher = tester.widget<AnimatedSwitcher>(find.byType(AnimatedSwitcher));
+    expect(switcher.duration, Duration.zero);
+    await tester.ensureVisible(find.text('ابدأ اللعب'));
+    await tester.tap(find.text('ابدأ اللعب'));
+    await tester.pumpAndSettle();
+    expect(speech.where((call) => call.method == 'speak'), isEmpty);
+    await tester.ensureVisible(find.text('استمع للسؤال'));
+    await tester.tap(find.text('استمع للسؤال'));
+    await tester.pumpAndSettle();
+    expect(speech.where((call) => call.method == 'speak'), isNotEmpty);
+    expect(speech.where((call) => call.method == 'setSpeechRate').last.arguments, 0.30);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+  });
+
 }

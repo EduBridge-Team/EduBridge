@@ -150,9 +150,10 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<AccessibilityProfile>(
-    valueListenable: AccessibilityService.instance.applicationProfile,
+    valueListenable: AccessibilityService.instance.profile,
     builder: (context, profile, _) {
-      final reduced = profile.reducedAnimations || MediaQuery.of(context).disableAnimations;
+      final reduced = !AdaptiveFeedbackPolicy(profile,
+        systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowMotion;
       return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
         appBar: JisrAppBar(title: _title),
         body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(20),
