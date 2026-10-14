@@ -5,7 +5,7 @@ import 'game_content.dart';
 import '../features/games/domain/rhythm_session.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
@@ -113,7 +113,7 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _tap() {
     if (!_isPlaying || _isPaused) return;
-    HapticFeedback.lightImpact();
+    AdaptiveHelper.hapticFeedback();
     setState(_session.tap);
   }
 

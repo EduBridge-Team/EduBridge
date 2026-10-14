@@ -4,7 +4,7 @@ import 'dart:async';
 import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
 import '../services/tts_service.dart';
@@ -94,13 +94,13 @@ class _QuickActionGameState extends State<QuickActionGame> {
     final next = GameContent.instance.pick('quick_action', _actions, (item) => item.$2);
 
     _currentAction = next;
-    HapticFeedback.mediumImpact();
+    AdaptiveHelper.hapticFeedback();
   }
 
   void _tapDone() {
     if (_isPaused || _isFinished) return;
 
-    HapticFeedback.heavyImpact();
+    AdaptiveHelper.hapticFeedback();
     setState(() {
       _score++;
       _round++;
@@ -110,7 +110,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
     if (_round % 5 == 0) {
       EncouragementService.instance.praiseStreak();
     } else {
-      HapticFeedback.lightImpact();
+      AdaptiveHelper.hapticFeedback();
     }
 
     _newAction();

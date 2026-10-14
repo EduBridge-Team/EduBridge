@@ -30,18 +30,25 @@ class EducationalGamesScreen extends StatelessWidget {
   final String childName;
   final int age;
   final int? childId;
+  final EncouragementService? encouragement;
 
   const EducationalGamesScreen({
     super.key,
     required this.childName,
     this.age = 8,
     this.childId,
+    this.encouragement,
   });
 
   @override
   Widget build(BuildContext context) => childId == null
-      ? _buildContent(context)
-      : ChildAdaptationScope(childId: childId!, builder: _buildContent);
+      ? _buildEntry(context)
+      : ChildAdaptationScope(childId: childId!, builder: _buildEntry);
+
+  Widget _buildEntry(BuildContext context) => _GameCatalogEntry(
+    encouragement: encouragement ?? EncouragementService.instance,
+    child: _buildContent(context),
+  );
 
   Widget _buildContent(BuildContext context) {
     final c = JisrColors.of(context);
@@ -51,10 +58,6 @@ class EducationalGamesScreen extends StatelessWidget {
     final isBlind = profile.type == DisabilityType.blind;
     final isDeaf = profile.type == DisabilityType.deaf;
     final isCalm = profile.sensoryCalmMode;
-
-    if (!isDeaf && !isCalm) {
-      EncouragementService.instance.praiseGame();
-    }
 
     final games = gamesFor(profile.type, group);
 
@@ -292,4 +295,29 @@ class _GameCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A route welcome is an event, not a side effect of rebuilding its contents.
+class _GameCatalogEntry extends StatefulWidget {
+  const _GameCatalogEntry({required this.encouragement, required this.child});
+  final EncouragementService encouragement;
+  final Widget child;
+
+  @override
+  State<_GameCatalogEntry> createState() => _GameCatalogEntryState();
+}
+
+class _GameCatalogEntryState extends State<_GameCatalogEntry> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && ModalRoute.of(context)?.isCurrent != false) {
+        widget.encouragement.praiseGame();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

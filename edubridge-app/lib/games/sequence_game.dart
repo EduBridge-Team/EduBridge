@@ -5,7 +5,7 @@ import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
@@ -115,7 +115,7 @@ class _SequenceGameState extends State<SequenceGame> {
   void _tapEmoji(String emoji) {
     if (_ordered.complete || _userOrder.contains(emoji)) return;
 
-    HapticFeedback.lightImpact();
+    AdaptiveHelper.hapticFeedback();
     setState(() => _ordered.selectValue(emoji));
 
     if (_userOrder.length == _correctOrder.length) {
@@ -130,7 +130,7 @@ class _SequenceGameState extends State<SequenceGame> {
     if (!mounted || !_ordered.complete) return;
     if (_ordered.correct) {
       // ✅ صحيح
-      HapticFeedback.heavyImpact();
+      AdaptiveHelper.hapticFeedback();
       setState(() {
         _score++;
         _streak++;
@@ -148,7 +148,7 @@ class _SequenceGameState extends State<SequenceGame> {
       });
     } else {
       // ❌ خطأ
-      HapticFeedback.mediumImpact();
+      AdaptiveHelper.hapticFeedback();
       _speak('حاول مرة أخرى — فكّر بالترتيب');
 
       setState(() {

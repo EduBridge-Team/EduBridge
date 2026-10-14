@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/quiz_session.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
-import '../services/tts_service.dart';
+import '../utils/adaptive_helper.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class LogicPuzzleGame extends StatefulWidget {
@@ -26,13 +25,14 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
   void _choose(int option) {
     final correct = _session.answer(option);
     if (correct == null) return;
-    HapticFeedback.mediumImpact();
+    AdaptiveHelper.hapticFeedback();
     setState(() {});
-    TtsService.instance.speakLine(correct ? 'إجابة صحيحة' : 'حاول أن تفكر في العلاقة بين المعلومات');
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(correct ? 'إجابة صحيحة' : 'حاول أن تفكر في العلاقة بين المعلومات');
     Future.delayed(const Duration(milliseconds: 850), () async {
       if (!mounted) return;
       if (_session.finished) {
         await GameProgressService.instance.record(_session.scorePercent);
+        if (!mounted) return;
         await VisualCelebration.show(context, message: 'أحسنت! ${_session.correctAnswers} من ${_session.totalRounds}', emoji: '🧠', childName: widget.childName, duration: const Duration(seconds: 3));
         if (mounted) Navigator.pop(context);
       } else {

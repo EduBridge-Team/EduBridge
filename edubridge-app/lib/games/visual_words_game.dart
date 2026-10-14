@@ -3,7 +3,7 @@
 import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
@@ -105,7 +105,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     if (option.$2 == _target.$2) {
       _transitioning = true;
       // ✅ صحيح
-      HapticFeedback.heavyImpact();
+      AdaptiveHelper.hapticFeedback();
       setState(() {
         _score++;
         _streak++;
@@ -122,7 +122,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
       if (mounted) _newRound();
     } else {
       // ❌ خطأ
-      HapticFeedback.mediumImpact();
+      AdaptiveHelper.hapticFeedback();
       _speak('حاول مرة أخرى — هذه ${option.$2}');
 
       setState(() => _streak = 0);
