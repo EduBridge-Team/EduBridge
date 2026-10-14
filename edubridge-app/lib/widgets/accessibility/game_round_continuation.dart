@@ -21,6 +21,7 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   Timer? _timer;
   bool _busy = false;
   bool _continued = false;
+  bool _failed = false;
   AppLifecycleState _lifecycle = AppLifecycleState.resumed;
 
   bool get _automatic => AdaptiveFeedbackPolicy(
@@ -38,7 +39,10 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   @override
   void didUpdateWidget(covariant GameRoundContinuation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.answered && !widget.answered) _continued = false;
+    if (oldWidget.answered && !widget.answered) {
+      _continued = false;
+      _failed = false;
+    }
     if (oldWidget.answered != widget.answered || oldWidget.delay != widget.delay) _schedule();
   }
 
@@ -70,14 +74,13 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   Future<void> _continue() async {
     if (!mounted || !widget.answered || _busy || _continued) return;
     _timer?.cancel();
-    setState(() { _busy = true; _continued = true; });
+    setState(() { _busy = true; _continued = true; _failed = false; });
     try {
       await widget.onContinue();
     } catch (_) {
       if (!mounted) return;
       _continued = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر متابعة اللعبة، حاول مرة أخرى')));
+      _failed = true;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -94,9 +97,14 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   @override
   Widget build(BuildContext context) => !widget.answered
     ? const SizedBox.shrink()
-    : Padding(padding: const EdgeInsets.only(top: 12), child: FilledButton(
+    : Padding(padding: const EdgeInsets.only(top: 12), child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (_failed) const Semantics(liveRegion: true,
+          child: Text('تعذّر متابعة اللعبة، حاول مرة أخرى', textAlign: TextAlign.center)),
+        FilledButton(
         onPressed: _busy || _continued ? null : _continue,
         child: Padding(padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(_busy ? 'جارٍ المتابعة' : 'متابعة')),
-      ));
+      ),
+    ]));
 }

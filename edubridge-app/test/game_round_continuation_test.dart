@@ -58,6 +58,25 @@ void main() {
     expect(calls, 1);
   });
 
+  testWidgets('covered routes cannot advance the underlying round', (tester) async {
+    final navigator = GlobalKey<NavigatorState>();
+    var calls = 0;
+    await tester.pumpWidget(MaterialApp(navigatorKey: navigator,
+      home: Scaffold(body: GameRoundContinuation(answered: true,
+        delay: const Duration(seconds: 1), onContinue: () async { calls++; }))));
+    final covered = navigator.currentState!.push(MaterialPageRoute<void>(
+      builder: (_) => const Scaffold(body: Text('صفحة أخرى'))));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 3));
+    expect(calls, 0);
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    await covered;
+    await tester.pump(const Duration(seconds: 1));
+    expect(calls, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('a failed continuation can be retried manually without automatic retries', (tester) async {
     service.profile.value = const AccessibilityProfile(type: DisabilityType.none, noTimedInteractions: true);
     var calls = 0;
@@ -68,6 +87,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 5));
     expect(calls, 1);
+    expect(find.text('تعذّر متابعة اللعبة، حاول مرة أخرى'), findsOneWidget);
     await tester.tap(find.text('متابعة'));
     await tester.pump();
     expect(calls, 2);
