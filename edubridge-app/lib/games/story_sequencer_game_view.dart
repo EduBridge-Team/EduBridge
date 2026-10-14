@@ -4,6 +4,8 @@ part of 'story_sequencer_game.dart';
 extension _StorySequencerGameView on _StorySequencerGameState {
   Widget _buildGame(BuildContext context) {
     final large = _profile.extraLargeTouchTargets;
+    final motion = AdaptiveFeedbackPolicy(_profile,
+      systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowMotion;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1FF),
@@ -16,12 +18,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'جولة جديدة',
-            onPressed: () {
-              _updateGame(() {
-                _ordered.reset();
-              });
-              _speak('أعد ترتيب البطاقات');
-            },
+            onPressed: _finishing || _answeredCorrectly ? null : _retry,
           ),
         ],
       ),
@@ -107,8 +104,10 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                   width: 2,
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                spacing: 8,
+                runSpacing: 8,
                 children: List.generate(_correctOrder.length, (i) {
                   final filled = i < _userOrder.length;
                   final emoji = filled ? _userOrder[i] : '';
@@ -143,7 +142,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
 
                       // خانة الإيموجي
                       AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
+                        duration: motion ? const Duration(milliseconds: 250) : Duration.zero,
                         width: large ? 68 : 58,
                         height: large ? 68 : 58,
                         decoration: BoxDecoration(
@@ -219,9 +218,10 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                           _correctOrder.indexOf(emoji);
 
                       return GestureDetector(
+                        key: ValueKey('story_choice_$emoji'),
                         onTap: used ? null : () => _tapEmoji(emoji),
                         child: AnimatedOpacity(
-                          duration: const Duration(milliseconds: 250),
+                          duration: motion ? const Duration(milliseconds: 250) : Duration.zero,
                           opacity: used ? 0.25 : 1.0,
                           child: Container(
                             width: large ? 100 : 90,
@@ -284,21 +284,25 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                   // ═══════════════════════════════════════════════
                   //  زر "أعد الترتيب"
                   // ═══════════════════════════════════════════════
-                  if (_userOrder.isNotEmpty)
+                  if (_feedback != null)
+                    Semantics(liveRegion: true, child: Text(_feedback!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: large ? 20 : 18, fontWeight: FontWeight.bold))),
+                  GameRoundContinuation(
+                    key: ValueKey(_round), answered: _answeredCorrectly,
+                    onContinue: _advance),
+                  if (_userOrder.isNotEmpty && !_answeredCorrectly)
                     TextButton.icon(
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF8B6DD4),
                         minimumSize: const Size(200, 44),
                       ),
                       icon: const Icon(Icons.undo),
-                      label: const Text(
-                        'أعد الترتيب',
+                      label: Text(
+                        _feedback == null ? 'أعد الترتيب' : 'حاول مرة أخرى',
                         style: TextStyle(fontSize: 16),
                       ),
-                      onPressed: () {
-                        _updateGame(() => _ordered.reset());
-                        _speak('أعد المحاولة');
-                      },
+                      onPressed: _finishing ? null : _retry,
                     ),
 
                   const SizedBox(height: 20),
