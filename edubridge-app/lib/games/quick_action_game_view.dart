@@ -2,7 +2,9 @@ part of 'quick_action_game.dart';
 
 extension _QuickActionGameView on _QuickActionGameState {
   Widget _buildPlayingView(bool large) {
-    return Padding(
+    final motion = AdaptiveFeedbackPolicy(_profile,
+      systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowMotion;
+    return SingleChildScrollView(child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -18,8 +20,11 @@ extension _QuickActionGameView on _QuickActionGameState {
           const SizedBox(height: 20),
           TweenAnimationBuilder<double>(
             key: ValueKey(_currentAction.$2),
-            tween: Tween(begin: 0.9, end: 1.1),
-            duration: const Duration(milliseconds: 800),
+            tween: Tween(
+              begin: motion ? 0.9 : 1.0,
+              end: motion ? 1.1 : 1.0),
+            duration: motion
+                ? const Duration(milliseconds: 800) : Duration.zero,
             curve: Curves.easeInOut,
             builder: (_, v, child) =>
                 Transform.scale(scale: v, child: child),
@@ -62,7 +67,7 @@ extension _QuickActionGameView on _QuickActionGameState {
           Text(
             _isPaused
                 ? '⏸️ متوقف مؤقتاً'
-                : 'افعلها بسرعة ثم اضغط "فعلتها"',
+                : (_timed ? 'افعلها ثم اضغط "فعلتها"' : 'خذ راحتك ثم اضغط "فعلتها"'),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
@@ -70,11 +75,11 @@ extension _QuickActionGameView on _QuickActionGameState {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildFinishedView(bool large) {
-    return Padding(
+    return SingleChildScrollView(child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +96,7 @@ extension _QuickActionGameView on _QuickActionGameState {
           ),
           const SizedBox(height: 12),
           Text(
-            '$_score حركة في $_QuickActionGameState._totalSeconds ثانية',
+            '$_score حركة',
             style: TextStyle(
               fontSize: large ? 24 : 20,
               color: const Color(0xFF12283A),
@@ -99,7 +104,7 @@ extension _QuickActionGameView on _QuickActionGameState {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _statChip({
