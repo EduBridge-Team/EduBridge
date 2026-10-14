@@ -2,11 +2,40 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, BadgeCheck, CheckCircle2, Mail, MessageCircle } from 'lucide-react'
 import NoorPet from '../../components/Noor/NoorPet'
 import { dashboardFor } from '../../roleRoutes'
-import { AUDIENCES, FEATURES, GETTING_STARTED, SERVICES } from './homeData'
+import { AUDIENCES, FEATURES, GETTING_STARTED, INCLUSION_DIFFERENTIATORS, SERVICES } from './homeData'
 
 export default function HomeSections({ loggedIn, navigate, user }) {
   return (
     <>
+      <section className="home-section inclusion-section" id="inclusion" aria-labelledby="inclusion-title">
+        <div className="section-heading inclusion-heading">
+          <span className="hero-kicker">ما الذي يجعل EduBridge مختلفة؟</span>
+          <h2 id="inclusion-title">التعليم الدامج هو محور المنصة</h2>
+          <p>
+            صُممت EduBridge لدعم الطلبة ذوي الإعاقة وصعوبات التعلّم بصورة خاصة،
+            مع أدوات تساعد على تكييف التعليم وتنسيق الدعم بين الأسرة والمعلم والمختص.
+          </p>
+        </div>
+        <div className="inclusion-grid">
+          {INCLUSION_DIFFERENTIATORS.map(({ Icon, title, text }) => (
+            <article className="inclusion-card" key={title}>
+              <span className="inclusion-icon"><Icon size={25} aria-hidden="true" /></span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+        <div className="inclusion-partners">
+          <div>
+            <h3>للمدارس والجمعيات والمؤسسات</h3>
+            <p>نتطلع إلى التعاون مع المؤسسات المهتمة بدعم التعليم الدامج وتوسيع فرص الوصول إليه.</p>
+          </div>
+          <a className="btn outline" href={'mailto:support@edubridge.win?subject=' + encodeURIComponent('طلب تعاون مؤسسي مع EduBridge')}>
+            تواصل بشأن التعاون <ArrowLeft size={17} aria-hidden="true" />
+          </a>
+        </div>
+      </section>
+
       <section className="home-section audience-section">
         <div className="section-heading compact">
           <div><h2>لمن صُممت EduBridge؟</h2><p>حلول مخصصة لكل من يشارك في رحلة التعلّم</p></div>
