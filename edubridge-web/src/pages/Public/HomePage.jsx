@@ -21,8 +21,8 @@ import { useInstitution } from '../../institutionContext'
 import HomeSections from './HomeSections'
 import '../../homepage-reference.css'
 
-const HERO_TITLE_LINE_ONE = 'تعليم يناسب قدرات'
-const HERO_TITLE_LINE_TWO = 'كل طفل'
+const HERO_TITLE_LINE_ONE = 'تعليم دامج للطلبة'
+const HERO_TITLE_LINE_TWO = 'ذوي الإعاقة'
 const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
 const JABALIA_LOGO = '/jabalia-logo.webp'
 
@@ -168,26 +168,26 @@ export default function HomePage() {
       <section className="home-hero reference-hero">
 
         <div className="home-hero-copy">
-          <span className="hero-kicker">معاً، نحو تعليم أكثر شمولاً</span>
+          <span className="hero-kicker">منصة متخصصة في التعليم الدامج وصعوبات التعلّم</span>
           <h1 className="hero-static-title" aria-label={HERO_TITLE}>
             {HERO_TITLE_LINE_ONE}<br />
             <span>{HERO_TITLE_LINE_TWO}</span>
           </h1>
           <p>
-            في EduBridge نبني تجربة تعليمية مرنة تراعي اختلاف القدرات والاحتياجات، وتجمع الأسرة والمعلم والمختص حول رحلة تعلم أوضح وأكثر تكافؤاً.
+            EduBridge منصة تعليمية تدعم الطلبة ذوي الإعاقة وصعوبات التعلّم، وتساعد المعلم والمختص والأسرة على تكييف الأنشطة ومتابعة تقدّم كل طفل وفق احتياجاته.
           </p>
 
           <div className="hero-actions">
             <button className="btn hero-primary" onClick={() => navigate(loggedIn ? dashboardFor(user) : '/register')}>
               ابدأ رحلتك الآن <ArrowLeft size={18} />
             </button>
-            <Link className="btn outline" to="/#services">استكشف الخدمات <ArrowLeft size={18} /></Link>
+            <Link className="btn outline" to="/#inclusion">اكتشف ما يميزنا <ArrowLeft size={18} /></Link>
           </div>
 
           <div className="hero-promises">
-            <span><Users size={18} /> تعليم شامل</span>
-            <span><Heart size={18} /> فرص متساوية</span>
-            <span><Accessibility size={18} /> إمكانات متنوعة</span>
+            <span><BookOpen size={18} /> تكييف الدروس</span>
+            <span><Heart size={18} /> دعم المعلم والمختص</span>
+            <span><Accessibility size={18} /> تعلّم بصري ووصول أسهل</span>
           </div>
         </div>
 
