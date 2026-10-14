@@ -1,6 +1,7 @@
 // lib/services/reward_service.dart
 // نظام المكافآت — نجوم متزامنة مع السيرفر مع fallback محلي للعمل دون اتصال.
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_service.dart';
+import 'accessibility_service.dart';
+import '../utils/adaptive_feedback_policy.dart';
 import 'sync_event.dart';
 
 class RewardService {
@@ -106,18 +109,34 @@ class RewardService {
     final overlay = Overlay.maybeOf(context, rootOverlay: true);
     if (overlay == null) return;
 
+    final feedback = AdaptiveFeedbackPolicy(
+      AccessibilityService.instance.profile.value,
+      systemReduceMotion: MediaQuery.disableAnimationsOf(context),
+    );
+    final dismissed = Completer<void>();
     late OverlayEntry entry;
+    void close() {
+      if (dismissed.isCompleted) return;
+      entry.remove();
+      dismissed.complete();
+    }
     entry = OverlayEntry(
       builder: (_) => _RewardOverlay(
         message: message,
         emoji: emoji,
         stars: stars,
+        allowMotion: feedback.allowMotion,
+        onDismiss: feedback.allowAutoDismiss ? null : close,
       ),
     );
 
     overlay.insert(entry);
-    await Future.delayed(const Duration(milliseconds: 2200));
-    entry.remove();
+    if (feedback.allowAutoDismiss) {
+      await Future.delayed(const Duration(milliseconds: 2200));
+      close();
+    } else {
+      await dismissed.future;
+    }
   }
 }
 
@@ -125,11 +144,15 @@ class _RewardOverlay extends StatefulWidget {
   final String message;
   final String emoji;
   final int stars;
+  final bool allowMotion;
+  final VoidCallback? onDismiss;
 
   const _RewardOverlay({
     required this.message,
     required this.emoji,
     required this.stars,
+    required this.allowMotion,
+    this.onDismiss,
   });
 
   @override
@@ -146,7 +169,12 @@ class _RewardOverlayState extends State<_RewardOverlay>
     _ctrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
-    )..forward();
+    );
+    if (widget.allowMotion) {
+      _ctrl.forward();
+    } else {
+      _ctrl.value = 1;
+    }
   }
 
   @override
@@ -158,11 +186,12 @@ class _RewardOverlayState extends State<_RewardOverlay>
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
+      ignoring: widget.onDismiss == null,
       child: Material(
         color: Colors.transparent,
         child: Center(
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.5, end: 1).animate(
+            scale: Tween<double>(begin: widget.allowMotion ? 0.5 : 1, end: 1).animate(
               CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut),
             ),
             child: Container(
@@ -200,6 +229,8 @@ class _RewardOverlayState extends State<_RewardOverlay>
                       color: Color(0xFFF2842B),
                     ),
                   ),
+                  if (widget.onDismiss != null) TextButton(
+                    onPressed: widget.onDismiss, child: const Text('متابعة')),
                 ],
               ),
             ),
