@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
+import '../../widgets/accessibility/child_adaptation_scope.dart';
 import '../../services/api_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
@@ -84,7 +85,10 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ChildAdaptationScope(
+    childId: widget.childId, builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     return Scaffold(
       appBar: JisrAppBar(title: 'واجبات ${widget.childName}'),
       body: RefreshIndicator(
