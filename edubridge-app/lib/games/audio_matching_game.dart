@@ -3,9 +3,8 @@ import 'dart:async';
 import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/encouragement_service.dart';
-import '../services/tts_service.dart';
 import '../theme.dart';
 
 class AudioMatchingGame extends StatefulWidget {
@@ -38,6 +37,10 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     _startGame();
   }
 
+  Future<void> _announce(String text) async {
+    if (AdaptiveHelper.shouldReadOnTap) await AdaptiveHelper.speak(text);
+  }
+
   void _startGame() {
     final selected = GameContent.instance.take('audio_matching', _pairs, 4, (item) => item.$2);
     final all = [...selected, ...selected]..shuffle();
@@ -48,7 +51,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     _matches = 0;
     _locked = false;
 
-    TtsService.instance.speakLine(
+    _announce(
       'مرحباً ${widget.childName}! المس أي بطاقة لتسمع اسمها، ثم ابحث عن زوجها',
     );
 
@@ -58,8 +61,9 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   Future<void> _selectCard(int index) async {
     if (_locked || _cards[index].matched) return;
 
-    await TtsService.instance.speakLine(_cards[index].name);
-    HapticFeedback.lightImpact();
+    await AdaptiveHelper.speak(_cards[index].name);
+    if (!mounted) return;
+    AdaptiveHelper.hapticFeedback();
 
     if (_firstIndex == null) {
       _firstIndex = index;
@@ -81,8 +85,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
         _matches++;
       });
 
-      HapticFeedback.heavyImpact();
-      await TtsService.instance.speakLine('صحيح! أحسنت');
+      AdaptiveHelper.hapticFeedback();
       EncouragementService.instance.praiseSuccess();
 
       if (_matches == 4) {
@@ -90,10 +93,11 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
         _onWin();
       }
     } else {
-      HapticFeedback.mediumImpact();
-      await TtsService.instance.speakLine('حاول مرة أخرى');
+      AdaptiveHelper.hapticFeedback();
+      await _announce('حاول مرة أخرى');
     }
 
+    if (!mounted) return;
     setState(() {
       _firstIndex = null;
       _locked = false;
@@ -101,15 +105,11 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   }
 
   Future<void> _onWin() async {
-    HapticFeedback.heavyImpact();
-    await Future.delayed(const Duration(milliseconds: 150));
-    HapticFeedback.heavyImpact();
-    await Future.delayed(const Duration(milliseconds: 150));
-    HapticFeedback.heavyImpact();
+    AdaptiveHelper.hapticFeedback();
 
     await GameProgressService.instance.record(100);
 
-    await TtsService.instance.speakLine(
+    await _announce(
       'مذهل يا ${widget.childName}! أكملت اللعبة بنجاح',
     );
 

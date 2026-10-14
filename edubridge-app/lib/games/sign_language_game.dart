@@ -3,7 +3,7 @@
 import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
@@ -52,7 +52,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     _options = [_target, ...distractors.take(3)]..shuffle();
 
     // 📳 اهتزاز خفيف للإشارة بالبداية (بدل الصوت)
-    HapticFeedback.lightImpact();
+    AdaptiveHelper.hapticFeedback();
     setState(() {});
   }
 
@@ -67,7 +67,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       });
 
       // 📳 اهتزاز قوي عند الصحيح
-      HapticFeedback.heavyImpact();
+      AdaptiveHelper.hapticFeedback();
 
       if (_round >= _totalRounds) {
         await Future.delayed(const Duration(milliseconds: 300));
@@ -78,7 +78,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       }
     } else {
       // ❌ خطأ
-      HapticFeedback.mediumImpact();
+      AdaptiveHelper.hapticFeedback();
     }
   }
 

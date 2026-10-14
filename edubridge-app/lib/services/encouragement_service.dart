@@ -1,10 +1,28 @@
 // خدمة التشجيع الصوتي — عبارات حماسية بالعربية لكل حالة
 import 'dart:math';
 import 'tts_service.dart';
+import 'accessibility_service.dart';
+import '../utils/adaptive_feedback_policy.dart';
 
 class EncouragementService {
-  EncouragementService._();
-  static final EncouragementService instance = EncouragementService._();
+  EncouragementService({
+    AccessibilityProfile Function()? profile,
+    Future<void> Function(String)? speak,
+    Future<void> Function(String)? speakSlow,
+  }) : _profile = profile ?? (() => AccessibilityService.instance.profile.value),
+       _speak = speak ?? TtsService.instance.speakLine,
+       _speakSlow = speakSlow ?? TtsService.instance.speakLineSlow;
+
+  static final EncouragementService instance = EncouragementService();
+  final AccessibilityProfile Function() _profile;
+  final Future<void> Function(String) _speak;
+  final Future<void> Function(String) _speakSlow;
+
+  Future<void> _announce(String text) async {
+    final profile = _profile();
+    if (!AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech) return;
+    await (profile.slowSpeech ? _speakSlow(text) : _speak(text));
+  }
 
   final _random = Random();
 
@@ -42,7 +60,7 @@ class EncouragementService {
     'أحسنت على مواصلة المحاولة 🌟',
   ];
 
-  // ✅ خاص بمتلازمة داون — كلمات بسيطة جداً + صوت بطيء
+  // عبارات قصيرة يمكن استعمالها دون فرض سرعة النطق من التصنيف.
   static const _downPhrases = [
     'أنت بطل! 🏆',
     'ممتاز! ⭐',
@@ -53,27 +71,27 @@ class EncouragementService {
 
   Future<void> praiseSuccess() async {
     final phrase = _successPhrases[_random.nextInt(_successPhrases.length)];
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 
   Future<void> praiseStart() async {
     final phrase = _startPhrases[_random.nextInt(_startPhrases.length)];
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 
   Future<void> praiseGame() async {
     final phrase = _gamePhrases[_random.nextInt(_gamePhrases.length)];
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 
   Future<void> gentleRetry() async {
     final phrase = _gentlePhrases[_random.nextInt(_gentlePhrases.length)];
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 
   Future<void> praiseStreak() async {
     final phrase = _streakPhrases[_random.nextInt(_streakPhrases.length)];
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 
   Future<void> praiseByName(String childName) async {
@@ -83,18 +101,18 @@ class EncouragementService {
       'يا بطل يا $childName! عمل رائع 🏆',
       'ما شاء الله يا $childName! ✨',
     ];
-    await TtsService.instance.speakLine(
+    await _announce(
       phrases[_random.nextInt(phrases.length)],
     );
   }
 
-  /// ✅ للداون: كلمات بسيطة جداً + صوت بطيء
+  /// Kept for existing callers; saved preferences control speech and speed.
   Future<void> praiseForDown({String? childName}) async {
     final base = _downPhrases[_random.nextInt(_downPhrases.length)];
     final phrase = childName != null && childName.isNotEmpty
         ? '$childName، $base'
         : base;
-    await TtsService.instance.speakLineSlow(phrase);
+    await _announce(phrase);
   }
 
   Future<void> praiseScore(int score) async {
@@ -108,6 +126,6 @@ class EncouragementService {
     } else {
       phrase = '$score نقطة! بداية جيدة، استمر 🌱';
     }
-    await TtsService.instance.speakLine(phrase);
+    await _announce(phrase);
   }
 }

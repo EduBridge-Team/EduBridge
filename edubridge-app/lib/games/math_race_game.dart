@@ -4,8 +4,9 @@ import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/arithmetic_question.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
-import 'package:flutter/services.dart';
+import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
+import '../utils/adaptive_feedback_policy.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class MathRaceGame extends StatefulWidget {
@@ -26,30 +27,37 @@ class _MathRaceGameState extends State<MathRaceGame> {
   int _wrong = 0;
   int _timeLeft = 60;
   Timer? _timer;
+  bool _finishing = false;
 
   AccessibilityProfile get _profile => AccessibilityService.instance.profile.value;
-  bool get _noPressure => _profile.noTimers || _profile.type == DisabilityType.adhd;
+  bool get _noPressure => !AdaptiveFeedbackPolicy(_profile).allowTaskDeadline;
 
   @override
   void initState() {
     super.initState();
     _newQuestion();
-    if (!_noPressure) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (!mounted) return;
-        if (_timeLeft <= 1) {
-          _timer?.cancel();
-          _onFinish();
-        } else {
-          setState(() => _timeLeft--);
-        }
-      });
-    }
+    AccessibilityService.instance.profile.addListener(_profileChanged);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || _finishing || _noPressure ||
+          (WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed) != AppLifecycleState.resumed ||
+          ModalRoute.of(context)?.isCurrent == false) return;
+      if (_timeLeft <= 1) {
+        setState(() => _timeLeft = 0);
+        _onFinish();
+      } else {
+        setState(() => _timeLeft--);
+      }
+    });
+  }
+
+  void _profileChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
     super.dispose();
   }
 
@@ -59,27 +67,35 @@ class _MathRaceGameState extends State<MathRaceGame> {
   }
 
   Future<void> _check(int picked) async {
+    if (_finishing) return;
     if (picked == _question.answer) {
       setState(() => _score++);
-      HapticFeedback.lightImpact();
+      AdaptiveHelper.hapticFeedback();
       if (mounted) setState(() => _newQuestion());
     } else {
       setState(() => _wrong++);
-      HapticFeedback.mediumImpact();
+      AdaptiveHelper.hapticFeedback();
     }
   }
 
-  void _onFinish() async {
+  Future<void> _onFinish() async {
+    if (_finishing) return;
+    setState(() => _finishing = true);
+    _timer?.cancel();
     final totalAnswers = _score + _wrong;
     final scorePercent = totalAnswers == 0 ? 0 : ((_score / totalAnswers) * 100).round();
-    await GameProgressService.instance.record(scorePercent);
-    await VisualCelebration.show(
-      context,
-      message: '$_score صحيحة!',
-      emoji: '➕',
-      childName: widget.childName,
-    );
-    if (mounted) Navigator.pop(context);
+    try {
+      await GameProgressService.instance.record(scorePercent);
+      if (!mounted) return;
+      await VisualCelebration.show(context,
+        message: '$_score صحيحة!', emoji: '➕', childName: widget.childName);
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _finishing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر حفظ النتيجة، حاول مرة أخرى')));
+    }
   }
 
   @override
@@ -92,6 +108,11 @@ class _MathRaceGameState extends State<MathRaceGame> {
         foregroundColor: Colors.white,
         title: const Text('➕ سباق الحساب'),
         actions: [
+          TextButton(
+            onPressed: _finishing ? null : _onFinish,
+            child: Text(_finishing ? 'جارٍ الحفظ' : 'إنهاء اللعب',
+              style: const TextStyle(color: Colors.white)),
+          ),
           if (_noPressure)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),

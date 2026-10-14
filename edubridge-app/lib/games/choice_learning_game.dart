@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
 import '../services/game_progress_service.dart';
 import '../services/tts_service.dart';
+import '../utils/adaptive_feedback_policy.dart';
+import '../utils/adaptive_helper.dart';
 import '../theme.dart';
 import 'learning_rounds.dart';
 
@@ -79,9 +81,10 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     try { await TtsService.instance.stop(); } catch (_) {}
   }
 
-  Future<void> _speak(String text) async {
-    if (!_sound) return;
-    try { await TtsService.instance.speakLine(text); }
+  Future<void> _speak(String text, {bool explicit = false}) async {
+    final policy = AdaptiveFeedbackPolicy(AccessibilityService.instance.profile.value);
+    if (!_sound || (!explicit && !policy.allowAutomaticSpeech)) return;
+    try { await AdaptiveHelper.speak(text); }
     catch (_) { /* Visual instructions remain available without a speech engine. */ }
   }
 
@@ -147,9 +150,10 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<AccessibilityProfile>(
-    valueListenable: AccessibilityService.instance.applicationProfile,
+    valueListenable: AccessibilityService.instance.profile,
     builder: (context, profile, _) {
-      final reduced = profile.reducedAnimations || MediaQuery.of(context).disableAnimations;
+      final reduced = !AdaptiveFeedbackPolicy(profile,
+        systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowMotion;
       return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
         appBar: JisrAppBar(title: _title),
         body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(20),
@@ -209,7 +213,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
         else _symbol(game.target, size: 76),
         const SizedBox(height: 16), Text(_question, textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-        TextButton.icon(onPressed: () => unawaited(_speak(_question)),
+        TextButton.icon(onPressed: () => unawaited(_speak(_question, explicit: true)),
           icon: const Icon(Icons.volume_up_outlined), label: const Text('استمع للسؤال')),
       ]))),
       const SizedBox(height: 16),
