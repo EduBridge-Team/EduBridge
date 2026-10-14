@@ -41,19 +41,35 @@ class _ChildAccessibilitySettingsScreenState
   bool _canEdit = false;
   bool _saving = false;
   bool _loadingPermission = true;
-  bool get _canChange => _canEdit && !_saving;
+  bool _loadingProfile = true;
+  bool _profileError = false;
+  bool get _canChange => _canEdit && !_saving && !_loadingProfile && !_profileError;
 
   @override
   void initState() {
     super.initState();
-    AccessibilityService.instance.setActiveChild(
-      widget.childId,
-      disabilityTypeHint: widget.disabilityTypeHint,
-      forceReload: true,
-    );
+    _loadProfile();
     _loadEditPermission();
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() {
+      _loadingProfile = true;
+      _profileError = false;
+    });
+    try {
+      await AccessibilityService.instance.setActiveChild(
+        widget.childId,
+        disabilityTypeHint: widget.disabilityTypeHint,
+        forceReload: true,
+      );
+    } catch (_) {
+      _profileError = true;
+    } finally {
+      if (mounted) setState(() => _loadingProfile = false);
+    }
   }
 
   Future<void> _loadEditPermission() async {
@@ -178,7 +194,7 @@ class _ChildAccessibilitySettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (_loadingPermission) {
+    if (_loadingPermission || _loadingProfile) {
       return Scaffold(appBar: JisrAppBar(title: 'إعدادات التكيف'),
         body: const Center(child: CircularProgressIndicator()));
     }
@@ -186,6 +202,15 @@ class _ChildAccessibilitySettingsScreenState
       return Scaffold(
         appBar: JisrAppBar(title: 'إعدادات التكيف'),
         body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
+      );
+    }
+    if (_profileError) {
+      return Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('تعذّر تحميل إعدادات الطفل'),
+          TextButton(onPressed: _loadProfile, child: const Text('إعادة المحاولة')),
+        ])),
       );
     }
     return buildView(context);
