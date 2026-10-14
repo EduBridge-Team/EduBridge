@@ -1,3 +1,4 @@
+import '../../widgets/accessibility/child_adaptation_scope.dart';
 // lib/screens/child_lessons/child_lessons_screen.dart
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -85,26 +86,21 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     _loadStars();
     _loadEmergencyContacts();
 
-    AccessibilityService.instance.setActiveChild(
-      widget.childId,
-      disabilityTypeHint: widget.disabilityType,
-      forceReload: true,
-    );
+
   }
 
   @override
   void dispose() {
     TtsService.instance.stop();
     _lessonAudioPlayer.dispose();
-    AccessibilityService.instance.setActiveChild(null);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BrainBreakScheduler(
-      profileListenable: AccessibilityService.instance.profile,
-      child: AdaptiveWrapper(
+    return ChildAdaptationScope(
+      childId: widget.childId,
+      builder: (context) => AdaptiveWrapper(
         screenTitle: 'دروس ${widget.childName}',
         child: Scaffold(
           appBar: buildChildLessonsAppBar(

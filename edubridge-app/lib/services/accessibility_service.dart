@@ -15,12 +15,12 @@ class AccessibilityService {
   static final AccessibilityService instance = AccessibilityService._();
 
   /// البروفايل المستخدم داخل شاشات الطفل المسموح لها بالتكييف
-  /// (إعدادات الطفل + صفحة دروس الطفل فقط).
+  /// (الدروس والألعاب والواجبات وإعدادات الطفل).
   final ValueNotifier<AccessibilityProfile> profile =
       ValueNotifier(const AccessibilityProfile(type: DisabilityType.none));
 
   /// بروفايل التطبيق العام. لا يتغيّر عند فتح طفل، حتى لا تنتقل
-  /// إعدادات طفل إلى لوحة ولي الأمر أو التقييمات أو الألعاب أو باقي التطبيق.
+  /// إعدادات طفل إلى لوحة ولي الأمر أو التقييمات أو باقي التطبيق.
   final ValueNotifier<AccessibilityProfile> applicationProfile =
       ValueNotifier(const AccessibilityProfile(type: DisabilityType.none));
 
@@ -33,11 +33,19 @@ class AccessibilityService {
 
   int? _ownerId;
   int _session = 0;
+  int _activationRequest = 0;
+  final Map<int, int> _profileRequests = {};
+  final Map<Object, int> _childScopes = {};
+  int? _scopeParentChild;
   String get _kParentKey => 'acc_user_${_ownerId}_parent';
   String get _kChildKeyPrefix => 'acc_user_${_ownerId}_child_';
 
   void resetSession() {
     _session++;
+    _activationRequest++;
+    _childScopes.clear();
+    _profileRequests.clear();
+    _scopeParentChild = null;
     _ownerId = null;
     _childProfiles.clear();
     _parentProfile = const AccessibilityProfile(type: DisabilityType.none);
@@ -145,10 +153,15 @@ class AccessibilityService {
       return _childProfiles[childId]!;
     }
 
+    final request = (_profileRequests[childId] ?? 0) + 1;
+    _profileRequests[childId] = request;
     try {
       final res =
           await ApiService.authGet('/children/$childId/accessibility-profile');
       if (session != _session) return const AccessibilityProfile(type: DisabilityType.none);
+      if (_profileRequests[childId] != request) {
+        return _childProfiles[childId] ?? const AccessibilityProfile(type: DisabilityType.none);
+      }
       if ([401, 403, 404].contains(res.statusCode)) {
         await removeChild(childId);
         return const AccessibilityProfile(type: DisabilityType.none);
@@ -187,6 +200,7 @@ class AccessibilityService {
   }) async {
     await _ensureAccount();
     final session = _session;
+    final request = ++_activationRequest;
     activeChildId.value = childId;
     profile.value = _parentProfile;
 
@@ -202,9 +216,38 @@ class AccessibilityService {
     );
 
     // قد تُغلق الصفحة أثناء جلب الملف من الشبكة؛ لا تعِد تفعيل طفل قديم.
-    if (session == _session && activeChildId.value == childId) {
+    if (session == _session && request == _activationRequest && activeChildId.value == childId) {
       profile.value = childProfile;
     }
+  }
+
+  /// Own a child route without changing the account preferences. Nested routes
+  /// restore their parent; a late disposal cannot restore a closed child route.
+  Future<Object> enterChildScope(int childId) async {
+    await _ensureAccount();
+    final token = Object();
+    if (_childScopes.isEmpty) _scopeParentChild = activeChildId.value;
+    final refresh = activeChildId.value != childId;
+    _childScopes[token] = childId;
+    try {
+      await setActiveChild(childId, forceReload: refresh);
+      return token;
+    } catch (_) {
+      await leaveChildScope(token);
+      rethrow;
+    }
+  }
+
+  Future<void> leaveChildScope(Object token) async {
+    if (!_childScopes.containsKey(token)) return;
+    final wasCurrent = identical(_childScopes.keys.last, token);
+    final childId = _childScopes.remove(token);
+    if (!wasCurrent) return;
+    final restore = _childScopes.isEmpty ? _scopeParentChild : _childScopes.values.last;
+    if (_childScopes.isEmpty) _scopeParentChild = null;
+    // Another explicit navigation/account transition already owns the profile.
+    if (activeChildId.value != childId) return;
+    await setActiveChild(restore);
   }
 
   Future<void> updateActive(AccessibilityProfile next) async {

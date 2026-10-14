@@ -211,7 +211,8 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
   }
 
   Future<void> _openGames() async {
-    await _openOutsideChildScope(
+    await Navigator.push(
+      context,
       MaterialPageRoute(
         builder: (_) => EducationalGamesScreen(
           childId: widget.childId,

@@ -18,6 +18,7 @@ import '../games/symbols_game.dart';
 import '../games/visual_words_game.dart';
 import '../games/word_builder_game.dart';
 import '../services/accessibility_service.dart';
+import '../widgets/accessibility/child_adaptation_scope.dart';
 import '../services/encouragement_service.dart';
 import '../services/game_progress_service.dart';
 import '../games/game_content.dart';
@@ -38,7 +39,11 @@ class EducationalGamesScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => childId == null
+      ? _buildContent(context)
+      : ChildAdaptationScope(childId: childId!, builder: _buildContent);
+
+  Widget _buildContent(BuildContext context) {
     final c = JisrColors.of(context);
     final profile = AccessibilityService.instance.profile.value;
     final group = ageGroupOf(age);
@@ -206,7 +211,8 @@ class EducationalGamesScreen extends StatelessWidget {
       if (!context.mounted) return;
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => screen!),
+        MaterialPageRoute(builder: (_) => childId == null ? screen!
+            : ChildAdaptationScope(childId: childId!, builder: (_) => screen!)),
       );
       GameProgressService.instance.end();
     }

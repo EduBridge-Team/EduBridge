@@ -36,6 +36,7 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
     (widget.profileListenable ??
             AccessibilityService.instance.applicationProfile)
         .addListener(_reschedule);
+    AccessibilityService.instance.activeChildId.addListener(_reschedule);
     _reschedule();
   }
 
@@ -54,6 +55,7 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    AccessibilityService.instance.activeChildId.removeListener(_reschedule);
     (widget.profileListenable ??
             AccessibilityService.instance.applicationProfile)
         .removeListener(_reschedule);
@@ -76,7 +78,9 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
     final p = (widget.profileListenable ??
             AccessibilityService.instance.applicationProfile)
         .value;
-    if (!p.brainBreaksEnabled || _lifecycle != AppLifecycleState.resumed) {
+    if ((widget.profileListenable == null &&
+        AccessibilityService.instance.activeChildId.value != null) ||
+        !p.brainBreaksEnabled || _lifecycle != AppLifecycleState.resumed) {
       return;
     }
     _timer = Timer(
@@ -86,7 +90,8 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
   }
 
   Future<void> _showBrainBreak() async {
-    if (_showing || !mounted) return;
+    if (_showing || !mounted || (widget.profileListenable == null &&
+        AccessibilityService.instance.activeChildId.value != null)) return;
     _showing = true;
 
     if (ModalRoute.of(context)?.isCurrent == false) {
