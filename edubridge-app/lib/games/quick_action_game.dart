@@ -8,6 +8,7 @@ import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../services/encouragement_service.dart';
 import '../services/tts_service.dart';
+import '../utils/adaptive_feedback_policy.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 part 'quick_action_game_view.dart';
@@ -48,6 +49,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
   int _secondsLeft = 30;
   bool _isPaused = false;
   bool _isFinished = false;
+  bool _recorded = false;
 
   static const _totalSeconds = 30;
 
@@ -55,9 +57,24 @@ class _QuickActionGameState extends State<QuickActionGame> {
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
 
+  bool get _timed => AdaptiveFeedbackPolicy(_profile).allowTaskDeadline;
+
+  void _profileChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _announce(String text) {
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+  }
+
+  Future<void> _stopSpeech() async {
+    try { await TtsService.instance.stop(); } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
+    AccessibilityService.instance.profile.addListener(_profileChanged);
     _startTimer();
     _newAction();
     EncouragementService.instance.praiseStart();
@@ -66,13 +83,16 @@ class _QuickActionGameState extends State<QuickActionGame> {
   @override
   void dispose() {
     _ticker?.cancel();
-    TtsService.instance.stop();
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
+    unawaited(_stopSpeech());
     super.dispose();
   }
 
   void _startTimer() {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted || _isPaused || _isFinished) return;
+      if (!mounted || _isPaused || _isFinished || !_timed ||
+          (WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed) != AppLifecycleState.resumed ||
+          ModalRoute.of(context)?.isCurrent == false) return;
 
       if (_secondsLeft <= 1) {
         _ticker?.cancel();
@@ -81,10 +101,10 @@ class _QuickActionGameState extends State<QuickActionGame> {
         setState(() => _secondsLeft--);
 
         if (_secondsLeft == 10) {
-          TtsService.instance.speakLine('عشر ثوانٍ متبقية!');
+          _announce('عشر ثوانٍ متبقية!');
         }
         if (_secondsLeft == 5) {
-          TtsService.instance.speakLine('خمس ثوانٍ!');
+          _announce('خمس ثوانٍ!');
         }
       }
     });
@@ -100,7 +120,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
   void _tapDone() {
     if (_isPaused || _isFinished) return;
 
-    AdaptiveHelper.hapticFeedback();
     setState(() {
       _score++;
       _round++;
@@ -109,8 +128,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
 
     if (_round % 5 == 0) {
       EncouragementService.instance.praiseStreak();
-    } else {
-      AdaptiveHelper.hapticFeedback();
     }
 
     _newAction();
@@ -118,22 +135,24 @@ class _QuickActionGameState extends State<QuickActionGame> {
 
   void _pause() {
     setState(() => _isPaused = true);
-    TtsService.instance.speakLine('توقفنا مؤقتاً');
+    _announce('توقفنا مؤقتاً');
   }
 
   void _resume() {
     setState(() => _isPaused = false);
-    TtsService.instance.speakLine('نكمل');
+    _announce('نكمل');
   }
 
-  void _onFinish() async {
+  Future<void> _onFinish() async {
+    if (_isFinished) return;
+    _ticker?.cancel();
     _isFinished = true;
     setState(() {});
 
     String message;
     String emoji;
     if (_score >= 20) {
-      message = 'مذهل! $_score حركة في دقيقة!';
+      message = 'مذهل! $_score حركة!';
       emoji = '🏆';
     } else if (_score >= 15) {
       message = 'رائع! $_score حركة!';
@@ -146,17 +165,21 @@ class _QuickActionGameState extends State<QuickActionGame> {
       emoji = '💪';
     }
 
-    await GameProgressService.instance.record((_score * 5).clamp(0, 100).toInt());
-
-    await VisualCelebration.show(
-      context,
-      message: message,
-      emoji: emoji,
-      childName: widget.childName,
-      duration: const Duration(seconds: 3),
-    );
-
-    if (mounted) Navigator.pop(context);
+    try {
+      if (!_recorded) {
+        await GameProgressService.instance.record((_score * 5).clamp(0, 100).toInt());
+        _recorded = true;
+      }
+      if (!mounted) return;
+      await VisualCelebration.show(context, message: message, emoji: emoji,
+        childName: widget.childName, duration: const Duration(seconds: 3));
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isFinished = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر حفظ النتيجة، حاول إنهاء اللعب مرة أخرى')));
+    }
   }
 
   @override
@@ -170,6 +193,8 @@ class _QuickActionGameState extends State<QuickActionGame> {
         foregroundColor: Colors.white,
         title: const Text('⚡ الحركة السريعة'),
         actions: [
+          TextButton(onPressed: _isFinished ? null : _onFinish,
+            child: const Text('إنهاء اللعب', style: TextStyle(color: Colors.white))),
           IconButton(
             icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
             tooltip: _isPaused ? 'متابعة' : 'إيقاف مؤقت',
@@ -184,6 +209,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
             color: Colors.white,
             child: Column(
               children: [
+                if (_timed) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -228,9 +254,13 @@ class _QuickActionGameState extends State<QuickActionGame> {
                         : const Color(0xFFF2842B),
                   ),
                 ),
+                ],
+                if (!_timed) const Text('بدون وقت — خذ راحتك'),
                 const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     _statChip(
                       icon: '⭐',

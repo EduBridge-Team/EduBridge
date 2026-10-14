@@ -1,14 +1,15 @@
 // لعبة الإيقاع — للتأتأة واضطرابات النطق
-// الطفل ينقر مع الكلمات بإيقاع بطيء — يقلّل التأتأة ويساعد على الطلاقة
-import 'dart:async';
+// تدريب على الاستماع والنقر مع كلمات بسيطة
 import 'game_content.dart';
 import '../features/games/domain/rhythm_session.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
+import '../utils/adaptive_feedback_policy.dart';
 import '../services/accessibility_service.dart';
 import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 
 part 'rhythm_game_view.dart';
 
@@ -46,7 +47,10 @@ class _RhythmGameState extends State<RhythmGame> {
   int get _tapCount => _session.tapCount;
   bool get _isPlaying => _session.playing;
   bool get _isPaused => _session.paused;
-  Timer? _beatTimer;
+  int _sessionGeneration = 0;
+  bool _finishing = false;
+  bool _recorded = false;
+  bool _saveError = false;
 
   // ✅ سرعة الإيقاع (بالثواني) — بطيئة جداً
   final int _beatDurationSeconds = 3;
@@ -58,9 +62,27 @@ class _RhythmGameState extends State<RhythmGame> {
       AccessibilityService.instance.profile.value;
 
   @override
+  void initState() {
+    super.initState();
+    AccessibilityService.instance.profile.addListener(_profileChanged);
+  }
+
+  void _profileChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _announce(String text) {
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+  }
+
+  Future<void> _stopSpeech() async {
+    try { await TtsService.instance.stop(); } catch (_) {}
+  }
+
+  @override
   void dispose() {
-    _beatTimer?.cancel();
-    TtsService.instance.stop();
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
+    _stopSpeech();
     super.dispose();
   }
 
@@ -68,51 +90,44 @@ class _RhythmGameState extends State<RhythmGame> {
   //  بدء اللعبة
   // ═══════════════════════════════════════════════════════
   void _start() {
+    if (_finishing) return;
     setState(() {
+      _sessionGeneration++;
+      _recorded = false;
+      _saveError = false;
       _session.start(GameContent.instance.take('rhythm', _words, _totalWords, (word) => word));
     });
-
-    // رسالة ترحيب
-    TtsService.instance.speakLineSlow(
-      'هيا نتدرب على الإيقاع. انقر مع كل كلمة',
-    );
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && _isPlaying) _speakCurrentWord();
-    });
+    _speakCurrentWord();
   }
 
   // ═══════════════════════════════════════════════════════
   //  نطق الكلمة الحالية + بدء المؤقّت
   // ═══════════════════════════════════════════════════════
-  void _speakCurrentWord() {
-    if (!_isPlaying || _isPaused || !mounted) return;
-
-    if (_currentIndex >= _totalWords) {
-      _finish();
-      return;
+  void _speakCurrentWord({bool explicit = false}) {
+    if (!_isPlaying || _isPaused || _finishing || !mounted || _session.complete) return;
+    final word = _session.currentWord;
+    if (explicit) {
+      AdaptiveHelper.speak(word);
+    } else {
+      _announce(word);
     }
+  }
 
-    // نطق الكلمة بصوت بطيء وواضح
-    final word = _sessionWords[_currentIndex % _sessionWords.length];
-    TtsService.instance.speakLineSlow(word);
-
-    // بدء مؤقّت الانتقال للكلمة التالية
-    _beatTimer?.cancel();
-    _beatTimer = Timer(Duration(seconds: _beatDurationSeconds), () {
-      if (!mounted || !_isPlaying || _isPaused) return;
-      setState(() {
-        _session.advance();
-      });
+  Future<void> _advanceWord() async {
+    if (!_isPlaying || _isPaused || _finishing) return;
+    setState(_session.advance);
+    if (_session.complete) {
+      await _finish();
+    } else {
       _speakCurrentWord();
-    });
+    }
   }
 
   // ═══════════════════════════════════════════════════════
   //  ضغط زر "انقر"
   // ═══════════════════════════════════════════════════════
   void _tap() {
-    if (!_isPlaying || _isPaused) return;
+    if (!_isPlaying || _isPaused || _finishing) return;
     AdaptiveHelper.hapticFeedback();
     setState(_session.tap);
   }
@@ -122,47 +137,40 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _pause() {
     setState(_session.pause);
-    _beatTimer?.cancel();
-    TtsService.instance.speakLineSlow('توقفنا مؤقتاً');
+    _announce('توقفنا مؤقتاً');
   }
 
   void _resume() {
     setState(_session.resume);
     _speakCurrentWord();
-    TtsService.instance.speakLineSlow('نكمل');
   }
 
   // ═══════════════════════════════════════════════════════
   //  إعادة البدء
   // ═══════════════════════════════════════════════════════
-  void _restart() {
-    _beatTimer?.cancel();
-    TtsService.instance.stop();
-    _start();
+  Future<void> _restart() async {
+    await _stopSpeech();
+    if (mounted && !_finishing) _start();
   }
 
   // ═══════════════════════════════════════════════════════
   //  إنهاء اللعبة
   // ═══════════════════════════════════════════════════════
-  void _finish() async {
-    _beatTimer?.cancel();
-    setState(_session.finish);
-
-    TtsService.instance.speakLineSlow(
-      'أحسنت يا ${widget.childName}! أتممت التمرين',
-    );
-
-    await GameProgressService.instance.record(100);
-
-    VisualCelebration.show(
-      context,
-      message: 'أحسنت! أتممت التمرين',
-      emoji: '🎵',
-      childName: widget.childName,
-      duration: const Duration(seconds: 3),
-    ).then((_) {
+  Future<void> _finish() async {
+    if (_finishing) return;
+    setState(() { _finishing = true; _session.finish(); _saveError = false; });
+    try {
+      if (!_recorded) {
+        await GameProgressService.instance.record(100);
+        _recorded = true;
+      }
+      if (!mounted) return;
+      await VisualCelebration.show(context, message: 'أحسنت! أتممت التمرين',
+        emoji: '🎵', childName: widget.childName, duration: const Duration(seconds: 3));
       if (mounted) Navigator.pop(context);
-    });
+    } catch (_) {
+      if (mounted) setState(() { _finishing = false; _saveError = true; });
+    }
   }
 
   // ═══════════════════════════════════════════════════════
@@ -183,19 +191,22 @@ class _RhythmGameState extends State<RhythmGame> {
             IconButton(
               icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
               tooltip: _isPaused ? 'متابعة' : 'إيقاف مؤقت',
-              onPressed: _isPaused ? _resume : _pause,
+              onPressed: _finishing ? null : (_isPaused ? _resume : _pause),
             ),
             IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: 'إعادة',
-              onPressed: _restart,
+              onPressed: _finishing ? null : _restart,
             ),
           ],
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: _isPlaying ? _buildPlaying(large) : _buildStart(large),
+        child: _finishing
+            ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                CircularProgressIndicator(), Text('جارٍ حفظ النتيجة')]))
+            : _isPlaying ? _buildPlaying(large) : _buildStart(large),
       ),
     );
   }
