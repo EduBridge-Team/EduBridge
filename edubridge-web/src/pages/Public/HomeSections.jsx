@@ -12,7 +12,7 @@ export default function HomeSections({ loggedIn, navigate, user }) {
           <span className="hero-kicker">ما الذي يجعل EduBridge مختلفة؟</span>
           <h2 id="inclusion-title">التعليم الدامج هو محور المنصة</h2>
           <p>
-            صُممت EduBridge لدعم الطلبة ذوي الإعاقة وصعوبات التعلّم بصورة خاصة،
+            صُممت EduBridge لدعم الطلبة ذوي الهمم وصعوبات التعلّم بصورة خاصة،
             مع أدوات تساعد على تكييف التعليم وتنسيق الدعم بين الأسرة والمعلم والمختص.
           </p>
         </div>
