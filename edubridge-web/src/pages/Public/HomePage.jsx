@@ -22,7 +22,7 @@ import HomeSections from './HomeSections'
 import '../../homepage-reference.css'
 
 const HERO_TITLE_LINE_ONE = 'تعليم دامج للطلبة'
-const HERO_TITLE_LINE_TWO = 'ذوي الإعاقة'
+const HERO_TITLE_LINE_TWO = 'ذوي الهمم'
 const HERO_TITLE = `${HERO_TITLE_LINE_ONE} ${HERO_TITLE_LINE_TWO}`
 const JABALIA_LOGO = '/jabalia-logo.webp'
 
@@ -174,7 +174,7 @@ export default function HomePage() {
             <span>{HERO_TITLE_LINE_TWO}</span>
           </h1>
           <p>
-            EduBridge منصة تعليمية تدعم الطلبة ذوي الإعاقة وصعوبات التعلّم، وتساعد المعلم والمختص والأسرة على تكييف الأنشطة ومتابعة تقدّم كل طفل وفق احتياجاته.
+            EduBridge منصة تعليمية تدعم الطلبة ذوي الهمم وصعوبات التعلّم، وتساعد المعلم والمختص والأسرة على تكييف الأنشطة ومتابعة تقدّم كل طفل وفق احتياجاته.
           </p>
 
           <div className="hero-actions">
