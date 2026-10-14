@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
-import '../../features/adaptation/data/adaptation_permission_repository.dart';
+import '../../features/adaptation/data/adaptation_settings_loader.dart';
 import '../../theme.dart';
 import '../../widgets/disability/disability_catalog.dart';
 import '../../widgets/disability/disability_picker_sheet.dart';
@@ -34,35 +34,38 @@ class _ChildAccessibilitySettingsScreenState
     extends State<ChildAccessibilitySettingsScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
-  final _permissionRepository = AdaptationPermissionRepository();
+  final _settingsLoader = AdaptationSettingsLoader();
 
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
   bool _canEdit = false;
   bool _saving = false;
-  bool _loadingPermission = true;
-  bool get _canChange => _canEdit && !_saving;
+  bool _loadingSettings = true;
+  bool _profileError = false;
+  bool get _canChange => _canEdit && !_saving && !_loadingSettings && !_profileError;
 
   @override
   void initState() {
     super.initState();
-    AccessibilityService.instance.setActiveChild(
-      widget.childId,
-      disabilityTypeHint: widget.disabilityTypeHint,
-      forceReload: true,
-    );
-    _loadEditPermission();
+    _loadSettings();
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
   }
 
-  Future<void> _loadEditPermission() async {
-    final canEdit = await _permissionRepository.canEdit(widget.childId);
-    if (!mounted) return;
+  Future<void> _loadSettings() async {
     setState(() {
-      _canEdit = canEdit;
-      _loadingPermission = false;
+      _loadingSettings = true;
+      _profileError = false;
     });
+    try {
+      final canEdit = await _settingsLoader.load(widget.childId,
+        disabilityHint: widget.disabilityTypeHint);
+      if (mounted) _canEdit = canEdit;
+    } catch (_) {
+      _profileError = true;
+    } finally {
+      if (mounted) setState(() => _loadingSettings = false);
+    }
   }
 
   @override
@@ -178,9 +181,18 @@ class _ChildAccessibilitySettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (_loadingPermission) {
+    if (_loadingSettings) {
       return Scaffold(appBar: JisrAppBar(title: 'إعدادات التكيف'),
         body: const Center(child: CircularProgressIndicator()));
+    }
+    if (_profileError) {
+      return Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('تعذّر تحميل إعدادات الطفل'),
+          TextButton(onPressed: _loadSettings, child: const Text('إعادة المحاولة')),
+        ])),
+      );
     }
     if (!_canEdit) {
       return Scaffold(

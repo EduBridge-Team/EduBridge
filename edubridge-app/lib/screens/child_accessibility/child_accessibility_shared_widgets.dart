@@ -220,3 +220,38 @@ Widget sw(String t, String s, bool v, ValueChanged<bool> on, {bool enabled = tru
     onChanged: enabled ? on : null,
   );
 }
+
+Widget buildDurationSetting({
+  required String title,
+  required String subtitle,
+  required int value,
+  required List<int> choices,
+  required String unit,
+  required ValueChanged<int>? onChanged,
+}) {
+  final options = {...choices, value}.toList()..sort();
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        Text(subtitle, style: const TextStyle(fontSize: 12)),
+        Semantics(
+          label: title,
+          child: DropdownButton<int>(
+            value: value,
+            isExpanded: true,
+            items: options.map((option) => DropdownMenuItem(
+              value: option, child: Text('$option $unit'),
+            )).toList(),
+            onChanged: onChanged == null ? null : (next) {
+              if (next != null) onChanged(next);
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}

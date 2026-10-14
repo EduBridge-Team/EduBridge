@@ -82,7 +82,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                         p.visualNotifications, (v) => _set(p.copyWith(visualNotifications: v)), enabled: _canChange),
                     sw('تنبيهات بوميض', 'وميض ملوّن للإشعارات المهمة',
                         p.flashAlerts, (v) => _set(p.copyWith(flashAlerts: v)), enabled: _canChange),
-                    sw('اهتزاز قوي', 'للتنبيهات والنجاح', p.vibrationAlerts,
+                    sw('اهتزاز للتنبيهات', 'اهتزاز عند النجاح وتأكيد الطوارئ حسب الإعدادات', p.vibrationAlerts,
                         (v) => _set(p.copyWith(vibrationAlerts: v)), enabled: _canChange),
                   ],
                 ),
@@ -139,6 +139,9 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                   color: AppColors.purple,
                   c: c,
                   children: [
+                    sw('قراءة خطوة بخطوة', 'إظهار زر أقرأ بسهولة لتقسيم نص الدرس دون حذف محتواه',
+                        p.stepByStepLessons,
+                        (v) => _set(p.copyWith(stepByStepLessons: v)), enabled: _canChange),
                     sw('أزرار برموز', 'إخفاء نص الزر عند توفر رمز، مع إبقاء تعليمات الدرس',
                         p.iconOnlyMode, (v) => _set(p.copyWith(iconOnlyMode: v)), enabled: _canChange),
                     sw('لغة مبسّطة جداً', 'كلمات وجمل قصيرة وسهلة',
@@ -166,24 +169,53 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                     sw('استراحات أثناء التعلم', 'اقتراح استراحة خلال الدروس',
                         p.brainBreaksEnabled,
                         (v) => _set(p.copyWith(brainBreaksEnabled: v)), enabled: _canChange),
-                    ListTile(
-                      title: const Text('مدة الاستراحة'),
-                      subtitle: Text(p.noTimedInteractions || p.noTimers || p.unlimitedTime
-                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
-                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.'),
-                      trailing: DropdownButton<int>(
-                        value: p.brainBreakDurationSeconds,
-                        items: {15, 30, 60, 90, 120, p.brainBreakDurationSeconds}
-                            .map((seconds) => DropdownMenuItem(
-                              value: seconds, child: Text('$seconds ثانية'),
-                            )).toList(),
-                        onChanged: _canChange
-                            ? (value) {
-                                if (value != null) _set(p.copyWith(brainBreakDurationSeconds: value));
-                              }
-                            : null,
-                      ),
+                    buildDurationSetting(
+                      title: 'الفترة بين الاستراحات',
+                      subtitle: 'اقتراح استراحة بعد هذه المدة من التعلم.',
+                      value: p.brainBreakIntervalMinutes,
+                      choices: const [5, 10, 15, 20, 30, 45, 60, 90, 120],
+                      unit: 'دقيقة',
+                      onChanged: _canChange && p.brainBreaksEnabled
+                          ? (value) => _set(p.copyWith(brainBreakIntervalMinutes: value)) : null,
                     ),
+                    buildDurationSetting(
+                      title: 'مدة الاستراحة',
+                      subtitle: p.noTimedInteractions || p.noTimers
+                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
+                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.',
+                      value: p.brainBreakDurationSeconds,
+                      choices: const [15, 30, 60, 90, 120],
+                      unit: 'ثانية',
+                      onChanged: _canChange
+                          ? (value) => _set(p.copyWith(brainBreakDurationSeconds: value)) : null,
+                    ),
+                  ],
+                ),
+
+                buildFeatureSection(
+                  title: 'وقت التعلم',
+                  icon: Icons.timer_outlined,
+                  color: AppColors.brandBlue,
+                  c: c,
+                  children: [
+                    sw('مؤقّت المهمة', 'عرض مؤقّت بصري أو سمعي حسب إعدادات الطفل',
+                        p.visualTimerEnabled,
+                        (v) => _set(p.copyWith(visualTimerEnabled: v)), enabled: _canChange),
+                    buildDurationSetting(
+                      title: 'مدة مؤقّت المهمة',
+                      subtitle: p.unlimitedTime || p.noTimers || p.noTimedInteractions
+                          ? 'المؤقّت معطّل حسب إعدادات الوقت الحالية؛ تبقى المدة محفوظة.'
+                          : 'المدة المتاحة قبل اقتراح استراحة.',
+                      value: p.timerRenewalMinutes,
+                      choices: const [1, 3, 5, 10, 15, 20, 30, 45, 60],
+                      unit: 'دقيقة',
+                      onChanged: _canChange && p.visualTimerEnabled &&
+                          !p.unlimitedTime && !p.noTimers && !p.noTimedInteractions
+                          ? (value) => _set(p.copyWith(timerRenewalMinutes: value)) : null,
+                    ),
+                    sw('إخفاء العدّادات', 'إخفاء عدّاد المهمة والاستراحة؛ الاستراحة تبقى محدودة',
+                        p.noTimers,
+                        (v) => _set(p.copyWith(noTimers: v)), enabled: _canChange),
                   ],
                 ),
 
@@ -198,6 +230,9 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                         (v) => _set(p.copyWith(extraLargeTouchTargets: v)), enabled: _canChange),
                     sw('تقليل الحركات', 'أنيميشن هادئ', p.reducedAnimations,
                         (v) => _set(p.copyWith(reducedAnimations: v)), enabled: _canChange),
+                    sw('تجنّب الوميض', 'تعطيل مؤثرات الحركة والوميض في العناصر المتكيفة',
+                        p.noFlashing,
+                        (v) => _set(p.copyWith(noFlashing: v)), enabled: _canChange),
                     sw('نطق تلقائي عند اللمس', 'قراءة صوتية لكل عنصر',
                         p.autoReadOnTap,
                         (v) => _set(p.copyWith(autoReadOnTap: v)), enabled: _canChange),
