@@ -1,7 +1,9 @@
-// مؤقّت سمعي — يقرأ الوقت المتبقي كل دقيقة للأعمى
+// مؤقّت سمعي يحترم إعدادات الطفل ووقت الاستخدام الفعلي.
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../services/tts_service.dart';
+import '../../services/accessibility_service.dart';
+import '../../utils/adaptive_feedback_policy.dart';
+import '../../utils/adaptive_helper.dart';
 import '../../theme.dart';
 
 class AudioTimer extends StatefulWidget {
@@ -20,35 +22,62 @@ class AudioTimer extends StatefulWidget {
   State<AudioTimer> createState() => _AudioTimerState();
 }
 
-class _AudioTimerState extends State<AudioTimer> {
+class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
   Timer? _ticker;
   Duration _remaining = Duration.zero;
   bool _isRunning = false;
+  AppLifecycleState _lifecycle = AppLifecycleState.resumed;
+
+  AdaptiveFeedbackPolicy get _feedback =>
+      AdaptiveFeedbackPolicy(AccessibilityService.instance.profile.value);
+
+  void _announce(String text) {
+    if (_feedback.allowAutomaticSpeech) unawaited(AdaptiveHelper.speak(text));
+  }
+
+  void _profileChanged() {
+    if (!_feedback.allowTaskDeadline && _isRunning) {
+      _ticker?.cancel();
+      _isRunning = false;
+    }
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lifecycle = state;
+  }
 
   @override
   void initState() {
     super.initState();
     _remaining = widget.total;
+    _lifecycle = WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed;
+    WidgetsBinding.instance.addObserver(this);
+    AccessibilityService.instance.profile.addListener(_profileChanged);
   }
 
   @override
   void dispose() {
     _ticker?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
     super.dispose();
   }
 
   void _start() {
-    if (_isRunning) return;
+    if (_isRunning || _remaining <= Duration.zero || !_feedback.allowTaskDeadline) return;
     setState(() => _isRunning = true);
-    TtsService.instance.speakLine('سأخبرك بالوقت المتبقي كل دقيقة');
+    _announce('سأخبرك بالوقت المتبقي كل دقيقة');
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      setState(() {
-        _remaining = _remaining - const Duration(seconds: 1);
-        if (_remaining.inSeconds <= 0) {
-          _finish();
-        }
-      });
+      if (!mounted || _lifecycle != AppLifecycleState.resumed ||
+          ModalRoute.of(context)?.isCurrent == false || !_feedback.allowTaskDeadline) return;
+      if (_remaining <= const Duration(seconds: 1)) {
+        setState(() => _remaining = Duration.zero);
+        _finish();
+        return;
+      }
+      setState(() => _remaining -= const Duration(seconds: 1));
       if (_remaining.inSeconds > 0 && _remaining.inSeconds % 60 == 0) {
         _speakRemaining();
       }
@@ -58,7 +87,7 @@ class _AudioTimerState extends State<AudioTimer> {
   void _pause() {
     _ticker?.cancel();
     setState(() => _isRunning = false);
-    TtsService.instance.speakLine('تم الإيقاف مؤقتاً');
+    _announce('تم الإيقاف مؤقتاً');
   }
 
   void _reset() {
@@ -67,15 +96,15 @@ class _AudioTimerState extends State<AudioTimer> {
       _remaining = widget.total;
       _isRunning = false;
     });
-    TtsService.instance.speakLine('تم إعادة المؤقّت');
+    _announce('تم إعادة المؤقّت');
   }
 
   void _speakRemaining() {
     final mins = _remaining.inMinutes;
     if (mins > 0) {
-      TtsService.instance.speakLine('تبقى $mins دقيقة');
+      _announce('تبقى $mins دقيقة');
     } else {
-      TtsService.instance.speakLine(
+      _announce(
         'تبقى ${_remaining.inSeconds} ثانية',
       );
     }
@@ -84,7 +113,7 @@ class _AudioTimerState extends State<AudioTimer> {
   void _finish() {
     _ticker?.cancel();
     setState(() => _isRunning = false);
-    TtsService.instance.speakLine(
+    _announce(
       'انتهى الوقت يا ${widget.childName}! أحسنت',
     );
     widget.onFinished?.call();
@@ -92,6 +121,7 @@ class _AudioTimerState extends State<AudioTimer> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_feedback.allowTaskDeadline) return const SizedBox.shrink();
     final c = JisrColors.of(context);
     final mins = _remaining.inMinutes;
     final secs = _remaining.inSeconds % 60;
@@ -141,7 +171,7 @@ class _AudioTimerState extends State<AudioTimer> {
                   child: ElevatedButton.icon(
                     icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
                     label: Text(_isRunning ? 'إيقاف' : 'ابدأ'),
-                    onPressed: _isRunning ? _pause : _start,
+                    onPressed: _remaining <= Duration.zero ? null : (_isRunning ? _pause : _start),
                   ),
                 ),
                 const SizedBox(width: 10),

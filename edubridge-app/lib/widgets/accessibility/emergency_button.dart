@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
+import '../../utils/adaptive_helper.dart';
 import '../../theme.dart';
 
 class EmergencyButton extends StatefulWidget {
@@ -30,11 +30,6 @@ class _EmergencyButtonState extends State<EmergencyButton> {
   bool _sending = false;
 
   Future<void> _triggerEmergency() async {
-    HapticFeedback.heavyImpact();
-    await Future.delayed(const Duration(milliseconds: 150));
-    HapticFeedback.heavyImpact();
-    if (!mounted) return;
-
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -71,7 +66,8 @@ class _EmergencyButtonState extends State<EmergencyButton> {
       ),
     );
 
-    if (confirmed != true) return;
+    if (!mounted || confirmed != true) return;
+    AdaptiveHelper.hapticFeedback();
 
     setState(() => _sending = true);
 
