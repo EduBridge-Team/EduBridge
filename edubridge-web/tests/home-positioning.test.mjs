@@ -10,10 +10,19 @@ test('first impression clearly names disability-focused inclusive education', ()
   const html = read('../index.html')
 
   assert.match(home, /HERO_TITLE_LINE_ONE = 'تعليم دامج للطلبة'/)
-  assert.match(home, /HERO_TITLE_LINE_TWO = 'ذوي الإعاقة'/)
+  assert.match(home, /HERO_TITLE_LINE_TWO = 'ذوي الهمم'/)
   assert.match(home, /صعوبات التعلّم/)
   assert.match(home, /to="\/#inclusion"/)
-  assert.match(html, /name="description" content="[^"]*ذوي الإعاقة[^"]*"/)
+  assert.match(html, /name="description" content="[^"]*ذوي الهمم[^"]*"/)
+  const publicCopy = [
+    home,
+    html,
+    read('../src/pages/Public/HomeSections.jsx'),
+    read('../src/pages/Public/AboutSections.jsx'),
+    read('../src/pages/Public/homeData.js'),
+    read('../src/pages/Public/aboutData.js'),
+  ].join(' ')
+  assert.doesNotMatch(publicCopy, /ذوي الإعاقة/)
 })
 
 test('differentiators specify adaptive learning and team support', () => {

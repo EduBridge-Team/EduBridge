@@ -79,7 +79,7 @@ export const SERVICES = [
 ]
 
 export const FEATURES = [
-  { Icon: Accessibility, title: 'وصول أسهل', text: 'خيارات تدعم احتياجات الوصول والتعلّم البصري للطلبة ذوي الإعاقة' },
+  { Icon: Accessibility, title: 'وصول أسهل', text: 'خيارات تدعم احتياجات الوصول والتعلّم البصري للطلبة ذوي الهمم' },
   { Icon: ShieldCheck, title: 'خصوصية وصلاحيات', text: 'وصول منظم للمعلومات بحسب دور المستخدم وصلاحياته' },
 ]
 
