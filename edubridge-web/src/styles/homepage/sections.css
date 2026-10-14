@@ -110,3 +110,112 @@
   font-size: 32px;
   transform: rotate(12deg);
 }
+
+
+/* Inclusive education positioning: immediately follows the public hero. */
+.reference-home .inclusion-section {
+  margin-block: 0 24px;
+  padding: 30px;
+  border: 1px solid #d4eaf5;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f1faff, #f0fcf9);
+}
+.reference-home .inclusion-heading {
+  max-width: 870px;
+}
+.reference-home .inclusion-heading .hero-kicker {
+  display: inline-block;
+}
+.reference-home .inclusion-heading p {
+  margin: 10px 0 0;
+  color: var(--home-text);
+  line-height: 1.9;
+}
+.reference-home .inclusion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+.reference-home .inclusion-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #dceef6;
+  border-radius: 18px;
+  background: #fff;
+}
+.reference-home .inclusion-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  color: var(--home-blue);
+  background: #e8f7fc;
+}
+.reference-home .inclusion-card h3,
+.reference-home .inclusion-partners h3 {
+  margin: 0 0 8px;
+  color: var(--home-ink);
+  font-size: 19px;
+}
+.reference-home .inclusion-card p,
+.reference-home .inclusion-partners p {
+  margin: 0;
+  color: var(--home-text);
+  line-height: 1.85;
+}
+.reference-home .inclusion-partners {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #cce8f1;
+}
+.reference-home .inclusion-partners .btn {
+  flex-shrink: 0;
+}
+
+:root[data-theme="dark"] .reference-home .inclusion-section {
+  background: linear-gradient(135deg, #0d2947, #123d43);
+  border-color: #28516b;
+}
+:root[data-theme="dark"] .reference-home .inclusion-card {
+  background: #0b2742;
+  border-color: #28516b;
+}
+:root[data-theme="dark"] .reference-home .inclusion-icon {
+  background: #163f55;
+  color: #92e7eb;
+}
+:root[data-theme="dark"] .reference-home .inclusion-partners {
+  border-color: #28516b;
+}
+
+@media (max-width: 780px) {
+  /* Put the mission before the large image on phones, above the fold. */
+  .reference-home .reference-hero .reference-hero-art {
+    order: 0;
+  }
+  .reference-home .inclusion-section {
+    padding: 22px;
+  }
+  .reference-home .inclusion-grid {
+    grid-template-columns: 1fr;
+  }
+  .reference-home .inclusion-partners {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+@media (max-width: 480px) {
+  .reference-home .inclusion-section {
+    padding: 18px;
+  }
+  .reference-home .inclusion-card {
+    padding: 17px;
+  }
+}
