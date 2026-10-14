@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:edubridge_app/features/adaptation/data/adaptation_settings_loader.dart';
+import 'package:edubridge_app/features/adaptation/data/adaptation_permission_repository.dart';
 
 void main() {
   final service = AccessibilityService.instance;
@@ -39,34 +40,53 @@ void main() {
     expect(dropdown.value, 5);
   });
 
-  testWidgets('controls wait for both permission and the saved profile', (tester) async {
-    final response = Completer<http.Response>();
-    final started = Completer<void>();
-    final loaded = Completer<void>();
-    void onProfile() {
-      if (service.profile.value.noTimers && !loaded.isCompleted) loaded.complete();
-    }
-    service.profile.addListener(onProfile);
-    addTearDown(() => service.profile.removeListener(onProfile));
-    await tester.runAsync(() async {
-      await http.runWithClient(() async {
-        await tester.pumpWidget(const MaterialApp(home: ChildAccessibilitySettingsScreen(
-          childId: 9, childName: 'محمود')));
-        await started.future.timeout(const Duration(seconds: 10));
-        expect(find.byType(SwitchListTile), findsNothing);
-        response.complete(http.Response(jsonEncode({'can_edit': true,
-          'profile': const AccessibilityProfile(type: DisabilityType.none, noTimers: true).toJson()}), 200));
-        await loaded.future.timeout(const Duration(seconds: 10));
-      }, () => MockClient((_) {
-        if (!started.isCompleted) started.complete();
-        return response.future;
-      }));
+  for (final permissionFirst in [true, false]) {
+    test('settings readiness waits for both loads, permissionFirst=$permissionFirst', () async {
+      final profileReady = Completer<void>();
+      final permissionReady = Completer<http.Response>();
+      final loader = AdaptationSettingsLoader(
+        permissions: AdaptationPermissionRepository(get: (_) => permissionReady.future),
+        activateChild: (id, hint) {
+          expect(id, 9);
+          expect(hint, 'أخرى');
+          return profileReady.future;
+        },
+      );
+      var finished = false;
+      final loaded = loader.load(9, disabilityHint: 'أخرى').then((allowed) {
+        finished = true;
+        return allowed;
+      });
+      final response = http.Response(jsonEncode({'can_edit': true}), 200);
+      if (permissionFirst) {
+        permissionReady.complete(response);
+      } else {
+        profileReady.complete();
+      }
+      await Future<void>.delayed(Duration.zero);
+      expect(finished, isFalse);
+      if (permissionFirst) {
+        profileReady.complete();
+      } else {
+        permissionReady.complete(response);
+      }
+      expect(await loaded, isTrue);
     });
-    await tester.pumpAndSettle();
-    expect(find.text('إعدادات محمود'), findsOneWidget);
-    expect(find.byType(SwitchListTile), findsWidgets);
-    expect(service.profile.value.noTimers, isTrue);
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pumpAndSettle();
+  }
+
+  test('profile readiness never overrides a denied permission', () async {
+    final loader = AdaptationSettingsLoader(
+      permissions: AdaptationPermissionRepository(get: (_) async => http.Response('{"can_edit":false}', 200)),
+      activateChild: (_, __) async {},
+    );
+    expect(await loader.load(9), isFalse);
   });
+  test('profile loading failure is propagated for the screen retry', () async {
+    final loader = AdaptationSettingsLoader(
+      permissions: AdaptationPermissionRepository(get: (_) async => http.Response('{"can_edit":true}', 200)),
+      activateChild: (_, __) async => throw StateError('Unable to load'),
+    );
+    await expectLater(loader.load(9), throwsStateError);
+  });
+
 }

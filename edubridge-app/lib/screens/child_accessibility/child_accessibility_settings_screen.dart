@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
-import '../../features/adaptation/data/adaptation_permission_repository.dart';
+import '../../features/adaptation/data/adaptation_settings_loader.dart';
 import '../../theme.dart';
 import '../../widgets/disability/disability_catalog.dart';
 import '../../widgets/disability/disability_picker_sheet.dart';
@@ -34,51 +34,38 @@ class _ChildAccessibilitySettingsScreenState
     extends State<ChildAccessibilitySettingsScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
-  final _permissionRepository = AdaptationPermissionRepository();
+  final _settingsLoader = AdaptationSettingsLoader();
 
   final _customNameCtrl = TextEditingController();
   String? _selectedDisability;
   bool _canEdit = false;
   bool _saving = false;
-  bool _loadingPermission = true;
-  bool _loadingProfile = true;
+  bool _loadingSettings = true;
   bool _profileError = false;
-  bool get _canChange => _canEdit && !_saving && !_loadingProfile && !_profileError;
+  bool get _canChange => _canEdit && !_saving && !_loadingSettings && !_profileError;
 
   @override
   void initState() {
     super.initState();
-    _loadProfile();
-    _loadEditPermission();
+    _loadSettings();
     _selectedDisability = widget.disabilityTypeHint;
     _customNameCtrl.text = widget.disabilityTypeHint ?? '';
   }
 
-  Future<void> _loadProfile() async {
+  Future<void> _loadSettings() async {
     setState(() {
-      _loadingProfile = true;
+      _loadingSettings = true;
       _profileError = false;
     });
     try {
-      await AccessibilityService.instance.setActiveChild(
-        widget.childId,
-        disabilityTypeHint: widget.disabilityTypeHint,
-        forceReload: true,
-      );
+      final canEdit = await _settingsLoader.load(widget.childId,
+        disabilityHint: widget.disabilityTypeHint);
+      if (mounted) _canEdit = canEdit;
     } catch (_) {
       _profileError = true;
     } finally {
-      if (mounted) setState(() => _loadingProfile = false);
+      if (mounted) setState(() => _loadingSettings = false);
     }
-  }
-
-  Future<void> _loadEditPermission() async {
-    final canEdit = await _permissionRepository.canEdit(widget.childId);
-    if (!mounted) return;
-    setState(() {
-      _canEdit = canEdit;
-      _loadingPermission = false;
-    });
   }
 
   @override
@@ -194,23 +181,23 @@ class _ChildAccessibilitySettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (_loadingPermission || _loadingProfile) {
+    if (_loadingSettings) {
       return Scaffold(appBar: JisrAppBar(title: 'إعدادات التكيف'),
         body: const Center(child: CircularProgressIndicator()));
-    }
-    if (!_canEdit) {
-      return Scaffold(
-        appBar: JisrAppBar(title: 'إعدادات التكيف'),
-        body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
-      );
     }
     if (_profileError) {
       return Scaffold(
         appBar: JisrAppBar(title: 'إعدادات التكيف'),
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('تعذّر تحميل إعدادات الطفل'),
-          TextButton(onPressed: _loadProfile, child: const Text('إعادة المحاولة')),
+          TextButton(onPressed: _loadSettings, child: const Text('إعادة المحاولة')),
         ])),
+      );
+    }
+    if (!_canEdit) {
+      return Scaffold(
+        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
       );
     }
     return buildView(context);
