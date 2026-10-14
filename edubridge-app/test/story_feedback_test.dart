@@ -12,7 +12,8 @@ void main() {
       noTimedInteractions: true, sensoryCalmMode: true);
     await tester.pumpWidget(const MaterialApp(home: StorySequencerGame(childName: 'نور')));
     // OrderedRound guarantees the initial choice order differs from the solution.
-    final cards = find.byWidgetPredicate((w) => w is GestureDetector && w.onTap != null);
+    final cards = find.byWidgetPredicate((w) => w is GestureDetector && w.onTap != null &&
+      w.key is ValueKey<String> && (w.key! as ValueKey<String>).value.startsWith('story_choice_'));
     final initialCards = cards.evaluate().map((e) => e.widget.key!).toList();
     expect(initialCards.length, 4);
     for (final card in initialCards) {
