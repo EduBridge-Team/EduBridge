@@ -378,6 +378,12 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   List<DashboardMenuAction> _buildMenuActions() {
     return [
       DashboardMenuAction(
+        id: 'specialist_lessons',
+        label: 'الدروس',
+        icon: AppIcons.lesson,
+        onSelected: () => setState(() => _tabIndex = 1),
+      ),
+      DashboardMenuAction(
         id: 'search_children',
         label: _searchQuery.isEmpty ? 'البحث عن طفل' : 'تعديل بحث الأطفال',
         icon: AppIcons.search,
@@ -591,20 +597,67 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
               child: NavigationBar(
                 height: 72,
-                selectedIndex: _tabIndex,
-                onDestinationSelected: (i) => setState(() => _tabIndex = i),
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(AppIcons.progress),
-                    selectedIcon: Icon(Icons.insights),
-                    label: 'الأطفال',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(AppIcons.lesson),
-                    selectedIcon: Icon(Icons.menu_book),
-                    label: 'الدروس',
-                  ),
-                ],
+                selectedIndex: _tabIndex == 1 ? 1 : 0,
+                onDestinationSelected: (i) {
+                  if (_tabIndex == 1) {
+                    setState(() => _tabIndex = i);
+                    return;
+                  }
+                  if (i == 0) return;
+                  final Widget destination;
+                  switch (i) {
+                    case 1:
+                      destination = const CaseDiscussionScreen();
+                      break;
+                    case 2:
+                      destination = const ChatsScreen();
+                      break;
+                    case 3:
+                      destination = const LearningSupportRequestsScreen();
+                      break;
+                    default:
+                      return;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => destination),
+                  );
+                },
+                destinations: _tabIndex == 1
+                    ? const [
+                        NavigationDestination(
+                          icon: Icon(AppIcons.progress),
+                          selectedIcon: Icon(Icons.insights),
+                          label: 'الأطفال',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(AppIcons.lesson),
+                          selectedIcon: Icon(Icons.menu_book),
+                          label: 'الدروس',
+                        ),
+                      ]
+                    : const [
+                        NavigationDestination(
+                          icon: Icon(AppIcons.progress),
+                          selectedIcon: Icon(Icons.insights),
+                          label: 'الأطفال',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(AppIcons.forum),
+                          selectedIcon: Icon(AppIcons.forum),
+                          label: 'دراسات الحالة',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(AppIcons.chat),
+                          selectedIcon: Icon(AppIcons.chat),
+                          label: 'المحادثات',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(AppIcons.specialist),
+                          selectedIcon: Icon(AppIcons.specialist),
+                          label: 'طلبات الدعم',
+                        ),
+                      ],
               ),
             ),
       floatingActionButton: _tabIndex == 1 && !_adding
