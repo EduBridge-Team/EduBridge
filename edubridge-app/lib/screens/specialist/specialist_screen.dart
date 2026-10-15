@@ -481,15 +481,45 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 specialty: _mySpecialty,
                 menuActions: _buildMenuActions(),
               ),
-              if (_tabIndex == 0 && _searchQuery.isNotEmpty)
+              if (_tabIndex == 0)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: InputChip(
-                      avatar: const Icon(AppIcons.search, size: 17),
-                      label: Text('بحث: $_searchQuery'),
-                      onDeleted: () => setState(() => _searchQuery = ''),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: TextFormField(
+                    initialValue: _searchQuery,
+                    textInputAction: TextInputAction.search,
+                    textDirection: TextDirection.rtl,
+                    onChanged: (value) =>
+                        setState(() => _searchQuery = value.trim()),
+                    decoration: InputDecoration(
+                      hintText: 'ابحث عن طفل بالاسم',
+                      prefixIcon: const Icon(
+                        AppIcons.search,
+                        color: Color(0xFF1A73C9),
+                      ),
+                      suffixIcon: _searchQuery.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: 'تعديل البحث',
+                              icon: const Icon(Icons.close_rounded),
+                              onPressed: () => _openChildSearch(),
+                            ),
+                      filled: true,
+                      fillColor: c.card,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: c.line),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF1A73C9),
+                          width: 1.5,
+                        ),
+                      ),
                     ),
                   ),
                 ),
