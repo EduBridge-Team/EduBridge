@@ -196,6 +196,57 @@
 }
 @media (max-width: 520px) {
   .noor-message-group { max-width: 94%; }
-  .noor-quick-actions { padding-inline: 8px; }
   .noor-response-tools { gap: 6px; }
+}
+
+/* On phones every quick action must be visible without sideways dragging.
+   This applies both to prompts and the role-aware navigation shortcuts. */
+@media (max-width: 640px) {
+  .noor-panel {
+    min-width: 0;
+    max-width: calc(100vw - 20px);
+  }
+
+  .noor-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    max-height: min(172px, 28dvh);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 8px 10px;
+    align-content: start;
+  }
+
+  .noor-quick-action {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    padding: 9px 8px;
+  }
+
+  .noor-header > span:nth-child(2),
+  .noor-messages,
+  .noor-form {
+    min-width: 0;
+  }
+
+  .noor-form textarea {
+    min-width: 0;
+    width: 0;
+  }
+
+  .noor-form > button {
+    flex: 0 0 44px;
+  }
+}
+
+@media (max-width: 360px) {
+  .noor-quick-actions {
+    grid-template-columns: 1fr;
+    max-height: min(180px, 28dvh);
+  }
 }
