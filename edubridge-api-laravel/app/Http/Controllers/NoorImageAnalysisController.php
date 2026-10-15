@@ -76,7 +76,7 @@ class NoorImageAnalysisController extends Controller
         $text = trim($reply);
         if ($incomplete) {
             Log::notice('Noor image reply reached its completion token limit');
-            $text .= "\n\nالشرح لم يكتمل بسبب حد الطول. يمكنك طرح سؤال متابعة عن الصورة.";
+            $text .= "\n\nالشرح لم يكتمل بسبب حد الطول. أعد إرسال الصورة واطلب شرح الجزء المتبقي.";
         }
         return response()->json(['reply' => $text, 'incomplete' => $incomplete]);
     }
