@@ -225,7 +225,9 @@ export default function AssistantWidget() {
   const quickActions = !hasConversation
     ? suggestions
     : lastMessage?.role === 'assistant'
-      ? assistantFollowUps(user, location.pathname)
+      ? lastMessage.incomplete && lastMessage.source !== 'image'
+        ? ['أكمل الإجابة', ...assistantFollowUps(user, location.pathname).slice(0, 3)]
+        : assistantFollowUps(user, location.pathname)
       : []
 
   useEffect(() => () => {
@@ -364,7 +366,11 @@ export default function AssistantWidget() {
   const requestAssistant = async (requestMessages) => {
     const context = buildAssistantContext({ user, location })
     const data = await askAssistant(requestMessages, context)
-    return { role: 'assistant', content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.' }
+    return {
+      role: 'assistant',
+      content: data.reply?.trim() || 'تعذّر التواصل مع نور الآن.',
+      incomplete: data.incomplete === true,
+    }
   }
 
   const toggleDictation = () => {
@@ -415,8 +421,9 @@ export default function AssistantWidget() {
     saveHistory(next)
 
     try {
-      const reply = image
-        ? { role: 'assistant', content: (await analyzeNoorImage(image, question)).reply }
+      const analysis = image ? await analyzeNoorImage(image, question) : null
+      const reply = analysis
+        ? { role: 'assistant', content: analysis.reply, incomplete: analysis.incomplete === true, source: 'image' }
         : await requestAssistant(requestMessages)
       setMessages((current) => {
         const updated = [...current, reply]
