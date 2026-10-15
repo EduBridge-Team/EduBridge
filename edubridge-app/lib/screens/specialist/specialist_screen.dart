@@ -496,13 +496,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         AppIcons.search,
                         color: Color(0xFF1A73C9),
                       ),
-                      suffixIcon: _searchQuery.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: 'تعديل البحث',
-                              icon: const Icon(Icons.close_rounded),
-                              onPressed: () => _openChildSearch(),
-                            ),
                       filled: true,
                       fillColor: c.card,
                       contentPadding: const EdgeInsets.symmetric(
