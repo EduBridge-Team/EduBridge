@@ -22,7 +22,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
           ),
         ],
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           // ═══════════════════════════════════════════════
           //  شريط المعلومات
@@ -30,8 +30,9 @@ extension _StorySequencerGameView on _StorySequencerGameState {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 12, runSpacing: 8,
               children: [
                 _infoChip(
                   icon: '🎯',
@@ -160,6 +161,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                         alignment: Alignment.center,
                         child: Text(
                           emoji,
+                          textScaler: TextScaler.noScaling,
                           style: TextStyle(fontSize: large ? 38 : 32),
                         ),
                       ),
@@ -171,8 +173,6 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                         child: Text(
                           label,
                           textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 11,
                             color: filled
@@ -194,8 +194,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
           // ═══════════════════════════════════════════════
           //  البطاقات المتاحة
           // ═══════════════════════════════════════════════
-          Expanded(
-            child: SingleChildScrollView(
+          Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -225,7 +224,8 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                           opacity: used ? 0.25 : 1.0,
                           child: Container(
                             width: large ? 100 : 90,
-                            height: large ? 100 : 90,
+                            constraints: BoxConstraints(minHeight: large ? 100 : 90),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(18),
@@ -248,10 +248,12 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                             ),
                             alignment: Alignment.center,
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   emoji,
+                                  textScaler: TextScaler.noScaling,
                                   style: TextStyle(
                                       fontSize: large ? 48 : 42),
                                 ),
@@ -263,8 +265,6 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                                     child: Text(
                                       _correctLabels[labelIndex],
                                       textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
@@ -308,10 +308,9 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                   const SizedBox(height: 20),
                 ],
               ),
-            ),
           ),
         ],
-      ),
+      )),
     );
   }
 

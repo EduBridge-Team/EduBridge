@@ -21,7 +21,7 @@ extension _SequenceGameView on _SequenceGameState {
           ),
         ],
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           // ═══════════════════════════════════════════════
           //  شريط المعلومات
@@ -29,8 +29,9 @@ extension _SequenceGameView on _SequenceGameState {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 12, runSpacing: 8,
               children: [
                 _infoChip(
                   icon: '🎯',
@@ -177,6 +178,7 @@ extension _SequenceGameView on _SequenceGameState {
                         alignment: Alignment.center,
                         child: Text(
                           emoji,
+                          textScaler: TextScaler.noScaling,
                           style: TextStyle(fontSize: large ? 42 : 36),
                         ),
                       ),
@@ -188,8 +190,6 @@ extension _SequenceGameView on _SequenceGameState {
                         child: Text(
                           label,
                           textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 11,
                             color: filled
@@ -211,8 +211,7 @@ extension _SequenceGameView on _SequenceGameState {
           // ═══════════════════════════════════════════════
           //  البطاقات المتاحة
           // ═══════════════════════════════════════════════
-          Expanded(
-            child: SingleChildScrollView(
+          Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -241,7 +240,8 @@ extension _SequenceGameView on _SequenceGameState {
                           opacity: used ? 0.25 : 1.0,
                           child: Container(
                             width: large ? 110 : 95,
-                            height: large ? 110 : 95,
+                            constraints: BoxConstraints(minHeight: large ? 110 : 95),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
@@ -264,10 +264,12 @@ extension _SequenceGameView on _SequenceGameState {
                             ),
                             alignment: Alignment.center,
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   emoji,
+                                  textScaler: TextScaler.noScaling,
                                   style: TextStyle(
                                       fontSize: large ? 52 : 44),
                                 ),
@@ -278,8 +280,6 @@ extension _SequenceGameView on _SequenceGameState {
                                     child: Text(
                                       _correctLabels[labelIndex],
                                       textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
@@ -320,10 +320,9 @@ extension _SequenceGameView on _SequenceGameState {
                   const SizedBox(height: 20),
                 ],
               ),
-            ),
           ),
         ],
-      ),
+      )),
     );
   }
 

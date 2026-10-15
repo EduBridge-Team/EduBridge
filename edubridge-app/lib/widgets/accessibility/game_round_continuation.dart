@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_feedback_policy.dart';
+import '../../utils/adaptive_helper.dart';
 
 /// Keeps answered rounds available when the specialist disables timed interaction.
 class GameRoundContinuation extends StatefulWidget {
@@ -109,6 +110,8 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
                 textAlign: TextAlign.center),
             ),
           FilledButton(
+            style: FilledButton.styleFrom(
+              minimumSize: Size(48, AdaptiveHelper.buttonHeight)),
             onPressed: _busy || _continued ? null : _continue,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),

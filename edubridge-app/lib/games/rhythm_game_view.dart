@@ -86,14 +86,14 @@ extension _RhythmGameView on _RhythmGameState {
                     const Icon(Icons.info_outline,
                         color: Color(0xFF8B6DD4), size: 24),
                     const SizedBox(width: 8),
-                    Text(
+                    Expanded(child: Text(
                       'كيف تلعب:',
                       style: TextStyle(
                         fontSize: large ? 18 : 16,
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF8B6DD4),
                       ),
-                    ),
+                    )),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -205,8 +205,9 @@ extension _RhythmGameView on _RhythmGameState {
           ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 12, runSpacing: 8,
                 children: [
                   Text(
                     'الكلمة ${_currentIndex + 1} من $_totalWords',
@@ -262,7 +263,8 @@ extension _RhythmGameView on _RhythmGameState {
               child: Container(
                 key: ValueKey(_currentIndex),
                 width: large ? 300 : 260,
-                height: large ? 220 : 190,
+                constraints: BoxConstraints(minHeight: large ? 220 : 190),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(28),

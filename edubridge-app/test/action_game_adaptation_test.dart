@@ -17,6 +17,7 @@ void main() {
       await tester.pump(const Duration(seconds: 35));
       expect(find.text('بدون وقت — خذ راحتك'), findsOneWidget);
       expect(find.text('إنهاء اللعب'), findsOneWidget);
+      await tester.ensureVisible(find.text('فعلتها!'));
       await tester.tap(find.text('فعلتها!'));
       await tester.pump();
       expect(find.text('أحسنت!'), findsNothing);
