@@ -193,8 +193,6 @@ class _QuickActionGameState extends State<QuickActionGame> {
         foregroundColor: Colors.white,
         title: const Text('⚡ الحركة السريعة'),
         actions: [
-          TextButton(onPressed: _isFinished ? null : _onFinish,
-            child: const Text('إنهاء اللعب', style: TextStyle(color: Colors.white))),
           IconButton(
             icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
             tooltip: _isPaused ? 'متابعة' : 'إيقاف مؤقت',
@@ -322,6 +320,16 @@ class _QuickActionGameState extends State<QuickActionGame> {
                   onPressed: _isPaused ? null : _tapDone,
                 ),
               ),
+            ),
+          if (!_isFinished)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: SizedBox(width: double.infinity, child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size(48, AdaptiveHelper.buttonHeight)),
+                onPressed: _onFinish,
+                child: const Text('إنهاء اللعب'),
+              )),
             ),
         ],
       )),
