@@ -544,21 +544,45 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       bottomNavigationBar: _adding
           ? null
-          : NavigationBar(
-              selectedIndex: _tabIndex,
-              onDestinationSelected: (i) => setState(() => _tabIndex = i),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(AppIcons.progress),
-                  selectedIcon: Icon(Icons.insights),
-                  label: 'الطلاب',
-                ),
-                NavigationDestination(
-                  icon: Icon(AppIcons.lesson),
-                  selectedIcon: Icon(Icons.menu_book),
-                  label: 'الدروس',
-                ),
-              ],
+          : NavigationBarTheme(
+              data: NavigationBarThemeData(
+                backgroundColor: c.card,
+                indicatorColor: const Color(0xFFE1F0FF),
+                labelTextStyle: WidgetStateProperty.resolveWith((states) =>
+                    TextStyle(
+                      fontSize: 12,
+                      fontWeight: states.contains(WidgetState.selected)
+                          ? FontWeight.w800
+                          : FontWeight.w600,
+                      color: states.contains(WidgetState.selected)
+                          ? const Color(0xFF1867BD)
+                          : c.muted,
+                    )),
+                iconTheme: WidgetStateProperty.resolveWith((states) =>
+                    IconThemeData(
+                      size: 24,
+                      color: states.contains(WidgetState.selected)
+                          ? const Color(0xFF1867BD)
+                          : c.muted,
+                    )),
+              ),
+              child: NavigationBar(
+                height: 72,
+                selectedIndex: _tabIndex,
+                onDestinationSelected: (i) => setState(() => _tabIndex = i),
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(AppIcons.progress),
+                    selectedIcon: Icon(Icons.insights),
+                    label: 'الأطفال',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(AppIcons.lesson),
+                    selectedIcon: Icon(Icons.menu_book),
+                    label: 'الدروس',
+                  ),
+                ],
+              ),
             ),
       floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
