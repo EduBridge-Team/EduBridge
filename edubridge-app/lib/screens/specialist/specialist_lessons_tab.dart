@@ -22,7 +22,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
       );
     }
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
       itemCount: _lessons.length,
       itemBuilder: (context, i) => _buildLessonCard(_lessons[i], c),
     );
@@ -64,14 +64,21 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 0,
+      color: c.card,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: c.line),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
         leading: Container(
-          width: 46,
-          height: 46,
+          width: 55,
+          height: 55,
           decoration: BoxDecoration(
-            color: targetColor.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xFFDDF5F7),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Icon(
             hasVideo
@@ -79,27 +86,27 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                 : hasAudio
                     ? AppIcons.volumeUp
                     : AppIcons.lesson,
-            size: 28,
-            color: targetColor,
+            size: 27,
+            color: const Color(0xFF0AABBA),
           ),
         ),
         title: Text(title,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
               color: c.heading,
             )),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (tag != null) Text(tag, style: const TextStyle(fontSize: 12)),
-            const SizedBox(height: 4),
+            const SizedBox(height: 9),
             Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: targetColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFFDDF5F7),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -117,7 +124,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
             ),
           ],
         ),
-        trailing: const Icon(Icons.chevron_left),
+        trailing: const Icon(Icons.chevron_left, color: Color(0xFF186CC8)),
         onTap: () => _viewLessonDetail(lesson),
       ),
     );
