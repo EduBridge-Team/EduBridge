@@ -70,7 +70,9 @@ Widget _buildHeader({
                         Text(
                           specialty == 'learning_support'
                               ? 'مختص دعم تعليمي'
-                              : 'مختص تعليمي',
+                              : specialty == 'educational'
+                                  ? 'مختص تعليمي'
+                                  : 'المختص',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: .85),
                             fontSize: 12,
