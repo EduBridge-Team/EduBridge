@@ -10,18 +10,7 @@ Widget _buildHeader({
   required List<DashboardMenuAction> menuActions,
 }) {
   final textTheme = Theme.of(context).textTheme;
-  final actions = <DashboardMenuAction>[
-    DashboardMenuAction(
-      id: 'notifications',
-      label: 'الإشعارات',
-      icon: AppIcons.notifications,
-      onSelected: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-      ),
-    ),
-    ...menuActions,
-  ];
+  final actions = menuActions;
 
   return Container(
     width: double.infinity,
@@ -112,6 +101,21 @@ Widget _buildHeader({
                     },
                   ),
                 ),
+                Material(
+                  color: Colors.white.withValues(alpha: .16),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: 'الإشعارات',
+                    icon: const Icon(AppIcons.notifications, color: Colors.white),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
                 DashboardMenu(
                   actions: actions,
                   iconSize: 25,
