@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
-import '../services/tts_service.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
+import '../utils/adaptive_feedback_policy.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 part 'sequence_game_view.dart';
@@ -61,6 +62,10 @@ class _SequenceGameState extends State<SequenceGame> {
   late List<String> _correctOrder;
   late List<String> _correctLabels;
   late String _hint;
+  String? _feedback;
+  bool _answeredCorrectly = false;
+  bool _finishing = false;
+  bool _recorded = false;
   int _round = 0;
   int _score = 0;
   int _streak = 0;
@@ -75,6 +80,7 @@ class _SequenceGameState extends State<SequenceGame> {
   @override
   void initState() {
     super.initState();
+    AccessibilityService.instance.profile.addListener(_profileChanged);
     _newRound();
   }
 
@@ -83,7 +89,6 @@ class _SequenceGameState extends State<SequenceGame> {
   // ═══════════════════════════════════════════════════════
   void _newRound() {
     if (_round >= _totalRounds) {
-      _onWin();
       return;
     }
 
@@ -94,6 +99,9 @@ class _SequenceGameState extends State<SequenceGame> {
 
     _ordered = OrderedRound(_correctOrder, random: _rnd);
 
+    _feedback = null;
+    _answeredCorrectly = false;
+
     // ✅ نطق التعليمات
     _speak('رتّب: $_hint');
 
@@ -101,11 +109,26 @@ class _SequenceGameState extends State<SequenceGame> {
   }
 
   void _speak(String text) {
-    if (_profile.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
-    } else {
-      TtsService.instance.speakLine(text);
-    }
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+  }
+
+  void _retry() {
+    if (_finishing || _answeredCorrectly) return;
+    setState(() {
+      _ordered.reset();
+      _feedback = null;
+    });
+    _speak('أعد المحاولة');
+  }
+
+  @override
+  void dispose() {
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
+    super.dispose();
+  }
+
+  void _profileChanged() {
+    if (mounted) setState(() {});
   }
 
 
@@ -113,13 +136,13 @@ class _SequenceGameState extends State<SequenceGame> {
   //  ضغط على بطاقة
   // ═══════════════════════════════════════════════════════
   void _tapEmoji(String emoji) {
-    if (_ordered.complete || _userOrder.contains(emoji)) return;
+    if (_finishing || _feedback != null || _ordered.complete || _userOrder.contains(emoji)) return;
 
     AdaptiveHelper.hapticFeedback();
     setState(() => _ordered.selectValue(emoji));
 
     if (_userOrder.length == _correctOrder.length) {
-      Future.delayed(const Duration(milliseconds: 400), _check);
+      _check();
     }
   }
 
@@ -127,56 +150,54 @@ class _SequenceGameState extends State<SequenceGame> {
   //  فحص الترتيب
   // ═══════════════════════════════════════════════════════
   void _check() {
-    if (!mounted || !_ordered.complete) return;
-    if (_ordered.correct) {
-      // ✅ صحيح
-      AdaptiveHelper.hapticFeedback();
-      setState(() {
+    if (!mounted || !_ordered.complete || _feedback != null) return;
+    final correct = _ordered.correct;
+    setState(() {
+      _answeredCorrectly = correct;
+      _feedback = correct ? 'ممتاز! ترتيب صحيح' : 'خلينا نحاول مرة ثانية، فكّر بترتيب الأحداث';
+      if (correct) {
         _score++;
         _streak++;
-        _round++;
-      });
-
-      if (_streak >= 2) {
-        _speak('ممتاز! متتالية رائعة');
       } else {
-        _speak('أحسنت! ترتيب صحيح');
-      }
-
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) _newRound();
-      });
-    } else {
-      // ❌ خطأ
-      AdaptiveHelper.hapticFeedback();
-      _speak('حاول مرة أخرى — فكّر بالترتيب');
-
-      setState(() {
-        _ordered.reset();
         _streak = 0;
-      });
+      }
+    });
+    AdaptiveHelper.hapticFeedback();
+    _speak(_feedback!);
+  }
+
+  Future<void> _advance() async {
+    if (!_answeredCorrectly || _finishing) return;
+    if (_round + 1 >= _totalRounds) {
+      await _onWin();
+    } else {
+      setState(() => _round++);
+      _newRound();
     }
   }
 
   // ═══════════════════════════════════════════════════════
-  //  عند الفوز
-  // ═══════════════════════════════════════════════════════
-  void _onWin() async {
-    await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
-    await VisualCelebration.show(
-      context,
-      message: 'أحسنت! $_score/$_totalRounds',
-      emoji: '🧩',
-      childName: widget.childName,
-      duration: const Duration(seconds: 3),
-    );
-    if (mounted) Navigator.pop(context);
+  Future<void> _onWin() async {
+    if (_finishing) return;
+    setState(() => _finishing = true);
+    try {
+      if (!_recorded) {
+        await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
+        _recorded = true;
+      }
+      if (!mounted) return;
+      await VisualCelebration.show(context, message: 'أحسنت! $_score/$_totalRounds',
+        emoji: '🧩', childName: widget.childName, duration: const Duration(seconds: 3));
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (mounted) setState(() => _finishing = false);
+      rethrow;
+    }
   }
 
   // ═══════════════════════════════════════════════════════
   //  واجهة المستخدم
   // ═══════════════════════════════════════════════════════
-  void _updateGame(VoidCallback callback) => setState(callback);
 
   @override
   Widget build(BuildContext context) => _buildGame(context);
