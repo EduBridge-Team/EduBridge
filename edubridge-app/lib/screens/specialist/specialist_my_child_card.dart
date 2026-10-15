@@ -30,21 +30,56 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
           children: [
             Row(
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: .14),
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    PresentationText.initial(name, fallback: '؟'),
-                    style: TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.w800,
-                      color: color,
-                    ),
+                SizedBox(
+                  width: 64,
+                  height: 70,
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Container(
+                        width: 58,
+                        height: 58,
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: .14),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFFD7EAF8),
+                            width: 3,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          PresentationText.initial(name, fallback: '؟'),
+                          style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                            color: color,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: c.card,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: c.line),
+                          ),
+                          child: Text(
+                            "${stats['pct']}%",
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: c.infoText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),
