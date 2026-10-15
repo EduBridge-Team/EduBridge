@@ -573,7 +573,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       bottomNavigationBar: _adding
           ? null
-          : NavigationBarTheme(
+          : DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: c.line, width: 1)),
+              ),
+              child: NavigationBarTheme(
               data: NavigationBarThemeData(
                 backgroundColor: c.card,
                 indicatorColor: const Color(0xFFE1F0FF),
@@ -626,8 +630,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 destinations: _tabIndex == 1
                     ? const [
                         NavigationDestination(
-                          icon: Icon(AppIcons.progress),
-                          selectedIcon: Icon(Icons.insights),
+                          icon: Icon(Icons.people_outline),
+                          selectedIcon: Icon(Icons.people_rounded),
                           label: 'الأطفال',
                         ),
                         NavigationDestination(
@@ -638,27 +642,28 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       ]
                     : const [
                         NavigationDestination(
-                          icon: Icon(AppIcons.progress),
-                          selectedIcon: Icon(Icons.insights),
+                          icon: Icon(Icons.people_outline),
+                          selectedIcon: Icon(Icons.people_rounded),
                           label: 'الأطفال',
                         ),
                         NavigationDestination(
-                          icon: Icon(AppIcons.forum),
-                          selectedIcon: Icon(AppIcons.forum),
+                          icon: Icon(Icons.description_outlined),
+                          selectedIcon: Icon(Icons.description_outlined),
                           label: 'دراسات الحالة',
                         ),
                         NavigationDestination(
-                          icon: Icon(AppIcons.chat),
-                          selectedIcon: Icon(AppIcons.chat),
+                          icon: Icon(Icons.chat_bubble_outline),
+                          selectedIcon: Icon(Icons.chat_bubble_outline),
                           label: 'المحادثات',
                         ),
                         NavigationDestination(
-                          icon: Icon(AppIcons.specialist),
-                          selectedIcon: Icon(AppIcons.specialist),
+                          icon: Icon(Icons.inbox_outlined),
+                          selectedIcon: Icon(Icons.inbox_outlined),
                           label: 'طلبات الدعم',
                         ),
                       ],
               ),
+            ),
             ),
       floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
