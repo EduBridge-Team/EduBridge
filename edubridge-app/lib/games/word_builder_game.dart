@@ -166,8 +166,10 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 16,
+              runSpacing: 8,
               children: [
                 Text('الجولة: ${_round + 1}/$_totalRounds',
                     style: const TextStyle(
