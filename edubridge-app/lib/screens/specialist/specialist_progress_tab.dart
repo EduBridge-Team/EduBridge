@@ -53,10 +53,46 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: displayChildren.length,
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      itemCount: displayChildren.length + 1,
       itemBuilder: (context, i) {
-        final row = displayChildren[i] as Map<String, dynamic>;
+        if (i == 0) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 16),
+            child: Row(
+              children: [
+                Text(
+                  _showOnlyMine ? 'الأطفال تحت متابعتي' : 'قائمة الانتظار',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: c.heading,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F1FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${displayChildren.length}',
+                    style: const TextStyle(
+                      color: Color(0xFF1867BD),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        final row = displayChildren[i - 1] as Map<String, dynamic>;
         return _showOnlyMine
             ? buildMyChildCard(row, c)
             : buildAvailableChildCard(row, c);
