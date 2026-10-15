@@ -1,99 +1,123 @@
+// lib/screens/specialist/specialist_header.dart
 part of 'specialist_screen.dart';
 
 Widget _buildHeader({
   required BuildContext context,
+  required JisrColors c,
+  required int tabIndex,
   required String? specialty,
   required List<DashboardMenuAction> menuActions,
 }) {
+  final textTheme = Theme.of(context).textTheme;
+  final actions = <DashboardMenuAction>[
+    DashboardMenuAction(
+      id: 'notifications',
+      label: 'الإشعارات',
+      icon: AppIcons.notifications,
+      onSelected: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      ),
+    ),
+    ...menuActions,
+  ];
+
   return Container(
     width: double.infinity,
-    clipBehavior: Clip.antiAlias,
     decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.bottomLeft,
-        end: Alignment.topRight,
-        colors: [AppColors.brandBlue, AppColors.brandBlueDeep],
-      ),
+      gradient: AppColors.headerGradient,
       borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
     ),
-    child: Stack(
-      children: [
-        PositionedDirectional(
-          start: -65,
-          bottom: -95,
-          child: IgnorePointer(
-            child: Container(
-              width: 190,
-              height: 190,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.brandTeal.withValues(alpha: .25),
-                  width: 24,
-                ),
-              ),
-            ),
-          ),
-        ),
-        SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-            child: Row(
+    child: SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                const ProfileAvatarButton(
-                  size: 48,
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.brandBlue,
+                DashboardMenu(
+                  actions: actions,
+                  iconSize: 26,
+                  iconColor: Colors.white,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FutureBuilder<String?>(
-                    future: ApiService.getName(),
-                    builder: (context, snapshot) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          snapshot.data ?? 'المختص',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          specialty == 'learning_support'
-                              ? 'مختص دعم تعليمي'
-                              : specialty == 'educational'
-                                  ? 'مختص تعليمي'
-                                  : 'المختص',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: .85),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                const Spacer(),
+                ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
+                  child: Image.asset(
+                    'assets/brand_logo.png',
+                    width: 124,
+                    height: 34,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
-                IconButton(
-                  tooltip: 'الإشعارات',
-                  icon: const Icon(AppIcons.notifications, color: Colors.white),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                  ),
-                ),
-                DashboardMenu(actions: menuActions, iconColor: Colors.white),
               ],
             ),
-          ),
+            const SizedBox(height: 18),
+            FutureBuilder<String?>(
+              future: ApiService.getName(),
+              builder: (context, snap) {
+                final name = snap.data ?? 'المختص';
+                return Row(
+                  children: [
+                    const ProfileAvatarButton(
+                      size: 54,
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.brandTealDeep,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'مرحباً، $name',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _subtitleFor(tabIndex, specialty),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.bodySmall?.copyWith(
+                              height: 1.35,
+                              color: Colors.white.withValues(alpha: 0.86),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   );
+}
+
+String _subtitleFor(int tabIndex, String? specialty) {
+  if (tabIndex == 1) {
+    return 'دروس إرشادية للأطفال وأولياء الأمور';
+  }
+
+  switch (specialty) {
+    case 'learning_support':
+      return 'مختص دعم تعليمي • متابعة الأطفال والتقدم';
+    case 'educational':
+      return 'مختص تعليمي • متابعة الأطفال والتقدم';
+    default:
+      return 'متابعة الأطفال والتقييم والتقدم';
+  }
 }

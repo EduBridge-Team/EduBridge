@@ -16,8 +16,6 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
         .kidPalette[_rows.indexOf(row) % AppColors.kidPalette.length];
 
     return Card(
-      color: c.card,
-      surfaceTintColor: Colors.transparent,
       margin: const EdgeInsets.only(bottom: 14),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
@@ -37,7 +35,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                   height: 52,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: .14),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(17),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -66,7 +64,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        need.isEmpty ? 'طفل قيد المتابعة' : need,
+                        need.isEmpty ? 'طالب قيد المتابعة' : need,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 12.5, color: c.muted),
@@ -157,7 +155,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                 Expanded(
                   flex: 3,
                   child: SizedBox(
-                    height: 46,
+                    height: 50,
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -168,7 +166,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       onPressed: () => _openChildProfile(child),
                       icon: const Icon(Icons.folder_open_outlined, size: 19),
                       label: const Text(
-                        'فتح ملف الطفل',
+                        'فتح ملف الطالب',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -183,7 +181,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                 Expanded(
                   flex: 2,
                   child: SizedBox(
-                    height: 46,
+                    height: 50,
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 10),

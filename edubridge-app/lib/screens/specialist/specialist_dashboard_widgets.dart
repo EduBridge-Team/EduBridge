@@ -56,7 +56,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
   }) {
     return Material(
       color: selected
-          ? AppColors.brandBlue
+          ? AppColors.brandBlue.withValues(alpha: .10)
           : Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
@@ -70,7 +70,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
               Icon(
                 icon,
                 size: 19,
-                color: selected ? Colors.white : c.muted,
+                color: selected ? AppColors.brandBlue : c.muted,
               ),
               const SizedBox(width: 7),
               Flexible(
@@ -81,7 +81,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                   style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                    color: selected ? Colors.white : c.body,
+                    color: selected ? AppColors.brandBlue : c.body,
                   ),
                 ),
               ),

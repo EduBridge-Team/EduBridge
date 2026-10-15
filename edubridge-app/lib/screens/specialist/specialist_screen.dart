@@ -378,12 +378,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   List<DashboardMenuAction> _buildMenuActions() {
     return [
       DashboardMenuAction(
-        id: 'lessons',
-        label: 'الدروس',
-        icon: AppIcons.lesson,
-        onSelected: () => setState(() => _tabIndex = 1),
-      ),
-      DashboardMenuAction(
         id: 'search_children',
         label: _searchQuery.isEmpty ? 'البحث عن طفل' : 'تعديل بحث الأطفال',
         icon: AppIcons.search,
@@ -475,62 +469,27 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Theme(
-      data: Theme.of(context).copyWith(
-        colorScheme: Theme.of(context).colorScheme.copyWith(
-          primary: AppColors.brandBlue,
-          onPrimary: Colors.white,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: c.card,
-          indicatorColor: AppColors.brandBlue.withValues(alpha: .12),
-          iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
-            color: states.contains(WidgetState.selected)
-                ? AppColors.brandBlue
-                : c.muted,
-          )),
-          labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
-            color: states.contains(WidgetState.selected)
-                ? AppColors.brandBlue
-                : c.muted,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-          )),
-        ),
-      ),
-      child: Scaffold(
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Theme.of(context).scaffoldBackgroundColor
-          : AppColors.cream,
+    return Scaffold(
       body: Stack(
         children: [
           Column(
             children: [
               _buildHeader(
                 context: context,
+                c: c,
+                tabIndex: _tabIndex,
                 specialty: _mySpecialty,
                 menuActions: _buildMenuActions(),
               ),
-              if (_tabIndex == 0)
+              if (_tabIndex == 0 && _searchQuery.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: TextFormField(
-                    initialValue: _searchQuery,
-                    onChanged: (value) => setState(() => _searchQuery = value.trim()),
-                    decoration: InputDecoration(
-                      hintText: 'ابحث عن طفل...',
-                      prefixIcon: const Icon(AppIcons.search),
-                      filled: true,
-                      fillColor: c.card,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: c.line),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: c.line),
-                      ),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: InputChip(
+                      avatar: const Icon(AppIcons.search, size: 17),
+                      label: Text('بحث: $_searchQuery'),
+                      onDeleted: () => setState(() => _searchQuery = ''),
                     ),
                   ),
                 ),
@@ -546,21 +505,21 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                         icon: AppIcons.clock,
                         value: '$_pendingCount',
                         label: 'بانتظار التقييم',
-                        color: AppColors.brandTealDeep,
+                        color: AppColors.blue,
                       ),
                       const SizedBox(width: 7),
                       _StatsCard(
                         icon: AppIcons.check,
                         value: '$_doneToday',
                         label: 'منجز اليوم',
-                        color: AppColors.brandGreenDeep,
+                        color: AppColors.brandTealDeep,
                       ),
                       const SizedBox(width: 7),
                       _StatsCard(
                         icon: AppIcons.progress,
                         value: '$_pendingProgress',
                         label: 'قيد التنفيذ',
-                        color: AppColors.brandBlue,
+                        color: AppColors.brandTeal,
                       ),
                     ],
                   ),
@@ -586,27 +545,19 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       bottomNavigationBar: _adding
           ? null
           : NavigationBar(
-              selectedIndex: 0,
-              onDestinationSelected: (i) {
-                if (i == 0) {
-                  setState(() => _tabIndex = 0);
-                  return;
-                }
-                final Widget destination;
-                if (i == 1) {
-                  destination = const CaseDiscussionScreen();
-                } else if (i == 2) {
-                  destination = const ChatsScreen();
-                } else {
-                  destination = const LearningSupportRequestsScreen();
-                }
-                Navigator.push(context, MaterialPageRoute(builder: (_) => destination));
-              },
+              selectedIndex: _tabIndex,
+              onDestinationSelected: (i) => setState(() => _tabIndex = i),
               destinations: const [
-                NavigationDestination(icon: Icon(Icons.people_outline), label: 'الأطفال'),
-                NavigationDestination(icon: Icon(AppIcons.report), label: 'دراسات الحالة'),
-                NavigationDestination(icon: Icon(AppIcons.chat), label: 'المحادثات'),
-                NavigationDestination(icon: Icon(Icons.inbox_outlined), label: 'طلبات الدعم'),
+                NavigationDestination(
+                  icon: Icon(AppIcons.progress),
+                  selectedIcon: Icon(Icons.insights),
+                  label: 'الطلاب',
+                ),
+                NavigationDestination(
+                  icon: Icon(AppIcons.lesson),
+                  selectedIcon: Icon(Icons.menu_book),
+                  label: 'الدروس',
+                ),
               ],
             ),
       floatingActionButton: _tabIndex == 1 && !_adding
@@ -621,7 +572,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
             )
           : null,
-      ),
     );
   }
 }
