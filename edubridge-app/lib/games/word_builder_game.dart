@@ -4,8 +4,10 @@ import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
+import '../services/accessibility_service.dart';
+import '../utils/adaptive_helper.dart';
 
-import '../services/tts_service.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 import '../widgets/accessibility/visual_celebration.dart';
 
 class WordBuilderGame extends StatefulWidget {
@@ -35,15 +37,22 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
   List<String> get _scrambled => _ordered.choices;
   List<String> get _userOrder => _ordered.selected;
   Set<int> get _usedIndices => _ordered.usedIndices;
+  String? _feedback;
+  bool _answeredCorrectly = false;
+  bool _finishing = false;
+  bool _recorded = false;
   int _round = 0;
   int _score = 0;
   final _rnd = Random();
+
+  AccessibilityProfile get _profile => AccessibilityService.instance.profile.value;
 
   int get _totalRounds => 6;
 
   @override
   void initState() {
     super.initState();
+    AccessibilityService.instance.profile.addListener(_profileChanged);
     _words = _pickWordsForAge();
     _newRound();
   }
@@ -56,59 +65,95 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
 
   void _newRound() {
     if (_round >= _totalRounds) {
-      _onWin();
       return;
     }
     _currentWord = GameContent.instance.pick('word_builder', _words, (word) => word);
     _ordered = OrderedRound(_currentWord.split(''), random: _rnd);
 
-    TtsService.instance.speakLine('رتّب الحروف لتكوين كلمة');
+    _feedback = null;
+    _answeredCorrectly = false;
+    _speak('رتّب الحروف لتكوين كلمة');
     setState(() {});
   }
 
+  void _speak(String text) {
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+  }
+
+  void _retry() {
+    if (_finishing || _answeredCorrectly) return;
+    setState(() {
+      _ordered.reset();
+      _feedback = null;
+    });
+    _speak('أعد المحاولة');
+  }
+
+  @override
+  void dispose() {
+    AccessibilityService.instance.profile.removeListener(_profileChanged);
+    super.dispose();
+  }
+
+  void _profileChanged() {
+    if (mounted) setState(() {});
+  }
+
+
   void _tapLetter(int index) {
     // ✅ إصلاح: التحقق بالـ index وليس بالقيمة
-    if (_ordered.complete || _usedIndices.contains(index)) return;
+    if (_finishing || _feedback != null || _ordered.complete || _usedIndices.contains(index)) return;
     setState(() {
       _ordered.selectIndex(index);
     });
     if (_userOrder.length == _currentWord.length) {
-      Future.delayed(const Duration(milliseconds: 300), _check);
+      _check();
     }
   }
 
   void _check() {
-    if (!mounted || !_ordered.complete) return;
-    if (_ordered.correct) {
-      setState(() {
-        _score++;
-        _round++;
-      });
-      TtsService.instance.speakLine('أحسنت! $_currentWord');
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted) _newRound();
-      });
+    if (!mounted || !_ordered.complete || _feedback != null) return;
+    final correct = _ordered.correct;
+    setState(() {
+      _answeredCorrectly = correct;
+      _feedback = correct ? 'ممتاز! ترتيب صحيح' : 'خلينا نحاول مرة ثانية، رتّب حروف الكلمة';
+      if (correct) _score++;
+    });
+    AdaptiveHelper.hapticFeedback();
+    _speak(_feedback!);
+  }
+
+  Future<void> _advance() async {
+    if (!_answeredCorrectly || _finishing) return;
+    if (_round + 1 >= _totalRounds) {
+      await _onWin();
     } else {
-      setState(() {
-        _ordered.reset();
-      });
-      TtsService.instance.speakLine('حاول مرة أخرى');
+      setState(() => _round++);
+      _newRound();
     }
   }
 
-  void _onWin() async {
-    await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
-    await VisualCelebration.show(
-      context,
-      message: 'أحسنت! $_score/$_totalRounds كلمات',
-      emoji: '🔤',
-      childName: widget.childName,
-    );
-    if (mounted) Navigator.pop(context);
+  Future<void> _onWin() async {
+    if (_finishing) return;
+    setState(() => _finishing = true);
+    try {
+      if (!_recorded) {
+        await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
+        _recorded = true;
+      }
+      if (!mounted) return;
+      await VisualCelebration.show(context, message: 'أحسنت! $_score/$_totalRounds كلمات',
+        emoji: '🔤', childName: widget.childName, duration: const Duration(seconds: 3));
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (mounted) setState(() => _finishing = false);
+      rethrow;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final large = _profile.extraLargeTouchTargets;
     return Scaffold(
       backgroundColor: const Color(0xFFF0F9FA),
       appBar: AppBar(
@@ -116,7 +161,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
         foregroundColor: Colors.white,
         title: const Text('🔤 بناء الكلمة'),
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(14),
@@ -134,8 +179,10 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
             ),
           ),
           const SizedBox(height: 30),
-          const Text('رتّب الحروف بالترتيب:',
-              style: TextStyle(fontSize: 20, color: Colors.grey)),
+          Text('كوّن كلمة: $_currentWord', textAlign: TextAlign.center,
+              style: TextStyle(fontSize: large ? 28 : 22, fontWeight: FontWeight.bold)),
+          TextButton.icon(onPressed: _finishing ? null : () => AdaptiveHelper.speak(_currentWord),
+            icon: const Icon(Icons.volume_up_outlined), label: const Text('استمع للكلمة')),
           const SizedBox(height: 20),
 
           Padding(
@@ -146,7 +193,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               children: List.generate(_currentWord.length, (i) {
                 final letter = i < _userOrder.length ? _userOrder[i] : '';
                 return Container(
-                  width: 55, height: 65,
+                  width: large ? 88 : 55, height: large ? 88 : 65,
                   decoration: BoxDecoration(
                     color: letter.isNotEmpty
                         ? const Color(0xFF1AA9B2)
@@ -182,11 +229,12 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
                 // ✅ إصلاح: التحقق بالـ index
                 final used = _usedIndices.contains(i);
                 return GestureDetector(
+                  key: ValueKey('word_choice_$i'),
                   onTap: used ? null : () => _tapLetter(i),
                   child: Opacity(
                     opacity: used ? 0.3 : 1,
                     child: Container(
-                      width: 60, height: 60,
+                      width: large ? 88 : 60, height: large ? 88 : 60,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(14),
@@ -203,8 +251,16 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               }),
             ),
           ),
+          if (_feedback != null)
+            Semantics(liveRegion: true, child: Text(_feedback!, textAlign: TextAlign.center)),
+          GameRoundContinuation(key: ValueKey(_round),
+            answered: _answeredCorrectly, onContinue: _advance),
+          if (_userOrder.isNotEmpty && !_answeredCorrectly)
+            TextButton(onPressed: _finishing ? null : _retry,
+              child: Text(_feedback == null ? 'أعد الترتيب' : 'حاول مرة أخرى')),
+          const SizedBox(height: 20),
         ],
-      ),
+      )),
     );
   }
 }
