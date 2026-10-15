@@ -7,20 +7,44 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
 
     if (displayChildren.isEmpty) {
       return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 54),
         children: [
-          const SizedBox(height: 80),
-          Icon(
-            _showOnlyMine ? Icons.person_off_outlined : AppIcons.clock,
-            size: 72,
-            color: c.muted,
+          Center(
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: const BoxDecoration(
+                color: Color(0xFFE7F6FA),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _showOnlyMine ? Icons.person_off_outlined : AppIcons.clock,
+                size: 46,
+                color: const Color(0xFF168CC5),
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Center(
             child: Text(
               _showOnlyMine
                   ? 'لا يوجد أطفال معيّنون لك حالياً'
                   : 'لا يوجد أطفال في قائمة الانتظار',
-              style: TextStyle(fontSize: 18, color: c.muted),
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: c.heading,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: Text(
+              _showOnlyMine
+                  ? 'سيظهر الأطفال هنا عند إضافتهم إلى قائمة المتابعة.'
+                  : 'ستظهر طلبات الأطفال هنا عند توفرها.',
+              style: TextStyle(fontSize: 13, height: 1.6, color: c.muted),
               textAlign: TextAlign.center,
             ),
           ),
