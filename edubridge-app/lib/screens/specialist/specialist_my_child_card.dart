@@ -201,7 +201,9 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
               ],
             ),
             if (!isPending) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
+              Divider(height: 1, thickness: 1, color: c.line),
+              const SizedBox(height: 4),
               Theme(
                 data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
