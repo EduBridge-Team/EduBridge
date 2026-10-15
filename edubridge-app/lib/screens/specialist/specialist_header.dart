@@ -119,6 +119,7 @@ Widget _buildHeader({
                 DashboardMenu(
                   actions: actions,
                   iconSize: 25,
+                  menuIcon: Icons.more_vert,
                   iconColor: Colors.white,
                 ),
               ],
