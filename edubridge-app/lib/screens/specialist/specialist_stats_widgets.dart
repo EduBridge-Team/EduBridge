@@ -1,4 +1,4 @@
-// lib/screens/specialist/specialist_stats_widgets.dart
+// Shared Figma-inspired dashboard statistics. Counts remain API-driven.
 part of 'specialist_screen.dart';
 
 class _StatsCard extends StatelessWidget {
@@ -19,40 +19,47 @@ class _StatsCard extends StatelessWidget {
     final c = JisrColors.of(context);
     return Expanded(
       child: Container(
-        constraints: const BoxConstraints(minHeight: 72),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        constraints: const BoxConstraints(minHeight: 116),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 5),
         decoration: BoxDecoration(
           color: c.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: c.line),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0D3C6C).withValues(alpha: .035),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 26,
-              height: 26,
+              width: 37,
+              height: 37,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: .10),
-                borderRadius: BorderRadius.circular(9),
+                color: color.withValues(alpha: .12),
+                shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 15, color: color),
+              child: Icon(icon, size: 19, color: color),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 9),
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 19,
                 fontWeight: FontWeight.w800,
-                color: c.heading,
+                color: color,
               ),
             ),
-            const SizedBox(height: 1),
+            const SizedBox(height: 7),
             Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 9.5, color: c.muted),
+              style: TextStyle(fontSize: 10.5, color: c.muted),
               textAlign: TextAlign.center,
             ),
           ],
@@ -71,10 +78,10 @@ class _CountBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.11),
-        borderRadius: BorderRadius.circular(10),
+        color: color.withValues(alpha: .11),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         text,
