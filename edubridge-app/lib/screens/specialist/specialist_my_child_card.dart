@@ -107,51 +107,6 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     ],
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.brandBlue.withValues(alpha: .08),
-                        borderRadius: BorderRadius.circular(11),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            AppIcons.starFilled,
-                            size: 14,
-                            color: AppColors.brandTealLight,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${stats['pct']}%',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: c.infoText,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isPending) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        'بانتظار التقييم',
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          color: c.muted,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
               ],
             ),
             if (child['has_pending_therapy_request'] == true) ...[
