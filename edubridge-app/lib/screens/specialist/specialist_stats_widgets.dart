@@ -19,7 +19,7 @@ class _StatsCard extends StatelessWidget {
     final c = JisrColors.of(context);
     return Expanded(
       child: Container(
-        constraints: const BoxConstraints(minHeight: 72),
+        constraints: const BoxConstraints(minHeight: 100),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
         decoration: BoxDecoration(
           color: c.card,
@@ -30,11 +30,11 @@ class _StatsCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 26,
-              height: 26,
+              width: 34,
+              height: 34,
               decoration: BoxDecoration(
                 color: color.withValues(alpha: .10),
-                borderRadius: BorderRadius.circular(9),
+                shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 15, color: color),
             ),
@@ -44,7 +44,7 @@ class _StatsCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: c.heading,
+                color: color,
               ),
             ),
             const SizedBox(height: 1),
