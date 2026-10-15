@@ -2,8 +2,6 @@ part of 'specialist_screen.dart';
 
 Widget _buildHeader({
   required BuildContext context,
-  required JisrColors c,
-  required int tabIndex,
   required String? specialty,
   required List<DashboardMenuAction> menuActions,
 }) {

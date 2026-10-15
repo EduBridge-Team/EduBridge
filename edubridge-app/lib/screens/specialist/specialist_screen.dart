@@ -508,8 +508,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
             children: [
               _buildHeader(
                 context: context,
-                c: c,
-                tabIndex: _tabIndex,
                 specialty: _mySpecialty,
                 menuActions: _buildMenuActions(),
               ),
