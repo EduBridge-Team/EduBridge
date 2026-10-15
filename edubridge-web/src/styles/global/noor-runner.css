@@ -13,56 +13,8 @@
 }
 
 
-/* Auth viewport scroll lock */
-@media (min-width: 781px) {
-    html.auth-page-active {
-        width: 100%;
-        height: 100%;
-        overflow: hidden !important;
-        overscroll-behavior: none;
-    }
-
-    body.auth-page-active {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100dvh !important;
-        min-height: 0 !important;
-        max-height: 100dvh !important;
-        overflow: hidden !important;
-        overscroll-behavior: none;
-        touch-action: none;
-    }
-
-    body.auth-page-active #root {
-        width: 100%;
-        height: 100dvh !important;
-        min-height: 0 !important;
-        max-height: 100dvh !important;
-        overflow: hidden !important;
-    }
-
-    body.auth-page-active #root > div {
-        display: grid;
-        grid-template-rows: var(--site-header-height) minmax(0, 1fr);
-        width: 100%;
-        height: 100dvh !important;
-        min-height: 0 !important;
-        max-height: 100dvh !important;
-        overflow: hidden !important;
-    }
-
-    body.auth-page-active .auth-page {
-        grid-row: 2;
-        width: 100%;
-        height: auto !important;
-        min-height: 0 !important;
-        max-height: none !important;
-        overflow: hidden !important;
-    }
-}
-
-
+/* Login and registration use document scrolling: a fixed-height viewport hides
+   form actions on laptops, at high zoom and when validation errors appear. */
 
 /* Independent Noor runner widget — separate from the assistant launcher. */
 .noor-runner-wrap {
