@@ -68,7 +68,11 @@ trait AssistantChatAction
                             'content' => $transcript,
                         ],
                     ],
-                    'max_completion_tokens' => 500,
+                    'max_completion_tokens' => 1600,
+                    // GPT-OSS spends completion tokens on reasoning as well as
+                    // visible text. Reserve more of the budget for the answer.
+                    ...(str_starts_with((string) config('services.groq.model'), 'openai/gpt-oss-')
+                        ? ['reasoning_effort' => 'low'] : []),
                 ]);
         } catch (ConnectionException $e) {
             report($e);
@@ -95,6 +99,12 @@ trait AssistantChatAction
             return response()->json(['error' => 'وصل رد غير مكتمل من المساعد.'], 502);
         }
 
-        return response()->json(['reply' => $reply]);
+        $incomplete = ($payload['choices'][0]['finish_reason'] ?? null) === 'length';
+        if ($incomplete) {
+            Log::notice('Groq assistant reply reached its completion token limit');
+            $reply .= "\n\nالرد لم يكتمل بسبب حد الطول. اضغط «أكمل الإجابة» للمتابعة.";
+        }
+
+        return response()->json(['reply' => $reply, 'incomplete' => $incomplete]);
     }
 }
