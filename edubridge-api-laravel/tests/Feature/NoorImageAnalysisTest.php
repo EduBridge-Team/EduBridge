@@ -42,8 +42,27 @@ class NoorImageAnalysisTest extends TestCase
         $this->assertSame('الصورة تعرض سؤال جمع.', $response->getData(true)['reply']);
         Http::assertSent(fn (OutboundRequest $sent) =>
             $sent['model'] === 'test-vision-model'
+            && $sent['max_completion_tokens'] === 1024
             && $sent['messages'][1]['content'][1]['type'] === 'image_url'
             && str_starts_with($sent['messages'][1]['content'][1]['image_url']['url'], 'data:image/png;base64,')
         );
+    }
+
+    public function test_token_limited_image_analysis_is_not_reported_as_complete(): void
+    {
+        config(['services.groq.key' => 'test-key', 'services.groq.vision_model' => 'test-vision-model']);
+        Http::fake(['api.groq.com/*' => Http::response([
+            'choices' => [[
+                'finish_reason' => 'length',
+                'message' => ['content' => 'تظهر في الصورة أعداد تحتاج إلى جمع.'],
+            ]],
+        ])]);
+
+        $response = app(NoorImageAnalysisController::class)
+            ->analyze($this->request(UploadedFile::fake()->image('lesson.png', 100, 100)));
+
+        $this->assertSame(200, $response->status());
+        $this->assertTrue($response->getData(true)['incomplete']);
+        $this->assertStringContainsString('أعد إرسال الصورة', $response->getData(true)['reply']);
     }
 }
