@@ -101,16 +101,29 @@ Widget _buildHeader({
                     },
                   ),
                 ),
-                Material(
-                  color: Colors.white.withValues(alpha: .16),
-                  shape: const CircleBorder(),
-                  child: IconButton(
-                    tooltip: 'الإشعارات',
-                    icon: const Icon(AppIcons.notifications, color: Colors.white),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen(),
+                ValueListenableBuilder<int>(
+                  valueListenable:
+                      NotificationListenerService.instance.unreadCount,
+                  builder: (context, unreadCount, _) => Material(
+                    color: Colors.white.withValues(alpha: .16),
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      tooltip: 'الإشعارات',
+                      icon: Badge(
+                        isLabelVisible: unreadCount > 0,
+                        smallSize: 9,
+                        backgroundColor: const Color(0xFFE94C60),
+                        child: const Icon(
+                          AppIcons.notifications,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
                       ),
                     ),
                   ),

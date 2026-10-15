@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
+import '../../services/notification_listener_service.dart';
 import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';
@@ -575,7 +576,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           ? null
           : DecoratedBox(
               decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: c.line, width: 1)),
+                border: const Border(top: BorderSide(color: Color(0xFF8FA5B5), width: 1.5)),
               ),
               child: NavigationBarTheme(
               data: NavigationBarThemeData(
@@ -593,14 +594,14 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     )),
                 iconTheme: WidgetStateProperty.resolveWith((states) =>
                     IconThemeData(
-                      size: 24,
+                      size: 23,
                       color: states.contains(WidgetState.selected)
                           ? const Color(0xFF1867BD)
                           : c.muted,
                     )),
               ),
               child: NavigationBar(
-                height: 72,
+                height: 76,
                 selectedIndex: _tabIndex == 1 ? 1 : 0,
                 onDestinationSelected: (i) {
                   if (_tabIndex == 1) {
