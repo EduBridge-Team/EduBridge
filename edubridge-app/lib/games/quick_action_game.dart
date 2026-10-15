@@ -202,7 +202,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
           ),
         ],
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
@@ -287,12 +287,10 @@ class _QuickActionGameState extends State<QuickActionGame> {
             ),
           ),
           const SizedBox(height: 20),
-          Expanded(
-            child: Center(
+          Center(
               child: _isFinished
                   ? _buildFinishedView(large)
                   : _buildPlayingView(large),
-            ),
           ),
           const SizedBox(height: 20),
           if (!_isFinished)
@@ -326,7 +324,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
               ),
             ),
         ],
-      ),
+      )),
     );
   }
 }
