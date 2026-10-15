@@ -54,7 +54,7 @@ class NoorImageAnalysisController extends Controller
                             ]],
                         ]],
                     ],
-                    'max_completion_tokens' => 500,
+                    'max_completion_tokens' => 1024,
                 ]);
         } catch (ConnectionException $e) {
             report($e);
@@ -72,6 +72,12 @@ class NoorImageAnalysisController extends Controller
         if (!is_string($reply) || trim($reply) === '') {
             return response()->json(['error' => 'وصل رد غير مكتمل من خدمة الصور.'], 502);
         }
-        return response()->json(['reply' => trim($reply)]);
+        $incomplete = $response->json('choices.0.finish_reason') === 'length';
+        $text = trim($reply);
+        if ($incomplete) {
+            Log::notice('Noor image reply reached its completion token limit');
+            $text .= "\n\nالشرح لم يكتمل بسبب حد الطول. يمكنك طرح سؤال متابعة عن الصورة.";
+        }
+        return response()->json(['reply' => $text, 'incomplete' => $incomplete]);
     }
 }
