@@ -44,6 +44,12 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.ensureVisible(find.text(entry.value.$2));
         await tester.pump();
+        if (entry.key == 'quick action') {
+          await tester.ensureVisible(find.text('إنهاء اللعب'));
+          await tester.pump();
+          expect(find.text('إنهاء اللعب').hitTestable(), findsOneWidget);
+          expect(tester.getSize(find.byType(OutlinedButton)).height, greaterThanOrEqualTo(88));
+        }
         if (entry.key == 'rhythm') {
           await tester.tap(find.text('ابدأ'));
           await tester.pump();
