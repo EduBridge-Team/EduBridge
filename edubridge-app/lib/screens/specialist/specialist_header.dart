@@ -133,6 +133,7 @@ Widget _buildHeader({
                   actions: actions,
                   iconSize: 25,
                   menuIcon: Icons.more_vert,
+                  specialistFigmaMenu: true,
                   iconColor: Colors.white,
                 ),
               ],
