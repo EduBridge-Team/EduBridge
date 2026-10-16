@@ -31,14 +31,14 @@ void main() {
 
     expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
     expect(find.text('اكتب رسالتك...'), findsOneWidget);
-    final send = tester.widget<IconButton>(find.byTooltip('إرسال'));
+    final send = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.mark_email_read_outlined));
     expect(send.onPressed, isNull);
 
     await tester.enterText(find.byType(TextField), 'مرحبا');
     await tester.pump();
-    expect(tester.widget<IconButton>(find.byTooltip('إرسال')).onPressed,
+    expect(tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.mark_email_read_outlined)).onPressed,
         isNotNull);
-    await tester.tap(find.byTooltip('إرسال'));
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.mark_email_read_outlined));
     expect(sent, 'مرحبا');
   });
 }
