@@ -125,7 +125,7 @@ class _SpecialistChildProfileScreenState
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: AppColors.headerGradient,
+        gradient: AppColors.appBarGradient,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(

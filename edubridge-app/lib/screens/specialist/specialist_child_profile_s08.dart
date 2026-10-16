@@ -61,7 +61,18 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
       if (student.disability.isNotEmpty) student.disability,
     ].join(' • ');
     return Scaffold(
-      appBar: BrandAppBar(
+      appBar: AppBar(
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        flexibleSpace: const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: AppColors.appBarGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
+        ),
         toolbarHeight: 64,
         centerTitle: false,
         leading: IconButton(
