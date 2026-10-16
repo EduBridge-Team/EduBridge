@@ -56,6 +56,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   int _tabIndex = 0;
+  int? _selectedLessonTypeId;
   List<Map<String, dynamic>> _rows = [];
   List _lessons = [];
   List _types = [];
@@ -587,105 +588,100 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       bottomNavigationBar: _adding
           ? null
           : DecoratedBox(
-              decoration: BoxDecoration(
-                border: const Border(top: BorderSide(color: Color(0xFF8FA5B5), width: 1.5)),
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Color(0xFF8FA5B5), width: 1.5),
+                ),
               ),
               child: NavigationBarTheme(
-              data: NavigationBarThemeData(
-                backgroundColor: c.card,
-                indicatorColor: const Color(0xFFE1F0FF),
-                labelTextStyle: WidgetStateProperty.resolveWith((states) =>
-                    TextStyle(
+                data: NavigationBarThemeData(
+                  backgroundColor: c.card,
+                  indicatorColor: _tabIndex == 1
+                      ? Colors.transparent
+                      : const Color(0xFFE1F0FF),
+                  labelTextStyle: WidgetStateProperty.resolveWith(
+                    (states) => TextStyle(
                       fontSize: 12,
-                      fontWeight: states.contains(WidgetState.selected)
+                      fontWeight: states.contains(WidgetState.selected) &&
+                              _tabIndex == 0
                           ? FontWeight.w800
                           : FontWeight.w600,
-                      color: states.contains(WidgetState.selected)
+                      color: states.contains(WidgetState.selected) &&
+                              _tabIndex == 0
                           ? const Color(0xFF1867BD)
                           : c.muted,
-                    )),
-                iconTheme: WidgetStateProperty.resolveWith((states) =>
-                    IconThemeData(
+                    ),
+                  ),
+                  iconTheme: WidgetStateProperty.resolveWith(
+                    (states) => IconThemeData(
                       size: 23,
-                      color: states.contains(WidgetState.selected)
+                      color: states.contains(WidgetState.selected) &&
+                              _tabIndex == 0
                           ? const Color(0xFF1867BD)
                           : c.muted,
-                    )),
-              ),
-              child: NavigationBar(
-                height: 76,
-                selectedIndex: _tabIndex == 1 ? 1 : 0,
-                onDestinationSelected: (i) {
-                  if (_tabIndex == 1) {
-                    setState(() => _tabIndex = i);
-                    return;
-                  }
-                  if (i == 0) return;
-                  final Widget destination;
-                  switch (i) {
-                    case 1:
-                      destination = const CaseDiscussionScreen();
-                      break;
-                    case 2:
-                      destination = const ChatsScreen();
-                      break;
-                    case 3:
-                      destination = const LearningSupportRequestsScreen();
-                      break;
-                    default:
+                    ),
+                  ),
+                ),
+                child: NavigationBar(
+                  height: 76,
+                  selectedIndex: 0,
+                  onDestinationSelected: (i) {
+                    if (i == 0) {
+                      if (_tabIndex != 0) setState(() => _tabIndex = 0);
                       return;
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => destination),
-                  );
-                },
-                destinations: _tabIndex == 1
-                    ? const [
-                        NavigationDestination(
-                          icon: Icon(Icons.people_outline),
-                          selectedIcon: Icon(Icons.people_rounded),
-                          label: 'الأطفال',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(AppIcons.lesson),
-                          selectedIcon: Icon(Icons.menu_book),
-                          label: 'الدروس',
-                        ),
-                      ]
-                    : const [
-                        NavigationDestination(
-                          icon: Icon(Icons.people_outline),
-                          selectedIcon: Icon(Icons.people_rounded),
-                          label: 'الأطفال',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.description_outlined),
-                          selectedIcon: Icon(Icons.description_outlined),
-                          label: 'دراسات الحالة',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.chat_bubble_outline),
-                          selectedIcon: Icon(Icons.chat_bubble_outline),
-                          label: 'المحادثات',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.inbox_outlined),
-                          selectedIcon: Icon(Icons.inbox_outlined),
-                          label: 'طلبات الدعم',
-                        ),
-                      ],
+                    }
+                    final Widget destination;
+                    switch (i) {
+                      case 1:
+                        destination = const CaseDiscussionScreen();
+                        break;
+                      case 2:
+                        destination = const ChatsScreen();
+                        break;
+                      case 3:
+                        destination = const LearningSupportRequestsScreen();
+                        break;
+                      default:
+                        return;
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => destination),
+                    );
+                  },
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.people_outline),
+                      selectedIcon: Icon(Icons.people_rounded),
+                      label: 'الأطفال',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.description_outlined),
+                      label: 'دراسات الحالة',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.chat_bubble_outline),
+                      label: 'المحادثات',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.inbox_outlined),
+                      label: 'طلبات الدعم',
+                    ),
+                  ],
+                ),
               ),
             ),
-            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _tabIndex == 1 && !_adding
           ? FloatingActionButton.extended(
+              backgroundColor: const Color(0xFF1769C2),
+              foregroundColor: Colors.white,
               onPressed: () async {
                 if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(AppIcons.add),
               label: const Text(
-                'إضافة درس',
+                'اقتراح درس',
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             )
