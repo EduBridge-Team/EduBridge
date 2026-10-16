@@ -103,49 +103,59 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(AdaptiveHelper.spacing),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: JisrColors.of(context).card,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(26),
             border: Border.all(color: JisrColors.of(context).line),
           ),
-          child: SizedBox(
-          width: 110,
-          height: 110,
-          child: Stack(
-            alignment: Alignment.center,
+          child: Row(
             children: [
               SizedBox(
-                width: 110,
-                height: 110,
-                child: CircularProgressIndicator(
-                  value: percent,
-                  strokeWidth: 10,
-                  strokeCap: StrokeCap.round,
-                  color: AppColors.green,
-                  backgroundColor: Colors.grey.shade200,
+                width: 96,
+                height: 96,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox.expand(
+                      child: CircularProgressIndicator(
+                        value: percent,
+                        strokeWidth: 10,
+                        strokeCap: StrokeCap.round,
+                        color: AppColors.green,
+                        backgroundColor: JisrColors.of(context).line,
+                      ),
+                    ),
+                    Text('${(percent * 100).round()}%',
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+                  ],
                 ),
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${(percent * 100).round()}%',
-                    style: TextStyle(
-                      fontSize: AdaptiveHelper.titleFontSize + 10,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AdaptiveText('نسبة الإنجاز', type: AdaptiveTextType.caption),
+                    const SizedBox(height: 7),
+                    AdaptiveText(
+                      total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
+                        : 'أكمل ${widget.childName} ${(percent * 100).round()}% من دروسه',
                       fontWeight: FontWeight.w800,
-                      color: AdaptiveHelper.textColor(context),
                     ),
-                  ),
-                  const AdaptiveText(
-                    'الإنجاز',
-                    type: AdaptiveTextType.caption,
-                  ),
-                ],
+                    const SizedBox(height: 7),
+                    AdaptiveText('$done من أصل $total درس مكتمل',
+                      type: AdaptiveTextType.caption),
+                    if (avgScore != null) ...[
+                      const SizedBox(height: 7),
+                      AdaptiveText('المستوى: $avgScore%',
+                        type: AdaptiveTextType.caption),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
-        ),
         ),
         SizedBox(height: AdaptiveHelper.spacing),
         Row(
