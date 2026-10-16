@@ -27,6 +27,7 @@ class DashboardMenu extends StatelessWidget {
   final int badgeCount;
   final double iconSize;
   final IconData menuIcon;
+  final bool specialistFigmaMenu;
   final Color iconColor;
 
   const DashboardMenu({
@@ -36,6 +37,7 @@ class DashboardMenu extends StatelessWidget {
     this.badgeCount = 0,
     this.iconSize = 27,
     this.menuIcon = Icons.menu_rounded,
+    this.specialistFigmaMenu = false,
     this.iconColor = Colors.white,
   });
 
@@ -62,6 +64,10 @@ class DashboardMenu extends StatelessWidget {
                       color: Theme.of(context).colorScheme.surface,
                       surfaceTintColor: Colors.transparent,
                       elevation: 8,
+                      position: PopupMenuPosition.under,
+                      constraints: specialistFigmaMenu
+                          ? const BoxConstraints(minWidth: 230, maxWidth: 230)
+                          : null,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: BorderSide(
@@ -71,7 +77,7 @@ class DashboardMenu extends StatelessWidget {
                         ),
                       ),
                       icon: Badge(
-                        isLabelVisible: count > 0,
+                        isLabelVisible: count > 0 && !specialistFigmaMenu,
                         label: Text('$count'),
                         child: Icon(
                           menuIcon,
@@ -106,7 +112,44 @@ class DashboardMenu extends StatelessWidget {
                           }
                         }
                       },
-                      itemBuilder: (context) => [
+                      itemBuilder: (context) => specialistFigmaMenu
+                          ? [
+                              const PopupMenuItem<String>(
+                                value: 'specialist_lessons',
+                                height: 46,
+                                child: _SpecialistFigmaMenuRow(
+                                  icon: Icons.menu_book_outlined,
+                                  label: 'الدروس',
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'support',
+                                height: 46,
+                                child: _SpecialistFigmaMenuRow(
+                                  icon: Icons.headset_mic_outlined,
+                                  label: 'الدعم الفني',
+                                ),
+                              ),
+                              PopupMenuItem<String>(
+                                value: '_assistant',
+                                height: 46,
+                                child: _SpecialistFigmaMenuRow(
+                                  icon: assistantVisible
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  label: assistantVisible ? 'إخفاء نور' : 'إظهار نور',
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'about_app',
+                                height: 46,
+                                child: _SpecialistFigmaMenuRow(
+                                  icon: Icons.info_outline,
+                                  label: 'عن التطبيق',
+                                ),
+                              ),
+                            ]
+                          : [
                         for (final action in actions)
                           PopupMenuItem<String>(
                             value: action.id,
@@ -204,4 +247,31 @@ class _MenuRow extends StatelessWidget {
       ],
     );
   }
+}
+
+
+/// Compact specialist overflow rows matching the S03 Figma reference.
+class _SpecialistFigmaMenuRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _SpecialistFigmaMenuRow({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Icon(icon, color: const Color(0xFF176CCC), size: 21),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ],
+  );
 }
