@@ -493,12 +493,17 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
-        child: _buildHeader(
-          context: context,
-          c: c,
-          tabIndex: _tabIndex,
-          specialty: _mySpecialty,
-          menuActions: _buildMenuActions(),
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: MediaQuery.paddingOf(context).top,
+          ),
+          child: _buildHeader(
+            context: context,
+            c: c,
+            tabIndex: _tabIndex,
+            specialty: _mySpecialty,
+            menuActions: _buildMenuActions(),
+          ),
         ),
       ),
       body: Stack(
