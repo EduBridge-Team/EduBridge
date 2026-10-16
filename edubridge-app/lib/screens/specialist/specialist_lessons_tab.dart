@@ -76,7 +76,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
         label: Text(label, maxLines: 1),
         selected: selected,
         showCheckmark: false,
-        onSelected: (_) => setState(() => _selectedLessonTypeId = id),
+        onSelected: (_) => _refreshState(() => _selectedLessonTypeId = id),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         shape: StadiumBorder(
           side: BorderSide(
