@@ -7,7 +7,10 @@ import '../theme.dart';
 import '../utils/safe_bottom.dart';
 
 class SupportSheet extends StatefulWidget {
-  const SupportSheet({super.key});
+  const SupportSheet({super.key, this.figmaS14 = false});
+
+  /// Figma S14 modal treatment used by the specialist dashboard only.
+  final bool figmaS14;
 
   @override
   State<SupportSheet> createState() => _SupportSheetState();
@@ -77,8 +80,184 @@ class _SupportSheetState extends State<SupportSheet> {
     }
   }
 
+  InputDecoration _s14FieldDecoration(String label, {Widget? icon}) {
+    const lineColor = Color(0xFFD8E7F2);
+    return InputDecoration(
+      hintText: label,
+      hintStyle: const TextStyle(
+        color: Color(0xFF738FA8),
+        fontSize: 15,
+        fontWeight: FontWeight.w400,
+      ),
+      prefixIcon: icon,
+      filled: true,
+      fillColor: Colors.white,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 15,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: const BorderSide(color: lineColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: const BorderSide(
+          color: Color(0xFF1C69C5),
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: const BorderSide(color: AppColors.red),
+      ),
+    );
+  }
+
+  Widget _buildS14Dialog(BuildContext context) {
+    const blue = Color(0xFF196AC5);
+    const heading = Color(0xFF13314D);
+
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.headset_mic_outlined,
+                    size: 23, color: blue),
+                  const SizedBox(width: 9),
+                  const Flexible(
+                    child: Text(
+                      'تواصل مع الدعم الفني',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: heading,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                height: 52,
+                child: TextField(
+                  controller: _subjectController,
+                  enabled: !_sending,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
+                  textInputAction: TextInputAction.next,
+                  decoration: _s14FieldDecoration(
+                    'الموضوع',
+                    icon: const Icon(Icons.edit_outlined, size: 20,
+                      color: blue),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 110,
+                child: TextField(
+                  controller: _messageController,
+                  enabled: !_sending,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  textAlignVertical: TextAlignVertical.top,
+                  expands: true,
+                  minLines: null,
+                  maxLines: null,
+                  textInputAction: TextInputAction.newline,
+                  decoration: _s14FieldDecoration('الرسالة'),
+                ),
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  _error!,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(color: AppColors.red, fontSize: 12),
+                ),
+              ],
+              const SizedBox(height: 13),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 35,
+                      child: OutlinedButton(
+                        onPressed: _sending
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: blue,
+                          backgroundColor: const Color(0xFFE5F1FD),
+                          side: const BorderSide(color: blue),
+                          padding: EdgeInsets.zero,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: const Text('إلغاء', style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 35,
+                      child: FilledButton(
+                        onPressed: _sending ? null : _sendTicket,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: blue,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: _sending
+                            ? const SizedBox(
+                                width: 18, height: 18,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('إرسال', style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700)),
+                                  SizedBox(width: 6),
+                                  Icon(Icons.mail_outline_rounded, size: 19),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.figmaS14) return _buildS14Dialog(context);
     final c = JisrColors.of(context);
 
     return Padding(

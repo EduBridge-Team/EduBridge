@@ -431,11 +431,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         id: 'support',
         label: 'الدعم الفني',
         icon: AppIcons.support,
-        onSelected: () => showModalBottomSheet(
+        onSelected: () => showDialog<void>(
           context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (_) => const SupportSheet(),
+          builder: (_) => const SupportSheet(figmaS14: true),
         ),
       ),
       DashboardMenuAction(
