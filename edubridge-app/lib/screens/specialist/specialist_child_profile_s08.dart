@@ -221,6 +221,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   MaterialPageRoute(
                     builder: (_) => ChildLessonsScreen(
                       childId: _childId, childName: _childName,
+                      specialistS10: true,
                     ),
                   ),
                 ),

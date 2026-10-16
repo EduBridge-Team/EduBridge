@@ -30,12 +30,14 @@ import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../child_progress_screen.dart';
 import '../educational_games_screen.dart';
 import '../assistant_screen.dart';
+import '../case_discussion/case_discussion_screen.dart';
 
 part 'child_lessons_header.dart';
 part 'child_lessons_card.dart';
 part 'child_lessons_detail_modal.dart';
 part 'child_lessons_samples.dart';
 part 'child_lessons_actions.dart';
+part 'child_lessons_s10.dart';
 
 class ChildLessonsScreen extends StatefulWidget {
   final int childId;
@@ -43,6 +45,7 @@ class ChildLessonsScreen extends StatefulWidget {
   final int age;
   final String? disabilityType;
   final String? parentPhone;
+  final bool specialistS10;
 
   const ChildLessonsScreen({
     super.key,
@@ -51,6 +54,7 @@ class ChildLessonsScreen extends StatefulWidget {
     this.age = 8,
     this.disabilityType,
     this.parentPhone,
+    this.specialistS10 = false,
   });
 
   @override
@@ -103,7 +107,9 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       builder: (context) => AdaptiveWrapper(
         screenTitle: 'دروس ${widget.childName}',
         child: Scaffold(
-          appBar: buildChildLessonsAppBar(
+          backgroundColor: widget.specialistS10
+              ? const Color(0xFFF5F9FC) : null,
+          appBar: widget.specialistS10 ? _s10AppBar() : buildChildLessonsAppBar(
             context: context,
             childName: widget.childName,
             stars: _stars,
@@ -112,7 +118,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           ),
           body: RefreshIndicator(
             onRefresh: _refreshLessons,
-            child: _buildBody(),
+            child: widget.specialistS10 ? _s10Body() : _buildBody(),
           ),
         ),
       ),
