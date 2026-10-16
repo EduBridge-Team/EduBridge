@@ -145,121 +145,91 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
-    final avgScore = _summary?['avg_score'];
-
+    final average = _summary?['avg_score'];
     final total = done + inProgress + notStarted;
-    final percent = total > 0 ? done / total : 0.0;
+    final percent = total == 0 ? 0.0 : done / total;
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: JisrColors.of(context).card,
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: JisrColors.of(context).line),
-          ),
-          child: Row(
+    return Column(children: [
+      _s09Card(
+        padding: const EdgeInsets.all(16),
+        child: Row(children: [
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 96,
-                height: 96,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox.expand(
-                      child: CircularProgressIndicator(
-                        value: percent,
-                        strokeWidth: 10,
-                        strokeCap: StrokeCap.round,
-                        color: AppColors.green,
-                        backgroundColor: JisrColors.of(context).line,
-                      ),
-                    ),
-                    Text('${(percent * 100).round()}%',
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-                  ],
+              const Text('نسبة الإنجاز', style: TextStyle(fontSize: 12,
+                fontWeight: FontWeight.w700, color: Color(0xFF637E98))),
+              const SizedBox(height: 10),
+              Text(
+                total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
+                    : done == total
+                        ? 'أنهى ${widget.childName} جميع دروسه'
+                        : 'أكمل ${widget.childName} ${(100 * percent).round()}% من دروسه',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800,
+                  height: 1.4, color: Color(0xFF102D49))),
+              const SizedBox(height: 8),
+              Text('${done} من ${total} درس مكتمل', style: const TextStyle(
+                fontSize: 12, color: Color(0xFF637E98))),
+              if (average != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F6FA),
+                    borderRadius: BorderRadius.circular(18)),
+                  child: Text('المستوى: ${average}%', style: const TextStyle(
+                    color: Color(0xFF637E98), fontSize: 11)),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AdaptiveText('نسبة الإنجاز', type: AdaptiveTextType.caption),
-                    const SizedBox(height: 7),
-                    AdaptiveText(
-                      total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
-                        : 'أكمل ${widget.childName} ${(percent * 100).round()}% من دروسه',
-                      fontWeight: FontWeight.w800,
-                    ),
-                    const SizedBox(height: 7),
-                    AdaptiveText('$done من أصل $total درس مكتمل',
-                      type: AdaptiveTextType.caption),
-                    if (avgScore != null) ...[
-                      const SizedBox(height: 7),
-                      AdaptiveText('المستوى: $avgScore%',
-                        type: AdaptiveTextType.caption),
-                    ],
-                  ],
-                ),
-              ),
+              ],
             ],
-          ),
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-        Row(
-          children: [
-            _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
-            const SizedBox(width: 6),
-            _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
-                AppColors.brandBlue),
-            const SizedBox(width: 6),
-            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock, AppColors.muted),
-            const SizedBox(width: 6),
-            _summaryCard('متوسّط',
-                avgScore != null ? '$avgScore%' : '—',
-                AppIcons.starFilled, AppColors.yellow),
-          ],
-        ),
-      ],
-    );
+          )),
+          const SizedBox(width: 15),
+          SizedBox(width: 96, height: 96,
+            child: Stack(alignment: Alignment.center, children: [
+              SizedBox.expand(child: CircularProgressIndicator(
+                value: percent, strokeWidth: 9, strokeCap: StrokeCap.round,
+                color: const Color(0xFF53B357),
+                backgroundColor: const Color(0xFFE7F0F7))),
+              Text('${(percent * 100).round()}%', style: const TextStyle(
+                fontSize: 17, fontWeight: FontWeight.w800,
+                color: Color(0xFF102D49))),
+            ])),
+        ]),
+      ),
+      const SizedBox(height: 14),
+      Row(children: [
+        _summaryCard('مكتمل', '${done}', Icons.check_circle_outline,
+          const Color(0xFF53B357)),
+        const SizedBox(width: 8),
+        _summaryCard('قيد التنفيذ', '${inProgress}', Icons.autorenew_rounded,
+          const Color(0xFF1CB6C4)),
+        const SizedBox(width: 8),
+        _summaryCard('لم يبدأ', '${notStarted}', Icons.access_time_rounded,
+          const Color(0xFF6C88A4)),
+        const SizedBox(width: 8),
+        _summaryCard('متوسط', average == null ? '—' : '${average}%',
+          Icons.star_rounded, const Color(0xFFFFB72E)),
+      ]),
+    ]);
   }
 
-  Widget _summaryCard(
-      String label, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        height: 126,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-        decoration: BoxDecoration(
-          color: JisrColors.of(context).card,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: JisrColors.of(context).line),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: color.withValues(alpha: 0.12),
-              child: Icon(icon, size: 19, color: color),
-            ),
-            SizedBox(height: AdaptiveHelper.spacing / 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AdaptiveHelper.textColor(context),
-              ),
-            ),
-            Text(label, maxLines: 1, textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10)),
-          ],
-        ),
-      ),
-    );
+  Widget _summaryCard(String label, String value, IconData icon, Color tint) {
+    return Expanded(child: Container(
+      height: 127,
+      padding: const EdgeInsets.fromLTRB(2, 12, 2, 11),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: const Color(0xFFD8E6F2))),
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        CircleAvatar(radius: 19,
+          backgroundColor: tint.withValues(alpha: 0.12),
+          child: Icon(icon, size: 21, color: tint)),
+        Text(value, maxLines: 1, style: const TextStyle(
+          color: Color(0xFF102D49), fontSize: 18, fontWeight: FontWeight.w800)),
+        Text(label, maxLines: 1, textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 10, color: Color(0xFF102D49))),
+      ]),
+    ));
   }
 
   Widget _buildRewardsSection() {
