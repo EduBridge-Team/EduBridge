@@ -16,7 +16,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
-      centerTitle: false,
+      centerTitle: true,
       titleSpacing: 4,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(23)),
