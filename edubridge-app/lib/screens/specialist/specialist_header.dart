@@ -57,7 +57,12 @@ Widget _buildHeader({
         SafeArea(
           bottom: false,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(18, tabIndex == 1 ? 10 : 16, 18, tabIndex == 1 ? 16 : 24),
+            padding: EdgeInsets.fromLTRB(
+              18,
+              tabIndex == 1 ? 16 : 16,
+              18,
+              tabIndex == 1 ? 28 : 24,
+            ),
             child: Row(
               children: [
                 const ProfileAvatarButton(

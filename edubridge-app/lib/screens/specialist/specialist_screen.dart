@@ -37,6 +37,7 @@ part 'specialist_lessons_tab.dart';
 part 'specialist_suggest_sheet.dart';
 part 'specialist_recommend_sheet.dart';
 part 'specialist_lesson_detail_sheet.dart';
+part 'specialist_lesson_recommendation_sheet.dart';
 part 'specialist_stats_widgets.dart';
 part 'specialist_dashboard_widgets.dart';
 part 'specialist_dashboard_logic.dart';
