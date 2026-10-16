@@ -561,21 +561,18 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                             child: Row(
                               children: [
                                 _StatsCard(
-                                  icon: AppIcons.clock,
                                   value: '$_pendingCount',
                                   label: 'بانتظار التقييم',
                                   color: AppColors.blue,
                                 ),
                                 const SizedBox(width: 7),
                                 _StatsCard(
-                                  icon: AppIcons.check,
                                   value: '$_doneToday',
                                   label: 'منجز اليوم',
                                   color: AppColors.brandTealDeep,
                                 ),
                                 const SizedBox(width: 7),
                                 _StatsCard(
-                                  icon: AppIcons.progress,
                                   value: '$_pendingProgress',
                                   label: 'قيد التنفيذ',
                                   color: AppColors.brandTeal,
