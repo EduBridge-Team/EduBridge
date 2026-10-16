@@ -237,7 +237,7 @@ extension _AssistantS12 on _AssistantScreenState {
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (final suggestion in _visibleSuggestions)
               Padding(
