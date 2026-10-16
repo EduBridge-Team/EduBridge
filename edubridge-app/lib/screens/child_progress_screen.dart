@@ -95,50 +95,15 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       screenTitle: 'تقدّم ${widget.childName}',
       child: Scaffold(
         appBar: BrandAppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(AppIcons.progress, color: Colors.white),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  'تقدّم ${widget.childName}',
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+          title: Text(
+            'تقدّم ${widget.childName}',
+            style: const TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
           ),
           centerTitle: true,
-          actions: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Row(
-                children: [
-                  const Icon(AppIcons.starFilled,
-                      size: 18, color: AppColors.yellow),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$_stars',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
         body: RefreshIndicator(
           onRefresh: _refreshProgress,
