@@ -2,13 +2,11 @@
 part of 'specialist_screen.dart';
 
 class _StatsCard extends StatelessWidget {
-  final IconData icon;
   final String value;
   final String label;
   final Color color;
 
   const _StatsCard({
-    required this.icon,
     required this.value,
     required this.label,
     required this.color,
@@ -19,8 +17,8 @@ class _StatsCard extends StatelessWidget {
     final c = JisrColors.of(context);
     return Expanded(
       child: Container(
-        constraints: const BoxConstraints(minHeight: 104),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        constraints: const BoxConstraints(minHeight: 76),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
         decoration: BoxDecoration(
           color: c.card,
           borderRadius: BorderRadius.circular(16),
@@ -36,25 +34,15 @@ class _StatsCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: .12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 18, color: color),
-            ),
-            const SizedBox(height: 5),
             Text(
               value,
               style: TextStyle(
-                fontSize: 19,
+                fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: color,
               ),
             ),
-            const SizedBox(height: 7),
+            const SizedBox(height: 5),
             Text(
               label,
               maxLines: 1,
