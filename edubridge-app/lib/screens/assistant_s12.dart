@@ -233,17 +233,21 @@ extension _AssistantS12 on _AssistantScreenState {
   }
 
   Widget _s12Suggestions() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 218),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final suggestion in _visibleSuggestions)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 7),
-                child: OutlinedButton.icon(
+    return SizedBox(
+      width: double.infinity,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 218),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final suggestion in _visibleSuggestions)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 7),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: OutlinedButton.icon(
                   onPressed: () => _send(suggestion),
                   icon: const Icon(Icons.auto_awesome_rounded, size: 14),
                   label: Text(
@@ -265,10 +269,11 @@ extension _AssistantS12 on _AssistantScreenState {
                     minimumSize: const Size(0, 42),
                     shape: const StadiumBorder(),
                     visualDensity: VisualDensity.compact,
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
