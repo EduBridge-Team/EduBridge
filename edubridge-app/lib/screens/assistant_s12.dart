@@ -248,27 +248,28 @@ extension _AssistantS12 on _AssistantScreenState {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: OutlinedButton.icon(
-                  onPressed: () => _send(suggestion),
-                  icon: const Icon(Icons.auto_awesome_rounded, size: 14),
-                  label: Text(
-                    suggestion,
-                    maxLines: 2,
-                    style: const TextStyle(
-                      fontSize: 12.8,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: _s12Teal,
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: _s12Teal, width: 1),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 9,
-                    ),
-                    minimumSize: const Size(0, 42),
-                    shape: const StadiumBorder(),
-                    visualDensity: VisualDensity.compact,
+                      onPressed: () => _send(suggestion),
+                      icon: const Icon(Icons.auto_awesome_rounded, size: 14),
+                      label: Text(
+                        suggestion,
+                        maxLines: 2,
+                        style: const TextStyle(
+                          fontSize: 12.8,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _s12Teal,
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: _s12Teal, width: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 13,
+                          vertical: 9,
+                        ),
+                        minimumSize: const Size(0, 42),
+                        shape: const StadiumBorder(),
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
                   ),
                 ),
