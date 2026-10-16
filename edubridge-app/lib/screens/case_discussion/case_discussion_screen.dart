@@ -7,12 +7,19 @@ import '../../app_icons.dart';
 import '../../model/case_discussion_model.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../../widgets/accessibility/profile_avatar_button.dart';
+import '../specialist/specialist_screen.dart';
+import '../profile/profile_screen.dart';
+import '../chats_screen.dart';
+import '../learning_support_requests/learning_support_requests_screen.dart';
+import '../notifications_screen.dart';
 
 part 'case_discussion_list.dart';
 part 'case_discussion_detail.dart';
 part 'case_discussion_message_bubble.dart';
 part 'case_new_discussion_sheet.dart';
 part 'case_discussion_detail_view.dart';
+part 'case_discussion_s07.dart';
 
 class CaseDiscussionScreen extends StatefulWidget {
   final int? discussionId;
