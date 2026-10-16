@@ -9,9 +9,14 @@ import '../../theme.dart';
 import '../change_password_screen.dart';
 import '../add_certificate_sheet.dart';
 import '../login_screen.dart';
+import '../specialist/specialist_screen.dart';
+import '../case_discussion/case_discussion_screen.dart';
+import '../chats_screen.dart';
+import '../learning_support_requests/learning_support_requests_screen.dart';
 
 part 'profile_delete_dialog.dart';
 part 'profile_widgets.dart';
+part 'profile_specialist_s04.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -301,14 +306,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
 
+    final specialist = _profile?['role'] == 'specialist';
     return Scaffold(
-      bottomNavigationBar: const TeacherNavigationBar(),
-      appBar: JisrAppBar(title: 'الملف الشخصي'),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? _buildError()
-              : _buildContent(c),
+      bottomNavigationBar: specialist
+          ? _s04BottomNavigation(c)
+          : const TeacherNavigationBar(),
+      appBar: specialist ? null : JisrAppBar(title: 'الملف الشخصي'),
+      body: specialist
+          ? SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  _s04Header(c),
+                  Expanded(
+                    child: _error != null
+                        ? _buildError()
+                        : _s04Content(c),
+                  ),
+                ],
+              ),
+            )
+          : _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+                  ? _buildError()
+                  : _buildContent(c),
     );
   }
 
