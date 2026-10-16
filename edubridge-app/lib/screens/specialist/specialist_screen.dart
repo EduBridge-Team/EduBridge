@@ -508,16 +508,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       body: Stack(
         children: [
-          RefreshIndicator(
-            onRefresh: _refresh,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-              if (_tabIndex == 0)
+          Column(
+            children: [
+              if (_tabIndex == 0) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                   child: TextFormField(
@@ -552,41 +545,42 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                 ),
-              if (_tabIndex == 0 && !_loading) ...[
                 const SizedBox(height: 12),
                 _buildFilterCard(c),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      _StatsCard(
-                        icon: AppIcons.clock,
-                        value: '$_pendingCount',
-                        label: 'بانتظار التقييم',
-                        color: AppColors.blue,
-                      ),
-                      const SizedBox(width: 7),
-                      _StatsCard(
-                        icon: AppIcons.check,
-                        value: '$_doneToday',
-                        label: 'منجز اليوم',
-                        color: AppColors.brandTealDeep,
-                      ),
-                      const SizedBox(width: 7),
-                      _StatsCard(
-                        icon: AppIcons.progress,
-                        value: '$_pendingProgress',
-                        label: 'قيد التنفيذ',
-                        color: AppColors.brandTeal,
-                      ),
-                    ],
-                  ),
-                ),
               ],
-                    ],
-                  ),
-                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _refresh,
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      if (_tabIndex == 0 && !_loading)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                _StatsCard(
+                                  value: '$_pendingCount',
+                                  label: 'بانتظار التقييم',
+                                  color: AppColors.blue,
+                                ),
+                                const SizedBox(width: 7),
+                                _StatsCard(
+                                  value: '$_doneToday',
+                                  label: 'منجز اليوم',
+                                  color: AppColors.brandTealDeep,
+                                ),
+                                const SizedBox(width: 7),
+                                _StatsCard(
+                                  value: '$_pendingProgress',
+                                  label: 'قيد التنفيذ',
+                                  color: AppColors.brandTeal,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                 if (_loading)
                   const SliverFillRemaining(
                     hasScrollBody: false,
@@ -601,8 +595,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   buildProgressTab(context, c)
                 else
                   buildLessonsTab(context, c),
-              ],
-            ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           if (_adding) _buildAddModal(),
         ],
