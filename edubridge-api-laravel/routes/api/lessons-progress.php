@@ -18,6 +18,9 @@ Route::post('/evaluations/child/{childId}', [\App\Http\Controllers\EvaluationCon
 Route::get('/disability-types', [\App\Http\Controllers\DisabilityTypeController::class, 'index']);
 
 // الدروس
+Route::post('/lessons/{id}/recommend', [\App\Http\Controllers\LessonRecommendationController::class, 'store'])
+    ->whereNumber('id')
+    ->middleware(['role:specialist', 'throttle:10,1']);
 Route::post('/lessons', [\App\Http\Controllers\LessonController::class, 'store'])
     ->middleware('role:teacher,specialist,admin');
 Route::match(['put', 'post'], '/lessons/{id}', [\App\Http\Controllers\LessonController::class, 'update'])
