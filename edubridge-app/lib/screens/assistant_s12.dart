@@ -206,11 +206,12 @@ extension _AssistantS12 on _AssistantScreenState {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 20,
-            backgroundColor: _s12Blue,
-            child: Icon(Icons.sentiment_satisfied_alt_rounded,
-                size: 24, color: Colors.white),
+          // Reuse the approved Noor character, shared with the assistant
+          // launcher, instead of a generic smile emoji/icon.
+          const SizedBox(
+            width: 52,
+            height: 52,
+            child: PetAvatar(size: 52),
           ),
           const SizedBox(width: 11),
           Expanded(
