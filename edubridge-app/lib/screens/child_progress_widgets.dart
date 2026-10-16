@@ -234,99 +234,67 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
 
   Widget _buildRewardsSection() {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
-
-    final badges = <({String emoji, String title, bool earned, String hint})>[
-      (
-        emoji: '🌟',
-        title: 'البداية المشرقة',
-        earned: done >= 1,
-        hint: 'أكمل أول درس',
-      ),
-      (
-        emoji: '🏅',
-        title: 'نجم المثابرة',
-        earned: done >= 5,
-        hint: done >= 5 ? '' : 'بقي ${5 - done} دروس',
-      ),
-      (
-        emoji: '🏆',
-        title: 'بطل الدروس',
-        earned: done >= 10,
-        hint: done >= 10 ? '' : 'بقي ${10 - done} دروس',
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const AdaptiveText(
-          'المكافآت',
-          type: AdaptiveTextType.title,
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-
-        AdaptiveCard(
-          child: Row(
-            children: [
-              Icon(AppIcons.starFilled,
-                  size: AdaptiveHelper.iconSize, color: AppColors.yellow),
-              SizedBox(width: AdaptiveHelper.spacing / 2),
-              Expanded(
-                child: AdaptiveText(
-                  '$_stars نجمة',
-                  type: AdaptiveTextType.body,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AdaptiveHelper.spacing / 2,
-          crossAxisSpacing: AdaptiveHelper.spacing / 2,
-          childAspectRatio: 0.78,
-          children: badges.map((b) => _buildBadgeCard(b)).toList(),
-        ),
-      ],
-    );
+    return Column(children: [
+      _s09Title('المكافآت', trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: Colors.white,
+          border: Border.all(color: const Color(0xFFD8E6F2)),
+          borderRadius: BorderRadius.circular(23)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.star_rounded, size: 18,
+            color: Color(0xFFFFB72E)),
+          const SizedBox(width: 4),
+          Text('${_stars} نجمة', style: const TextStyle(
+            fontSize: 11, color: Color(0xFF102D49))),
+        ]),
+      )),
+      const SizedBox(height: 12),
+      Row(children: [
+        _s09BadgeCard('البداية المشرقة', done, 1),
+        const SizedBox(width: 9),
+        _s09BadgeCard('نجمة المثابرة', done, 4),
+        const SizedBox(width: 9),
+        _s09BadgeCard('بطل الدروس', done, 9),
+      ]),
+    ]);
   }
 
-  Widget _buildBadgeCard(
-      ({String emoji, String title, bool earned, String hint}) badge) {
-    return AdaptiveCard(
-      backgroundColor: badge.earned
-          ? AppColors.green.withValues(alpha: 0.1)
-          : AdaptiveHelper.cardColor(context),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            badge.earned ? AppIcons.trophy : AppIcons.lock,
-            size: AdaptiveHelper.iconSize + 8,
-            color: badge.earned ? AppColors.green : AppColors.muted,
-          ),
-          SizedBox(height: AdaptiveHelper.spacing / 4),
-          AdaptiveText(
-            badge.title,
-            type: AdaptiveTextType.caption,
-            fontWeight: FontWeight.w800,
-            textAlign: TextAlign.center,
-            color: badge.earned ? AppColors.green : null,
-          ),
-          if (!badge.earned && badge.hint.isNotEmpty)
-            AdaptiveText(
-              badge.hint,
-              type: AdaptiveTextType.label,
-              textAlign: TextAlign.center,
-            ),
-        ],
-      ),
-    );
+  Widget _s09BadgeCard(String title, int done, int goal) {
+    final earned = done >= goal;
+    final achieved = done.clamp(0, goal);
+    return Expanded(child: Container(
+      height: 179,
+      padding: const EdgeInsets.fromLTRB(6, 12, 6, 11),
+      decoration: BoxDecoration(color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: earned ? const Color(0xFF53B357)
+          : const Color(0xFFD8E6F2))),
+      child: Column(children: [
+        CircleAvatar(radius: 24,
+          backgroundColor: earned ? const Color(0xFFE7F5E9)
+            : const Color(0xFFF0F6FA),
+          child: Icon(earned ? Icons.emoji_events_outlined
+            : Icons.lock_outline, size: 26,
+            color: earned ? const Color(0xFF53B357)
+              : const Color(0xFF6C88A4))),
+        const SizedBox(height: 10),
+        Expanded(child: Center(child: Text(title, textAlign: TextAlign.center,
+          maxLines: 2, style: const TextStyle(
+            color: Color(0xFF102D49), fontSize: 11,
+            height: 1.4, fontWeight: FontWeight.w800)))),
+        const SizedBox(height: 10),
+        ClipRRect(borderRadius: BorderRadius.circular(9),
+          child: LinearProgressIndicator(
+            value: achieved / goal, minHeight: 4,
+            color: const Color(0xFF53B357),
+            backgroundColor: const Color(0xFFE1EDF6))),
+        const SizedBox(height: 8),
+        Text(earned ? 'تم الإنجاز' : '${achieved}/${goal}',
+          style: TextStyle(fontSize: 10,
+            color: earned ? const Color(0xFF53B357)
+              : const Color(0xFF637E98))),
+      ]),
+    ));
   }
 
   Widget _buildProgressTile(Map p) {
