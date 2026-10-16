@@ -103,7 +103,8 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
           centerTitle: false,
-          titleSpacing: 8,
+          titleSpacing: 0,
+          leadingWidth: 48,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
           flexibleSpace: ClipRRect(
@@ -130,7 +131,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
             onPressed: () => Navigator.maybePop(context),
             icon: const CircleAvatar(
               radius: 21, backgroundColor: Color(0x33FFFFFF),
-              child: Icon(Icons.arrow_forward_rounded,
+              child: Icon(Icons.arrow_back_rounded,
                 size: 23, color: Colors.white)),
           ),
           title: Text('تقدّم ${widget.childName}',
