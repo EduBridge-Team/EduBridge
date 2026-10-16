@@ -491,8 +491,16 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: BrandAppBar(
+      appBar: AppBar(
         toolbarHeight: 64,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        flexibleSpace: const DecoratedBox(
+          decoration: BoxDecoration(gradient: AppColors.appBarGradient),
+        ),
         title: const Text(
           'EduBridge',
           style: TextStyle(
@@ -505,12 +513,15 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       body: Stack(
         children: [
-          NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverToBoxAdapter(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+          RefreshIndicator(
+            onRefresh: _refresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
               _buildHeader(
                 context: context,
                 c: c,
@@ -585,19 +596,24 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ),
                 ),
               ],
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-            body: RefreshIndicator(
-              onRefresh: _refresh,
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _error != null
-                      ? _buildError()
-                      : (_tabIndex == 0
-                          ? buildProgressTab(context, c)
-                          : buildLessonsTab(context, c)),
+                if (_loading)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_error != null)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildError(),
+                  )
+                else if (_tabIndex == 0)
+                  buildProgressTab(context, c)
+                else
+                  buildLessonsTab(context, c),
+              ],
             ),
           ),
           if (_adding) _buildAddModal(),
