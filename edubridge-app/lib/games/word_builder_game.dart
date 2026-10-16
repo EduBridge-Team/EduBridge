@@ -3,6 +3,7 @@ import 'dart:math';
 import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../services/accessibility_service.dart';
 import '../utils/adaptive_helper.dart';
@@ -156,9 +157,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     final large = _profile.extraLargeTouchTargets;
     return Scaffold(
       backgroundColor: const Color(0xFFF0F9FA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1AA9B2),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('🔤 بناء الكلمة'),
       ),
       body: SingleChildScrollView(child: Column(

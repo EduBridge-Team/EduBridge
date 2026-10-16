@@ -89,7 +89,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: AppColors.headerGradient,
+        gradient: AppColors.appBarGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
       ),
       child: SafeArea(

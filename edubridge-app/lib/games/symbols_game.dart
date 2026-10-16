@@ -2,6 +2,7 @@
 // الطفل يتعلّم الألوان بالاعتماد على الرموز والأنماط بدلاً من الألوان فقط
 import 'game_content.dart';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';

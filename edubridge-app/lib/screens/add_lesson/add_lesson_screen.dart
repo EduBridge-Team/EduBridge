@@ -50,18 +50,10 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: BrandAppBar(
         toolbarHeight: 88,
         elevation: 0,
         centerTitle: false,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-          ),
-        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
         ),

@@ -12,7 +12,7 @@ extension _HomeScreenView on HomeScreen {
           SliverToBoxAdapter(
             child: Container(
               decoration: const BoxDecoration(
-                gradient: AppColors.headerGradient,
+                gradient: AppColors.appBarGradient,
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(34),
                 ),

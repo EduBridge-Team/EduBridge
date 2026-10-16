@@ -74,16 +74,8 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: BrandAppBar(
         toolbarHeight: 78,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),

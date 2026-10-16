@@ -9,9 +9,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1FF),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF8B6DD4),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('📖 رتّب القصة'),
         actions: [
           // زر إعادة الجولة

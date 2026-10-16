@@ -220,15 +220,10 @@ class _ParentScreenState extends State<ParentScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 72,
       titleSpacing: 0,
       centerTitle: false,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.headerGradient,
-        ),
-      ),
       leadingWidth: 72,
       leading: Padding(
         padding: const EdgeInsetsDirectional.only(start: 8),

@@ -152,10 +152,8 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         if (snapshot.hasError) {
           final message = snapshot.error.toString().replaceFirst('Exception: ', '');
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: colors.card,
-              foregroundColor: colors.heading,
-              title: Text('نور', style: TextStyle(color: colors.heading)),
+            appBar: BrandAppBar(
+              title: const Text('نور', style: TextStyle(color: Colors.white)),
             ),
             body: Center(
               child: Padding(
@@ -179,11 +177,9 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
 
         final data = snapshot.data!;
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: colors.card,
-            foregroundColor: colors.heading,
+          appBar: BrandAppBar(
             title: Text('نور • ${widget.childName}',
-                style: TextStyle(color: colors.heading)),
+                style: const TextStyle(color: Colors.white)),
           ),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),

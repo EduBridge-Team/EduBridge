@@ -94,12 +94,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     return AdaptiveWrapper(
       screenTitle: 'تقدّم ${widget.childName}',
       child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: AppColors.headerGradient,
-            ),
-          ),
+        appBar: BrandAppBar(
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

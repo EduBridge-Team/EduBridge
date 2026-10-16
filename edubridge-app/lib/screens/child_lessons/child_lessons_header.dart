@@ -8,14 +8,8 @@ PreferredSizeWidget buildChildLessonsAppBar({
   required VoidCallback? onOpenSettings,
   required VoidCallback onOpenProgress,
 }) {
-  return AppBar(
+  return BrandAppBar(
     toolbarHeight: 72,
-    flexibleSpace: Container(
-      decoration: const BoxDecoration(
-        gradient: AppColors.headerGradient,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-      ),
-    ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
     ),

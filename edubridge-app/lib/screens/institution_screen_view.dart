@@ -10,7 +10,7 @@ extension _InstitutionScreenView on InstitutionScreen {
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
-              gradient: AppColors.headerGradient,
+              gradient: AppColors.appBarGradient,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             child: SafeArea(

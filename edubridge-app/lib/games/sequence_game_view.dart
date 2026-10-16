@@ -9,9 +9,7 @@ extension _SequenceGameView on _SequenceGameState {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F9FA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1AA9B2),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('🧩 لعبة الترتيب'),
         actions: [
           IconButton(

@@ -15,7 +15,7 @@ Widget _buildTeacherHeader({
   return Container(
     width: double.infinity,
     decoration: const BoxDecoration(
-      gradient: AppColors.headerGradient,
+      gradient: AppColors.appBarGradient,
       borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
     ),
     child: SafeArea(

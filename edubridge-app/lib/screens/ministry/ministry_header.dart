@@ -9,7 +9,7 @@ class _MinistryHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: AppColors.headerGradient,
+        gradient: AppColors.appBarGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
       ),
       child: SafeArea(

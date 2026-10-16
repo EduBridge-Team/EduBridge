@@ -12,17 +12,11 @@ class JisrAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 72,
       titleSpacing: 18,
       title: Text(title),
       actions: actions,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.headerGradient,
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-        ),
-      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
       ),

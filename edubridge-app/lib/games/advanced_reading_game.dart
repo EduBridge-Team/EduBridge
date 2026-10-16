@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/quiz_session.dart';
 import '../services/game_progress_service.dart';
@@ -54,7 +55,7 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
   Widget build(BuildContext context) {
     final item = _session.current;
     return Scaffold(
-      appBar: AppBar(title: const Text('القراءة المتقدمة 📚')),
+      appBar: BrandAppBar(title: const Text('القراءة المتقدمة 📚')),
       body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

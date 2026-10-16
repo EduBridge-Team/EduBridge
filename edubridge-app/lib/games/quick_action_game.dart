@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'game_content.dart';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
@@ -188,9 +189,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8EE),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF2842B),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('⚡ الحركة السريعة'),
         actions: [
           IconButton(

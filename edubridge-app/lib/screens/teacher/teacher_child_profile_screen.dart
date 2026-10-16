@@ -74,10 +74,8 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
     final status = child.status;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: BrandAppBar(
         toolbarHeight: 76,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           _childName.isEmpty ? 'ملف الطالب' : 'ملف $_childName',
@@ -85,12 +83,6 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
             color: Colors.white,
             fontWeight: FontWeight.w800,
             fontSize: 19,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
           ),
         ),
         shape: const RoundedRectangleBorder(

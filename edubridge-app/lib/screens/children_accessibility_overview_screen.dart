@@ -114,12 +114,7 @@ class _ChildrenAccessibilityOverviewScreenState
     return AdaptiveWrapper(
       screenTitle: 'احتياجات الأبناء الخاصة',
       child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: AppColors.headerGradient,
-            ),
-          ),
+        appBar: BrandAppBar(
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

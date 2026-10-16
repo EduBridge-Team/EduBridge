@@ -15,11 +15,7 @@ Widget _buildHeader({
   return Container(
     width: double.infinity,
     decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.centerRight,
-        end: Alignment.bottomLeft,
-        colors: [Color(0xFF1559B3), Color(0xFF1B74CA), Color(0xFF1EB8C4)],
-      ),
+      gradient: AppColors.appBarGradient,
       borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
     ),
     child: Stack(
