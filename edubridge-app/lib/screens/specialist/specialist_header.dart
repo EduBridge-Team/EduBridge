@@ -66,6 +66,7 @@ Widget _buildHeader({
               children: [
                 const ProfileAvatarButton(
                   size: 48,
+                  showVerificationBadge: true,
                   backgroundColor: Colors.white,
                   foregroundColor: Color(0xFF1768C5),
                 ),
