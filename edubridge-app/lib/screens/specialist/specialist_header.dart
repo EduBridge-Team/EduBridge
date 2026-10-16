@@ -61,7 +61,7 @@ Widget _buildHeader({
         SafeArea(
           bottom: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
+            padding: EdgeInsets.fromLTRB(18, tabIndex == 1 ? 10 : 16, 18, tabIndex == 1 ? 16 : 24),
             child: Row(
               children: [
                 const ProfileAvatarButton(
@@ -72,7 +72,18 @@ Widget _buildHeader({
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: FutureBuilder<String?>(
+                  child: tabIndex == 1
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'الدروس',
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : FutureBuilder<String?> (
                     future: ApiService.getName(),
                     builder: (context, snapshot) {
                       final name = snapshot.data?.trim();
