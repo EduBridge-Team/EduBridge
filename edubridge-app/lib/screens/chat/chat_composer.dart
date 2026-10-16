@@ -25,11 +25,15 @@ class ChatComposer extends StatefulWidget {
   /// حالة الإرسال (يُعطّل الحقل والزر أثناءها)
   final bool isSending;
 
+  /// Figma S16 visual treatment for specialist chat only.
+  final bool figmaS16;
+
   const ChatComposer({
     super.key,
     required this.controller,
     required this.onSend,
     this.isSending = false,
+    this.figmaS16 = false,
   });
 
   @override
@@ -108,11 +112,96 @@ class _ChatComposerState extends State<ChatComposer> {
               if (mode == ComposerMode.aac) _buildMessagePreview(),
 
               // ─── حقل الإدخال + الأزرار ───
-              _buildInputRow(c, mode),
+              widget.figmaS16
+                  ? _buildS16InputRow(mode)
+                  : _buildInputRow(c, mode),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildS16InputRow(ComposerMode mode) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          12, 10, 12,
+          10 + MediaQuery.paddingOf(context).bottom,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const ComposerSwitcherButton(figmaS16: true),
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextField(
+                controller: widget.controller,
+                enabled: !widget.isSending,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
+                minLines: 1,
+                maxLines: 3,
+                maxLength: 2000,
+                textInputAction: TextInputAction.newline,
+                decoration: InputDecoration(
+                  hintText: _hintFor(mode),
+                  hintStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF718DA4),
+                  ),
+                  counterText: '',
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(28),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD8E7F2)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(28),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF196AC6), width: 1.5),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: widget.controller,
+              builder: (context, value, _) {
+                final enabled =
+                    value.text.trim().isNotEmpty && !widget.isSending;
+                return IconButton.filled(
+                  tooltip: 'إرسال',
+                  onPressed: enabled ? _handleSend : null,
+                  icon: widget.isSending
+                      ? const SizedBox(
+                          width: 19, height: 19,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.mark_email_read_outlined, size: 23),
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    maximumSize: const Size(48, 48),
+                    shape: const CircleBorder(),
+                    backgroundColor: const Color(0xFF196AC6),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: const Color(0xFFE9F1F7),
+                    disabledForegroundColor: Colors.white,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
