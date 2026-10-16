@@ -511,7 +511,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           Column(
             children: [
               if (_tabIndex == 0) ...[
-              if (_tabIndex == 0)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                   child: TextFormField(
@@ -586,7 +585,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       ),
                     ],
                   ),
-                ),                            ],
+                ),
+                            ],
                           ),
                         ),
                 if (_loading)
@@ -607,6 +607,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ),
                 ),
               ),
+            ],
+          ),
           if (_adding) _buildAddModal(),
         ],
       ),
