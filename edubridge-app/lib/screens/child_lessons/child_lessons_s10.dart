@@ -10,14 +10,14 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
 
   PreferredSizeWidget _s10AppBar() {
     return AppBar(
-      toolbarHeight: 96,
+      toolbarHeight: 116,
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleSpacing: 7,
+      titleSpacing: 4,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(23)),
       ),
@@ -32,22 +32,22 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
             ),
           )),
           Positioned(
-            left: -56, bottom: -92,
+            left: -54, bottom: -84,
             child: IgnorePointer(child: Container(
-              width: 190, height: 170,
+              width: 155, height: 155,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: .19), width: 17),
+                border: Border.all(color: Colors.white.withValues(alpha: .19), width: 12),
               ),
             )),
           ),
           Positioned(
-            left: -30, bottom: -94,
+            left: -15, bottom: -90,
             child: IgnorePointer(child: Container(
-              width: 138, height: 142,
+              width: 114, height: 114,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: .17), width: 14),
+                border: Border.all(color: Colors.white.withValues(alpha: .17), width: 10),
               ),
             )),
           ),
@@ -72,8 +72,8 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
       ),
       actions: const [
         Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Icon(Icons.auto_awesome_outlined, size: 23, color: Colors.white),
+          padding: EdgeInsets.only(left: 24),
+          child: Icon(Icons.auto_awesome_outlined, size: 22, color: Colors.white),
         ),
       ],
     );
@@ -121,7 +121,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
   Widget _s10Card(Widget child) {
     return Container(
       padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.only(bottom: 11),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: _s10Border),
