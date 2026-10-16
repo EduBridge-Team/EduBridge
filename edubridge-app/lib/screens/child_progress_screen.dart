@@ -96,13 +96,14 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F9FC),
         appBar: AppBar(
-          toolbarHeight: 95,
+          toolbarHeight: 116,
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           elevation: 0,
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
-          centerTitle: true,
+          centerTitle: false,
+          titleSpacing: 8,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
           flexibleSpace: ClipRRect(
@@ -112,14 +113,16 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.centerLeft, end: Alignment.centerRight,
                   colors: [Color(0xFF20B6C6), Color(0xFF1769C2)]))),
-              Positioned(left: -52, bottom: -88,
-                child: Container(width: 156, height: 156,
-                  decoration: BoxDecoration(shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white24, width: 10)))),
-              Positioned(left: -14, bottom: -85,
-                child: Container(width: 116, height: 116,
-                  decoration: BoxDecoration(shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white12, width: 9)))),
+              // S09 decorative illustration: overlapping translucent arcs.
+              const Positioned(
+                left: 0,
+                bottom: 0,
+                width: 177,
+                height: 116,
+                child: IgnorePointer(
+                  child: CustomPaint(painter: _S09HeaderArtwork()),
+                ),
+              ),
             ]),
           ),
           leading: IconButton(
@@ -143,4 +146,30 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       ),
     );
   }
+}
+
+/// Decorative, resolution-independent artwork matching the two overlapping
+/// turquoise arcs in the supplied S09 Figma header.
+class _S09HeaderArtwork extends CustomPainter {
+  const _S09HeaderArtwork();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final largeArc = Paint()
+      ..color = const Color(0x6689DCE8)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 14
+      ..isAntiAlias = true;
+    final crossingArc = Paint()
+      ..color = const Color(0x619AE4ED)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 16
+      ..isAntiAlias = true;
+
+    canvas.drawCircle(const Offset(-12, 147), 106, largeArc);
+    canvas.drawCircle(const Offset(67, 152), 84, crossingArc);
+  }
+
+  @override
+  bool shouldRepaint(covariant _S09HeaderArtwork oldDelegate) => false;
 }
