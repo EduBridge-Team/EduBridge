@@ -114,7 +114,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
             ],
           ),
         ),
-        toolbarHeight: 64,
+        toolbarHeight: 96,
         centerTitle: false,
         leading: IconButton(
           tooltip: 'رجوع',
