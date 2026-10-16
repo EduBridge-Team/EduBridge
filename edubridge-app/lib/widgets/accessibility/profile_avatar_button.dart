@@ -12,12 +12,14 @@ class ProfileAvatarButton extends StatefulWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final double size;
+  final bool showVerificationBadge;
 
   const ProfileAvatarButton({
     super.key,
     this.backgroundColor,
     this.foregroundColor,
     this.size = 42,
+    this.showVerificationBadge = false,
   });
 
   @override
@@ -28,6 +30,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
   String? _avatarUrl;
   String _initial = '؟';
   bool _loading = true;
+  bool _verified = false;
 
   @override
   void initState() {
@@ -38,6 +41,9 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
   Future<void> _load() async {
     final name = await ApiService.getName();
     final url = await ApiService.getSavedAvatarUrl();
+    final verified = widget.showVerificationBadge
+        ? await ApiService.isVerified()
+        : false;
 
     if (!mounted) return;
     setState(() {
@@ -45,6 +51,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
           ? name.trim().characters.first.toUpperCase()
           : '؟';
       _avatarUrl = url;
+      _verified = verified;
       _loading = false;
     });
   }
@@ -62,7 +69,10 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
         // ✅ إعادة تحميل الصورة عند الرجوع
         _load();
       },
-      child: Container(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
         width: widget.size,
         height: widget.size,
         decoration: BoxDecoration(
@@ -101,6 +111,23 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
                     },
                   )
                 : _buildInitial(),
+          ),
+          if (widget.showVerificationBadge && _verified)
+            Positioned(
+              left: -2,
+              bottom: -2,
+              child: Container(
+                width: 17,
+                height: 17,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF35B76B),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+                child: const Icon(Icons.check, size: 11, color: Colors.white),
+              ),
+            ),
+        ],
       ),
     );
   }
