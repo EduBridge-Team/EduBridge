@@ -437,6 +437,18 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
         ),
       ),
       DashboardMenuAction(
+        id: 'about_app',
+        label: 'عن التطبيق',
+        icon: Icons.info_outline,
+        onSelected: () => showAboutDialog(
+          context: context,
+          applicationName: 'EduBridge',
+          children: const [
+            Text('منصة تعليمية لدعم الأطفال ذوي الاحتياجات الخاصة.'),
+          ],
+        ),
+      ),
+      DashboardMenuAction(
         id: 'legal',
         label: 'الخصوصية والحساب',
         icon: AppIcons.privacy,
