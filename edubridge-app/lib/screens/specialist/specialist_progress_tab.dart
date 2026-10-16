@@ -6,9 +6,9 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
     final displayChildren = _filteredChildren;
 
     if (displayChildren.isEmpty) {
-      return ListView(
+      return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 54),
-        children: [
+        sliver: SliverList.list(children: [
           Center(
             child: Container(
               width: 100,
@@ -48,12 +48,13 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
               textAlign: TextAlign.center,
             ),
           ),
-        ],
+        ]),
       );
     }
 
-    return ListView.builder(
+    return SliverPadding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      sliver: SliverList.builder(
       itemCount: displayChildren.length,
       itemBuilder: (context, i) {
         final row = displayChildren[i] as Map<String, dynamic>;
@@ -61,6 +62,7 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
             ? buildMyChildCard(row, c)
             : buildAvailableChildCard(row, c);
       },
+      ),
     );
   }
 }
