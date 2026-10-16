@@ -491,25 +491,15 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 64,
-        backgroundColor: AppColors.brandBlue,
-        foregroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        flexibleSpace: const DecoratedBox(
-          decoration: BoxDecoration(gradient: AppColors.appBarGradient),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100),
+        child: _buildHeader(
+          context: context,
+          c: c,
+          tabIndex: _tabIndex,
+          specialty: _mySpecialty,
+          menuActions: _buildMenuActions(),
         ),
-        title: const Text(
-          'EduBridge',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -522,13 +512,6 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-              _buildHeader(
-                context: context,
-                c: c,
-                tabIndex: _tabIndex,
-                specialty: _mySpecialty,
-                menuActions: _buildMenuActions(),
-              ),
               if (_tabIndex == 0)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
