@@ -2,12 +2,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
+import 'specialist/specialist_screen.dart';
 import '../services/api_service.dart';
 import '../services/reward_service.dart';
 import '../theme.dart';
-import '../utils/adaptive_helper.dart';
-import '../widgets/accessibility/adaptive_card.dart';
-import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
 
 part 'child_progress_widgets.dart';
@@ -46,7 +44,9 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     setState(() => _stars = stars);
   }
 
-  Future<void> _refreshProgress() => _loadProgress(showLoader: false);
+  Future<void> _refreshProgress() async {
+    await Future.wait([_loadProgress(showLoader: false), _loadStars()]);
+  }
 
   Future<void> _loadProgress({bool showLoader = true}) async {
     if (showLoader) {
@@ -94,16 +94,47 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
     return AdaptiveWrapper(
       screenTitle: 'تقدّم ${widget.childName}',
       child: Scaffold(
-        appBar: BrandAppBar(
-          title: Text(
-            'تقدّم ${widget.childName}',
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
+        backgroundColor: const Color(0xFFF5F9FC),
+        appBar: AppBar(
+          toolbarHeight: 95,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
           centerTitle: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
+          flexibleSpace: ClipRRect(
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+            child: Stack(fit: StackFit.expand, children: [
+              const DecoratedBox(decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft, end: Alignment.centerRight,
+                  colors: [Color(0xFF20B6C6), Color(0xFF1769C2)]))),
+              Positioned(left: -52, bottom: -88,
+                child: Container(width: 156, height: 156,
+                  decoration: BoxDecoration(shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white24, width: 10)))),
+              Positioned(left: -14, bottom: -85,
+                child: Container(width: 116, height: 116,
+                  decoration: BoxDecoration(shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white12, width: 9)))),
+            ]),
+          ),
+          leading: IconButton(
+            tooltip: 'رجوع',
+            onPressed: () => Navigator.maybePop(context),
+            icon: const CircleAvatar(
+              radius: 21, backgroundColor: Color(0x33FFFFFF),
+              child: Icon(Icons.arrow_forward_rounded,
+                size: 23, color: Colors.white)),
+          ),
+          title: Text('تقدّم ${widget.childName}',
+            maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white, fontSize: 20,
+              fontWeight: FontWeight.w800)),
         ),
         body: RefreshIndicator(
           onRefresh: _refreshProgress,

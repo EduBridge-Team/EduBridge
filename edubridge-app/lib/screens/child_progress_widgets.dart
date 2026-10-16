@@ -3,78 +3,141 @@ part of 'child_progress_screen.dart';
 extension _ChildProgressWidgets on _ChildProgressScreenState {
   Widget _buildBody() {
     if (_loading) return const Center(child: CircularProgressIndicator());
-
     if (_error != null) {
       return ListView(
-        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
         children: [
-          SizedBox(height: AdaptiveHelper.spacing * 6),
-          const Icon(AppIcons.error, size: 58, color: AppColors.red),
-          SizedBox(height: AdaptiveHelper.spacing),
-          AdaptiveText(
-            _error!,
-            textAlign: TextAlign.center,
-            color: AppColors.red,
-            fontWeight: FontWeight.w700,
-          ),
-          SizedBox(height: AdaptiveHelper.spacing),
-          Center(
-            child: FilledButton.icon(
-              onPressed: _loadProgress,
-              icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
-            ),
-          ),
+          const SizedBox(height: 100),
+          const Icon(Icons.error_outline, color: AppColors.red, size: 52),
+          const SizedBox(height: 12),
+          Text(_error!, textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.red)),
+          const SizedBox(height: 14),
+          Center(child: FilledButton(
+            onPressed: _loadProgress, child: const Text('إعادة المحاولة'))),
         ],
       );
     }
-
-
     return ListView(
-      padding: EdgeInsets.fromLTRB(
-        AdaptiveHelper.spacing,
-        AdaptiveHelper.spacing * 1.25,
-        AdaptiveHelper.spacing,
-        AdaptiveHelper.spacing * 2,
-      ),
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 30),
       children: [
         _buildSummaryCards(),
-        SizedBox(height: AdaptiveHelper.spacing * 2),
-        AdaptiveText('نشاط الأسبوع', type: AdaptiveTextType.title),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: JisrColors.of(context).card,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: JisrColors.of(context).line),
-          ),
-          child: const AdaptiveText(
-            'سيظهر النشاط الأسبوعي عند توفر بيانات الدروس اليومية.',
-            type: AdaptiveTextType.caption,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        SizedBox(height: AdaptiveHelper.spacing * 2),
+        const SizedBox(height: 14),
+        _buildWeeklyActivity(),
+        const SizedBox(height: 18),
         _buildRewardsSection(),
-        SizedBox(height: AdaptiveHelper.spacing * 2),
-        const AdaptiveText(
-          'تفاصيل الدروس',
-          type: AdaptiveTextType.title,
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
+        const SizedBox(height: 24),
+        _s09Title('تفاصيل الدروس'),
+        const SizedBox(height: 12),
         if (_progress.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: AdaptiveText(
-              'لم يبدأ الطفل أي درس بعد. سيظهر تقدّم الدروس هنا عند البدء.',
-              type: AdaptiveTextType.caption,
-              textAlign: TextAlign.center,
-            ),
+          _s09Card(
+            child: const Text('لم يبدأ الطفل أي درس بعد. ستظهر تفاصيل الدروس هنا عند البدء.',
+              textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF637E98))),
           )
         else
-          ..._progress.map((p) => _buildProgressTile(p)),
+          ..._progress.whereType<Map>().map(_buildProgressTile),
+        const SizedBox(height: 14),
+        SizedBox(
+          height: 54,
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF1969C5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) =>
+                const SpecialistDashboardScreen(initialTab: 1))),
+            icon: const Icon(Icons.auto_awesome, color: Colors.white),
+            label: const Text('اقترح درسًا تاليًا',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget _s09Card({required Widget child, EdgeInsets? padding,
+      Color border = const Color(0xFFD8E6F2)}) {
+    return Container(
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white, borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: border)),
+      child: child,
+    );
+  }
+
+  Widget _s09Title(String title, {Widget? trailing}) => Row(
+    children: [
+      Expanded(child: Text(title, style: const TextStyle(
+        fontSize: 21, color: Color(0xFF102D49), fontWeight: FontWeight.w800))),
+      if (trailing != null) trailing,
+    ],
+  );
+
+  List<int> _s09WeeklyCounts() {
+    final now = DateTime.now();
+    final weekStart = DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: (now.weekday + 1) % 7));
+    final weekEnd = weekStart.add(const Duration(days: 7));
+    final counts = List<int>.filled(7, 0);
+    for (final row in _progress) {
+      if (row is! Map || row['status'] != 'done') continue;
+      final date = DateTime.tryParse(row['completed_at']?.toString() ?? '')?.toLocal();
+      if (date == null || date.isBefore(weekStart) || !date.isBefore(weekEnd)) continue;
+      final day = DateTime(date.year, date.month, date.day);
+      counts[day.difference(weekStart).inDays] += 1;
+    }
+    return counts;
+  }
+
+  Widget _buildWeeklyActivity() {
+    const names = ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'];
+    final counts = _s09WeeklyCounts();
+    final maximum = counts.fold<int>(0, (v, n) => n > v ? n : v);
+    return _s09Card(
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 13),
+      child: Column(
+        children: [
+          _s09Title('نشاط الأسبوع', trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF3FC),
+              borderRadius: BorderRadius.circular(18)),
+            child: const Text('هذا الأسبوع',
+              style: TextStyle(fontSize: 11, color: Color(0xFF1969C5))),
+          )),
+          const SizedBox(height: 13),
+          Row(children: List.generate(7, (i) {
+            final fraction = maximum == 0 ? 0.0 : counts[i] / maximum;
+            return Expanded(child: Column(children: [
+              SizedBox(height: 67, child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Container(width: 20, height: 67,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEEF5FA),
+                      borderRadius: BorderRadius.circular(7))),
+                  if (counts[i] > 0)
+                    Container(width: 20, height: 10 + fraction * 57,
+                      decoration: BoxDecoration(
+                        color: i == 0 ? const Color(0xFF21BEC4)
+                          : const Color(0xFF1969C5),
+                        borderRadius: BorderRadius.circular(7))),
+                ],
+              )),
+              const SizedBox(height: 7),
+              Text(names[i], maxLines: 1,
+                style: const TextStyle(fontSize: 10, color: Color(0xFF637E98))),
+            ]));
+          })),
+          if (maximum == 0) ...[
+            const SizedBox(height: 7),
+            const Text('لا توجد دروس مكتملة هذا الأسبوع',
+              style: TextStyle(fontSize: 10, color: Color(0xFF637E98))),
+          ],
+        ],
+      ),
     );
   }
 
@@ -82,256 +145,203 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     final inProgress = int.tryParse('${_summary?['in_progress'] ?? 0}') ?? 0;
     final notStarted = int.tryParse('${_summary?['not_started'] ?? 0}') ?? 0;
-    final avgScore = _summary?['avg_score'];
-
+    final average = _summary?['avg_score'];
     final total = done + inProgress + notStarted;
-    final percent = total > 0 ? done / total : 0.0;
+    final percent = total == 0 ? 0.0 : done / total;
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: JisrColors.of(context).card,
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: JisrColors.of(context).line),
-          ),
-          child: Row(
+    return Column(children: [
+      _s09Card(
+        padding: const EdgeInsets.all(16),
+        child: Row(children: [
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 96,
-                height: 96,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox.expand(
-                      child: CircularProgressIndicator(
-                        value: percent,
-                        strokeWidth: 10,
-                        strokeCap: StrokeCap.round,
-                        color: AppColors.green,
-                        backgroundColor: JisrColors.of(context).line,
-                      ),
-                    ),
-                    Text('${(percent * 100).round()}%',
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-                  ],
+              const Text('نسبة الإنجاز', style: TextStyle(fontSize: 12,
+                fontWeight: FontWeight.w700, color: Color(0xFF637E98))),
+              const SizedBox(height: 10),
+              Text(
+                total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
+                    : done == total
+                        ? 'أنهى ${widget.childName} جميع دروسه'
+                        : 'أكمل ${widget.childName} ${(100 * percent).round()}% من دروسه',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800,
+                  height: 1.4, color: Color(0xFF102D49))),
+              const SizedBox(height: 8),
+              Text('${done} من ${total} درس مكتمل', style: const TextStyle(
+                fontSize: 12, color: Color(0xFF637E98))),
+              if (average != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F6FA),
+                    borderRadius: BorderRadius.circular(18)),
+                  child: Text('المستوى: ${average}%', style: const TextStyle(
+                    color: Color(0xFF637E98), fontSize: 11)),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AdaptiveText('نسبة الإنجاز', type: AdaptiveTextType.caption),
-                    const SizedBox(height: 7),
-                    AdaptiveText(
-                      total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
-                        : 'أكمل ${widget.childName} ${(percent * 100).round()}% من دروسه',
-                      fontWeight: FontWeight.w800,
-                    ),
-                    const SizedBox(height: 7),
-                    AdaptiveText('$done من أصل $total درس مكتمل',
-                      type: AdaptiveTextType.caption),
-                    if (avgScore != null) ...[
-                      const SizedBox(height: 7),
-                      AdaptiveText('المستوى: $avgScore%',
-                        type: AdaptiveTextType.caption),
-                    ],
-                  ],
-                ),
-              ),
+              ],
             ],
-          ),
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-        Row(
-          children: [
-            _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
-            const SizedBox(width: 6),
-            _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
-                AppColors.brandBlue),
-            const SizedBox(width: 6),
-            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock, AppColors.muted),
-            const SizedBox(width: 6),
-            _summaryCard('متوسّط',
-                avgScore != null ? '$avgScore%' : '—',
-                AppIcons.starFilled, AppColors.yellow),
-          ],
-        ),
-      ],
-    );
+          )),
+          const SizedBox(width: 15),
+          SizedBox(width: 96, height: 96,
+            child: Stack(alignment: Alignment.center, children: [
+              SizedBox.expand(child: CircularProgressIndicator(
+                value: percent, strokeWidth: 9, strokeCap: StrokeCap.round,
+                color: const Color(0xFF53B357),
+                backgroundColor: const Color(0xFFE7F0F7))),
+              Text('${(percent * 100).round()}%', style: const TextStyle(
+                fontSize: 17, fontWeight: FontWeight.w800,
+                color: Color(0xFF102D49))),
+            ])),
+        ]),
+      ),
+      const SizedBox(height: 14),
+      Row(children: [
+        _summaryCard('مكتمل', '${done}', Icons.check_circle_outline,
+          const Color(0xFF53B357)),
+        const SizedBox(width: 8),
+        _summaryCard('قيد التنفيذ', '${inProgress}', Icons.autorenew_rounded,
+          const Color(0xFF1CB6C4)),
+        const SizedBox(width: 8),
+        _summaryCard('لم يبدأ', '${notStarted}', Icons.access_time_rounded,
+          const Color(0xFF6C88A4)),
+        const SizedBox(width: 8),
+        _summaryCard('متوسط', average == null ? '—' : '${average}%',
+          Icons.star_rounded, const Color(0xFFFFB72E)),
+      ]),
+    ]);
   }
 
-  Widget _summaryCard(
-      String label, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        height: 126,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-        decoration: BoxDecoration(
-          color: JisrColors.of(context).card,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: JisrColors.of(context).line),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: color.withValues(alpha: 0.12),
-              child: Icon(icon, size: 19, color: color),
-            ),
-            SizedBox(height: AdaptiveHelper.spacing / 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AdaptiveHelper.textColor(context),
-              ),
-            ),
-            Text(label, maxLines: 1, textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10)),
-          ],
-        ),
-      ),
-    );
+  Widget _summaryCard(String label, String value, IconData icon, Color tint) {
+    return Expanded(child: Container(
+      height: 127,
+      padding: const EdgeInsets.fromLTRB(2, 12, 2, 11),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: const Color(0xFFD8E6F2))),
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        CircleAvatar(radius: 19,
+          backgroundColor: tint.withValues(alpha: 0.12),
+          child: Icon(icon, size: 21, color: tint)),
+        Text(value, maxLines: 1, style: const TextStyle(
+          color: Color(0xFF102D49), fontSize: 18, fontWeight: FontWeight.w800)),
+        Text(label, maxLines: 1, textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 10, color: Color(0xFF102D49))),
+      ]),
+    ));
   }
 
   Widget _buildRewardsSection() {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
-
-    final badges = <({String emoji, String title, bool earned, String hint})>[
-      (
-        emoji: '🌟',
-        title: 'البداية المشرقة',
-        earned: done >= 1,
-        hint: 'أكمل أول درس',
-      ),
-      (
-        emoji: '🏅',
-        title: 'نجم المثابرة',
-        earned: done >= 5,
-        hint: done >= 5 ? '' : 'بقي ${5 - done} دروس',
-      ),
-      (
-        emoji: '🏆',
-        title: 'بطل الدروس',
-        earned: done >= 10,
-        hint: done >= 10 ? '' : 'بقي ${10 - done} دروس',
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const AdaptiveText(
-          'المكافآت',
-          type: AdaptiveTextType.title,
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-
-        AdaptiveCard(
-          child: Row(
-            children: [
-              Icon(AppIcons.starFilled,
-                  size: AdaptiveHelper.iconSize, color: AppColors.yellow),
-              SizedBox(width: AdaptiveHelper.spacing / 2),
-              Expanded(
-                child: AdaptiveText(
-                  '$_stars نجمة',
-                  type: AdaptiveTextType.body,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: AdaptiveHelper.spacing),
-
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AdaptiveHelper.spacing / 2,
-          crossAxisSpacing: AdaptiveHelper.spacing / 2,
-          childAspectRatio: 0.78,
-          children: badges.map((b) => _buildBadgeCard(b)).toList(),
-        ),
-      ],
-    );
+    return Column(children: [
+      _s09Title('المكافآت', trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: Colors.white,
+          border: Border.all(color: const Color(0xFFD8E6F2)),
+          borderRadius: BorderRadius.circular(23)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.star_rounded, size: 18,
+            color: Color(0xFFFFB72E)),
+          const SizedBox(width: 4),
+          Text('${_stars} نجمة', style: const TextStyle(
+            fontSize: 11, color: Color(0xFF102D49))),
+        ]),
+      )),
+      const SizedBox(height: 12),
+      Row(children: [
+        _s09BadgeCard('البداية المشرقة', done, 1),
+        const SizedBox(width: 9),
+        _s09BadgeCard('نجمة المثابرة', done, 4),
+        const SizedBox(width: 9),
+        _s09BadgeCard('بطل الدروس', done, 9),
+      ]),
+    ]);
   }
 
-  Widget _buildBadgeCard(
-      ({String emoji, String title, bool earned, String hint}) badge) {
-    return AdaptiveCard(
-      backgroundColor: badge.earned
-          ? AppColors.green.withValues(alpha: 0.1)
-          : AdaptiveHelper.cardColor(context),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            badge.earned ? AppIcons.trophy : AppIcons.lock,
-            size: AdaptiveHelper.iconSize + 8,
-            color: badge.earned ? AppColors.green : AppColors.muted,
-          ),
-          SizedBox(height: AdaptiveHelper.spacing / 4),
-          AdaptiveText(
-            badge.title,
-            type: AdaptiveTextType.caption,
-            fontWeight: FontWeight.w800,
-            textAlign: TextAlign.center,
-            color: badge.earned ? AppColors.green : null,
-          ),
-          if (!badge.earned && badge.hint.isNotEmpty)
-            AdaptiveText(
-              badge.hint,
-              type: AdaptiveTextType.label,
-              textAlign: TextAlign.center,
-            ),
-        ],
-      ),
-    );
+  Widget _s09BadgeCard(String title, int done, int goal) {
+    final earned = done >= goal;
+    final achieved = done.clamp(0, goal);
+    return Expanded(child: Container(
+      height: 179,
+      padding: const EdgeInsets.fromLTRB(6, 12, 6, 11),
+      decoration: BoxDecoration(color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: earned ? const Color(0xFF53B357)
+          : const Color(0xFFD8E6F2))),
+      child: Column(children: [
+        CircleAvatar(radius: 24,
+          backgroundColor: earned ? const Color(0xFFE7F5E9)
+            : const Color(0xFFF0F6FA),
+          child: Icon(earned ? Icons.emoji_events_outlined
+            : Icons.lock_outline, size: 26,
+            color: earned ? const Color(0xFF53B357)
+              : const Color(0xFF6C88A4))),
+        const SizedBox(height: 10),
+        Expanded(child: Center(child: Text(title, textAlign: TextAlign.center,
+          maxLines: 2, style: const TextStyle(
+            color: Color(0xFF102D49), fontSize: 11,
+            height: 1.4, fontWeight: FontWeight.w800)))),
+        const SizedBox(height: 10),
+        ClipRRect(borderRadius: BorderRadius.circular(9),
+          child: LinearProgressIndicator(
+            value: achieved / goal, minHeight: 4,
+            color: const Color(0xFF53B357),
+            backgroundColor: const Color(0xFFE1EDF6))),
+        const SizedBox(height: 8),
+        Text(earned ? 'تم الإنجاز' : '${achieved}/${goal}',
+          style: TextStyle(fontSize: 10,
+            color: earned ? const Color(0xFF53B357)
+              : const Color(0xFF637E98))),
+      ]),
+    ));
   }
 
   Widget _buildProgressTile(Map p) {
-    final status = p['status'] ?? 'not_started';
-    final statusInfo = _statusInfo(status);
-    final score = p['score'];
+    final info = _statusInfo((p['status'] ?? 'not_started').toString());
     final title = (p['lesson_title'] ?? '').toString();
-
+    final score = p['score'];
     return Padding(
-      padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing / 2),
-      child: AdaptiveCard(
-        child: Row(
-          children: [
-            Icon(
-              statusInfo.icon,
-              size: AdaptiveHelper.iconSize,
-              color: statusInfo.color,
-            ),
-            SizedBox(width: AdaptiveHelper.spacing),
-            Expanded(
-              child: Column(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SpecialistDashboardScreen(initialTab: 1))),
+          child: _s09Card(
+            padding: const EdgeInsets.all(12),
+            child: Row(children: [
+              Container(width: 49, height: 49,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5F0FB),
+                  borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.menu_book_outlined,
+                  color: Color(0xFF1969C5), size: 25)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AdaptiveText(
-                    title,
-                    type: AdaptiveTextType.body,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  AdaptiveText(
-                    statusInfo.label +
-                        (score != null ? ' • النتيجة: $score%' : ''),
-                    type: AdaptiveTextType.caption,
-                    color: statusInfo.color,
+                  Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 15,
+                      color: Color(0xFF102D49), fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: info.color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(18)),
+                    child: Text(score == null ? info.label
+                      : '${info.label} • النتيجة ${score}%',
+                      style: TextStyle(color: info.color, fontSize: 11)),
                   ),
                 ],
-              ),
-            ),
-          ],
+              )),
+              const SizedBox(width: 5),
+              const Icon(Icons.chevron_left_rounded,
+                color: Color(0xFF637E98)),
+            ]),
+          ),
         ),
       ),
     );
