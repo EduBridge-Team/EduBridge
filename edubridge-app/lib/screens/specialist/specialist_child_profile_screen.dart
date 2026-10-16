@@ -137,27 +137,31 @@ class _SpecialistChildProfileScreenState
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 31,
-            backgroundColor: Colors.white,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .16),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Text(
-              PresentationText.initial(_childName, fallback: '؟'),
+              isPreview ? 'قبل التعيين' : 'قيد المتابعة',
               style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w900,
-                color: AppColors.brandBlue,
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   _childName.isEmpty ? 'طالب' : _childName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
@@ -177,6 +181,7 @@ class _SpecialistChildProfileScreenState
                         ].join(' • '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: .88),
                     fontSize: 13,
@@ -185,18 +190,16 @@ class _SpecialistChildProfileScreenState
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: .16),
-              borderRadius: BorderRadius.circular(12),
-            ),
+          const SizedBox(width: 14),
+          CircleAvatar(
+            radius: 31,
+            backgroundColor: Colors.white,
             child: Text(
-              isPreview ? 'قبل التعيين' : 'قيد المتابعة',
+              PresentationText.initial(_childName, fallback: '؟'),
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+                color: AppColors.brandBlue,
               ),
             ),
           ),
