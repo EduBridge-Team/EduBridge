@@ -40,6 +40,22 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
       children: [
         _buildSummaryCards(),
         SizedBox(height: AdaptiveHelper.spacing * 2),
+        AdaptiveText('نشاط الأسبوع', type: AdaptiveTextType.title),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: JisrColors.of(context).card,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: JisrColors.of(context).line),
+          ),
+          child: const AdaptiveText(
+            'سيظهر النشاط الأسبوعي عند توفر بيانات الدروس اليومية.',
+            type: AdaptiveTextType.caption,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(height: AdaptiveHelper.spacing * 2),
         _buildRewardsSection(),
         SizedBox(height: AdaptiveHelper.spacing * 2),
         const AdaptiveText(
