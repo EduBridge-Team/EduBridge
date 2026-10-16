@@ -288,8 +288,6 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    _buildAdaptationAndSpecialistActions(row, child),
                     if (child['current_plan_id'] != null || current != null) ...[
                       const SizedBox(height: 10),
                       LayoutBuilder(builder: (context, constraints) {
