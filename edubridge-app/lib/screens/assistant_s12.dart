@@ -81,8 +81,13 @@ extension _AssistantS12 on _AssistantScreenState {
           icon: const CircleAvatar(
             radius: 21,
             backgroundColor: Color(0x33FFFFFF),
-            child: Icon(Icons.arrow_forward_rounded,
-                color: Colors.white, size: 23),
+            // Keep the visual arrow pointing right, as in the S12 reference,
+            // without changing the surrounding Arabic RTL layout.
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Icon(Icons.arrow_forward_rounded,
+                  color: Colors.white, size: 23),
+            ),
           ),
         ),
         title: const Text(
