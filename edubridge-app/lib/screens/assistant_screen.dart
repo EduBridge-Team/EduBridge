@@ -15,6 +15,7 @@ import 'lessons_screen.dart';
 import 'chats_screen.dart';
 import 'notifications_screen.dart';
 part 'assistant_screen_view.dart';
+part 'assistant_s12.dart';
 
 const _structuredAssistantHeadings = <String>{
   'الهدف',
@@ -180,6 +181,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
     final items = <String>[
       if (hasLessonContext) 'اشرح هذا الدرس ببساطة',
+      if (!hasLessonContext && _role == 'specialist') 'اشرح الدرس ببساطة',
       ...switch (_role) {
         'parent' => const [
             'لخّص لي ما يمكنني متابعته اليوم',
