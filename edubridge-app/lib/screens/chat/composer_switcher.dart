@@ -14,7 +14,9 @@ import 'composer_mode.dart';
 //  الزر الصغير — يتغير حسب الوضع الحالي
 // ═══════════════════════════════════════════════════════════
 class ComposerSwitcherButton extends StatelessWidget {
-  const ComposerSwitcherButton({super.key});
+  const ComposerSwitcherButton({super.key, this.figmaS16 = false});
+
+  final bool figmaS16;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +29,12 @@ class ComposerSwitcherButton extends StatelessWidget {
         return Tooltip(
           message: 'وضع: ${meta.label}',
           child: Material(
-            color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
+            color: figmaS16
+                ? const Color(0xFFE5F0FA)
+                : color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(figmaS16 ? 14 : 12),
             child: InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(figmaS16 ? 14 : 12),
               onTap: () async {
                 HapticFeedback.selectionClick();
                 await _showPicker(context);
@@ -39,9 +43,11 @@ class ComposerSwitcherButton extends StatelessWidget {
                 width: 44,
                 height: 44,
                 child: Icon(
-                  meta.icon,
+                  figmaS16 ? Icons.edit_outlined : meta.icon,
                   size: 22,
-                  color: color,
+                  color: figmaS16
+                      ? const Color(0xFF1C6BC6)
+                      : color,
                 ),
               ),
             ),
