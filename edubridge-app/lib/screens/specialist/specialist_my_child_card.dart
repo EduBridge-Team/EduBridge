@@ -210,9 +210,9 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                   initiallyExpanded: false,
                   maintainState: false,
                   tilePadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  childrenPadding: const EdgeInsets.only(top: 10, bottom: 5),
+                  childrenPadding: const EdgeInsets.only(top: 8, bottom: 6),
                   leading: Icon(
-                    Icons.tune_rounded,
+                    Icons.tune_outlined,
                     size: 20,
                     color: c.infoText,
                   ),
@@ -221,7 +221,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     style: TextStyle(
                       color: c.heading,
                       fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   children: [
@@ -230,12 +230,13 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         Expanded(
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                              foregroundColor: const Color(0xFF176CCB),
                               side: BorderSide(color: c.line),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
-                            icon: const Icon(AppIcons.report, size: 17),
-                            label: const Text('تقرير المعلم'),
+                            icon: const Icon(Icons.bar_chart_outlined, size: 18),
+                            label: const Text('تقرير المعلم', maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _openTeacherReport(row),
                           ),
                         ),
@@ -243,12 +244,13 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         Expanded(
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                              foregroundColor: const Color(0xFF176CCB),
                               side: BorderSide(color: c.line),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
-                            icon: const Icon(AppIcons.edit, size: 17),
-                            label: const Text('اكتب تقدّم'),
+                            icon: const Icon(Icons.edit_outlined, size: 18),
+                            label: const Text('اكتب تقدّم', maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _writeProgressBasedOnReport(row),
                           ),
                         ),
@@ -260,12 +262,13 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         Expanded(
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                              foregroundColor: const Color(0xFF176CCB),
                               side: BorderSide(color: c.line),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
-                            icon: const Icon(AppIcons.forum, size: 17),
-                            label: const Text('دراسة الحالة'),
+                            icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                            label: const Text('دراسة الحالة', maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _openCaseDiscussion(childId: childId),
                           ),
                         ),
@@ -273,12 +276,13 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         Expanded(
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                              foregroundColor: const Color(0xFF176CCB),
                               side: BorderSide(color: c.line),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
-                            icon: const Icon(AppIcons.specialist, size: 17),
-                            label: const Text('اقترح دعم'),
+                            icon: const Icon(Icons.lightbulb_outline, size: 18),
+                            label: const Text('اقترح دعم', maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _recommendLearningSupport(row),
                           ),
                         ),
