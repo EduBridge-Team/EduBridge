@@ -6,9 +6,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F7),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF3A6EA5),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('🌈 لعبة الرموز'),
       ),
       body: Column(

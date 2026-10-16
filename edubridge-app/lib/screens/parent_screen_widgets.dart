@@ -7,7 +7,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
       decoration: const BoxDecoration(
-        gradient: AppColors.headerGradient,
+        gradient: AppColors.appBarGradient,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
       ),
       child: FutureBuilder<String?>(

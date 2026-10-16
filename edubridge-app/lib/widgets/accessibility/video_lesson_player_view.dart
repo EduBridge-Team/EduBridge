@@ -4,9 +4,7 @@ extension _VideoLessonPlayerStateView on _VideoLessonPlayerState {
   Widget buildView(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: Text(
           widget.lessonTitle,
           style: const TextStyle(fontSize: 16),

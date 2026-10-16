@@ -3,6 +3,7 @@
 import 'game_content.dart';
 import '../features/games/domain/rhythm_session.dart';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../utils/adaptive_feedback_policy.dart';
@@ -182,9 +183,7 @@ class _RhythmGameState extends State<RhythmGame> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1FF),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF8B6DD4),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('🎵 لعبة الإيقاع'),
         actions: [
           if (_isPlaying) ...[

@@ -6,9 +6,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1FAF1),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF57B25A),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('💙 الكلمات البصرية'),
       ),
       body: Column(

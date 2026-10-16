@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/quiz_session.dart';
 import '../services/game_progress_service.dart';
@@ -55,7 +56,7 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
   Widget build(BuildContext context) {
     final item = _session.current;
     return Scaffold(
-      appBar: AppBar(title: const Text('لغز المنطق 🧠')),
+      appBar: BrandAppBar(title: const Text('لغز المنطق 🧠')),
       body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

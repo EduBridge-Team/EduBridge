@@ -3,6 +3,7 @@ import 'dart:async';
 import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/arithmetic_question.dart';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
@@ -103,9 +104,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
     final options = _options;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8EE),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF2842B),
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: const Text('➕ سباق الحساب'),
         actions: [
           TextButton(

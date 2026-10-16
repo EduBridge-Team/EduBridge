@@ -61,6 +61,13 @@ class AppColors {
   static const headerBlueMid = Color(0xFF124F91);
   static const headerTealDeep = Color(0xFF055966);
 
+  // Shared horizontal app bar gradient, sampled from the approved reference.
+  static const appBarGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [Color(0xFF1EB7C4), Color(0xFF1969C1)],
+  );
+
   static const headerGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,

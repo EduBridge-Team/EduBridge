@@ -169,7 +169,7 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: AppColors.headerGradient,
+        gradient: AppColors.appBarGradient,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(

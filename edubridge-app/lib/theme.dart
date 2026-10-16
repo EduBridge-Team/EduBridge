@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'theme_colors.dart';
 part 'theme_builders.dart';
 part 'jisr_app_bar.dart';
+part 'brand_app_bar.dart';
 
 final ValueNotifier<ThemeMode> jisrThemeMode = ValueNotifier(ThemeMode.light);
 

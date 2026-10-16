@@ -3,16 +3,14 @@ part of 'adaptive_video_player.dart';
 extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
   Widget buildView(BuildContext context) {
     if (!_initialized) {
-      return Scaffold(appBar: AppBar(title: Text(widget.title ?? 'فيديو')),
+      return Scaffold(appBar: BrandAppBar(title: Text(widget.title ?? 'فيديو')),
         body: Center(child: _error == null
           ? const CircularProgressIndicator() : Text(_error!)));
     }
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+      appBar: BrandAppBar(
         title: Text(widget.title ?? 'فيديو', style: const TextStyle(fontSize: 16)),
         actions: [
           if (widget.audioDescription?.trim().isNotEmpty == true)

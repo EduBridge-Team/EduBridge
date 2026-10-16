@@ -129,10 +129,8 @@ class _SpecialistChildProfileScreenState
     final hasDocuments = child.hasDocuments;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: BrandAppBar(
         toolbarHeight: 74,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           _childName.isEmpty ? 'ملف الطالب' : 'ملف $_childName',
@@ -140,12 +138,6 @@ class _SpecialistChildProfileScreenState
             color: Colors.white,
             fontWeight: FontWeight.w800,
             fontSize: 19,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.headerGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
           ),
         ),
         shape: const RoundedRectangleBorder(
