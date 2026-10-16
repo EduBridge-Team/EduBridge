@@ -103,71 +103,73 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(AdaptiveHelper.spacing),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: JisrColors.of(context).card,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(26),
             border: Border.all(color: JisrColors.of(context).line),
           ),
-          child: SizedBox(
-          width: 160,
-          height: 160,
-          child: Stack(
-            alignment: Alignment.center,
+          child: Row(
             children: [
               SizedBox(
-                width: 160,
-                height: 160,
-                child: CircularProgressIndicator(
-                  value: percent,
-                  strokeWidth: 14,
-                  strokeCap: StrokeCap.round,
-                  color: AppColors.green,
-                  backgroundColor: Colors.grey.shade200,
+                width: 96,
+                height: 96,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox.expand(
+                      child: CircularProgressIndicator(
+                        value: percent,
+                        strokeWidth: 10,
+                        strokeCap: StrokeCap.round,
+                        color: AppColors.green,
+                        backgroundColor: JisrColors.of(context).line,
+                      ),
+                    ),
+                    Text('${(percent * 100).round()}%',
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+                  ],
                 ),
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${(percent * 100).round()}%',
-                    style: TextStyle(
-                      fontSize: AdaptiveHelper.titleFontSize + 10,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AdaptiveText('نسبة الإنجاز', type: AdaptiveTextType.caption),
+                    const SizedBox(height: 7),
+                    AdaptiveText(
+                      total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
+                        : 'أكمل ${widget.childName} ${(percent * 100).round()}% من دروسه',
                       fontWeight: FontWeight.w800,
-                      color: AdaptiveHelper.textColor(context),
                     ),
-                  ),
-                  const AdaptiveText(
-                    'الإنجاز',
-                    type: AdaptiveTextType.caption,
-                  ),
-                ],
+                    const SizedBox(height: 7),
+                    AdaptiveText('$done من أصل $total درس مكتمل',
+                      type: AdaptiveTextType.caption),
+                    if (avgScore != null) ...[
+                      const SizedBox(height: 7),
+                      AdaptiveText('المستوى: $avgScore%',
+                        type: AdaptiveTextType.caption),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
-        ),
         ),
         SizedBox(height: AdaptiveHelper.spacing),
         Row(
           children: [
             _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
-            SizedBox(width: AdaptiveHelper.spacing / 2),
+            const SizedBox(width: 6),
             _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
-                AppColors.orangeDeep),
-          ],
-        ),
-        SizedBox(height: AdaptiveHelper.spacing / 2),
-        Row(
-          children: [
-            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock,
-                AppColors.muted),
-            SizedBox(width: AdaptiveHelper.spacing / 2),
-            _summaryCard(
-              'متوسّط',
-              avgScore != null ? '$avgScore%' : '—',
-              AppIcons.starFilled,
-              AppColors.yellow,
-            ),
+                AppColors.brandBlue),
+            const SizedBox(width: 6),
+            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock, AppColors.muted),
+            const SizedBox(width: 6),
+            _summaryCard('متوسّط',
+                avgScore != null ? '$avgScore%' : '—',
+                AppIcons.starFilled, AppColors.yellow),
           ],
         ),
       ],
@@ -177,20 +179,33 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
   Widget _summaryCard(
       String label, String value, IconData icon, Color color) {
     return Expanded(
-      child: AdaptiveCard(
+      child: Container(
+        height: 126,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+        decoration: BoxDecoration(
+          color: JisrColors.of(context).card,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: JisrColors.of(context).line),
+        ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Icon(icon, size: AdaptiveHelper.iconSize, color: color),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: color.withValues(alpha: 0.12),
+              child: Icon(icon, size: 19, color: color),
+            ),
             SizedBox(height: AdaptiveHelper.spacing / 4),
             Text(
               value,
               style: TextStyle(
-                fontSize: AdaptiveHelper.titleFontSize,
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: color,
+                color: AdaptiveHelper.textColor(context),
               ),
             ),
-            AdaptiveText(label, type: AdaptiveTextType.caption),
+            Text(label, maxLines: 1, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10)),
           ],
         ),
       ),
@@ -238,7 +253,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
               SizedBox(width: AdaptiveHelper.spacing / 2),
               Expanded(
                 child: AdaptiveText(
-                  'جمع ${widget.childName} $_stars نجمة',
+                  '$_stars نجمة',
                   type: AdaptiveTextType.body,
                   fontWeight: FontWeight.w800,
                 ),
@@ -249,12 +264,12 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
         SizedBox(height: AdaptiveHelper.spacing),
 
         GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: AdaptiveHelper.spacing / 2,
           crossAxisSpacing: AdaptiveHelper.spacing / 2,
-          childAspectRatio: 1.4,
+          childAspectRatio: 0.78,
           children: badges.map((b) => _buildBadgeCard(b)).toList(),
         ),
       ],
