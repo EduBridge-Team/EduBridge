@@ -110,17 +110,17 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
             border: Border.all(color: JisrColors.of(context).line),
           ),
           child: SizedBox(
-          width: 160,
-          height: 160,
+          width: 110,
+          height: 110,
           child: Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 160,
-                height: 160,
+                width: 110,
+                height: 110,
                 child: CircularProgressIndicator(
                   value: percent,
-                  strokeWidth: 14,
+                  strokeWidth: 10,
                   strokeCap: StrokeCap.round,
                   color: AppColors.green,
                   backgroundColor: Colors.grey.shade200,
@@ -238,7 +238,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
               SizedBox(width: AdaptiveHelper.spacing / 2),
               Expanded(
                 child: AdaptiveText(
-                  'جمع ${widget.childName} $_stars نجمة',
+                  '$_stars نجمة',
                   type: AdaptiveTextType.body,
                   fontWeight: FontWeight.w800,
                 ),
@@ -249,12 +249,12 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
         SizedBox(height: AdaptiveHelper.spacing),
 
         GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: AdaptiveHelper.spacing / 2,
           crossAxisSpacing: AdaptiveHelper.spacing / 2,
-          childAspectRatio: 1.4,
+          childAspectRatio: 0.78,
           children: badges.map((b) => _buildBadgeCard(b)).toList(),
         ),
       ],
