@@ -138,23 +138,195 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
     }
   }
 
+  PreferredSizeWidget _s13AppBar() {
+    return AppBar(
+      toolbarHeight: 116,
+      backgroundColor: Colors.transparent,
+      foregroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      centerTitle: false,
+      titleSpacing: 4,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      flexibleSpace: ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(24),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xFF1EB8C8), Color(0xFF1765C2)],
+                ),
+              ),
+            ),
+            Positioned(
+              left: -54,
+              bottom: -83,
+              child: IgnorePointer(
+                child: Container(
+                  width: 152,
+                  height: 152,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.23),
+                      width: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: -12,
+              bottom: -84,
+              child: IgnorePointer(
+                child: Container(
+                  width: 113,
+                  height: 113,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      width: 10,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      leading: IconButton(
+        tooltip: 'رجوع',
+        onPressed: () => Navigator.maybePop(context),
+        icon: const CircleAvatar(
+          radius: 21,
+          backgroundColor: Color(0x33FFFFFF),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 23,
+            ),
+          ),
+        ),
+      ),
+      title: Text(
+        'نور • ${widget.childName}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+
+  Widget _s13SummaryCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 19, 18, 18),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Color(0xFF175FB9), Color(0xFF21B9C7)],
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'ملخص نور الذكي',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(width: 12),
+              Icon(Icons.auto_awesome_rounded,
+                  color: Colors.white, size: 17),
+            ],
+          ),
+          SizedBox(height: 12),
+          Text(
+            'هذه اقتراحات تعليمية مبنية على بيانات EduBridge المتاحة للطالب. لا تمثل تشخيصاً طبياً أو نفسياً، ولا يتم تنفيذ أي إجراء تلقائياً.',
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12.5,
+              height: 1.85,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _s13AskButton(_StudentNoorData data) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
+        child: SizedBox(
+          width: double.infinity,
+          height: 58,
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: const Color(0xFF196AC6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            onPressed: () => _openChat(data),
+            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+            label: const Text(
+              'اسأل نور عن هذا الطفل',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = JisrColors.of(context);
     return FutureBuilder<_StudentNoorData>(
       future: _contextFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            backgroundColor: const Color(0xFFF5F9FC),
+            appBar: _s13AppBar(),
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
         if (snapshot.hasError) {
           final message = snapshot.error.toString().replaceFirst('Exception: ', '');
           return Scaffold(
-            appBar: BrandAppBar(
-              title: const Text('نور', style: TextStyle(color: Colors.white)),
-            ),
+            backgroundColor: const Color(0xFFF5F9FC),
+            appBar: _s13AppBar(),
             body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -164,7 +336,8 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                     Text(message, textAlign: TextAlign.center),
                     const SizedBox(height: 16),
                     FilledButton.icon(
-                      onPressed: () => setState(() => _contextFuture = _loadContext()),
+                      onPressed: () =>
+                          setState(() => _contextFuture = _loadContext()),
                       icon: const Icon(Icons.refresh),
                       label: const Text('إعادة المحاولة'),
                     ),
@@ -177,62 +350,44 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
 
         final data = snapshot.data!;
         return Scaffold(
-          appBar: BrandAppBar(
-            title: Text('نور • ${widget.childName}',
-                style: const TextStyle(color: Colors.white)),
-          ),
+          backgroundColor: const Color(0xFFF5F9FC),
+          appBar: _s13AppBar(),
           body: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(12, 14, 12, 22),
             children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  gradient: AppColors.headerGradient,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.auto_awesome_rounded, color: Colors.white),
-                        SizedBox(width: 8),
-                        Expanded(child: Text(
-                          'ملخص نور الذكي',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        )),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'هذه اقتراحات تعليمية مبنية على بيانات EduBridge المتاحة للطالب. لا تمثل تشخيصاً طبياً أو نفسياً، ولا يتم تنفيذ أي إجراء تلقائياً.',
-                      style: TextStyle(color: Colors.white, height: 1.55),
-                    ),
-                  ],
+              _s13SummaryCard(),
+              const SizedBox(height: 18),
+              const Text(
+                'الخطوات التالية المقترحة',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Color(0xFF112F4A),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 20),
-              if (data.actions.isNotEmpty) ...[
-                Text(
-                  'الخطوات التالية المقترحة',
-                  style: TextStyle(
-                    color: colors.heading,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
+              const SizedBox(height: 14),
+              if (data.actions.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(17),
+                    border: Border.all(color: const Color(0xFFD8E6F2)),
+                  ),
+                  child: const Text(
+                    'لا توجد خطوات متابعة مقترحة حاليًا.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Color(0xFF637F98)),
                   ),
                 ),
+              for (final action in data.actions) ...[
+                _ActionCard(
+                  action: action,
+                  onAsk: () => _openChat(data, action: action),
+                ),
                 const SizedBox(height: 10),
-                for (final action in data.actions) ...[
-                  _ActionCard(
-                    action: action,
-                    onAsk: () => _openChat(data, action: action),
-                  ),
-                  const SizedBox(height: 10),
-                ],
               ],
               if (data.role == 'teacher') ...[
                 const SizedBox(height: 4),
@@ -265,23 +420,15 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
-              SizedBox(
-                height: 52,
-                child: FilledButton.icon(
-                  onPressed: () => _openChat(data),
-                  icon: const Icon(Icons.chat_bubble_outline_rounded),
-                  label: const Text(
-                    'اسأل نور عن هذا الطالب',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ),
-              ),
+
             ],
           ),
+          bottomNavigationBar: _s13AskButton(data),
         );
       },
     );
   }
+
 }
 
 class _ActionCard extends StatelessWidget {
@@ -292,11 +439,10 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
     final priorityColor = switch (action.priority) {
-      'high' => AppColors.red,
-      'medium' => AppColors.orangeDeep,
-      _ => AppColors.brandTealDeep,
+      'high' => const Color(0xFFC4362E),
+      'medium' => const Color(0xFFAF680F),
+      _ => const Color(0xFF038D98),
     };
     final priorityLabel = switch (action.priority) {
       'high' => 'أولوية عالية',
@@ -305,64 +451,92 @@ class _ActionCard extends StatelessWidget {
     };
 
     return Container(
-      padding: const EdgeInsets.all(15),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(15, 18, 15, 12),
       decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: c.line),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: const Color(0xFFD8E6F2)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x071A5C8E),
+            blurRadius: 9,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Text(
                   action.title,
-                  style: TextStyle(
-                    color: c.heading,
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w900,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                    color: Color(0xFF112F4A),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    height: 1.65,
                   ),
                 ),
               ),
+              const SizedBox(width: 9),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: priorityColor.withValues(alpha: .10),
-                  borderRadius: BorderRadius.circular(999),
+                  color: priorityColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Text(
                   priorityLabel,
                   style: TextStyle(
                     color: priorityColor,
                     fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
           if (action.reason.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               action.reason,
-              style: TextStyle(color: c.body, height: 1.5, fontSize: 13),
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                color: Color(0xFF637F98),
+                fontSize: 13,
+                height: 2,
+              ),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Align(
-            alignment: AlignmentDirectional.centerEnd,
+            alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: onAsk,
-              icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-              label: const Text('ناقشها مع نور'),
+              icon: const Icon(Icons.auto_awesome_rounded, size: 15),
+              label: const Text(
+                'ناقشها مع نور',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF196AC6),
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                minimumSize: const Size(0, 36),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
 }
 
 class _StudentNoorData {
