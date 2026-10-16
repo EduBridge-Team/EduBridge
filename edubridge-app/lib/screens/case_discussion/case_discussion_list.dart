@@ -17,6 +17,7 @@ class _CaseDiscussionList extends StatefulWidget {
 }
 
 class _CaseDiscussionListState extends State<_CaseDiscussionList> {
+  void _refreshS07State(VoidCallback callback) => setState(callback);
   List<CaseDiscussion> _items = [];
   bool _loading = true;
   String? _error;
