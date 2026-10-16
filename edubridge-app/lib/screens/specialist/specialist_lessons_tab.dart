@@ -58,7 +58,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                   ],
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(12, 1, 12, 100),
+                  padding: const EdgeInsets.fromLTRB(12, 1, 12, 166),
                   itemCount: filtered.length,
                   itemBuilder: (context, i) =>
                       _buildLessonCard(filtered[i], c),
@@ -221,8 +221,14 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.chevron_left_rounded,
-                    color: Color(0xFF1767C3), size: 23),
+                  Transform.flip(
+                    flipX: true,
+                    child: const Icon(
+                      Icons.chevron_left_rounded,
+                      color: Color(0xFF1767C3),
+                      size: 23,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 7),
@@ -241,7 +247,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                     ),
-                    onPressed: () => _viewLessonDetail(lesson),
+                    onPressed: () => _recommendLessonToChild(lesson),
                     icon: const Icon(Icons.add_circle_outline, size: 18),
                     label: const Text(
                       'اقتراح لطفل',
