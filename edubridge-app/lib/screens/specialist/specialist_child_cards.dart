@@ -57,6 +57,9 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
     );
   }
 
+  // Legacy adaptation/specialist controls remain available to other dashboard
+  // flows, but are intentionally not displayed in the S02 quick-action grid.
+  // ignore: unused_element
   Widget _buildAdaptationAndSpecialistActions(
     Map<String, dynamic> row,
     Map<String, dynamic> child,
