@@ -55,6 +55,7 @@ Widget _buildHeader({
           ),
         ),
         SafeArea(
+          top: false,
           bottom: false,
           child: Padding(
             padding: EdgeInsets.fromLTRB(

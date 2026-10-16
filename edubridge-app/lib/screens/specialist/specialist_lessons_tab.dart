@@ -9,61 +9,63 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
             lesson['disability_type_id']?.toString() ==
             _selectedLessonTypeId.toString()).toList();
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 65,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
-            children: [
-              _lessonTypeChip(c, null, 'الكل'),
-              for (final type in _types)
-                if (type is Map &&
-                    type['id'] != null &&
-                    (type['name'] ?? '').toString().trim().isNotEmpty)
-                  _lessonTypeChip(
-                    c,
-                    int.tryParse(type['id'].toString()),
-                    (type['name'] ?? '').toString(),
-                  ),
-            ],
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 65,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
+              children: [
+                _lessonTypeChip(c, null, 'الكل'),
+                for (final type in _types)
+                  if (type is Map &&
+                      type['id'] != null &&
+                      (type['name'] ?? '').toString().trim().isNotEmpty)
+                    _lessonTypeChip(
+                      c,
+                      int.tryParse(type['id'].toString()),
+                      (type['name'] ?? '').toString(),
+                    ),
+              ],
+            ),
           ),
         ),
-        Expanded(
-          child: filtered.isEmpty
-              ? ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 72, 20, 120),
-                  children: [
-                    Icon(AppIcons.lesson, size: 62, color: c.muted),
-                    const SizedBox(height: 16),
-                    Text(
-                      _lessons.isEmpty
-                          ? 'لا توجد دروس بعد'
-                          : 'لا توجد دروس لهذا التصنيف',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: c.heading,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (_lessons.isEmpty)
-                      Text(
-                        'أضف درساً جديداً باستخدام زر اقتراح درس',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 13, color: c.muted),
-                      ),
-                  ],
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(12, 1, 12, 166),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, i) =>
-                      _buildLessonCard(filtered[i], c),
+        if (filtered.isEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 72, 20, 120),
+            sliver: SliverList.list(children: [
+              Icon(AppIcons.lesson, size: 62, color: c.muted),
+              const SizedBox(height: 16),
+              Text(
+                _lessons.isEmpty
+                    ? 'لا توجد دروس بعد'
+                    : 'لا توجد دروس لهذا التصنيف',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: c.heading,
                 ),
-        ),
+              ),
+              const SizedBox(height: 8),
+              if (_lessons.isEmpty)
+                Text(
+                  'أضف درساً جديداً باستخدام زر اقتراح درس',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: c.muted),
+                ),
+            ]),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(12, 1, 12, 166),
+            sliver: SliverList.builder(
+              itemCount: filtered.length,
+              itemBuilder: (context, i) => _buildLessonCard(filtered[i], c),
+            ),
+          ),
       ],
     );
   }
