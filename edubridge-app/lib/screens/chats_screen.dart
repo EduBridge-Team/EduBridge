@@ -6,8 +6,13 @@ import '../app_icons.dart';
 import '../features/communication/data/conversation_repository.dart';
 import '../features/communication/presentation/communication_list_controller.dart';
 import '../theme.dart';
+import '../services/api_service.dart';
+import 'specialist/specialist_screen.dart';
+import 'case_discussion/case_discussion_screen.dart';
+import 'learning_support_requests/learning_support_requests_screen.dart';
 import 'chat_screen.dart';
 part 'chats_screen_view.dart';
+part 'chats_screen_s15.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
@@ -18,6 +23,7 @@ class ChatsScreen extends StatefulWidget {
 
 class _ChatsScreenState extends State<ChatsScreen> {
   final _repository = ConversationRepository();
+  late final Future<String?> _viewerRole = ApiService.getRole();
   late final CommunicationListController _listController;
   List get _conversations => _listController.items;
   bool get _loading => _listController.loading;
@@ -109,7 +115,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) => FutureBuilder<String?>(
+    future: _viewerRole,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (snapshot.data == 'specialist') return _buildS15(context);
+      return buildView(context);
+    },
+  );
 }
 
 class _UserPickerSheet extends StatelessWidget {
