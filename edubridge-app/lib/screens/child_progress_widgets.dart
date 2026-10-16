@@ -29,45 +29,6 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
       );
     }
 
-    if (_progress.isEmpty) {
-      final c = JisrColors.of(context);
-      return ListView(
-        padding: EdgeInsets.all(AdaptiveHelper.spacing * 2),
-        children: [
-          SizedBox(height: AdaptiveHelper.spacing * 5),
-          Center(
-            child: Container(
-              width: 86,
-              height: 86,
-              decoration: BoxDecoration(
-                color: c.tintTeal,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                AppIcons.progress,
-                size: 42,
-                color: AppColors.brandBlue,
-              ),
-            ),
-          ),
-          SizedBox(height: AdaptiveHelper.spacing),
-          AdaptiveText(
-            'لا يوجد تقدّم مسجّل بعد',
-            type: AdaptiveTextType.subtitle,
-            textAlign: TextAlign.center,
-            fontWeight: FontWeight.w800,
-            color: c.heading,
-          ),
-          SizedBox(height: AdaptiveHelper.spacing / 3),
-          AdaptiveText(
-            'ستظهر هنا نسبة الإنجاز والنتائج والمكافآت بعد بدء الدروس.',
-            type: AdaptiveTextType.caption,
-            textAlign: TextAlign.center,
-            color: c.muted,
-          ),
-        ],
-      );
-    }
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
@@ -86,7 +47,17 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           type: AdaptiveTextType.title,
         ),
         SizedBox(height: AdaptiveHelper.spacing),
-        ..._progress.map((p) => _buildProgressTile(p)),
+        if (_progress.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: AdaptiveText(
+              'لم يبدأ الطفل أي درس بعد. سيظهر تقدّم الدروس هنا عند البدء.',
+              type: AdaptiveTextType.caption,
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          ..._progress.map((p) => _buildProgressTile(p)),
       ],
     );
   }
