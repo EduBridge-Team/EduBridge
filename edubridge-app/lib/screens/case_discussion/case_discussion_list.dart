@@ -20,11 +20,19 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   List<CaseDiscussion> _items = [];
   bool _loading = true;
   String? _error;
+  String? _viewerRole;
+  bool _s07Completed = false;
+  bool get _useS07 => !widget.embedded &&
+      widget.filterChildId == null &&
+      _viewerRole == 'specialist';
 
   @override
   void initState() {
     super.initState();
     _load();
+    ApiService.getRole().then((role) {
+      if (mounted) setState(() => _viewerRole = role);
+    });
   }
 
   Future<void> _refresh() => _load(showLoader: false);
@@ -82,6 +90,28 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    if (_useS07) {
+      return Scaffold(
+        body: Column(
+          children: [
+            _s07Header(),
+            Expanded(child: _s07Body(c)),
+          ],
+        ),
+        bottomNavigationBar: _s07Navigation(c),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _openNewDiscussion,
+          backgroundColor: AppColors.brandBlue,
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.add_circle_outline),
+          label: const Text(
+            'دراسة جديدة',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
+        ),
+      );
+    }
 
     if (widget.embedded) {
       return Scaffold(
