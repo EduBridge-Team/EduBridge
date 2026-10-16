@@ -62,11 +62,15 @@ class LessonRecommendationTest extends TestCase
         DB::table('child_specialist')->insert(['child_id' => 10, 'specialist_id' => 3]);
         DB::table('child_parent')->insert(['child_id' => 10, 'parent_id' => 8]);
         DB::table('lessons')->insert([
-            ['id' => 4, 'title' => 'درس مشترك', 'teacher_id' => 3, 'target_type' => 'everyone'],
+            ['id' => 4, 'title' => 'درس مشترك', 'teacher_id' => 3,
+             'target_type' => 'everyone', 'target_child_ids' => null,
+             'disability_type_id' => null],
             ['id' => 5, 'title' => 'درس خاص', 'teacher_id' => 3,
-             'target_type' => 'specificChildren', 'target_child_ids' => json_encode([20])],
+             'target_type' => 'specificChildren', 'target_child_ids' => json_encode([20]),
+             'disability_type_id' => null],
             ['id' => 6, 'title' => 'درس لإعاقة أخرى', 'teacher_id' => 3,
-             'target_type' => 'byDisability', 'disability_type_id' => 3],
+             'target_type' => 'byDisability', 'target_child_ids' => null,
+             'disability_type_id' => 3],
         ]);
     }
 
