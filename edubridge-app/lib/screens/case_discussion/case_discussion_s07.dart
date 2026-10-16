@@ -230,9 +230,39 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
               child: Center(child: CircularProgressIndicator()),
             )
           else if (_error != null)
-            _buildError()
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Column(
+                children: [
+                  const Icon(Icons.error_outline,
+                      color: AppColors.red, size: 42),
+                  const SizedBox(height: 12),
+                  Text(_error!, textAlign: TextAlign.center),
+                  TextButton(
+                    onPressed: _load,
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
+              ),
+            )
           else if (displayed.isEmpty)
-            _buildEmpty(c)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 76),
+              child: Column(
+                children: [
+                  Icon(Icons.folder_open_outlined, color: c.muted, size: 52),
+                  const SizedBox(height: 14),
+                  Text(
+                    'لا توجد دراسات حالة في هذا القسم',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: c.heading,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            )
           else
             for (final item in displayed) _s07Card(c, item),
         ],
