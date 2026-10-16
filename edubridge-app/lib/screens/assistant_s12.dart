@@ -206,11 +206,12 @@ extension _AssistantS12 on _AssistantScreenState {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 20,
-            backgroundColor: _s12Blue,
-            child: Icon(Icons.sentiment_satisfied_alt_rounded,
-                size: 24, color: Colors.white),
+          // Reuse the approved Noor character, shared with the assistant
+          // launcher, instead of a generic smile emoji/icon.
+          const SizedBox(
+            width: 52,
+            height: 52,
+            child: PetAvatar(size: 52),
           ),
           const SizedBox(width: 11),
           Expanded(
@@ -232,42 +233,48 @@ extension _AssistantS12 on _AssistantScreenState {
   }
 
   Widget _s12Suggestions() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 218),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final suggestion in _visibleSuggestions)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 7),
-                child: OutlinedButton.icon(
-                  onPressed: () => _send(suggestion),
-                  icon: const Icon(Icons.auto_awesome_rounded, size: 14),
-                  label: Text(
-                    suggestion,
-                    maxLines: 2,
-                    style: const TextStyle(
-                      fontSize: 12.8,
-                      fontWeight: FontWeight.w700,
+    return SizedBox(
+      width: double.infinity,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 218),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final suggestion in _visibleSuggestions)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 7),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _send(suggestion),
+                      icon: const Icon(Icons.auto_awesome_rounded, size: 14),
+                      label: Text(
+                        suggestion,
+                        maxLines: 2,
+                        style: const TextStyle(
+                          fontSize: 12.8,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _s12Teal,
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: _s12Teal, width: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 13,
+                          vertical: 9,
+                        ),
+                        minimumSize: const Size(0, 42),
+                        shape: const StadiumBorder(),
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: _s12Teal,
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: _s12Teal, width: 1),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 9,
-                    ),
-                    minimumSize: const Size(0, 42),
-                    shape: const StadiumBorder(),
-                    visualDensity: VisualDensity.compact,
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
