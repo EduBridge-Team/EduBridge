@@ -508,15 +508,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       body: Stack(
         children: [
-          RefreshIndicator(
-            onRefresh: _refresh,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+          Column(
+            children: [
+              if (_tabIndex == 0) ...[
               if (_tabIndex == 0)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -552,10 +546,20 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                 ),
-              if (_tabIndex == 0 && !_loading) ...[
+
                 const SizedBox(height: 12),
                 _buildFilterCard(c),
-                const SizedBox(height: 10),
+              ],
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _refresh,
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      if (_tabIndex == 0 && !_loading)
+                        SliverToBoxAdapter(
+                          child: Column(
+                            children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -582,11 +586,9 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       ),
                     ],
                   ),
-                ),
-              ],
-                    ],
-                  ),
-                ),
+                ),                            ],
+                          ),
+                        ),
                 if (_loading)
                   const SliverFillRemaining(
                     hasScrollBody: false,
@@ -601,9 +603,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   buildProgressTab(context, c)
                 else
                   buildLessonsTab(context, c),
-              ],
-            ),
-          ),
+                    ],
+                  ),
+                ),
+              ),
           if (_adding) _buildAddModal(),
         ],
       ),
