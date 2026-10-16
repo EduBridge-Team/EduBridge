@@ -81,32 +81,33 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   ),
                 ),
               ),
+              // Subtle partial arcs anchored to the bottom-left, as in S08.
               Positioned(
-                left: -36,
-                bottom: -58,
+                left: -57,
+                bottom: -87,
                 child: Container(
-                  width: 138,
-                  height: 138,
+                  width: 144,
+                  height: 144,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: .22),
-                      width: 8,
+                      color: Colors.white.withValues(alpha: .17),
+                      width: 7,
                     ),
                   ),
                 ),
               ),
               Positioned(
-                left: 12,
-                bottom: -61,
+                left: -12,
+                bottom: -84,
                 child: Container(
-                  width: 101,
-                  height: 101,
+                  width: 112,
+                  height: 112,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: .14),
-                      width: 8,
+                      color: Colors.white.withValues(alpha: .10),
+                      width: 7,
                     ),
                   ),
                 ),
@@ -130,7 +131,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800,
+            color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,
           ),
         ),
         shape: const RoundedRectangleBorder(
