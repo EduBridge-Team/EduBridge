@@ -491,10 +491,26 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
+      appBar: BrandAppBar(
+        toolbarHeight: 64,
+        title: const Text(
+          'EduBridge',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
-          Column(
-            children: [
+          NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverToBoxAdapter(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
               _buildHeader(
                 context: context,
                 c: c,
@@ -569,19 +585,20 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   ),
                 ),
               ],
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error != null
-                          ? _buildError()
-                          : (_tabIndex == 0
-                              ? buildProgressTab(context, c)
-                              : buildLessonsTab(context, c)),
+                  ],
                 ),
               ),
             ],
+            body: RefreshIndicator(
+              onRefresh: _refresh,
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error != null
+                      ? _buildError()
+                      : (_tabIndex == 0
+                          ? buildProgressTab(context, c)
+                          : buildLessonsTab(context, c)),
+            ),
           ),
           if (_adding) _buildAddModal(),
         ],
