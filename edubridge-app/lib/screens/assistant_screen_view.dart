@@ -2,6 +2,7 @@ part of 'assistant_screen.dart';
 
 extension _AssistantScreenStateView on _AssistantScreenState {
   Widget buildView(BuildContext context) {
+    if (_role == 'specialist') return _buildSpecialistS12(context);
     final c = JisrColors.of(context);
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
     final visibleSuggestions = _visibleSuggestions;
