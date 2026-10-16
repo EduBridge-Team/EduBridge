@@ -62,15 +62,56 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
     ].join(' • ');
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.brandBlue,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
-        flexibleSpace: const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: AppColors.appBarGradient,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        flexibleSpace: ClipRRect(
+          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Color(0xFF20B6C6), Color(0xFF1769C2)],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: -36,
+                bottom: -58,
+                child: Container(
+                  width: 138,
+                  height: 138,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: .22),
+                      width: 8,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 12,
+                bottom: -61,
+                child: Container(
+                  width: 101,
+                  height: 101,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: .14),
+                      width: 8,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         toolbarHeight: 64,
@@ -80,7 +121,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           icon: const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0x33FFFFFF),
-            child: Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+            child: Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
           ),
           onPressed: () => Navigator.maybePop(context),
         ),
