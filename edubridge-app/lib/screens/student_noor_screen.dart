@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
-import '../theme.dart';
 import 'assistant_screen.dart';
 import 'create_homework_screen.dart';
 
@@ -416,7 +415,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                 Text(
                   'ستفتح المسودة في نموذج الواجب لتراجعها وتعدّلها قبل النشر.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: colors.muted, fontSize: 11.5),
+                  style: const TextStyle(color: Color(0xFF637F98), fontSize: 11.5),
                 ),
                 const SizedBox(height: 12),
               ],
