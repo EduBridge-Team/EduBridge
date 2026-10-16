@@ -151,23 +151,15 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
         Row(
           children: [
             _summaryCard('مكتمل', '$done', AppIcons.check, AppColors.green),
-            SizedBox(width: AdaptiveHelper.spacing / 2),
+            const SizedBox(width: 6),
             _summaryCard('قيد التنفيذ', '$inProgress', AppIcons.refresh,
-                AppColors.orangeDeep),
-          ],
-        ),
-        SizedBox(height: AdaptiveHelper.spacing / 2),
-        Row(
-          children: [
-            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock,
-                AppColors.muted),
-            SizedBox(width: AdaptiveHelper.spacing / 2),
-            _summaryCard(
-              'متوسّط',
-              avgScore != null ? '$avgScore%' : '—',
-              AppIcons.starFilled,
-              AppColors.yellow,
-            ),
+                AppColors.brandBlue),
+            const SizedBox(width: 6),
+            _summaryCard('لم يبدأ', '$notStarted', AppIcons.clock, AppColors.muted),
+            const SizedBox(width: 6),
+            _summaryCard('متوسّط',
+                avgScore != null ? '$avgScore%' : '—',
+                AppIcons.starFilled, AppColors.yellow),
           ],
         ),
       ],
@@ -177,20 +169,33 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
   Widget _summaryCard(
       String label, String value, IconData icon, Color color) {
     return Expanded(
-      child: AdaptiveCard(
+      child: Container(
+        height: 126,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+        decoration: BoxDecoration(
+          color: JisrColors.of(context).card,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: JisrColors.of(context).line),
+        ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Icon(icon, size: AdaptiveHelper.iconSize, color: color),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: color.withValues(alpha: 0.12),
+              child: Icon(icon, size: 19, color: color),
+            ),
             SizedBox(height: AdaptiveHelper.spacing / 4),
             Text(
               value,
               style: TextStyle(
-                fontSize: AdaptiveHelper.titleFontSize,
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: color,
+                color: AdaptiveHelper.textColor(context),
               ),
             ),
-            AdaptiveText(label, type: AdaptiveTextType.caption),
+            Text(label, maxLines: 1, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10)),
           ],
         ),
       ),
