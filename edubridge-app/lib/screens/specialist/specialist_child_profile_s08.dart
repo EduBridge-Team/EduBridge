@@ -62,11 +62,15 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
     ].join(' • ');
     return Scaffold(
       appBar: BrandAppBar(
-        toolbarHeight: 96,
-        centerTitle: true,
+        toolbarHeight: 64,
+        centerTitle: false,
         leading: IconButton(
           tooltip: 'رجوع',
-          icon: const Icon(Icons.arrow_forward_rounded),
+          icon: const CircleAvatar(
+            radius: 18,
+            backgroundColor: Color(0x33FFFFFF),
+            child: Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+          ),
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
@@ -74,11 +78,11 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800,
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800,
           ),
         ),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: RefreshIndicator(
