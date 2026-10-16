@@ -298,41 +298,50 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
   }
 
   Widget _buildProgressTile(Map p) {
-    final status = p['status'] ?? 'not_started';
-    final statusInfo = _statusInfo(status);
-    final score = p['score'];
+    final info = _statusInfo((p['status'] ?? 'not_started').toString());
     final title = (p['lesson_title'] ?? '').toString();
-
+    final score = p['score'];
     return Padding(
-      padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing / 2),
-      child: AdaptiveCard(
-        child: Row(
-          children: [
-            Icon(
-              statusInfo.icon,
-              size: AdaptiveHelper.iconSize,
-              color: statusInfo.color,
-            ),
-            SizedBox(width: AdaptiveHelper.spacing),
-            Expanded(
-              child: Column(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SpecialistDashboardScreen(initialTab: 1))),
+          child: _s09Card(
+            padding: const EdgeInsets.all(12),
+            child: Row(children: [
+              Container(width: 49, height: 49,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5F0FB),
+                  borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.menu_book_outlined,
+                  color: Color(0xFF1969C5), size: 25)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AdaptiveText(
-                    title,
-                    type: AdaptiveTextType.body,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  AdaptiveText(
-                    statusInfo.label +
-                        (score != null ? ' • النتيجة: $score%' : ''),
-                    type: AdaptiveTextType.caption,
-                    color: statusInfo.color,
+                  Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 15,
+                      color: Color(0xFF102D49), fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: info.color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(18)),
+                    child: Text(score == null ? info.label
+                      : '${info.label} • النتيجة ${score}%',
+                      style: TextStyle(color: info.color, fontSize: 11)),
                   ),
                 ],
-              ),
-            ),
-          ],
+              )),
+              const SizedBox(width: 5),
+              const Icon(Icons.chevron_left_rounded,
+                color: Color(0xFF637E98)),
+            ]),
+          ),
         ),
       ),
     );
