@@ -80,19 +80,12 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   }
 
   Future<void> _openNewDiscussion() async {
-    // S21 is a centered modal on standalone specialist case-study screens.
-    // Preserve the existing bottom sheet for teachers and embedded views.
-    final created = _useS07
-        ? await showDialog<bool>(
-            context: context,
-            builder: (_) => const _NewDiscussionSheet(figmaS21: true),
-          )
-        : await showModalBottomSheet<bool>(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => const _NewDiscussionSheet(),
-          );
+    // All entry points (specialist, teacher and embedded child flows)
+    // use the same S21 layout; existing role-based child/team access stays.
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (_) => const _NewDiscussionSheet(figmaS21: true),
+    );
     if (created == true && mounted) _load();
   }
 
