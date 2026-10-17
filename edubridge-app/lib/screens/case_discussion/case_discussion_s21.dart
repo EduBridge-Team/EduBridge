@@ -311,13 +311,7 @@ extension _CaseDiscussionS21View on _NewDiscussionSheetState {
     saving: _saving,
     error: _error,
     onChildSelected: _onChildSelected,
-    onParticipantToggled: (id) {
-      setState(() {
-        if (!_selectedParticipants.add(id)) {
-          _selectedParticipants.remove(id);
-        }
-      });
-    },
+    onParticipantToggled: _toggleS21Participant,
     onSave: _save,
     onCancel: () => Navigator.of(context).pop(),
     onRetry: _load,
