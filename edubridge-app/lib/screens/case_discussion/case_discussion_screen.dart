@@ -21,6 +21,7 @@ part 'case_new_discussion_sheet.dart';
 part 'case_discussion_detail_view.dart';
 part 'case_discussion_s07.dart';
 part 'case_discussion_s20.dart';
+part 'case_discussion_s21.dart';
 
 class CaseDiscussionScreen extends StatefulWidget {
   final int? discussionId;
