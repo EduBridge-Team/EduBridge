@@ -84,11 +84,12 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
-    final result = await showModalBottomSheet<bool>(
+    final result = await showDialog<bool>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _RecommendLearningSupportSheet(child: row['child']),
+      builder: (_) => _RecommendLearningSupportSheet(
+        child: row['child'],
+        figmaS23: true,
+      ),
     );
     if (result == true) _load();
   }
