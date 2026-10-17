@@ -8,7 +8,12 @@ import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/speakable.dart';
 import 'specialist_suggestions_screen.dart';
+import 'specialist/specialist_screen.dart';
+import 'case_discussion/case_discussion_screen.dart';
+import 'chats_screen.dart';
+import 'learning_support_requests/learning_support_requests_screen.dart';
 part 'notifications_screen_view.dart';
+part 'notifications_s24.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -19,6 +24,7 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late final NotificationOperationsController _operations;
+  late final Future<String?> _roleFuture = ApiService.getRole();
   bool get _loading => _operations.loading;
   bool get _markingAll => _operations.markingAll;
   bool get _loadingMore => _operations.loadingMore;
@@ -305,7 +311,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) => FutureBuilder<String?>(
+    future: _roleFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      return snapshot.data == 'specialist'
+          ? _buildSpecialistS24(context) : buildView(context);
+    },
+  );
 
   Widget _buildBody(JisrColors c) {
     if (_loading) {
