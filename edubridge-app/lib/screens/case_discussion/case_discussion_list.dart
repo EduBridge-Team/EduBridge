@@ -80,13 +80,20 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   }
 
   Future<void> _openNewDiscussion() async {
-    final created = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _NewDiscussionSheet(),
-    );
-    if (created == true) _load();
+    // S21 is a centered modal on standalone specialist case-study screens.
+    // Preserve the existing bottom sheet for teachers and embedded views.
+    final created = _useS07
+        ? await showDialog<bool>(
+            context: context,
+            builder: (_) => const _NewDiscussionSheet(figmaS21: true),
+          )
+        : await showModalBottomSheet<bool>(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => const _NewDiscussionSheet(),
+          );
+    if (created == true && mounted) _load();
   }
 
   Widget _body(JisrColors c) {
