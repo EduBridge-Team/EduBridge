@@ -15,6 +15,7 @@ import '../case_discussion/case_discussion_screen.dart';
 import '../plan_evaluation_screen.dart';
 import '../evaluation/evaluation_sheet.dart';
 import '../student_noor_screen.dart';
+import 'specialist_screen.dart';
 
 part 'specialist_child_profile_s08.dart';
 
