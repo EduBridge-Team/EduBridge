@@ -252,7 +252,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
-                        CaseDiscussionScreen(filterChildId: _childId),
+                        const CaseDiscussionScreen(),
                   ),
                 ),
               ),
