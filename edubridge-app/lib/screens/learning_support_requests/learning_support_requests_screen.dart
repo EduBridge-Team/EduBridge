@@ -5,10 +5,14 @@ import '../../app_icons.dart';
 import '../../model/learning_support_request_model.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../specialist/specialist_screen.dart';
+import '../case_discussion/case_discussion_screen.dart';
+import '../chats_screen.dart';
 
 part 'learning_support_request_cards.dart';
 part 'schedule_learning_support_sheet.dart';
 part 'schedule_learning_support_sheet_view.dart';
+part 'learning_support_requests_s17.dart';
 
 class LearningSupportRequestsScreen extends StatefulWidget {
   const LearningSupportRequestsScreen({super.key});
@@ -22,6 +26,7 @@ class _LearningSupportRequestsScreenState
     extends State<LearningSupportRequestsScreen> {
   List<LearningSupportRequest> _requests = [];
   bool _loading = true;
+  late final Future<String?> _viewerRole = ApiService.getRole();
   String? _error;
 
   @override
@@ -62,6 +67,23 @@ class _LearningSupportRequestsScreenState
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: _viewerRole,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.data == 'specialist') {
+          return _buildSpecialistS17(context);
+        }
+        return _buildDefaultScreen();
+      },
+    );
+  }
+
+  Widget _buildDefaultScreen() {
     return Scaffold(
       appBar: JisrAppBar(title: 'طلبات الدعم التعليمي'),
       body: RefreshIndicator(
