@@ -2,7 +2,9 @@
 part of 'case_discussion_screen.dart';
 
 class _NewDiscussionSheet extends StatefulWidget {
-  const _NewDiscussionSheet();
+  const _NewDiscussionSheet({this.figmaS21 = false});
+
+  final bool figmaS21;
 
   @override
   State<_NewDiscussionSheet> createState() => _NewDiscussionSheetState();
@@ -108,9 +110,10 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
     setState(() {
       _selectedChildId = childId;
-      _selectedParticipants
-        ..clear()
-        ..add(_myUserId!); // أنا مشارك دائماً
+      _selectedParticipants.clear();
+      if (_myUserId != null) {
+        _selectedParticipants.add(_myUserId!); // أنا مشارك دائماً
+      }
       _childTeam = team;
     });
   }
@@ -217,6 +220,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
+    if (widget.figmaS21) return _buildS21Dialog();
     final c = JisrColors.of(context);
 
     return Container(
