@@ -86,7 +86,12 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
     }
   }
 
-  Widget _buildS18Dialog() {
+  Widget _buildS18Dialog() => Directionality(
+    textDirection: TextDirection.rtl,
+    child: _buildS18DialogContent(),
+  );
+
+  Widget _buildS18DialogContent() {
     const blue = Color(0xFF196BC7);
     const ink = Color(0xFF102E4B);
     const light = Color(0xFFE6F1FC);
