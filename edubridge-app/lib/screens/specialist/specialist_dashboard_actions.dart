@@ -99,16 +99,26 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     if (!await _checkVerification()) return;
     if (!mounted) return;
     final child = row['child'];
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _SuggestSpecialistSheet(
-        child: child,
-        specialists: _specialists,
-        specialty: specialty,
-      ),
-    );
+    final result = specialty == 'learning_support'
+        ? await showDialog<bool>(
+            context: context,
+            builder: (_) => _SuggestSpecialistSheet(
+              child: child,
+              specialists: _specialists,
+              specialty: specialty,
+              figmaS22: true,
+            ),
+          )
+        : await showModalBottomSheet<bool>(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => _SuggestSpecialistSheet(
+              child: child,
+              specialists: _specialists,
+              specialty: specialty,
+            ),
+          );
     if (result == true) _load();
   }
 
