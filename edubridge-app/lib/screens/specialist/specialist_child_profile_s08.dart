@@ -228,6 +228,21 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               ),
               _s08Action(
                 c,
+                icon: Icons.lightbulb_outline_rounded,
+                title: 'اقتراح مختص دعم تعليمي',
+                subtitle: 'اقتراح مختص لهذا الطفل',
+                tint: const Color(0xFFE0EDFC),
+                accent: const Color(0xFF1769C2),
+                onTap: () async {
+                  final sent = await showChildSpecialistSuggestion(
+                    context,
+                    child: _child,
+                  );
+                  if (sent && mounted) await _load();
+                },
+              ),
+              _s08Action(
+                c,
                 icon: Icons.chat_bubble_outline,
                 title: 'مناقشة الحالة',
                 subtitle: 'التواصل مع فريق متابعة الطفل',
