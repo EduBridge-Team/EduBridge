@@ -169,6 +169,16 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     return ids;
   }
 
+  // Keep UI state mutations in the State class, not in an extension.
+  void _toggleS21Participant(int id) {
+    if (_saving || id == _myUserId) return;
+    setState(() {
+      if (!_selectedParticipants.add(id)) {
+        _selectedParticipants.remove(id);
+      }
+    });
+  }
+
   // ═══════════════════════════════════════════════════════
   //  حفظ
   // ═══════════════════════════════════════════════════════
