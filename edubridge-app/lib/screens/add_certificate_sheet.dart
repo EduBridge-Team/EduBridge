@@ -177,7 +177,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   button: true,
                   label: 'اختيار صورة أو ملف PDF',
                   child: CustomPaint(
-                    painter: const _S18DashedOutlinePainter(),
+                    foregroundPainter: const _S18DashedOutlinePainter(),
                     child: Material(
                       color: light,
                       borderRadius: BorderRadius.circular(17),
@@ -213,7 +213,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                 )
               else
                 CustomPaint(
-                  painter: const _S18DashedOutlinePainter(),
+                  foregroundPainter: const _S18DashedOutlinePainter(),
                   child: Container(
                     height: 53,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
