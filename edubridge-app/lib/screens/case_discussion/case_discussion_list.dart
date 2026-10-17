@@ -22,6 +22,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   bool _loading = true;
   String? _error;
   String? _viewerRole;
+  bool _roleResolved = false;
   bool _s07Completed = false;
   bool get _useS07 => !widget.embedded &&
       widget.filterChildId == null &&
@@ -31,9 +32,22 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   void initState() {
     super.initState();
     _load();
-    ApiService.getRole().then((role) {
-      if (mounted) setState(() => _viewerRole = role);
-    });
+    _resolveRole();
+  }
+
+  Future<void> _resolveRole() async {
+    try {
+      final role = await ApiService.getRole();
+      if (!mounted) return;
+      setState(() {
+        _viewerRole = role;
+        _roleResolved = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      // Do not briefly render the teacher layout if role lookup fails.
+      setState(() => _roleResolved = true);
+    }
   }
 
   Future<void> _refresh() => _load(showLoader: false);
@@ -91,9 +105,38 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    // S20 is exclusively the successful empty specialist view; keep S07
-    // during loading, on failures, and whenever actual studies exist.
-    if (_useS07 && !_loading && _error == null && _items.isEmpty) {
+    // The role is resolved asynchronously. Never render the default/teacher
+    // UI on the first frame while deciding whether this is a specialist.
+    final standalone = !widget.embedded && widget.filterChildId == null;
+    if (standalone && !_roleResolved) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF5F9FD),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (standalone && _viewerRole == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('تعذّر تحديد نوع الحساب'),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  setState(() => _roleResolved = false);
+                  _resolveRole();
+                },
+                child: const Text('إعادة المحاولة'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    // Keep the same S20 header during specialist loading/error/empty states.
+    // Show populated S07 only after the actual cases have loaded.
+    if (_useS07 && _items.isEmpty) {
       return _buildS20Empty();
     }
     if (_useS07) {
