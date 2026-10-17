@@ -13,6 +13,7 @@ import 'learning_support_requests/learning_support_requests_screen.dart';
 import 'chat_screen.dart';
 part 'chats_screen_view.dart';
 part 'chats_screen_s15.dart';
+part 'chats_user_picker_s19.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
@@ -78,40 +79,52 @@ class _ChatsScreenState extends State<ChatsScreen> {
     }
     if (!mounted) return;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _UserPickerSheet(
-        users: users,
-        onSelect: (user) async {
-          Navigator.pop(context);
-          try {
-            final conversationId = await _repository.create(
-              user['id'],
-              'محادثة مع ${user['name']}',
-            );
-            if (!mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ChatScreen(
-                  conversationId: conversationId,
-                  otherUserName: user['name'] ?? '',
-                  otherUserRole: user['role'] ?? '',
-                  childName: '',
-                ),
-              ),
-            ).then((_) => _loadConversations());
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
-            );
-          }
-        },
-      ),
-    );
+    Future<void> selectUser(Map user) async {
+      Navigator.of(context).pop();
+      try {
+        final conversationId = await _repository.create(
+          user['id'], 'محادثة مع ${user['name']}',
+        );
+        if (!mounted) return;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              conversationId: conversationId,
+              otherUserName: user['name'] ?? '',
+              otherUserRole: user['role'] ?? '',
+              childName: '',
+            ),
+          ),
+        );
+        if (mounted) _loadConversations();
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
+        );
+      }
+    }
+
+    if (await _viewerRole == 'specialist') {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => SpecialistContactPickerDialog(
+          users: users, onSelect: selectUser,
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => _UserPickerSheet(
+          users: users, onSelect: selectUser,
+        ),
+      );
+    }
   }
 
   @override
