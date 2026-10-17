@@ -55,6 +55,13 @@ void main() {
     final title = find.text('دراسات الحالة');
     expect(title, findsOneWidget);
     expect(tester.getTopLeft(title).dy, greaterThan(30));
+    // RTL: the title starts just to the left of the back button, not
+    // centered across the AppBar as in the clipped old layout.
+    final backButton = find.widgetWithIcon(
+      IconButton, Icons.arrow_forward_rounded);
+    final titleRect = tester.getRect(title);
+    final backRect = tester.getRect(backButton);
+    expect((backRect.left - titleRect.right).abs(), lessThan(24));
     expect(find.byTooltip('رجوع'), findsOneWidget);
     expect(find.byTooltip('تحديث دراسات الحالة'), findsOneWidget);
 
