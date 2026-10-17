@@ -91,6 +91,11 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    // S20 is exclusively the successful empty specialist view; keep S07
+    // during loading, on failures, and whenever actual studies exist.
+    if (_useS07 && !_loading && _error == null && _items.isEmpty) {
+      return _buildS20Empty();
+    }
     if (_useS07) {
       return Scaffold(
         body: Column(
