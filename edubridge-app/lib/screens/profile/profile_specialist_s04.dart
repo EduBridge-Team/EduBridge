@@ -124,11 +124,12 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             title: 'إضافة شهادة',
             subtitle: 'أضف شهاداتك ومؤهلاتك المهنية',
             color: AppColors.brandTealDeep,
-            onTap: () => showModalBottomSheet(
+            onTap: () => showDialog<void>(
               context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => AddCertificateSheet(onSaved: _load),
+              builder: (_) => AddCertificateSheet(
+                onSaved: _load,
+                figmaS18: true,
+              ),
             ),
           ),
           const SizedBox(height: 22),
