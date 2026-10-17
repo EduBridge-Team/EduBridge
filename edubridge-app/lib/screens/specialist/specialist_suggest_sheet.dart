@@ -133,8 +133,10 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                         else
                           RadioGroup<int>(
                             groupValue: _selectedId,
-                            onChanged: _saving ? null :
-                                (v) => setState(() => _selectedId = v),
+                            onChanged: (v) {
+                              if (_saving) return;
+                              setState(() => _selectedId = v);
+                            },
                             child: Column(
                               children: [
                                 for (final person in filtered) ...[
