@@ -530,7 +530,8 @@ class _S18DashedOutlinePainter extends CustomPainter {
     for (final metric in outline.computeMetrics()) {
       for (double distance = 0; distance < metric.length; distance += 9) {
         canvas.drawPath(
-          metric.extractPath(distance, (distance + 5).clamp(0.0, metric.length)),
+          metric.extractPath(
+            distance, (distance + 5).clamp(0.0, metric.length).toDouble()),
           paint,
         );
       }
