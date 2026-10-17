@@ -80,12 +80,23 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   }
 
   Future<void> _openNewDiscussion() async {
-    final created = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _NewDiscussionSheet(),
-    );
+    final bool? created;
+    if (_useS07) {
+      // S21 belongs to the standalone specialist workflow. Other roles
+      // and embedded case discussions keep their current bottom sheet.
+      created = await showDialog<bool>(
+        context: context,
+        builder: (_) => const _NewDiscussionSheet(figmaS21: true),
+      );
+    } else {
+      created = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => const _NewDiscussionSheet(),
+      );
+    }
+    if (!mounted) return;
     if (created == true) _load();
   }
 
