@@ -288,6 +288,31 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         ),
                       ],
                     ),
+                    // Expose the existing S22 specialist suggestion workflow.
+                    // Previously its only button lived in an unused legacy widget.
+                    if (!_hasSpecialistOfType(child, 'learning_support')) ...[
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          key: ValueKey('suggest_specialist_${child['id']}'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 10),
+                            foregroundColor: const Color(0xFF176CCB),
+                            side: BorderSide(color: c.line),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          ),
+                          icon: const Icon(Icons.lightbulb_outline_rounded,
+                            size: 18),
+                          label: const Text('اقتراح مختص دعم تعليمي',
+                            textAlign: TextAlign.center),
+                          onPressed: () =>
+                              _openSuggestSpecialist(row, 'learning_support'),
+                        ),
+                      ),
+                    ],
                     if (child['current_plan_id'] != null || current != null) ...[
                       const SizedBox(height: 10),
                       LayoutBuilder(builder: (context, constraints) {
