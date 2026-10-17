@@ -49,17 +49,21 @@ class CaseDiscussionNewS21Dialog extends StatelessWidget {
               children: [
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'دراسة حالة جديدة',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: dark,
+                    Flexible(
+                      child: Text(
+                        'دراسة حالة جديدة',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: dark,
+                        ),
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 8),
                     Icon(Icons.description_outlined, size: 23, color: blue),
                   ],
                 ),
