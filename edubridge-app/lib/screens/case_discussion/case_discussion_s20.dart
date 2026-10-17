@@ -83,8 +83,11 @@ class CaseDiscussionHeaderS20 extends StatelessWidget
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       elevation: 0,
-      centerTitle: true,
-      titleSpacing: 4,
+      // Keep the RTL title beside the back arrow, rather than centered
+      // with a large gap on narrow mobile screens.
+      centerTitle: false,
+      titleSpacing: 0,
+      leadingWidth: 52,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
       ),
