@@ -25,13 +25,12 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
   }
 
   void _openCaseDiscussion({int? childId}) {
+    // Use the same specialist case-study route as the bottom navigation.
+    // Passing filterChildId switches to the legacy layout instead of S20.
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CaseDiscussionScreen(
-          filterChildId: childId,
-          showBottomNavigation: false,
-        ),
+      MaterialPageRoute<void>(
+        builder: (_) => const CaseDiscussionScreen(),
       ),
     );
   }
