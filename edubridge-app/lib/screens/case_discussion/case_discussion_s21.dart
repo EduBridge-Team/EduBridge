@@ -216,7 +216,7 @@ extension _S21NewCaseStudyLayout on _NewDiscussionSheetState {
         style: TextStyle(fontSize: 14, color: Color(0xFF69839B)),
       ),
       decoration: _s21InputDecoration('', icon: Icons.edit_outlined),
-      items: _myChildren.map<DropdownMenuItem<int>>((child) {
+      items: _myChildren.map<DropdownMenuItem<int>?>((child) {
         final id = int.tryParse(child['id'].toString());
         if (id == null) return null;
         return DropdownMenuItem<int>(
