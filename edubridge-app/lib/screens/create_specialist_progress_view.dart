@@ -287,7 +287,7 @@ extension _CreateSpecialistProgressScreenStateView
 
   Widget _moodChoice(JisrColors c, int rating) {
     const icons = [Icons.sentiment_very_dissatisfied_outlined,
-      Icons.sentiment_dissatisfied_outlined, Icons.sentiment_neutral_outlined,
+      Icons.sentiment_dissatisfied, Icons.sentiment_neutral,
       Icons.sentiment_satisfied_outlined, Icons.sentiment_very_satisfied_outlined];
     const labels = ['ضعيفة جدًا', 'ضعيفة', 'متوسطة', 'جيدة', 'ممتازة'];
     final selected = _moodRating == rating;
