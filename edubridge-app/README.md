@@ -188,3 +188,26 @@ the launch guard and ends any started progress session in `finally`.
 
 Catalog entries with no child ID retain practice mode; they cannot record a
 child result. This lifecycle does not change API routes or authorization.
+
+
+## Shared game UI and adaptation coverage
+
+`GameStatChip` is the shared round/score/streak presentation used by symbols,
+visual words, sequence and story games. Their distinct content, answer rules,
+result recording and colours stay in their existing game implementations.
+`GameRoundContinuation` owns manual/automatic advancement and cancellation.
+The active lesson-video routes use `AdaptiveVideoPlayer`; the unreferenced
+legacy `VideoLessonPlayer` implementation has been removed.
+
+These stored profile flags currently have no dedicated runtime implementation:
+
+| Stored flag | Current coverage |
+| --- | --- |
+| `simpleIconsGrid` | Stored profile and overview only; not a separate global grid mode. |
+| `colorFiltersEnabled` | Stored profile and overview only; no colour-filter layer. |
+| `eyeTrackingOptimized` | Stored profile and overview only; no eye-tracking integration. |
+| `largeMouseCursor` | Stored profile and overview only; no custom cursor implementation. |
+
+Keeping these fields preserves saved-profile compatibility. They must not be
+advertised as completed assistive integrations. This cleanup does not add device
+capabilities, alter saved child settings, or change the backend contract.
