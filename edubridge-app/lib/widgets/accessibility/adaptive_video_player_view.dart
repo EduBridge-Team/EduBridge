@@ -3,7 +3,8 @@ part of 'adaptive_video_player.dart';
 extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
   Widget buildView(BuildContext context) {
     if (!_initialized) {
-      return Scaffold(appBar: BrandAppBar(title: Text(widget.title ?? 'فيديو')),
+      return Scaffold(appBar: BrandAppBar(title: Text(widget.title ?? 'فيديو'),
+      ),
         body: Center(child: _error == null
           ? const CircularProgressIndicator() : Text(_error!)));
     }

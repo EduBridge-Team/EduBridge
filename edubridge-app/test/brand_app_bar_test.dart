@@ -1,4 +1,5 @@
 import 'package:edubridge_app/theme.dart';
+import 'package:edubridge_app/widgets/dashboard_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,7 +17,10 @@ void main() {
       expect(bar.preferredSize.height, 74);
       expect(bar.foregroundColor, Colors.white);
       expect(bar.scrolledUnderElevation, 0);
-      final background = bar.flexibleSpace! as DecoratedBox;
+      expect(bar.backgroundColor, AppColors.brandBlue);
+      expect(bar.flexibleSpace, isA<BrandHeaderSurface>());
+      final background = tester.widget<DecoratedBox>(find.descendant(
+        of: find.byType(BrandHeaderSurface), matching: find.byType(DecoratedBox)).first);
       final gradient = (background.decoration as BoxDecoration).gradient! as LinearGradient;
       expect(gradient.begin, Alignment.centerLeft);
       expect(gradient.end, Alignment.centerRight);
@@ -34,7 +38,7 @@ void main() {
     await tester.tap(find.text('افتح'));
     await tester.pumpAndSettle();
     final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
-    expect(bar.preferredSize.height, 72);
+    expect(bar.preferredSize.height, 100);
     expect(bar.shape, isA<RoundedRectangleBorder>());
     expect(bar.clipBehavior, Clip.antiAlias);
     await tester.tap(find.byType(BackButton));
@@ -42,4 +46,46 @@ void main() {
     expect(find.text('افتح'), findsOneWidget);
     expect(find.text('تفاصيل'), findsNothing);
   });
+  for (final brightness in Brightness.values) {
+    testWidgets('parent branding and menu retain contrast and taps in $brightness', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 568));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var taps = 0;
+      await tester.pumpWidget(MaterialApp(theme: ThemeData(brightness: brightness,
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.white)),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(padding: const EdgeInsets.only(top: 24),
+            textScaler: TextScaler.linear(1.8)),
+          child: Directionality(textDirection: TextDirection.rtl, child: child!)),
+        home: Scaffold(appBar: BrandAppBar(
+          leadingWidth: 72,
+          leading: DashboardMenu(actions: [DashboardMenuAction(id: 'notifications',
+            label: 'الإشعارات', icon: Icons.notifications_outlined,
+            onSelected: () { taps++; })]),
+          title: const SizedBox.shrink(),
+          actions: [Padding(padding: const EdgeInsetsDirectional.only(end: 16),
+            child: Center(child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              child: Image.asset('assets/brand_logo.png', width: 136, height: 38,
+                semanticLabel: 'EduBridge'))))],
+        ))));
+      await tester.pump();
+      final bar = tester.widget<BrandAppBar>(find.byType(BrandAppBar));
+      expect(bar.backgroundColor, AppColors.brandBlue);
+      expect(bar.foregroundColor, Colors.white);
+      expect(bar.preferredSize.height, 100);
+      final surface = find.byType(BrandHeaderSurface);
+      expect(tester.getSize(surface).height, 124);
+      final logo = find.byWidgetPredicate((widget) => widget is Image && widget.semanticLabel == 'EduBridge');
+      expect(tester.getCenter(find.byTooltip('القائمة')).dx,
+        greaterThan(tester.getCenter(logo).dx));
+      await tester.tap(find.byTooltip('القائمة'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('الإشعارات'));
+      await tester.pumpAndSettle();
+      expect(taps, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
 }

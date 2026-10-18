@@ -12,43 +12,11 @@ extension _CreateSpecialistProgressScreenStateView
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: dark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFF5F9FC),
-        appBar: AppBar(
+        appBar: BrandAppBar(
           toolbarHeight: 96,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          surfaceTintColor: Colors.transparent,
           centerTitle: false,
           titleSpacing: 0,
           leadingWidth: 56,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-          flexibleSpace: ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-            child: Stack(fit: StackFit.expand, children: [
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomLeft,
-                    end: Alignment.topRight,
-                    colors: [Color(0xFF1DB5C6), Color(0xFF1458B6)],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: -55,
-                bottom: -85,
-                child: _headerArc(148, const Color(0x6689DCE8)),
-              ),
-              Positioned(
-                left: 5,
-                bottom: -83,
-                child: _headerArc(126, const Color(0x619AE4ED)),
-              ),
-            ]),
-          ),
           leading: IconButton(
             tooltip: 'رجوع',
             onPressed: () => Navigator.maybePop(context),
@@ -161,15 +129,6 @@ extension _CreateSpecialistProgressScreenStateView
       ),
     );
   }
-
-  Widget _headerArc(double diameter, Color color) => Container(
-    width: diameter,
-    height: diameter,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(color: color, width: 12),
-    ),
-  );
 
   Widget _surface(JisrColors c, Widget child) => Container(
     padding: const EdgeInsets.all(12),

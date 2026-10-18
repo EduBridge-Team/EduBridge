@@ -76,9 +76,6 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
     return Scaffold(
       appBar: BrandAppBar(
         toolbarHeight: 78,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

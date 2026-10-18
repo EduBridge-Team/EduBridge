@@ -15,66 +15,10 @@ extension _AssistantS12 on _AssistantScreenState {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9FC),
-      appBar: AppBar(
+      appBar: BrandAppBar(
         toolbarHeight: 116,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
         centerTitle: false,
         titleSpacing: 5,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(23)),
-        ),
-        flexibleSpace: ClipRRect(
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(23)),
-          child: Stack(fit: StackFit.expand, children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Color(0xFF1DB7C7), Color(0xFF1765C2)],
-                ),
-              ),
-            ),
-            Positioned(
-              left: -55,
-              bottom: -86,
-              child: IgnorePointer(
-                child: Container(
-                  width: 166,
-                  height: 166,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.22),
-                      width: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -16,
-              bottom: -83,
-              child: IgnorePointer(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      width: 10,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ]),
-        ),
         leading: IconButton(
           tooltip: 'رجوع',
           onPressed: () => Navigator.maybePop(context),

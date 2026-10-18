@@ -5,35 +5,11 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
   static const _blue = Color(0xFF196AC5);
   static const _ink = Color(0xFF102F4B);
 
-  PreferredSizeWidget _s24AppBar() => AppBar(
+  PreferredSizeWidget _s24AppBar() => BrandAppBar(
     toolbarHeight: 92,
     centerTitle: false,
     titleSpacing: 0,
     leadingWidth: 52,
-    foregroundColor: Colors.white,
-    backgroundColor: Colors.transparent,
-    surfaceTintColor: Colors.transparent,
-    scrolledUnderElevation: 0,
-    elevation: 0,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
-    flexibleSpace: ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-      child: Stack(fit: StackFit.expand, children: [
-        const DecoratedBox(decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft, end: Alignment.centerRight,
-            colors: [Color(0xFF20B9C7), Color(0xFF1969C8)]))),
-        Positioned(left: -58, bottom: -90, child: IgnorePointer(
-          child: Container(width: 180, height: 165, decoration: BoxDecoration(
-            shape: BoxShape.circle, border: Border.all(
-              color: const Color(0x55FFFFFF), width: 13))))),
-        Positioned(left: -17, bottom: -91, child: IgnorePointer(
-          child: Container(width: 128, height: 128, decoration: BoxDecoration(
-            shape: BoxShape.circle, border: Border.all(
-              color: const Color(0x36FFFFFF), width: 10))))),
-      ]),
-    ),
     leading: IconButton(
       tooltip: 'رجوع', onPressed: () => Navigator.maybePop(context),
       style: IconButton.styleFrom(

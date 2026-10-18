@@ -54,9 +54,6 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
         toolbarHeight: 88,
         elevation: 0,
         centerTitle: false,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-        ),
         leading: IconButton(
           tooltip: 'رجوع',
           onPressed: () => Navigator.pop(context),

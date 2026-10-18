@@ -3,49 +3,10 @@ part of 'profile_screen.dart';
 
 extension _SpecialistS04Profile on _ProfileScreenState {
   Widget _s04Header(JisrColors c) {
-    return Container(
+    return SizedBox(
       height: 124,
-      clipBehavior: Clip.antiAlias,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.bottomLeft,
-          colors: [Color(0xFF1765BE), Color(0xFF1F8EC7), Color(0xFF21B8C4)],
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
-      ),
-      child: Stack(
+      child: BrandHeaderSurface(child: Stack(
         children: [
-          Positioned(
-            left: -61,
-            bottom: -88,
-            child: Container(
-              width: 172,
-              height: 154,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: .19),
-                  width: 16,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: -25,
-            bottom: -95,
-            child: Container(
-              width: 118,
-              height: 138,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: .18),
-                  width: 12,
-                ),
-              ),
-            ),
-          ),
           Positioned(
             left: 16,
             right: 16,
@@ -92,7 +53,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 

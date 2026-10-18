@@ -9,69 +9,10 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
   static const _s15Line = Color(0xFFD8E7F2);
 
   PreferredSizeWidget _s15AppBar() {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 116,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
       titleSpacing: 4,
       centerTitle: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-      ),
-      flexibleSpace: ClipRRect(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Color(0xFF1FB7C5), Color(0xFF1B64C1)],
-                ),
-              ),
-            ),
-            Positioned(
-              left: -60,
-              bottom: -92,
-              child: IgnorePointer(
-                child: Container(
-                  width: 190,
-                  height: 170,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.22),
-                      width: 13,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -18,
-              bottom: -90,
-              child: IgnorePointer(
-                child: Container(
-                  width: 128,
-                  height: 128,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      width: 11,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
       leading: IconButton(
         tooltip: 'رجوع',
         onPressed: () => Navigator.maybePop(context),
