@@ -6,8 +6,8 @@ import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
-import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 part 'visual_words_game_view.dart';
 
 class VisualWordsGame extends StatefulWidget {
@@ -63,6 +63,18 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     return 4;
   }
 
+  int get _roundNumber => _round >= _totalRounds
+      ? _totalRounds : _round + (_transitioning ? 0 : 1);
+
+  Future<void> _advance() async {
+    if (!mounted || !_transitioning) return;
+    if (_round >= _totalRounds) {
+      await _onWin();
+    } else {
+      _newRound();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -74,10 +86,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   // ═══════════════════════════════════════════════════════
   void _newRound() {
     if (!mounted) return;
-    if (_round >= _totalRounds) {
-      _onWin();
-      return;
-    }
+    if (_round >= _totalRounds) return;
 
     _transitioning = false;
 
@@ -93,17 +102,13 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   }
 
   void _speak(String text) {
-    if (_profile.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
-    } else {
-      TtsService.instance.speakLine(text);
-    }
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
   }
 
   // ═══════════════════════════════════════════════════════
   //  فحص الإجابة
   // ═══════════════════════════════════════════════════════
-  Future<void> _check((String, String) option) async {
+  void _check((String, String) option) {
     if (_transitioning) return;
     if (option.$2 == _target.$2) {
       _transitioning = true;
@@ -121,8 +126,6 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
         _speak('أحسنت! ${option.$2}');
       }
 
-      await Future.delayed(const Duration(milliseconds: 900));
-      if (mounted) _newRound();
     } else {
       // ❌ خطأ
       AdaptiveHelper.hapticFeedback();
@@ -198,10 +201,12 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   // شبكة خيارات (4 خيارات — للأعمار الأكبر)
   Widget _buildOptionsGrid(bool large) {
     return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
       mainAxisSpacing: 14,
       crossAxisSpacing: 14,
-      childAspectRatio: 1.3,
+      childAspectRatio: 1.3 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
       children: _options.map((option) {
         return GestureDetector(
           onTap: () => _check(option),
