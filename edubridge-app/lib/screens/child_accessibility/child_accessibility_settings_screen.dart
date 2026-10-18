@@ -105,6 +105,7 @@ class _ChildAccessibilitySettingsScreenState
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => DisabilityPickerSheet(
+        figmaS30: true,
         currentValue: _selectedDisability,
       ),
     );
