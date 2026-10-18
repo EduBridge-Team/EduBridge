@@ -66,7 +66,7 @@ class _RenderCursorRegion extends RenderMouseRegion {
         afterSelf = true;
         continue;
       }
-      final target = entry.target;
+      final Object target = entry.target;
       if (afterSelf && target is MouseTrackerAnnotation &&
           target.validForMouseTracker && target.cursor != MouseCursor.defer) {
         resolved = target.cursor;
