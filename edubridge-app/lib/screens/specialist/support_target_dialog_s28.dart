@@ -50,11 +50,12 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                 }),
                 child: Column(children: [
                   for (final target in SupportRecommendationTarget.values)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Material(
                         color: dark ? const Color(0xFF20384C) : const Color(0xFFF0F6FB),
-                        borderRadius: BorderRadius.circular(17)),
+                        borderRadius: BorderRadius.circular(17),
+                        clipBehavior: Clip.antiAlias,
                       child: RadioListTile<SupportRecommendationTarget>(
                         key: ValueKey('s28-${target.name}'),
                         value: target,
@@ -65,6 +66,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                         title: Text(target == SupportRecommendationTarget.specialist
                             ? 'مختص دعم تعليمي' : 'ولي الأمر',
                           style: TextStyle(color: textColor, fontSize: 16)),
+                      ),
                       ),
                     ),
                 ]),
