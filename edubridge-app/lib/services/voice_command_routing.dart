@@ -73,62 +73,7 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
     return null;
   }
 
-  Widget? _gameWidgetFor(String gameId) {
-    const name = 'بطل';
-    const age = 8;
-    switch (gameId) {
-      case 'audio':
-        return const AudioMatchingGame(childName: name);
-      case 'matching':
-        return const MatchingGame(childName: name);
-      case 'shapes':
-        return const ShapesGame(childName: name, age: age);
-      case 'colors':
-        return const ColorsGame(childName: name);
-      case 'symbols':
-        return const SymbolsGame(childName: name);
-      case 'numbers':
-        return const NumbersGame(childName: name);
-      case 'math':
-        return const MathRaceGame(childName: name, age: age);
-      case 'visual_words':
-        return const VisualWordsGame(childName: name, age: age);
-      case 'word_builder':
-        return const WordBuilderGame(childName: name, age: age);
-      case 'sequence':
-        return const SequenceGame(childName: name);
-      case 'story':
-        return const StorySequencerGame(childName: name, age: age);
-      case 'sign':
-        return const SignLanguageGame(childName: name);
-      case 'quick':
-        return const QuickActionGame(childName: name);
-      case 'rhythm':
-        return const RhythmGame(childName: name);
-      default:
-        return null;
-    }
-  }
-
-  String _gameDisplayName(String gameId) {
-    const names = {
-      'audio': 'لعبة الأصوات',
-      'matching': 'لعبة المطابقة',
-      'shapes': 'لعبة الأشكال',
-      'colors': 'لعبة الألوان',
-      'symbols': 'لعبة الرموز',
-      'numbers': 'لعبة الأرقام',
-      'math': 'سباق الحساب',
-      'visual_words': 'الكلمات البصرية',
-      'word_builder': 'بناء الكلمة',
-      'sequence': 'لعبة الترتيب',
-      'story': 'رتّب القصة',
-      'sign': 'لغة الإشارة',
-      'quick': 'الحركة السريعة',
-      'rhythm': 'لعبة الإيقاع',
-    };
-    return names[gameId] ?? 'اللعبة';
-  }
+  String _gameDisplayName(String gameId) => GameScreenFactory.info(gameId)?.title ?? 'اللعبة';
 
   // ═══════════════════════════════════════════════════════════
   //  أدوات مساعدة

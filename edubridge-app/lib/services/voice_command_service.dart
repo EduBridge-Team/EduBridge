@@ -6,21 +6,9 @@ import 'package:speech_to_text/speech_recognition_result.dart'
     show SpeechRecognitionResult;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-// ─── الألعاب ───
-import '../games/audio_matching_game.dart';
-import '../games/colors_game.dart';
-import '../games/matching_game.dart';
-import '../games/math_race_game.dart';
-import '../games/numbers_game.dart';
-import '../games/quick_action_game.dart';
-import '../games/rhythm_game.dart';
-import '../games/sequence_game.dart';
-import '../games/shapes_game.dart';
-import '../games/sign_language_game.dart';
-import '../games/story_sequencer_game.dart';
-import '../games/symbols_game.dart';
-import '../games/visual_words_game.dart';
-import '../games/word_builder_game.dart';
+import '../features/games/application/game_launcher.dart';
+import '../features/games/application/game_screen_factory.dart';
+import '../features/games/domain/game_player.dart';
 
 // ─── الشاشات ───
 import '../screens/add_child/add_child_screen.dart';
@@ -56,6 +44,7 @@ import 'speech_input_service.dart';
 part 'voice_command_routing.dart';
 part 'voice_command_execution.dart';
 part 'voice_command_child_navigation.dart';
+part 'voice_command_game_navigation.dart';
 
 class VoiceCommandService {
   VoiceCommandService._();
@@ -65,6 +54,7 @@ class VoiceCommandService {
   final _speechOwner = Object();
   bool _available = false;
   bool _starting = false;
+  bool _choosingGame = false;
   bool _acceptResults = false;
   bool _commandHandled = false;
   int? _childrenCacheUserId;
