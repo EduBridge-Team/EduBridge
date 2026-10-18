@@ -111,6 +111,7 @@ class _CreateSpecialistProgressScreenState
         });
       }
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _error = 'تعذّر الاتصال بالسيرفر';
         _saving = false;
@@ -120,57 +121,6 @@ class _CreateSpecialistProgressScreenState
 
   @override
   Widget build(BuildContext context) => buildView(context);
-
-  Widget _buildTeacherReportCard(WeeklyReport r, JisrColors c) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: c.tintTeal,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.brandBlue.withValues(alpha: 0.3),
-          width: 2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(AppIcons.report, color: AppColors.brandBlue),
-              const SizedBox(width: 8),
-              const Text(
-                'تقرير المعلم (مرجع)',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _miniStat('التقدّم', '${r.progressPercentage.round()}%'),
-              _miniStat('الدروس', '${r.lessonsCompleted}/${r.lessonsTotal}'),
-              _miniStat('الواجبات',
-                  '${r.homeworkSubmitted}/${r.homeworkAssigned}'),
-            ],
-          ),
-          if (r.teacherNotes != null && r.teacherNotes!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Text(
-              'ملاحظات المعلم:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            const SizedBox(height: 4),
-            Text(r.teacherNotes!,
-                style: const TextStyle(fontSize: 13, height: 1.5)),
-          ],
-        ],
-      ),
-    );
-  }
 
   Widget _buildNoReportCard(JisrColors c) {
     return Container(
@@ -194,21 +144,4 @@ class _CreateSpecialistProgressScreenState
     );
   }
 
-  Widget _miniStat(String label, String value) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.brandBlue,
-            ),
-          ),
-          Text(label, style: const TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
-  }
 }
