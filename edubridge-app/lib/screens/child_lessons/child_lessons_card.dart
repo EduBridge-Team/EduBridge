@@ -59,7 +59,7 @@ Widget buildLessonCard({
             Expanded(child: doneButton),
           ]]);
 
-  if (profile.simpleIconsGrid) {
+  if (profile.simpleIconsGrid && !isSample) {
     return SimpleIconTile(
       key: ValueKey('simple_lesson_$lessonId'),
       title: title,

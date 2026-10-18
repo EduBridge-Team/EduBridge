@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final service = AccessibilityService.instance;
-  const firstProfile = AccessibilityProfile(type: DisabilityType.none, extraLargeTouchTargets: true);
+  const firstProfile = AccessibilityProfile(type: DisabilityType.none, extraLargeTouchTargets: true, simpleIconsGrid: true);
   const secondProfile = AccessibilityProfile(type: DisabilityType.none, sensoryCalmMode: true);
   setUp(() async {
     service.resetSession();
@@ -32,9 +32,11 @@ void main() {
       final nested = await service.enterChildScope(9);
       final second = await service.enterChildScope(10);
       expect(service.profile.value.sensoryCalmMode, isTrue);
+      expect(service.profile.value.simpleIconsGrid, isFalse);
       await service.leaveChildScope(second);
       expect(service.activeChildId.value, 9);
       expect(service.profile.value.extraLargeTouchTargets, isTrue);
+      expect(service.profile.value.simpleIconsGrid, isTrue);
       await service.leaveChildScope(nested);
       expect(service.activeChildId.value, 9);
       await service.leaveChildScope(first);
