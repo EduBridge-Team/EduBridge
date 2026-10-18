@@ -87,16 +87,16 @@ test('protected pages still reject guests before resolving their lazy content', 
   assert.ok(!verifyHtml.includes('توثيق الهوية مطلوب'))
 })
 
- test('specialist can open parent guide authoring and AAC is inside the conversation panel', async () => {
+ test('specialist can open parent guide authoring and text conversation', async () => {
   const html = await renderRoute('/parent-lessons', 'specialist')
   assert.match(html, /إضافة درس لأولياء الأمور/)
   const { default: ConversationPanel } = await server.ssrLoadModule('/src/pages/Communication/ConversationPanel.jsx')
   const { renderToStaticMarkup } = await import('react-dom/server')
-  const chat = renderToStaticMarkup(createElement(MemoryRouter, { initialEntries: ['/conversations?mode=aac'] }, createElement(ConversationPanel, { active: { id: 1, other_user_name: 'ولي الأمر', other_user_role: 'parent' }, draft: '💧 أريد ماء', messages: [], onDraftChange() {}, onSend() {} })))
-  assert.match(chat, /chat-aac-panel/)
+  const chat = renderToStaticMarkup(createElement(MemoryRouter, { initialEntries: ['/conversations'] }, createElement(ConversationPanel, { active: { id: 1, other_user_name: 'ولي الأمر', other_user_role: 'parent' }, draft: '💧 أريد ماء', messages: [], onDraftChange() {}, onSend() {} })))
+  assert.doesNotMatch(chat, /chat-aac-panel/)
   assert.match(chat, /أريد ماء/)
   assert.match(chat, /aria-label="إرسال"/)
-  assert.match(chat, /aria-pressed="true"[^>]*>تواصل بالصور/)
+  assert.doesNotMatch(chat, /تواصل بالصور/)
   const { parentLessonPayload } = await server.ssrLoadModule('/src/pages/Learning/ParentLessonForm.jsx')
   assert.deepEqual(parentLessonPayload(' درس ', ' إرشادات '), { title: 'درس', content: 'إرشادات', target_type: 'parents' })
 })
