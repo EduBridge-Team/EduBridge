@@ -7,6 +7,7 @@ import '../../services/approval_service.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/legal_links_button.dart';
 import '../../widgets/dashboard_menu.dart';
+import '../../widgets/dashboard_header_actions.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../utils/navigation.dart';

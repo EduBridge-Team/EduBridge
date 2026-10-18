@@ -5,13 +5,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
-import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
+import '../widgets/dashboard_header_actions.dart';
 import 'add_child/add_child_screen.dart';
 import 'child_homework/child_homework_screen.dart';
 import 'child_lessons/child_lessons_screen.dart';
@@ -247,32 +247,8 @@ class _ParentScreenState extends State<ParentScreen> {
           ),
         ),
       actions: [
-        ValueListenableBuilder<int>(
-          valueListenable: NotificationListenerService.instance.unreadCount,
-          builder: (context, unreadCount, _) => Material(
-            color: Colors.white.withValues(alpha: .16),
-            shape: const CircleBorder(),
-            child: IconButton(
-              tooltip: 'الإشعارات',
-              icon: Badge(
-                isLabelVisible: unreadCount > 0,
-                smallSize: 9,
-                backgroundColor: const Color(0xFFE94C60),
-                child: const Icon(AppIcons.notifications,
-                    color: Colors.white, size: 24),
-              ),
-              onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen())),
-            ),
-          ),
-        ),
-        const SizedBox(width: 6),
-        DashboardMenu(
+        DashboardHeaderActions(
             showMicrophoneToggle: true,
-            iconSize: 25,
-            menuIcon: Icons.more_vert,
-            specialistFigmaMenu: true,
-            iconColor: Colors.white,
             actions: [
               DashboardMenuAction(
                 id: 'notifications',

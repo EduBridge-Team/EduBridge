@@ -22,9 +22,7 @@ extension _InstitutionScreenView on InstitutionScreen {
                   children: [
                     Row(
                       children: [
-                        DashboardMenu(
-                          iconSize: 26,
-                          iconColor: Colors.white,
+                        DashboardHeaderActions(
                           actions: [
                             DashboardMenuAction(
                               id: 'theme',
