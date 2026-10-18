@@ -46,8 +46,10 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 20,
             child: Row(
               children: [
                 IconButton.filledTonal(
@@ -68,7 +70,11 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                       );
                     }
                   },
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 23),
+                  icon: const Icon(
+                    Icons.arrow_forward_rounded,
+                    textDirection: TextDirection.ltr,
+                    size: 23,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 const Flexible(
@@ -82,7 +88,6 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
