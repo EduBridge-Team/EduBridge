@@ -160,25 +160,6 @@ class _ChildAccessibilitySettingsScreenState
     );
   }
 
-  Future<void> _applyRecommendations() async {
-    if (!_canChange) return;
-    final profile = _p;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('تطبيق الإعدادات المقترحة؟'),
-        content: const Text('سيستبدل هذا إعدادات التكيف الحالية باقتراحات أولية. راجعها وعدّلها حسب احتياج الطفل.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('إلغاء')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('تطبيق')),
-        ],
-      ),
-    );
-    if (!mounted || confirmed != true || !_canChange) return;
-    await _set(AccessibilityProfile.recommendedFor(profile.type,
-        customName: profile.customDisabilityName));
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_loadingSettings) {

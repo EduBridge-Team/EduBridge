@@ -257,11 +257,6 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                   c: c,
                   children: [
                     OutlinedButton.icon(
-                      icon: const Icon(Icons.tune),
-                      label: const Text('تطبيق إعدادات مقترحة'),
-                      onPressed: _canChange ? _applyRecommendations : null,
-                    ),
-                    OutlinedButton.icon(
                       icon: const Icon(AppIcons.refresh),
                       label: const Text('إعادة الضبط'),
                       onPressed: !_canChange ? null : () async {
