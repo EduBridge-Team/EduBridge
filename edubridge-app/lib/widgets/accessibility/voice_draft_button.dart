@@ -36,7 +36,9 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
   void didUpdateWidget(covariant VoiceDraftButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if ((!widget.enabled && oldWidget.enabled) ||
-        !identical(widget.controller, oldWidget.controller)) _cancel();
+        !identical(widget.controller, oldWidget.controller)) {
+      _cancel();
+    }
   }
 
   @override

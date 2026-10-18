@@ -395,6 +395,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (!mounted) return;
       setState(() => _messages = original);
       await AssistantService.saveHistory(original);
+      if (!mounted) return;
       final message = error.toString().replaceFirst('Exception: ', '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
@@ -439,7 +440,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       }
       setState(() => _listening = true);
       await _speech.listen(
-        localeId: 'ar_SA',
+        listenOptions: stt.SpeechListenOptions(localeId: 'ar_SA'),
         onResult: (result) {
           if (!mounted || !result.finalResult) return;
           final spoken = result.recognizedWords.trim();

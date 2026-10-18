@@ -91,7 +91,9 @@ class _BrainBreakSchedulerState extends State<BrainBreakScheduler>
 
   Future<void> _showBrainBreak() async {
     if (_showing || !mounted || (widget.profileListenable == null &&
-        AccessibilityService.instance.activeChildId.value != null)) return;
+        AccessibilityService.instance.activeChildId.value != null)) {
+      return;
+    }
     _showing = true;
 
     if (ModalRoute.of(context)?.isCurrent == false) {

@@ -29,11 +29,13 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
   Future<void> _loadAdaptation() async {
     try {
       final profile = await AccessibilityService.instance.ensureChildProfile(widget.childId);
-      if (mounted) setState(() {
-        _childProfile = profile;
-        _wordPrediction = profile.wordPrediction;
-        _voiceToText = profile.voiceToText;
-      });
+      if (mounted) {
+        setState(() {
+          _childProfile = profile;
+          _wordPrediction = profile.wordPrediction;
+          _voiceToText = profile.voiceToText;
+        });
+      }
     } catch (_) {
       // Writing remains available if adaptation settings cannot be loaded.
     }

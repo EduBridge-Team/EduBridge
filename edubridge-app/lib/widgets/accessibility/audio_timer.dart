@@ -71,7 +71,9 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
     _announce('سأخبرك بالوقت المتبقي كل دقيقة');
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _lifecycle != AppLifecycleState.resumed ||
-          ModalRoute.of(context)?.isCurrent == false || !_feedback.allowTaskDeadline) return;
+          ModalRoute.of(context)?.isCurrent == false || !_feedback.allowTaskDeadline) {
+        return;
+      }
       if (_remaining <= const Duration(seconds: 1)) {
         setState(() => _remaining = Duration.zero);
         _finish();

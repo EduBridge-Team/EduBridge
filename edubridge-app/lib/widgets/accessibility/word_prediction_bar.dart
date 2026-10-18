@@ -24,7 +24,9 @@ class WordPredictionBar extends StatelessWidget {
     valueListenable: controller,
     builder: (context, value, _) {
       if (!enabled || !value.composing.isCollapsed ||
-          (value.selection.isValid && !value.selection.isCollapsed)) return const SizedBox.shrink();
+          (value.selection.isValid && !value.selection.isCollapsed)) {
+        return const SizedBox.shrink();
+      }
       final caret = value.selection.isValid ? value.selection.extentOffset.clamp(0, value.text.length) : value.text.length;
       final prefix = value.text.substring(0, caret).split(RegExp(r'\s')).last;
       if (prefix.isEmpty) return const SizedBox.shrink();

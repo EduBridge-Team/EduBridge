@@ -207,7 +207,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
               Expanded(
                 child: _s07Filter(
                   c,
-                  'نشطة (' + active.length.toString() + ')',
+                  'نشطة (${active.length})',
                   !_s07Completed,
                   () => _refreshS07State(() => _s07Completed = false),
                 ),
@@ -216,7 +216,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
               Expanded(
                 child: _s07Filter(
                   c,
-                  'مكتملة (' + completed.length.toString() + ')',
+                  'مكتملة (${completed.length})',
                   _s07Completed,
                   () => _refreshS07State(() => _s07Completed = true),
                 ),

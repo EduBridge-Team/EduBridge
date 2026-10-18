@@ -210,7 +210,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     builder: (_) => AddLessonScreen(types: _types),
                   ),
                 );
-                if (!mounted || lesson == null) return;
+                if (!mounted || !context.mounted || lesson == null) return;
                 setState(() => _lessons = [lesson, ..._lessons]);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

@@ -41,7 +41,9 @@ class _MathRaceGameState extends State<MathRaceGame> {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _finishing || _noPressure ||
           (WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed) != AppLifecycleState.resumed ||
-          ModalRoute.of(context)?.isCurrent == false) return;
+          ModalRoute.of(context)?.isCurrent == false) {
+        return;
+      }
       if (_timeLeft <= 1) {
         setState(() => _timeLeft = 0);
         _onFinish();

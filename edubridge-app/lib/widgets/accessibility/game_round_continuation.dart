@@ -61,7 +61,9 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
   void _schedule() {
     _timer?.cancel();
     if (!widget.answered || _busy || _continued || !_automatic ||
-        _lifecycle != AppLifecycleState.resumed) return;
+        _lifecycle != AppLifecycleState.resumed) {
+      return;
+    }
     _timer = Timer(widget.delay, () {
       if (!mounted) return;
       if (ModalRoute.of(context)?.isCurrent == false) {

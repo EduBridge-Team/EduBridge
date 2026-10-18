@@ -30,7 +30,9 @@ class MatchingBoard {
   /// True when two different eligible cards are ready for delayed resolution.
   bool flip(int index) {
     if (locked || index < 0 || index >= _cards.length ||
-        _cards[index].flipped || _cards[index].matched) return false;
+        _cards[index].flipped || _cards[index].matched) {
+      return false;
+    }
     _cards[index] = _cards[index].copyWith(flipped: true);
     if (_first == null) { _first = index; return false; }
     _second = index;
