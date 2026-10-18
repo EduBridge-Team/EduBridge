@@ -182,12 +182,12 @@ class _ChildAccessibilitySettingsScreenState
   @override
   Widget build(BuildContext context) {
     if (_loadingSettings) {
-      return Scaffold(appBar: JisrAppBar(title: 'إعدادات التكيف'),
+      return Scaffold(appBar: buildChildSettingsAppBar(context, widget.childName),
         body: const Center(child: CircularProgressIndicator()));
     }
     if (_profileError) {
       return Scaffold(
-        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        appBar: buildChildSettingsAppBar(context, widget.childName),
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('تعذّر تحميل إعدادات الطفل'),
           TextButton(onPressed: _loadSettings, child: const Text('إعادة المحاولة')),
@@ -196,7 +196,7 @@ class _ChildAccessibilitySettingsScreenState
     }
     if (!_canEdit) {
       return Scaffold(
-        appBar: JisrAppBar(title: 'إعدادات التكيف'),
+        appBar: buildChildSettingsAppBar(context, widget.childName),
         body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
       );
     }

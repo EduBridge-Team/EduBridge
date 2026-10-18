@@ -1,102 +1,81 @@
 // lib/screens/child_accessibility/child_accessibility_shared_widgets.dart
 part of 'child_accessibility_settings_screen.dart';
 
-Widget buildInfoBanner(JisrColors c, String childName) {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: c.tintTeal,
-      borderRadius: BorderRadius.circular(18),
-    ),
-    child: Row(
-      children: [
-        const Icon(AppIcons.child, color: AppColors.brandBlue, size: 32),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            'هذه الإعدادات تُطبَّق على $childName فقط.',
-            style: TextStyle(color: c.onTint, fontSize: 14),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+PreferredSizeWidget buildChildSettingsAppBar(BuildContext context, String childName) => AppBar(
+  toolbarHeight: 96,
+  backgroundColor: Colors.transparent,
+  foregroundColor: Colors.white,
+  surfaceTintColor: Colors.transparent,
+  elevation: 0,
+  scrolledUnderElevation: 0,
+  centerTitle: false,
+  titleSpacing: 0,
+  leadingWidth: 52,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
+  flexibleSpace: ClipRRect(
+    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+    child: Stack(fit: StackFit.expand, children: [
+      const DecoratedBox(decoration: BoxDecoration(
+        gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight,
+          colors: [Color(0xFF1DB5C6), Color(0xFF1458B6)]))),
+      for (final arc in [(148.0, -55.0, -85.0), (126.0, 5.0, -83.0)])
+        Positioned(left: arc.$2, bottom: arc.$3, child: Container(
+          width: arc.$1, height: arc.$1,
+          decoration: BoxDecoration(shape: BoxShape.circle,
+            border: Border.all(color: const Color(0x6689DCE8), width: 12)))),
+    ]),
+  ),
+  leading: IconButton(
+    tooltip: 'رجوع', onPressed: () => Navigator.maybePop(context),
+    icon: const CircleAvatar(radius: 19, backgroundColor: Color(0x33FFFFFF),
+      child: Icon(Icons.arrow_back_rounded, size: 22, color: Colors.white))),
+  title: Text('إعدادات $childName', maxLines: 1, overflow: TextOverflow.ellipsis,
+    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+);
 
-Widget buildSectionTitle(String title, JisrColors c) {
-  return Text(
-    title,
-    style: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-      color: c.heading,
-    ),
-  );
-}
+Widget _settingsBadge(IconData icon) => Container(
+  width: 36, height: 36,
+  decoration: BoxDecoration(color: const Color(0xFFE2F5F7),
+    borderRadius: BorderRadius.circular(11)),
+  child: Icon(icon, color: const Color(0xFF09ACC0), size: 20),
+);
+
+Widget buildInfoBanner(JisrColors c, String childName) => Container(
+  padding: const EdgeInsets.all(14),
+  decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(20)),
+  child: Row(children: [
+    _settingsBadge(Icons.people_outline_rounded),
+    const SizedBox(width: 12),
+    Expanded(child: Text('هذه الإعدادات تُطبَّق على $childName فقط.',
+      style: TextStyle(color: c.heading, fontSize: 15, height: 1.7, fontWeight: FontWeight.w700))),
+  ]),
+);
 
 Widget buildDisabilitySelector({
   required JisrColors c,
   required String? selectedValue,
   required VoidCallback? onTap,
-}) {
-  final hasValue = selectedValue != null;
-
-  return InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(16),
+}) => Material(
+  color: c.card,
+  borderRadius: BorderRadius.circular(18),
+  clipBehavior: Clip.antiAlias,
+  child: InkWell(onTap: onTap, child: Padding(
+    padding: const EdgeInsets.all(12),
     child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: hasValue ? AppColors.brandBlue : c.line,
-          width: hasValue ? 2 : 1.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            AppIcons.specialist,
-            color: hasValue ? AppColors.brandBlue : c.muted,
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'نوع الإعاقة',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: hasValue ? AppColors.brandBlue : c.muted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  hasValue ? selectedValue : 'اضغط للاختيار',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: hasValue ? c.heading : c.muted,
-                    fontWeight: hasValue ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.keyboard_arrow_down,
-            color: hasValue ? AppColors.brandBlue : c.muted,
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(color: c.tintTeal.withValues(alpha: .5),
+        borderRadius: BorderRadius.circular(12)),
+      child: Row(children: [
+        _settingsBadge(Icons.description_outlined),
+        const SizedBox(width: 8),
+        Expanded(child: Text(selectedValue == null ? 'نوع الإعاقة' : 'نوع الإعاقة: $selectedValue',
+          style: TextStyle(color: c.muted, fontSize: 13))),
+        const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF1769C2), size: 21),
+      ]),
     ),
-  );
-}
+  )),
+);
 
 Widget buildCustomDisabilityBox({
   required JisrColors c,
@@ -164,62 +143,61 @@ Widget buildFeatureSection({
   required Color color,
   required JisrColors c,
   required List<Widget> children,
-}) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 20),
-    child: Material(
-      color: c.card,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: color.withValues(alpha: 0.3), width: 1.5),
-      ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 24, color: color),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ),
-            ],
-          ),
+  bool initiallyExpanded = true,
+}) => Padding(
+  padding: const EdgeInsets.only(bottom: 12),
+  child: Material(
+    color: c.card,
+    borderRadius: BorderRadius.circular(20),
+    clipBehavior: Clip.antiAlias,
+    child: Builder(builder: (context) => Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          key: PageStorageKey('s27-$title'),
+          initiallyExpanded: initiallyExpanded,
+          maintainState: true,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          leading: _settingsBadge(Icons.people_outline_rounded),
+          title: Text(title, style: TextStyle(color: c.heading,
+            fontSize: 15, fontWeight: FontWeight.w800, height: 1.6)),
+          iconColor: const Color(0xFF1769C2),
+          collapsedIconColor: const Color(0xFF1769C2),
+          children: children,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(children: children),
-        ),
-      ],
-    ),
-    ),
-  );
-}
+      )),
+  ),
+);
 
-Widget sw(String t, String s, bool v, ValueChanged<bool> on, {bool enabled = true}) {
-  return SwitchListTile(
-    dense: true,
-    title: Text(t,
-        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5)),
-    subtitle: Text(s, style: const TextStyle(fontSize: 11.5)),
-    value: v,
-    onChanged: enabled ? on : null,
-  );
-}
+Widget sw(String t, String s, bool v, ValueChanged<bool> on, {bool enabled = true}) => Builder(
+  builder: (context) {
+    final c = JisrColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Material(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? c.tintTeal : const Color(0xFFEEF6FB),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Tooltip(
+          message: s,
+          child: SwitchListTile(
+            dense: true,
+            contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 4),
+            visualDensity: const VisualDensity(horizontal: -2, vertical: -3),
+            title: Text(t, style: TextStyle(color: c.heading, fontSize: 13)),
+            activeThumbColor: Colors.white,
+            activeTrackColor: const Color(0xFF10BFD0),
+            inactiveThumbColor: Colors.white,
+            inactiveTrackColor: const Color(0xFFCCD9EA),
+            trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+            value: v,
+            onChanged: enabled ? on : null,
+          ),
+        ),
+      ),
+    );
+  },
+);
 
 Widget buildDurationSetting({
   required String title,

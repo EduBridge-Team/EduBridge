@@ -4,16 +4,20 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return AdaptiveWrapper(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: AdaptiveWrapper(
       screenTitle: 'إعدادات ${widget.childName}',
       child: Scaffold(
-        appBar: JisrAppBar(title: 'إعدادات ${widget.childName}'),
+        appBar: buildChildSettingsAppBar(context, widget.childName),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFF5F9FC),
         body: ValueListenableBuilder<AccessibilityProfile>(
           valueListenable: AccessibilityService.instance.profile,
           builder: (context, _, __) {
             final p = _p;
             return ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
               children: [
                 buildInfoBanner(c, widget.childName),
                 if (!_canEdit)
@@ -21,9 +25,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                     padding: EdgeInsets.symmetric(vertical: 12),
                     child: Text('للعرض فقط — التعديل متاح للمختص المعيّن للطفل.'),
                   ),
-                const SizedBox(height: 20),
-                buildSectionTitle('نوع الإعاقة', c),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 buildDisabilitySelector(
                   c: c,
                   selectedValue: _selectedDisability,
@@ -37,10 +39,11 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                     onSave: _applyCustom,
                   ),
                 ],
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
                 buildFeatureSection(
                   title: 'ميزات الإعاقات البصرية',
+                  initiallyExpanded: true,
                   icon: AppIcons.blind,
                   color: AppColors.brandBlue,
                   c: c,
@@ -66,6 +69,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
 
                 buildFeatureSection(
                   title: 'ميزات الإعاقات السمعية',
+                  initiallyExpanded: false,
                   icon: AppIcons.deaf,
                   color: AppColors.pink,
                   c: c,
@@ -88,31 +92,8 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات اضطرابات النطق واللغة',
-                  icon: AppIcons.speech,
-                  color: AppColors.orangeDeep,
-                  c: c,
-                  children: [
-                    sw('تحويل الكلام إلى نص', 'كتابة إجابة الواجب بالصوت؛ يتطلب دعم العربية على الجهاز',
-                        p.voiceToText,
-                        (v) => _set(p.copyWith(voiceToText: v)), enabled: _canChange),
-                    sw('اقتراح كلمات', 'اقتراح كلمات تواصل عامة أثناء كتابة إجابة الواجب',
-                        p.wordPrediction,
-                        (v) => _set(p.copyWith(wordPrediction: v)), enabled: _canChange),
-                    sw('تواصل بالصور', 'إضافة عبارات من بطاقات رمزية إلى إجابة الواجب',
-                        p.pictureCommunication,
-                        (v) => _set(p.copyWith(pictureCommunication: v)), enabled: _canChange),
-                    sw('جمل قصيرة جداً', 'تقسيم عرض النص لأسطر قصيرة بدون حذف المحتوى',
-                        p.shortSentences,
-                        (v) => _set(p.copyWith(shortSentences: v)), enabled: _canChange),
-                    sw('وقت غير محدود', 'تعطيل مؤقّت المهمة؛ الاستراحة تبقى محدودة',
-                        p.unlimitedTime,
-                        (v) => _set(p.copyWith(unlimitedTime: v)), enabled: _canChange),
-                  ],
-                ),
-
-                buildFeatureSection(
                   title: 'ميزات الإعاقات الحركية والعصبية',
+                  initiallyExpanded: false,
                   icon: AppIcons.motor,
                   color: AppColors.brandBlue,
                   c: c,
@@ -134,7 +115,8 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات الإعاقات الذهنية والنمائية',
+                  title: 'ميزات الإعاقات الذهنية والتطويرية',
+                  initiallyExpanded: false,
                   icon: AppIcons.cognitive,
                   color: AppColors.purple,
                   c: c,
@@ -161,66 +143,33 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 ),
 
                 buildFeatureSection(
-                  title: 'الاستراحة',
-                  icon: Icons.pause_circle_outline,
-                  color: AppColors.teal,
+                  title: 'ميزات اضطرابات النطق واللغة',
+                  initiallyExpanded: false,
+                  icon: AppIcons.speech,
+                  color: AppColors.orangeDeep,
                   c: c,
                   children: [
-                    sw('استراحات أثناء التعلم', 'اقتراح استراحة خلال الدروس',
-                        p.brainBreaksEnabled,
-                        (v) => _set(p.copyWith(brainBreaksEnabled: v)), enabled: _canChange),
-                    buildDurationSetting(
-                      title: 'الفترة بين الاستراحات',
-                      subtitle: 'اقتراح استراحة بعد هذه المدة من التعلم.',
-                      value: p.brainBreakIntervalMinutes,
-                      choices: const [5, 10, 15, 20, 30, 45, 60, 90, 120],
-                      unit: 'دقيقة',
-                      onChanged: _canChange && p.brainBreaksEnabled
-                          ? (value) => _set(p.copyWith(brainBreakIntervalMinutes: value)) : null,
-                    ),
-                    buildDurationSetting(
-                      title: 'مدة الاستراحة',
-                      subtitle: p.noTimedInteractions || p.noTimers
-                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
-                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.',
-                      value: p.brainBreakDurationSeconds,
-                      choices: const [15, 30, 60, 90, 120],
-                      unit: 'ثانية',
-                      onChanged: _canChange
-                          ? (value) => _set(p.copyWith(brainBreakDurationSeconds: value)) : null,
-                    ),
-                  ],
-                ),
-
-                buildFeatureSection(
-                  title: 'وقت التعلم',
-                  icon: Icons.timer_outlined,
-                  color: AppColors.brandBlue,
-                  c: c,
-                  children: [
-                    sw('مؤقّت المهمة', 'عرض مؤقّت بصري أو سمعي حسب إعدادات الطفل',
-                        p.visualTimerEnabled,
-                        (v) => _set(p.copyWith(visualTimerEnabled: v)), enabled: _canChange),
-                    buildDurationSetting(
-                      title: 'مدة مؤقّت المهمة',
-                      subtitle: p.unlimitedTime || p.noTimers || p.noTimedInteractions
-                          ? 'المؤقّت معطّل حسب إعدادات الوقت الحالية؛ تبقى المدة محفوظة.'
-                          : 'المدة المتاحة قبل اقتراح استراحة.',
-                      value: p.timerRenewalMinutes,
-                      choices: const [1, 3, 5, 10, 15, 20, 30, 45, 60],
-                      unit: 'دقيقة',
-                      onChanged: _canChange && p.visualTimerEnabled &&
-                          !p.unlimitedTime && !p.noTimers && !p.noTimedInteractions
-                          ? (value) => _set(p.copyWith(timerRenewalMinutes: value)) : null,
-                    ),
-                    sw('إخفاء العدّادات', 'إخفاء عدّاد المهمة والاستراحة؛ الاستراحة تبقى محدودة',
-                        p.noTimers,
-                        (v) => _set(p.copyWith(noTimers: v)), enabled: _canChange),
+                    sw('تحويل الكلام إلى نص', 'كتابة إجابة الواجب بالصوت؛ يتطلب دعم العربية على الجهاز',
+                        p.voiceToText,
+                        (v) => _set(p.copyWith(voiceToText: v)), enabled: _canChange),
+                    sw('اقتراح كلمات', 'اقتراح كلمات تواصل عامة أثناء كتابة إجابة الواجب',
+                        p.wordPrediction,
+                        (v) => _set(p.copyWith(wordPrediction: v)), enabled: _canChange),
+                    sw('تواصل بالصور', 'إضافة عبارات من بطاقات رمزية إلى إجابة الواجب',
+                        p.pictureCommunication,
+                        (v) => _set(p.copyWith(pictureCommunication: v)), enabled: _canChange),
+                    sw('جمل قصيرة جداً', 'تقسيم عرض النص لأسطر قصيرة بدون حذف المحتوى',
+                        p.shortSentences,
+                        (v) => _set(p.copyWith(shortSentences: v)), enabled: _canChange),
+                    sw('وقت غير محدود', 'تعطيل مؤقّت المهمة؛ الاستراحة تبقى محدودة',
+                        p.unlimitedTime,
+                        (v) => _set(p.copyWith(unlimitedTime: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
                   title: 'خصائص عامة',
+                  initiallyExpanded: true,
                   icon: AppIcons.settings,
                   color: AppColors.muted,
                   c: c,
@@ -248,28 +197,108 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                   ],
                 ),
 
-                const SizedBox(height: 24),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.tune),
-                  label: const Text('تطبيق إعدادات مقترحة'),
-                  onPressed: _canChange ? _applyRecommendations : null,
+                buildFeatureSection(
+                  title: 'الاستراحة ووقت التعلم',
+                  initiallyExpanded: false,
+                  icon: Icons.pause_circle_outline,
+                  color: AppColors.teal,
+                  c: c,
+                  children: [
+                    sw('استراحات أثناء التعلم', 'اقتراح استراحة خلال الدروس',
+                        p.brainBreaksEnabled,
+                        (v) => _set(p.copyWith(brainBreaksEnabled: v)), enabled: _canChange),
+                    buildDurationSetting(
+                      title: 'الفترة بين الاستراحات',
+                      subtitle: 'اقتراح استراحة بعد هذه المدة من التعلم.',
+                      value: p.brainBreakIntervalMinutes,
+                      choices: const [5, 10, 15, 20, 30, 45, 60, 90, 120],
+                      unit: 'دقيقة',
+                      onChanged: _canChange && p.brainBreaksEnabled
+                          ? (value) => _set(p.copyWith(brainBreakIntervalMinutes: value)) : null,
+                    ),
+                    buildDurationSetting(
+                      title: 'مدة الاستراحة',
+                      subtitle: p.noTimedInteractions || p.noTimers
+                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
+                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.',
+                      value: p.brainBreakDurationSeconds,
+                      choices: const [15, 30, 60, 90, 120],
+                      unit: 'ثانية',
+                      onChanged: _canChange
+                          ? (value) => _set(p.copyWith(brainBreakDurationSeconds: value)) : null,
+                    ),
+
+                    sw('مؤقّت المهمة', 'عرض مؤقّت بصري أو سمعي حسب إعدادات الطفل',
+                        p.visualTimerEnabled,
+                        (v) => _set(p.copyWith(visualTimerEnabled: v)), enabled: _canChange),
+                    buildDurationSetting(
+                      title: 'مدة مؤقّت المهمة',
+                      subtitle: p.unlimitedTime || p.noTimers || p.noTimedInteractions
+                          ? 'المؤقّت معطّل حسب إعدادات الوقت الحالية؛ تبقى المدة محفوظة.'
+                          : 'المدة المتاحة قبل اقتراح استراحة.',
+                      value: p.timerRenewalMinutes,
+                      choices: const [1, 3, 5, 10, 15, 20, 30, 45, 60],
+                      unit: 'دقيقة',
+                      onChanged: _canChange && p.visualTimerEnabled &&
+                          !p.unlimitedTime && !p.noTimers && !p.noTimedInteractions
+                          ? (value) => _set(p.copyWith(timerRenewalMinutes: value)) : null,
+                    ),
+                    sw('إخفاء العدّادات', 'إخفاء عدّاد المهمة والاستراحة؛ الاستراحة تبقى محدودة',
+                        p.noTimers,
+                        (v) => _set(p.copyWith(noTimers: v)), enabled: _canChange),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  icon: const Icon(AppIcons.refresh),
-                  label: const Text('إعادة الضبط'),
-                  onPressed: !_canChange ? null : () {
-                    _refreshState(() => _selectedDisability = null);
-                    _set(const AccessibilityProfile(type: DisabilityType.none));
-                  },
+
+                buildFeatureSection(
+                  title: 'إعادة الضبط',
+                  initiallyExpanded: false,
+                  icon: AppIcons.refresh,
+                  color: AppColors.brandBlue,
+                  c: c,
+                  children: [
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.tune),
+                      label: const Text('تطبيق إعدادات مقترحة'),
+                      onPressed: _canChange ? _applyRecommendations : null,
+                    ),
+                    OutlinedButton.icon(
+                      icon: const Icon(AppIcons.refresh),
+                      label: const Text('إعادة الضبط'),
+                      onPressed: !_canChange ? null : () async {
+                        final saved = await _set(const AccessibilityProfile(type: DisabilityType.none));
+                        if (saved && mounted) _refreshState(() => _selectedDisability = null);
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 30),
+                SizedBox(
+                  height: 48,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF1769C2),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onPressed: !_canChange ? null : () async {
+                      final saved = await _set(_p);
+                      if (saved && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('تم حفظ الإعدادات')),
+                        );
+                      }
+                    },
+                    icon: _saving
+                        ? const SizedBox(width: 18, height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.save_outlined, size: 19),
+                    label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الإعدادات'),
+                  ),
+                ),
               ],
             );
           },
         ),
       ),
-    );
-  
+    ));
   }
 }
