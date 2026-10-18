@@ -4,7 +4,7 @@ part of 'profile_screen.dart';
 extension _SpecialistS04Profile on _ProfileScreenState {
   Widget _s04Header(JisrColors c) {
     return Container(
-      height: 112,
+      height: 124,
       clipBehavior: Clip.antiAlias,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -47,7 +47,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
               children: [
                 IconButton.filledTonal(
@@ -70,10 +70,11 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                   },
                   icon: const Icon(Icons.arrow_forward_rounded, size: 23),
                 ),
-                const Expanded(
+                const SizedBox(width: 8),
+                const Flexible(
                   child: Text(
                     'الملف الشخصي',
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -81,7 +82,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                     ),
                   ),
                 ),
-                const SizedBox(width: 44),
+
               ],
             ),
           ),
@@ -218,8 +219,8 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  width: 92,
-                  height: 92,
+                  width: 100,
+                  height: 100,
                   clipBehavior: Clip.antiAlias,
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -236,8 +237,8 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                             ))
                           : Image.network(
                               avatarUrl,
-                              width: 92,
-                              height: 92,
+                              width: 100,
+                              height: 100,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Text(
                                 initial,
@@ -266,7 +267,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             name.isEmpty ? 'مستخدم' : name,
             textAlign: TextAlign.center,
@@ -278,7 +279,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           ),
           const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: .23),
               borderRadius: BorderRadius.circular(12),
@@ -292,9 +293,9 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             ),
           ),
           if (verified) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 color: const Color(0xFF58BB55),
                 borderRadius: BorderRadius.circular(12),
@@ -368,7 +369,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
   Widget _s04InfoRow(JisrColors c, IconData icon, String label, String value,
       {Color? valueColor, bool latin = false}) {
     return SizedBox(
-      height: 47,
+      height: 50,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 13),
         child: Row(
@@ -382,7 +383,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                 value.isEmpty ? '—' : value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.end,
+                textAlign: latin ? TextAlign.left : TextAlign.end,
                 textDirection: latin ? TextDirection.ltr : null,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
@@ -405,7 +406,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
         ? 'معتمدة'
         : status == 'rejected' ? 'مرفوضة' : 'بانتظار المراجعة';
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
       decoration: BoxDecoration(
         color: c.card,
         border: Border.all(color: c.line),
@@ -459,15 +460,15 @@ extension _SpecialistS04Profile on _ProfileScreenState {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
               Container(
-                width: 51,
-                height: 51,
+                width: 58,
+                height: 58,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: Icon(icon, color: color, size: 25),
               ),
@@ -484,7 +485,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                     const SizedBox(height: 4),
                     Text(subtitle, style: TextStyle(
                       color: c.muted,
-                      fontSize: 11.5,
+                      fontSize: 13,
                     )),
                   ],
                 ),
