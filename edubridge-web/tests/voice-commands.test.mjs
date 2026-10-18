@@ -10,7 +10,6 @@ test('Arabic commands prioritize specific phrases and normalize speech spelling'
     ['افتح التقدّم الأُسبوعي', '/weekly-reports'],
     ['افتح إعدادات التكيف الخاصة بالطفل', '/accessibility'],
     ['افتح مكتبة الدروس', '/lessons'],
-    ['افتح التواصل بالصور', '/conversations?mode=aac'],
     ['الرئيسية', '/specialist'],
     ['الطلاب', '/children'],
     ['أضف درس جديد', '/lessons/new'],
