@@ -9,7 +9,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
       appBar: BrandAppBar(
         title: const Text('💙 الكلمات البصرية'),
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           // ═══════════════════════════════════════════════
           //  شريط المعلومات
@@ -17,13 +17,15 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 12,
+              runSpacing: 8,
               children: [
                 _infoChip(
                   icon: '🎯',
                   label: 'الجولة',
-                  value: '${_round + 1}/$_totalRounds',
+                  value: '$_roundNumber/$_totalRounds',
                   color: const Color(0xFF57B25A),
                 ),
                 _infoChip(
@@ -85,6 +87,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
                   alignment: Alignment.center,
                   child: Text(
                     _target.$1,
+                    textScaler: TextScaler.noScaling,
                     style: TextStyle(fontSize: large ? 130 : 115),
                   ),
                 ),
@@ -97,16 +100,23 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
           // ═══════════════════════════════════════════════
           //  الخيارات (كلمات)
           // ═══════════════════════════════════════════════
-          Expanded(
-            child: Padding(
+          Padding(
               padding: const EdgeInsets.all(16),
               child: _optionCount == 3
                   ? _buildOptionsVertical(large)
                   : _buildOptionsGrid(large),
-            ),
           ),
+          SafeArea(top: false, child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: GameRoundContinuation(
+              key: ValueKey(_round),
+              answered: _transitioning && !_resultRecorded,
+              delay: const Duration(milliseconds: 900),
+              onContinue: _advance,
+            ),
+          )),
         ],
-      ),
+      )),
     );
   
   }

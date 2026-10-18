@@ -6,6 +6,7 @@ import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../theme.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 
 class SignLanguageGame extends StatefulWidget {
   final String childName;
@@ -38,6 +39,18 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   int _round = 0;
   static const _totalRounds = 8;
 
+  int get _roundNumber => _round >= _totalRounds
+      ? _totalRounds : _round + (_transitioning ? 0 : 1);
+
+  Future<void> _advance() async {
+    if (!mounted || !_transitioning) return;
+    if (_round >= _totalRounds) {
+      await _onWin();
+    } else {
+      _newRound();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +70,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     setState(() {});
   }
 
-  Future<void> _check((String, String, String) option) async {
+  void _check((String, String, String) option) {
     if (_transitioning) return;
     if (option.$1 == _target.$1) {
       _transitioning = true;
@@ -70,14 +83,6 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       // 📳 اهتزاز قوي عند الصحيح
       AdaptiveHelper.hapticFeedback();
 
-      if (_round >= _totalRounds) {
-        await Future.delayed(const Duration(milliseconds: 300));
-        if (!mounted) return;
-        await _onWin();
-      } else {
-        await Future.delayed(const Duration(milliseconds: 500));
-        _newRound();
-      }
     } else {
       // ❌ خطأ
       AdaptiveHelper.hapticFeedback();
@@ -96,6 +101,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       context,
       message: 'أحسنت يا ${widget.childName}! $scorePercent%',
       emoji: '🤟',
+      playSound: false,
       duration: const Duration(seconds: 4),
     );
 
@@ -162,16 +168,18 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
 
     return Scaffold(
       appBar: JisrAppBar(title: 'لعبة لغة الإشارة 🤟'),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           // شريط النقاط
           Container(
             padding: const EdgeInsets.all(14),
             color: c.tintTeal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 12,
+              runSpacing: 8,
               children: [
-                Text('الجولة: ${_round + 1}/$_totalRounds',
+                Text('الجولة: $_roundNumber/$_totalRounds',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
                 Text('النقاط: $_score ⭐',
@@ -227,11 +235,14 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
           const SizedBox(height: 20),
 
           // الخيارات — إشارات
-          Expanded(
-            child: Padding(
+          Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.count(
-                crossAxisCount: 2,
+              child: LayoutBuilder(builder: (context, constraints) => GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: constraints.maxWidth < 400 &&
+                    MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
+                childAspectRatio: 1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: _options.map((option) {
@@ -259,6 +270,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                         children: [
                           Text(
                             option.$2,
+                            textScaler: TextScaler.noScaling,
                             style: const TextStyle(fontSize: 64),
                           ),
                           const SizedBox(height: 8),
@@ -280,11 +292,19 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                     ),
                   );
                 }).toList(),
-              ),
-            ),
+              )),
           ),
+          SafeArea(top: false, child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: GameRoundContinuation(
+              key: ValueKey(_round),
+              answered: _transitioning && !_resultRecorded,
+              delay: Duration(milliseconds: _round >= _totalRounds ? 300 : 500),
+              onContinue: _advance,
+            ),
+          )),
         ],
-      ),
+      )),
     );
   }
 }

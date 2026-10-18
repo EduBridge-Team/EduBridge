@@ -9,7 +9,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
       appBar: BrandAppBar(
         title: const Text('🌈 لعبة الرموز'),
       ),
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         children: [
           // ═══════════════════════════════════════════════
           //  شريط المعلومات
@@ -17,13 +17,15 @@ extension _SymbolsGameStateView on _SymbolsGameState {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              spacing: 12,
+              runSpacing: 8,
               children: [
                 _infoChip(
                   icon: '🎯',
                   label: 'الجولة',
-                  value: '${_round + 1}/$_totalRounds',
+                  value: '$_roundNumber/$_totalRounds',
                   color: const Color(0xFF3A6EA5),
                 ),
                 _infoChip(
@@ -102,8 +104,8 @@ extension _SymbolsGameStateView on _SymbolsGameState {
 
                 // عرض الهدف بشكل كبير
                 Container(
-                  width: large ? 200 : 170,
-                  height: large ? 200 : 170,
+                  width: (large ? 200.0 : 170.0) * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.4),
+                  height: (large ? 200.0 : 170.0) * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
@@ -126,6 +128,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                     children: [
                       Text(
                         _target.$1,
+                        textScaler: TextScaler.noScaling,
                         style: TextStyle(
                           fontSize: large ? 100 : 85,
                           color: _target.$3,
@@ -153,14 +156,16 @@ extension _SymbolsGameStateView on _SymbolsGameState {
           // ═══════════════════════════════════════════════
           //  الخيارات
           // ═══════════════════════════════════════════════
-          Expanded(
-            child: Padding(
+          Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.count(
-                crossAxisCount: 2,
+              child: LayoutBuilder(builder: (context, constraints) => GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: constraints.maxWidth < 400 &&
+                    MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 14,
-                childAspectRatio: 1.1,
+                childAspectRatio: 1.1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
                 children: _options.map((option) {
                   return GestureDetector(
                     onTap: () => _check(option),
@@ -188,6 +193,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                           // الرمز بلونه
                           Text(
                             option.$1,
+                            textScaler: TextScaler.noScaling,
                             style: TextStyle(
                               fontSize: large ? 68 : 56,
                               color: option.$3,
@@ -209,11 +215,19 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                     ),
                   );
                 }).toList(),
-              ),
-            ),
+              )),
           ),
+          SafeArea(top: false, child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: GameRoundContinuation(
+              key: ValueKey(_round),
+              answered: _transitioning && !_resultRecorded,
+              delay: const Duration(milliseconds: 700),
+              onContinue: _advance,
+            ),
+          )),
         ],
-      ),
+      )),
     );
   
   }

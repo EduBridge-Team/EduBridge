@@ -6,8 +6,8 @@ import '../theme.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
-import '../services/tts_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_round_continuation.dart';
 part 'symbols_game_view.dart';
 
 class SymbolsGame extends StatefulWidget {
@@ -46,6 +46,18 @@ class _SymbolsGameState extends State<SymbolsGame> {
 
   int get _totalRounds => 8;
 
+  int get _roundNumber => _round >= _totalRounds
+      ? _totalRounds : _round + (_transitioning ? 0 : 1);
+
+  Future<void> _advance() async {
+    if (!mounted || !_transitioning) return;
+    if (_round >= _totalRounds) {
+      await _onWin();
+    } else {
+      _newRound();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,10 +69,7 @@ class _SymbolsGameState extends State<SymbolsGame> {
   // ═══════════════════════════════════════════════════════
   void _newRound() {
     if (!mounted) return;
-    if (_round >= _totalRounds) {
-      _onWin();
-      return;
-    }
+    if (_round >= _totalRounds) return;
 
     _transitioning = false;
 
@@ -76,17 +85,13 @@ class _SymbolsGameState extends State<SymbolsGame> {
   }
 
   void _speak(String text) {
-    if (_profile.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
-    } else {
-      TtsService.instance.speakLine(text);
-    }
+    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
   }
 
   // ═══════════════════════════════════════════════════════
   //  فحص الإجابة
   // ═══════════════════════════════════════════════════════
-  Future<void> _check((String, String, Color) option) async {
+  void _check((String, String, Color) option) {
     if (_transitioning) return;
     if (option.$2 == _target.$2) {
       _transitioning = true;
@@ -104,8 +109,6 @@ class _SymbolsGameState extends State<SymbolsGame> {
         _speak('أحسنت! ${option.$2}');
       }
 
-      await Future.delayed(const Duration(milliseconds: 700));
-      if (mounted) _newRound();
     } else {
       // ❌ خطأ
       AdaptiveHelper.hapticFeedback();
