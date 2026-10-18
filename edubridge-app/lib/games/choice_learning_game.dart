@@ -254,9 +254,11 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
   }
 
   Widget _symbol(int index, {required double size}) {
-    if (_isColors) return Semantics(label: _label(index), child: Container(width: size, height: size,
-      decoration: BoxDecoration(color: _colors[index].$2, borderRadius: BorderRadius.circular(_visualStyle.isEven ? 16 : size / 2),
-        border: Border.all(color: Colors.black26))));
+    if (_isColors) {
+      return Semantics(label: _label(index), child: Container(width: size, height: size,
+        decoration: BoxDecoration(color: _colors[index].$2, borderRadius: BorderRadius.circular(_visualStyle.isEven ? 16 : size / 2),
+          border: Border.all(color: Colors.black26))));
+    }
     final symbol = Text(_isShapes ? (_visualStyle.isEven ? _shapes[index].$2 : _shapeGlyphs[index]) : _digits[index],
       semanticsLabel: _label(index), style: TextStyle(fontSize: size,
         color: _isShapes ? [AppColors.brandBlue, AppColors.brandTeal,

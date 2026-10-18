@@ -60,9 +60,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       await _operations.loadMore();
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
+        );
+      }
     }
   }
 

@@ -197,7 +197,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 tint: const Color(0xFFE4F5E7),
                 accent: const Color(0xFF37B54A),
                 badge: _s08CompletionPct == null
-                    ? null : '${_s08CompletionPct}%',
+                    ? null : '$_s08CompletionPct%',
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -215,7 +215,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 tint: const Color(0xFFE0EDFC),
                 accent: const Color(0xFF1769C2),
                 badge: _s08LessonsCount == null
-                    ? null : '${_s08LessonsCount} درس',
+                    ? null : '$_s08LessonsCount درس',
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -421,7 +421,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
   Widget _s08Metrics(JisrColors c) => Row(
     children: [
       Expanded(child: _s08Metric(c, Icons.check_circle_outline,
-          _s08CompletionPct == null ? '—' : '${_s08CompletionPct}%',
+          _s08CompletionPct == null ? '—' : '$_s08CompletionPct%',
           'الإنجاز', const Color(0xFF42B751))),
       const SizedBox(width: 9),
       Expanded(child: _s08Metric(c, Icons.menu_book_outlined,

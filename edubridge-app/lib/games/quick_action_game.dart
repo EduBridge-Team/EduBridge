@@ -93,7 +93,9 @@ class _QuickActionGameState extends State<QuickActionGame> {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _isPaused || _isFinished || !_timed ||
           (WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed) != AppLifecycleState.resumed ||
-          ModalRoute.of(context)?.isCurrent == false) return;
+          ModalRoute.of(context)?.isCurrent == false) {
+        return;
+      }
 
       if (_secondsLeft <= 1) {
         _ticker?.cancel();

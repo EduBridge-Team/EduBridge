@@ -8,7 +8,7 @@ extension _VoiceCommandGameNavigation on VoiceCommandService {
     _choosingGame = true;
     try {
       await _ensureChildrenLoaded();
-      if (!nav.mounted || await ApiService.getUserId() != userId) return;
+      if (await ApiService.getUserId() != userId || !nav.mounted) return;
       final players = _childrenCache.map(GamePlayer.fromChild).whereType<GamePlayer>().toList();
       final named = _findChild(text);
       GamePlayer? player = named == null ? null : GamePlayer.fromChild(named);
@@ -26,11 +26,11 @@ extension _VoiceCommandGameNavigation on VoiceCommandService {
             SimpleDialogOption(onPressed: () => Navigator.pop(context, child),
               child: Text(child.name))).toList()));
       }
-      if (player == null || !nav.mounted || await ApiService.getUserId() != userId) return;
+      if (player == null || await ApiService.getUserId() != userId || !nav.mounted) return;
       final selected = player;
       await _reply(gameId == null ? 'سأفتح ألعاب ${selected.name}'
         : 'سأفتح ${_gameDisplayName(gameId)} لـ ${selected.name}');
-      if (!nav.mounted || await ApiService.getUserId() != userId) return;
+      if (await ApiService.getUserId() != userId || !nav.mounted) return;
       if (gameId != null) {
         await GameLauncher.instance.open(nav.context, gameId: gameId, player: selected);
       } else {

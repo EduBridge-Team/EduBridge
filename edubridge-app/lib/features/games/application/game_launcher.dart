@@ -39,8 +39,10 @@ class GameLauncher {
         end: GameProgressService.instance.end,
       );
     } catch (_) {
-      if (context.mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        const SnackBar(content: Text('تعذّر فتح اللعبة، حاول مرة أخرى')));
+      if (context.mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text('تعذّر فتح اللعبة، حاول مرة أخرى')));
+      }
       return false;
     }
   }

@@ -167,7 +167,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800,
                   height: 1.4, color: Color(0xFF102D49))),
               const SizedBox(height: 8),
-              Text('${done} من ${total} درس مكتمل', style: const TextStyle(
+              Text('$done من $total درس مكتمل', style: const TextStyle(
                 fontSize: 12, color: Color(0xFF637E98))),
               if (average != null) ...[
                 const SizedBox(height: 8),
@@ -176,7 +176,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0F6FA),
                     borderRadius: BorderRadius.circular(18)),
-                  child: Text('المستوى: ${average}%', style: const TextStyle(
+                  child: Text('المستوى: $average%', style: const TextStyle(
                     color: Color(0xFF637E98), fontSize: 11)),
                 ),
               ],
@@ -197,16 +197,16 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
       ),
       const SizedBox(height: 14),
       Row(children: [
-        _summaryCard('مكتمل', '${done}', Icons.check_circle_outline,
+        _summaryCard('مكتمل', '$done', Icons.check_circle_outline,
           const Color(0xFF53B357)),
         const SizedBox(width: 8),
-        _summaryCard('قيد التنفيذ', '${inProgress}', Icons.autorenew_rounded,
+        _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew_rounded,
           const Color(0xFF1CB6C4)),
         const SizedBox(width: 8),
-        _summaryCard('لم يبدأ', '${notStarted}', Icons.access_time_rounded,
+        _summaryCard('لم يبدأ', '$notStarted', Icons.access_time_rounded,
           const Color(0xFF6C88A4)),
         const SizedBox(width: 8),
-        _summaryCard('متوسط', average == null ? '—' : '${average}%',
+        _summaryCard('متوسط', average == null ? '—' : '$average%',
           Icons.star_rounded, const Color(0xFFFFB72E)),
       ]),
     ]);
@@ -244,7 +244,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           const Icon(Icons.star_rounded, size: 18,
             color: Color(0xFFFFB72E)),
           const SizedBox(width: 4),
-          Text('${_stars} نجمة', style: const TextStyle(
+          Text('$_stars نجمة', style: const TextStyle(
             fontSize: 11, color: Color(0xFF102D49))),
         ]),
       )),
@@ -289,7 +289,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
             color: const Color(0xFF53B357),
             backgroundColor: const Color(0xFFE1EDF6))),
         const SizedBox(height: 8),
-        Text(earned ? 'تم الإنجاز' : '${achieved}/${goal}',
+        Text(earned ? 'تم الإنجاز' : '$achieved/$goal',
           style: TextStyle(fontSize: 10,
             color: earned ? const Color(0xFF53B357)
               : const Color(0xFF637E98))),
@@ -332,7 +332,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                       color: info.color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(18)),
                     child: Text(score == null ? info.label
-                      : '${info.label} • النتيجة ${score}%',
+                      : '${info.label} • النتيجة $score%',
                       style: TextStyle(color: info.color, fontSize: 11)),
                   ),
                 ],

@@ -48,6 +48,7 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
   static const _s17Blue = Color(0xFF1969C6);
 
   PreferredSizeWidget _s17AppBar() {
+    final pageContext = context;
     return AppBar(
       toolbarHeight: 116,
       backgroundColor: Colors.transparent,
@@ -114,10 +115,11 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
       leading: IconButton(
         tooltip: 'رجوع',
         onPressed: () async {
-          final popped = await Navigator.maybePop(context);
-          if (!popped && context.mounted) {
+          final popped = await Navigator.maybePop(pageContext);
+          if (!pageContext.mounted) return;
+          if (!popped) {
             Navigator.pushReplacement(
-              context,
+              pageContext,
               MaterialPageRoute<void>(
                 builder: (_) => const SpecialistDashboardScreen(),
               ),
