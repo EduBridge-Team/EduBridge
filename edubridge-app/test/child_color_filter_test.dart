@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:edubridge_app/games/choice_learning_game.dart';
 import 'package:edubridge_app/screens/educational_games_screen.dart';
