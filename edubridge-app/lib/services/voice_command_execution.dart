@@ -230,7 +230,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     }
 
     if (_matches(text, [
-  'تواصل', 'التواصل', 'تواصل بالصور', 'aac',
+  'تواصل', 'التواصل',
 ]    )) {
   await _reply('سأفتح المحادثات');
   nav.push(MaterialPageRoute(builder: (_) => const ChatsScreen()));
@@ -268,7 +268,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
         'افتح تقدم [اسم الطفل]، افتح تقرير [اسم الطفل]، '
         'افتح دراسة حالة [اسم الطفل]. '
         'كمان: الألعاب، الأطفال، الإشعارات، المحادثات، المساعد، '
-        'التواصل بالصور، دروس ولي الأمر، احتياجات الأبناء، '
+        'دروس ولي الأمر، احتياجات الأبناء، '
         'الملف الشخصي، توثيق الهوية. '
         'وتقدر تقول: اقرأ، أوقف، ارجع، الرئيسية، الوضع الليلي',
       );

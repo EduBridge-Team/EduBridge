@@ -1,14 +1,12 @@
 import 'package:edubridge_app/screens/chat/chat_composer.dart';
-import 'package:edubridge_app/screens/chat/composer_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('S16 composer keeps right-hand pencil and functional send',
+  testWidgets('S16 composer sends text without removed communication modes',
       (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    ComposerModeService.instance.mode.value = ComposerMode.text;
+    SharedPreferences.setMockInitialValues({'chat_composer_mode_v1': 'aac'});
     final controller = TextEditingController();
     addTearDown(controller.dispose);
     String? sent;
@@ -29,7 +27,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.edit_outlined), findsNothing);
+    expect(find.text('صور (AAC)'), findsNothing);
+    expect(find.text('لغة الإشارة'), findsNothing);
     expect(find.text('اكتب رسالتك...'), findsOneWidget);
     final send = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.mark_email_read_outlined));
     expect(send.onPressed, isNull);
