@@ -64,9 +64,8 @@ void main() {
 
   test('rejects duplicate lesson ids', () {
     final json = sample();
-    (json['templates'] as List).add(Map<String, dynamic>.from(
-      (json['templates'] as List).first as Map<String, dynamic>,
-    ));
+    final templates = json['templates'] as List;
+    templates.add(templates.first);
     expect(() => InteractiveLessonCatalog.fromJson(json), throwsFormatException);
   });
 }
