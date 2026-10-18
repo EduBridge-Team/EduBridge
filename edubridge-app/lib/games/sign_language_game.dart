@@ -34,6 +34,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   late (String, String, String) _target;
   bool _transitioning = false;
   int _score = 0;
+  bool _resultRecorded = false;
   int _round = 0;
   static const _totalRounds = 8;
 
@@ -71,7 +72,8 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
 
       if (_round >= _totalRounds) {
         await Future.delayed(const Duration(milliseconds: 300));
-        _onWin();
+        if (!mounted) return;
+        await _onWin();
       } else {
         await Future.delayed(const Duration(milliseconds: 500));
         _newRound();
@@ -83,10 +85,13 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
   }
 
   Future<void> _onWin() async {
+    if (!mounted || _resultRecorded) return;
+    _resultRecorded = true;
     final scorePercent = ((_score / _totalRounds) * 100).round();
     await GameProgressService.instance.record(scorePercent);
 
     // 🎉 احتفال بصري ضخم (بدون صوت — للأصمّ)
+    if (!mounted) return;
     await VisualCelebration.show(
       context,
       message: 'أحسنت يا ${widget.childName}! $scorePercent%',
@@ -137,6 +142,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                 onPressed: () {
                   Navigator.pop(context);
                   setState(() {
+                    _resultRecorded = false;
                     _score = 0;
                     _round = 0;
                   });

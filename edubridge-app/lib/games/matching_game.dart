@@ -23,7 +23,7 @@ class MatchingGame extends StatefulWidget {
   State<MatchingGame> createState() => _MatchingGameState();
 }
 
-class _MatchingGameState extends State<MatchingGame> {
+class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver {
   static const _defaultItems = [
     '🐶', '🐱', '🐼', '🦊', '🐸', '🦁', '🐧', '🐨',
     '🍎', '🍌', '🍓', '🍇', '🚗', '🚲', '✈️', '🚂',
@@ -38,20 +38,44 @@ class _MatchingGameState extends State<MatchingGame> {
   int get _mistakes => _board.mistakes;
   Timer? _timer;
   int _secondsElapsed = 0;
+  bool _resultRecorded = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _startGame();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_board.finished) {
+      _startTimer();
+    } else {
+      _timer?.cancel();
+    }
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    if (WidgetsBinding.instance.lifecycleState != null &&
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      return;
+    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => _secondsElapsed++);
+    });
+  }
+
   void _startGame() {
+    _resultRecorded = false;
     _generation++;
     final items = (widget.items ?? _defaultItems).toSet().toList();
     final selected = GameContent.instance.take('matching', items, 4, (item) => item);
@@ -62,10 +86,7 @@ class _MatchingGameState extends State<MatchingGame> {
 
     EncouragementService.instance.praiseGame();
 
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _secondsElapsed++);
-    });
+    _startTimer();
 
     setState(() {});
   }
@@ -102,9 +123,13 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   Future<void> _onWin() async {
+    if (!mounted || _resultRecorded) return;
+    _resultRecorded = true;
+    final generation = _generation;
     final score = _board.scorePercent;
     await GameProgressService.instance.record(score);
 
+    if (!mounted || generation != _generation) return;
     await VisualCelebration.show(
       context,
       message: 'أكملت اللعبة! $score%',
@@ -113,7 +138,7 @@ class _MatchingGameState extends State<MatchingGame> {
       duration: const Duration(seconds: 3),
     );
 
-    if (mounted) {
+    if (mounted && generation == _generation) {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
