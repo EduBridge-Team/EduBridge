@@ -12,6 +12,7 @@ import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../widgets/dashboard_header_actions.dart';
+import '../widgets/dashboard_profile_identity.dart';
 import 'add_child/add_child_screen.dart';
 import 'child_homework/child_homework_screen.dart';
 import 'child_lessons/child_lessons_screen.dart';
@@ -230,20 +231,7 @@ class _ParentScreenState extends State<ParentScreen> {
           padding: const EdgeInsetsDirectional.only(start: 18),
           child: Align(
             alignment: AlignmentDirectional.centerStart,
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-              child: Image.asset(
-                'assets/brand_logo.png',
-                width: 136,
-                height: 38,
-                fit: BoxFit.contain,
-                alignment: AlignmentDirectional.centerEnd,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
+            child: const DashboardProfileIdentity(roleLabel: 'ولي الأمر'),
           ),
         ),
       actions: [

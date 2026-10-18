@@ -85,19 +85,7 @@ Widget _buildTeacherHeader({
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(
-                        'assets/brand_logo.png',
-                        width: 136,
-                        height: 38,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    ),
+                    const DashboardProfileIdentity(roleLabel: 'المعلم'),
                   ],
                 ),
               ],

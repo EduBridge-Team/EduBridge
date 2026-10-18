@@ -8,6 +8,7 @@ import '../../theme.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/dashboard_header_actions.dart';
+import '../../widgets/dashboard_profile_identity.dart';
 import '../../widgets/legal_links_button.dart';
 import '../edit_child_screen.dart';
 import '../login_screen.dart';
@@ -106,19 +107,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     actions: menuActions,
                   ),
                   const Spacer(),
-                  ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                      Colors.white,
-                      BlendMode.srcIn,
-                    ),
-                    child: Image.asset(
-                      'assets/brand_logo.png',
-                      width: 124,
-                      height: 34,
-                      fit: BoxFit.contain,
-                      filterQuality: FilterQuality.high,
-                    ),
-                  ),
+                  const DashboardProfileIdentity(roleLabel: 'الأدمن'),
                 ],
               ),
               const SizedBox(height: 18),
