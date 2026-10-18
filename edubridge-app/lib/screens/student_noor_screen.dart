@@ -138,71 +138,10 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
   }
 
   PreferredSizeWidget _s13AppBar() {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 116,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
       centerTitle: false,
       titleSpacing: 4,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-      ),
-      flexibleSpace: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(24),
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Color(0xFF1EB8C8), Color(0xFF1765C2)],
-                ),
-              ),
-            ),
-            Positioned(
-              left: -54,
-              bottom: -83,
-              child: IgnorePointer(
-                child: Container(
-                  width: 152,
-                  height: 152,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.23),
-                      width: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -12,
-              bottom: -84,
-              child: IgnorePointer(
-                child: Container(
-                  width: 113,
-                  height: 113,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      width: 10,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
       leading: IconButton(
         tooltip: 'رجوع',
         onPressed: () => Navigator.maybePop(context),

@@ -221,7 +221,6 @@ class _ParentScreenState extends State<ParentScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return BrandAppBar(
-      toolbarHeight: 72,
       titleSpacing: 0,
       centerTitle: false,
       leadingWidth: 72,

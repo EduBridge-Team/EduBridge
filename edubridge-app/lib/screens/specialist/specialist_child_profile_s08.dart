@@ -61,60 +61,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
       if (student.disability.isNotEmpty) student.disability,
     ].join(' • ');
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        flexibleSpace: ClipRRect(
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [Color(0xFF20B6C6), Color(0xFF1769C2)],
-                  ),
-                ),
-              ),
-              // Subtle partial arcs anchored to the bottom-left, as in S08.
-              Positioned(
-                left: -57,
-                bottom: -87,
-                child: Container(
-                  width: 144,
-                  height: 144,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .17),
-                      width: 7,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: -12,
-                bottom: -84,
-                child: Container(
-                  width: 112,
-                  height: 112,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .10),
-                      width: 7,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      appBar: BrandAppBar(
         toolbarHeight: 96,
         centerTitle: false,
         leading: IconButton(
@@ -133,9 +80,6 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           style: const TextStyle(
             color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800,
           ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: RefreshIndicator(

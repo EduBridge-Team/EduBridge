@@ -1,31 +1,11 @@
 // lib/screens/child_accessibility/child_accessibility_shared_widgets.dart
 part of 'child_accessibility_settings_screen.dart';
 
-PreferredSizeWidget buildChildSettingsAppBar(BuildContext context, String childName) => AppBar(
+PreferredSizeWidget buildChildSettingsAppBar(BuildContext context, String childName) => BrandAppBar(
   toolbarHeight: 96,
-  backgroundColor: Colors.transparent,
-  foregroundColor: Colors.white,
-  surfaceTintColor: Colors.transparent,
-  elevation: 0,
-  scrolledUnderElevation: 0,
   centerTitle: false,
   titleSpacing: 0,
   leadingWidth: 52,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
-  flexibleSpace: ClipRRect(
-    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-    child: Stack(fit: StackFit.expand, children: [
-      const DecoratedBox(decoration: BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight,
-          colors: [Color(0xFF1DB5C6), Color(0xFF1458B6)]))),
-      for (final arc in [(148.0, -55.0, -85.0), (126.0, 5.0, -83.0)])
-        Positioned(left: arc.$2, bottom: arc.$3, child: Container(
-          width: arc.$1, height: arc.$1,
-          decoration: BoxDecoration(shape: BoxShape.circle,
-            border: Border.all(color: const Color(0x6689DCE8), width: 12)))),
-    ]),
-  ),
   leading: IconButton(
     tooltip: 'رجوع', onPressed: () => Navigator.maybePop(context),
     icon: const CircleAvatar(radius: 19, backgroundColor: Color(0x33FFFFFF),

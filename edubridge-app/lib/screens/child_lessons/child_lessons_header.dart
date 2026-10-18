@@ -9,10 +9,6 @@ PreferredSizeWidget buildChildLessonsAppBar({
   required VoidCallback onOpenProgress,
 }) {
   return BrandAppBar(
-    toolbarHeight: 72,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
-    ),
     title: Text(
       'دروس $childName',
       style: const TextStyle(

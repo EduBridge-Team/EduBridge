@@ -56,7 +56,8 @@ class _LogicPuzzleGameState extends State<LogicPuzzleGame> {
   Widget build(BuildContext context) {
     final item = _session.current;
     return Scaffold(
-      appBar: BrandAppBar(title: const Text('لغز المنطق 🧠')),
+      appBar: BrandAppBar(title: const Text('لغز المنطق 🧠'),
+      ),
       body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

@@ -55,7 +55,8 @@ class _AdvancedReadingGameState extends State<AdvancedReadingGame> {
   Widget build(BuildContext context) {
     final item = _session.current;
     return Scaffold(
-      appBar: BrandAppBar(title: const Text('القراءة المتقدمة 📚')),
+      appBar: BrandAppBar(title: const Text('القراءة المتقدمة 📚'),
+      ),
       body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

@@ -76,74 +76,13 @@ class CaseDiscussionHeaderS20 extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 92,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
       // Keep the RTL title beside the back arrow, rather than centered
       // with a large gap on narrow mobile screens.
       centerTitle: false,
       titleSpacing: 0,
       leadingWidth: 52,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
-      ),
-      flexibleSpace: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(25),
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Color(0xFF23B7C6), Color(0xFF1968C7)],
-                ),
-              ),
-            ),
-            Positioned(
-              left: -55,
-              bottom: -84,
-              child: IgnorePointer(
-                child: Container(
-                  width: 165,
-                  height: 165,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.22),
-                      width: 13,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -16,
-              bottom: -90,
-              child: IgnorePointer(
-                child: Container(
-                  width: 128,
-                  height: 128,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.17),
-                      width: 11,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
       leading: IconButton(
         tooltip: 'رجوع',
         onPressed: onBack,

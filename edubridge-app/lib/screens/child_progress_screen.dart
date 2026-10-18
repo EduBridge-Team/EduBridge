@@ -95,37 +95,11 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       screenTitle: 'تقدّم ${widget.childName}',
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F9FC),
-        appBar: AppBar(
+        appBar: BrandAppBar(
           toolbarHeight: 116,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          surfaceTintColor: Colors.transparent,
           centerTitle: false,
           titleSpacing: 0,
           leadingWidth: 48,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24))),
-          flexibleSpace: ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-            child: Stack(fit: StackFit.expand, children: [
-              const DecoratedBox(decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft, end: Alignment.centerRight,
-                  colors: [Color(0xFF20B6C6), Color(0xFF1769C2)]))),
-              // S09 decorative illustration: overlapping translucent arcs.
-              const Positioned(
-                left: 0,
-                bottom: 0,
-                width: 177,
-                height: 116,
-                child: IgnorePointer(
-                  child: CustomPaint(painter: _S09HeaderArtwork()),
-                ),
-              ),
-            ]),
-          ),
           leading: IconButton(
             tooltip: 'رجوع',
             onPressed: () => Navigator.maybePop(context),
@@ -147,30 +121,4 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
       ),
     );
   }
-}
-
-/// Decorative, resolution-independent artwork matching the two overlapping
-/// turquoise arcs in the supplied S09 Figma header.
-class _S09HeaderArtwork extends CustomPainter {
-  const _S09HeaderArtwork();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final largeArc = Paint()
-      ..color = const Color(0x6689DCE8)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 14
-      ..isAntiAlias = true;
-    final crossingArc = Paint()
-      ..color = const Color(0x619AE4ED)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 16
-      ..isAntiAlias = true;
-
-    canvas.drawCircle(const Offset(-12, 147), 106, largeArc);
-    canvas.drawCircle(const Offset(67, 152), 84, crossingArc);
-  }
-
-  @override
-  bool shouldRepaint(covariant _S09HeaderArtwork oldDelegate) => false;
 }

@@ -12,50 +12,9 @@ Widget _buildHeader({
   final textTheme = Theme.of(context).textTheme;
   final actions = menuActions;
 
-  return Container(
-    width: double.infinity,
-    decoration: const BoxDecoration(
-      gradient: AppColors.appBarGradient,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-    ),
-    child: Stack(
-      children: [
-        Positioned(
-          left: -56,
-          bottom: -92,
-          child: IgnorePointer(
-            child: Container(
-              width: 190,
-              height: 170,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: .19),
-                  width: 17,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: -30,
-          bottom: -94,
-          child: IgnorePointer(
-            child: Container(
-              width: 138,
-              height: 142,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: .17),
-                  width: 14,
-                ),
-              ),
-            ),
-          ),
-        ),
-        SafeArea(
-          top: false,
+  return BrandHeaderSurface(
+    child: SafeArea(
+          top: true,
           bottom: false,
           child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -154,8 +113,6 @@ Widget _buildHeader({
             ),
           ),
         ),
-      ],
-    ),
   );
 }
 

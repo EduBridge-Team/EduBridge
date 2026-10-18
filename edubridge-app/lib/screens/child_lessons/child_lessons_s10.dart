@@ -9,50 +9,10 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
   static const _s10Green = Color(0xFF46B453);
 
   PreferredSizeWidget _s10AppBar() {
-    return AppBar(
+    return BrandAppBar(
       toolbarHeight: 116,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
       centerTitle: true,
       titleSpacing: 4,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(23)),
-      ),
-      flexibleSpace: ClipRRect(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(23)),
-        child: Stack(fit: StackFit.expand, children: [
-          const DecoratedBox(decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xFF20B6C6), Color(0xFF1769C2)],
-            ),
-          )),
-          Positioned(
-            left: -54, bottom: -84,
-            child: IgnorePointer(child: Container(
-              width: 155, height: 155,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: .19), width: 12),
-              ),
-            )),
-          ),
-          Positioned(
-            left: -15, bottom: -90,
-            child: IgnorePointer(child: Container(
-              width: 114, height: 114,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: .17), width: 10),
-              ),
-            )),
-          ),
-        ]),
-      ),
       leading: IconButton(
         tooltip: 'رجوع',
         onPressed: () => Navigator.maybePop(context),

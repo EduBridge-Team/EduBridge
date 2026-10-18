@@ -85,9 +85,6 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
             fontSize: 19,
           ),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        ),
       ),
       body: RefreshIndicator(
         onRefresh: _load,
