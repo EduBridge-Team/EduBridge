@@ -130,15 +130,6 @@ extension _CreateSpecialistProgressScreenStateView
     );
   }
 
-  Widget _headerArc(double diameter, Color color) => Container(
-    width: diameter,
-    height: diameter,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(color: color, width: 12),
-    ),
-  );
-
   Widget _surface(JisrColors c, Widget child) => Container(
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(

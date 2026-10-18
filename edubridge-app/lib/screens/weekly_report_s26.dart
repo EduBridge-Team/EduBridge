@@ -41,12 +41,6 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
     );
   }
 
-  Widget _reportArc(double size, Color color) => Container(
-    width: size, height: size,
-    decoration: BoxDecoration(shape: BoxShape.circle,
-      border: Border.all(color: color, width: 12)),
-  );
-
   Widget _reportWeek(JisrColors c, {bool onBlue = false}) {
     final r = _report;
     final weeks = {
