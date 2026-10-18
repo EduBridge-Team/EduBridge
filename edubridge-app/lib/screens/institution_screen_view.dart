@@ -20,9 +20,10 @@ extension _InstitutionScreenView on InstitutionScreen {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        DashboardHeaderActions(
+                    Row(children: [
+Expanded(child: DashboardProfileIdentity(roleLabel: 'المؤسسة', subtitle: 'أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.')),
+const SizedBox(width: 8),
+DashboardHeaderActions(
                           actions: [
                             DashboardMenuAction(
                               id: 'theme',
@@ -46,47 +47,7 @@ extension _InstitutionScreenView on InstitutionScreen {
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        const DashboardProfileIdentity(roleLabel: 'المؤسسة'),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    FutureBuilder<String?>(
-                      future: ApiService.getName(),
-                      builder: (context, snapshot) => Row(
-                        children: [
-                          const ProfileAvatarButton(
-                            size: 54,
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppColors.brandTealDeep,
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'مرحباً، ${snapshot.data?.isNotEmpty == true ? snapshot.data : 'فريق المؤسسة'}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  'أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.',
-                                  style: TextStyle(
-                                    fontSize: 13.5,
-                                    color: Colors.white.withValues(alpha: .86),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+]),
                   ],
                 ),
               ),

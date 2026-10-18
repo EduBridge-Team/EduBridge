@@ -9,7 +9,6 @@ import '../../widgets/legal_links_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/dashboard_header_actions.dart';
 import '../../widgets/dashboard_profile_identity.dart';
-import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../admin/admin_screen.dart';
 import '../chats_screen.dart';
 import '../lessons_screen.dart';

@@ -8,7 +8,6 @@ import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
-import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
 import '../widgets/dashboard_header_actions.dart';
@@ -199,7 +198,6 @@ class _ParentScreenState extends State<ParentScreen> {
         appBar: _buildAppBar(),
         body: Column(
           children: [
-            _buildHeader(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshData,
@@ -231,7 +229,7 @@ class _ParentScreenState extends State<ParentScreen> {
           padding: const EdgeInsetsDirectional.only(start: 18),
           child: Align(
             alignment: AlignmentDirectional.centerStart,
-            child: const DashboardProfileIdentity(roleLabel: 'ولي الأمر'),
+            child: const DashboardProfileIdentity(roleLabel: 'ولي الأمر', subtitle: 'تابع أطفالك وتقدّمهم التعليمي من مكان واحد'),
           ),
         ),
       actions: [

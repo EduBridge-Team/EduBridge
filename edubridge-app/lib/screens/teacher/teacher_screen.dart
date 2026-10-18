@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../model/homework_model.dart';
 import '../../services/approval_service.dart';
-import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/legal_links_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/dashboard_header_actions.dart';

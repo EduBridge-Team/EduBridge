@@ -2,51 +2,6 @@
 part of 'parent_screen.dart';
 
 extension _ParentScreenWidgetsExtension on _ParentScreenState {
-  Widget _buildHeader() {
-    final colors = JisrColors.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
-      child: FutureBuilder<String?>(
-        future: ApiService.getName(),
-        builder: (context, snap) {
-          final name = snap.data ?? 'ولي الأمر';
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const ProfileAvatarButton(
-                size: 52,
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.brandTealDeep,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AdaptiveText(
-                      'مرحباً، $name',
-                      type: AdaptiveTextType.title,
-                      color: colors.heading,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    const SizedBox(height: 4),
-                    AdaptiveText(
-                      'تابع أطفالك وتقدّمهم التعليمي من مكان واحد',
-                      type: AdaptiveTextType.caption,
-                      color: colors.muted,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildBody() {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());

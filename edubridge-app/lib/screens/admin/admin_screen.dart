@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
-import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
 import '../../widgets/dashboard_header_actions.dart';
 import '../../widgets/dashboard_profile_identity.dart';
@@ -62,7 +61,6 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Widget _buildAdminHeader() {
-    final textTheme = Theme.of(context).textTheme;
     final menuActions = <DashboardMenuAction>[
       DashboardMenuAction(
         id: 'search_identity',
@@ -101,60 +99,13 @@ class _AdminScreenState extends State<AdminScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  DashboardHeaderActions(
+              Row(children: [
+Expanded(child: DashboardProfileIdentity(roleLabel: 'الأدمن', subtitle: _adminSubtitle())),
+const SizedBox(width: 8),
+DashboardHeaderActions(
                     actions: menuActions,
                   ),
-                  const Spacer(),
-                  const DashboardProfileIdentity(roleLabel: 'الأدمن'),
-                ],
-              ),
-              const SizedBox(height: 18),
-              FutureBuilder<String?>(
-                future: ApiService.getName(),
-                builder: (context, snap) {
-                  final fallbackName =
-                      (widget.admin['name'] ?? widget.admin['full_name'] ?? 'الإدارة')
-                          .toString();
-                  final name = (snap.data ?? fallbackName).trim();
-                  return Row(
-                    children: [
-                      const ProfileAvatarButton(
-                        size: 54,
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.brandTealDeep,
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'مرحباً، ${name.isEmpty ? 'الإدارة' : name}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _adminSubtitle(),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.bodySmall?.copyWith(
-                                height: 1.35,
-                                color: Colors.white.withValues(alpha: 0.86),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+]),
             ],
           ),
         ),
