@@ -104,8 +104,8 @@ extension _SymbolsGameStateView on _SymbolsGameState {
 
                 // عرض الهدف بشكل كبير
                 Container(
-                  width: large ? 200 : 170,
-                  height: large ? 200 : 170,
+                  width: (large ? 200.0 : 170.0) * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.4),
+                  height: (large ? 200.0 : 170.0) * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
@@ -161,7 +161,8 @@ extension _SymbolsGameStateView on _SymbolsGameState {
               child: GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
+                crossAxisCount: MediaQuery.sizeOf(context).width < 400 &&
+                    MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 14,
                 childAspectRatio: 1.1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),

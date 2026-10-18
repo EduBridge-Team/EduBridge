@@ -240,7 +240,8 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
               child: GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
+                crossAxisCount: MediaQuery.sizeOf(context).width < 400 &&
+                    MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
                 childAspectRatio: 1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,

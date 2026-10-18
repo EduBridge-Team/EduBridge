@@ -85,7 +85,8 @@ void main() {
       await tester.pump(const Duration(seconds: 10));
       await _tapVisible(tester, _answer(tester, game));
       expect(_round(game, 8), findsOneWidget);
-      expect(find.text(game == 'sign' ? 'النقاط: 8 ⭐' : '8'), findsOneWidget);
+      expect(find.text(game == 'sign' ? 'النقاط: 8 ⭐' : '8'),
+        findsNWidgets(game == 'sign' ? 1 : 2));
       expect(find.text('متابعة'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
     });
