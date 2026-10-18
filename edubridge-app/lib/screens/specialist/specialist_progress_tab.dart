@@ -6,6 +6,14 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
     final displayChildren = _filteredChildren;
 
     if (displayChildren.isEmpty) {
+      if (!_showOnlyMine) {
+        return SliverPadding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+          sliver: SliverToBoxAdapter(
+            child: SpecialistWaitingEmptyS29(isSearch: _searchQuery.isNotEmpty),
+          ),
+        );
+      }
       return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 54),
         sliver: SliverList.list(children: [
