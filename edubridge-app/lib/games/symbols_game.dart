@@ -38,6 +38,7 @@ class _SymbolsGameState extends State<SymbolsGame> {
   int _round = 0;
   bool _transitioning = false;
   int _score = 0;
+  bool _resultRecorded = false;
   int _streak = 0;
 
   AccessibilityProfile get _profile =>
@@ -56,11 +57,12 @@ class _SymbolsGameState extends State<SymbolsGame> {
   // ═══════════════════════════════════════════════════════
   void _newRound() {
     if (!mounted) return;
-    _transitioning = false;
     if (_round >= _totalRounds) {
       _onWin();
       return;
     }
+
+    _transitioning = false;
 
     // خلط الرموز واختيار 4
     _target = GameContent.instance.pick('symbols', _symbols, (item) => item.$2);
@@ -116,8 +118,11 @@ class _SymbolsGameState extends State<SymbolsGame> {
   // ═══════════════════════════════════════════════════════
   //  عند الفوز
   // ═══════════════════════════════════════════════════════
-  void _onWin() async {
+  Future<void> _onWin() async {
+    if (!mounted || _resultRecorded) return;
+    _resultRecorded = true;
     await GameProgressService.instance.record(((_score / _totalRounds) * 100).round());
+    if (!mounted) return;
     await VisualCelebration.show(
       context,
       message: 'أحسنت! $_score/$_totalRounds',

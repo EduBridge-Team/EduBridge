@@ -30,6 +30,8 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   int? _firstIndex;
   bool _locked = false;
   int _matches = 0;
+  bool _resultRecorded = false;
+  int _generation = 0;
 
   @override
   void initState() {
@@ -42,6 +44,8 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   }
 
   void _startGame() {
+    _generation++;
+    _resultRecorded = false;
     final selected = GameContent.instance.take('audio_matching', _pairs, 4, (item) => item.$2);
     final all = [...selected, ...selected]..shuffle();
     _cards = all
@@ -59,19 +63,25 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   }
 
   Future<void> _selectCard(int index) async {
-    if (_locked || _cards[index].matched) return;
+    if (_locked || _resultRecorded || _cards[index].matched) return;
+    final generation = _generation;
+    _locked = true;
 
     await AdaptiveHelper.speak(_cards[index].name);
-    if (!mounted) return;
+    if (!mounted || generation != _generation) return;
     AdaptiveHelper.hapticFeedback();
 
     if (_firstIndex == null) {
+      _locked = false;
       _firstIndex = index;
       setState(() {});
       return;
     }
 
-    if (_firstIndex == index) return;
+    if (_firstIndex == index) {
+      _locked = false;
+      return;
+    }
 
     _locked = true;
     final first = _cards[_firstIndex!];
@@ -90,14 +100,15 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
 
       if (_matches == 4) {
         await Future.delayed(const Duration(milliseconds: 500));
-        _onWin();
+        if (!mounted || generation != _generation) return;
+        await _onWin();
       }
     } else {
       AdaptiveHelper.hapticFeedback();
       await _announce('حاول مرة أخرى');
     }
 
-    if (!mounted) return;
+    if (!mounted || generation != _generation) return;
     setState(() {
       _firstIndex = null;
       _locked = false;
@@ -105,10 +116,13 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   }
 
   Future<void> _onWin() async {
+    if (!mounted || _resultRecorded) return;
+    _resultRecorded = true;
     AdaptiveHelper.hapticFeedback();
 
     await GameProgressService.instance.record(100);
 
+    if (!mounted) return;
     await _announce(
       'مذهل يا ${widget.childName}! أكملت اللعبة بنجاح',
     );
