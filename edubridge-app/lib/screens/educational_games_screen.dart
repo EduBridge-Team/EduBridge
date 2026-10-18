@@ -1,28 +1,11 @@
 // lib/screens/educational_games_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
-import '../games/advanced_reading_game.dart';
-import '../games/audio_matching_game.dart';
-import '../games/colors_game.dart';
-import '../games/logic_puzzle_game.dart';
-import '../games/matching_game.dart';
-import '../games/math_race_game.dart';
-import '../games/numbers_game.dart';
-import '../games/quick_action_game.dart';
-import '../games/rhythm_game.dart';
-import '../games/sequence_game.dart';
-import '../games/shapes_game.dart';
-import '../games/sign_language_game.dart';
-import '../games/story_sequencer_game.dart';
-import '../games/symbols_game.dart';
-import '../games/visual_words_game.dart';
-import '../games/word_builder_game.dart';
 import '../services/accessibility_service.dart';
+import '../features/games/application/game_launcher.dart';
+import '../features/games/domain/game_player.dart';
 import '../widgets/accessibility/child_adaptation_scope.dart';
 import '../services/encouragement_service.dart';
-import '../services/game_progress_service.dart';
-import '../games/game_content.dart';
-import '../services/api_service.dart';
 import '../theme.dart';
 import '../utils/game_catalog.dart';
 
@@ -123,7 +106,7 @@ class EducationalGamesScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _GameCard(
                     game: g,
-                    onTap: () => _openGame(context, g, profile),
+                    onTap: () => _openGame(context, g),
                   ),
                 )),
 
@@ -147,79 +130,11 @@ class EducationalGamesScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _openGame(
-      BuildContext context, GameInfo game, AccessibilityProfile profile) async {
-    Widget? screen;
-
-    switch (game.id) {
-      case 'animal_sounds':
-      case 'audio_matching':
-        screen = AudioMatchingGame(childName: childName);
-        break;
-      case 'matching':
-        screen = MatchingGame(childName: childName);
-        break;
-      case 'shapes':
-        screen = ShapesGame(childName: childName, age: age);
-        break;
-      case 'colors_simple':
-        screen = ColorsGame(childName: childName);
-        break;
-      case 'colors_symbols':
-        screen = SymbolsGame(childName: childName);
-        break;
-      case 'numbers_count':
-        screen = NumbersGame(childName: childName);
-        break;
-      case 'numbers_math':
-        screen = MathRaceGame(childName: childName, age: age);
-        break;
-      case 'visual_words':
-        screen = VisualWordsGame(childName: childName);
-        break;
-      case 'word_builder':
-        screen = WordBuilderGame(childName: childName, age: age);
-        break;
-      case 'sequence_simple':
-        screen = SequenceGame(childName: childName);
-        break;
-      case 'story_sequencer':
-        screen = StorySequencerGame(childName: childName, age: age);
-        break;
-      case 'logic_puzzle':
-        screen = LogicPuzzleGame(childName: childName);
-        break;
-      case 'sign_language':
-        screen = SignLanguageGame(childName: childName);
-        break;
-      case 'quick_action':
-        screen = QuickActionGame(childName: childName);
-        break;
-      case 'rhythm':
-        screen = RhythmGame(childName: childName);
-        break;
-      case 'advanced_reading':
-        screen = AdvancedReadingGame(childName: childName);
-        break;
-    }
-
-    if (screen != null) {
-      GameProgressService.instance.begin(
-        childId: childId,
-        gameKey: game.id,
-      );
-      await GameContent.instance.prepare(
-        ownerId: await ApiService.getUserId(), childId: childId);
-      await GameProgressService.instance.flushPending();
-      if (!context.mounted) return;
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => childId == null ? screen!
-            : ChildAdaptationScope(childId: childId!, builder: (_) => screen!)),
-      );
-      GameProgressService.instance.end();
-    }
+  Future<void> _openGame(BuildContext context, GameInfo game) async {
+    await GameLauncher.instance.open(context, gameId: game.id,
+      player: GamePlayer(childId: childId, name: childName, age: age));
   }
+
 }
 
 class _GameCard extends StatelessWidget {
