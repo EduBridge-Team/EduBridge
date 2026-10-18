@@ -56,7 +56,8 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       context,
       MaterialPageRoute(
         builder: (_) => WeeklyReportScreen(
-          childId: child['id'],
+          specialistS26: true,
+                        childId: child['id'],
           childName: (child['name'] ?? '').toString(),
         ),
       ),
