@@ -28,9 +28,7 @@ Widget _buildTeacherHeader({
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                DashboardMenu(
-                  iconSize: 26,
-                  iconColor: Colors.white,
+                DashboardHeaderActions(
                   actions: [
                     DashboardMenuAction(
                       id: 'notifications',

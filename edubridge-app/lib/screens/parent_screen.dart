@@ -11,6 +11,7 @@ import '../widgets/accessibility/adaptive_wrapper.dart';
 import '../widgets/accessibility/profile_avatar_button.dart';
 import '../widgets/legal_links_button.dart';
 import '../widgets/dashboard_menu.dart';
+import '../widgets/dashboard_header_actions.dart';
 import 'add_child/add_child_screen.dart';
 import 'child_homework/child_homework_screen.dart';
 import 'child_lessons/child_lessons_screen.dart';
@@ -223,14 +224,31 @@ class _ParentScreenState extends State<ParentScreen> {
     return BrandAppBar(
       titleSpacing: 0,
       centerTitle: false,
-      leadingWidth: 72,
-      leading: Padding(
-        padding: const EdgeInsetsDirectional.only(start: 8),
-        child: Center(
-          child: DashboardMenu(
+      leading: const SizedBox.shrink(),
+      leadingWidth: 0,
+      title: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 18),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+              child: Image.asset(
+                'assets/brand_logo.png',
+                width: 136,
+                height: 38,
+                fit: BoxFit.contain,
+                alignment: AlignmentDirectional.centerEnd,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
+        ),
+      actions: [
+        DashboardHeaderActions(
             showMicrophoneToggle: true,
-            iconSize: 26,
-            iconColor: Colors.white,
             actions: [
               DashboardMenuAction(
                 id: 'notifications',
@@ -286,29 +304,7 @@ class _ParentScreenState extends State<ParentScreen> {
               ),
             ],
           ),
-        ),
-      ),
-      title: const SizedBox.shrink(),
-      actions: [
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: 16),
-          child: Center(
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-              child: Image.asset(
-                'assets/brand_logo.png',
-                width: 136,
-                height: 38,
-                fit: BoxFit.contain,
-                alignment: AlignmentDirectional.centerEnd,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          ),
-        ),
+        const SizedBox(width: 18),
       ],
     );
   }

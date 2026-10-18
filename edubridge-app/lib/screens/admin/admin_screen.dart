@@ -7,6 +7,7 @@ import '../../services/api_service.dart';
 import '../../theme.dart';
 import '../../widgets/accessibility/profile_avatar_button.dart';
 import '../../widgets/dashboard_menu.dart';
+import '../../widgets/dashboard_header_actions.dart';
 import '../../widgets/legal_links_button.dart';
 import '../edit_child_screen.dart';
 import '../login_screen.dart';
@@ -101,10 +102,8 @@ class _AdminScreenState extends State<AdminScreen> {
             children: [
               Row(
                 children: [
-                  DashboardMenu(
+                  DashboardHeaderActions(
                     actions: menuActions,
-                    iconSize: 26,
-                    iconColor: Colors.white,
                   ),
                   const Spacer(),
                   ColorFiltered(

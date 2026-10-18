@@ -3,13 +3,10 @@ part of 'parent_screen.dart';
 
 extension _ParentScreenWidgetsExtension on _ParentScreenState {
   Widget _buildHeader() {
+    final colors = JisrColors.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
-      decoration: const BoxDecoration(
-        gradient: AppColors.appBarGradient,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(34)),
-      ),
       child: FutureBuilder<String?>(
         future: ApiService.getName(),
         builder: (context, snap) {
@@ -31,14 +28,14 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     AdaptiveText(
                       'مرحباً، $name',
                       type: AdaptiveTextType.title,
-                      color: Colors.white,
+                      color: colors.heading,
                       fontWeight: FontWeight.w800,
                     ),
                     const SizedBox(height: 4),
                     AdaptiveText(
                       'تابع أطفالك وتقدّمهم التعليمي من مكان واحد',
                       type: AdaptiveTextType.caption,
-                      color: Colors.white.withValues(alpha: 0.88),
+                      color: colors.muted,
                     ),
                   ],
                 ),

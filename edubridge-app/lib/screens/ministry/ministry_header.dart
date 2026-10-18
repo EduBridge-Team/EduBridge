@@ -32,9 +32,7 @@ class _MinistryHeader extends StatelessWidget {
   Widget _buildTopRow(BuildContext context) {
     return Row(
       children: [
-        DashboardMenu(
-          iconSize: 26,
-          iconColor: Colors.white,
+        DashboardHeaderActions(
           actions: [
             DashboardMenuAction(
               id: 'support',
