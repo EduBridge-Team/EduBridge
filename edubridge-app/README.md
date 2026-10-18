@@ -206,7 +206,7 @@ Runtime coverage of the following profile flags:
 | `simpleIconsGrid` | Specialist-controlled simplified game/lesson catalogs for child routes; retains all eligible items and lesson actions. Specialist S10 stays unchanged. |
 | `colorFiltersEnabled` | Specialist-controlled 60% saturation filter for child lesson/game/homework catalogs. Lesson content, media and actual games retain original colours; not a colour-vision correction. |
 | `eyeTrackingOptimized` | Stored profile and overview only; no eye-tracking integration. |
-| `largeMouseCursor` | Stored profile and overview only; no custom cursor implementation. |
+| `largeMouseCursor` | Child-scoped large arrow/text cursor; one paint-only app layer replaces native basic/click/text cursors, retaining special native cursors. Touch is unchanged. Real desktop/browser QA remains required. |
 
 The remaining unsupported fields preserve saved-profile compatibility and must
 not be advertised as completed assistive integrations. Catalog adaptations do

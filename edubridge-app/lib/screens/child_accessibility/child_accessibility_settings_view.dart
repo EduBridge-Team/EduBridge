@@ -62,8 +62,9 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                         (v) => _set(p.copyWith(keyboardShortcuts: v)), enabled: _canChange),
                     sw('واجهة نصية فقط', 'عرض وصف صور الدرس بدل تحميل الصور',
                         p.textOnlyMode, (v) => _set(p.copyWith(textOnlyMode: v)), enabled: _canChange),
-                    sw('مؤشر فأرة كبير', 'يمكن ضبط حجم المؤشر من إعدادات الجهاز',
-                        false, (_) {}, enabled: false),
+                    sw('مؤشر فأرة كبير', 'تكبير سهم الفأرة ومؤشر الكتابة داخل تجربة الطفل؛ لا يغيّر اللمس',
+                        p.largeMouseCursor,
+                        (v) => _set(p.copyWith(largeMouseCursor: v)), enabled: _canChange),
                   ],
                 ),
 

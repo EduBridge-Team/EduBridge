@@ -18,6 +18,7 @@ import 'theme.dart';
 import 'utils/home_router.dart';
 import 'utils/navigation.dart';
 import 'widgets/accessibility/adaptive_scaffold.dart';
+import 'widgets/accessibility/child_mouse_cursor.dart';
 import 'widgets/accessibility/voice_mic_overlay.dart';
 import 'widgets/notification_snackbar.dart';
 import 'widgets/pet_assistant_overlay.dart';
@@ -149,7 +150,7 @@ class EduBridgeApp extends StatelessWidget {
           themeMode: mode,
           builder: (context, child) => Directionality(
             textDirection: TextDirection.rtl,
-            child: NotificationSnackbarHost(
+            child: ChildMouseCursor(child: NotificationSnackbarHost(
               child: PetAssistantOverlay(
                 child: VoiceMicOverlay(
                   child: SafeArea(
@@ -161,7 +162,7 @@ class EduBridgeApp extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            )),
           ),
           home: initialHome,
           routes: {
