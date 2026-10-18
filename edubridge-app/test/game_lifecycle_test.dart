@@ -59,7 +59,9 @@ void main() {
     for (var round = 0; round < 8; round++) {
       final target = tester.widget<Text>(find.byWidgetPredicate((widget) =>
         widget is Text && widget.style?.fontSize == 90));
-      await tester.tap(find.text(answers[target.data]!));
+      final answer = find.text(answers[target.data]!);
+      await tester.ensureVisible(answer);
+      await tester.tap(answer);
       if (round < 7) await tester.pump(const Duration(milliseconds: 500));
     }
     await tester.pumpWidget(const SizedBox.shrink());
