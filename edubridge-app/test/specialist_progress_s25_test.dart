@@ -26,9 +26,14 @@ void main() {
   Future<void> open(WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(360, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(const MaterialApp(
-      home: CreateSpecialistProgressScreen(childId: 7, childName: 'محمود'),
-    ));
+    // TokenStore serializes secure-storage work across calls. Run platform
+    // futures outside the per-test fake clock before settling UI animations.
+    await tester.runAsync(() async {
+      await tester.pumpWidget(const MaterialApp(
+        home: CreateSpecialistProgressScreen(childId: 7, childName: 'محمود'),
+      ));
+      await Future<void>.delayed(Duration.zero);
+    });
     await tester.pumpAndSettle();
   }
 
@@ -58,7 +63,10 @@ void main() {
     await http.runWithClient(() async {
       await open(tester);
       await tester.ensureVisible(find.text('حفظ التقييم'));
-      await tester.tap(find.text('حفظ التقييم'));
+      await tester.runAsync(() async {
+        await tester.tap(find.text('حفظ التقييم'));
+        await Future<void>.delayed(Duration.zero);
+      });
       await tester.pumpAndSettle();
       expect(saved, isEmpty);
       expect(find.text('مطلوب'), findsOneWidget);
@@ -73,7 +81,10 @@ void main() {
       await tester.tap(find.byTooltip('ممتازة'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('حفظ التقييم'));
-      await tester.tap(find.text('حفظ التقييم'));
+      await tester.runAsync(() async {
+        await tester.tap(find.text('حفظ التقييم'));
+        await Future<void>.delayed(Duration.zero);
+      });
       await tester.pumpAndSettle();
       expect(saved.single, {
         'child_id': 7, 'specialist_notes': 'تحسن ملحوظ',
@@ -81,7 +92,10 @@ void main() {
         'plan_evaluation': 'زيادة التدريب', 'mood_rating': 5,
       });
       expect(find.text('فشل الحفظ'), findsOneWidget);
-      await tester.tap(find.text('حفظ التقييم'));
+      await tester.runAsync(() async {
+        await tester.tap(find.text('حفظ التقييم'));
+        await Future<void>.delayed(Duration.zero);
+      });
       await tester.pumpAndSettle();
       expect(saved, hasLength(2));
       expect(saved.last, saved.first);
