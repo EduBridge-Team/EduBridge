@@ -48,7 +48,7 @@ void main() {
   });
 
   testWidgets('leaving sign game before delayed completion cannot record for the next child', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(800, 1000));
+    await tester.binding.setSurfaceSize(const Size(800, 1400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     const answers = {
       'أ': 'إصبع الإبهام مرفوع', 'ب': 'كف مفتوح مستقيم',
@@ -61,7 +61,11 @@ void main() {
         widget is Text && widget.style?.fontSize == 90));
       final answer = find.text(answers[target.data]!);
       await tester.ensureVisible(answer);
+      await tester.pump();
+      expect(answer.hitTestable(), findsOneWidget);
       await tester.tap(answer);
+      await tester.pump();
+      expect(find.text('النقاط: ${round + 1} ⭐'), findsOneWidget);
       if (round < 7) await tester.pump(const Duration(milliseconds: 500));
     }
     await tester.pumpWidget(const SizedBox.shrink());
