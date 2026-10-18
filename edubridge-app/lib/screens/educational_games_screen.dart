@@ -1,5 +1,6 @@
 // lib/screens/educational_games_screen.dart
 import 'package:flutter/material.dart';
+import '../widgets/accessibility/child_color_filter.dart';
 import '../app_icons.dart';
 import '../services/accessibility_service.dart';
 import '../features/games/application/game_launcher.dart';
@@ -48,7 +49,7 @@ class EducationalGamesScreen extends StatelessWidget {
 
     final games = gamesFor(profile.type, group);
 
-    return Scaffold(
+    return ChildColorFilter(child: Scaffold(
       appBar: JisrAppBar(title: 'الألعاب التعليمية'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -140,7 +141,7 @@ class EducationalGamesScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   IconData _gameIcon(String id) => switch (id) {
