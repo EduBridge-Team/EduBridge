@@ -12,7 +12,6 @@ import 'specialist/specialist_screen.dart';
 import 'case_discussion/case_discussion_screen.dart';
 import 'chats_screen.dart';
 import 'learning_support_requests/learning_support_requests_screen.dart';
-part 'notifications_screen_view.dart';
 part 'notifications_s24.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -319,8 +318,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (snapshot.connectionState != ConnectionState.done) {
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       }
-      return snapshot.data == 'specialist'
-          ? _buildSpecialistS24(context) : buildView(context);
+      return _buildSpecialistS24(context, role: snapshot.data);
     },
   );
 
@@ -405,7 +403,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
             itemCount: list.length + 1,
             itemBuilder: (context, i) {
-              if (i < list.length) return _buildTile(list[i] as Map, c);
+              if (i < list.length) return _s24Tile(list[i] as Map, c);
               return ValueListenableBuilder<bool>(
                 valueListenable: NotificationListenerService.instance.hasMore,
                 builder: (context, more, _) => more ? TextButton(
@@ -417,116 +415,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildTile(Map n, JisrColors c) {
-    final isRead = n['is_read'] ?? false;
-    final date = n['created_at'] != null
-        ? DateTime.tryParse(n['created_at'].toString())
-        : null;
-    final title = (n['title'] ?? '').toString();
-    final body = (n['body'] ?? n['message'] ?? '').toString();
-    final type = n['type']?.toString() ?? '';
-    final icon = _getIcon(type);
-    final iconColor = _getIconColor(type);
-
-    return Speakable(
-      text: '$title: $body',
-      onTap: () => _markRead(n['id']),
-      child: Material(
-        color: isRead ? c.card : c.tintTeal.withValues(alpha: .35),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
-          side: BorderSide(
-            color: isRead ? c.line : AppColors.brandBlue.withValues(alpha: .35),
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => _openNotificationDetails(n, c),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.13),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(icon, size: 23, color: iconColor),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              title,
-                              style: TextStyle(
-                                fontWeight: isRead
-                                    ? FontWeight.w700
-                                    : FontWeight.w800,
-                                color: c.heading,
-                              ),
-                            ),
-                          ),
-                          if (!isRead)
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.brandBlue,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                        ],
-                      ),
-                      if (body.isNotEmpty) ...[
-                        const SizedBox(height: 5),
-                        Text(
-                          body,
-                          style: TextStyle(
-                            fontSize: 13.5,
-                            height: 1.45,
-                            color: c.body,
-                          ),
-                        ),
-                      ],
-                      if (date != null) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(Icons.schedule_rounded, size: 14, color: c.muted),
-                            const SizedBox(width: 4),
-                            Text(
-                              _formatDate(date),
-                              style: TextStyle(fontSize: 11, color: c.muted),
-                            ),
-                            const Spacer(),
-                            Icon(
-                              Icons.chevron_left_rounded,
-                              size: 18,
-                              color: c.muted,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -5,7 +5,6 @@ import '../app_icons.dart';
 import '../features/communication/data/conversation_repository.dart';
 import '../features/communication/presentation/communication_list_controller.dart';
 import '../theme.dart';
-import '../services/api_service.dart';
 import 'chat/chat_composer.dart';
 
 part 'chat_screen_view.dart';
@@ -31,7 +30,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _repository = ConversationRepository();
-  late final Future<String?> _viewerRole = ApiService.getRole();
   late final CommunicationListController _listController;
   List get _messages => _listController.items;
   bool get _loading => _listController.loading;
@@ -101,18 +99,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<String?>(
-    future: _viewerRole,
-    builder: (context, snapshot) {
-      if (snapshot.connectionState != ConnectionState.done) {
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
-      }
-      if (snapshot.data == 'specialist') return _buildS16(context);
-      return buildView(context);
-    },
-  );
+  Widget build(BuildContext context) => _buildS16(context);
+
 }
 
 class _ChatBubble extends StatelessWidget {

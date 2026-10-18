@@ -74,6 +74,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           _s04Section('معلومات الحساب', c),
           const SizedBox(height: 12),
           _s04InfoCard(c, name, email, phone, role, isVerified),
+          if (['teacher', 'specialist'].contains(role)) ...[
           const SizedBox(height: 24),
           _s04Section('الملف المهني', c),
           const SizedBox(height: 12),
@@ -99,6 +100,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               ),
             ),
           ),
+          ],
           const SizedBox(height: 22),
           _s04Section('الأمان', c),
           const SizedBox(height: 12),

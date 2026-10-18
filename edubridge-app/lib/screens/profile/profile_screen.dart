@@ -311,26 +311,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       bottomNavigationBar: specialist
           ? _s04BottomNavigation(c)
           : const TeacherNavigationBar(),
-      appBar: specialist ? null : JisrAppBar(title: 'الملف الشخصي'),
-      body: specialist
-          ? SafeArea(
-              bottom: false,
-              child: Column(
-                children: [
-                  _s04Header(c),
-                  Expanded(
-                    child: _error != null
-                        ? _buildError()
-                        : _s04Content(c),
-                  ),
-                ],
-              ),
-            )
-          : _loading
+      body: SafeArea(
+        bottom: false,
+        child: Column(children: [
+          _s04Header(c),
+          Expanded(child: _loading
               ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? _buildError()
-                  : _buildContent(c),
+              : _error != null ? _buildError() : _s04Content(c)),
+        ]),
+      ),
     );
   }
 

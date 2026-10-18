@@ -13,7 +13,7 @@ void main() {
             builder: (context) => TextButton(
               onPressed: () => showDialog<void>(
                 context: context,
-                builder: (_) => SpecialistContactPickerDialog(
+                builder: (_) => ContactPickerDialog(
                   users: const [
                     {'id': 7, 'name': 'مستخدم أول', 'role': 'parent'},
                     {'id': 8, 'name': 'مستخدم ثان', 'role': 'teacher'},
@@ -55,7 +55,7 @@ void main() {
             builder: (context) => TextButton(
               onPressed: () => showDialog<void>(
                 context: context,
-                builder: (_) => SpecialistContactPickerDialog(
+                builder: (_) => ContactPickerDialog(
                   users: const [],
                   onSelect: (_) {},
                 ),

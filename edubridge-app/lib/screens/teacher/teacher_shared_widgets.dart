@@ -58,12 +58,7 @@ Widget _buildTeacherHeader({
                       id: 'support',
                       label: 'الدعم الفني',
                       icon: AppIcons.support,
-                      onSelected: () => showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (_) => const SupportSheet(),
-                      ),
+                      onSelected: () => SupportSheet.show(context),
                     ),
                     DashboardMenuAction(
                       id: 'chats',

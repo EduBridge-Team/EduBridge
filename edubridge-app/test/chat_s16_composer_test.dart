@@ -18,7 +18,6 @@ void main() {
           child: Scaffold(
             body: ChatComposer(
               controller: controller,
-              figmaS16: true,
               onSend: (text) => sent = text,
             ),
           ),

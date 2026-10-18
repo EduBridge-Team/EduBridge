@@ -1,16 +1,16 @@
 // lib/screens/support_sheet.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import '../utils/safe_bottom.dart';
 
 class SupportSheet extends StatefulWidget {
-  const SupportSheet({super.key, this.figmaS14 = false});
+  const SupportSheet({super.key});
 
-  /// Figma S14 modal treatment used by the specialist dashboard only.
-  final bool figmaS14;
+  static Future<void> show(BuildContext context) => showDialog<void>(
+    context: context,
+    builder: (_) => const SupportSheet(),
+  );
 
   @override
   State<SupportSheet> createState() => _SupportSheetState();
@@ -256,115 +256,8 @@ class _SupportSheetState extends State<SupportSheet> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (widget.figmaS14) return _buildS14Dialog(context);
-    final c = JisrColors.of(context);
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: safeModalBottom(context)),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 60, 12, 12),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: c.line),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .10),
-              blurRadius: 28,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: c.line,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(AppIcons.support, color: c.infoText, size: 26),
-                const SizedBox(width: 8),
-                Text(
-                  'تواصل مع الدعم الفني',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: c.heading,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _subjectController,
-              decoration: const InputDecoration(
-                labelText: 'الموضوع',
-                hintText: 'مثال: مشكلة في تسجيل الدخول',
-                prefixIcon: Icon(AppIcons.edit),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _messageController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'الرسالة',
-                hintText: 'اكتب تفاصيل المشكلة هنا...',
-                alignLabelWithHint: true,
-              ),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(AppIcons.error, color: c.dangerText, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _error!,
-                        style: TextStyle(color: c.dangerText),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: _sending ? null : _sendTicket,
-              icon: _sending
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2),
-                    )
-                  : const Icon(AppIcons.send),
-              label: Text(_sending ? 'جارٍ الإرسال...' : 'إرسال'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Directionality(
+    textDirection: TextDirection.rtl,
+    child: _buildS14Dialog(context),
+  );
 }
