@@ -30,14 +30,14 @@ extension _DisabilityPickerS30 on _DisabilityPickerSheetState {
             child: TextField(
               key: const ValueKey('s30-search'),
               controller: _searchCtrl,
-              onChanged: (value) => setState(() => _search = value),
+              onChanged: (value) => _refreshState(() => _search = value),
               decoration: InputDecoration(
                 hintText: 'ابحث عن إعاقة...',
                 hintStyle: TextStyle(color: c.muted, fontSize: 13),
                 prefixIcon: Icon(Icons.search_rounded, color: c.muted, size: 22),
                 suffixIcon: _search.isEmpty ? null : IconButton(
                   tooltip: 'مسح البحث', icon: const Icon(Icons.close_rounded, size: 19),
-                  onPressed: () => setState(() { _searchCtrl.clear(); _search = ''; })),
+                  onPressed: () => _refreshState(() { _searchCtrl.clear(); _search = ''; })),
                 filled: true, fillColor: c.card,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(15),

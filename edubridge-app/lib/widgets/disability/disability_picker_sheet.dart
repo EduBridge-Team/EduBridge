@@ -23,6 +23,8 @@ class DisabilityPickerSheet extends StatefulWidget {
 }
 
 class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _searchCtrl = TextEditingController();
   String _search = '';
 
