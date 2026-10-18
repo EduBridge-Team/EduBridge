@@ -66,7 +66,7 @@ void main() {
             onMarkDone: (_) async { completed++; },
           )],
         )),
-      )))));
+      ))));
       await tester.tap(find.text('درس الطفل'));
       await tester.pump();
       expect(opened, 1);
