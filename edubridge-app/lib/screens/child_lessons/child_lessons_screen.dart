@@ -16,6 +16,7 @@ import '../../widgets/accessibility/adaptive_button.dart';
 import '../../widgets/accessibility/alt_text_image.dart';
 import '../../widgets/accessibility/step_by_step_lesson.dart';
 import '../../widgets/accessibility/adaptive_card.dart';
+import '../../widgets/accessibility/simple_icons_grid.dart';
 import '../../widgets/accessibility/adaptive_text.dart';
 import '../../widgets/accessibility/adaptive_video_player.dart';
 import '../../widgets/accessibility/adaptive_wrapper.dart';
@@ -118,7 +119,11 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
           ),
           body: RefreshIndicator(
             onRefresh: _refreshLessons,
-            child: widget.specialistS10 ? _s10Body() : _buildBody(),
+            child: ValueListenableBuilder<AccessibilityProfile>(
+              valueListenable: AccessibilityService.instance.profile,
+              builder: (context, _, _) =>
+                  widget.specialistS10 ? _s10Body() : _buildBody(),
+            ),
           ),
         ),
       ),
@@ -163,22 +168,24 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         return order != 0 ? order : '${a['title']}'.compareTo('${b['title']}');
       });
     }
+    if (AccessibilityService.instance.profile.value.simpleIconsGrid &&
+        displayedLessons.isNotEmpty) {
+      return ListView(
+        padding: EdgeInsets.all(AdaptiveHelper.spacing),
+        children: [
+          _catalogHeader(),
+          SimpleIconsGrid(children: [for (final lesson in displayedLessons)
+            _catalogCard(lesson),
+          ]),
+        ],
+      );
+    }
     return ListView.builder(
       padding: EdgeInsets.all(AdaptiveHelper.spacing),
       itemCount: _lessons.length + (_lessons.isEmpty ? 2 : 1),
       itemBuilder: (context, i) {
         if (i == 0) {
-          return buildAdaptiveHeader(
-            context: context,
-            childId: widget.childId,
-            childName: widget.childName,
-            parentPhone: widget.parentPhone,
-            specialistPhone: _specialistPhone,
-            canMarkDone: _canMarkDone,
-            timerCycle: _timerCycle,
-            onOpenGames: _openGames,
-            onTimerFinished: () => setState(() => _timerCycle++),
-          );
+          return _catalogHeader();
         }
 
         if (_lessons.isEmpty) {
@@ -202,18 +209,23 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
         }
 
         final lessonIndex = i - 1;
-        return buildLessonCard(
-          context: context,
-          lesson: displayedLessons[lessonIndex],
-          doneLessonIds: _doneLessonIds,
-          speakingLessonId: _speakingLessonId,
-          savingLessonId: _savingLessonId,
-          canMarkDone: _canMarkDone,
-          onOpenLesson: _openLesson,
-          onToggleSpeak: _toggleSpeak,
-          onMarkDone: _markLessonDone,
-        );
+        return _catalogCard(displayedLessons[lessonIndex]);
       },
     );
   }
+
+  Widget _catalogHeader() => buildAdaptiveHeader(
+    context: context, childId: widget.childId, childName: widget.childName,
+    parentPhone: widget.parentPhone, specialistPhone: _specialistPhone,
+    canMarkDone: _canMarkDone, timerCycle: _timerCycle, onOpenGames: _openGames,
+    onTimerFinished: () => setState(() => _timerCycle++),
+  );
+
+  Widget _catalogCard(Map lesson) => buildLessonCard(
+    context: context, lesson: lesson, doneLessonIds: _doneLessonIds,
+    speakingLessonId: _speakingLessonId, savingLessonId: _savingLessonId,
+    canMarkDone: _canMarkDone, onOpenLesson: _openLesson,
+    onToggleSpeak: _toggleSpeak, onMarkDone: _markLessonDone,
+  );
+
 }
