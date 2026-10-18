@@ -204,10 +204,10 @@ Runtime coverage of the following profile flags:
 | Stored flag | Current coverage |
 | --- | --- |
 | `simpleIconsGrid` | Specialist-controlled simplified game/lesson catalogs for child routes; retains all eligible items and lesson actions. Specialist S10 stays unchanged. |
-| `colorFiltersEnabled` | Stored profile and overview only; no colour-filter layer. |
+| `colorFiltersEnabled` | Specialist-controlled 60% saturation filter for child lesson/game/homework catalogs. Lesson content, media and actual games retain original colours; not a colour-vision correction. |
 | `eyeTrackingOptimized` | Stored profile and overview only; no eye-tracking integration. |
 | `largeMouseCursor` | Stored profile and overview only; no custom cursor implementation. |
 
-Keeping these fields preserves saved-profile compatibility. They must not be
-advertised as completed assistive integrations. This cleanup does not add device
-capabilities, alter saved child settings, or change the backend contract.
+The remaining unsupported fields preserve saved-profile compatibility and must
+not be advertised as completed assistive integrations. Catalog adaptations do
+not add device capabilities or change the backend contract.

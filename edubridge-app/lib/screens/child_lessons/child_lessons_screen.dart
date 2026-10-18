@@ -2,6 +2,7 @@ import '../../widgets/accessibility/child_adaptation_scope.dart';
 // lib/screens/child_lessons/child_lessons_screen.dart
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/accessibility/child_color_filter.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/api_service.dart';
@@ -107,7 +108,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
       childId: widget.childId,
       builder: (context) => AdaptiveWrapper(
         screenTitle: 'دروس ${widget.childName}',
-        child: Scaffold(
+        child: ChildColorFilter(enabled: !widget.specialistS10, child: Scaffold(
           backgroundColor: widget.specialistS10
               ? const Color(0xFFF5F9FC) : null,
           appBar: widget.specialistS10 ? _s10AppBar() : buildChildLessonsAppBar(
@@ -125,7 +126,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                   widget.specialistS10 ? _s10Body() : _buildBody(),
             ),
           ),
-        ),
+        )),
       ),
     );
   }

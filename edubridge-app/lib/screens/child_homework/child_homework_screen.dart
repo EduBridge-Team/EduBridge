@@ -1,6 +1,7 @@
 // lib/screens/child_homework/child_homework_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../widgets/accessibility/child_color_filter.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
@@ -88,13 +89,13 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     childId: widget.childId, builder: _buildScreen);
 
   Widget _buildScreen(BuildContext context) {
-    return Scaffold(
+    return ChildColorFilter(child: Scaffold(
       appBar: JisrAppBar(title: 'واجبات ${widget.childName}'),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _buildBody(),
       ),
-    );
+    ));
   }
 
   Widget _buildBody() {
