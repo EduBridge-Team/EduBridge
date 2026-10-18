@@ -1,9 +1,9 @@
-// S19 specialist-only contact picker: centered modal matching the Figma image.
+// Shared S19 contact picker: centered modal matching the Figma image.
 // Names come from /conversation-users, never from the design's sample content.
 part of 'chats_screen.dart';
 
-class SpecialistContactPickerDialog extends StatelessWidget {
-  const SpecialistContactPickerDialog({
+class ContactPickerDialog extends StatelessWidget {
+  const ContactPickerDialog({
     super.key,
     required this.users,
     required this.onSelect,

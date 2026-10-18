@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
-import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/assistant_service.dart';
 import '../theme.dart';
@@ -806,28 +805,6 @@ class _TypingBubble extends StatelessWidget {
         child: const SizedBox(
           width: 38,
           child: LinearProgressIndicator(minHeight: 3),
-        ),
-      ),
-    );
-  }
-}
-
-class _SuggestionChip extends StatelessWidget {
-  final String text;
-  final ValueChanged<String> onTap;
-
-  const _SuggestionChip({required this.text, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(end: 8),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 44),
-        child: ActionChip(
-        avatar: const Icon(AppIcons.info, size: 18),
-        label: Text(text),
-        onPressed: () => onTap(text),
         ),
       ),
     );

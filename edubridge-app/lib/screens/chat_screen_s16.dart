@@ -194,7 +194,6 @@ extension _S16SpecialistChat on _ChatScreenState {
           ChatComposer(
             controller: _messageCtrl,
             isSending: _sending,
-            figmaS16: true,
             onSend: (text) => _sendMessage(contentOverride: text),
           ),
         ]),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('S14 specialist support opens as a dialog and validates inputs',
+  testWidgets('Shared support opens as a dialog and validates inputs',
       (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -13,10 +13,7 @@ void main() {
             body: Builder(
               builder: (context) => Center(
                 child: TextButton(
-                  onPressed: () => showDialog<void>(
-                    context: context,
-                    builder: (_) => const SupportSheet(figmaS14: true),
-                  ),
+                  onPressed: () => SupportSheet.show(context),
                   child: const Text('فتح الدعم'),
                 ),
               ),

@@ -70,15 +70,15 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
               Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
+                  Speakable(text: title, child: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 17,
-                      fontWeight: FontWeight.w800, color: _ink)),
+                      fontWeight: FontWeight.w800, color: _ink))),
                   if (message.isNotEmpty) ...[
                     const SizedBox(height: 7),
-                    Text(message, maxLines: 2,
+                    Speakable(text: message, child: Text(message, maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 12.5,
-                        color: Color(0xFF52708D))),
+                        color: Color(0xFF52708D)))),
                   ],
                   if (date != null) ...[
                     const SizedBox(height: 8),
@@ -206,13 +206,14 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
     );
   }
 
-  Widget _buildSpecialistS24(BuildContext context) {
+  Widget _buildSpecialistS24(BuildContext context, {required String? role}) {
     final colors = JisrColors.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8FC),
       appBar: _s24AppBar(),
       body: _s24Body(colors),
-      bottomNavigationBar: _s24Navigation(colors),
+      bottomNavigationBar: role == 'specialist' ? _s24Navigation(colors)
+          : role == 'teacher' ? const TeacherNavigationBar() : null,
     );
   }
 }

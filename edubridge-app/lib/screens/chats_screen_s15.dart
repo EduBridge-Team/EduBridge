@@ -273,12 +273,13 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
     );
   }
 
-  Widget _buildS15(BuildContext context) {
+  Widget _buildS15(BuildContext context, {required String? role}) {
     final c = JisrColors.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9FC),
       appBar: _s15AppBar(),
-      bottomNavigationBar: _s15Navigation(c),
+      bottomNavigationBar: role == 'specialist' ? _s15Navigation(c)
+          : role == 'teacher' ? const TeacherNavigationBar() : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _startNewConversation,

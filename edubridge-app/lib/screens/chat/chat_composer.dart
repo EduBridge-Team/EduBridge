@@ -12,15 +12,11 @@ class ChatComposer extends StatefulWidget {
   /// حالة الإرسال (يُعطّل الحقل والزر أثناءها)
   final bool isSending;
 
-  /// Figma S16 visual treatment for specialist chat only.
-  final bool figmaS16;
-
   const ChatComposer({
     super.key,
     required this.controller,
     required this.onSend,
     this.isSending = false,
-    this.figmaS16 = false,
   });
 
   @override
@@ -45,7 +41,7 @@ class _ChatComposerState extends State<ChatComposer> {
         color: c.card,
         border: Border(top: BorderSide(color: c.line)),
       ),
-      child: widget.figmaS16 ? _buildS16InputRow() : _buildInputRow(),
+      child: _buildS16InputRow(),
     );
   }
 
@@ -133,95 +129,4 @@ class _ChatComposerState extends State<ChatComposer> {
   // ═══════════════════════════════════════════════════════════
   //  صف الإدخال: الحقل والإرسال
   // ═══════════════════════════════════════════════════════════
-  Widget _buildInputRow() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        12,
-        8,
-        12,
-        8 + MediaQuery.of(context).padding.bottom,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // ─── حقل الإدخال ───
-          Expanded(child: _buildTextField()),
-
-          const SizedBox(width: 8),
-
-          // ─── زر الإرسال ───
-          _buildSendButton(),
-        ],
-      ),
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  //  حقل الإدخال
-  // ═══════════════════════════════════════════════════════════
-  Widget _buildTextField() {
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: widget.controller,
-      builder: (context, value, _) {
-        final hasText = value.text.trim().isNotEmpty;
-
-        return TextField(
-          controller: widget.controller,
-          enabled: !widget.isSending,
-          minLines: 1,
-          maxLines: 4,
-          maxLength: 2000,
-          textInputAction: TextInputAction.newline,
-          decoration: InputDecoration(
-            hintText: 'اكتب رسالتك...',
-            counterText: '',
-            suffixIcon: hasText && !widget.isSending
-                ? IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
-                    tooltip: 'مسح',
-                    onPressed: () => widget.controller.clear(),
-                  )
-                : null,
-          ),
-        );
-      },
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  //  زر الإرسال — يظهر دائرة أو مؤشر تحميل
-  // ═══════════════════════════════════════════════════════════
-  Widget _buildSendButton() {
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: widget.controller,
-      builder: (context, value, _) {
-        final canSend = value.text.trim().isNotEmpty && !widget.isSending;
-
-        return IconButton.filled(
-          tooltip: 'إرسال',
-          onPressed: canSend ? _handleSend : null,
-          icon: widget.isSending
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Icon(Icons.send_rounded),
-          style: IconButton.styleFrom(
-            minimumSize: const Size(52, 52),
-            backgroundColor:
-                canSend ? AppColors.orange : AppColors.muted.withValues(alpha: 0.4),
-            foregroundColor: Colors.white,
-            disabledBackgroundColor:
-                AppColors.muted.withValues(alpha: 0.25),
-            disabledForegroundColor: Colors.white70,
-          ),
-        );
-      },
-    );
-  }
-
 }
