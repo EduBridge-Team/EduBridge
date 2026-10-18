@@ -269,7 +269,6 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
       p.vibrationAlerts,
       p.voiceToText,
       p.wordPrediction,
-      p.pictureCommunication,
       p.voiceControl,
       p.keyboardShortcuts,
     ];
@@ -323,9 +322,6 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
     }
     if (p.audioDescriptions) {
       addBadge(AppIcons.speech, 'وصف فيديو', AppColors.brandBlue);
-    }
-    if (p.pictureCommunication) {
-      addBadge(AppIcons.aac, 'تواصل بالصور', AppColors.purple);
     }
     if (p.voiceToText) addBadge(AppIcons.mic, 'كتابة صوتية', AppColors.purple);
     if (p.slowSpeech) addBadge(Icons.speed, 'نطق بطيء', AppColors.orangeDeep);

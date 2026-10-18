@@ -1,19 +1,6 @@
-// lib/screens/chat/chat_composer.dart
-// ═══════════════════════════════════════════════════════════
-//  Composer موحّد للمحادثة — يجمع:
-//    • زر تبديل الوضع (نص / صور / إشارة)
-//    • حقل الكتابة
-//    • شريط AAC أو شريط الإشارة (حسب الوضع)
-//    • زر الإرسال
-// ═══════════════════════════════════════════════════════════
+// Text message composer shared by chat screens.
 import 'package:flutter/material.dart';
 import '../../theme.dart';
-import '../../services/accessibility_service.dart';
-import '../../services/tts_service.dart';
-import 'aac_quick_bar.dart';
-import 'composer_mode.dart';
-import 'composer_switcher.dart';
-import 'sign_quick_bar.dart';
 
 class ChatComposer extends StatefulWidget {
   /// نفس الـ controller المستخدم في الشاشة الأم
@@ -41,13 +28,6 @@ class ChatComposer extends StatefulWidget {
 }
 
 class _ChatComposerState extends State<ChatComposer> {
-  @override
-  void initState() {
-    super.initState();
-    // نضمن تحميل الوضع المحفوظ مرة واحدة
-    ComposerModeService.instance.ensureLoaded();
-  }
-
   // ═══════════════════════════════════════════════════════════
   //  إرسال — يجمع النص ويتحقق منه
   // ═══════════════════════════════════════════════════════════
@@ -57,72 +37,19 @@ class _ChatComposerState extends State<ChatComposer> {
     widget.onSend(text);
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  إضافة رمز/بطاقة إلى حقل الإدخال
-  // ═══════════════════════════════════════════════════════════
-  void _appendToInput(String insertion) {
-    if (widget.isSending) return;
-    final current = widget.controller.text.trimRight();
-    final next = current.isEmpty ? insertion : '$current $insertion';
-
-    widget.controller.text = next;
-    widget.controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: next.length),
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  //  إعادة الوضع إلى "نص" (عند إغلاق شريط)
-  // ═══════════════════════════════════════════════════════════
-  Future<void> _closeAssistBar() async {
-    await ComposerModeService.instance.setMode(ComposerMode.text);
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  //  Build
-  // ═══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-
-    return ValueListenableBuilder<ComposerMode>(
-      valueListenable: ComposerModeService.instance.mode,
-      builder: (context, mode, _) {
-        return Container(
-          decoration: BoxDecoration(
-            color: c.card,
-            border: Border(top: BorderSide(color: c.line)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ─── شريط المساعدة (AAC أو إشارة) ───
-              if (mode == ComposerMode.aac)
-                AacQuickBar(
-                  enabled: !widget.isSending,
-                  onItemSelected: (_, spoken) => _appendToInput(spoken),
-                  onClose: _closeAssistBar,
-                )
-              else if (mode == ComposerMode.sign)
-                SignQuickBar(
-                  onSignSelected: (insertion, _) => _appendToInput(insertion),
-                  onClose: _closeAssistBar,
-                ),
-
-              if (mode == ComposerMode.aac) _buildMessagePreview(),
-
-              // ─── حقل الإدخال + الأزرار ───
-              widget.figmaS16
-                  ? _buildS16InputRow(mode)
-                  : _buildInputRow(c, mode),
-            ],
-          ),
-        );
-      },
+    return Container(
+      decoration: BoxDecoration(
+        color: c.card,
+        border: Border(top: BorderSide(color: c.line)),
+      ),
+      child: widget.figmaS16 ? _buildS16InputRow() : _buildInputRow(),
     );
   }
 
-  Widget _buildS16InputRow(ComposerMode mode) {
+  Widget _buildS16InputRow() {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Padding(
@@ -133,8 +60,6 @@ class _ChatComposerState extends State<ChatComposer> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const ComposerSwitcherButton(figmaS16: true),
-            const SizedBox(width: 10),
             Expanded(
               child: TextField(
                 controller: widget.controller,
@@ -146,7 +71,7 @@ class _ChatComposerState extends State<ChatComposer> {
                 maxLength: 2000,
                 textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
-                  hintText: _hintFor(mode),
+                  hintText: 'اكتب رسالتك...',
                   hintStyle: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF718DA4),
@@ -205,41 +130,10 @@ class _ChatComposerState extends State<ChatComposer> {
     );
   }
 
-  Widget _buildMessagePreview() {
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: widget.controller,
-      builder: (context, value, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        child: SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(48, 52),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            ),
-            icon: const Icon(Icons.volume_up_outlined),
-            label: const Text('أسمع رسالتي', textAlign: TextAlign.center),
-            onPressed: widget.isSending || value.text.trim().isEmpty
-                ? null
-                : () {
-                    final text = widget.controller.text.trim();
-                    final profile = AccessibilityService.instance.applicationProfile.value;
-                    if (profile.slowSpeech) {
-                      TtsService.instance.speakLineSlow(text);
-                    } else {
-                      TtsService.instance.speakLine(text);
-                    }
-                  },
-          ),
-        ),
-      ),
-    );
-  }
-
   // ═══════════════════════════════════════════════════════════
-  //  صف الإدخال: زر الوضع + الحقل + الإرسال
+  //  صف الإدخال: الحقل والإرسال
   // ═══════════════════════════════════════════════════════════
-  Widget _buildInputRow(JisrColors c, ComposerMode mode) {
+  Widget _buildInputRow() {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         12,
@@ -250,12 +144,8 @@ class _ChatComposerState extends State<ChatComposer> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // ─── زر تبديل الوضع ───
-          const ComposerSwitcherButton(),
-          const SizedBox(width: 8),
-
           // ─── حقل الإدخال ───
-          Expanded(child: _buildTextField(mode)),
+          Expanded(child: _buildTextField()),
 
           const SizedBox(width: 8),
 
@@ -267,9 +157,9 @@ class _ChatComposerState extends State<ChatComposer> {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  حقل الإدخال — يتغير الـ hint حسب الوضع
+  //  حقل الإدخال
   // ═══════════════════════════════════════════════════════════
-  Widget _buildTextField(ComposerMode mode) {
+  Widget _buildTextField() {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: widget.controller,
       builder: (context, value, _) {
@@ -283,7 +173,7 @@ class _ChatComposerState extends State<ChatComposer> {
           maxLength: 2000,
           textInputAction: TextInputAction.newline,
           decoration: InputDecoration(
-            hintText: _hintFor(mode),
+            hintText: 'اكتب رسالتك...',
             counterText: '',
             suffixIcon: hasText && !widget.isSending
                 ? IconButton(
@@ -334,17 +224,4 @@ class _ChatComposerState extends State<ChatComposer> {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  Hint لكل وضع
-  // ═══════════════════════════════════════════════════════════
-  String _hintFor(ComposerMode mode) {
-    switch (mode) {
-      case ComposerMode.text:
-        return 'اكتب رسالتك...';
-      case ComposerMode.aac:
-        return 'اختر صوراً أو اكتب...';
-      case ComposerMode.sign:
-        return 'اختر رموز الإشارة أو اكتب...';
-    }
-  }
 }
