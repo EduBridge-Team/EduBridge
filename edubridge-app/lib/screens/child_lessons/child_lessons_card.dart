@@ -36,6 +36,41 @@ Widget buildLessonCard({
     content = SimpleLanguageService.instance.readingLines(content, wordsPerLine: 8);
   }
 
+  final listenButton = AdaptiveButton(
+    label: isSpeaking ? 'إيقاف' : 'استمع',
+    enableReadOnTap: false,
+    icon: isSpeaking ? Icons.stop_circle : AppIcons.volumeUp,
+    style: AdaptiveButtonStyle.outlined,
+    onPressed: () => onToggleSpeak(lesson),
+  );
+  final doneButton = canMarkDone && !isSample ? AdaptiveButton(
+    label: isSaving ? 'جارٍ الحفظ' : isDone ? 'مكتمل' : 'تمّ',
+    isBusy: isSaving,
+    icon: isDone ? AppIcons.check : Icons.check,
+    backgroundColor: isDone ? AppColors.brandTealDeep : AppColors.brandTeal,
+    onPressed: isDone || isSaving ? null : () => onMarkDone(lessonId),
+  ) : null;
+  final actions = profile.simpleIconsGrid
+      ? Column(children: [listenButton,
+          if (doneButton != null) ...[const SizedBox(height: 8), doneButton]])
+      : Row(children: [Expanded(child: listenButton),
+          if (doneButton != null) ...[
+            SizedBox(width: AdaptiveHelper.spacing / 2),
+            Expanded(child: doneButton),
+          ]]);
+
+  if (profile.simpleIconsGrid && !isSample) {
+    return SimpleIconTile(
+      key: ValueKey('simple_lesson_$lessonId'),
+      title: title,
+      icon: isDone ? AppIcons.check : hasVideo ? AppIcons.play
+          : hasAudio ? AppIcons.volumeUp : AppIcons.lesson,
+      status: isSample ? null : isDone ? 'تم إكمال هذا الدرس' : 'جاهز للبدء',
+      onTap: isSample ? null : () => onOpenLesson(lesson),
+      actions: actions,
+    );
+  }
+
   return Padding(
     padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
     child: AdaptiveCard(
@@ -141,36 +176,7 @@ Widget buildLessonCard({
                 ],
               ),
             ),
-          Row(
-            children: [
-              Expanded(
-                child: AdaptiveButton(
-                  label: isSpeaking ? 'إيقاف' : 'استمع',
-                  enableReadOnTap: false,
-                  icon: isSpeaking ? Icons.stop_circle : AppIcons.volumeUp,
-                  style: AdaptiveButtonStyle.outlined,
-                  fullWidth: true,
-                  onPressed: () => onToggleSpeak(lesson),
-                ),
-              ),
-              if (canMarkDone && !isSample) ...[
-                SizedBox(width: AdaptiveHelper.spacing / 2),
-                Expanded(
-                  child: AdaptiveButton(
-                    label: isSaving ? 'جارٍ الحفظ' : isDone ? 'مكتمل' : 'تمّ',
-                    isBusy: isSaving,
-                    icon: isDone ? AppIcons.check : Icons.check,
-                    backgroundColor:
-                        isDone ? AppColors.brandTealDeep : AppColors.brandTeal,
-                    fullWidth: true,
-                    onPressed: (isDone || isSaving)
-                        ? null
-                        : () => onMarkDone(lessonId),
-                  ),
-                ),
-              ],
-            ],
-          ),
+          actions,
         ],
       ),
     ),

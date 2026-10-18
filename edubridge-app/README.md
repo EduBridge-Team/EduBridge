@@ -199,11 +199,11 @@ result recording and colours stay in their existing game implementations.
 The active lesson-video routes use `AdaptiveVideoPlayer`; the unreferenced
 legacy `VideoLessonPlayer` implementation has been removed.
 
-These stored profile flags currently have no dedicated runtime implementation:
+Runtime coverage of the following profile flags:
 
 | Stored flag | Current coverage |
 | --- | --- |
-| `simpleIconsGrid` | Stored profile and overview only; not a separate global grid mode. |
+| `simpleIconsGrid` | Specialist-controlled simplified game/lesson catalogs for child routes; retains all eligible items and lesson actions. Specialist S10 stays unchanged. |
 | `colorFiltersEnabled` | Stored profile and overview only; no colour-filter layer. |
 | `eyeTrackingOptimized` | Stored profile and overview only; no eye-tracking integration. |
 | `largeMouseCursor` | Stored profile and overview only; no custom cursor implementation. |

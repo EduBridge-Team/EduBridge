@@ -5,6 +5,7 @@ import '../services/accessibility_service.dart';
 import '../features/games/application/game_launcher.dart';
 import '../features/games/domain/game_player.dart';
 import '../widgets/accessibility/child_adaptation_scope.dart';
+import '../widgets/accessibility/simple_icons_grid.dart';
 import '../services/encouragement_service.dart';
 import '../theme.dart';
 import '../utils/game_catalog.dart';
@@ -30,7 +31,10 @@ class EducationalGamesScreen extends StatelessWidget {
 
   Widget _buildEntry(BuildContext context) => _GameCatalogEntry(
     encouragement: encouragement ?? EncouragementService.instance,
-    child: _buildContent(context),
+    child: ValueListenableBuilder<AccessibilityProfile>(
+      valueListenable: AccessibilityService.instance.profile,
+      builder: (context, _, __) => _buildContent(context),
+    ),
   );
 
   Widget _buildContent(BuildContext context) {
@@ -102,7 +106,16 @@ class EducationalGamesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            ...games.map((g) => Padding(
+            if (profile.simpleIconsGrid)
+              SimpleIconsGrid(children: [for (final game in games)
+                SimpleIconTile(
+                  key: ValueKey('simple_game_${game.id}'),
+                  title: game.title,
+                  icon: _gameIcon(game.id),
+                  onTap: () => _openGame(context, game),
+                ),
+              ])
+            else ...games.map((g) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _GameCard(
                     game: g,
@@ -129,6 +142,22 @@ class EducationalGamesScreen extends StatelessWidget {
       ),
     );
   }
+
+  IconData _gameIcon(String id) => switch (id) {
+    'animal_sounds' => Icons.pets,
+    'matching' => Icons.style,
+    'shapes' => Icons.category,
+    'colors_simple' || 'colors_symbols' => Icons.palette,
+    'numbers_count' || 'numbers_math' => Icons.calculate,
+    'visual_words' || 'word_builder' || 'advanced_reading' => Icons.menu_book,
+    'sequence_simple' || 'story_sequencer' => Icons.view_list,
+    'logic_puzzle' => Icons.extension,
+    'audio_matching' => Icons.hearing,
+    'sign_language' => Icons.sign_language,
+    'quick_action' => Icons.touch_app,
+    'rhythm' => Icons.music_note,
+    _ => AppIcons.game,
+  };
 
   Future<void> _openGame(BuildContext context, GameInfo game) async {
     await GameLauncher.instance.open(context, gameId: game.id,
