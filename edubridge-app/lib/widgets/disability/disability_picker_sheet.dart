@@ -4,14 +4,17 @@ import '../../app_icons.dart';
 import '../../theme.dart';
 import 'disability_catalog.dart';
 part 'disability_picker_sheet_view.dart';
+part 'disability_picker_s30.dart';
 
 class DisabilityPickerSheet extends StatefulWidget {
   final String? currentValue;
   final String title;
+  final bool figmaS30;
 
   const DisabilityPickerSheet({
     super.key,
     this.currentValue,
+    this.figmaS30 = false,
     this.title = 'اختر نوع الإعاقة',
   });
 
@@ -20,6 +23,8 @@ class DisabilityPickerSheet extends StatefulWidget {
 }
 
 class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
+  void _refreshState(VoidCallback callback) => setState(callback);
+
   final _searchCtrl = TextEditingController();
   String _search = '';
 
@@ -49,7 +54,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) => widget.figmaS30 ? buildS30(context) : buildView(context);
 
   Widget _buildHandle(JisrColors c) => Container(
         width: 40,
