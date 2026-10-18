@@ -10,7 +10,6 @@ Widget _buildTeacherHeader({
   required Future<bool> Function() onVerify,
   required Future<void> Function() onLoadData,
 }) {
-  final textTheme = Theme.of(context).textTheme;
 
   return Container(
     width: double.infinity,
@@ -25,10 +24,10 @@ Widget _buildTeacherHeader({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DashboardHeaderActions(
+            Row(children: [
+Expanded(child: DashboardProfileIdentity(roleLabel: 'المعلم', subtitle: switch (tabIndex) { 0 => 'لديك $childrenCount طفل تحت مسؤوليتك', 1 => 'أضف دروساً جديدة أو تصفّح الدروس الموجودة', _ => 'تابع الواجبات والتسليمات والتصحيح' })),
+const SizedBox(width: 8),
+DashboardHeaderActions(
                   actions: [
                     DashboardMenuAction(
                       id: 'notifications',
@@ -82,64 +81,7 @@ Widget _buildTeacherHeader({
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(
-                        'assets/brand_logo.png',
-                        width: 136,
-                        height: 38,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            FutureBuilder<String?>(
-              future: ApiService.getName(),
-              builder: (context, snap) {
-                final name = snap.data ?? 'المعلم';
-                final subtitle = switch (tabIndex) {
-                  0 => 'لديك $childrenCount طفل${childrenCount != 1 ? 'اً' : ''} تحت مسؤوليتك',
-                  1 => 'أضف دروساً جديدة أو تصفّح الدروس الموجودة',
-                  _ => 'تابع الواجبات والتسليمات والتصحيح',
-                };
-                return Row(
-                  children: [
-                    const ProfileAvatarButton(size: 54),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'مرحباً، $name',
-                            style: textTheme.headlineSmall?.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            subtitle,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.86),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+]),
           ],
         ),
       ),

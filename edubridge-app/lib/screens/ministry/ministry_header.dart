@@ -20,8 +20,6 @@ class _MinistryHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTopRow(context),
-              const SizedBox(height: 12),
-              _buildGreeting(context),
             ],
           ),
         ),
@@ -30,9 +28,10 @@ class _MinistryHeader extends StatelessWidget {
   }
 
   Widget _buildTopRow(BuildContext context) {
-    return Row(
-      children: [
-        DashboardHeaderActions(
+    return Row(children: [
+Expanded(child: DashboardProfileIdentity(roleLabel: 'الوزارة', subtitle: 'إدارة شاملة للمؤسسات والموافقات')),
+const SizedBox(width: 8),
+DashboardHeaderActions(
           actions: [
             DashboardMenuAction(
               id: 'support',
@@ -71,61 +70,7 @@ class _MinistryHeader extends StatelessWidget {
             ),
           ],
         ),
-        const Spacer(),
-        ColorFiltered(
-          colorFilter: const ColorFilter.mode(
-            Colors.white,
-            BlendMode.srcIn,
-          ),
-          child: Image.asset(
-            'assets/brand_logo.png',
-            width: 136,
-            height: 38,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-          ),
-        ),
-      ],
-    );
+]);
   }
 
-  Widget _buildGreeting(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return FutureBuilder<String?>(
-      future: ApiService.getName(),
-      builder: (context, snap) {
-        final name = snap.data ?? 'الوزارة';
-        return Row(
-          children: [
-            const ProfileAvatarButton(
-              size: 54,
-              backgroundColor: Colors.white,
-              foregroundColor: AppColors.brandTealDeep,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'مرحباً، $name',
-                    style: textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'إدارة شاملة للمؤسسات والموافقات',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.86),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
