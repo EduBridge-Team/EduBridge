@@ -351,6 +351,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                     context,
                     MaterialPageRoute(
                       builder: (_) => WeeklyReportScreen(
+                        specialistS26: true,
                         childId: _childId, childName: _childName,
                       ),
                     ),

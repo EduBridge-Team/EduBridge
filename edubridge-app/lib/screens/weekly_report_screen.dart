@@ -2,20 +2,24 @@
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
+import '../model/specialist_weekly_evaluation.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 part 'weekly_report_view.dart';
+part 'weekly_report_s26.dart';
 
 class WeeklyReportScreen extends StatefulWidget {
   final int childId;
   final String childName;
   final DateTime? weekStart;
+  final bool specialistS26;
 
   const WeeklyReportScreen({
     super.key,
     required this.childId,
     required this.childName,
     this.weekStart,
+    this.specialistS26 = false,
   });
 
   @override
@@ -70,7 +74,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => buildView(context);
+  Widget build(BuildContext context) =>
+      widget.specialistS26 || ApiService.userRole.value == 'specialist'
+          ? buildS26(context)
+          : buildView(context);
 
   Widget _buildError() {
     return ListView(
