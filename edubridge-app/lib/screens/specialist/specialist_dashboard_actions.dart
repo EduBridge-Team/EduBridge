@@ -85,6 +85,17 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       Map<String, dynamic> row) async {
     if (!await _checkVerification()) return;
     if (!mounted) return;
+    final target = await showDialog<SupportRecommendationTarget>(
+      context: context,
+      builder: (_) => SupportTargetDialogS28(
+        childName: (row['child']['name'] ?? '').toString(),
+      ),
+    );
+    if (!mounted || target == null) return;
+    if (target == SupportRecommendationTarget.specialist) {
+      await _openSuggestSpecialist(row, 'learning_support');
+      return;
+    }
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => _RecommendLearningSupportSheet(
