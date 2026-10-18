@@ -121,7 +121,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
             onRefresh: _refreshLessons,
             child: ValueListenableBuilder<AccessibilityProfile>(
               valueListenable: AccessibilityService.instance.profile,
-              builder: (context, _, _) =>
+              builder: (context, _, __) =>
                   widget.specialistS10 ? _s10Body() : _buildBody(),
             ),
           ),

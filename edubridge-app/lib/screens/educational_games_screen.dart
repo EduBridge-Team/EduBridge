@@ -33,7 +33,7 @@ class EducationalGamesScreen extends StatelessWidget {
     encouragement: encouragement ?? EncouragementService.instance,
     child: ValueListenableBuilder<AccessibilityProfile>(
       valueListenable: AccessibilityService.instance.profile,
-      builder: (context, _, _) => _buildContent(context),
+      builder: (context, _, __) => _buildContent(context),
     ),
   );
 
