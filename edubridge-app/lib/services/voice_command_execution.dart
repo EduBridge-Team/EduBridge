@@ -126,25 +126,11 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
 
     // ═══ 7. الألعاب ═══
     final gameId = _detectGame(text);
-    if (gameId != null && childRole) {
-      final widget = _gameWidgetFor(gameId);
-      if (widget != null) {
-        await _reply('سأفتح ${_gameDisplayName(gameId)}');
-        nav.push(MaterialPageRoute(builder: (_) => widget));
-        return;
-      }
-    }
-
-    if (_matches(text, [
+    final wantsCatalog = _matches(text, [
       'الالعاب', 'العاب', 'قائمه الالعاب', 'شاشه الالعاب', 'العب',
-    ])) {
-      await _reply('سأفتح شاشة الألعاب');
-      nav.push(MaterialPageRoute(
-        builder: (_) => const EducationalGamesScreen(
-          childName: 'بطل',
-          age: 8,
-        ),
-      ));
+    ]);
+    if ((gameId != null || wantsCatalog) && childRole) {
+      await _openChildGame(text, nav, userId: userId, gameId: gameId);
       return;
     }
 

@@ -171,3 +171,20 @@ flutter build appbundle --release
 - ميزات إمكانية الوصول
 - المساعد التعليمي نور
 - لوحات وتنقل حسب صلاحيات المستخدم
+
+## Game launch lifecycle
+
+The catalog and voice commands use `GameLauncher` with a `GamePlayer` supplied
+from the selected child's data. Voice commands resolve a named child or show a
+child picker; they do not supply a placeholder name or age. Incomplete child
+data is reported instead of silently substituting an age.
+
+`GameScreenFactory` owns catalog/voice ID aliases and game construction.
+`GameLaunchCoordinator` rejects concurrent launches through preparation and the
+route lifetime. The launcher prepares local content and queued results, verifies
+that the account and source route remain current, starts progress recording,
+then opens the game inside `ChildAdaptationScope`. Returning or failing releases
+the launch guard and ends any started progress session in `finally`.
+
+Catalog entries with no child ID retain practice mode; they cannot record a
+child result. This lifecycle does not change API routes or authorization.
