@@ -7,6 +7,7 @@ import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
 import '../services/accessibility_service.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_stat_chip.dart';
 import '../widgets/accessibility/game_round_continuation.dart';
 part 'visual_words_game_view.dart';
 
@@ -245,46 +246,5 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   // ═══════════════════════════════════════════════════════
   //  رقاقة معلومات صغيرة
   // ═══════════════════════════════════════════════════════
-  Widget _infoChip({
-    required String icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: color.withValues(alpha: 0.8),
-                ),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+
 }

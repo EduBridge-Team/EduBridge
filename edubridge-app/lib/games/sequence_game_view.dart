@@ -31,20 +31,20 @@ extension _SequenceGameView on _SequenceGameState {
               alignment: WrapAlignment.spaceAround,
               spacing: 12, runSpacing: 8,
               children: [
-                _infoChip(
+                GameStatChip(
                   icon: '🎯',
                   label: 'الجولة',
                   value: '${_round + 1}/$_totalRounds',
                   color: const Color(0xFF1AA9B2),
                 ),
-                _infoChip(
+                GameStatChip(
                   icon: '⭐',
                   label: 'النقاط',
                   value: '$_score',
                   color: const Color(0xFF57B25A),
                 ),
                 if (_streak >= 2)
-                  _infoChip(
+                  GameStatChip(
                     icon: '🔥',
                     label: 'متتالية',
                     value: '$_streak',
@@ -327,46 +327,5 @@ extension _SequenceGameView on _SequenceGameState {
   // ═══════════════════════════════════════════════════════
   //  رقاقة معلومات صغيرة
   // ═══════════════════════════════════════════════════════
-  Widget _infoChip({
-    required String icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: color.withValues(alpha: 0.8),
-                ),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+
 }

@@ -22,20 +22,20 @@ extension _SymbolsGameStateView on _SymbolsGameState {
               spacing: 12,
               runSpacing: 8,
               children: [
-                _infoChip(
+                GameStatChip(
                   icon: '🎯',
                   label: 'الجولة',
                   value: '$_roundNumber/$_totalRounds',
                   color: const Color(0xFF3A6EA5),
                 ),
-                _infoChip(
+                GameStatChip(
                   icon: '⭐',
                   label: 'النقاط',
                   value: '$_score',
                   color: const Color(0xFF57B25A),
                 ),
                 if (_streak >= 2)
-                  _infoChip(
+                  GameStatChip(
                     icon: '🔥',
                     label: 'متتالية',
                     value: '$_streak',

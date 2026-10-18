@@ -11,6 +11,7 @@ import '../services/accessibility_service.dart';
 import '../widgets/accessibility/game_round_continuation.dart';
 import '../utils/adaptive_feedback_policy.dart';
 import '../widgets/accessibility/visual_celebration.dart';
+import '../widgets/accessibility/game_stat_chip.dart';
 
 part 'sequence_game_view.dart';
 
