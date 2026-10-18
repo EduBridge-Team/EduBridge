@@ -237,10 +237,10 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
           // الخيارات — إشارات
           Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.count(
+              child: LayoutBuilder(builder: (context, constraints) => GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: MediaQuery.sizeOf(context).width < 400 &&
+                crossAxisCount: constraints.maxWidth < 400 &&
                     MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
                 childAspectRatio: 1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
                 mainAxisSpacing: 16,
@@ -270,6 +270,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                         children: [
                           Text(
                             option.$2,
+                            textScaler: TextScaler.noScaling,
                             style: const TextStyle(fontSize: 64),
                           ),
                           const SizedBox(height: 8),
@@ -291,7 +292,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                     ),
                   );
                 }).toList(),
-              ),
+              )),
           ),
           SafeArea(top: false, child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),

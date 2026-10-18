@@ -158,10 +158,10 @@ extension _SymbolsGameStateView on _SymbolsGameState {
           // ═══════════════════════════════════════════════
           Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.count(
+              child: LayoutBuilder(builder: (context, constraints) => GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: MediaQuery.sizeOf(context).width < 400 &&
+                crossAxisCount: constraints.maxWidth < 400 &&
                     MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 1 : 2,
                 mainAxisSpacing: 14,
                 crossAxisSpacing: 14,
@@ -193,6 +193,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                           // الرمز بلونه
                           Text(
                             option.$1,
+                            textScaler: TextScaler.noScaling,
                             style: TextStyle(
                               fontSize: large ? 68 : 56,
                               color: option.$3,
@@ -214,7 +215,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                     ),
                   );
                 }).toList(),
-              ),
+              )),
           ),
           SafeArea(top: false, child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
