@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
+import '../services/notification_listener_service.dart';
 import '../theme.dart';
 import '../widgets/accessibility/adaptive_text.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
@@ -223,13 +224,54 @@ class _ParentScreenState extends State<ParentScreen> {
     return BrandAppBar(
       titleSpacing: 0,
       centerTitle: false,
-      leadingWidth: 72,
-      leading: Padding(
-        padding: const EdgeInsetsDirectional.only(start: 8),
-        child: Center(
-          child: DashboardMenu(
+      leading: const SizedBox.shrink(),
+      leadingWidth: 0,
+      title: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 18),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+              child: Image.asset(
+                'assets/brand_logo.png',
+                width: 136,
+                height: 38,
+                fit: BoxFit.contain,
+                alignment: AlignmentDirectional.centerEnd,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
+        ),
+      actions: [
+        ValueListenableBuilder<int>(
+          valueListenable: NotificationListenerService.instance.unreadCount,
+          builder: (context, unreadCount, _) => Material(
+            color: Colors.white.withValues(alpha: .16),
+            shape: const CircleBorder(),
+            child: IconButton(
+              tooltip: 'الإشعارات',
+              icon: Badge(
+                isLabelVisible: unreadCount > 0,
+                smallSize: 9,
+                backgroundColor: const Color(0xFFE94C60),
+                child: const Icon(AppIcons.notifications,
+                    color: Colors.white, size: 24),
+              ),
+              onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        DashboardMenu(
             showMicrophoneToggle: true,
-            iconSize: 26,
+            iconSize: 25,
+            menuIcon: Icons.more_vert,
+            specialistFigmaMenu: true,
             iconColor: Colors.white,
             actions: [
               DashboardMenuAction(
@@ -286,29 +328,7 @@ class _ParentScreenState extends State<ParentScreen> {
               ),
             ],
           ),
-        ),
-      ),
-      title: const SizedBox.shrink(),
-      actions: [
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: 16),
-          child: Center(
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-              child: Image.asset(
-                'assets/brand_logo.png',
-                width: 136,
-                height: 38,
-                fit: BoxFit.contain,
-                alignment: AlignmentDirectional.centerEnd,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          ),
-        ),
+        const SizedBox(width: 18),
       ],
     );
   }
