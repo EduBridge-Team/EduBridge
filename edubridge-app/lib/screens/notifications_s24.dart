@@ -72,7 +72,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
     final accent = _getIconColor(type);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 11),
       child: Material(
         color: unread ? const Color(0xFFD3EDF1) : Colors.white,
         elevation: unread ? 0 : 1,
@@ -95,7 +95,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 16,
+                    style: const TextStyle(fontSize: 17,
                       fontWeight: FontWeight.w800, color: _ink)),
                   if (message.isNotEmpty) ...[
                     const SizedBox(height: 7),
@@ -165,34 +165,68 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
   }
 
   Widget _s24Navigation(JisrColors colors) {
-    return NavigationBar(
-      backgroundColor: Colors.white,
-      indicatorColor: const Color(0xFFE2EDF8),
-      height: 76,
-      selectedIndex: 0,
-      onDestinationSelected: (index) {
-        final Widget screen;
-        switch (index) {
-          case 0: screen = const SpecialistDashboardScreen(); break;
-          case 1: screen = const CaseDiscussionScreen(
-            showBottomNavigation: true); break;
-          case 2: screen = const ChatsScreen(); break;
-          case 3: screen = const LearningSupportRequestsScreen(); break;
-          default: return;
-        }
-        Navigator.pushReplacement(context,
-          MaterialPageRoute<void>(builder: (_) => screen));
-      },
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.people_outline),
-          selectedIcon: Icon(Icons.people_rounded), label: 'الأطفال'),
-        NavigationDestination(icon: Icon(Icons.description_outlined),
-          label: 'دراسات الحالة'),
-        NavigationDestination(icon: Icon(Icons.chat_bubble_outline_rounded),
-          label: 'المحادثات'),
-        NavigationDestination(icon: Icon(Icons.inbox_outlined),
-          label: 'طلبات الدعم'),
-      ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Color(0xFFD9E7F2), width: 1),
+        ),
+      ),
+      child: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          backgroundColor: Colors.white,
+          indicatorColor: const Color(0xFFE2EDF8),
+          iconTheme: WidgetStateProperty.resolveWith((states) =>
+              IconThemeData(
+                size: 23,
+                color: states.contains(WidgetState.selected)
+                    ? _blue : const Color(0xFF587895),
+              )),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) =>
+              TextStyle(
+                fontSize: 12,
+                fontWeight: states.contains(WidgetState.selected)
+                    ? FontWeight.w800 : FontWeight.w600,
+                color: states.contains(WidgetState.selected)
+                    ? _blue : colors.muted,
+              )),
+        ),
+        child: NavigationBar(
+          height: 76,
+          selectedIndex: 0,
+          onDestinationSelected: (index) {
+            final Widget screen;
+            switch (index) {
+              case 0: screen = const SpecialistDashboardScreen(); break;
+              case 1: screen = const CaseDiscussionScreen(
+                showBottomNavigation: true); break;
+              case 2: screen = const ChatsScreen(); break;
+              case 3: screen = const LearningSupportRequestsScreen(); break;
+              default: return;
+            }
+            Navigator.pushReplacement(context,
+              MaterialPageRoute<void>(builder: (_) => screen));
+          },
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.people_outline),
+              selectedIcon: Icon(Icons.people_rounded),
+              label: 'الأطفال',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.description_outlined),
+              label: 'دراسات الحالة',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.chat_bubble_outline_rounded),
+              label: 'المحادثات',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.inbox_outlined),
+              label: 'طلبات الدعم',
+            ),
+          ],
+        ),
+      ),
     );
   }
 
