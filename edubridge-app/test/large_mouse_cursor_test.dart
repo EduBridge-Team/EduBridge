@@ -131,9 +131,11 @@ void main() {
     final drawn = await _pixels(tester, capture);
     expect(_pixel(drawn, 800, const Offset(124, 140)), isNot(_pixel(original, 800, const Offset(124, 140))));
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    // Paused apps intentionally do not paint frames. Verify the cleared cursor
+    // on the first resumed frame instead of capturing the cached paused layer.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pump();
     expect((await _pixels(tester, capture)).buffer.asUint8List(), original.buffer.asUint8List());
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await mouse.removePointer();
     await tester.pumpWidget(const SizedBox.shrink());
   });
