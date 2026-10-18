@@ -78,7 +78,10 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
       decoration: BoxDecoration(
         color: onBlue ? const Color(0x33FFFFFF) : c.card,
         borderRadius: BorderRadius.circular(24)),
-      child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 210),
+        child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+        isExpanded: true,
         key: const ValueKey('s26-week'),
         value: _selectedWeek == null ? '' : _weekKey(_selectedWeek!),
         isDense: true,
@@ -89,18 +92,20 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
           for (var i = 0; i <= weeks.length; i++)
             Text(r == null ? 'أسبوع التقرير' :
               'الأسبوع: ${r.weekStart.day}/${r.weekStart.month} — ${r.weekEnd.day}/${r.weekEnd.month}',
+              maxLines: 1, overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 12, color: onBlue ? Colors.white : c.heading)),
         ],
         items: [
           const DropdownMenuItem(value: '', child: Text('الأسبوع الحالي')),
           for (final week in weeks)
-            DropdownMenuItem(value: week, child: Text('الأسبوع الذي يبدأ في $week')),
+            DropdownMenuItem(value: week, child: Text('الأسبوع الذي يبدأ في $week',
+              maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
         onChanged: (value) {
           _selectedWeek = value == null || value.isEmpty ? null : DateTime.parse(value);
           _load();
         },
-      )),
+      ))),
     );
   }
 

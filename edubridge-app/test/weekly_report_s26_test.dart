@@ -49,7 +49,9 @@ void main() {
       expect(find.text('لا يوجد'), findsOneWidget);
       expect(tester.getCenter(find.text('الدروس')).dx,
         greaterThan(tester.getCenter(find.text('الواجبات')).dx));
-      await tester.tap(find.byKey(const ValueKey('s26-week')));
+      await tester.runAsync(() async {
+        await tester.tap(find.byKey(const ValueKey('s26-week')));
+      });
       await tester.pumpAndSettle();
       await tester.runAsync(() async {
         await tester.tap(find.text('الأسبوع الذي يبدأ في 2026-10-05').last);
