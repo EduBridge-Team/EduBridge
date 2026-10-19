@@ -107,6 +107,9 @@ void main() {
         expect(jsonDecode(writes.single.body), {'reason': 'سبب الرفض الأصلي'});
         expect(find.text(strings.followupRejectedNotice), findsNothing);
         expect(find.text(language == 'en' ? strings.genericError : 'خطأ من الخادم'), findsOneWidget);
+        // The feedback temporarily overlays the card's lower actions.
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpAndSettle();
         await _tap(tester, find.widgetWithText(OutlinedButton, strings.reject));
         await _tap(tester, find.text(strings.cancel));
         expect(writes, hasLength(1));
