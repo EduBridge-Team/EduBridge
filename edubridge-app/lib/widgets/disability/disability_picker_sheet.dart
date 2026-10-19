@@ -133,7 +133,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
 
   Widget _buildEmpty(JisrColors c) {
     return Center(
-      child: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -257,82 +257,85 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
   Widget _buildCategory(DisabilityCategory cat, JisrColors c) {
     final hasCurrent =
         widget.currentValue != null && cat.items.contains(widget.currentValue);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Material(
         color: c.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: c.line, width: 1.5),
-      ),
-      child: ExpansionTile(
-        key: ValueKey('disability-${cat.label}-$_search'),
-        initiallyExpanded: hasCurrent || _search.trim().isNotEmpty,
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-        childrenPadding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
-        iconColor: AppColors.brandBlue,
-        collapsedIconColor: c.muted,
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: AppColors.brandBlue.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: c.line, width: 1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          key: ValueKey('disability-${cat.label}-$_search'),
+          initiallyExpanded: hasCurrent || _search.trim().isNotEmpty,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+          childrenPadding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          iconColor: AppColors.brandBlue,
+          collapsedIconColor: c.muted,
+          leading: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.brandBlue.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Text(cat.emoji, style: const TextStyle(fontSize: 22)),
           ),
-          alignment: Alignment.center,
-          child: Text(cat.emoji, style: const TextStyle(fontSize: 22)),
-        ),
-        title: Text(DisabilityDisplay.label(cat.label, context.l10n),
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: c.heading,
-            )),
-        subtitle: Text(
-          context.l10n.disabilityCaseCount(cat.items.length),
-          style: TextStyle(fontSize: 12, color: c.muted),
-        ),
-        children: cat.items.map((item) {
-          final isSelected = widget.currentValue == item;
-          return InkWell(
-            onTap: () => Navigator.pop(context, item),
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.brandBlue.withValues(alpha: 0.2)
-                    : c.tintTeal.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-                border: isSelected
-                    ? Border.all(color: AppColors.brandBlue, width: 2)
-                    : null,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    isSelected ? AppIcons.check : AppIcons.back,
-                    size: 18,
-                    color: AppColors.brandBlue,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      DisabilityDisplay.label(item, context.l10n),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: c.heading,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.w500,
+          title: Text(DisabilityDisplay.label(cat.label, context.l10n),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: c.heading,
+              )),
+          subtitle: Text(
+            context.l10n.disabilityCaseCount(cat.items.length),
+            style: TextStyle(fontSize: 12, color: c.muted),
+          ),
+          children: cat.items.map((item) {
+            final isSelected = widget.currentValue == item;
+            return InkWell(
+              onTap: () => Navigator.pop(context, item),
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.brandBlue.withValues(alpha: 0.2)
+                      : c.tintTeal.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                  border: isSelected
+                      ? Border.all(color: AppColors.brandBlue, width: 2)
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isSelected ? AppIcons.check : AppIcons.back,
+                      size: 18,
+                      color: AppColors.brandBlue,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        DisabilityDisplay.label(item, context.l10n),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: c.heading,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

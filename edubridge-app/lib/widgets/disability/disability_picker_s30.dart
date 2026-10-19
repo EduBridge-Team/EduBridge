@@ -9,57 +9,60 @@ extension _DisabilityPickerS30 on _DisabilityPickerSheetState {
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       decoration: BoxDecoration(color: c.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28))),
-      child: SafeArea(top: false, child: Column(children: [
-        const SizedBox(height: 8),
-        Center(child: Container(width: 40, height: 4,
-          decoration: BoxDecoration(color: c.line, borderRadius: BorderRadius.circular(4)))),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Icon(Icons.lightbulb_outline_rounded, color: Color(0xFF2684DD), size: 22),
-            const SizedBox(width: 7),
-            Flexible(child: Text(widget.title ?? context.l10n.selectDisability, textAlign: TextAlign.center,
-              style: TextStyle(color: c.heading, fontSize: 19, fontWeight: FontWeight.w800))),
-            IconButton(tooltip: context.l10n.close, onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.close_rounded, color: Color(0xFF2684DD), size: 22)),
-          ]),
-        ),
-        Padding(padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-          child: TextField(
-            key: const ValueKey('s30-search'),
-            controller: _searchCtrl,
-            onChanged: (value) => _refreshState(() => _search = value),
-            decoration: InputDecoration(
-              hintText: context.l10n.searchDisability,
-              hintStyle: TextStyle(color: c.muted, fontSize: 13),
-              prefixIcon: Icon(Icons.search_rounded, color: c.muted, size: 22),
-              suffixIcon: _search.isEmpty ? null : IconButton(
-                tooltip: context.l10n.clearSearch, icon: const Icon(Icons.close_rounded, size: 19),
-                onPressed: () => _refreshState(() { _searchCtrl.clear(); _search = ''; })),
-              filled: true, fillColor: c.card,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: c.line)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: c.line)),
-            ),
-          )),
-        Expanded(child: categories.isEmpty && !_showOther && !_showNoAdaptation
-            ? _buildEmpty(c)
-            : ListView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
-                children: [
-                  for (final category in categories) _s30Category(c, category),
-                  if (_showOther)
-                    _s30Other(c),
-                  if (_showNoAdaptation) ...[
-                    const SizedBox(height: 10),
-                    _buildNoDisabilityOption(c),
-                  ],
-                ],
-              )),
+      child: SafeArea(top: false, child: CustomScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [SliverToBoxAdapter(child: Column(children: [
+          const SizedBox(height: 8),
+          Center(child: Container(width: 40, height: 4,
+            decoration: BoxDecoration(color: c.line, borderRadius: BorderRadius.circular(4)))),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(Icons.lightbulb_outline_rounded, color: Color(0xFF2684DD), size: 22),
+              const SizedBox(width: 7),
+              Flexible(child: Text(widget.title ?? context.l10n.selectDisability, textAlign: TextAlign.center,
+                style: TextStyle(color: c.heading, fontSize: 19, fontWeight: FontWeight.w800))),
+              IconButton(tooltip: context.l10n.close, onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close_rounded, color: Color(0xFF2684DD), size: 22)),
+            ]),
+          ),
+          Padding(padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+            child: TextField(
+              key: const ValueKey('s30-search'),
+              controller: _searchCtrl,
+              onChanged: (value) => _refreshState(() => _search = value),
+              decoration: InputDecoration(
+                hintText: context.l10n.searchDisability,
+                hintStyle: TextStyle(color: c.muted, fontSize: 13),
+                prefixIcon: Icon(Icons.search_rounded, color: c.muted, size: 22),
+                suffixIcon: _search.isEmpty ? null : IconButton(
+                  tooltip: context.l10n.clearSearch, icon: const Icon(Icons.close_rounded, size: 19),
+                  onPressed: () => _refreshState(() { _searchCtrl.clear(); _search = ''; })),
+                filled: true, fillColor: c.card,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: c.line)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: c.line)),
+              ),
+            )),
+        ])),
+        if (categories.isEmpty && !_showOther && !_showNoAdaptation)
+          SliverToBoxAdapter(child: _buildEmpty(c))
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
+            sliver: SliverList.list(children: [
+              for (final category in categories) _s30Category(c, category),
+              if (_showOther) _s30Other(c),
+              if (_showNoAdaptation) ...[
+                const SizedBox(height: 10),
+                _buildNoDisabilityOption(c),
+              ],
+            ]),
+          ),
       ])),
+
     );
   }
 

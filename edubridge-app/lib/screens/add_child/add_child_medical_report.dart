@@ -80,52 +80,45 @@ Widget buildMedicalReportSection({
           ),
           const SizedBox(height: 12),
         ],
-        Row(
-          children: [
-            Expanded(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 44),
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandTeal,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+        _DocumentActions(children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandTeal,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  icon: const Icon(AppIcons.upload, size: 18),
-                  label: Text(
-                    hasFiles ? context.l10n.addMoreFiles : context.l10n.fromGallery,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                  onPressed: onPick,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.upload, size: 18),
+                label: Text(
+                  hasFiles ? context.l10n.addMoreFiles : context.l10n.fromGallery,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                onPressed: onPick,
               ),
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 44),
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.brandTeal,
-                    side: const BorderSide(
-                        color: AppColors.brandTeal, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.brandTeal,
+                  side: const BorderSide(
+                      color: AppColors.brandTeal, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  icon: const Icon(AppIcons.camera, size: 18),
-                  label: Text(context.l10n.camera,
-                      style: TextStyle(fontSize: 13)),
-                  onPressed: onCapture,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.camera, size: 18),
+                label: Text(context.l10n.camera,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onCapture,
               ),
             ),
-          ],
-        ),
+          ]),
       ],
     ),
   );

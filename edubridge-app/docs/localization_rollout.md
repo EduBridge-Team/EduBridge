@@ -232,7 +232,9 @@ A presentation-only disability adapter translates every known category/value.
 The canonical Arabic catalog, adaptation mapping, payload values and custom
 free-text disability descriptions are unchanged. Both picker layouts inherit the
 active direction, search canonical Arabic plus the displayed translation and
-return canonical identifiers, including Other/No adaptation. The regular picker
+return canonical identifiers, including Other/No adaptation. Both pickers scroll
+the complete header and options when large text/keyboard leaves little room.
+Document actions share a layout that stacks them when needed. The regular picker
 now also finds those two options when categories have no match.
 
 Tests cover both picker layouts/languages at 320 pixels, doubled text, keyboard

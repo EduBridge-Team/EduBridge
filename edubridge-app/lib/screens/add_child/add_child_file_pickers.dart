@@ -149,51 +149,42 @@ Widget _buildFilePicker({
         Text(sublabel, style: TextStyle(fontSize: 12, color: c.muted)),
         const SizedBox(height: 10),
         if (!hasFile)
-          Row(
-            children: [
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 42),
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: color,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                    ),
-                    icon: const Icon(AppIcons.upload, size: 18),
-                    label: Text(context.l10n.fromGallery,
-                        style: TextStyle(fontSize: 13)),
-                    onPressed: onPick,
+          _DocumentActions(children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 42),
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: color,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.upload, size: 18),
+                label: Text(context.l10n.fromGallery,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onPick,
               ),
-              if (onCapture != null) ...[
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 42),
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: color,
-                        side: BorderSide(color: color, width: 1.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-                      icon: const Icon(AppIcons.camera, size: 18),
-                      label: Text(context.l10n.camera,
-                          style: TextStyle(fontSize: 13)),
-                      onPressed: onCapture,
-                    ),
+            ),
+            if (onCapture != null) ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 42),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: color,
+                  side: BorderSide(color: color, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
-              ],
-            ],
-          )
+                icon: const Icon(AppIcons.camera, size: 18),
+                label: Text(context.l10n.camera,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onCapture,
+              ),
+            ),
+          ])
         else
           Row(
             children: [
@@ -251,4 +242,31 @@ Widget _buildFilePicker({
       ],
     ),
   );
+}
+
+
+/// Stack document actions when large text or a narrow card needs more room.
+class _DocumentActions extends StatelessWidget {
+  const _DocumentActions({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
+    final stack = constraints.maxWidth < 220 ||
+        MediaQuery.textScalerOf(context).scale(13) > 18;
+    if (stack) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        for (var i = 0; i < children.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          children[i],
+        ],
+      ]);
+    }
+    return Row(children: [
+      for (var i = 0; i < children.length; i++) ...[
+        if (i > 0) const SizedBox(width: 8),
+        Expanded(child: children[i]),
+      ],
+    ]);
+  });
 }
