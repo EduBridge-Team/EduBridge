@@ -1,4 +1,5 @@
-import '../../utils/presentation_text.dart';
+import '../../l10n/l10n.dart';
+import '../../widgets/disability/disability_display.dart';
 // lib/screens/case_discussion/case_discussion_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -54,3 +55,10 @@ class _CaseDiscussionScreenState extends State<CaseDiscussionScreen> {
     return _CaseDiscussionDetail(discussionId: widget.discussionId!);
   }
 }
+
+
+String _caseStatusLabel(BuildContext context, CaseDiscussion discussion) => switch (discussion.status) {
+  CaseDiscussionStatus.open => context.l10n.caseOpen,
+  CaseDiscussionStatus.inReview => context.l10n.underReview,
+  CaseDiscussionStatus.resolved => context.l10n.caseResolved,
+};

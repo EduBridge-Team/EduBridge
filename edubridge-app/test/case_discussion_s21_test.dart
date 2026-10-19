@@ -1,3 +1,4 @@
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/case_discussion/case_discussion_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('ar'), supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: Builder(
             builder: (context) => TextButton(
@@ -79,6 +82,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('ar'), supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: NewCaseStudyDialogS21(
             children: const [

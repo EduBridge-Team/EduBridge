@@ -24,7 +24,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
   bool _loading = true;
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -43,6 +43,10 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   //  تحميل البيانات — مع فلترة الأطفال حسب متابعة المستخدم
   // ═══════════════════════════════════════════════════════
   Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final role = await ApiService.getRole();
       final meId = await ApiService.getUserId();
@@ -54,6 +58,9 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
       if (!mounted) return;
 
+      if (responses.any((response) => response.statusCode != 200)) {
+        throw StateError('Case team data could not be loaded');
+      }
       final allChildren =
           ApiService.extractList(responses[0].body, 'children');
       final allUsers = ApiService.extractList(responses[1].body, 'users');
@@ -84,7 +91,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل البيانات';
+        _error = SharedUiMessage.caseDataLoadFailed;
         _loading = false;
       });
     }
@@ -184,11 +191,11 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   // ═══════════════════════════════════════════════════════
   Future<void> _save() async {
     if (_selectedChildId == null) {
-      setState(() => _error = 'اختر الطفل');
+      setState(() => _error = SharedUiMessage.caseChooseChild);
       return;
     }
     if (_topicCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'العنوان مطلوب');
+      setState(() => _error = SharedUiMessage.homeworkTitleRequired);
       return;
     }
 
@@ -196,7 +203,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     if (_myUserId != null) participants.add(_myUserId!);
 
     if (participants.length < 2) {
-      setState(() => _error = 'اختر مشاركاً واحداً على الأقل من الفريق');
+      setState(() => _error = SharedUiMessage.caseChooseParticipant);
       return;
     }
 
@@ -206,7 +213,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     });
 
     try {
-      await ApiService.createCaseDiscussion(
+      final created = await ApiService.createCaseDiscussion(
         childId: _selectedChildId!,
         topic: _topicCtrl.text.trim(),
         description: _descCtrl.text.trim().isEmpty
@@ -215,6 +222,13 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         participantIds: participants.toList(),
       );
       if (!mounted) return;
+      if (created == null) {
+        setState(() {
+          _error = SharedUiMessage.caseCreateFailed;
+          _saving = false;
+        });
+        return;
+      }
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -279,7 +293,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
-                  Text(_error!,
+                  Text(context.sharedMessage(_error),
                       style: const TextStyle(color: AppColors.red)),
                 ],
                 const SizedBox(height: 16),
@@ -296,7 +310,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            'دراسة حالة جديدة',
+            context.l10n.caseNewTitle,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -323,14 +337,14 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             color: AppColors.orange.withValues(alpha: 0.3),
           ),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(AppIcons.info, color: AppColors.orangeDeep, size: 22),
-            SizedBox(width: 8),
+            const Icon(AppIcons.info, color: AppColors.orangeDeep, size: 22),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'لا يوجد أطفال معيّنون لك حالياً — لا يمكن بدء دراسة حالة.',
-                style: TextStyle(fontSize: 13, height: 1.4),
+                context.l10n.caseNoAssignedChildrenHint,
+                style: const TextStyle(fontSize: 13, height: 1.4),
               ),
             ),
           ],
@@ -339,16 +353,17 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     }
 
     return DropdownButtonFormField<int>(
+      isExpanded: true,
       initialValue: _selectedChildId,
-      decoration: const InputDecoration(
-        labelText: 'الطفل *',
-        prefixIcon: Icon(AppIcons.child),
+      decoration: InputDecoration(
+        labelText: context.l10n.caseChildField,
+        prefixIcon: const Icon(AppIcons.child),
       ),
       items: _myChildren.map<DropdownMenuItem<int>>((ch) {
         return DropdownMenuItem(
           value: ch['id'] as int,
           child: Text(
-            '${ch['name']} — ${ch['disability_type'] ?? ''}',
+            "${ch['name']} — ${DisabilityDisplay.label(ch['disability_type']?.toString() ?? '', context.l10n)}",
             overflow: TextOverflow.ellipsis,
           ),
         );
@@ -360,10 +375,10 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
   Widget _buildTopicField() {
     return TextField(
       controller: _topicCtrl,
-      decoration: const InputDecoration(
-        labelText: 'موضوع الدراسة *',
-        prefixIcon: Icon(AppIcons.edit),
-        hintText: 'مثال: صعوبات التركيز في الحصة',
+      decoration: InputDecoration(
+        labelText: context.l10n.caseTopicField,
+        prefixIcon: const Icon(AppIcons.edit),
+        hintText: context.l10n.caseTopicHint,
       ),
     );
   }
@@ -372,19 +387,21 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
     return TextField(
       controller: _descCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'وصف الحالة (اختياري)',
+      decoration: InputDecoration(
+        labelText: context.l10n.caseDescriptionField,
         alignLabelWithHint: true,
-        prefixIcon: Icon(AppIcons.info),
+        prefixIcon: const Icon(AppIcons.info),
       ),
     );
   }
 
   Widget _buildParticipantsHeader(JisrColors c) {
-    return Row(
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
       children: [
         Text(
-          'المشاركون من الفريق (${_selectedParticipants.length}):',
+          context.l10n.caseTeamCount(_selectedParticipants.length),
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 15,
@@ -398,9 +415,9 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             color: AppColors.brandTeal.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Text(
-            'أنت مشارك تلقائياً',
-            style: TextStyle(
+          child: Text(
+            context.l10n.caseAutomaticParticipant,
+            style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w800,
               color: AppColors.brandBlue,
@@ -421,7 +438,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
-            'اختر طفلاً أولاً لعرض أعضاء فريقه',
+            context.l10n.caseChooseChildForTeam,
             style: TextStyle(fontSize: 13, color: c.onTint),
             textAlign: TextAlign.center,
           ),
@@ -437,9 +454,9 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
             color: AppColors.orange.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Text(
-            'لا يوجد أعضاء آخرون في فريق هذا الطفل حالياً',
-            style: TextStyle(fontSize: 13, color: AppColors.orangeDeep),
+          child: Text(
+            context.l10n.caseNoOtherTeam,
+            style: const TextStyle(fontSize: 13, color: AppColors.orangeDeep),
             textAlign: TextAlign.center,
           ),
         ),
@@ -455,7 +472,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
 
       final roleIcon =
           role == 'teacher' ? AppIcons.teacher : AppIcons.specialist;
-      final roleLabel = role == 'teacher' ? 'معلّم' : 'مختص';
+      final roleLabel = role == 'teacher' ? context.l10n.teacherRole : context.l10n.specialistRole;
 
       return CheckboxListTile(
         dense: true,
@@ -467,7 +484,7 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
           color: isMe ? AppColors.brandBlue : AppColors.muted,
         ),
         title: Text(
-          '$roleLabel — $name${isMe ? ' (أنت)' : ''}',
+          isMe ? context.l10n.caseParticipantMe(roleLabel, name) : context.l10n.caseParticipant(roleLabel, name),
           style: TextStyle(
             fontWeight: isMe ? FontWeight.bold : FontWeight.normal,
             color: isMe ? AppColors.brandBlue : null,
@@ -494,14 +511,14 @@ class _NewDiscussionSheetState extends State<_NewDiscussionSheet> {
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: FilledButton(
             onPressed: _saving ? null : _save,
-            child: Text(_saving ? '...' : 'إنشاء'),
+            child: Text(_saving ? '...' : context.l10n.caseCreate),
           ),
         ),
       ],

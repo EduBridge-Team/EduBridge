@@ -30,8 +30,8 @@ class CaseDiscussionEmptyS20 extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          'لا توجد دراسات حالة بعد',
+        Text(
+          context.l10n.caseListEmpty,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 20,
@@ -40,8 +40,8 @@ class CaseDiscussionEmptyS20 extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 23),
-        const Text(
-          'ابدأ دراسة جديدة للتعاون مع المختصين حول\nحالة الطفل.',
+        Text(
+          context.l10n.caseListEmptyHintS20,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14.5,
@@ -84,22 +84,20 @@ class CaseDiscussionHeaderS20 extends StatelessWidget
       titleSpacing: 0,
       leadingWidth: 52,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: onBack,
         style: IconButton.styleFrom(
           backgroundColor: Colors.white.withValues(alpha: 0.18),
           foregroundColor: Colors.white,
         ),
-        icon: const Directionality(
-          textDirection: TextDirection.ltr,
-          child: Icon(Icons.arrow_forward_rounded, size: 23),
-        ),
+        icon: Icon(Directionality.of(context) == TextDirection.rtl
+            ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded, size: 23),
       ),
-      title: const Text(
-        'دراسات الحالة',
+      title: Text(
+        context.l10n.caseStudies,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.w800,
@@ -107,7 +105,7 @@ class CaseDiscussionHeaderS20 extends StatelessWidget
       ),
       actions: [
         IconButton(
-          tooltip: 'تحديث دراسات الحالة',
+          tooltip: context.l10n.caseRefresh,
           onPressed: onRefresh,
           icon: const Icon(Icons.refresh_rounded, size: 24),
         ),
@@ -155,9 +153,9 @@ extension _S20CaseDiscussionLayout on _CaseDiscussionListState {
           borderRadius: BorderRadius.circular(16),
         ),
         icon: const Icon(Icons.add_circle_outline_rounded, size: 23),
-        label: const Text(
-          'دراسة جديدة',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+        label: Text(
+          context.l10n.caseNewAction,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
         ),
       ),
     );

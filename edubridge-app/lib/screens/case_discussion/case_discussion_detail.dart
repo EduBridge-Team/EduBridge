@@ -51,7 +51,8 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
     final data = await ApiService.getCaseDiscussionDetails(widget.discussionId);
     if (!mounted || data == null) return;
     final fresh = CaseDiscussion.fromJson(data);
-    if (fresh.messages.length != (_discussion?.messages.length ?? 0)) {
+    if (fresh.status != _discussion?.status ||
+        fresh.messages.length != (_discussion?.messages.length ?? 0)) {
       setState(() => _discussion = fresh);
       _scrollToBottom();
     }
@@ -62,19 +63,21 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
     if (text.isEmpty || _sending) return;
 
     setState(() => _sending = true);
-    _inputCtrl.clear();
 
     try {
-      await ApiService.addCaseMessage(
+      final message = await ApiService.addCaseMessage(
         discussionId: widget.discussionId,
         content: text,
         type: _msgType.name,
       );
+      if (message == null) throw StateError('Message was not saved');
+      if (!mounted) return;
+      _inputCtrl.clear();
       await _load();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تعذّر الإرسال: $e')),
+          SnackBar(content: Text(context.sharedMessage(SharedUiMessage.messageSendFailed))),
         );
       }
     } finally {
@@ -87,35 +90,38 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('إغلاق دراسة الحالة'),
-        content: const Text(
-          'هل أنت متأكد من اعتبار هذه الدراسة محلولة؟ لن تُقبل رسائل جديدة.',
+        title: Text(context.l10n.caseCloseTitle),
+        content: Text(
+          context.l10n.caseCloseConfirm,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTealDeep),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('إغلاق'),
+            child: Text(context.l10n.close),
           ),
         ],
       ),
     );
-    if (confirm != true) return;
+    if (confirm != true || !mounted) return;
 
     final ok = await ApiService.resolveCaseDiscussion(widget.discussionId);
     if (!mounted) return;
     if (ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إغلاق دراسة الحالة'),
+        SnackBar(
+          content: Text(context.l10n.caseClosedNotice),
           backgroundColor: AppColors.brandTealDeep,
         ),
       );
       _load();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(context.sharedMessage(SharedUiMessage.caseResolveFailed))));
     }
   }
 
@@ -161,7 +167,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                           color: c.heading,
                         )),
                     if (d.disabilityType != null)
-                      Text(d.disabilityType!,
+                      Text(DisabilityDisplay.label(d.disabilityType!, context.l10n),
                           style: TextStyle(fontSize: 12, color: c.muted)),
                   ],
                 ),
@@ -175,7 +181,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  d.statusLabel,
+                  _caseStatusLabel(context, d),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -210,8 +216,8 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                       color: AppColors.brandBlue,
                     ),
                     const SizedBox(width: 4),
-                    Text(p.name,
-                        style: TextStyle(fontSize: 11, color: c.body)),
+                    Flexible(child: Text(p.name,
+                        style: TextStyle(fontSize: 11, color: c.body))),
                   ],
                 ),
               );
@@ -225,7 +231,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
   Widget _buildMessages(CaseDiscussion d, JisrColors c) {
     if (d.messages.isEmpty) {
       return Center(
-        child: Text('لا توجد رسائل بعد — ابدأ النقاش',
+        child: Text(context.l10n.caseNoMessages,
             style: TextStyle(color: c.muted, fontSize: 14)),
       );
     }
@@ -257,13 +263,13 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _typeChip('رسالة', CaseMessageType.text, AppIcons.chat),
+                _typeChip(context.l10n.caseMessage, CaseMessageType.text, AppIcons.chat),
                 const SizedBox(width: 6),
-                _typeChip('ملاحظة', CaseMessageType.observation, AppIcons.view),
+                _typeChip(context.l10n.caseObservation, CaseMessageType.observation, AppIcons.view),
                 const SizedBox(width: 6),
-                _typeChip('سؤال', CaseMessageType.question, AppIcons.info),
+                _typeChip(context.l10n.caseQuestion, CaseMessageType.question, AppIcons.info),
                 const SizedBox(width: 6),
-                _typeChip('قرار', CaseMessageType.decision, AppIcons.check),
+                _typeChip(context.l10n.caseDecision, CaseMessageType.decision, AppIcons.check),
               ],
             ),
           ),
@@ -277,8 +283,8 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                   minLines: 1,
                   maxLines: 4,
                   enabled: !_sending,
-                  decoration: const InputDecoration(
-                    hintText: 'اكتب رسالتك...',
+                  decoration: InputDecoration(
+                    hintText: context.l10n.messagePlaceholder,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   ),
@@ -290,6 +296,7 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
                   backgroundColor: AppColors.brandBlue,
                   minimumSize: const Size(50, 50),
                 ),
+                tooltip: context.l10n.send,
                 onPressed: _sending ? null : _send,
                 icon: _sending
                     ? const SizedBox(
@@ -334,9 +341,9 @@ class _CaseDiscussionDetailState extends State<_CaseDiscussionDetail> {
         children: [
           const Icon(AppIcons.check, color: AppColors.green),
           const SizedBox(width: 8),
-          Text('تم إغلاق هذه الدراسة',
+          Flexible(child: Text(context.l10n.caseClosedBanner,
               style:
-                  TextStyle(color: c.onTint, fontWeight: FontWeight.w800)),
+                  TextStyle(color: c.onTint, fontWeight: FontWeight.w800))),
         ],
       ),
     );

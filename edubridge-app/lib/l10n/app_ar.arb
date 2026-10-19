@@ -4188,5 +4188,238 @@
   "homeworkDueDateLabel": "موعد التسليم",
   "@homeworkDueDateLabel": {
     "description": "Teacher student details and homework interface."
+  },
+  "caseCloseTitle": "إغلاق دراسة الحالة",
+  "@caseCloseTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseCloseConfirm": "هل أنت متأكد من اعتبار هذه الدراسة محلولة؟ لن تُقبل رسائل جديدة.",
+  "@caseCloseConfirm": {
+    "description": "Case discussion interface."
+  },
+  "caseClosedNotice": "تم إغلاق دراسة الحالة",
+  "@caseClosedNotice": {
+    "description": "Case discussion interface."
+  },
+  "caseNoMessages": "لا توجد رسائل بعد — ابدأ النقاش",
+  "@caseNoMessages": {
+    "description": "Case discussion interface."
+  },
+  "caseMessage": "رسالة",
+  "@caseMessage": {
+    "description": "Case discussion interface."
+  },
+  "caseObservation": "ملاحظة",
+  "@caseObservation": {
+    "description": "Case discussion interface."
+  },
+  "caseQuestion": "سؤال",
+  "@caseQuestion": {
+    "description": "Case discussion interface."
+  },
+  "caseDecision": "قرار",
+  "@caseDecision": {
+    "description": "Case discussion interface."
+  },
+  "caseClosedBanner": "تم إغلاق هذه الدراسة",
+  "@caseClosedBanner": {
+    "description": "Case discussion interface."
+  },
+  "caseDataLoadFailed": "تعذّر تحميل البيانات",
+  "@caseDataLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseChild": "اختر الطفل",
+  "@caseChooseChild": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseParticipant": "اختر مشاركاً واحداً على الأقل من الفريق",
+  "@caseChooseParticipant": {
+    "description": "Case discussion interface."
+  },
+  "caseNewTitle": "دراسة حالة جديدة",
+  "@caseNewTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseNoAssignedChildrenHint": "لا يوجد أطفال معيّنون لك حالياً — لا يمكن بدء دراسة حالة.",
+  "@caseNoAssignedChildrenHint": {
+    "description": "Case discussion interface."
+  },
+  "caseChildField": "الطفل *",
+  "@caseChildField": {
+    "description": "Case discussion interface."
+  },
+  "caseTopicField": "موضوع الدراسة *",
+  "@caseTopicField": {
+    "description": "Case discussion interface."
+  },
+  "caseTopicHint": "مثال: صعوبات التركيز في الحصة",
+  "@caseTopicHint": {
+    "description": "Case discussion interface."
+  },
+  "caseDescriptionField": "وصف الحالة (اختياري)",
+  "@caseDescriptionField": {
+    "description": "Case discussion interface."
+  },
+  "caseTeamCount": "المشاركون من الفريق ({count}):",
+  "@caseTeamCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseExtraTeamCount": "المشاركون من الفريق ({count})",
+  "@caseExtraTeamCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseAutomaticParticipant": "أنت مشارك تلقائياً",
+  "@caseAutomaticParticipant": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseChildForTeam": "اختر طفلاً أولاً لعرض أعضاء فريقه",
+  "@caseChooseChildForTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseNoOtherTeam": "لا يوجد أعضاء آخرون في فريق هذا الطفل حالياً",
+  "@caseNoOtherTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseNoExtraTeam": "لا يوجد أعضاء إضافيون في فريق هذا الطفل",
+  "@caseNoExtraTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmpty": "لا توجد دراسات حالة بعد",
+  "@caseListEmpty": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmptyHint": "ابدأ دراسة جديدة للتعاون مع المختصين حول حالة الطفل.",
+  "@caseListEmptyHint": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmptyHintS20": "ابدأ دراسة جديدة للتعاون مع المختصين حول\nحالة الطفل.",
+  "@caseListEmptyHintS20": {
+    "description": "Case discussion interface."
+  },
+  "caseRefresh": "تحديث دراسات الحالة",
+  "@caseRefresh": {
+    "description": "Case discussion interface."
+  },
+  "caseNewAction": "دراسة جديدة",
+  "@caseNewAction": {
+    "description": "Case discussion interface."
+  },
+  "caseListLoadFailed": "تعذّر تحميل دراسات الحالة",
+  "@caseListLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseRoleUnknown": "تعذّر تحديد نوع الحساب",
+  "@caseRoleUnknown": {
+    "description": "Case discussion interface."
+  },
+  "caseLoadFailed": "تعذّر التحميل",
+  "@caseLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseActive": "نشطة",
+  "@caseActive": {
+    "description": "Case discussion interface."
+  },
+  "caseResolved": "محلولة",
+  "@caseResolved": {
+    "description": "Case discussion interface."
+  },
+  "caseOpen": "مفتوحة",
+  "@caseOpen": {
+    "description": "Case discussion interface."
+  },
+  "caseSectionEmpty": "لا توجد دراسات حالة في هذا القسم",
+  "@caseSectionEmpty": {
+    "description": "Case discussion interface."
+  },
+  "caseActiveCount": "نشطة ({count})",
+  "@caseActiveCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseCompletedCount": "مكتملة ({count})",
+  "@caseCompletedCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseTitleFor": "دراسة حالة — {name}",
+  "@caseTitleFor": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseTitle": "دراسة حالة",
+  "@caseTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseCloseAction": "إغلاق الدراسة",
+  "@caseCloseAction": {
+    "description": "Case discussion interface."
+  },
+  "caseParticipant": "{role} — {name}",
+  "@caseParticipant": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseParticipantMe": "{role} — {name} (أنت)",
+  "@caseParticipantMe": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseCreateFailed": "تعذّر إنشاء الدراسة",
+  "@caseCreateFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseResolveFailed": "تعذّر إغلاق الدراسة",
+  "@caseResolveFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseCreate": "إنشاء",
+  "@caseCreate": {
+    "description": "Case discussion action."
+  },
+  "caseMenu": "القائمة",
+  "@caseMenu": {
+    "description": "Case discussion action."
+  },
+  "caseRefreshAction": "تحديث",
+  "@caseRefreshAction": {
+    "description": "Case discussion action."
   }
 }

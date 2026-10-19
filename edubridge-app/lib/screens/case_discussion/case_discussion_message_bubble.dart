@@ -17,19 +17,19 @@ class _MessageBubble extends StatelessWidget {
       case CaseMessageType.observation:
         bgColor = AppColors.brandGreen;
         iconColor = AppColors.brandGreen;
-        typeLabel = 'ملاحظة';
+        typeLabel = context.l10n.caseObservation;
         typeIcon = AppIcons.view;
         break;
       case CaseMessageType.decision:
         bgColor = AppColors.brandTealDeep.withValues(alpha: 0.1);
         iconColor = AppColors.brandTealDeep;
-        typeLabel = 'قرار';
+        typeLabel = context.l10n.caseDecision;
         typeIcon = AppIcons.check;
         break;
       case CaseMessageType.question:
         bgColor = c.tintTeal;
         iconColor = AppColors.brandBlue;
-        typeLabel = 'سؤال';
+        typeLabel = context.l10n.caseQuestion;
         typeIcon = AppIcons.info;
         break;
       default:
@@ -74,7 +74,7 @@ class _MessageBubble extends StatelessWidget {
                   ),
                 ),
                 if (typeLabel.isNotEmpty)
-                  Container(
+                  Flexible(child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
@@ -89,10 +89,10 @@ class _MessageBubble extends StatelessWidget {
                         color: iconColor,
                       ),
                     ),
-                  ),
+                  )),
                 const SizedBox(width: 6),
                 Text(
-                  PresentationText.clock(message.createdAt),
+                  MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(message.createdAt)),
                   style: TextStyle(fontSize: 11, color: c.muted),
                 ),
               ],

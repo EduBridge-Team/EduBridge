@@ -56,10 +56,10 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                     foregroundColor: Color(0xFF1768C5),
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'دراسات الحالة',
-                      style: TextStyle(
+                      context.l10n.caseStudies,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -67,7 +67,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'الإشعارات',
+                    tooltip: context.l10n.notifications,
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.white.withValues(alpha: .16),
                       foregroundColor: Colors.white,
@@ -81,7 +81,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'القائمة',
+                    tooltip: context.l10n.caseMenu,
                     color: Theme.of(context).colorScheme.surface,
                     icon: const Icon(Icons.more_vert, color: Colors.white),
                     onSelected: (key) {
@@ -102,14 +102,14 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                         );
                       }
                     },
-                    itemBuilder: (_) => const [
+                    itemBuilder: (_) => [
                       PopupMenuItem(
                         value: 'lessons',
-                        child: Text('الدروس'),
+                        child: Text(context.l10n.lessons),
                       ),
                       PopupMenuItem(
                         value: 'profile',
-                        child: Text('الملف الشخصي'),
+                        child: Text(context.l10n.profile),
                       ),
                     ],
                   ),
@@ -165,23 +165,23 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                 MaterialPageRoute<void>(builder: (_) => destination),
               );
             },
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                icon: Icon(Icons.people_outline),
-                label: 'الأطفال',
+                icon: const Icon(Icons.people_outline),
+                label: context.l10n.children,
               ),
               NavigationDestination(
-                icon: Icon(Icons.description_outlined),
-                selectedIcon: Icon(Icons.description_rounded),
-                label: 'دراسات الحالة',
+                icon: const Icon(Icons.description_outlined),
+                selectedIcon: const Icon(Icons.description_rounded),
+                label: context.l10n.caseStudies,
               ),
               NavigationDestination(
-                icon: Icon(Icons.chat_bubble_outline),
-                label: 'المحادثات',
+                icon: const Icon(Icons.chat_bubble_outline),
+                label: context.l10n.conversations,
               ),
               NavigationDestination(
-                icon: Icon(Icons.inbox_outlined),
-                label: 'طلبات الدعم',
+                icon: const Icon(Icons.inbox_outlined),
+                label: context.l10n.supportRequests,
               ),
             ],
           ),
@@ -207,7 +207,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
               Expanded(
                 child: _s07Filter(
                   c,
-                  'نشطة (${active.length})',
+                  context.l10n.caseActiveCount(active.length),
                   !_s07Completed,
                   () => _refreshS07State(() => _s07Completed = false),
                 ),
@@ -216,7 +216,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
               Expanded(
                 child: _s07Filter(
                   c,
-                  'مكتملة (${completed.length})',
+                  context.l10n.caseCompletedCount(completed.length),
                   _s07Completed,
                   () => _refreshS07State(() => _s07Completed = true),
                 ),
@@ -237,10 +237,10 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                   const Icon(Icons.error_outline,
                       color: AppColors.red, size: 42),
                   const SizedBox(height: 12),
-                  Text(_error!, textAlign: TextAlign.center),
+                  Text(context.sharedMessage(_error), textAlign: TextAlign.center),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('إعادة المحاولة'),
+                    child: Text(context.l10n.retryAction),
                   ),
                 ],
               ),
@@ -253,7 +253,7 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
                   Icon(Icons.folder_open_outlined, color: c.muted, size: 52),
                   const SizedBox(height: 14),
                   Text(
-                    'لا توجد دراسات حالة في هذا القسم',
+                    context.l10n.caseSectionEmpty,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: c.heading,
@@ -278,11 +278,12 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          child: SizedBox(
-            height: 47,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 47),
             child: Center(
               child: Text(
                 label,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
@@ -420,14 +421,14 @@ extension _S07CaseDiscussionLayout on _CaseDiscussionListState {
           children: [
             Icon(icon, size: 14, color: const Color(0xFF1798B9)),
             const SizedBox(width: 5),
-            Text(
+            Flexible(child: Text(
               name,
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF183F57),
               ),
-            ),
+            )),
           ],
         ),
       );
