@@ -75,7 +75,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
       key: const ValueKey('s21_child_selector'),
       initialValue: selectedChildId,
       isExpanded: true,
-      hint: Text(context.l10n.caseChildField, style: TextStyle(
+      hint: Text(context.l10n.caseChildField, style: const TextStyle(
         color: _muted, fontSize: 14)),
       icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _blue),
       decoration: _fieldDecoration('', icon: true),
@@ -102,7 +102,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
         padding: EdgeInsets.only(top: 9),
         child: Text(context.l10n.caseNoExtraTeam,
           textAlign: TextAlign.start,
-          style: TextStyle(color: _muted, fontSize: 12)),
+          style: const TextStyle(color: _muted, fontSize: 12)),
       );
     }
     return Column(
@@ -165,7 +165,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: _ink,
                           fontSize: 20,
                           fontWeight: FontWeight.w800),
@@ -185,7 +185,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(top: 7),
                       child: Text(context.l10n.noAssignedChildren,
-                        style: TextStyle(color: _muted, fontSize: 12)),
+                        style: const TextStyle(color: _muted, fontSize: 12)),
                     ),
                   const SizedBox(height: 11),
                   SizedBox(

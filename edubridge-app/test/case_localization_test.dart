@@ -24,15 +24,19 @@ MockClient _client({bool empty = false, bool failList = false,
   if (request.url.path.endsWith('/case-discussions')) {
     return _response({'discussions': empty ? [] : [_case()]}, failList ? 500 : 200);
   }
-  if (request.url.path.endsWith('/children')) return _response({'children': [
+  if (request.url.path.endsWith('/children')) {
+    return _response({'children': [
     {'id': 7, 'name': 'محمود', 'assigned_teacher_id': 3, 'specialist_ids': [2]},
     {'id': 8, 'name': 'طفل غير معيّن', 'assigned_teacher_id': 99, 'specialist_ids': [99]},
-  ]});
-  if (request.url.path.endsWith('/users')) return _response({'users': [
+    ]});
+  }
+  if (request.url.path.endsWith('/users')) {
+    return _response({'users': [
     {'id': 2, 'name': 'مختص أصلي', 'role': 'specialist'},
     {'id': 3, 'name': 'معلم أصلي', 'role': 'teacher'},
     {'id': 99, 'name': 'مستخدم خارج الفريق', 'role': 'teacher'},
-  ]});
+    ]});
+  }
   return _response({'user': {'id': 2, 'name': 'مختص أصلي'}, 'verification': {'verification_status': 'approved'}});
 });
 Future<void> _mount(WidgetTester tester, Widget screen, String language, {double scale = 1}) async {

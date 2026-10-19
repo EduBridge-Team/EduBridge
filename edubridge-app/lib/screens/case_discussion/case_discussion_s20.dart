@@ -33,7 +33,7 @@ class CaseDiscussionEmptyS20 extends StatelessWidget {
         Text(
           context.l10n.caseListEmpty,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w800,
             color: Color(0xFF112F4B),
@@ -43,7 +43,7 @@ class CaseDiscussionEmptyS20 extends StatelessWidget {
         Text(
           context.l10n.caseListEmptyHintS20,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14.5,
             height: 1.85,
             color: Color(0xFF617D99),
