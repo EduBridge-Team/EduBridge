@@ -57,7 +57,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
     final student = _profile;
     final preview = student.isAssignmentPreview;
     final subtitle = [
-      if (student.age != null) '${student.age} سنة',
+      if (student.age != null) context.l10n.childAgeYears(student.age.toString()),
       if (student.disability.isNotEmpty) student.disability,
     ].join(' • ');
     return Scaffold(
@@ -65,7 +65,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
         toolbarHeight: 96,
         centerTitle: false,
         leading: IconButton(
-          tooltip: 'رجوع',
+          tooltip: context.l10n.back,
           icon: const CircleAvatar(
             radius: 18,
             backgroundColor: Color(0x33FFFFFF),
@@ -74,7 +74,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
-          _childName.isEmpty ? 'ملف الطالب' : 'ملف $_childName',
+          _childName.isEmpty ? context.l10n.studentProfile : context.l10n.studentProfileFor(_childName),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -94,13 +94,13 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
             ],
             if (_error != null) ...[
               Text(
-                _error!,
+                context.sharedMessage(_error),
                 style: const TextStyle(color: AppColors.red),
                 textAlign: TextAlign.center,
               ),
               TextButton(
                 onPressed: _load,
-                child: const Text('إعادة المحاولة'),
+                child: Text(context.l10n.retryAction),
               ),
               const SizedBox(height: 12),
             ],
@@ -113,7 +113,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
             if (preview) ...[
               const SizedBox(height: 12),
               Text(
-                'تظهر المعلومات المتاحة قبل قبول المتابعة. بيانات الهوية والمستندات تظهر بعد التعيين.',
+                context.l10n.previewInformationNotice,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: c.muted, fontSize: 12),
               ),
@@ -122,13 +122,13 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
             _s08Metrics(c),
             if (!_loading && _error == null && !preview) ...[
               const SizedBox(height: 22),
-              _s08Title(c, 'متابعة الطفل'),
+              _s08Title(c, context.l10n.childFollowUp),
               const SizedBox(height: 10),
               _s08Action(
                 c,
                 icon: Icons.edit_outlined,
-                title: 'تقييم الطفل والخطة',
-                subtitle: 'إضافة أو مراجعة تقييم الطفل',
+                title: context.l10n.evaluateChildPlan,
+                subtitle: context.l10n.addReviewChildEvaluation,
                 tint: const Color(0xFFDDF5F7),
                 accent: const Color(0xFF04AABB),
                 onTap: _evaluate,
@@ -136,8 +136,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               _s08Action(
                 c,
                 icon: Icons.trending_up_rounded,
-                title: 'عرض التقدّم',
-                subtitle: 'متابعة إنجاز الطفل وتطوره',
+                title: context.l10n.viewProgress,
+                subtitle: context.l10n.trackChildDevelopment,
                 tint: const Color(0xFFE4F5E7),
                 accent: const Color(0xFF37B54A),
                 badge: _s08CompletionPct == null
@@ -154,12 +154,12 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               _s08Action(
                 c,
                 icon: Icons.menu_book_outlined,
-                title: 'دروس الطفل',
-                subtitle: 'عرض الدروس والمواد التعليمية',
+                title: context.l10n.childLessons,
+                subtitle: context.l10n.viewLessonsMaterials,
                 tint: const Color(0xFFE0EDFC),
                 accent: const Color(0xFF1769C2),
                 badge: _s08LessonsCount == null
-                    ? null : '$_s08LessonsCount درس',
+                    ? null : context.l10n.profileLessonCount(_s08LessonsCount!),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -173,8 +173,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               _s08Action(
                 c,
                 icon: Icons.lightbulb_outline_rounded,
-                title: 'اقتراح مختص دعم تعليمي',
-                subtitle: 'اقتراح مختص لهذا الطفل',
+                title: context.l10n.recommendSupportSpecialist,
+                subtitle: context.l10n.recommendSpecialistForChild,
                 tint: const Color(0xFFE0EDFC),
                 accent: const Color(0xFF1769C2),
                 onTap: () async {
@@ -188,8 +188,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               _s08Action(
                 c,
                 icon: Icons.chat_bubble_outline,
-                title: 'مناقشة الحالة',
-                subtitle: 'التواصل مع فريق متابعة الطفل',
+                title: context.l10n.discussCase,
+                subtitle: context.l10n.contactChildCareTeam,
                 tint: const Color(0xFFDFF6F8),
                 accent: const Color(0xFF02B1C1),
                 onTap: () => Navigator.push(
@@ -202,81 +202,81 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               ),
             ],
             const SizedBox(height: 12),
-            _s08Title(c, 'تفاصيل الطفل'),
+            _s08Title(c, context.l10n.childDetails),
             const SizedBox(height: 10),
-            _s08Details(c, 'معلومات الطفل', subtitle, Icons.badge_outlined, [
-              _row(c, 'الاسم', _childName, Icons.person_outline),
+            _s08Details(c, context.l10n.childInformation, subtitle, Icons.badge_outlined, [
+              _row(c, context.l10n.name, _childName, Icons.person_outline),
               if (student.age != null)
-                _row(c, 'العمر', '${student.age} سنة', Icons.cake_outlined),
+                _row(c, context.l10n.age, context.l10n.childAgeYears(student.age.toString()), Icons.cake_outlined),
               if (student.birthDate.isNotEmpty)
-                _row(c, 'تاريخ الميلاد', student.birthDate, Icons.cake_outlined),
+                _row(c, context.l10n.birthDate, student.birthDate, Icons.cake_outlined),
               if (student.gender.isNotEmpty)
-                _row(c, 'الجنس', student.gender == 'female' ? 'أنثى' :
-                    student.gender == 'male' ? 'ذكر' : student.gender,
+                _row(c, context.l10n.gender, student.gender == 'female' ? context.l10n.female :
+                    student.gender == 'male' ? context.l10n.male : student.gender,
                     Icons.person_outline),
               if (student.disability.isNotEmpty)
-                _row(c, 'نوع الإعاقة', student.disability,
+                _row(c, context.l10n.disabilityType, student.disability,
                     Icons.accessibility_new),
               if (student.description.isNotEmpty)
-                _row(c, 'وصف الإعاقة', student.description, AppIcons.info),
+                _row(c, context.l10n.disabilityDescription, student.description, AppIcons.info),
               if (student.specialNeeds.isNotEmpty)
-                _row(c, 'احتياجات خاصة', student.specialNeeds, AppIcons.support),
+                _row(c, context.l10n.specialNeeds, student.specialNeeds, AppIcons.support),
               if (student.preferredStyle.isNotEmpty)
-                _row(c, 'أسلوب التعلّم', student.preferredStyle, AppIcons.lesson),
+                _row(c, context.l10n.learningStyle, student.preferredStyle, AppIcons.lesson),
               if (student.strengths.isNotEmpty)
-                _chips(c, 'نقاط القوة', student.strengths, AppColors.greenDeep),
+                _chips(c, context.l10n.strengths, student.strengths, AppColors.greenDeep),
               if (student.challenges.isNotEmpty)
-                _chips(c, 'التحديات', student.challenges, AppColors.orangeDeep),
+                _chips(c, context.l10n.challenges, student.challenges, AppColors.orangeDeep),
             ]),
             _s08Details(
-              c, 'فريق المتابعة والخطة',
+              c, context.l10n.followUpTeamPlan,
               [student.teacherName, student.specialistNames,
                student.organizationName].where((t) => t.isNotEmpty).join(' • '),
               Icons.groups_outlined,
               [
                 if (student.guardianNames.isNotEmpty)
-                  _row(c, 'ولي الأمر', student.guardianNames, AppIcons.parent),
+                  _row(c, context.l10n.parentRole, student.guardianNames, AppIcons.parent),
                 if (student.teacherName.isNotEmpty)
-                  _row(c, 'المعلم', student.teacherName, Icons.school_outlined),
+                  _row(c, context.l10n.teacherRole, student.teacherName, Icons.school_outlined),
                 if (student.specialistNames.isNotEmpty)
-                  _row(c, 'المختصون', student.specialistNames, AppIcons.specialist),
+                  _row(c, context.l10n.specialists, student.specialistNames, AppIcons.specialist),
                 if (student.organizationName.isNotEmpty)
-                  _row(c, 'المؤسسة', student.organizationName,
+                  _row(c, context.l10n.institutionRole, student.organizationName,
                       Icons.business_outlined),
                 if (student.educationalPlan.isNotEmpty)
-                  _row(c, 'الخطة التعليمية', student.educationalPlan,
+                  _row(c, context.l10n.educationalPlan, student.educationalPlan,
                       AppIcons.lesson),
-                _row(c, 'الحالة',
-                    StudentProfileLabels.specialistStatus(student),
+                _row(c, context.l10n.status,
+                    StudentProfileLabels.specialistStatus(student, strings: context.l10n),
                     Icons.info_outline),
                 if (student.notes.isNotEmpty)
-                  _row(c, 'ملاحظات', student.notes, AppIcons.info),
+                  _row(c, context.l10n.notes, student.notes, AppIcons.info),
               ],
             ),
             if (student.hasDocuments && !preview)
-              _s08Details(c, 'المستندات والتوثيق', '',
+              _s08Details(c, context.l10n.documentsVerification, '',
                   Icons.description_outlined, [
                 if (student.childNationalId.isNotEmpty)
-                  _row(c, 'هوية الطفل', student.childNationalId,
+                  _row(c, context.l10n.childNationalId, student.childNationalId,
                       Icons.badge_outlined),
                 if (student.guardianNationalId.isNotEmpty)
-                  _row(c, 'هوية ولي الأمر', student.guardianNationalId,
+                  _row(c, context.l10n.guardianNationalId, student.guardianNationalId,
                       Icons.badge_outlined),
                 if (student.guardianDocument.isNotEmpty)
-                  _row(c, 'صورة هوية ولي الأمر', 'مرفقة', Icons.attachment),
+                  _row(c, context.l10n.guardianIdPhoto, context.l10n.attached, Icons.attachment),
                 if (student.kinshipDocument.isNotEmpty)
-                  _row(c, 'مستند صلة القرابة', 'مرفق', Icons.attachment),
+                  _row(c, context.l10n.kinshipDocument, context.l10n.attached, Icons.attachment),
                 if (student.medicalReport.isNotEmpty)
-                  _row(c, 'التقرير الطبي', 'مرفق', Icons.description_outlined),
+                  _row(c, context.l10n.medicalReport, context.l10n.attached, Icons.description_outlined),
               ]),
             if (!_loading && _error == null && !preview)
-              _s08Details(c, 'أدوات متابعة إضافية',
-                  'نور • التقارير • التكييف', Icons.more_horiz_rounded, [
+              _s08Details(c, context.l10n.additionalFollowUpTools,
+                  context.l10n.noorReportsAdaptation, Icons.more_horiz_rounded, [
                 _actionTile(
                   c,
                   icon: Icons.auto_awesome_rounded,
-                  title: 'اسأل نور عن هذا الطالب',
-                  subtitle: 'ملخص ذكي مبني على بيانات الطالب',
+                  title: context.l10n.askNoorAboutStudent,
+                  subtitle: context.l10n.studentDataSummary,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -289,8 +289,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 _actionTile(
                   c,
                   icon: AppIcons.report,
-                  title: 'التقدم الأسبوعي وتقارير المعلم',
-                  subtitle: 'تقارير المعلم وسجل التقدم',
+                  title: context.l10n.weeklyProgressTeacherReports,
+                  subtitle: context.l10n.teacherReportsProgressHistory,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -305,8 +305,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   _actionTile(
                     c,
                     icon: Icons.accessibility_new_rounded,
-                    title: 'تكييف التعلّم',
-                    subtitle: 'ضبط ميزات التكيّف',
+                    title: context.l10n.adaptLearning,
+                    subtitle: context.l10n.adjustAdaptationFeatures,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -322,8 +322,8 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                   _actionTile(
                     c,
                     icon: Icons.fact_check_outlined,
-                    title: 'تقييم الخطة الحالية',
-                    subtitle: 'قياس فعالية الخطة التعليمية',
+                    title: context.l10n.evaluateCurrentPlan,
+                    subtitle: context.l10n.measurePlanEffectiveness,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -341,7 +341,7 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
               FilledButton.icon(
                 onPressed: () async => widget.onAccept!(_child),
                 icon: const Icon(Icons.check_circle_outline),
-                label: const Text('قبول متابعة الطفل'),
+                label: Text(context.l10n.acceptChildFollowUp),
               ),
             ],
           ],
@@ -366,24 +366,26 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
     children: [
       Expanded(child: _s08Metric(c, Icons.check_circle_outline,
           _s08CompletionPct == null ? '—' : '$_s08CompletionPct%',
-          'الإنجاز', const Color(0xFF42B751))),
+          context.l10n.achievement, const Color(0xFF42B751))),
       const SizedBox(width: 9),
       Expanded(child: _s08Metric(c, Icons.menu_book_outlined,
           _s08LessonsCount?.toString() ?? '—',
-          'الدروس', const Color(0xFF1769C2))),
+          context.l10n.lessons, const Color(0xFF1769C2))),
     ],
   );
 
   Widget _s08Metric(
     JisrColors c, IconData icon, String value, String label, Color accent,
   ) => Container(
-    height: 116,
+    constraints: const BoxConstraints(minHeight: 116),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
     decoration: BoxDecoration(
       color: c.card,
       borderRadius: BorderRadius.circular(17),
       border: Border.all(color: c.line),
     ),
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CircleAvatar(
@@ -453,20 +455,22 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 ),
               ),
               if (badge != null)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 5,
+                Flexible(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tint,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(badge, style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
+                    )),
                   ),
-                  decoration: BoxDecoration(
-                    color: tint,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(badge, style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: accent,
-                  )),
                 ),
               Icon(Icons.chevron_left_rounded, color: c.muted, size: 21),
             ],

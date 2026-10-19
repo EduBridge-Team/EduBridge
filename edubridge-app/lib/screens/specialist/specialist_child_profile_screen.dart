@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -45,7 +46,7 @@ class _SpecialistChildProfileScreenState
   Map<String, dynamic> get _child => _profile.toJson();
   bool _canAdapt = false;
   bool _loading = true;
-  String? _error;
+  Object? _error;
   int? _s08LessonsCount;
   int? _s08CompletionPct;
 
@@ -78,7 +79,7 @@ class _SpecialistChildProfileScreenState
     } catch (_) {
       if (mounted) {
         setState(() =>
-            _error = 'تعذّر تحديث معلومات الطالب. حاول مرة أخرى.');
+            _error = SharedUiMessage.studentProfileRefreshFailed);
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -156,7 +157,7 @@ class _SpecialistChildProfileScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _childName.isEmpty ? 'طالب' : _childName,
+                  _childName.isEmpty ? context.l10n.student : _childName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -168,12 +169,12 @@ class _SpecialistChildProfileScreenState
                 const SizedBox(height: 4),
                 Text(
                   [
-                    if (age != null) '$age سنة',
+                    if (age != null) context.l10n.childAgeYears(age.toString()),
                     if (disability.isNotEmpty) disability,
                   ].join(' • ').isEmpty
-                      ? 'معلومات الطالب'
+                      ? context.l10n.studentInformation
                       : [
-                          if (age != null) '$age سنة',
+                          if (age != null) context.l10n.childAgeYears(age.toString()),
                           if (disability.isNotEmpty) disability,
                         ].join(' • '),
                   maxLines: 1,
@@ -186,18 +187,20 @@ class _SpecialistChildProfileScreenState
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: .16),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              isPreview ? 'قبل التعيين' : 'قيد المتابعة',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .16),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                isPreview ? context.l10n.beforeAssignment : context.l10n.underFollowUp,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ),

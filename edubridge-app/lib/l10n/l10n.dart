@@ -3,6 +3,8 @@ import 'generated/app_localizations.dart';
 
 /// Local UI state stores message identities, not a sentence in a previous locale.
 enum SharedUiMessage {
+  studentProfileRefreshFailed,
+  careTeamLoadFailed,
   verificationRequestsLoadFailed,
   usersLoadFailed,
   ticketsLoadFailed,
@@ -45,6 +47,8 @@ extension LocalizedContext on BuildContext {
   String sharedMessage(Object? message) {
     if (message is SharedUiMessage) {
       return switch (message) {
+        SharedUiMessage.studentProfileRefreshFailed => l10n.studentProfileRefreshFailed,
+        SharedUiMessage.careTeamLoadFailed => l10n.careTeamLoadFailed,
         SharedUiMessage.verificationRequestsLoadFailed => l10n.verificationRequestsLoadFailed,
         SharedUiMessage.usersLoadFailed => l10n.usersLoadFailed,
         SharedUiMessage.ticketsLoadFailed => l10n.ticketsLoadFailed,

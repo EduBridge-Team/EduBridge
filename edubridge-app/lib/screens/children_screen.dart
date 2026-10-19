@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/children_screen.dart
 import 'package:flutter/material.dart';
@@ -19,9 +20,6 @@ import 'specialist/specialist_child_profile_screen.dart';
 import '../widgets/teacher_navigation_bar.dart';
 
 class ChildrenScreen extends StatefulWidget {
-  String? get destinationLabel => switch (destination) {
-    'weekly-reports' => 'التقدم الأسبوعي', 'homeworks' => 'الواجبات', _ => null,
-  };
   final String? destination;
   final bool forProgress;
   const ChildrenScreen({super.key, this.forProgress = false, this.destination});
@@ -31,6 +29,11 @@ class ChildrenScreen extends StatefulWidget {
 }
 
 class _ChildrenScreenState extends State<ChildrenScreen> {
+  String? get _destinationLabel => switch (widget.destination) {
+    'weekly-reports' => context.l10n.weeklyProgress,
+    'homeworks' => context.l10n.homeworks,
+    _ => null,
+  };
   String? _role;
   List _children = [];
   late final PagedListController _pages;
@@ -98,13 +101,13 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: JisrAppBar(
-        title: widget.destinationLabel != null ? 'اختر طالباً لعرض ${widget.destinationLabel}' : widget.forProgress ? 'اختر طفلاً لعرض تقدّمه' : 'الأطفال',
+        title: _destinationLabel != null ? context.l10n.chooseStudentForDestination(_destinationLabel!) : widget.forProgress ? context.l10n.chooseChildForProgress : context.l10n.children,
         actions: const [ListenButton()],
       ),
       bottomNavigationBar: const TeacherNavigationBar(),
       body: Column(children: [
         Padding(padding: const EdgeInsets.all(12), child: TextField(
-          decoration: const InputDecoration(hintText: 'ابحث عن طفل أو معلّم...', prefixIcon: Icon(AppIcons.search)),
+          decoration: InputDecoration(hintText: context.l10n.searchChildOrTeacher, prefixIcon: Icon(AppIcons.search)),
           onChanged: _pages.search,
         )),
         Expanded(child: RefreshIndicator(onRefresh: _refreshChildren, child: _buildBody())),
@@ -128,7 +131,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           const Icon(AppIcons.error, size: 58, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.l10n.childrenLoadFailed,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
@@ -141,7 +144,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
             child: FilledButton.icon(
               onPressed: _loadChildren,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
             ),
           ),
         ],
@@ -170,7 +173,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            _pages.query.trim().isEmpty ? 'لا يوجد أطفال بعد' : 'لا نتائج مطابقة لبحثك',
+            _pages.query.trim().isEmpty ? context.l10n.noChildrenYet : context.l10n.noSearchResults,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
@@ -180,7 +183,7 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'سيظهر الأطفال المرتبطون بحسابك هنا.',
+            context.l10n.linkedChildrenDescription,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: c.muted),
           ),
@@ -247,8 +250,8 @@ class _ChildrenScreenState extends State<ChildrenScreen> {
                             const SizedBox(height: 4),
                             Text(
                               widget.forProgress
-                                  ? 'عرض التقدّم والإنجازات'
-                                  : widget.destinationLabel ?? (['teacher', 'specialist'].contains(_role) ? 'عرض ملف الطالب' : 'عرض الدروس والأنشطة'),
+                                  ? context.l10n.viewProgressAchievements
+                                  : _destinationLabel ?? (['teacher', 'specialist'].contains(_role) ? context.l10n.viewStudentProfile : context.l10n.viewLessonsActivities),
                               style: TextStyle(
                                 fontSize: 13.5,
                                 color: c.muted,

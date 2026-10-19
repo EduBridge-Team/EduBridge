@@ -1,23 +1,30 @@
+import 'package:flutter/widgets.dart' show Locale;
+import '../../../l10n/generated/app_localizations.dart';
 import '../domain/student_profile.dart';
 
 /// Keep the existing specialist and teacher display conventions explicit.
 class StudentProfileLabels {
-  static String specialistStatus(StudentProfile profile) {
-    if (profile.isAssignmentPreview) return 'قبل التعيين';
+  static String specialistStatus(StudentProfile profile, {AppLocalizations? strings}) {
+    final s = strings ?? lookupAppLocalizations(const Locale('ar'));
+    if (profile.isAssignmentPreview) return s.beforeAssignment;
     return switch (profile.status.toLowerCase()) {
-      'pending' => 'بانتظار التقييم',
-      'active' => 'قيد المتابعة',
-      'completed' || 'done' => 'مكتمل',
-      _ => profile.status.isEmpty ? 'قيد المتابعة' : profile.status,
+      'pending' => s.awaitingAssessment,
+      'assigned' => s.assignedStatus,
+      'active' => s.underFollowUp,
+      'completed' || 'done' => s.completedStatus,
+      _ => profile.status.isEmpty ? s.underFollowUp : profile.status,
     };
   }
-  static String teacherStatus(StudentProfile profile) => switch (profile.status.toLowerCase()) {
-    'pending' => 'بانتظار التقييم',
-    'assigned' || 'active' => 'قيد المتابعة',
-    'evaluated' => 'تم التقييم',
-    'completed' || 'done' => 'مكتمل',
+  static String teacherStatus(StudentProfile profile, {AppLocalizations? strings}) {
+    final s = strings ?? lookupAppLocalizations(const Locale('ar'));
+    return switch (profile.status.toLowerCase()) {
+    'pending' => s.awaitingAssessment,
+    'assigned' || 'active' => s.underFollowUp,
+    'evaluated' => s.evaluatedStatus,
+    'completed' || 'done' => s.completedStatus,
     _ => profile.status,
-  };
+    };
+  }
   static List<String> teacherList(List<String> values) => List.unmodifiable(
     values.map((value) => value.trim()).where((value) => value.isNotEmpty));
 }
