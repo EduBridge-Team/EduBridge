@@ -116,6 +116,7 @@ void main() {
       await http.runWithClient(() async {
         await _mount(tester, const TeacherChildDetailsScreen(childId: 7, childName: 'محمود', initialTab: 1), language, scale: 2);
         expect(find.text(strings.studentLessonsTab), findsOneWidget);
+        await _scrollTo(tester, find.text('درس المعلم الأصلي'));
         expect(find.text('درس المعلم الأصلي'), findsOneWidget);
         expect(find.text(strings.completedStatus), findsWidgets);
       }, () => _client());
