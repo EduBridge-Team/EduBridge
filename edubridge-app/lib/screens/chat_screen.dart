@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/chat_screen.dart
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _listController = CommunicationListController(
-      load: () => _repository.loadMessages(widget.conversationId), errorMessage: 'تعذّر تحميل الرسائل',
+      load: () => _repository.loadMessages(widget.conversationId), errorMessage: 'messages_load_failed',
     )..addListener(_onListChanged);
     _loadMessages();
   }
@@ -80,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تعذّر إرسال الرسالة: $e')),
+        SnackBar(content: Text(context.l10n.messageSendFailed)),
       );
     } finally {
       if (mounted) setState(() => _sending = false);

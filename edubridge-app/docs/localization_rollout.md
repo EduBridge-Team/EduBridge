@@ -44,10 +44,36 @@ RTL overrides and untranslated text are tracked below; phase 2 alone does not
 represent complete English support. User manual testing is deferred until all
 six stages finish, as requested; automated checks run for every PR.
 
+## Phase 3 shared interfaces
+
+Translated onboarding, sign-in/registration, password recovery/reset/change,
+identity verification states/forms, profile/account/photo/deletion controls,
+professional certificate uploads, support, conversation lists/contact picker,
+chat composer, notification screen controls, and shared navigation labels.
+Guest language menus reuse the existing selector, so English can be chosen
+before signing in. Interface direction and logical arrows follow the locale.
+
+App-owned errors/notices use semantic `SharedUiMessage` values until display,
+so an already-visible validation message follows a later locale change.
+Unstructured server errors keep their original detail in Arabic and use a
+translated generic fallback in English. Authored user content (names, messages,
+certificate titles, reports, lessons and incoming notification content) is not
+machine-translated or rewritten. Notification controls/dates are localized;
+server-provided notification titles/bodies retain their original content.
+
+Registration roles, verification gates, certificate eligibility, API payload
+identifiers and account deletion endpoints are unchanged. The deletion dialog
+requires the exact word displayed in the active locale (`حذف` / `DELETE`), and
+re-evaluates confirmation after a locale change. No typed input is translated.
+
+New widget coverage exercises small-screen English at text scales 1/2, onboarding,
+live validation-language changes, destructive confirmation, canonical role IDs,
+all six roles on shared conversation screens, and original Arabic message/name
+preservation. Existing Arabic tests remain in place. CI results are recorded in
+the PR; physical/user QA stays deferred until the rollout finishes.
+
 ## Pending stages
 
-3. Shared screens/components, authentication, errors, dialogs and empty/loading
-   states. Translate accessibility/tooltip labels too.
 4. Role-specific screens and visible labels in assessments, reports, progress,
    adaptations and administration, preserving underlying data and permissions.
 5. Child UI, game prompts/feedback, breaks, voice input/output and semantic

@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/screens/profile/profile_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? _profile;
   List<dynamic> _certificates = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   bool _deleting = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -52,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (['teacher', 'specialist'].contains(data?['role'])) {
         final response = await ApiService.authGet('/certificates');
         final certificates = ApiService.decodeMap(response.body);
-        if (response.statusCode != 200) throw Exception('تعذّر تحميل الشهادات');
+        if (response.statusCode != 200) throw StateError('certificates_load_failed');
         _certificates = certificates['certificates'] as List? ?? [];
       }
       if (!mounted) return;
@@ -67,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الملف الشخصي';
+        _error = SharedUiMessage.profileLoadFailed;
         _loading = false;
       });
     }
@@ -86,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر فتح المعرض')),
+        SnackBar(content: Text(context.l10n.galleryOpenFailed)),
       );
     }
   }
@@ -103,8 +104,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم تحديث الصورة'),
+        SnackBar(
+          content: Text(context.l10n.photoUpdated),
           backgroundColor: AppColors.brandTealDeep,
         ),
       );
@@ -113,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _uploadingAvatar = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          content: Text(context.sharedMessage(e)),
           backgroundColor: AppColors.red,
         ),
       );
@@ -125,17 +126,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('حذف الصورة'),
-        content: const Text('هل تريد حذف صورة البروفايل؟'),
+        title: Text(context.l10n.deletePhoto),
+        content: Text(context.l10n.deletePhotoQuestion),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('حذف'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),
@@ -151,8 +152,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (_profile != null) _profile!['avatar_url'] = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم حذف الصورة'),
+        SnackBar(
+          content: Text(context.l10n.photoDeleted),
           backgroundColor: AppColors.green,
         ),
       );
@@ -175,15 +176,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'تغيير صورة البروفايل',
+              Text(
+                context.l10n.changeProfilePhoto,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(AppIcons.camera, color: AppColors.brandBlue),
-                title: const Text('التقاط صورة'),
-                subtitle: const Text('من كاميرا الجهاز'),
+                title: Text(context.l10n.takePhoto),
+                subtitle: Text(context.l10n.fromDeviceCamera),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _pickAvatar(ImageSource.camera);
@@ -191,8 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               ListTile(
                 leading: const Icon(AppIcons.image, color: AppColors.brandBlue),
-                title: const Text('اختيار من المعرض'),
-                subtitle: const Text('صورة محفوظة على الجهاز'),
+                title: Text(context.l10n.chooseFromGallery),
+                subtitle: Text(context.l10n.savedDevicePhoto),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _pickAvatar(ImageSource.gallery);
@@ -201,8 +202,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (hasAvatar)
                 ListTile(
                   leading: const Icon(AppIcons.delete, color: AppColors.red),
-                  title: const Text(
-                    'حذف الصورة الحالية',
+                  title: Text(
+                    context.l10n.deleteCurrentPhoto,
                     style: TextStyle(color: AppColors.red),
                   ),
                   onTap: () {
@@ -246,8 +247,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.pop(context);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم حذف حسابك بنجاح'),
+        SnackBar(
+          content: Text(context.l10n.accountDeleted),
           backgroundColor: AppColors.green,
         ),
       );
@@ -276,17 +277,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('تسجيل الخروج'),
-        content: const Text('هل تريد تسجيل الخروج من التطبيق؟'),
+        title: Text(context.l10n.signOut),
+        content: Text(context.l10n.signOutQuestion),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('تسجيل الخروج'),
+            child: Text(context.l10n.signOut),
           ),
         ],
       ),

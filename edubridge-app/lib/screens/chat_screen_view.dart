@@ -9,7 +9,7 @@ extension _ChatScreenStateView on _ChatScreenState {
         const Icon(AppIcons.error, size: 54, color: AppColors.red),
         const SizedBox(height: 14),
         Text(
-          _error!,
+          context.l10n.messagesLoadFailed,
           textAlign: TextAlign.center,
           style: TextStyle(color: c.dangerText, fontWeight: FontWeight.w700),
         ),
@@ -18,7 +18,7 @@ extension _ChatScreenStateView on _ChatScreenState {
           child: FilledButton.icon(
             onPressed: _loadMessages,
             icon: const Icon(AppIcons.refresh),
-            label: const Text('إعادة المحاولة'),
+            label: Text(context.l10n.retryAction),
           ),
         ),
       ],
@@ -38,7 +38,7 @@ extension _ChatScreenStateView on _ChatScreenState {
         return _ChatBubble(
           message: msg['content'] ?? '',
           isMe: isMe,
-          senderName: isMe ? 'أنا' : widget.otherUserName,
+          senderName: isMe ? context.l10n.me : widget.otherUserName,
           time: date != null ? PresentationText.clock(date) : '',
           color: isMe ? AppColors.brandBlue : c.card,
           textColor: isMe ? Colors.white : c.body,

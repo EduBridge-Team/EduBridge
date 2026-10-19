@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // Text message composer shared by chat screens.
 import 'package:flutter/material.dart';
 import '../../theme.dart';
@@ -47,7 +48,7 @@ class _ChatComposerState extends State<ChatComposer> {
 
   Widget _buildS16InputRow() {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           12, 10, 12,
@@ -60,14 +61,14 @@ class _ChatComposerState extends State<ChatComposer> {
               child: TextField(
                 controller: widget.controller,
                 enabled: !widget.isSending,
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.right,
+                textDirection: Directionality.of(context),
+                textAlign: TextAlign.start,
                 minLines: 1,
                 maxLines: 3,
                 maxLength: 2000,
                 textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
-                  hintText: 'اكتب رسالتك...',
+                  hintText: context.l10n.messagePlaceholder,
                   hintStyle: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF718DA4),
@@ -100,7 +101,7 @@ class _ChatComposerState extends State<ChatComposer> {
                 final enabled =
                     value.text.trim().isNotEmpty && !widget.isSending;
                 return IconButton.filled(
-                  tooltip: 'إرسال',
+                  tooltip: context.l10n.send,
                   onPressed: enabled ? _handleSend : null,
                   icon: widget.isSending
                       ? const SizedBox(

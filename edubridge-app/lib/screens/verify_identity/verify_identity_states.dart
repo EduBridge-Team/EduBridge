@@ -7,7 +7,7 @@ Widget buildVerifiedState({
   required bool isTeacherOrSpecialist,
 }) {
   return Scaffold(
-    appBar: JisrAppBar(title: 'توثيق الهوية'),
+    appBar: JisrAppBar(title: context.l10n.verifyIdentity),
     body: Center(
       child: Container(
         margin: const EdgeInsets.all(24),
@@ -23,14 +23,14 @@ Widget buildVerifiedState({
             const Icon(Icons.verified_user, size: 76, color: AppColors.green),
             const SizedBox(height: 16),
             Text(
-              'تم توثيق حسابك',
+              context.l10n.accountVerified,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
               isTeacherOrSpecialist
-                  ? 'تم اعتماد الهوية وبياناتك المهنية. يمكنك استخدام صلاحياتك بشكل طبيعي.'
-                  : 'تم اعتماد هويتك بنجاح.',
+                  ? context.l10n.professionalIdentityApproved
+                  : context.l10n.identityApproved,
               textAlign: TextAlign.center,
               style: TextStyle(color: c.muted, fontSize: 15, height: 1.6),
             ),
@@ -40,7 +40,7 @@ Widget buildVerifiedState({
               height: 56,
               child: FilledButton.icon(
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('العودة'),
+                label: Text(context.l10n.returnAction),
                 onPressed: () => Navigator.maybePop(context),
               ),
             ),
@@ -59,7 +59,7 @@ Widget buildPendingState({
   required Future<void> Function() onRefresh,
 }) {
   return Scaffold(
-    appBar: JisrAppBar(title: 'توثيق الهوية'),
+    appBar: JisrAppBar(title: context.l10n.verifyIdentity),
     body: Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -69,14 +69,14 @@ Widget buildPendingState({
             const Icon(Icons.hourglass_top, size: 72, color: AppColors.tealDeep),
             const SizedBox(height: 16),
             Text(
-              'طلبك قيد المراجعة',
+              context.l10n.verificationPending,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
               isTeacherOrSpecialist
-                  ? 'سيتم التحقق من هويتك وشهادتك خلال 24 ساعة. شكراً لصبرك.'
-                  : 'سيتم تفعيل حسابك فور موافقة الإدارة. شكراً لصبرك.',
+                  ? context.l10n.professionalVerificationPending
+                  : context.l10n.verificationPendingDescription,
               textAlign: TextAlign.center,
               style: TextStyle(color: c.muted, fontSize: 15, height: 1.6),
             ),
@@ -86,14 +86,14 @@ Widget buildPendingState({
               height: 56,
               child: FilledButton.icon(
                 icon: const Icon(Icons.refresh),
-                label: const Text('تحديث الحالة'),
+                label: Text(context.l10n.refreshStatus),
                 onPressed: loading ? null : onRefresh,
               ),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('خروج'),
+              child: Text(context.l10n.exit),
             ),
           ],
         ),
@@ -108,7 +108,7 @@ Widget buildRejectedState({
   required VoidCallback onRetry,
 }) {
   return Scaffold(
-    appBar: JisrAppBar(title: 'توثيق الهوية'),
+    appBar: JisrAppBar(title: context.l10n.verifyIdentity),
     body: Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -118,12 +118,12 @@ Widget buildRejectedState({
             const Icon(Icons.cancel, size: 72, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'تم رفض طلب التوثيق',
+              context.l10n.verificationRejected,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.heading),
             ),
             const SizedBox(height: 8),
             Text(
-              'يرجى مراجعة البيانات والصور وإعادة المحاولة، أو التواصل مع الدعم الفني.',
+              context.l10n.verificationRejectedDescription,
               textAlign: TextAlign.center,
               style: TextStyle(color: c.muted, fontSize: 15, height: 1.6),
             ),
@@ -133,7 +133,7 @@ Widget buildRejectedState({
               height: 56,
               child: FilledButton(
                 onPressed: onRetry,
-                child: const Text('إعادة المحاولة'),
+                child: Text(context.l10n.retryAction),
               ),
             ),
           ],

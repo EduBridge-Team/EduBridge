@@ -1,3 +1,5 @@
+import '../widgets/language_selector.dart';
+import '../l10n/l10n.dart';
 // lib/screens/register_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -27,19 +29,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  String? _error;
+  Object? _error;
 
-  static const _roles = {
-    'parent': 'ولي أمر',
-    'teacher': 'معلّم',
-    'specialist': 'مختص',
+  Map<String, String> get _roles => {
+    'parent': context.l10n.parentRole,
+    'teacher': context.l10n.teacherRole,
+    'specialist': context.l10n.specialistRole,
   };
 
   bool get _needsSpecialty => _role == 'specialist';
 
-  static const _specialties = {
-    'learning_support': 'مختص دعم تعليمي',
-    'educational': 'مختص تعليمي',
+  Map<String, String> get _specialties => {
+    'learning_support': context.l10n.learningSupportSpecialist,
+    'educational': context.l10n.educationalSpecialist,
   };
 
   Future<void> _register() async {
@@ -66,8 +68,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول.'),
+        SnackBar(
+          content: Text(context.l10n.accountCreatedVerifyEmail),
           backgroundColor: AppColors.green,
         ),
       );

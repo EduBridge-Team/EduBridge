@@ -11,16 +11,16 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
     titleSpacing: 0,
     leadingWidth: 52,
     leading: IconButton(
-      tooltip: 'رجوع', onPressed: () => Navigator.maybePop(context),
+      tooltip: context.l10n.back, onPressed: () => Navigator.maybePop(context),
       style: IconButton.styleFrom(
         backgroundColor: const Color(0x33FFFFFF)),
-      icon: const Directionality(textDirection: TextDirection.ltr,
-        child: Icon(Icons.arrow_forward_rounded, size: 23))),
-    title: const Text('الإشعارات', style: TextStyle(
+      icon: Directionality(textDirection: Directionality.of(context),
+        child: Icon(Icons.arrow_back_rounded, size: 23))),
+    title: Text(context.l10n.notifications, style: TextStyle(
       fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
     actions: [
       IconButton(
-        tooltip: 'تحديث الإشعارات',
+        tooltip: context.l10n.refreshNotifications,
         onPressed: _loading ? null : _load,
         style: IconButton.styleFrom(backgroundColor: const Color(0x33FFFFFF)),
         icon: const Icon(Icons.refresh_rounded, size: 23)),
@@ -29,7 +29,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
         builder: (context, count, _) => TextButton(
           onPressed: count == 0 || _markingAll || _loadingMore
               ? null : _markAllRead,
-          child: Text('قراءة الكل', style: TextStyle(
+          child: Text(context.l10n.markAllRead, style: TextStyle(
             color: count == 0 ? const Color(0x99FFFFFF) : Colors.white,
             fontSize: 13, fontWeight: FontWeight.w700)),
         ),
@@ -130,7 +130,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
                     ? TextButton(
                         onPressed: _loadingMore || _markingAll ? null : _loadMore,
                         child: Text(_loadingMore
-                            ? 'جارِ التحميل...' : 'تحميل إشعارات أقدم'))
+                            ? context.l10n.loadingDots : context.l10n.loadOlderNotifications))
                     : const SizedBox.shrink(),
               );
             },
@@ -182,23 +182,23 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
             Navigator.pushReplacement(context,
               MaterialPageRoute<void>(builder: (_) => screen));
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
               icon: Icon(Icons.people_outline),
               selectedIcon: Icon(Icons.people_rounded),
-              label: 'الأطفال',
+              label: context.l10n.children,
             ),
             NavigationDestination(
               icon: Icon(Icons.description_outlined),
-              label: 'دراسات الحالة',
+              label: context.l10n.caseStudies,
             ),
             NavigationDestination(
               icon: Icon(Icons.chat_bubble_outline_rounded),
-              label: 'المحادثات',
+              label: context.l10n.conversations,
             ),
             NavigationDestination(
               icon: Icon(Icons.inbox_outlined),
-              label: 'طلبات الدعم',
+              label: context.l10n.supportRequests,
             ),
           ],
         ),

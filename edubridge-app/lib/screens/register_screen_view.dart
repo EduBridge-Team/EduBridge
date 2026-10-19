@@ -8,7 +8,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const JisrAppBar(title: 'إنشاء حساب'),
+      appBar: JisrAppBar(title: context.l10n.createAccountTitle, actions: const [LanguageMenuButton(color: Colors.white)]),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -26,7 +26,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'ابدأ رحلتك مع EduBridge',
+                      context.l10n.startYourJourney,
                       textAlign: TextAlign.center,
                       style: textTheme.headlineSmall?.copyWith(
                         height: 1.25,
@@ -35,7 +35,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'أنشئ حسابك الآن، ويمكنك استكمال بياناتك وتوثيق حسابك لاحقًا.',
+                      context.l10n.createAccountSubtitle,
                       textAlign: TextAlign.center,
                       style: textTheme.bodySmall?.copyWith(
                         height: 1.5,
@@ -63,7 +63,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'المعلومات الأساسية',
+                            context.l10n.basicInformation,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
@@ -74,13 +74,13 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             controller: _nameCtrl,
                             textInputAction: TextInputAction.next,
                             autofillHints: const [AutofillHints.name],
-                            decoration: const InputDecoration(
-                              labelText: 'الاسم الكامل',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.fullName,
                               prefixIcon: Icon(AppIcons.profile),
                             ),
                             validator: (v) =>
                                 (v == null || v.trim().isEmpty)
-                                    ? 'الاسم مطلوب'
+                                    ? context.l10n.nameRequired
                                     : null,
                           ),
                           const SizedBox(height: 14),
@@ -89,18 +89,18 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             autofillHints: const [AutofillHints.email],
-                            decoration: const InputDecoration(
-                              labelText: 'البريد الإلكتروني',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.email,
                               prefixIcon: Icon(Icons.mail_outline_rounded),
                             ),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'البريد الإلكتروني مطلوب';
+                                return context.l10n.emailRequired;
                               }
                               final email = v.trim();
                               if (!email.contains('@') ||
                                   !email.split('@').last.contains('.')) {
-                                return 'صيغة البريد الإلكتروني غير صحيحة';
+                                return context.l10n.invalidEmail;
                               }
                               return null;
                             },
@@ -109,7 +109,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           Divider(color: c.line),
                           const SizedBox(height: 16),
                           Text(
-                            'نوع الحساب',
+                            context.l10n.accountType,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
@@ -117,7 +117,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'اختر الدور الذي سيُستخدم للوصول إلى ميزات EduBridge المناسبة لك.',
+                            context.l10n.chooseRoleDescription,
                             style: textTheme.bodySmall?.copyWith(
                               height: 1.5,
                               color: c.muted,
@@ -128,11 +128,11 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             initialValue: _role,
                             isExpanded: true,
                             alignment: AlignmentDirectional.centerStart,
-                            decoration: const InputDecoration(
-                              labelText: 'الدور',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.role,
                               prefixIcon: Icon(AppIcons.users),
                             ),
-                            items: _RegisterScreenState._roles.entries
+                            items: _roles.entries
                                 .map(
                                   (e) => DropdownMenuItem(
                                     value: e.key,
@@ -161,11 +161,11 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                               initialValue: _specialty,
                               isExpanded: true,
                               alignment: AlignmentDirectional.centerStart,
-                              decoration: const InputDecoration(
-                                labelText: 'التخصص',
+                              decoration: InputDecoration(
+                                labelText: context.l10n.specialty,
                                 prefixIcon: Icon(AppIcons.specialist),
                               ),
-                              items: _RegisterScreenState._specialties.entries
+                              items: _specialties.entries
                                   .map(
                                     (e) => DropdownMenuItem(
                                       value: e.key,
@@ -189,7 +189,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           Divider(color: c.line),
                           const SizedBox(height: 16),
                           Text(
-                            'الأمان',
+                            context.l10n.security,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: c.heading,
@@ -197,7 +197,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'استخدم كلمة مرور لا تقل عن 8 أحرف.',
+                            context.l10n.passwordEightHint,
                             style: textTheme.bodySmall?.copyWith(
                               height: 1.5,
                               color: c.muted,
@@ -211,7 +211,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                             textInputAction: TextInputAction.next,
                             autofillHints: const [AutofillHints.newPassword],
                             decoration: InputDecoration(
-                              labelText: 'كلمة المرور',
+                              labelText: context.l10n.password,
                               prefixIcon: const Icon(AppIcons.lock),
                               counterText: '',
                               suffixIcon: IconButton(
@@ -225,16 +225,16 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                       : Icons.visibility_off_outlined,
                                 ),
                                 tooltip: _obscurePassword
-                                    ? 'إظهار كلمة المرور'
-                                    : 'إخفاء كلمة المرور',
+                                    ? context.l10n.showPassword
+                                    : context.l10n.hidePassword,
                               ),
                             ),
                             validator: (v) {
                               if (v == null || v.isEmpty) {
-                                return 'كلمة المرور مطلوبة';
+                                return context.l10n.passwordRequired;
                               }
                               if (v.length < 8 || v.length > 128) {
-                                return 'كلمة المرور يجب أن تكون بين 8 و128 حرفاً';
+                                return context.l10n.passwordLengthRange;
                               }
                               return null;
                             },
@@ -248,7 +248,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                               if (!_loading) _register();
                             },
                             decoration: InputDecoration(
-                              labelText: 'تأكيد كلمة المرور',
+                              labelText: context.l10n.confirmPassword,
                               prefixIcon: const Icon(AppIcons.lock),
                               suffixIcon: IconButton(
                                 onPressed: () => _refreshState(
@@ -261,16 +261,16 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                       : Icons.visibility_off_outlined,
                                 ),
                                 tooltip: _obscureConfirmPassword
-                                    ? 'إظهار كلمة المرور'
-                                    : 'إخفاء كلمة المرور',
+                                    ? context.l10n.showPassword
+                                    : context.l10n.hidePassword,
                               ),
                             ),
                             validator: (v) {
                               if (v == null || v.isEmpty) {
-                                return 'أعد كتابة كلمة المرور';
+                                return context.l10n.repeatPassword;
                               }
                               return v != _passwordCtrl.text
-                                  ? 'كلمتا المرور غير متطابقتين'
+                                  ? context.l10n.passwordMismatch
                                   : null;
                             },
                           ),
@@ -296,7 +296,7 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      _error!,
+                                      context.sharedMessage(_error),
                                       style: textTheme.bodyMedium?.copyWith(
                                         color: AppColors.red,
                                         fontWeight: FontWeight.w600,
@@ -322,13 +322,13 @@ extension _RegisterScreenStateView on _RegisterScreenState {
                                 : const Icon(AppIcons.check),
                             label: Text(
                               _loading
-                                  ? 'جارٍ إنشاء الحساب...'
-                                  : 'إنشاء الحساب',
+                                  ? context.l10n.creatingAccount
+                                  : context.l10n.createAccount,
                             ),
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'بإنشاء الحساب، ستحتاج إلى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.',
+                            context.l10n.verifyBeforeSignIn,
                             textAlign: TextAlign.center,
                             style: textTheme.labelSmall?.copyWith(
                               height: 1.5,

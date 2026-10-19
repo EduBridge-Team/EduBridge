@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/chats_screen.dart
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void initState() {
     super.initState();
     _listController = CommunicationListController(
-      load: _repository.loadConversations, errorMessage: 'تعذّر تحميل المحادثات',
+      load: _repository.loadConversations, errorMessage: 'conversations_load_failed',
     )..addListener(_onListChanged);
     _loadConversations();
   }
@@ -73,7 +74,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       if (!mounted) return;
       final message = e.toString().replaceFirst('Exception: ', '');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(content: Text(context.sharedMessage(message))),
       );
       return;
     }
@@ -83,7 +84,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Navigator.of(context).pop();
       try {
         final conversationId = await _repository.create(
-          user['id'], 'محادثة مع ${user['name']}',
+          user['id'], context.l10n.conversationWith(user['name']?.toString() ?? ''),
         );
         if (!mounted) return;
         await Navigator.push(
@@ -101,7 +102,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تعذّر إنشاء المحادثة: $e')),
+          SnackBar(content: Text(context.l10n.conversationCreateFailed)),
         );
       }
     }

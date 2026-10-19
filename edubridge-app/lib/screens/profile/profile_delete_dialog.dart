@@ -10,16 +10,15 @@ class DeleteAccountDialog extends StatefulWidget {
 
 class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   final _confirmCtrl = TextEditingController();
-  bool _canDelete = false;
+  bool get _canDelete => _confirmCtrl.text.trim() == _confirmWord;
 
-  static const _confirmWord = 'حذف';
+  String get _confirmWord => context.l10n.deleteConfirmationWord;
 
   @override
   void initState() {
     super.initState();
     _confirmCtrl.addListener(() {
-      final ok = _confirmCtrl.text.trim() == _confirmWord;
-      if (ok != _canDelete) setState(() => _canDelete = ok);
+      setState(() {});
     });
   }
 
@@ -35,13 +34,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Row(
+      title: Row(
         children: [
           Icon(AppIcons.warning, color: AppColors.red, size: 32),
           SizedBox(width: 8),
           Expanded(
             child: Text(
-              'حذف الحساب نهائياً',
+              context.l10n.deleteAccountPermanently,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -59,7 +58,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             _buildWarningBox(),
             const SizedBox(height: 16),
             Text(
-              'للتأكيد، اكتب كلمة "$_confirmWord" في الحقل أدناه:',
+              context.l10n.deleteAccountInstruction(_confirmWord),
               style: TextStyle(
                 fontSize: 14,
                 color: c.body,
@@ -92,7 +91,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('إلغاء'),
+          child: Text(context.l10n.cancel),
         ),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
@@ -101,7 +100,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             foregroundColor: Colors.white,
           ),
           icon: const Icon(AppIcons.delete),
-          label: const Text('حذف نهائي'),
+          label: Text(context.l10n.permanentDelete),
           onPressed: _canDelete ? () => Navigator.pop(context, true) : null,
         ),
       ],
@@ -116,11 +115,11 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.red.withValues(alpha: 0.3)),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'تحذير: هذا الإجراء نهائي',
+            context.l10n.irreversibleActionWarning,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -128,12 +127,12 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             ),
           ),
           SizedBox(height: 8),
-          Text('سيتم حذف:', style: TextStyle(fontSize: 13)),
+          Text(context.l10n.willBeDeleted, style: TextStyle(fontSize: 13)),
           SizedBox(height: 4),
-          Text('• حسابك وبياناتك الشخصية', style: TextStyle(fontSize: 13)),
-          Text('• جميع الأطفال المرتبطين بحسابك', style: TextStyle(fontSize: 13)),
-          Text('• كل الدروس والتقدّم المسجّل', style: TextStyle(fontSize: 13)),
-          Text('• الإشعارات والمحادثات', style: TextStyle(fontSize: 13)),
+          Text(context.l10n.deleteAccountData, style: TextStyle(fontSize: 13)),
+          Text(context.l10n.deleteLinkedChildren, style: TextStyle(fontSize: 13)),
+          Text(context.l10n.deleteLessonProgress, style: TextStyle(fontSize: 13)),
+          Text(context.l10n.deleteMessagesNotifications, style: TextStyle(fontSize: 13)),
         ],
       ),
     );

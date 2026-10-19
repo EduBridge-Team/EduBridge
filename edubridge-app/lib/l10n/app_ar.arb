@@ -97,5 +97,1080 @@
   "showMicrophone": "إظهار المايك",
   "@showMicrophone": {
     "description": "Shared dashboard menu: showMicrophone."
+  },
+  "lightMode": "الوضع الفاتح",
+  "@lightMode": {
+    "description": "Shared interface: lightMode."
+  },
+  "darkMode": "الوضع الداكن",
+  "@darkMode": {
+    "description": "Shared interface: darkMode."
+  },
+  "welcomeHeadline": "تعليم ذكي\nوشامل\nلكل طفل",
+  "@welcomeHeadline": {
+    "description": "Shared interface: welcomeHeadline."
+  },
+  "welcomeDescription": "أدوات تعليمية مرنة تربط الطفل بأسرته ومعلميه ومختصيه في تجربة واحدة آمنة.",
+  "@welcomeDescription": {
+    "description": "Shared interface: welcomeDescription."
+  },
+  "accessibleForEveryone": "متاح للجميع",
+  "@accessibleForEveryone": {
+    "description": "Shared interface: accessibleForEveryone."
+  },
+  "personalizedLearning": "تعلم مخصص",
+  "@personalizedLearning": {
+    "description": "Shared interface: personalizedLearning."
+  },
+  "safeEnvironment": "بيئة آمنة",
+  "@safeEnvironment": {
+    "description": "Shared interface: safeEnvironment."
+  },
+  "signIn": "تسجيل الدخول",
+  "@signIn": {
+    "description": "Shared interface: signIn."
+  },
+  "createNewAccount": "إنشاء حساب جديد",
+  "@createNewAccount": {
+    "description": "Shared interface: createNewAccount."
+  },
+  "hide": "إخفاء",
+  "@hide": {
+    "description": "Shared interface: hide."
+  },
+  "learnAboutEduBridge": "تعرّف على EduBridge",
+  "@learnAboutEduBridge": {
+    "description": "Shared interface: learnAboutEduBridge."
+  },
+  "visionWithoutLimits": "رؤية بلا حدود",
+  "@visionWithoutLimits": {
+    "description": "Shared interface: visionWithoutLimits."
+  },
+  "visionDescription": "نسعى أن نكون المرجع الأول في الوطن العربي للتعليم الرقمي المتاح، حيث تذوب الفوارق الجسدية وتبرز القدرات العقلية والإبداعية.",
+  "@visionDescription": {
+    "description": "Shared interface: visionDescription."
+  },
+  "ongoingSupport": "الدعم المستمر",
+  "@ongoingSupport": {
+    "description": "Shared interface: ongoingSupport."
+  },
+  "ongoingSupportDescription": "مرافقة المتعلم في كل خطوة لضمان النجاح.",
+  "@ongoingSupportDescription": {
+    "description": "Shared interface: ongoingSupportDescription."
+  },
+  "variedCurricula": "تنوع المناهج",
+  "@variedCurricula": {
+    "description": "Shared interface: variedCurricula."
+  },
+  "variedCurriculaDescription": "محتوى تعليمي يناسب مختلف أنواع الإعاقات.",
+  "@variedCurriculaDescription": {
+    "description": "Shared interface: variedCurriculaDescription."
+  },
+  "specializedLearningPaths": "مسارات تعليمية متخصصة",
+  "@specializedLearningPaths": {
+    "description": "Shared interface: specializedLearningPaths."
+  },
+  "advancedSignLanguage": "لغة الإشارة المتقدمة",
+  "@advancedSignLanguage": {
+    "description": "Shared interface: advancedSignLanguage."
+  },
+  "advancedSignLanguageDescription": "دورة شاملة لتعلم لغة الإشارة من الأساسيات وحتى الاحتراف.",
+  "@advancedSignLanguageDescription": {
+    "description": "Shared interface: advancedSignLanguageDescription."
+  },
+  "accessibleReading": "تقنيات القراءة الميسّرة",
+  "@accessibleReading": {
+    "description": "Shared interface: accessibleReading."
+  },
+  "accessibleReadingDescription": "تدريب عملي لتعزيز استقلالية القراءة والتعلم لكل طفل.",
+  "@accessibleReadingDescription": {
+    "description": "Shared interface: accessibleReadingDescription."
+  },
+  "digitalLifeSkills": "المهارات الحياتية الرقمية",
+  "@digitalLifeSkills": {
+    "description": "Shared interface: digitalLifeSkills."
+  },
+  "digitalLifeSkillsDescription": "برنامج مخصص لتمكين الأطفال ذوي الإعاقات الإدراكية من التعامل مع العالم الرقمي بأمان.",
+  "@digitalLifeSkillsDescription": {
+    "description": "Shared interface: digitalLifeSkillsDescription."
+  },
+  "exploreEduBridge": "اكتشف تجربة EduBridge",
+  "@exploreEduBridge": {
+    "description": "Shared interface: exploreEduBridge."
+  },
+  "tourAdaptiveTitle": "تعليم يتكيف مع كل طفل",
+  "@tourAdaptiveTitle": {
+    "description": "Shared interface: tourAdaptiveTitle."
+  },
+  "tourTeamTitle": "أسرة ومعلم ومختص\nفي مكان واحد",
+  "@tourTeamTitle": {
+    "description": "Shared interface: tourTeamTitle."
+  },
+  "tourSafeTitle": "بيئة آمنة ومريحة",
+  "@tourSafeTitle": {
+    "description": "Shared interface: tourSafeTitle."
+  },
+  "tourAdaptiveDescription": "قراءة صوتية، ألوان هادئة، ورموز أكبر — نضبط حسب ما يساعد طفلك.",
+  "@tourAdaptiveDescription": {
+    "description": "Shared interface: tourAdaptiveDescription."
+  },
+  "tourTeamDescription": "تابعوا تقدم الطفل، وتبادلوا الرسائل والتقييمات بسهولة.",
+  "@tourTeamDescription": {
+    "description": "Shared interface: tourTeamDescription."
+  },
+  "tourSafeDescription": "استراحات حركية بين الدروس، وزر طوارئ يبلغ الأهل والمختص فوراً.",
+  "@tourSafeDescription": {
+    "description": "Shared interface: tourSafeDescription."
+  },
+  "skip": "تخطي",
+  "@skip": {
+    "description": "Shared interface: skip."
+  },
+  "start": "ابدأ",
+  "@start": {
+    "description": "Shared interface: start."
+  },
+  "next": "التالي",
+  "@next": {
+    "description": "Shared interface: next."
+  },
+  "previous": "السابق",
+  "@previous": {
+    "description": "Shared interface: previous."
+  },
+  "listen": "استمع",
+  "@listen": {
+    "description": "Shared interface: listen."
+  },
+  "readAloud": "قراءة صوتية",
+  "@readAloud": {
+    "description": "Shared interface: readAloud."
+  },
+  "calmColors": "ألوان هادئة",
+  "@calmColors": {
+    "description": "Shared interface: calmColors."
+  },
+  "largerIcons": "رموز أكبر",
+  "@largerIcons": {
+    "description": "Shared interface: largerIcons."
+  },
+  "teacherLabel": "المعلم",
+  "@teacherLabel": {
+    "description": "Shared interface: teacherLabel."
+  },
+  "parentLabel": "ولي الأمر",
+  "@parentLabel": {
+    "description": "Shared interface: parentLabel."
+  },
+  "specialistLabel": "المختص",
+  "@specialistLabel": {
+    "description": "Shared interface: specialistLabel."
+  },
+  "movementBreak": "استراحة حركية",
+  "@movementBreak": {
+    "description": "Shared interface: movementBreak."
+  },
+  "emergency": "طوارئ",
+  "@emergency": {
+    "description": "Shared interface: emergency."
+  },
+  "parentRole": "ولي أمر",
+  "@parentRole": {
+    "description": "Shared interface: parentRole."
+  },
+  "teacherRole": "معلّم",
+  "@teacherRole": {
+    "description": "Shared interface: teacherRole."
+  },
+  "specialistRole": "مختص",
+  "@specialistRole": {
+    "description": "Shared interface: specialistRole."
+  },
+  "learningSupportSpecialist": "مختص دعم تعليمي",
+  "@learningSupportSpecialist": {
+    "description": "Shared interface: learningSupportSpecialist."
+  },
+  "educationalSpecialist": "مختص تعليمي",
+  "@educationalSpecialist": {
+    "description": "Shared interface: educationalSpecialist."
+  },
+  "enterEmailFirst": "أدخل بريدك الإلكتروني أولاً",
+  "@enterEmailFirst": {
+    "description": "Shared interface: enterEmailFirst."
+  },
+  "verificationEmailNotice": "إذا كان الحساب بحاجة للتحقق فستصلك رسالة جديدة على بريدك الإلكتروني.",
+  "@verificationEmailNotice": {
+    "description": "Shared interface: verificationEmailNotice."
+  },
+  "welcomeBack": "أهلاً بعودتك",
+  "@welcomeBack": {
+    "description": "Shared interface: welcomeBack."
+  },
+  "signInSubtitle": "سجّل الدخول لمتابعة رحلة التعلّم",
+  "@signInSubtitle": {
+    "description": "Shared interface: signInSubtitle."
+  },
+  "loginDetails": "بيانات الدخول",
+  "@loginDetails": {
+    "description": "Shared interface: loginDetails."
+  },
+  "email": "البريد الإلكتروني",
+  "@email": {
+    "description": "Shared interface: email."
+  },
+  "password": "كلمة المرور",
+  "@password": {
+    "description": "Shared interface: password."
+  },
+  "showPassword": "إظهار كلمة المرور",
+  "@showPassword": {
+    "description": "Shared interface: showPassword."
+  },
+  "hidePassword": "إخفاء كلمة المرور",
+  "@hidePassword": {
+    "description": "Shared interface: hidePassword."
+  },
+  "forgotPasswordQuestion": "نسيت كلمة المرور؟",
+  "@forgotPasswordQuestion": {
+    "description": "Shared interface: forgotPasswordQuestion."
+  },
+  "signingIn": "جارِ الدخول...",
+  "@signingIn": {
+    "description": "Shared interface: signingIn."
+  },
+  "orContinueWith": "أو تابع باستخدام",
+  "@orContinueWith": {
+    "description": "Shared interface: orContinueWith."
+  },
+  "signInWithGoogle": "تسجيل الدخول باستخدام Google",
+  "@signInWithGoogle": {
+    "description": "Shared interface: signInWithGoogle."
+  },
+  "newAccountType": "نوع الحساب للحساب الجديد",
+  "@newAccountType": {
+    "description": "Shared interface: newAccountType."
+  },
+  "newGoogleAccountRoleNotice": "هذا الاختيار للحسابات الجديدة فقط. الحساب الموجود يحتفظ بدوره الحالي.",
+  "@newGoogleAccountRoleNotice": {
+    "description": "Shared interface: newGoogleAccountRoleNotice."
+  },
+  "continueWithGoogle": "المتابعة باستخدام Google",
+  "@continueWithGoogle": {
+    "description": "Shared interface: continueWithGoogle."
+  },
+  "resendVerificationEmail": "إعادة إرسال رسالة تأكيد البريد",
+  "@resendVerificationEmail": {
+    "description": "Shared interface: resendVerificationEmail."
+  },
+  "noAccountQuestion": "ليس لديك حساب؟",
+  "@noAccountQuestion": {
+    "description": "Shared interface: noAccountQuestion."
+  },
+  "createAccountLink": "أنشئ حساباً جديداً",
+  "@createAccountLink": {
+    "description": "Shared interface: createAccountLink."
+  },
+  "accountCreatedVerifyEmail": "تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول.",
+  "@accountCreatedVerifyEmail": {
+    "description": "Shared interface: accountCreatedVerifyEmail."
+  },
+  "createAccountTitle": "إنشاء حساب",
+  "@createAccountTitle": {
+    "description": "Shared interface: createAccountTitle."
+  },
+  "startYourJourney": "ابدأ رحلتك مع EduBridge",
+  "@startYourJourney": {
+    "description": "Shared interface: startYourJourney."
+  },
+  "createAccountSubtitle": "أنشئ حسابك الآن، ويمكنك استكمال بياناتك وتوثيق حسابك لاحقًا.",
+  "@createAccountSubtitle": {
+    "description": "Shared interface: createAccountSubtitle."
+  },
+  "basicInformation": "المعلومات الأساسية",
+  "@basicInformation": {
+    "description": "Shared interface: basicInformation."
+  },
+  "fullName": "الاسم الكامل",
+  "@fullName": {
+    "description": "Shared interface: fullName."
+  },
+  "nameRequired": "الاسم مطلوب",
+  "@nameRequired": {
+    "description": "Shared interface: nameRequired."
+  },
+  "emailRequired": "البريد الإلكتروني مطلوب",
+  "@emailRequired": {
+    "description": "Shared interface: emailRequired."
+  },
+  "invalidEmail": "صيغة البريد الإلكتروني غير صحيحة",
+  "@invalidEmail": {
+    "description": "Shared interface: invalidEmail."
+  },
+  "accountType": "نوع الحساب",
+  "@accountType": {
+    "description": "Shared interface: accountType."
+  },
+  "chooseRoleDescription": "اختر الدور الذي سيُستخدم للوصول إلى ميزات EduBridge المناسبة لك.",
+  "@chooseRoleDescription": {
+    "description": "Shared interface: chooseRoleDescription."
+  },
+  "role": "الدور",
+  "@role": {
+    "description": "Shared interface: role."
+  },
+  "specialty": "التخصص",
+  "@specialty": {
+    "description": "Shared interface: specialty."
+  },
+  "security": "الأمان",
+  "@security": {
+    "description": "Shared interface: security."
+  },
+  "passwordEightHint": "استخدم كلمة مرور لا تقل عن 8 أحرف.",
+  "@passwordEightHint": {
+    "description": "Shared interface: passwordEightHint."
+  },
+  "passwordRequired": "كلمة المرور مطلوبة",
+  "@passwordRequired": {
+    "description": "Shared interface: passwordRequired."
+  },
+  "passwordLengthRange": "كلمة المرور يجب أن تكون بين 8 و128 حرفاً",
+  "@passwordLengthRange": {
+    "description": "Shared interface: passwordLengthRange."
+  },
+  "confirmPassword": "تأكيد كلمة المرور",
+  "@confirmPassword": {
+    "description": "Shared interface: confirmPassword."
+  },
+  "repeatPassword": "أعد كتابة كلمة المرور",
+  "@repeatPassword": {
+    "description": "Shared interface: repeatPassword."
+  },
+  "passwordMismatch": "كلمتا المرور غير متطابقتين",
+  "@passwordMismatch": {
+    "description": "Shared interface: passwordMismatch."
+  },
+  "creatingAccount": "جارٍ إنشاء الحساب...",
+  "@creatingAccount": {
+    "description": "Shared interface: creatingAccount."
+  },
+  "createAccount": "إنشاء الحساب",
+  "@createAccount": {
+    "description": "Shared interface: createAccount."
+  },
+  "verifyBeforeSignIn": "بإنشاء الحساب، ستحتاج إلى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.",
+  "@verifyBeforeSignIn": {
+    "description": "Shared interface: verifyBeforeSignIn."
+  },
+  "validEmailRequired": "أدخل بريداً إلكترونياً صالحاً",
+  "@validEmailRequired": {
+    "description": "Shared interface: validEmailRequired."
+  },
+  "recoveryEmailNotice": "إذا كان البريد مسجلاً فستصلك رسالة استعادة. افتح الرابط في الرسالة أو الصقه هنا لإكمال التغيير.",
+  "@recoveryEmailNotice": {
+    "description": "Shared interface: recoveryEmailNotice."
+  },
+  "passwordRecovery": "استعادة كلمة المرور",
+  "@passwordRecovery": {
+    "description": "Shared interface: passwordRecovery."
+  },
+  "recoveryDescription": "أدخل بريدك وسنرسل رابط استعادة صالحاً لمدة 60 دقيقة.",
+  "@recoveryDescription": {
+    "description": "Shared interface: recoveryDescription."
+  },
+  "sending": "جارِ الإرسال...",
+  "@sending": {
+    "description": "Shared interface: sending."
+  },
+  "sendingAlt": "جارٍ الإرسال...",
+  "@sendingAlt": {
+    "description": "Shared interface: sendingAlt."
+  },
+  "sendRecoveryLink": "إرسال رابط الاستعادة",
+  "@sendRecoveryLink": {
+    "description": "Shared interface: sendRecoveryLink."
+  },
+  "haveRecoveryLink": "لدي رابط استعادة",
+  "@haveRecoveryLink": {
+    "description": "Shared interface: haveRecoveryLink."
+  },
+  "invalidRecoveryLink": "رابط الاستعادة غير صالح",
+  "@invalidRecoveryLink": {
+    "description": "Shared interface: invalidRecoveryLink."
+  },
+  "passwordEightMinimum": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+  "@passwordEightMinimum": {
+    "description": "Shared interface: passwordEightMinimum."
+  },
+  "passwordConfirmationMismatch": "تأكيد كلمة المرور غير مطابق",
+  "@passwordConfirmationMismatch": {
+    "description": "Shared interface: passwordConfirmationMismatch."
+  },
+  "pasteRecoveryLinkFirst": "الصق رابط الاستعادة أولاً",
+  "@pasteRecoveryLinkFirst": {
+    "description": "Shared interface: pasteRecoveryLinkFirst."
+  },
+  "passwordChanged": "تم تغيير كلمة المرور بنجاح",
+  "@passwordChanged": {
+    "description": "Shared interface: passwordChanged."
+  },
+  "setNewPassword": "تعيين كلمة مرور جديدة",
+  "@setNewPassword": {
+    "description": "Shared interface: setNewPassword."
+  },
+  "pasteRecoveryLinkDescription": "الصق رابط الاستعادة الذي وصلك بالبريد، ثم اختر كلمة مرور جديدة.",
+  "@pasteRecoveryLinkDescription": {
+    "description": "Shared interface: pasteRecoveryLinkDescription."
+  },
+  "recoveryLink": "رابط الاستعادة",
+  "@recoveryLink": {
+    "description": "Shared interface: recoveryLink."
+  },
+  "readLink": "قراءة الرابط",
+  "@readLink": {
+    "description": "Shared interface: readLink."
+  },
+  "newPassword": "كلمة المرور الجديدة",
+  "@newPassword": {
+    "description": "Shared interface: newPassword."
+  },
+  "updating": "جارِ التحديث...",
+  "@updating": {
+    "description": "Shared interface: updating."
+  },
+  "changePassword": "تغيير كلمة المرور",
+  "@changePassword": {
+    "description": "Shared interface: changePassword."
+  },
+  "protectAccount": "حماية حسابك",
+  "@protectAccount": {
+    "description": "Shared interface: protectAccount."
+  },
+  "strongPasswordDescription": "اختر كلمة مرور قوية ومختلفة عن الحالية.",
+  "@strongPasswordDescription": {
+    "description": "Shared interface: strongPasswordDescription."
+  },
+  "currentPasswordRequiredLabel": "كلمة المرور الحالية *",
+  "@currentPasswordRequiredLabel": {
+    "description": "Shared interface: currentPasswordRequiredLabel."
+  },
+  "enterCurrentPassword": "أدخل كلمة المرور الحالية",
+  "@enterCurrentPassword": {
+    "description": "Shared interface: enterCurrentPassword."
+  },
+  "newPasswordRequiredLabel": "كلمة المرور الجديدة *",
+  "@newPasswordRequiredLabel": {
+    "description": "Shared interface: newPasswordRequiredLabel."
+  },
+  "enterNewPassword": "أدخل كلمة المرور الجديدة",
+  "@enterNewPassword": {
+    "description": "Shared interface: enterNewPassword."
+  },
+  "passwordSixMinimum": "يجب أن تكون 6 أحرف على الأقل",
+  "@passwordSixMinimum": {
+    "description": "Shared interface: passwordSixMinimum."
+  },
+  "passwordMustDiffer": "يجب أن تختلف عن كلمة المرور الحالية",
+  "@passwordMustDiffer": {
+    "description": "Shared interface: passwordMustDiffer."
+  },
+  "confirmPasswordRequiredLabel": "تأكيد كلمة المرور *",
+  "@confirmPasswordRequiredLabel": {
+    "description": "Shared interface: confirmPasswordRequiredLabel."
+  },
+  "confirmPasswordPrompt": "أكّد كلمة المرور",
+  "@confirmPasswordPrompt": {
+    "description": "Shared interface: confirmPasswordPrompt."
+  },
+  "passwordSixHint": "يجب أن تكون كلمة المرور 6 أحرف على الأقل، ويُفضّل أن تحتوي على أرقام ورموز.",
+  "@passwordSixHint": {
+    "description": "Shared interface: passwordSixHint."
+  },
+  "saving": "جارِ الحفظ...",
+  "@saving": {
+    "description": "Shared interface: saving."
+  },
+  "savePassword": "حفظ كلمة المرور",
+  "@savePassword": {
+    "description": "Shared interface: savePassword."
+  },
+  "olderNotificationsError": "تعذّر تحميل الإشعارات الأقدم، حاول مجدداً",
+  "@olderNotificationsError": {
+    "description": "Shared interface: olderNotificationsError."
+  },
+  "allNotificationsRead": "تم تحديد جميع الإشعارات كمقروءة",
+  "@allNotificationsRead": {
+    "description": "Shared interface: allNotificationsRead."
+  },
+  "operationFailed": "تعذّر تنفيذ العملية",
+  "@operationFailed": {
+    "description": "Shared interface: operationFailed."
+  },
+  "notAvailable": "غير متوفر",
+  "@notAvailable": {
+    "description": "Shared interface: notAvailable."
+  },
+  "notificationDetails": "تفاصيل الإشعار",
+  "@notificationDetails": {
+    "description": "Shared interface: notificationDetails."
+  },
+  "openRelatedDetails": "فتح التفاصيل المرتبطة",
+  "@openRelatedDetails": {
+    "description": "Shared interface: openRelatedDetails."
+  },
+  "retryAction": "إعادة المحاولة",
+  "@retryAction": {
+    "description": "Shared interface: retryAction."
+  },
+  "noNotifications": "لا توجد إشعارات",
+  "@noNotifications": {
+    "description": "Shared interface: noNotifications."
+  },
+  "notificationsEmptyDescription": "ستظهر التحديثات المهمة هنا عند وصولها.",
+  "@notificationsEmptyDescription": {
+    "description": "Shared interface: notificationsEmptyDescription."
+  },
+  "loadingDots": "جارِ التحميل...",
+  "@loadingDots": {
+    "description": "Shared interface: loadingDots."
+  },
+  "loadOlderNotifications": "تحميل إشعارات أقدم",
+  "@loadOlderNotifications": {
+    "description": "Shared interface: loadOlderNotifications."
+  },
+  "back": "رجوع",
+  "@back": {
+    "description": "Shared interface: back."
+  },
+  "refreshNotifications": "تحديث الإشعارات",
+  "@refreshNotifications": {
+    "description": "Shared interface: refreshNotifications."
+  },
+  "markAllRead": "قراءة الكل",
+  "@markAllRead": {
+    "description": "Shared interface: markAllRead."
+  },
+  "children": "الأطفال",
+  "@children": {
+    "description": "Shared interface: children."
+  },
+  "caseStudies": "دراسات الحالة",
+  "@caseStudies": {
+    "description": "Shared interface: caseStudies."
+  },
+  "conversations": "المحادثات",
+  "@conversations": {
+    "description": "Shared interface: conversations."
+  },
+  "supportRequests": "طلبات الدعم",
+  "@supportRequests": {
+    "description": "Shared interface: supportRequests."
+  },
+  "supportFieldsRequired": "الرجاء تعبئة الموضوع والرسالة",
+  "@supportFieldsRequired": {
+    "description": "Shared interface: supportFieldsRequired."
+  },
+  "supportMessageSent": "تم إرسال رسالتك للدعم الفني بنجاح",
+  "@supportMessageSent": {
+    "description": "Shared interface: supportMessageSent."
+  },
+  "supportSendFailed": "تعذّر إرسال الرسالة",
+  "@supportSendFailed": {
+    "description": "Shared interface: supportSendFailed."
+  },
+  "connectionFailed": "تعذّر الاتصال بالسيرفر",
+  "@connectionFailed": {
+    "description": "Shared interface: connectionFailed."
+  },
+  "contactSupport": "تواصل مع الدعم الفني",
+  "@contactSupport": {
+    "description": "Shared interface: contactSupport."
+  },
+  "subject": "الموضوع",
+  "@subject": {
+    "description": "Shared interface: subject."
+  },
+  "message": "الرسالة",
+  "@message": {
+    "description": "Shared interface: message."
+  },
+  "send": "إرسال",
+  "@send": {
+    "description": "Shared interface: send."
+  },
+  "conversationsLoadFailed": "تعذّر تحميل المحادثات",
+  "@conversationsLoadFailed": {
+    "description": "Shared interface: conversationsLoadFailed."
+  },
+  "user": "مستخدم",
+  "@user": {
+    "description": "Shared interface: user."
+  },
+  "noMessagesYet": "لا توجد رسائل بعد",
+  "@noMessagesYet": {
+    "description": "Shared interface: noMessagesYet."
+  },
+  "noConversationsYet": "لا توجد محادثات بعد",
+  "@noConversationsYet": {
+    "description": "Shared interface: noConversationsYet."
+  },
+  "newConversation": "محادثة جديدة",
+  "@newConversation": {
+    "description": "Shared interface: newConversation."
+  },
+  "communicationTeam": "فريق التواصل",
+  "@communicationTeam": {
+    "description": "Shared interface: communicationTeam."
+  },
+  "noUsersAvailable": "لا يوجد مستخدمون متاحون",
+  "@noUsersAvailable": {
+    "description": "Shared interface: noUsersAvailable."
+  },
+  "messagesLoadFailed": "تعذّر تحميل الرسائل",
+  "@messagesLoadFailed": {
+    "description": "Shared interface: messagesLoadFailed."
+  },
+  "me": "أنا",
+  "@me": {
+    "description": "Shared interface: me."
+  },
+  "administratorLabel": "مدير النظام",
+  "@administratorLabel": {
+    "description": "Shared interface: administratorLabel."
+  },
+  "refreshConversation": "تحديث المحادثة",
+  "@refreshConversation": {
+    "description": "Shared interface: refreshConversation."
+  },
+  "generalConversation": "محادثة عامة",
+  "@generalConversation": {
+    "description": "Shared interface: generalConversation."
+  },
+  "startConversation": "ابدأ المحادثة",
+  "@startConversation": {
+    "description": "Shared interface: startConversation."
+  },
+  "startConversationDescription": "أرسل أول رسالة وابدأ التواصل مباشرة.",
+  "@startConversationDescription": {
+    "description": "Shared interface: startConversationDescription."
+  },
+  "messagePlaceholder": "اكتب رسالتك...",
+  "@messagePlaceholder": {
+    "description": "Shared interface: messagePlaceholder."
+  },
+  "certificatesLoadFailed": "تعذّر تحميل الشهادات",
+  "@certificatesLoadFailed": {
+    "description": "Shared interface: certificatesLoadFailed."
+  },
+  "profileLoadFailed": "تعذّر تحميل الملف الشخصي",
+  "@profileLoadFailed": {
+    "description": "Shared interface: profileLoadFailed."
+  },
+  "galleryOpenFailed": "تعذّر فتح المعرض",
+  "@galleryOpenFailed": {
+    "description": "Shared interface: galleryOpenFailed."
+  },
+  "photoUpdated": "تم تحديث الصورة",
+  "@photoUpdated": {
+    "description": "Shared interface: photoUpdated."
+  },
+  "deletePhoto": "حذف الصورة",
+  "@deletePhoto": {
+    "description": "Shared interface: deletePhoto."
+  },
+  "deletePhotoQuestion": "هل تريد حذف صورة البروفايل؟",
+  "@deletePhotoQuestion": {
+    "description": "Shared interface: deletePhotoQuestion."
+  },
+  "delete": "حذف",
+  "@delete": {
+    "description": "Shared interface: delete."
+  },
+  "photoDeleted": "تم حذف الصورة",
+  "@photoDeleted": {
+    "description": "Shared interface: photoDeleted."
+  },
+  "changeProfilePhoto": "تغيير صورة البروفايل",
+  "@changeProfilePhoto": {
+    "description": "Shared interface: changeProfilePhoto."
+  },
+  "takePhoto": "التقاط صورة",
+  "@takePhoto": {
+    "description": "Shared interface: takePhoto."
+  },
+  "fromDeviceCamera": "من كاميرا الجهاز",
+  "@fromDeviceCamera": {
+    "description": "Shared interface: fromDeviceCamera."
+  },
+  "chooseFromGallery": "اختيار من المعرض",
+  "@chooseFromGallery": {
+    "description": "Shared interface: chooseFromGallery."
+  },
+  "savedDevicePhoto": "صورة محفوظة على الجهاز",
+  "@savedDevicePhoto": {
+    "description": "Shared interface: savedDevicePhoto."
+  },
+  "deleteCurrentPhoto": "حذف الصورة الحالية",
+  "@deleteCurrentPhoto": {
+    "description": "Shared interface: deleteCurrentPhoto."
+  },
+  "accountDeleted": "تم حذف حسابك بنجاح",
+  "@accountDeleted": {
+    "description": "Shared interface: accountDeleted."
+  },
+  "signOut": "تسجيل الخروج",
+  "@signOut": {
+    "description": "Shared interface: signOut."
+  },
+  "signOutQuestion": "هل تريد تسجيل الخروج من التطبيق؟",
+  "@signOutQuestion": {
+    "description": "Shared interface: signOutQuestion."
+  },
+  "adminRole": "أدمن",
+  "@adminRole": {
+    "description": "Shared interface: adminRole."
+  },
+  "ministryRole": "وزارة",
+  "@ministryRole": {
+    "description": "Shared interface: ministryRole."
+  },
+  "institutionRole": "مؤسسة",
+  "@institutionRole": {
+    "description": "Shared interface: institutionRole."
+  },
+  "profile": "الملف الشخصي",
+  "@profile": {
+    "description": "Shared interface: profile."
+  },
+  "accountInformation": "معلومات الحساب",
+  "@accountInformation": {
+    "description": "Shared interface: accountInformation."
+  },
+  "professionalProfile": "الملف المهني",
+  "@professionalProfile": {
+    "description": "Shared interface: professionalProfile."
+  },
+  "addCertificate": "إضافة شهادة",
+  "@addCertificate": {
+    "description": "Shared interface: addCertificate."
+  },
+  "addQualifications": "أضف شهاداتك ومؤهلاتك المهنية",
+  "@addQualifications": {
+    "description": "Shared interface: addQualifications."
+  },
+  "updatePasswordDescription": "حدّث كلمة المرور لحماية حسابك",
+  "@updatePasswordDescription": {
+    "description": "Shared interface: updatePasswordDescription."
+  },
+  "settings": "الإعدادات",
+  "@settings": {
+    "description": "Shared interface: settings."
+  },
+  "switchAppearance": "تبديل وضع العرض",
+  "@switchAppearance": {
+    "description": "Shared interface: switchAppearance."
+  },
+  "lightDarkAppearance": "فاتح / ليلي",
+  "@lightDarkAppearance": {
+    "description": "Shared interface: lightDarkAppearance."
+  },
+  "dangerZone": "منطقة الخطر",
+  "@dangerZone": {
+    "description": "Shared interface: dangerZone."
+  },
+  "deleteAccountPermanently": "حذف الحساب نهائياً",
+  "@deleteAccountPermanently": {
+    "description": "Shared interface: deleteAccountPermanently."
+  },
+  "deleteAccountWarning": "سيتم حذف حسابك وكل بياناتك — لا يمكن التراجع",
+  "@deleteAccountWarning": {
+    "description": "Shared interface: deleteAccountWarning."
+  },
+  "signOutDescription": "الخروج من التطبيق",
+  "@signOutDescription": {
+    "description": "Shared interface: signOutDescription."
+  },
+  "verified": "موثّق",
+  "@verified": {
+    "description": "Shared interface: verified."
+  },
+  "name": "الاسم",
+  "@name": {
+    "description": "Shared interface: name."
+  },
+  "phone": "رقم الهاتف",
+  "@phone": {
+    "description": "Shared interface: phone."
+  },
+  "status": "الحالة",
+  "@status": {
+    "description": "Shared interface: status."
+  },
+  "notVerified": "غير موثّق",
+  "@notVerified": {
+    "description": "Shared interface: notVerified."
+  },
+  "approved": "معتمدة",
+  "@approved": {
+    "description": "Shared interface: approved."
+  },
+  "rejected": "مرفوضة",
+  "@rejected": {
+    "description": "Shared interface: rejected."
+  },
+  "awaitingReview": "بانتظار المراجعة",
+  "@awaitingReview": {
+    "description": "Shared interface: awaitingReview."
+  },
+  "noCertificates": "لا توجد شهادات مضافة بعد",
+  "@noCertificates": {
+    "description": "Shared interface: noCertificates."
+  },
+  "permanentDelete": "حذف نهائي",
+  "@permanentDelete": {
+    "description": "Shared interface: permanentDelete."
+  },
+  "irreversibleActionWarning": "تحذير: هذا الإجراء نهائي",
+  "@irreversibleActionWarning": {
+    "description": "Shared interface: irreversibleActionWarning."
+  },
+  "willBeDeleted": "سيتم حذف:",
+  "@willBeDeleted": {
+    "description": "Shared interface: willBeDeleted."
+  },
+  "deleteAccountData": "• حسابك وبياناتك الشخصية",
+  "@deleteAccountData": {
+    "description": "Shared interface: deleteAccountData."
+  },
+  "deleteLinkedChildren": "• جميع الأطفال المرتبطين بحسابك",
+  "@deleteLinkedChildren": {
+    "description": "Shared interface: deleteLinkedChildren."
+  },
+  "deleteLessonProgress": "• كل الدروس والتقدّم المسجّل",
+  "@deleteLessonProgress": {
+    "description": "Shared interface: deleteLessonProgress."
+  },
+  "deleteMessagesNotifications": "• الإشعارات والمحادثات",
+  "@deleteMessagesNotifications": {
+    "description": "Shared interface: deleteMessagesNotifications."
+  },
+  "certificateTitleRequired": "عنوان الشهادة مطلوب",
+  "@certificateTitleRequired": {
+    "description": "Shared interface: certificateTitleRequired."
+  },
+  "certificateFileRequired": "ملف الشهادة مطلوب",
+  "@certificateFileRequired": {
+    "description": "Shared interface: certificateFileRequired."
+  },
+  "certificateSubmitted": "تم إرسال الشهادة للمراجعة",
+  "@certificateSubmitted": {
+    "description": "Shared interface: certificateSubmitted."
+  },
+  "addQualificationCertificate": "إضافة شهادة (إثبات أهلية)",
+  "@addQualificationCertificate": {
+    "description": "Shared interface: addQualificationCertificate."
+  },
+  "certificateTitle": "عنوان الشهادة",
+  "@certificateTitle": {
+    "description": "Shared interface: certificateTitle."
+  },
+  "certificateFileLabel": "ملف الشهادة (صورة أو PDF)",
+  "@certificateFileLabel": {
+    "description": "Shared interface: certificateFileLabel."
+  },
+  "chooseImageOrPdf": "اختيار صورة أو ملف PDF",
+  "@chooseImageOrPdf": {
+    "description": "Shared interface: chooseImageOrPdf."
+  },
+  "removeSelectedFile": "إزالة الملف المختار",
+  "@removeSelectedFile": {
+    "description": "Shared interface: removeSelectedFile."
+  },
+  "submitForReview": "إرسال للمراجعة",
+  "@submitForReview": {
+    "description": "Shared interface: submitForReview."
+  },
+  "certificateUploadDescription": "أضف اسم الوثيقة وارفق صورة واضحة أو ملف PDF لإرسالها للمراجعة.",
+  "@certificateUploadDescription": {
+    "description": "Shared interface: certificateUploadDescription."
+  },
+  "certificateTitleExample": "مثال: بكالوريوس تربية خاصة",
+  "@certificateTitleExample": {
+    "description": "Shared interface: certificateTitleExample."
+  },
+  "homework": "الواجبات",
+  "@homework": {
+    "description": "Shared interface: homework."
+  },
+  "students": "الطلاب",
+  "@students": {
+    "description": "Shared interface: students."
+  },
+  "view": "عرض",
+  "@view": {
+    "description": "Shared interface: view."
+  },
+  "tourStep": "الخطوة {step} من {total}",
+  "@tourStep": {
+    "description": "Shared interface: tourStep.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conversationWith": "محادثة مع {name}",
+  "@conversationWith": {
+    "description": "Shared interface: conversationWith.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseDiscussionSubject": "مناقشة حالة: {subject}",
+  "@caseDiscussionSubject": {
+    "description": "Shared interface: caseDiscussionSubject.",
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountInstruction": "للتأكيد، اكتب كلمة \"{word}\" في الحقل أدناه:",
+  "@deleteAccountInstruction": {
+    "description": "Shared interface: deleteAccountInstruction.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteConfirmationWord": "حذف",
+  "@deleteConfirmationWord": {
+    "description": "Exact confirmation word required for destructive account deletion."
+  },
+  "notificationsLoadFailed": "تعذّر تحميل الإشعارات",
+  "@notificationsLoadFailed": {
+    "description": "Shared interface: notificationsLoadFailed."
+  },
+  "conversationCreateFailed": "تعذّر إنشاء المحادثة",
+  "@conversationCreateFailed": {
+    "description": "Shared interface: conversationCreateFailed."
+  },
+  "messageSendFailed": "تعذّر إرسال الرسالة",
+  "@messageSendFailed": {
+    "description": "Shared interface: messageSendFailed."
+  },
+  "nationalIdRequired": "رقم الهوية مطلوب",
+  "@nationalIdRequired": {
+    "description": "Identity verification interface: nationalIdRequired."
+  },
+  "idPhotoRequired": "صورة الهوية مطلوبة",
+  "@idPhotoRequired": {
+    "description": "Identity verification interface: idPhotoRequired."
+  },
+  "certificatePhotoRequired": "صورة الشهادة مطلوبة",
+  "@certificatePhotoRequired": {
+    "description": "Identity verification interface: certificatePhotoRequired."
+  },
+  "verifyIdentity": "توثيق الهوية",
+  "@verifyIdentity": {
+    "description": "Identity verification interface: verifyIdentity."
+  },
+  "nationalIdLabel": "رقم الهوية *",
+  "@nationalIdLabel": {
+    "description": "Identity verification interface: nationalIdLabel."
+  },
+  "nationalIdExample": "مثال: 1234567890",
+  "@nationalIdExample": {
+    "description": "Identity verification interface: nationalIdExample."
+  },
+  "idPhotoLabel": "صورة الهوية *",
+  "@idPhotoLabel": {
+    "description": "Identity verification interface: idPhotoLabel."
+  },
+  "idPhotoHint": "jpg, png, webp — صورة واضحة للوجه الأمامي",
+  "@idPhotoHint": {
+    "description": "Identity verification interface: idPhotoHint."
+  },
+  "professionalVerificationRequired": "مطلوب توثيق الهوية + رفع الشهادة العلمية لتفعيل صلاحياتك الكاملة.",
+  "@professionalVerificationRequired": {
+    "description": "Identity verification interface: professionalVerificationRequired."
+  },
+  "identityVerificationRequired": "لا يمكنك استخدام الصلاحيات الكاملة قبل توثيق هويتك.",
+  "@identityVerificationRequired": {
+    "description": "Identity verification interface: identityVerificationRequired."
+  },
+  "qualificationCertificateLabel": "الشهادة العلمية *",
+  "@qualificationCertificateLabel": {
+    "description": "Identity verification interface: qualificationCertificateLabel."
+  },
+  "required": "إلزامي",
+  "@required": {
+    "description": "Identity verification interface: required."
+  },
+  "certificateTitleLabel": "عنوان الشهادة *",
+  "@certificateTitleLabel": {
+    "description": "Identity verification interface: certificateTitleLabel."
+  },
+  "uploadFromGallery": "رفع من المعرض",
+  "@uploadFromGallery": {
+    "description": "Identity verification interface: uploadFromGallery."
+  },
+  "camera": "الكاميرا",
+  "@camera": {
+    "description": "Identity verification interface: camera."
+  },
+  "submitVerification": "حفظ وإرسال للتوثيق",
+  "@submitVerification": {
+    "description": "Identity verification interface: submitVerification."
+  },
+  "accountVerified": "تم توثيق حسابك",
+  "@accountVerified": {
+    "description": "Identity verification interface: accountVerified."
+  },
+  "professionalIdentityApproved": "تم اعتماد الهوية وبياناتك المهنية. يمكنك استخدام صلاحياتك بشكل طبيعي.",
+  "@professionalIdentityApproved": {
+    "description": "Identity verification interface: professionalIdentityApproved."
+  },
+  "identityApproved": "تم اعتماد هويتك بنجاح.",
+  "@identityApproved": {
+    "description": "Identity verification interface: identityApproved."
+  },
+  "returnAction": "العودة",
+  "@returnAction": {
+    "description": "Identity verification interface: returnAction."
+  },
+  "verificationPending": "طلبك قيد المراجعة",
+  "@verificationPending": {
+    "description": "Identity verification interface: verificationPending."
+  },
+  "professionalVerificationPending": "سيتم التحقق من هويتك وشهادتك خلال 24 ساعة. شكراً لصبرك.",
+  "@professionalVerificationPending": {
+    "description": "Identity verification interface: professionalVerificationPending."
+  },
+  "verificationPendingDescription": "سيتم تفعيل حسابك فور موافقة الإدارة. شكراً لصبرك.",
+  "@verificationPendingDescription": {
+    "description": "Identity verification interface: verificationPendingDescription."
+  },
+  "refreshStatus": "تحديث الحالة",
+  "@refreshStatus": {
+    "description": "Identity verification interface: refreshStatus."
+  },
+  "exit": "خروج",
+  "@exit": {
+    "description": "Identity verification interface: exit."
+  },
+  "verificationRejected": "تم رفض طلب التوثيق",
+  "@verificationRejected": {
+    "description": "Identity verification interface: verificationRejected."
+  },
+  "verificationRejectedDescription": "يرجى مراجعة البيانات والصور وإعادة المحاولة، أو التواصل مع الدعم الفني.",
+  "@verificationRejectedDescription": {
+    "description": "Identity verification interface: verificationRejectedDescription."
   }
 }

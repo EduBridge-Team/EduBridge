@@ -1,3 +1,5 @@
+import '../widgets/language_selector.dart';
+import '../l10n/l10n.dart';
 // lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -26,13 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   bool _obscurePassword = true;
   String _googleRole = 'parent';
-  String? _error;
-  String? _notice;
+  Object? _error;
+  Object? _notice;
 
-  static const _googleRoles = {
-    'parent': 'ولي أمر',
-    'teacher': 'معلّم',
-    'specialist': 'مختص',
+  Map<String, String> get _googleRoles => {
+    'parent': context.l10n.parentRole,
+    'teacher': context.l10n.teacherRole,
+    'specialist': context.l10n.specialistRole,
   };
 
   @override
@@ -113,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
       setState(() {
-        _error = 'أدخل بريدك الإلكتروني أولاً';
+        _error = SharedUiMessage.enterEmailFirst;
         _notice = null;
       });
       return;
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (error == null) {
       setState(() => _notice =
-          'إذا كان الحساب بحاجة للتحقق فستصلك رسالة جديدة على بريدك الإلكتروني.');
+          SharedUiMessage.verificationEmailNotice);
     } else {
       setState(() => _error = error);
     }

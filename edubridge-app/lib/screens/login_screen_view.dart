@@ -36,6 +36,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                   constraints: const BoxConstraints(maxWidth: 480),
                   child: Column(
                     children: [
+                      const Align(alignment: AlignmentDirectional.centerEnd,
+                        child: LanguageMenuButton()),
                       const BrandLockup(
                         iconSize: 50,
                         fontSize: 32,
@@ -43,7 +45,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        'أهلاً بعودتك',
+                        context.l10n.welcomeBack,
                         textAlign: TextAlign.center,
                         style: textTheme.headlineMedium?.copyWith(
                           height: 1.2,
@@ -52,7 +54,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'سجّل الدخول لمتابعة رحلة التعلّم',
+                        context.l10n.signInSubtitle,
                         textAlign: TextAlign.center,
                         style: textTheme.bodyMedium?.copyWith(
                           height: 1.5,
@@ -80,7 +82,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'بيانات الدخول',
+                                context.l10n.loginDetails,
                                 style: textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: colors.heading,
@@ -92,8 +94,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                                 keyboardType: TextInputType.emailAddress,
                                 autofillHints: const [AutofillHints.email],
                                 textInputAction: TextInputAction.next,
-                                decoration: const InputDecoration(
-                                  labelText: 'البريد الإلكتروني',
+                                decoration: InputDecoration(
+                                  labelText: context.l10n.email,
                                   prefixIcon:
                                       Icon(Icons.mail_outline_rounded),
                                 ),
@@ -107,7 +109,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                   if (!_loading) _login();
                                 },
                                 decoration: InputDecoration(
-                                  labelText: 'كلمة المرور',
+                                  labelText: context.l10n.password,
                                   prefixIcon: const Icon(
                                     Icons.lock_outline_rounded,
                                   ),
@@ -122,8 +124,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                                           : Icons.visibility_off_outlined,
                                     ),
                                     tooltip: _obscurePassword
-                                        ? 'إظهار كلمة المرور'
-                                        : 'إخفاء كلمة المرور',
+                                        ? context.l10n.showPassword
+                                        : context.l10n.hidePassword,
                                   ),
                                 ),
                               ),
@@ -139,7 +141,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                                   const ForgotPasswordScreen(),
                                             ),
                                           ),
-                                  child: const Text('نسيت كلمة المرور؟'),
+                                  child: Text(context.l10n.forgotPasswordQuestion),
                                 ),
                               ),
                               if (_error != null) ...[
@@ -165,7 +167,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          _error!,
+                                          context.sharedMessage(_error),
                                           style: textTheme.bodyMedium?.copyWith(
                                             color: AppColors.red,
                                             fontWeight: FontWeight.w600,
@@ -199,7 +201,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          _notice!,
+                                          context.sharedMessage(_notice),
                                           style: textTheme.bodyMedium?.copyWith(
                                             color: AppColors.green,
                                             fontWeight: FontWeight.w600,
@@ -225,8 +227,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                                     : const Icon(Icons.login_rounded),
                                 label: Text(
                                   _loading
-                                      ? 'جارِ الدخول...'
-                                      : 'تسجيل الدخول',
+                                      ? context.l10n.signingIn
+                                      : context.l10n.signIn,
                                 ),
                               ),
                               if (GoogleAuthService.isConfigured) ...[
@@ -239,7 +241,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                         horizontal: 12,
                                       ),
                                       child: Text(
-                                        'أو تابع باستخدام',
+                                        context.l10n.orContinueWith,
                                         style: textTheme.labelSmall?.copyWith(
                                           color: colors.muted,
                                           fontWeight: FontWeight.w600,
@@ -273,7 +275,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
-                                              'تسجيل الدخول باستخدام Google',
+                                              context.l10n.signInWithGoogle,
                                               style: textTheme.bodyMedium?.copyWith(
                                                 color: colors.heading,
                                                 fontWeight: FontWeight.w700,
@@ -286,14 +288,13 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       DropdownButtonFormField<String>(
                                         initialValue: _googleRole,
                                         isExpanded: true,
-                                        decoration: const InputDecoration(
+                                        decoration: InputDecoration(
                                           labelText:
-                                              'نوع الحساب للحساب الجديد',
+                                              context.l10n.newAccountType,
                                           prefixIcon:
                                               Icon(Icons.badge_outlined),
                                         ),
-                                        items: _LoginScreenState
-                                            ._googleRoles.entries
+                                        items: _googleRoles.entries
                                             .map(
                                               (entry) =>
                                                   DropdownMenuItem<String>(
@@ -314,7 +315,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                       ),
                                       const SizedBox(height: 7),
                                       Text(
-                                        'هذا الاختيار للحسابات الجديدة فقط. الحساب الموجود يحتفظ بدوره الحالي.',
+                                        context.l10n.newGoogleAccountRoleNotice,
                                         style: textTheme.bodySmall?.copyWith(
                                           height: 1.5,
                                           color: colors.muted,
@@ -327,8 +328,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                                         icon: const Icon(
                                           Icons.account_circle_outlined,
                                         ),
-                                        label: const Text(
-                                          'المتابعة باستخدام Google',
+                                        label: Text(
+                                          context.l10n.continueWithGoogle,
                                         ),
                                       ),
                                     ],
@@ -343,8 +344,8 @@ extension _LoginScreenStateView on _LoginScreenState {
                                   Icons.forward_to_inbox_outlined,
                                   size: 19,
                                 ),
-                                label: const Text(
-                                  'إعادة إرسال رسالة تأكيد البريد',
+                                label: Text(
+                                  context.l10n.resendVerificationEmail,
                                 ),
                               ),
                             ],
@@ -352,11 +353,12 @@ extension _LoginScreenStateView on _LoginScreenState {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
-                            'ليس لديك حساب؟',
+                            context.l10n.noAccountQuestion,
                             style: textTheme.bodyMedium?.copyWith(
                               color: colors.muted,
                             ),
@@ -368,7 +370,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                                 builder: (_) => const RegisterScreen(),
                               ),
                             ),
-                            child: const Text('أنشئ حساباً جديداً'),
+                            child: Text(context.l10n.createAccountLink),
                           ),
                         ],
                       ),
