@@ -152,3 +152,19 @@ Total: 267 files / 3009 candidate lines at phase 1.
 
 Some RTL directions are intentional for Arabic educational content. Replace only
 UI-level overrides; preserve content direction where the lesson language requires it.
+
+### Phase 4 — first dashboard batch
+
+Parent, institution and the shared fallback home dashboard now resolve their
+labels from ARB resources. Child names, disability descriptions and lesson
+content remain unchanged. Child counts use ICU plurals; stored error state is
+locale independent. Institution metrics retain the existing static values (24
+and 18); this batch does not connect them to live data.
+
+The shared dashboard greeting and legal/account menu are localized. The legal
+menu reuses the profile's existing deletion confirmation instead of maintaining
+a second implementation. Confirmation remains required in the current locale.
+
+Phase 4 remains in progress: teacher, specialist, administrator and ministry
+dashboards, followed by child, evaluation and reporting workflows. Activities
+and the final completeness audit remain in phases 5 and 6.

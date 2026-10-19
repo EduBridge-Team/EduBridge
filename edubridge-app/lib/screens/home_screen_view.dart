@@ -32,14 +32,14 @@ extension _HomeScreenView on HomeScreen {
                             actions: [
                               DashboardMenuAction(
                                 id: 'legal',
-                                label: 'الخصوصية والحساب',
+                                label: context.l10n.privacyAndAccount,
                                 icon: AppIcons.privacy,
                                 onSelected: () =>
                                     const LegalLinksButton().show(context),
                               ),
                               DashboardMenuAction(
                                 id: 'logout',
-                                label: 'تسجيل الخروج',
+                                label: context.l10n.logout,
                                 icon: AppIcons.logout,
                                 destructive: true,
                                 onSelected: () => _logout(context),
@@ -69,7 +69,7 @@ extension _HomeScreenView on HomeScreen {
                         ),
                         builder: (context, snapshot) {
                           final name = snapshot.data?[0];
-                          final role = HomeScreen._roleNames[snapshot.data?[1]];
+                          final role = HomeScreen._roleNames(context)[snapshot.data?[1]];
                           return Row(
                             children: [
                               const ProfileAvatarButton(
@@ -84,8 +84,8 @@ extension _HomeScreenView on HomeScreen {
                                   children: [
                                     Text(
                                       name != null && name.isNotEmpty
-                                          ? 'مرحباً، $name'
-                                          : 'مرحباً بك في EduBridge',
+                                          ? context.l10n.dashboardGreeting(name)
+                                          : context.l10n.welcomeToEduBridge,
                                       style: textTheme.headlineSmall?.copyWith(
                                         height: 1.2,
                                         color: Colors.white,
@@ -125,7 +125,7 @@ extension _HomeScreenView on HomeScreen {
                                           const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
-                                            'كل ما تحتاجه لدعم رحلة التعلّم في مكان واحد.',
+                                            context.l10n.homeDashboardDescription,
                                             style: textTheme.bodySmall?.copyWith(
                                               height: 1.5,
                                               color: Colors.white70,
@@ -160,7 +160,7 @@ extension _HomeScreenView on HomeScreen {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'ابدأ من هنا',
+                          context.l10n.startHere,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: c.heading,
@@ -168,7 +168,7 @@ extension _HomeScreenView on HomeScreen {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          'وصول سريع لأهم مساحاتك التعليمية',
+                          context.l10n.learningSpacesDescription,
                           style: textTheme.bodySmall?.copyWith(color: c.muted),
                         ),
                         const SizedBox(height: 16),
@@ -178,9 +178,9 @@ extension _HomeScreenView on HomeScreen {
                             tint: isDark
                                 ? const Color(0xFF103A40)
                                 : AppColors.tintTeal,
-                            title: 'لوحة التحكم الإدارية',
+                            title: context.l10n.adminDashboard,
                             subtitle:
-                                'إدارة المستخدمين وربط الأطفال ومتابعة المنصة',
+                                context.l10n.adminDashboardDescription,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -196,9 +196,9 @@ extension _HomeScreenView on HomeScreen {
                           tint: isDark
                               ? const Color(0xFF103A40)
                               : AppColors.tintTeal,
-                          title: 'الأطفال',
+                          title: context.l10n.children,
                           subtitle:
-                              'الملفات التعليمية والدروس والتقدّم لكل طفل',
+                              context.l10n.childRecordsDescription,
                           onTap: () => _openChildren(context),
                         ),
                         _MenuTile(
@@ -206,9 +206,9 @@ extension _HomeScreenView on HomeScreen {
                           tint: isDark
                               ? const Color(0xFF183B26)
                               : AppColors.tintGreen,
-                          title: 'تصفّح الدروس',
+                          title: context.l10n.browseLessons,
                           subtitle:
-                              'اكتشف المحتوى وابحث عن الدرس المناسب بسهولة',
+                              context.l10n.browseLessonsDescription,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -223,9 +223,9 @@ extension _HomeScreenView on HomeScreen {
                           tint: isDark
                               ? const Color(0xFF45311E)
                               : AppColors.tintOrange,
-                          title: 'التقدّم والمكافآت',
+                          title: context.l10n.progressAndRewards,
                           subtitle:
-                              'تابع الإنجاز والنجوم والشارات في عرض واضح',
+                              context.l10n.progressAndRewardsDescription,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -274,7 +274,7 @@ extension _HomeScreenView on HomeScreen {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'رحلة أبسط، تركيز أكبر',
+                                      context.l10n.simplerJourney,
                                       style: textTheme.bodyMedium?.copyWith(
                                         fontWeight: FontWeight.w800,
                                         color: c.heading,
@@ -282,7 +282,7 @@ extension _HomeScreenView on HomeScreen {
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
-                                      'أعدنا ترتيب الواجهة لتصل للمعلومة المهمة بخطوات أقل.',
+                                      context.l10n.simplerJourneyDescription,
                                       style: textTheme.bodySmall?.copyWith(
                                         height: 1.45,
                                         color: c.muted,

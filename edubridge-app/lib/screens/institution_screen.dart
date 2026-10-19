@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/institution_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -134,7 +135,7 @@ class _ActionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_back_ios_new_rounded,
+              Icon(Icons.arrow_forward_ios_rounded,
                   color: c.muted, size: 17),
             ],
           ),

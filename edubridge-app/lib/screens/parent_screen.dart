@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/parent_screen.dart
 // لوحة ولي الأمر — بهوية EduBridge
@@ -38,7 +39,7 @@ class ParentScreen extends StatefulWidget {
 class _ParentScreenState extends State<ParentScreen> {
   List _children = [];
   bool _loading = true;
-  String? _error;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -52,10 +53,10 @@ class _ParentScreenState extends State<ParentScreen> {
     if (showLoader) {
       setState(() {
         _loading = true;
-        _error = null;
+        _hasError = false;
       });
-    } else if (_error != null) {
-      setState(() => _error = null);
+    } else if (_hasError) {
+      setState(() => _hasError = false);
     }
 
     try {
@@ -70,14 +71,14 @@ class _ParentScreenState extends State<ParentScreen> {
         });
       } else {
         setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الأطفال';
+          _hasError = true;
           _loading = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _hasError = true;
         _loading = false;
       });
     }
@@ -193,7 +194,7 @@ class _ParentScreenState extends State<ParentScreen> {
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
-      screenTitle: 'لوحة ولي الأمر',
+      screenTitle: context.l10n.parentDashboard,
       child: Scaffold(
         appBar: _buildAppBar(),
         body: Column(
@@ -209,8 +210,8 @@ class _ParentScreenState extends State<ParentScreen> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _openAddChild,
           icon: const Icon(AppIcons.add),
-          label: const Text(
-            'إضافة طفل',
+          label: Text(
+            context.l10n.addChild,
             style: TextStyle(fontWeight: FontWeight.w800),
           ),
         ),
@@ -229,7 +230,7 @@ class _ParentScreenState extends State<ParentScreen> {
           padding: const EdgeInsetsDirectional.only(start: 18),
           child: Align(
             alignment: AlignmentDirectional.centerStart,
-            child: const DashboardProfileIdentity(roleLabel: 'ولي الأمر', subtitle: 'تابع أطفالك وتقدّمهم التعليمي من مكان واحد'),
+            child: DashboardProfileIdentity(roleLabel: context.l10n.parentRole, subtitle: context.l10n.parentDashboardDescription),
           ),
         ),
       actions: [
@@ -238,7 +239,7 @@ class _ParentScreenState extends State<ParentScreen> {
             actions: [
               DashboardMenuAction(
                 id: 'notifications',
-                label: 'الإشعارات',
+                label: context.l10n.notifications,
                 icon: AppIcons.notifications,
                 onSelected: () => Navigator.push(
                   context,
@@ -249,19 +250,19 @@ class _ParentScreenState extends State<ParentScreen> {
               ),
               DashboardMenuAction(
                 id: 'parent_lessons',
-                label: 'دروس ولي الأمر',
+                label: context.l10n.parentLessons,
                 icon: AppIcons.parent,
                 onSelected: _openParentLessons,
               ),
               DashboardMenuAction(
                 id: 'support',
-                label: 'الدعم الفني',
+                label: context.l10n.technicalSupport,
                 icon: AppIcons.support,
                 onSelected: () => SupportSheet.show(context),
               ),
               DashboardMenuAction(
                 id: 'chats',
-                label: 'المحادثات',
+                label: context.l10n.conversations,
                 icon: AppIcons.chat,
                 onSelected: () => Navigator.push(
                   context,
@@ -270,13 +271,13 @@ class _ParentScreenState extends State<ParentScreen> {
               ),
               DashboardMenuAction(
                 id: 'legal',
-                label: 'الخصوصية والحساب',
+                label: context.l10n.privacyAndAccount,
                 icon: AppIcons.privacy,
                 onSelected: () => const LegalLinksButton().show(context),
               ),
               DashboardMenuAction(
                 id: 'logout',
-                label: 'تسجيل الخروج',
+                label: context.l10n.logout,
                 icon: AppIcons.logout,
                 destructive: true,
                 onSelected: () async {

@@ -21,26 +21,26 @@ extension _InstitutionScreenView on InstitutionScreen {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: 'المؤسسة', subtitle: 'أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.')),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.institutionRole, subtitle: context.l10n.institutionDashboardDescription)),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                           actions: [
                             DashboardMenuAction(
                               id: 'theme',
-                              label: 'تبديل وضع العرض',
+                              label: context.l10n.switchAppearance,
                               icon: AppIcons.theme,
                               onSelected: toggleThemeMode,
                             ),
                             DashboardMenuAction(
                               id: 'legal',
-                              label: 'الخصوصية والحساب',
+                              label: context.l10n.privacyAndAccount,
                               icon: AppIcons.privacy,
                               onSelected: () =>
                                   const LegalLinksButton().show(context),
                             ),
                             DashboardMenuAction(
                               id: 'logout',
-                              label: 'تسجيل الخروج',
+                              label: context.l10n.logout,
                               icon: AppIcons.logout,
                               destructive: true,
                               onSelected: () => _logout(context),
@@ -62,8 +62,8 @@ DashboardHeaderActions(
                     Expanded(
                       child: _MetricCard(
                         icon: AppIcons.users,
-                        value: '٢٤',
-                        label: 'عضوًا بالفريق',
+                        value: MaterialLocalizations.of(context).formatDecimal(24),
+                        label: context.l10n.teamMembersMetric,
                         color: AppColors.brandBlue,
                       ),
                     ),
@@ -71,8 +71,8 @@ DashboardHeaderActions(
                     Expanded(
                       child: _MetricCard(
                         icon: AppIcons.check,
-                        value: '١٨',
-                        label: 'حالة نشطة',
+                        value: MaterialLocalizations.of(context).formatDecimal(18),
+                        label: context.l10n.activeCasesMetric,
                         color: AppColors.brandTeal,
                       ),
                     ),
@@ -80,7 +80,7 @@ DashboardHeaderActions(
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'مهام المؤسسة',
+                  context.l10n.institutionTasks,
                   style: TextStyle(
                     color: c.heading,
                     fontSize: 21,
@@ -90,29 +90,29 @@ DashboardHeaderActions(
                 const SizedBox(height: 10),
                 _ActionCard(
                   icon: AppIcons.child,
-                  title: 'ملفات الطلاب',
-                  subtitle: 'عرض الطلاب والحالات المرتبطة بالمؤسسة',
+                  title: context.l10n.studentRecords,
+                  subtitle: context.l10n.institutionStudentsDescription,
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const ChildrenScreen()),
                 ),
                 _ActionCard(
                   icon: AppIcons.lesson,
-                  title: 'مكتبة الدروس',
-                  subtitle: 'الوصول إلى المحتوى التعليمي المعتمد',
+                  title: context.l10n.lessonLibrary,
+                  subtitle: context.l10n.approvedContentDescription,
                   color: AppColors.brandTeal,
                   onTap: () => _open(context, const LessonsScreen()),
                 ),
                 _ActionCard(
                   icon: AppIcons.forum,
-                  title: 'تواصل الفريق',
-                  subtitle: 'محادثات المعلمين والمختصين',
+                  title: context.l10n.teamCommunication,
+                  subtitle: context.l10n.teamCommunicationDescription,
                   color: const Color(0xFF7557BD),
                   onTap: () => _open(context, const ChatsScreen()),
                 ),
                 _ActionCard(
                   icon: AppIcons.verified,
-                  title: 'توثيق المؤسسة',
-                  subtitle: 'متابعة حالة الهوية والصلاحيات',
+                  title: context.l10n.institutionVerification,
+                  subtitle: context.l10n.institutionVerificationDescription,
                   color: const Color.fromARGB(255, 17, 108, 182),
                   onTap: () => _open(context, const VerifyIdentityScreen()),
                 ),

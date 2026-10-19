@@ -6,7 +6,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_hasError) {
       return _buildErrorState();
     }
     if (_children.isEmpty) {
@@ -23,7 +23,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
           children: [
             Expanded(
               child: Text(
-                'أطفالك',
+                context.l10n.yourChildren,
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: c.heading,
@@ -37,7 +37,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                '${_children.length} ${_children.length == 1 ? 'طفل' : 'أطفال'}',
+                context.l10n.dashboardChildCount(_children.length),
                 style: textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: c.infoText,
@@ -48,7 +48,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         ),
         const SizedBox(height: 5),
         Text(
-          'وصول سريع للواجبات والتقارير والتقدّم وفريق الرعاية.',
+          context.l10n.childQuickAccessDescription,
           style: textTheme.bodySmall?.copyWith(color: c.muted),
         ),
         const SizedBox(height: 16),
@@ -69,7 +69,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         const Icon(AppIcons.error, size: 58, color: AppColors.red),
         const SizedBox(height: 14),
         AdaptiveText(
-          _error!,
+          context.l10n.childrenLoadFailed,
           textAlign: TextAlign.center,
           color: c.dangerText,
           fontWeight: FontWeight.w700,
@@ -79,7 +79,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
           child: FilledButton.icon(
             onPressed: _loadData,
             icon: const Icon(AppIcons.refresh),
-            label: const Text('إعادة المحاولة'),
+            label: Text(context.l10n.retryAction),
           ),
         ),
       ],
@@ -110,7 +110,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         ),
         const SizedBox(height: 18),
         AdaptiveText(
-          'لا يوجد أطفال مسجلون بعد',
+          context.l10n.noRegisteredChildren,
           type: AdaptiveTextType.subtitle,
           textAlign: TextAlign.center,
           fontWeight: FontWeight.w800,
@@ -118,7 +118,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
         ),
         const SizedBox(height: 6),
         AdaptiveText(
-          'أضف طفلك للبدء بمتابعة الدروس والتقدّم وفريق الرعاية.',
+          context.l10n.addChildDescription,
           type: AdaptiveTextType.caption,
           textAlign: TextAlign.center,
           color: c.muted,
@@ -185,7 +185,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                             children: [
                               _infoChip(
                                 icon: Icons.cake_outlined,
-                                text: '$age سنة',
+                                text: context.l10n.childAgeYears(age.toString()),
                                 c: c,
                               ),
                               if (disabilityType.isNotEmpty)
@@ -207,7 +207,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _quickAction(
                         icon: AppIcons.homework,
-                        label: 'الواجب',
+                        label: context.l10n.homework,
                         color: AppColors.brandBlue,
                         onTap: () => _openHomework(child),
                       ),
@@ -216,7 +216,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _quickAction(
                         icon: AppIcons.report,
-                        label: 'التقرير',
+                        label: context.l10n.report,
                         color: AppColors.brandTeal,
                         onTap: () => _openWeeklyReport(child),
                       ),
@@ -225,7 +225,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _quickAction(
                         icon: AppIcons.users,
-                        label: 'الفريق',
+                        label: context.l10n.team,
                         color: AppColors.brandBlue,
                         onTap: () => _openCareTeam(child),
                       ),
@@ -234,7 +234,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _quickAction(
                         icon: AppIcons.progress,
-                        label: 'التقدّم',
+                        label: context.l10n.progress,
                         color: AppColors.brandTealDeep,
                         onTap: () => _openChildProgress(child),
                       ),
@@ -247,7 +247,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _secondaryAction(
                         icon: AppIcons.parent,
-                        label: 'دروس ولي الأمر',
+                        label: context.l10n.parentLessons,
                         onTap: _openParentLessons,
                       ),
                     ),
@@ -255,7 +255,7 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                     Expanded(
                       child: _secondaryAction(
                         icon: AppIcons.specialist,
-                        label: 'طلب دعم تعليمي',
+                        label: context.l10n.requestLearningSupport,
                         onTap: () => _openLearningSupportRequest(child),
                       ),
                     ),
@@ -267,8 +267,8 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                   child: TextButton.icon(
                     onPressed: () => _openEditChild(child),
                     icon: const Icon(AppIcons.edit, size: 17),
-                    label: const Text(
-                      'تعديل البيانات',
+                    label: Text(
+                      context.l10n.editDetails,
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -402,19 +402,19 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
     final textTheme = Theme.of(context).textTheme;
     final (text, accentColor, textColor, icon) = switch (status) {
       'evaluated' => (
-          'تم التقييم',
+          context.l10n.evaluatedStatus,
           AppColors.brandTealDeep,
           c.successText,
           AppIcons.check,
         ),
       'assigned' => (
-          'تم التعيين',
+          context.l10n.assignedStatus,
           AppColors.brandBlue,
           c.infoText,
           AppIcons.verified,
         ),
       _ => (
-          'قيد الانتظار',
+          context.l10n.pendingStatus,
           AppColors.orangeDeep,
           c.warningText,
           AppIcons.clock,
