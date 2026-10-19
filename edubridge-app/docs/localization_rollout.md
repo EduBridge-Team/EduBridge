@@ -201,3 +201,21 @@ UI errors retain message identities until rendered in the selected language.
 Phase 4 still includes child-profile, clinical recommendation, detailed child,
 evaluation and reporting forms. Activities remain phase 5; completeness and
 accessibility/direction audits remain phase 6.
+
+
+### Phase 4 — child profiles and care teams
+
+Child lists, profile summaries for teachers/specialists, edit-child labels, care
+teams and list pagination use the active Arabic/English locale. Shared status
+labels retain role-specific meanings; API status identifiers are unchanged.
+Names, authored descriptions, notes, plans and uploaded document values remain
+original. Assignment preview, follow-up acceptance and adaptation permission
+checks retain their existing gates.
+
+Bilingual profile tests cover 360-pixel layouts at normal and doubled text scale,
+original authored content and assignment-preview restrictions. Domain tests also
+verify localized labels do not mutate profile payloads.
+
+Phase 4 remains in progress: add-child forms/disability selection, clinical
+recommendations, evaluation and reporting forms are next. Child activities remain
+phase 5; the final completeness/accessibility/direction audit remains phase 6.

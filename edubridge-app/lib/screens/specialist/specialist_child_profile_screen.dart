@@ -187,7 +187,8 @@ class _SpecialistChildProfileScreenState
               ],
             ),
           ),
-          Container(
+          Flexible(
+            child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: .16),
@@ -201,6 +202,7 @@ class _SpecialistChildProfileScreenState
                 fontWeight: FontWeight.w800,
               ),
             ),
+          ),
           ),
         ],
       ),

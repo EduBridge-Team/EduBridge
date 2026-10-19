@@ -45,6 +45,14 @@ void main() {
             await tester.pumpAndSettle();
             expect(find.text(s.studentProfileFor('ليان')), findsOneWidget);
             expect(find.text('ليان'), findsWidgets);
+            if (specialist) {
+              await tester.scrollUntilVisible(find.text(s.childInformation), 250,
+                  scrollable: find.byType(Scrollable).first);
+              await tester.tap(find.text(s.childInformation));
+              await tester.pumpAndSettle();
+              await tester.scrollUntilVisible(find.text('وصف كتبه المختص'), 150,
+                  scrollable: find.byType(Scrollable).first);
+            }
             expect(find.text('وصف كتبه المختص'), findsOneWidget);
             expect(tester.takeException(), isNull);
             await tester.pumpWidget(const SizedBox.shrink());
@@ -71,6 +79,8 @@ void main() {
         expect(find.text(s.documentsVerification), findsNothing);
         expect(find.text(s.evaluateChildPlan), findsNothing);
         expect(find.text(s.adaptLearning), findsNothing);
+        await tester.scrollUntilVisible(find.text(s.acceptChildFollowUp), 200,
+            scrollable: find.byType(Scrollable).first);
         expect(find.text(s.acceptChildFollowUp), findsOneWidget);
         expect(paths.where((p) => p.endsWith('/accessibility-profile')), isEmpty);
         expect(tester.takeException(), isNull);

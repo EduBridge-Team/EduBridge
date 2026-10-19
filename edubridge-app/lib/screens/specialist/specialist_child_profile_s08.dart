@@ -377,13 +377,15 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
   Widget _s08Metric(
     JisrColors c, IconData icon, String value, String label, Color accent,
   ) => Container(
-    height: 116,
+    constraints: const BoxConstraints(minHeight: 116),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
     decoration: BoxDecoration(
       color: c.card,
       borderRadius: BorderRadius.circular(17),
       border: Border.all(color: c.line),
     ),
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CircleAvatar(
