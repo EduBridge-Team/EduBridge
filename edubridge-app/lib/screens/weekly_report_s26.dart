@@ -147,7 +147,7 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
           Divider(color: c.line, height: 20),
           _s26Detail(c, context.l10n.reportPlanSuitability, switch (evaluation.suitability) {
             'مناسبة' => context.l10n.planSuitable,
-            'تحتاج تعديل' => context.l10n.planNeedsChanges,
+            'تحتاج تعديل' || 'تحتاج تعديلاً' => context.l10n.planNeedsChanges,
             final value => value ?? '—',
           }),
           if (evaluation.planChanges.isNotEmpty) ...[

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 
 import 'package:edubridge_app/screens/create_specialist_progress_screen.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ void main() {
     // futures outside the per-test fake clock before settling UI animations.
     await tester.runAsync(() async {
       await tester.pumpWidget(const MaterialApp(
+        locale: Locale('ar'), supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: CreateSpecialistProgressScreen(childId: 7, childName: 'محمود'),
       ));
       await Future<void>.delayed(Duration.zero);
@@ -69,7 +72,8 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(saved, isEmpty);
-      expect(find.text('مطلوب'), findsOneWidget);
+      final strings = await AppLocalizations.delegate.load(const Locale('ar'));
+      expect(find.text(strings.fieldRequired), findsOneWidget);
       await tester.enterText(find.byType(TextFormField).at(0), 'تحسن ملحوظ');
       await tester.enterText(find.byType(TextFormField).at(1), 'متابعة القراءة');
       await tester.ensureVisible(find.text('تحتاج تعديل'));
@@ -91,7 +95,7 @@ void main() {
         'recommendations': 'متابعة القراءة', 'is_plan_appropriate': false,
         'plan_evaluation': 'زيادة التدريب', 'mood_rating': 5,
       });
-      expect(find.text('فشل الحفظ'), findsOneWidget);
+      expect(find.text(strings.changesSaveFailed), findsOneWidget);
       await tester.runAsync(() async {
         await tester.tap(find.text('حفظ التقييم'));
         await Future<void>.delayed(Duration.zero);

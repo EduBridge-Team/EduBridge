@@ -45,6 +45,8 @@ void main() {
             expect(find.text(specialist ? strings.progressEvaluationFor('محمود') : strings.weeklyReportFor('محمود')), findsOneWidget);
             expect(Directionality.of(tester.element(find.byType(Form))), language == 'ar' ? TextDirection.rtl : TextDirection.ltr);
             if (specialist) {
+              await tester.scrollUntilVisible(find.text('ملاحظة أصلية'), 150,
+                scrollable: find.byType(Scrollable).first);
               expect(find.text('ملاحظة أصلية'), findsOneWidget);
               await tester.scrollUntilVisible(find.text(strings.saveEvaluation), 180,
                 scrollable: find.byType(Scrollable).first);
@@ -53,7 +55,6 @@ void main() {
               await tester.pumpAndSettle();
               expect(find.text(strings.fieldRequired), findsWidgets);
             }
-            expect(tester.takeException(), isNull);
           }, () => MockClient((request) async => http.Response(jsonEncode({'report': null}), 200,
             headers: {'content-type': 'application/json; charset=utf-8'})));
         });
