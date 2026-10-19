@@ -19,7 +19,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                 c: c,
                 selected: _showOnlyMine,
                 icon: AppIcons.profile,
-                label: 'أطفالي',
+                label: context.l10n.myChildren,
                 count: _showOnlyMine ? _filteredChildren.length : null,
                 onTap: () => _refreshState(() => _showOnlyMine = true),
               ),
@@ -30,7 +30,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                 c: c,
                 selected: !_showOnlyMine,
                 icon: AppIcons.clock,
-                label: 'قائمة الانتظار',
+                label: context.l10n.waitingList,
                 count: !_showOnlyMine ? _filteredChildren.length : null,
                 onTap: () => _refreshState(() => _showOnlyMine = false),
               ),
@@ -109,7 +109,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
         Center(
           child: Column(
             children: [
-              Text(_error!,
+              Text(context.sharedMessage(_error),
                   style:
                       const TextStyle(fontSize: 16, color: AppColors.red)),
               const SizedBox(height: 16),
@@ -117,7 +117,7 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
                 height: 56,
                 child: ElevatedButton.icon(
                   icon: const Icon(AppIcons.refresh, size: 28),
-                  label: const Text('إعادة المحاولة',
+                  label: Text(context.l10n.retryAction,
                       style: TextStyle(fontSize: 18)),
                   onPressed: _load,
                 ),
@@ -141,8 +141,8 @@ extension _SpecialistDashboardWidgetsExtension on _SpecialistDashboardScreenStat
             _adding = false;
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم إضافة الدرس بنجاح'),
+            SnackBar(
+              content: Text(context.l10n.lessonAdded),
               backgroundColor: AppColors.brandGreen,
             ),
           );

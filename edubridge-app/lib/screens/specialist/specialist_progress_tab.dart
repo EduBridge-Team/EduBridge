@@ -36,8 +36,8 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
           Center(
             child: Text(
               _showOnlyMine
-                  ? 'لا يوجد أطفال معيّنون لك حالياً'
-                  : 'لا يوجد أطفال في قائمة الانتظار',
+                  ? context.l10n.noAssignedChildren
+                  : context.l10n.noWaitingChildren,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
@@ -50,8 +50,8 @@ extension _ProgressTabExtension on _SpecialistDashboardScreenState {
           Center(
             child: Text(
               _showOnlyMine
-                  ? 'سيظهر الأطفال هنا عند إضافتهم إلى قائمة المتابعة.'
-                  : 'ستظهر طلبات الأطفال هنا عند توفرها.',
+                  ? context.l10n.followUpChildrenDescription
+                  : context.l10n.waitingChildrenDescription,
               style: TextStyle(fontSize: 13, height: 1.6, color: c.muted),
               textAlign: TextAlign.center,
             ),

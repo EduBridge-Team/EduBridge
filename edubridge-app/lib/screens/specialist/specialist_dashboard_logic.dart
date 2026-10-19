@@ -183,8 +183,8 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
         await _load();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم اعتماد إنجاز الدرس'),
+          SnackBar(
+            content: Text(context.l10n.lessonCompletionApproved),
             backgroundColor: AppColors.brandTeal,
           ),
         );
@@ -192,7 +192,7 @@ extension _SpecialistDashboardLogicExtension on _SpecialistDashboardScreenState 
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
+          SnackBar(content: Text(context.l10n.connectionFailed)),
         );
       }
     } finally {

@@ -19,100 +19,104 @@ Widget _buildLessonsTab(
           return title.contains(q) || content.contains(q);
         }).toList();
 
-  return Column(
-    children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+  return CustomScrollView(
+    slivers: [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.lessonLibrary,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                context.l10n.lessonLibraryDescription,
+                style: TextStyle(fontSize: 13, color: c.muted),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: context.l10n.searchLessonsHint,
+                  prefixIcon: const Icon(AppIcons.search),
+                  suffixIcon: query.isNotEmpty
+                      ? IconButton(
+                          tooltip: context.l10n.clearSearch,
+                          onPressed: () => onQueryChanged(''),
+                          icon: const Icon(Icons.close_rounded),
+                        )
+                      : null,
+                ),
+                onChanged: onQueryChanged,
+              ),
+            ],
+          ),
+        ),
+      ),
+      if (filtered.isEmpty)
+        SliverPadding(
+          padding: const EdgeInsets.all(24),
+          sliver: SliverList.list(children: [
+            const SizedBox(height: 80),
+            Center(
+              child: Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  color: c.tintTeal,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  AppIcons.lesson,
+                  size: 40,
+                  color: AppColors.brandBlue,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
             Text(
-              'مكتبة الدروس',
+              lessons.isEmpty
+                  ? context.l10n.noLessonsYet
+                  : context.l10n.noSearchResults,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
-              'استعرض الدروس الحالية أو ابحث عن محتوى محدد.',
-              style: TextStyle(fontSize: 13, color: c.muted),
+              lessons.isEmpty
+                  ? context.l10n.addFirstLessonDescription
+                  : context.l10n.tryDifferentSearch,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13.5, color: c.muted),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              style: const TextStyle(fontSize: 16),
-              decoration: InputDecoration(
-                hintText: 'ابحث عن درس...',
-                prefixIcon: const Icon(AppIcons.search),
-                suffixIcon: query.isNotEmpty
-                    ? IconButton(
-                        tooltip: 'مسح البحث',
-                        onPressed: () => onQueryChanged(''),
-                        icon: const Icon(Icons.close_rounded),
-                      )
-                    : null,
-              ),
-              onChanged: onQueryChanged,
-            ),
-          ],
+          ]),
+        )
+      else
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
+          sliver: SliverList.builder(
+            itemCount: filtered.length,
+            itemBuilder: (context, i) =>
+                _buildTeacherLessonCard(context, filtered[i], c, types, onViewLesson),
+          ),
         ),
-      ),
-      Expanded(
-        child: filtered.isEmpty
-            ? ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  const SizedBox(height: 80),
-                  Center(
-                    child: Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        color: c.tintTeal,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        AppIcons.lesson,
-                        size: 40,
-                        color: AppColors.brandBlue,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    lessons.isEmpty
-                        ? 'لا توجد دروس بعد'
-                        : 'لا نتائج مطابقة لبحثك',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w800,
-                      color: c.heading,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    lessons.isEmpty
-                        ? 'ابدأ بإضافة أول درس إلى مكتبتك.'
-                        : 'جرّب كلمة بحث مختلفة.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13.5, color: c.muted),
-                  ),
-                ],
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
-                itemCount: filtered.length,
-                itemBuilder: (context, i) =>
-                    _buildTeacherLessonCard(filtered[i], c, types, onViewLesson),
-              ),
-      ),
     ],
   );
 }
 
 Widget _buildTeacherLessonCard(
+  BuildContext context,
   Map lesson,
   JisrColors c,
   List types,
@@ -134,23 +138,23 @@ Widget _buildTeacherLessonCard(
   IconData targetIcon;
   switch (targetType) {
     case 'parents':
-      targetBadge = 'لأولياء الأمور';
+      targetBadge = context.l10n.forParents;
       targetColor = AppColors.purple;
       targetIcon = AppIcons.parent;
       break;
     case 'byDisability':
-      targetBadge = 'حسب الإعاقة';
+      targetBadge = context.l10n.byDisability;
       targetColor = AppColors.brandTeal;
       targetIcon = AppIcons.filter;
       break;
     case 'specificChildren':
       final count = (lesson['target_child_ids'] as List?)?.length ?? 0;
-      targetBadge = '$count طلاب';
+      targetBadge = context.l10n.targetStudentCount(count);
       targetColor = AppColors.brandTeal;
       targetIcon = AppIcons.users;
       break;
     default:
-      targetBadge = 'للجميع';
+      targetBadge = context.l10n.forEveryone;
       targetColor = AppColors.brandBlue;
       targetIcon = AppIcons.users;
   }
@@ -329,15 +333,15 @@ Widget _buildLessonViewModal(
                           )),
                     ),
                   if (videoUrl != null) _mediaChip(
-                    AppIcons.video, 'فيديو مرفق', AppColors.brandBlue, c.tintTeal),
+                    AppIcons.video, context.l10n.videoAttached, AppColors.brandBlue, c.tintTeal),
                   if (captionUrl != null) _mediaChip(
                     AppIcons.captions,
-                    'ملف ترجمات مرفق',
+                    context.l10n.subtitlesAttached,
                     AppColors.pink,
                     AppColors.pink.withValues(alpha: 0.1)),
                   if (signUrl != null) _mediaChip(
                     AppIcons.signLanguage,
-                    'فيديو لغة إشارة مرفق',
+                    context.l10n.signLanguageVideoAttached,
                     AppColors.purple,
                     AppColors.purple.withValues(alpha: 0.1)),
                   if (audioDesc != null && audioDesc.toString().isNotEmpty)
@@ -355,7 +359,7 @@ Widget _buildLessonViewModal(
                               color: AppColors.orangeDeep, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text('وصف صوتي: $audioDesc',
+                            child: Text(context.l10n.audioDescriptionContent(audioDesc),
                                 style: const TextStyle(fontSize: 13)),
                           ),
                         ],
@@ -363,7 +367,7 @@ Widget _buildLessonViewModal(
                     ),
                   if (audioUrl != null) _mediaChip(
                     AppIcons.audio,
-                    'تسجيل صوتي مرفق',
+                    context.l10n.audioAttached,
                     AppColors.greenDeep,
                     c.tintGreen),
                 ],

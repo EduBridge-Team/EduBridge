@@ -99,7 +99,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        need.isEmpty ? 'طالب قيد المتابعة' : need,
+                        need.isEmpty ? context.l10n.followUpActive : need,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 12.5, color: c.muted),
@@ -123,17 +123,17 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                 children: [
                   if (current != null)
                     _CountBadge(
-                      '${current['lesson_title'] ?? 'نشاط حالي'}',
+                      (current['lesson_title'] ?? context.l10n.currentActivity).toString(),
                       color: AppColors.brandTealDeep,
                     ),
                   if ((stats['inProgress'] as int) > 0)
                     _CountBadge(
-                      '${stats['inProgress']} قيد التنفيذ',
+                      context.l10n.inProgressActivityCount(stats['inProgress'] ?? 0),
                       color: AppColors.brandBlue,
                     ),
                   if ((stats['done'] as int) > 0)
                     _CountBadge(
-                      '${stats['done']} مكتمل',
+                      context.l10n.completedActivityCount(stats['done'] ?? 0),
                       color: AppColors.lightTeal,
                     ),
                 ],
@@ -155,8 +155,8 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                       onPressed: () => _openChildProfile(child),
                       icon: const Icon(Icons.folder_open_outlined, size: 19),
-                      label: const Text(
-                        'فتح ملف الطفل',
+                      label: Text(
+                        context.l10n.openChildProfile,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -185,7 +185,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                         size: 18,
                       ),
                       label: Text(
-                        isPending ? 'تقييم' : 'التقييم',
+                        isPending ? context.l10n.evaluate : context.l10n.evaluation,
                         maxLines: 1,
                         style: const TextStyle(
                           fontSize: 13,
@@ -217,7 +217,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                     color: c.infoText,
                   ),
                   title: Text(
-                    'إجراءات سريعة',
+                    context.l10n.quickActions,
                     style: TextStyle(
                       color: c.heading,
                       fontSize: 14,
@@ -236,7 +236,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
                             icon: const Icon(Icons.bar_chart_outlined, size: 18),
-                            label: const Text('تقرير المعلم', maxLines: 1, overflow: TextOverflow.ellipsis),
+                            label: Text(context.l10n.teacherReport, maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _openTeacherReport(row),
                           ),
                         ),
@@ -250,7 +250,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
                             icon: const Icon(Icons.edit_outlined, size: 18),
-                            label: const Text('اكتب تقدّم', maxLines: 1, overflow: TextOverflow.ellipsis),
+                            label: Text(context.l10n.writeProgress, maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _writeProgressBasedOnReport(row),
                           ),
                         ),
@@ -268,7 +268,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
                             icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                            label: const Text('دراسة الحالة', maxLines: 1, overflow: TextOverflow.ellipsis),
+                            label: Text(context.l10n.caseStudy, maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _openCaseDiscussion(childId: childId),
                           ),
                         ),
@@ -282,7 +282,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
                             icon: const Icon(Icons.lightbulb_outline, size: 18),
-                            label: const Text('اقترح دعم', maxLines: 1, overflow: TextOverflow.ellipsis),
+                            label: Text(context.l10n.suggestSupport, maxLines: 1, overflow: TextOverflow.ellipsis),
                             onPressed: () => _recommendLearningSupport(row),
                           ),
                         ),
@@ -302,7 +302,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
                           icon: const Icon(AppIcons.evaluate, size: 17),
-                          label: const Text('تقييم الخطة الحالية'),
+                          label: Text(context.l10n.evaluateCurrentPlan),
                           onPressed: () => _openPlanEvaluation(row),
                         ),
                       ),
@@ -321,7 +321,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : const Icon(AppIcons.check, size: 17),
-                          label: Text(approving ? 'جارٍ الاعتماد...' : 'اعتماد النشاط الحالي'),
+                          label: Text(approving ? context.l10n.approving : context.l10n.approveCurrentActivity),
                           onPressed: approving ? null : () => _approve(row),
                         ),
                       ),

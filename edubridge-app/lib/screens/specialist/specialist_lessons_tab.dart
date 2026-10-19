@@ -18,7 +18,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
               children: [
-                _lessonTypeChip(c, null, 'الكل'),
+                _lessonTypeChip(c, null, context.l10n.all),
                 for (final type in _types)
                   if (type is Map &&
                       type['id'] != null &&
@@ -40,8 +40,8 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
               const SizedBox(height: 16),
               Text(
                 _lessons.isEmpty
-                    ? 'لا توجد دروس بعد'
-                    : 'لا توجد دروس لهذا التصنيف',
+                    ? context.l10n.noLessonsYet
+                    : context.l10n.noLessonsInCategory,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -52,7 +52,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
               const SizedBox(height: 8),
               if (_lessons.isEmpty)
                 Text(
-                  'أضف درساً جديداً باستخدام زر اقتراح درس',
+                  context.l10n.addLessonUsingSuggestion,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: c.muted),
                 ),
@@ -105,16 +105,16 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
     String targetText;
     switch (targetType) {
       case 'specificChildren':
-        targetText = '${targetedChildren ?? 0} أطفال';
+        targetText = context.l10n.dashboardChildCount(targetedChildren ?? 0);
         break;
       case 'byDisability':
-        targetText = 'حسب الإعاقة';
+        targetText = context.l10n.byDisability;
         break;
       case 'parents':
-        targetText = 'لأولياء الأمور';
+        targetText = context.l10n.forParents;
         break;
       default:
-        targetText = 'للجميع';
+        targetText = context.l10n.forEveryone;
     }
 
     // Only show completion if provided by the API; the lessons endpoint
@@ -144,7 +144,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
               Padding(
                 padding: const EdgeInsets.only(right: 63),
                 child: Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerStart,
                   child: Text(
                     title,
                     maxLines: 2,
@@ -206,7 +206,7 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                                 child: Text(
                                   completion == null
                                       ? targetText
-                                      : '$targetText · إتمام $completion%',
+                                      : context.l10n.lessonTargetCompletion(targetText, completion),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
@@ -251,8 +251,8 @@ extension _LessonsTabExtension on _SpecialistDashboardScreenState {
                     ),
                     onPressed: () => _recommendLessonToChild(lesson),
                     icon: const Icon(Icons.add_circle_outline, size: 18),
-                    label: const Text(
-                      'اقتراح لطفل',
+                    label: Text(
+                      context.l10n.recommendToChild,
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 12.5,

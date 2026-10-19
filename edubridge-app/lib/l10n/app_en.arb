@@ -1399,5 +1399,624 @@
         "type": "int"
       }
     }
+  },
+  "verificationRequired": "Identity verification required",
+  "@verificationRequired": {
+    "description": "Professional dashboard interface: verificationRequired."
+  },
+  "teacherVerificationDescription": "Verify your identity and upload your qualification certificate to access all teacher permissions.",
+  "@teacherVerificationDescription": {
+    "description": "Professional dashboard interface: teacherVerificationDescription."
+  },
+  "specialistVerificationDescription": "Verify your identity and upload your qualification certificate to access all specialist permissions.",
+  "@specialistVerificationDescription": {
+    "description": "Professional dashboard interface: specialistVerificationDescription."
+  },
+  "verifyIdentityAndCertificate": "Verify identity and certificate",
+  "@verifyIdentityAndCertificate": {
+    "description": "Professional dashboard interface: verifyIdentityAndCertificate."
+  },
+  "verifyFirstForPermission": "Verify your identity first to activate this permission",
+  "@verifyFirstForPermission": {
+    "description": "Professional dashboard interface: verifyFirstForPermission."
+  },
+  "verifyIdentityFirst": "Verify your identity first",
+  "@verifyIdentityFirst": {
+    "description": "Professional dashboard interface: verifyIdentityFirst."
+  },
+  "openStudentProfile": "Open student profile",
+  "@openStudentProfile": {
+    "description": "Professional dashboard interface: openStudentProfile."
+  },
+  "plan": "Plan",
+  "@plan": {
+    "description": "Professional dashboard interface: plan."
+  },
+  "quickActions": "Quick actions",
+  "@quickActions": {
+    "description": "Professional dashboard interface: quickActions."
+  },
+  "reports": "Reports",
+  "@reports": {
+    "description": "Professional dashboard interface: reports."
+  },
+  "homeworks": "Homework",
+  "@homeworks": {
+    "description": "Professional dashboard interface: homeworks."
+  },
+  "caseStudy": "Case study",
+  "@caseStudy": {
+    "description": "Professional dashboard interface: caseStudy."
+  },
+  "noAssignedTeacherChildren": "No children are currently assigned to you",
+  "@noAssignedTeacherChildren": {
+    "description": "Professional dashboard interface: noAssignedTeacherChildren."
+  },
+  "assignedChildrenDescription": "Children will appear here once assigned to your account.",
+  "@assignedChildrenDescription": {
+    "description": "Professional dashboard interface: assignedChildrenDescription."
+  },
+  "followUpCompleted": "Follow-up completed",
+  "@followUpCompleted": {
+    "description": "Professional dashboard interface: followUpCompleted."
+  },
+  "followUpPending": "Awaiting follow-up",
+  "@followUpPending": {
+    "description": "Professional dashboard interface: followUpPending."
+  },
+  "followUpActive": "Follow-up in progress",
+  "@followUpActive": {
+    "description": "Professional dashboard interface: followUpActive."
+  },
+  "planUnderReview": "Plan under review",
+  "@planUnderReview": {
+    "description": "Professional dashboard interface: planUnderReview."
+  },
+  "preliminaryPlan": "Preliminary plan",
+  "@preliminaryPlan": {
+    "description": "Professional dashboard interface: preliminaryPlan."
+  },
+  "homeworksLoadFailed": "Could not load homework",
+  "@homeworksLoadFailed": {
+    "description": "Professional dashboard interface: homeworksLoadFailed."
+  },
+  "all": "All",
+  "@all": {
+    "description": "Professional dashboard interface: all."
+  },
+  "notSubmitted": "Not submitted",
+  "@notSubmitted": {
+    "description": "Professional dashboard interface: notSubmitted."
+  },
+  "toGrade": "To grade",
+  "@toGrade": {
+    "description": "Professional dashboard interface: toGrade."
+  },
+  "graded": "Graded",
+  "@graded": {
+    "description": "Professional dashboard interface: graded."
+  },
+  "noHomeworkInCategory": "No homework in this category",
+  "@noHomeworkInCategory": {
+    "description": "Professional dashboard interface: noHomeworkInCategory."
+  },
+  "createHomework": "Create homework",
+  "@createHomework": {
+    "description": "Professional dashboard interface: createHomework."
+  },
+  "lessonLibraryDescription": "Browse existing lessons or search for specific content.",
+  "@lessonLibraryDescription": {
+    "description": "Professional dashboard interface: lessonLibraryDescription."
+  },
+  "searchLessonsHint": "Search for a lesson...",
+  "@searchLessonsHint": {
+    "description": "Professional dashboard interface: searchLessonsHint."
+  },
+  "clearSearch": "Clear search",
+  "@clearSearch": {
+    "description": "Professional dashboard interface: clearSearch."
+  },
+  "noLessonsYet": "No lessons yet",
+  "@noLessonsYet": {
+    "description": "Professional dashboard interface: noLessonsYet."
+  },
+  "noSearchResults": "No results match your search",
+  "@noSearchResults": {
+    "description": "Professional dashboard interface: noSearchResults."
+  },
+  "addFirstLessonDescription": "Start by adding your first lesson to the library.",
+  "@addFirstLessonDescription": {
+    "description": "Professional dashboard interface: addFirstLessonDescription."
+  },
+  "tryDifferentSearch": "Try a different search term.",
+  "@tryDifferentSearch": {
+    "description": "Professional dashboard interface: tryDifferentSearch."
+  },
+  "forParents": "For parents",
+  "@forParents": {
+    "description": "Professional dashboard interface: forParents."
+  },
+  "byDisability": "By disability",
+  "@byDisability": {
+    "description": "Professional dashboard interface: byDisability."
+  },
+  "forEveryone": "For everyone",
+  "@forEveryone": {
+    "description": "Professional dashboard interface: forEveryone."
+  },
+  "videoAttached": "Video attached",
+  "@videoAttached": {
+    "description": "Professional dashboard interface: videoAttached."
+  },
+  "subtitlesAttached": "Subtitles attached",
+  "@subtitlesAttached": {
+    "description": "Professional dashboard interface: subtitlesAttached."
+  },
+  "signLanguageVideoAttached": "Sign language video attached",
+  "@signLanguageVideoAttached": {
+    "description": "Professional dashboard interface: signLanguageVideoAttached."
+  },
+  "audioAttached": "Audio attached",
+  "@audioAttached": {
+    "description": "Professional dashboard interface: audioAttached."
+  },
+  "planApprovedByMinistry": "This plan has been approved by the ministry",
+  "@planApprovedByMinistry": {
+    "description": "Professional dashboard interface: planApprovedByMinistry."
+  },
+  "educationalPlan": "Educational plan",
+  "@educationalPlan": {
+    "description": "Professional dashboard interface: educationalPlan."
+  },
+  "cognitiveAssessment": "Cognitive assessment",
+  "@cognitiveAssessment": {
+    "description": "Professional dashboard interface: cognitiveAssessment."
+  },
+  "motorAssessment": "Motor assessment",
+  "@motorAssessment": {
+    "description": "Professional dashboard interface: motorAssessment."
+  },
+  "emotionalAssessment": "Emotional assessment",
+  "@emotionalAssessment": {
+    "description": "Professional dashboard interface: emotionalAssessment."
+  },
+  "socialAssessment": "Social assessment",
+  "@socialAssessment": {
+    "description": "Professional dashboard interface: socialAssessment."
+  },
+  "recommendations": "Recommendations",
+  "@recommendations": {
+    "description": "Professional dashboard interface: recommendations."
+  },
+  "suggestedTeachingMethods": "Suggested teaching methods",
+  "@suggestedTeachingMethods": {
+    "description": "Professional dashboard interface: suggestedTeachingMethods."
+  },
+  "dashboardLoadFailed": "Could not load dashboard data",
+  "@dashboardLoadFailed": {
+    "description": "Professional dashboard interface: dashboardLoadFailed."
+  },
+  "lessonAdded": "Lesson added successfully",
+  "@lessonAdded": {
+    "description": "Professional dashboard interface: lessonAdded."
+  },
+  "addLesson": "Add lesson",
+  "@addLesson": {
+    "description": "Professional dashboard interface: addLesson."
+  },
+  "teacherLessonsDescription": "Add new lessons or browse existing lessons",
+  "@teacherLessonsDescription": {
+    "description": "Professional dashboard interface: teacherLessonsDescription."
+  },
+  "teacherHomeworkDescription": "Track homework, submissions and grading",
+  "@teacherHomeworkDescription": {
+    "description": "Professional dashboard interface: teacherHomeworkDescription."
+  },
+  "disabilityDescription": "Disability description",
+  "@disabilityDescription": {
+    "description": "Professional dashboard interface: disabilityDescription."
+  },
+  "medicalHistory": "Medical history",
+  "@medicalHistory": {
+    "description": "Professional dashboard interface: medicalHistory."
+  },
+  "specialNeeds": "Special needs",
+  "@specialNeeds": {
+    "description": "Professional dashboard interface: specialNeeds."
+  },
+  "preferredLearningStyle": "Preferred learning style",
+  "@preferredLearningStyle": {
+    "description": "Professional dashboard interface: preferredLearningStyle."
+  },
+  "psychologicalNotes": "Psychological notes",
+  "@psychologicalNotes": {
+    "description": "Professional dashboard interface: psychologicalNotes."
+  },
+  "strengths": "Strengths",
+  "@strengths": {
+    "description": "Professional dashboard interface: strengths."
+  },
+  "challenges": "Challenges",
+  "@challenges": {
+    "description": "Professional dashboard interface: challenges."
+  },
+  "reviewCaseBeforeAccepting": "Review the case details and decide whether they fit your specialty before accepting follow-up.",
+  "@reviewCaseBeforeAccepting": {
+    "description": "Professional dashboard interface: reviewCaseBeforeAccepting."
+  },
+  "selectSpecialtyFirst": "Choose your specialty first",
+  "@selectSpecialtyFirst": {
+    "description": "Professional dashboard interface: selectSpecialtyFirst."
+  },
+  "acceptingFollowUp": "Accepting follow-up...",
+  "@acceptingFollowUp": {
+    "description": "Professional dashboard interface: acceptingFollowUp."
+  },
+  "available": "Available",
+  "@available": {
+    "description": "Professional dashboard interface: available."
+  },
+  "parentRequestsSupportMeeting": "The parent is requesting a learning support meeting",
+  "@parentRequestsSupportMeeting": {
+    "description": "Professional dashboard interface: parentRequestsSupportMeeting."
+  },
+  "adaptLearning": "Adapt learning",
+  "@adaptLearning": {
+    "description": "Professional dashboard interface: adaptLearning."
+  },
+  "suggestLearningSupportSpecialist": "Suggest a learning support specialist",
+  "@suggestLearningSupportSpecialist": {
+    "description": "Professional dashboard interface: suggestLearningSupportSpecialist."
+  },
+  "suggestEducationalSpecialist": "Suggest an educational specialist",
+  "@suggestEducationalSpecialist": {
+    "description": "Professional dashboard interface: suggestEducationalSpecialist."
+  },
+  "specialtyMissingContactSupport": "Your specialty is not set. Contact support.",
+  "@specialtyMissingContactSupport": {
+    "description": "Professional dashboard interface: specialtyMissingContactSupport."
+  },
+  "casePreviewFailed": "Could not preview the case",
+  "@casePreviewFailed": {
+    "description": "Professional dashboard interface: casePreviewFailed."
+  },
+  "confirmAdding": "Confirm addition",
+  "@confirmAdding": {
+    "description": "Professional dashboard interface: confirmAdding."
+  },
+  "unspecified": "Not specified",
+  "@unspecified": {
+    "description": "Professional dashboard interface: unspecified."
+  },
+  "lessonCompletionApproved": "Lesson completion approved",
+  "@lessonCompletionApproved": {
+    "description": "Professional dashboard interface: lessonCompletionApproved."
+  },
+  "myChildren": "My children",
+  "@myChildren": {
+    "description": "Professional dashboard interface: myChildren."
+  },
+  "waitingList": "Waiting list",
+  "@waitingList": {
+    "description": "Professional dashboard interface: waitingList."
+  },
+  "noRecordedEvaluation": "No evaluation recorded",
+  "@noRecordedEvaluation": {
+    "description": "Professional dashboard interface: noRecordedEvaluation."
+  },
+  "evaluationDetails": "Evaluation details",
+  "@evaluationDetails": {
+    "description": "Professional dashboard interface: evaluationDetails."
+  },
+  "learningInteraction": "Interaction during learning",
+  "@learningInteraction": {
+    "description": "Professional dashboard interface: learningInteraction."
+  },
+  "parentTargetedLesson": "Lesson for parents",
+  "@parentTargetedLesson": {
+    "description": "Professional dashboard interface: parentTargetedLesson."
+  },
+  "lessonRecommendationFailed": "Could not send the recommendation",
+  "@lessonRecommendationFailed": {
+    "description": "Professional dashboard interface: lessonRecommendationFailed."
+  },
+  "lessonRecommendationSent": "Lesson recommendation sent",
+  "@lessonRecommendationSent": {
+    "description": "Professional dashboard interface: lessonRecommendationSent."
+  },
+  "recommendLessonToChild": "Recommend a lesson to a child",
+  "@recommendLessonToChild": {
+    "description": "Professional dashboard interface: recommendLessonToChild."
+  },
+  "noChildrenForRecommendation": "No children are linked to your account to receive a recommendation.",
+  "@noChildrenForRecommendation": {
+    "description": "Professional dashboard interface: noChildrenForRecommendation."
+  },
+  "sendRecommendationToParent": "Send recommendation to parent",
+  "@sendRecommendationToParent": {
+    "description": "Professional dashboard interface: sendRecommendationToParent."
+  },
+  "noLessonsInCategory": "No lessons in this category",
+  "@noLessonsInCategory": {
+    "description": "Professional dashboard interface: noLessonsInCategory."
+  },
+  "addLessonUsingSuggestion": "Add a new lesson using the Suggest lesson button",
+  "@addLessonUsingSuggestion": {
+    "description": "Professional dashboard interface: addLessonUsingSuggestion."
+  },
+  "recommendToChild": "Recommend to a child",
+  "@recommendToChild": {
+    "description": "Professional dashboard interface: recommendToChild."
+  },
+  "currentActivity": "Current activity",
+  "@currentActivity": {
+    "description": "Professional dashboard interface: currentActivity."
+  },
+  "openChildProfile": "Open child profile",
+  "@openChildProfile": {
+    "description": "Professional dashboard interface: openChildProfile."
+  },
+  "evaluate": "Evaluate",
+  "@evaluate": {
+    "description": "Professional dashboard interface: evaluate."
+  },
+  "evaluation": "Evaluation",
+  "@evaluation": {
+    "description": "Professional dashboard interface: evaluation."
+  },
+  "teacherReport": "Teacher report",
+  "@teacherReport": {
+    "description": "Professional dashboard interface: teacherReport."
+  },
+  "writeProgress": "Write progress",
+  "@writeProgress": {
+    "description": "Professional dashboard interface: writeProgress."
+  },
+  "suggestSupport": "Suggest support",
+  "@suggestSupport": {
+    "description": "Professional dashboard interface: suggestSupport."
+  },
+  "evaluateCurrentPlan": "Evaluate current plan",
+  "@evaluateCurrentPlan": {
+    "description": "Professional dashboard interface: evaluateCurrentPlan."
+  },
+  "approving": "Approving...",
+  "@approving": {
+    "description": "Professional dashboard interface: approving."
+  },
+  "approveCurrentActivity": "Approve current activity",
+  "@approveCurrentActivity": {
+    "description": "Professional dashboard interface: approveCurrentActivity."
+  },
+  "noAssignedChildren": "No children are currently assigned to you",
+  "@noAssignedChildren": {
+    "description": "Professional dashboard interface: noAssignedChildren."
+  },
+  "noWaitingChildren": "No children on the waiting list",
+  "@noWaitingChildren": {
+    "description": "Professional dashboard interface: noWaitingChildren."
+  },
+  "followUpChildrenDescription": "Children will appear here when added to your follow-up list.",
+  "@followUpChildrenDescription": {
+    "description": "Professional dashboard interface: followUpChildrenDescription."
+  },
+  "waitingChildrenDescription": "Child requests will appear here when available.",
+  "@waitingChildrenDescription": {
+    "description": "Professional dashboard interface: waitingChildrenDescription."
+  },
+  "searchForChild": "Search for a child",
+  "@searchForChild": {
+    "description": "Professional dashboard interface: searchForChild."
+  },
+  "enterChildName": "Enter the child's name...",
+  "@enterChildName": {
+    "description": "Professional dashboard interface: enterChildName."
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Professional dashboard interface: search."
+  },
+  "editChildSearch": "Edit child search",
+  "@editChildSearch": {
+    "description": "Professional dashboard interface: editChildSearch."
+  },
+  "aboutEduBridge": "An educational platform supporting children with disabilities.",
+  "@aboutEduBridge": {
+    "description": "Professional dashboard interface: aboutEduBridge."
+  },
+  "searchChildrenByName": "Search for a child by name",
+  "@searchChildrenByName": {
+    "description": "Professional dashboard interface: searchChildrenByName."
+  },
+  "awaitingAssessment": "Awaiting assessment",
+  "@awaitingAssessment": {
+    "description": "Professional dashboard interface: awaitingAssessment."
+  },
+  "completedToday": "Completed today",
+  "@completedToday": {
+    "description": "Professional dashboard interface: completedToday."
+  },
+  "inProgress": "In progress",
+  "@inProgress": {
+    "description": "Professional dashboard interface: inProgress."
+  },
+  "suggestLesson": "Suggest lesson",
+  "@suggestLesson": {
+    "description": "Professional dashboard interface: suggestLesson."
+  },
+  "specialistsLoadFailed": "Could not load specialists",
+  "@specialistsLoadFailed": {
+    "description": "Professional dashboard interface: specialistsLoadFailed."
+  },
+  "noMatchingChildren": "No children match your search",
+  "@noMatchingChildren": {
+    "description": "Professional dashboard interface: noMatchingChildren."
+  },
+  "chooseSupportTarget": "Choose a recipient for the support recommendation",
+  "@chooseSupportTarget": {
+    "description": "Professional dashboard interface: chooseSupportTarget."
+  },
+  "teacherChildrenResponsibility": "{count, plural, =0{No children in your care} =1{1 child in your care} other{{count} children in your care}}",
+  "@teacherChildrenResponsibility": {
+    "description": "Professional dashboard interface: teacherChildrenResponsibility.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "targetStudentCount": "{count, plural, =0{No students} =1{1 student} other{{count} students}}",
+  "@targetStudentCount": {
+    "description": "Professional dashboard interface: targetStudentCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inProgressActivityCount": "{count, plural, =0{No activities in progress} =1{1 activity in progress} other{{count} activities in progress}}",
+  "@inProgressActivityCount": {
+    "description": "Professional dashboard interface: inProgressActivityCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedActivityCount": "{count, plural, =0{No completed activities} =1{1 completed activity} other{{count} completed activities}}",
+  "@completedActivityCount": {
+    "description": "Professional dashboard interface: completedActivityCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "planPendingForChild": "The ministry has not yet approved the plan for \"{name}\".\n\nYou can view the specialist's preliminary plan.",
+  "@planPendingForChild": {
+    "description": "Professional dashboard interface: planPendingForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkDueDate": "Due: {date}",
+  "@homeworkDueDate": {
+    "description": "Professional dashboard interface: homeworkDueDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionContent": "Audio description: {description}",
+  "@audioDescriptionContent": {
+    "description": "Professional dashboard interface: audioDescriptionContent.",
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "approvedPlanForChild": "Approved plan — {name}",
+  "@approvedPlanForChild": {
+    "description": "Professional dashboard interface: approvedPlanForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "followChildAsSpecialist": "Follow up as {specialty}",
+  "@followChildAsSpecialist": {
+    "description": "Professional dashboard interface: followChildAsSpecialist.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "childAgeLabel": "Age: {age} years",
+  "@childAgeLabel": {
+    "description": "Professional dashboard interface: childAgeLabel.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "childFollowUpAdded": "{name} was added to your follow-up list",
+  "@childFollowUpAdded": {
+    "description": "Professional dashboard interface: childFollowUpAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "evaluationDate": "Date: {date}",
+  "@evaluationDate": {
+    "description": "Professional dashboard interface: evaluationDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonAddedDate": "Added: {date}",
+  "@lessonAddedDate": {
+    "description": "Professional dashboard interface: lessonAddedDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonTargetCompletion": "{target} · {percent}% complete",
+  "@lessonTargetCompletion": {
+    "description": "Professional dashboard interface: lessonTargetCompletion.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "supportRecommendationForChild": "Learning support recommendation — {name}",
+  "@supportRecommendationForChild": {
+    "description": "Professional dashboard interface: supportRecommendationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "acceptChildFollowUpConfirmation": "Parent/guardian: {guardians}\nChild's condition: {condition}\nNeeds: {needs}\n\nAdd \"{name}\" to your follow-up list as {specialty}?",
+  "@acceptChildFollowUpConfirmation": {
+    "description": "Professional dashboard interface: acceptChildFollowUpConfirmation.",
+    "placeholders": {
+      "guardians": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      },
+      "needs": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Confirm adding an item."
   }
 }

@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/teacher/teacher_screen.dart
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
   List _lessons = [];
   List _types = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _query = '';
   Map? _viewingLesson;
   final bool _adding = false;
@@ -121,14 +122,14 @@ class _TeacherScreenState extends State<TeacherScreen> {
           _error = childrenData['error'] ??
               lessonsData['error'] ??
               typesData['error'] ??
-              'تعذّر جلب البيانات';
+              SharedUiMessage.dashboardLoadFailed;
           _loading = false;
         });
       }
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -184,21 +185,21 @@ class _TeacherScreenState extends State<TeacherScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.people_outline),
             selectedIcon: Icon(Icons.people),
-            label: 'الأطفال',
+            label: context.l10n.children,
           ),
           NavigationDestination(
             icon: Icon(AppIcons.lesson),
             selectedIcon: Icon(Icons.menu_book),
-            label: 'الدروس',
+            label: context.l10n.lessons,
           ),
           NavigationDestination(
             icon: Icon(AppIcons.homework),
             selectedIcon: Icon(Icons.assignment),
-            label: 'الواجبات',
+            label: context.l10n.homeworks,
           ),
         ],
       ),
@@ -214,15 +215,15 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 if (!mounted || !context.mounted || lesson == null) return;
                 setState(() => _lessons = [lesson, ..._lessons]);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم إضافة الدرس بنجاح'),
+                  SnackBar(
+                    content: Text(context.l10n.lessonAdded),
                     backgroundColor: AppColors.green,
                   ),
                 );
               },
               icon: const Icon(AppIcons.add),
-              label: const Text(
-                'إضافة درس',
+              label: Text(
+                context.l10n.addLesson,
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             )

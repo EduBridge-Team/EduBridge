@@ -31,7 +31,7 @@ extension _TeacherActions on _TeacherScreenState {
               ),
               const SizedBox(height: 20),
               Text(
-                'توثيق الهوية مطلوب',
+                context.l10n.verificationRequired,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -41,7 +41,7 @@ extension _TeacherActions on _TeacherScreenState {
               ),
               const SizedBox(height: 12),
               Text(
-                'عزيزي المعلم، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.',
+                context.l10n.teacherVerificationDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -62,7 +62,7 @@ extension _TeacherActions on _TeacherScreenState {
                     ),
                   ),
                   icon: const Icon(AppIcons.verified, size: 22),
-                  label: const Text('توثيق الهوية والشهادة',
+                  label: Text(context.l10n.verifyIdentityAndCertificate,
                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                   onPressed: () async {
                     Navigator.pop(dialogContext);
@@ -93,8 +93,8 @@ extension _TeacherActions on _TeacherScreenState {
     if (!await ApiService.isVerified()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('يرجى توثيق الهوية أولاً لتفعيل هذه الصلاحية'),
+          SnackBar(
+            content: Text(context.l10n.verifyFirstForPermission),
             backgroundColor: AppColors.brandTeal,
           ),
         );

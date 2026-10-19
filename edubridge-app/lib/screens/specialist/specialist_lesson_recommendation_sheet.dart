@@ -21,7 +21,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
 
     int? selectedId;
     bool sending = false;
-    String? errorMessage;
+    Object? errorMessage;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -46,8 +46,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                 if (!sheetContext.mounted) return;
                 update(() {
                   sending = false;
-                  errorMessage = (data['error'] ?? 'تعذّر إرسال الاقتراح')
-                      .toString();
+                  errorMessage = data['error'] ?? SharedUiMessage.lessonRecommendationFailed;
                 });
                 return;
               }
@@ -57,7 +56,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      (data['message'] ?? 'تم إرسال اقتراح الدرس').toString(),
+                      context.l10n.lessonRecommendationSent,
                     ),
                   ),
                 );
@@ -66,7 +65,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
               if (!sheetContext.mounted) return;
               update(() {
                 sending = false;
-                errorMessage = 'تعذّر الاتصال بالسيرفر';
+                errorMessage = SharedUiMessage.connectionFailed;
               });
             }
           }
@@ -79,7 +78,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'اقتراح درس لطفل',
+                    sheetContext.l10n.recommendLessonToChild,
                     style: TextStyle(
                       color: JisrColors.of(sheetContext).heading,
                       fontSize: 19,
@@ -98,10 +97,10 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                   ),
                   const SizedBox(height: 12),
                   if (children.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(vertical: 15),
                       child: Text(
-                        'لا يوجد أطفال مرتبطون بحسابك لإرسال الاقتراح لهم.',
+                        sheetContext.l10n.noChildrenForRecommendation,
                         textAlign: TextAlign.center,
                       ),
                     )
@@ -137,7 +136,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                   if (errorMessage != null) ...[
                     const SizedBox(height: 8),
                     Text(
-                      errorMessage!,
+                      sheetContext.sharedMessage(errorMessage),
                       style: const TextStyle(color: AppColors.red),
                     ),
                   ],
@@ -152,7 +151,7 @@ extension _SpecialistLessonRecommendation on _SpecialistDashboardScreenState {
                           )
                         : const Icon(Icons.send_outlined),
                     label: Text(
-                      sending ? 'جارٍ الإرسال...' : 'إرسال الاقتراح لولي الأمر',
+                      sending ? sheetContext.l10n.sendingAlt : sheetContext.l10n.sendRecommendationToParent,
                     ),
                   ),
                 ],

@@ -26,10 +26,10 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
     final hasSpecialty = _mySpecialty != null;
 
     final specType = _mySpecialty == 'learning_support'
-        ? 'مختص دعم تعليمي'
+        ? context.l10n.learningSupportSpecialist
         : _mySpecialty == 'educational'
-            ? 'مختص تعليمي'
-            : 'مختص';
+            ? context.l10n.educationalSpecialist
+            : context.l10n.specialistRole;
 
     final specIcon = _mySpecialty == 'learning_support'
         ? AppIcons.specialist
@@ -68,7 +68,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
             if (disability.isNotEmpty) _buildDisabilityBadge(disability, c),
             if (description.isNotEmpty)
               _buildInfoBlock(
-                label: 'وصف الإعاقة',
+                label: context.l10n.disabilityDescription,
                 value: description,
                 icon: AppIcons.info,
                 color: AppColors.brandBlue,
@@ -76,7 +76,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (medicalHistory.isNotEmpty)
               _buildInfoBlock(
-                label: 'التاريخ الطبي',
+                label: context.l10n.medicalHistory,
                 value: medicalHistory,
                 icon: AppIcons.certificate,
                 color: AppColors.brandTealDeep,
@@ -84,7 +84,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (specialNeeds.isNotEmpty)
               _buildInfoBlock(
-                label: 'احتياجات خاصة',
+                label: context.l10n.specialNeeds,
                 value: specialNeeds,
                 icon: AppIcons.support,
                 color: AppColors.orangeDeep,
@@ -92,7 +92,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (preferredStyle.isNotEmpty)
               _buildInfoBlock(
-                label: 'أسلوب التعلم المفضّل',
+                label: context.l10n.preferredLearningStyle,
                 value: preferredStyle,
                 icon: AppIcons.lesson,
                 color: AppColors.purple,
@@ -100,7 +100,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (psychologistNotes.isNotEmpty)
               _buildInfoBlock(
-                label: 'ملاحظات نفسية',
+                label: context.l10n.psychologicalNotes,
                 value: psychologistNotes,
                 icon: AppIcons.cognitive,
                 color: AppColors.pink,
@@ -108,7 +108,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (strengths.isNotEmpty)
               _buildChipsBlock(
-                label: 'نقاط القوة',
+                label: context.l10n.strengths,
                 items: strengths,
                 fg: AppColors.greenDeep,
                 bg: c.tintGreen,
@@ -117,7 +117,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
               ),
             if (challenges.isNotEmpty)
               _buildChipsBlock(
-                label: 'التحديات',
+                label: context.l10n.challenges,
                 items: challenges,
                 fg: AppColors.orangeDeep,
                 bg: c.tintOrange,
@@ -142,7 +142,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'راجع معلومات الحالة ثم قرر إن كانت مناسبة لتخصصك قبل قبول المتابعة.',
+                      context.l10n.reviewCaseBeforeAccepting,
                       style: TextStyle(
                         fontSize: 12,
                         height: 1.4,
@@ -168,8 +168,8 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                     ),
                   ),
                   icon: const Icon(AppIcons.info, size: 20),
-                  label: const Text(
-                    'حدّد تخصصك أولاً',
+                  label: Text(
+                    context.l10n.selectSpecialtyFirst,
                     style: TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
@@ -206,7 +206,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                               strokeWidth: 2, color: Colors.white))
                       : Icon(specIcon, size: 20),
                   label: Text(
-                    isAdding ? 'جارٍ قبول المتابعة...' : 'متابعة الطفل كـ $specType',
+                    isAdding ? context.l10n.acceptingFollowUp : context.l10n.followChildAsSpecialist(specType),
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
@@ -255,7 +255,7 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
                 ),
               ),
               Text(
-                'العمر: $age سنة',
+                context.l10n.childAgeLabel(age.toString()),
                 style: TextStyle(fontSize: 13, color: c.muted),
               ),
             ],
@@ -267,13 +267,13 @@ extension _AvailableChildCardExtension on _SpecialistDashboardScreenState {
             color: AppColors.blue.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(AppIcons.clock, size: 12, color: AppColors.blue),
               SizedBox(width: 4),
               Text(
-                'متاح',
+                context.l10n.available,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,

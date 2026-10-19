@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
@@ -28,9 +29,9 @@ class SpecialistWaitingEmptyS29 extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          isSearch ? 'لا يوجد أطفال مطابقون للبحث' : 'لا يوجد أطفال في قائمة الانتظار',
+          isSearch ? context.l10n.noMatchingChildren : context.l10n.noWaitingChildren,
           textAlign: TextAlign.center,
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           style: TextStyle(color: c.heading, fontSize: 18, fontWeight: FontWeight.w800),
         ),
       ],

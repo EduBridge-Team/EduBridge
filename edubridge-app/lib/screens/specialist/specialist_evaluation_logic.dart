@@ -67,12 +67,12 @@ extension _SpecialistEvaluationLogicExtension on _SpecialistDashboardScreenState
         children: [
           const Icon(AppIcons.evaluate, size: 48, color: AppColors.muted),
           const SizedBox(height: 12),
-          Text('لا يوجد تقييم مسجل',
+          Text(context.l10n.noRecordedEvaluation,
               style: TextStyle(color: c.muted)),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
+            child: Text(context.l10n.close),
           ),
         ],
       ),
@@ -102,7 +102,7 @@ extension _SpecialistEvaluationLogicExtension on _SpecialistDashboardScreenState
                 const Icon(AppIcons.evaluate, color: AppColors.brandTeal),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text('تفاصيل التقييم',
+                  child: Text(context.l10n.evaluationDetails,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -116,22 +116,22 @@ extension _SpecialistEvaluationLogicExtension on _SpecialistDashboardScreenState
               ],
             ),
             if (date != null)
-              Text('التاريخ: ${date.day}/${date.month}/${date.year}',
+              Text(context.l10n.evaluationDate(MaterialLocalizations.of(context).formatShortDate(date)),
                   style: TextStyle(color: c.muted)),
             const SizedBox(height: 12),
-            _detailRow('التقييم المعرفي', evaluation['cognitive_assessment']),
-            _detailRow('التقييم الحركي', evaluation['motor_assessment']),
+            _detailRow(context.l10n.cognitiveAssessment, evaluation['cognitive_assessment']),
+            _detailRow(context.l10n.motorAssessment, evaluation['motor_assessment']),
             _detailRow(
-                'التفاعل أثناء التعلم', evaluation['emotional_assessment']),
-            _detailRow('التقييم الاجتماعي', evaluation['social_assessment']),
-            _detailRow('التوصيات', evaluation['recommendations']),
-            _detailRow('الخطة التعليمية', evaluation['educational_plan']),
+                context.l10n.learningInteraction, evaluation['emotional_assessment']),
+            _detailRow(context.l10n.socialAssessment, evaluation['social_assessment']),
+            _detailRow(context.l10n.recommendations, evaluation['recommendations']),
+            _detailRow(context.l10n.educationalPlan, evaluation['educational_plan']),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('إغلاق'),
+                child: Text(context.l10n.close),
               ),
             ),
           ],
