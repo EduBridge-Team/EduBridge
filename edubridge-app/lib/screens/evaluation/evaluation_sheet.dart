@@ -205,6 +205,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
     required String title,
     required String message,
   }) {
+    setState(() => _loading = false);
     return showDialog<void>(
       context: context,
       barrierDismissible: false,

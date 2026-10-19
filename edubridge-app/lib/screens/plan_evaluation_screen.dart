@@ -86,13 +86,13 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: c.tintTeal,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
+          Material(
+            color: c.tintTeal,
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -113,6 +113,7 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                   ),
                 ),
               ],
+              ),
             ),
           ),
           const SizedBox(height: 16),

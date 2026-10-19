@@ -97,10 +97,11 @@ void main() {
         await _narrow(tester);
         final s = await AppLocalizations.delegate.load(Locale(language));
         await _mount(tester, const PlanEvaluationScreen(childId: 8, childName: 'محمود', planId: 5), language, scale: scale);
-        await tester.ensureVisible(find.text(s.saveEvaluation));
+        expect(find.text(s.planNeedsChanges), findsOneWidget);
+        await tester.scrollUntilVisible(find.text(s.saveEvaluation), 150,
+          scrollable: find.byType(Scrollable).first);
         await tester.pumpAndSettle();
         expect(find.text(s.planEvaluationForChild('محمود')), findsOneWidget);
-        expect(find.text(s.planNeedsChanges), findsOneWidget);
         await tester.pumpWidget(const SizedBox.shrink());
       });
       testWidgets('$language specialist suggestion scale=$scale preserves IDs and authored reason', (tester) async {
@@ -218,7 +219,11 @@ void main() {
   testWidgets('failed plan save can retry without losing notes or boolean values', (tester) async {
     final payloads = <Map<String, dynamic>>[];
     await http.runWithClient(() async {
-      await _mount(tester, const PlanEvaluationScreen(childId: 8, childName: 'محمود', planId: 5), 'en');
+      await _mount(tester, Scaffold(body: Builder(builder: (context) => TextButton(
+        onPressed: () => Navigator.push<void>(context, MaterialPageRoute(builder: (_) =>
+          const PlanEvaluationScreen(childId: 8, childName: 'محمود', planId: 5))),
+        child: const Text('Open')))), 'en');
+      await _tap(tester, find.text('Open'));
       tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).onChanged(false);
       await tester.enterText(find.byType(TextField).at(0), 'ملاحظات أصلية');
       await tester.enterText(find.byType(TextField).at(1), 'تغيير أول\nتغيير ثان');
@@ -274,8 +279,10 @@ void main() {
     await http.runWithClient(() async {
       await _mount(tester, const SpecialistDashboardScreen(), 'en');
       final s = await AppLocalizations.delegate.load(const Locale('en'));
-      await tester.scrollUntilVisible(find.text(s.suggestSupport).hitTestable(), 200,
-        scrollable: find.descendant(of: find.byType(CustomScrollView), matching: find.byType(Scrollable)).first);
+      final scrollable = find.descendant(of: find.byType(CustomScrollView), matching: find.byType(Scrollable)).first;
+      await tester.scrollUntilVisible(find.text(s.quickActions).hitTestable(), 200, scrollable: scrollable);
+      await _tap(tester, find.text(s.quickActions));
+      await tester.scrollUntilVisible(find.text(s.suggestSupport).hitTestable(), 200, scrollable: scrollable);
       await _tap(tester, find.text(s.suggestSupport));
       await _tap(tester, find.byKey(const ValueKey('s28-parent')));
       await _tap(tester, find.byKey(const ValueKey('s28-next')));
