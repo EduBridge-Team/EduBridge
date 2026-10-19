@@ -226,8 +226,10 @@ class _ChildListTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        context.l10n.childAgeLabel(age.toString())
-                        '${disability != null && disability.isNotEmpty ? ' • $disability' : ''}',
+                        [
+                          context.l10n.childAgeLabel(age.toString()),
+                          if (disability != null && disability.isNotEmpty) disability,
+                        ].join(' • '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 12, color: c.muted),

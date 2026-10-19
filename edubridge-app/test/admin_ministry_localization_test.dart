@@ -22,7 +22,7 @@ http.Response _response(Object data, [int status = 200]) => http.Response(jsonEn
 MockClient _client({List<Map<String, dynamic>> lessons = const [],
     List<Map<String, dynamic>> users = const [],
     Future<http.Response> Function(http.Request)? mutation}) => MockClient((request) async {
-  if (request.method != 'GET') return mutation == null ? _response({}, 500) : mutation(request);
+  if (request.method != 'GET') return mutation == null ? _response({}, 500) : await mutation(request);
   return _response({'users': users, 'children': [], 'requests': [], 'tickets': [],
     'approvals': [], 'lessons': lessons, 'children_count': 0, 'users_count': users.length});
 });
