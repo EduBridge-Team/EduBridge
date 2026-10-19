@@ -455,20 +455,22 @@ extension _S08SpecialistChildProfile on _SpecialistChildProfileScreenState {
                 ),
               ),
               if (badge != null)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 5,
+                Flexible(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tint,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(badge, style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
+                    )),
                   ),
-                  decoration: BoxDecoration(
-                    color: tint,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(badge, style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: accent,
-                  )),
                 ),
               Icon(Icons.chevron_left_rounded, color: c.muted, size: 21),
             ],
