@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated from lib/l10n/*.arb by Flutter gen-l10n
+/lib/l10n/generated/

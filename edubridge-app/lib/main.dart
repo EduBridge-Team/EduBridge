@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
 import 'services/notification_listener_service.dart';
@@ -142,7 +143,9 @@ class EduBridgeApp extends StatelessWidget {
         builder: (context, accProfile, __) => MaterialApp(
           navigatorKey: appNavigatorKey,
           navigatorObservers: [jisrModalRouteObserver],
-          title: 'EduBridge — جسر تعليمي',
+          onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           debugShowCheckedModeBanner: false,
           locale: const Locale('ar'),
           theme: buildJisrTheme(),

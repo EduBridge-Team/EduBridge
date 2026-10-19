@@ -1,0 +1,65 @@
+{
+  "@@locale": "en",
+  "appTitle": "EduBridge — Learning Bridge",
+  "@appTitle": {
+    "description": "Application title."
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for the language setting in the shared dashboard menu."
+  },
+  "chooseLanguage": "Choose language",
+  "@chooseLanguage": {
+    "description": "Title of the language selector."
+  },
+  "arabicLanguage": "العربية",
+  "@arabicLanguage": {
+    "description": "Arabic language name, displayed in its own language."
+  },
+  "englishLanguage": "English",
+  "@englishLanguage": {
+    "description": "English language name, displayed in its own language."
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel a pending UI action."
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close the current dialog."
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save changes."
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notification menu label and accessible tooltip."
+  },
+  "moreOptions": "More options",
+  "@moreOptions": {
+    "description": "Accessible label for the dashboard menu."
+  },
+  "loading": "Loading…",
+  "@loading": {
+    "description": "Progress label while loading data."
+  },
+  "retry": "Try again",
+  "@retry": {
+    "description": "Retry a failed operation."
+  },
+  "genericError": "Unable to complete this action. Please try again.",
+  "@genericError": {
+    "description": "Safe fallback for an unrecognized error; do not expose raw server details."
+  },
+  "activityCount": "{count, plural, =0{No activities} =1{One activity} other{{count} activities}}",
+  "@activityCount": {
+    "description": "Number of activities; use a complete plural message, never concatenate fragments.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  }
+}
