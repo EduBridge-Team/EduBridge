@@ -57,7 +57,7 @@ void main() {
       expect(Directionality.of(contentContext),
           language == 'ar' ? TextDirection.rtl : TextDirection.ltr);
       expect(MaterialLocalizations.of(contentContext).cancelButtonLabel,
-          language == 'ar' ? 'إلغاء' : 'Cancel');
+          language == 'ar' ? 'الإلغاء' : 'Cancel');
       expect(tester.takeException(), isNull);
     });
   }
