@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/admin/admin_screen.dart
 import 'dart:convert';
@@ -34,20 +35,20 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   int _tab = 0;
 
-  static const _tabs = [
-    (AppIcons.users, 'المستخدمون'),
-    (AppIcons.shield, 'مراجعة التوثيق'),
-    (AppIcons.support, 'الدعم الفني'),
+  List<(IconData, String)> get _tabs => [
+    (AppIcons.users, context.l10n.users),
+    (AppIcons.shield, context.l10n.verificationReview),
+    (AppIcons.support, context.l10n.technicalSupport),
   ];
 
   String _adminSubtitle() {
     switch (_tab) {
       case 1:
-        return 'مراجعة طلبات التوثيق واعتماد الحسابات';
+        return context.l10n.adminVerificationDescription;
       case 2:
-        return 'متابعة طلبات الدعم الفني';
+        return context.l10n.adminSupportDescription;
       default:
-        return 'إدارة المستخدمين وحسابات المنصة';
+        return context.l10n.adminUsersDescription;
     }
   }
 
@@ -64,7 +65,7 @@ class _AdminScreenState extends State<AdminScreen> {
     final menuActions = <DashboardMenuAction>[
       DashboardMenuAction(
         id: 'search_identity',
-        label: 'البحث بالهوية',
+        label: context.l10n.searchByIdentity,
         icon: AppIcons.search,
         onSelected: () => Navigator.push(
           context,
@@ -73,13 +74,13 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
       DashboardMenuAction(
         id: 'legal',
-        label: 'الخصوصية والحساب',
+        label: context.l10n.privacyAndAccount,
         icon: AppIcons.privacy,
         onSelected: () => const LegalLinksButton().show(context),
       ),
       DashboardMenuAction(
         id: 'logout',
-        label: 'تسجيل الخروج',
+        label: context.l10n.logout,
         icon: AppIcons.logout,
         destructive: true,
         onSelected: _logout,
@@ -100,7 +101,7 @@ class _AdminScreenState extends State<AdminScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: 'الأدمن', subtitle: _adminSubtitle())),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.adminRole, subtitle: _adminSubtitle())),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                     actions: menuActions,
@@ -152,7 +153,7 @@ DashboardHeaderActions(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'لوحة التحكم الإدارية',
+                          context.l10n.adminDashboard,
                           style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: c.heading,
@@ -160,7 +161,7 @@ DashboardHeaderActions(
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'إدارة المستخدمين والتوثيق وطلبات الدعم.',
+                          context.l10n.adminManagementDescription,
                           style: textTheme.bodySmall?.copyWith(color: c.muted),
                         ),
                       ],

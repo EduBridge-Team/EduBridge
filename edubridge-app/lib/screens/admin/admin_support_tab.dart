@@ -12,7 +12,7 @@ class _SupportTicketsTab extends StatefulWidget {
 class _SupportTicketsTabState extends State<_SupportTicketsTab> {
   List _tickets = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -43,13 +43,13 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
         });
       } else {
         setState(() {
-          _error = data['error']?.toString() ?? 'تعذّر جلب الشكاوى';
+          _error = data['error']?.toString() ?? SharedUiMessage.ticketsLoadFailed;
           _loading = false;
         });
       }
     } catch (_) {
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -59,17 +59,17 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('حل الشكوى'),
-        content: const Text(
-            'هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم.'),
+        title: Text(context.l10n.resolveTicket),
+        content: Text(
+            context.l10n.resolveTicketConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('تم الحل', style: TextStyle(color: Colors.green)),
+            child: Text(context.l10n.resolvedStatus, style: TextStyle(color: Colors.green)),
           ),
         ],
       ),
@@ -85,18 +85,18 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
             _tickets.removeWhere((t) => t['id'] == ticket['id']);
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('تم حل الشكوى وإرسال إشعار للمستخدم')),
+            SnackBar(
+                content: Text(context.l10n.ticketResolvedNotice)),
           );
         } else {
           setState(() {
-            _error = 'تعذّر حل الشكوى. تأكد من دعم الـ Backend.';
+            _error = SharedUiMessage.ticketResolveFailed;
           });
         }
       } catch (_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
+          SnackBar(content: Text(context.l10n.connectionFailed)),
         );
       }
     }
@@ -115,7 +115,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -128,7 +128,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
             child: FilledButton.icon(
               onPressed: _loadTickets,
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
             ),
           ),
         ],
@@ -159,7 +159,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'لا توجد شكاوى حالياً',
+                  context.l10n.noTickets,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 19,
@@ -169,7 +169,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'عند وصول طلب دعم جديد سيظهر هنا للمراجعة.',
+                  context.l10n.ticketsEmptyDescription,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13.5, color: c.muted),
                 ),
@@ -210,7 +210,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              ticket['subject']?.toString() ?? 'بدون موضوع',
+                              ticket['subject']?.toString() ?? context.l10n.noSubject,
                               style: TextStyle(
                                 fontSize: 15.5,
                                 fontWeight: FontWeight.w800,
@@ -231,7 +231,7 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                             if (user['name'] != null) ...[
                               const SizedBox(height: 7),
                               Text(
-                                'من: ${user['name']}',
+                                context.l10n.ticketFromUser((user['name'] ?? '').toString()),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: c.muted,
@@ -249,8 +249,8 @@ class _SupportTicketsTabState extends State<_SupportTicketsTab> {
                           minimumSize: const Size(82, 42),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                         ),
-                        child: const Text(
-                          'تم الحل',
+                        child: Text(
+                          context.l10n.resolvedStatus,
                           style: TextStyle(fontSize: 12.5),
                         ),
                       ),

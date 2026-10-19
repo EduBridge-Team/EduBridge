@@ -19,14 +19,14 @@ class _MinistrySectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12, top: 8),
       child: Row(
         children: [
-          Text(
+          Flexible(child: Text(
             title,
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
               color: c.heading,
             ),
-          ),
+          )),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -122,7 +122,7 @@ class _MinistryApprovalCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'أُرسل: ${_formatMinistryDate(approval['submitted_at'])}',
+                        context.l10n.submittedDate(_formatMinistryDate(context, approval['submitted_at'])),
                         style: TextStyle(fontSize: 12, color: c.muted),
                       ),
                     ],
@@ -134,12 +134,12 @@ class _MinistryApprovalCard extends StatelessWidget {
                     color: AppColors.brandBlueLight.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(AppIcons.clock, size: 12, color: AppColors.brandTealDeep),
                       SizedBox(width: 4),
-                      Text('قيد المراجعة',
+                      Text(context.l10n.underReview,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -151,11 +151,11 @@ class _MinistryApprovalCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _miniRow('الخطة التعليمية', approval['educational_plan'], c),
+            _miniRow(context.l10n.educationalPlan, approval['educational_plan'], c),
             if (approval['recommendations'] != null)
-              _miniRow('التوصيات', approval['recommendations'], c),
+              _miniRow(context.l10n.recommendations, approval['recommendations'], c),
             if (approval['teacher_name'] != null)
-              _miniRow('المعلم المقترح', approval['teacher_name'], c),
+              _miniRow(context.l10n.suggestedTeacher, approval['teacher_name'], c),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -167,7 +167,7 @@ class _MinistryApprovalCard extends StatelessWidget {
                       minimumSize: const Size(0, 44),
                     ),
                     icon: const Icon(AppIcons.close),
-                    label: const Text('رفض'),
+                    label: Text(context.l10n.reject),
                     onPressed: onReject,
                   ),
                 ),
@@ -179,7 +179,7 @@ class _MinistryApprovalCard extends StatelessWidget {
                       minimumSize: const Size(0, 44),
                     ),
                     icon: const Icon(AppIcons.check),
-                    label: const Text('اعتماد'),
+                    label: Text(context.l10n.approve),
                     onPressed: onApprove,
                   ),
                 ),
@@ -254,7 +254,7 @@ class _MinistryProcessedCard extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          '${isApproved ? "معتمدة" : "مرفوضة"} • ${_formatMinistryDate(approval['decided_at'] ?? approval['submitted_at'])}',
+          context.l10n.decisionStatusDate(isApproved ? context.l10n.approvedStatus : context.l10n.rejectedStatus, _formatMinistryDate(context, approval['decided_at'] ?? approval['submitted_at'])),
           style: TextStyle(fontSize: 12, color: c.muted),
         ),
       ),
@@ -262,9 +262,9 @@ class _MinistryProcessedCard extends StatelessWidget {
   }
 }
 
-String _formatMinistryDate(dynamic value) {
+String _formatMinistryDate(BuildContext context, dynamic value) {
   if (value == null) return '';
   final d = DateTime.tryParse(value.toString());
   if (d == null) return '';
-  return '${d.day}/${d.month}/${d.year}';
+  return MaterialLocalizations.of(context).formatShortDate(d);
 }

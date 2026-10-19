@@ -10,11 +10,11 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!,
+            Text(context.sharedMessage(_error),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+            ElevatedButton(onPressed: _load, child: Text(context.l10n.retryAction)),
           ],
         ),
       );
@@ -38,7 +38,7 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'وضع العرض فقط — لا يمكن التعديل أو الحذف',
+                    context.l10n.ministryReadOnlyNotice,
                     style: TextStyle(
                       fontSize: 12,
                       color: c.onTint,
@@ -58,8 +58,8 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
               border: Border.all(color: c.line),
             ),
             child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'ابحث بالاسم أو البريد...',
+              decoration: InputDecoration(
+                hintText: context.l10n.searchNameOrEmail,
                 prefixIcon: Icon(AppIcons.search),
                 border: InputBorder.none,
               ),
@@ -70,7 +70,7 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
           _buildMinistryUserSection(
             context: context,
             icon: AppIcons.teacher,
-            title: 'المعلّمون',
+            title: context.l10n.teachers,
             users: _teachers,
             color: AppColors.brandBlueLight,
             bgTint: c.tintGreen,
@@ -79,7 +79,7 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
           _buildMinistryUserSection(
             context: context,
             icon: AppIcons.specialist,
-            title: 'المختصون',
+            title: context.l10n.specialists,
             users: _specialists,
             color: AppColors.brandTealDeep,
             bgTint: c.tintOrange,
@@ -88,7 +88,7 @@ extension _MinistryUsersTabStateView on _MinistryUsersTabState {
           _buildMinistryUserSection(
             context: context,
             icon: AppIcons.parent,
-            title: 'أولياء الأمور',
+            title: context.l10n.parents,
             users: _parents,
             color: AppColors.brandBlue,
             bgTint: c.tintTeal,

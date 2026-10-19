@@ -7,16 +7,16 @@ class _MinistryTabBar extends StatelessWidget {
 
   const _MinistryTabBar({required this.index, required this.onChanged});
 
-  static const _tabs = [
-    (AppIcons.report, 'نظرة عامة'),
-    (AppIcons.upload, 'الطلبات'),
-    (AppIcons.users, 'المستخدمون'),
-    (AppIcons.lesson, 'المناهج'),
-  ];
 
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final tabs = [
+      (AppIcons.report, context.l10n.overview),
+      (AppIcons.upload, context.l10n.requests),
+      (AppIcons.users, context.l10n.users),
+      (AppIcons.lesson, context.l10n.curricula),
+    ];
 
     return Container(
       padding: const EdgeInsets.all(6),
@@ -26,9 +26,9 @@ class _MinistryTabBar extends StatelessWidget {
         border: Border.all(color: c.line),
       ),
       child: Row(
-        children: List.generate(_tabs.length, (i) {
+        children: List.generate(tabs.length, (i) {
           final active = i == index;
-          final (icon, label) = _tabs[i];
+          final (icon, label) = tabs[i];
           return Expanded(
             child: GestureDetector(
               onTap: () => onChanged(i),

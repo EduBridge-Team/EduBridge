@@ -13,7 +13,7 @@ class _UsersTabState extends State<_UsersTab> {
   List _users = [];
   List _children = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _search = '';
 
   @override
@@ -40,7 +40,7 @@ class _UsersTabState extends State<_UsersTab> {
       if (usersRes.statusCode != 200) {
         final data = jsonDecode(usersRes.body);
         setState(() {
-          _error = data['error']?.toString() ?? 'تعذّر جلب المستخدمين';
+          _error = data['error']?.toString() ?? SharedUiMessage.usersLoadFailed;
           _loading = false;
         });
         return;
@@ -71,7 +71,7 @@ class _UsersTabState extends State<_UsersTab> {
       });
     } catch (_) {
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -136,13 +136,13 @@ class _UsersTabState extends State<_UsersTab> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('حذف المستخدم'),
-        content: Text('هل أنت متأكد من حذف "${user['name']}"؟'),
+        title: Text(context.l10n.deleteUser),
+        content: Text(context.l10n.deleteNamedUserConfirmation((user['name'] ?? '').toString())),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('حذف', style: TextStyle(color: Colors.red)),
+            child: Text(context.l10n.deleteConfirmationWord, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -155,18 +155,18 @@ class _UsersTabState extends State<_UsersTab> {
           setState(() => _users.removeWhere((u) => u['id'] == user['id']));
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم حذف المستخدم بنجاح')),
+            SnackBar(content: Text(context.l10n.userDeleted)),
           );
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تعذّر حذف المستخدم')),
+            SnackBar(content: Text(context.l10n.userDeleteFailed)),
           );
         }
       } catch (_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
+          SnackBar(content: Text(context.l10n.connectionFailed)),
         );
       }
     }
@@ -176,13 +176,13 @@ class _UsersTabState extends State<_UsersTab> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('حذف الطفل'),
-        content: Text('هل أنت متأكد من حذف "${child['name']}"؟'),
+        title: Text(context.l10n.deleteChild),
+        content: Text(context.l10n.deleteNamedChildConfirmation((child['name'] ?? '').toString())),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('حذف', style: TextStyle(color: Colors.red)),
+            child: Text(context.l10n.deleteConfirmationWord, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -195,18 +195,18 @@ class _UsersTabState extends State<_UsersTab> {
           setState(() => _children.removeWhere((c) => c['id'] == child['id']));
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم حذف الطفل بنجاح')),
+            SnackBar(content: Text(context.l10n.childDeleted)),
           );
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تعذّر حذف الطفل')),
+            SnackBar(content: Text(context.l10n.childDeleteFailed)),
           );
         }
       } catch (_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر الاتصال بالسيرفر')),
+          SnackBar(content: Text(context.l10n.connectionFailed)),
         );
       }
     }
@@ -277,8 +277,8 @@ class _UsersTabState extends State<_UsersTab> {
         border: Border.all(color: c.line),
       ),
       child: TextField(
-        decoration: const InputDecoration(
-          hintText: 'ابحث بالاسم أو البريد...',
+        decoration: InputDecoration(
+          hintText: context.l10n.searchNameOrEmail,
           prefixIcon: Icon(AppIcons.search),
           border: InputBorder.none,
         ),
@@ -305,7 +305,7 @@ class _UsersTabState extends State<_UsersTab> {
           ),
           const SizedBox(height: 10),
           if (users.isEmpty)
-            _EmptyBox(text: 'لا يوجد $title مسجّلون')
+            _EmptyBox(text: context.l10n.noRegisteredGroup(title))
           else
             ...users.map((u) => _UserListTile(
                   user: u,
@@ -328,12 +328,12 @@ class _UsersTabState extends State<_UsersTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionHeader(
-          icon: AppIcons.child, title: 'الأطفال', count: children.length,
+          icon: AppIcons.child, title: context.l10n.children, count: children.length,
           color: AppColors.brandTealDeep, bgTint: c.tintYellow,
         ),
         const SizedBox(height: 10),
         if (children.isEmpty)
-          const _EmptyBox(text: 'لا يوجد أطفال مسجّلون')
+          _EmptyBox(text: context.l10n.noRegisteredChildrenAdmin)
         else
           ...List.generate(children.length, (i) {
             final child = children[i];

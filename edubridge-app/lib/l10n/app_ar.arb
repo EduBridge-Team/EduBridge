@@ -2018,5 +2018,480 @@
   "add": "إضافة",
   "@add": {
     "description": "Confirm adding an item."
+  },
+  "createInstitutionMinistryAccount": "إنشاء حساب مؤسسة أو وزارة",
+  "@createInstitutionMinistryAccount": {
+    "description": "Administration and ministry interface: createInstitutionMinistryAccount."
+  },
+  "institutionMinistryName": "اسم المؤسسة أو الوزارة",
+  "@institutionMinistryName": {
+    "description": "Administration and ministry interface: institutionMinistryName."
+  },
+  "accountCreateFailed": "تعذّر إنشاء الحساب",
+  "@accountCreateFailed": {
+    "description": "Administration and ministry interface: accountCreateFailed."
+  },
+  "changesSaveFailed": "تعذّر حفظ التعديلات",
+  "@changesSaveFailed": {
+    "description": "Administration and ministry interface: changesSaveFailed."
+  },
+  "editUser": "تعديل المستخدم",
+  "@editUser": {
+    "description": "Administration and ministry interface: editUser."
+  },
+  "users": "المستخدمون",
+  "@users": {
+    "description": "Administration and ministry interface: users."
+  },
+  "verificationReview": "مراجعة التوثيق",
+  "@verificationReview": {
+    "description": "Administration and ministry interface: verificationReview."
+  },
+  "adminVerificationDescription": "مراجعة طلبات التوثيق واعتماد الحسابات",
+  "@adminVerificationDescription": {
+    "description": "Administration and ministry interface: adminVerificationDescription."
+  },
+  "adminSupportDescription": "متابعة طلبات الدعم الفني",
+  "@adminSupportDescription": {
+    "description": "Administration and ministry interface: adminSupportDescription."
+  },
+  "adminUsersDescription": "إدارة المستخدمين وحسابات المنصة",
+  "@adminUsersDescription": {
+    "description": "Administration and ministry interface: adminUsersDescription."
+  },
+  "searchByIdentity": "البحث بالهوية",
+  "@searchByIdentity": {
+    "description": "Administration and ministry interface: searchByIdentity."
+  },
+  "adminManagementDescription": "إدارة المستخدمين والتوثيق وطلبات الدعم.",
+  "@adminManagementDescription": {
+    "description": "Administration and ministry interface: adminManagementDescription."
+  },
+  "searchNationalId": "ابحث برقم الهوية",
+  "@searchNationalId": {
+    "description": "Administration and ministry interface: searchNationalId."
+  },
+  "searchIdentityDescription": "اعثر بسرعة على المستخدم أو الطفل المرتبط برقم الهوية.",
+  "@searchIdentityDescription": {
+    "description": "Administration and ministry interface: searchIdentityDescription."
+  },
+  "enterNationalIdHint": "أدخل رقم الهوية...",
+  "@enterNationalIdHint": {
+    "description": "Administration and ministry interface: enterNationalIdHint."
+  },
+  "identitySearchFailed": "تعذّر البحث",
+  "@identitySearchFailed": {
+    "description": "Administration and ministry interface: identitySearchFailed."
+  },
+  "noMatchingResults": "لا توجد نتائج مطابقة",
+  "@noMatchingResults": {
+    "description": "Administration and ministry interface: noMatchingResults."
+  },
+  "checkNationalIdDescription": "تحقق من رقم الهوية وحاول مرة أخرى.",
+  "@checkNationalIdDescription": {
+    "description": "Administration and ministry interface: checkNationalIdDescription."
+  },
+  "child": "طفل",
+  "@child": {
+    "description": "Administration and ministry interface: child."
+  },
+  "certificate": "شهادة",
+  "@certificate": {
+    "description": "Administration and ministry interface: certificate."
+  },
+  "ticketsLoadFailed": "تعذّر جلب الشكاوى",
+  "@ticketsLoadFailed": {
+    "description": "Administration and ministry interface: ticketsLoadFailed."
+  },
+  "resolveTicket": "حل الشكوى",
+  "@resolveTicket": {
+    "description": "Administration and ministry interface: resolveTicket."
+  },
+  "resolveTicketConfirmation": "هل أنت متأكد من حل هذه الشكوى؟ سيتم إرسال إشعار للمستخدم.",
+  "@resolveTicketConfirmation": {
+    "description": "Administration and ministry interface: resolveTicketConfirmation."
+  },
+  "resolvedStatus": "تم الحل",
+  "@resolvedStatus": {
+    "description": "Administration and ministry interface: resolvedStatus."
+  },
+  "ticketResolvedNotice": "تم حل الشكوى وإرسال إشعار للمستخدم",
+  "@ticketResolvedNotice": {
+    "description": "Administration and ministry interface: ticketResolvedNotice."
+  },
+  "ticketResolveFailed": "تعذّر حل الشكوى. حاول مرة أخرى.",
+  "@ticketResolveFailed": {
+    "description": "Administration and ministry interface: ticketResolveFailed."
+  },
+  "noTickets": "لا توجد شكاوى حالياً",
+  "@noTickets": {
+    "description": "Administration and ministry interface: noTickets."
+  },
+  "ticketsEmptyDescription": "عند وصول طلب دعم جديد سيظهر هنا للمراجعة.",
+  "@ticketsEmptyDescription": {
+    "description": "Administration and ministry interface: ticketsEmptyDescription."
+  },
+  "noSubject": "بدون موضوع",
+  "@noSubject": {
+    "description": "Administration and ministry interface: noSubject."
+  },
+  "noLinkedChildren": "لا يوجد أطفال مرتبطون حالياً",
+  "@noLinkedChildren": {
+    "description": "Administration and ministry interface: noLinkedChildren."
+  },
+  "usersLoadFailed": "تعذّر جلب المستخدمين",
+  "@usersLoadFailed": {
+    "description": "Administration and ministry interface: usersLoadFailed."
+  },
+  "deleteUser": "حذف المستخدم",
+  "@deleteUser": {
+    "description": "Administration and ministry interface: deleteUser."
+  },
+  "userDeleted": "تم حذف المستخدم بنجاح",
+  "@userDeleted": {
+    "description": "Administration and ministry interface: userDeleted."
+  },
+  "userDeleteFailed": "تعذّر حذف المستخدم",
+  "@userDeleteFailed": {
+    "description": "Administration and ministry interface: userDeleteFailed."
+  },
+  "deleteChild": "حذف الطفل",
+  "@deleteChild": {
+    "description": "Administration and ministry interface: deleteChild."
+  },
+  "childDeleted": "تم حذف الطفل بنجاح",
+  "@childDeleted": {
+    "description": "Administration and ministry interface: childDeleted."
+  },
+  "childDeleteFailed": "تعذّر حذف الطفل",
+  "@childDeleteFailed": {
+    "description": "Administration and ministry interface: childDeleteFailed."
+  },
+  "searchNameOrEmail": "ابحث بالاسم أو البريد...",
+  "@searchNameOrEmail": {
+    "description": "Administration and ministry interface: searchNameOrEmail."
+  },
+  "noRegisteredChildrenAdmin": "لا يوجد أطفال مسجّلون",
+  "@noRegisteredChildrenAdmin": {
+    "description": "Administration and ministry interface: noRegisteredChildrenAdmin."
+  },
+  "teachers": "المعلّمون",
+  "@teachers": {
+    "description": "Administration and ministry interface: teachers."
+  },
+  "specialists": "المختصون",
+  "@specialists": {
+    "description": "Administration and ministry interface: specialists."
+  },
+  "parents": "أولياء الأمور",
+  "@parents": {
+    "description": "Administration and ministry interface: parents."
+  },
+  "institutions": "المؤسسات",
+  "@institutions": {
+    "description": "Administration and ministry interface: institutions."
+  },
+  "verificationRequestsLoadFailed": "تعذّر جلب الطلبات",
+  "@verificationRequestsLoadFailed": {
+    "description": "Administration and ministry interface: verificationRequestsLoadFailed."
+  },
+  "requestApproved": "تم اعتماد الطلب",
+  "@requestApproved": {
+    "description": "Administration and ministry interface: requestApproved."
+  },
+  "requestRejected": "تم رفض الطلب",
+  "@requestRejected": {
+    "description": "Administration and ministry interface: requestRejected."
+  },
+  "certificates": "الشهادات",
+  "@certificates": {
+    "description": "Administration and ministry interface: certificates."
+  },
+  "noPendingRequests": "لا توجد طلبات معلقة",
+  "@noPendingRequests": {
+    "description": "Administration and ministry interface: noPendingRequests."
+  },
+  "verificationEmptyDescription": "ستظهر هنا طلبات التوثيق التي تحتاج إلى مراجعة.",
+  "@verificationEmptyDescription": {
+    "description": "Administration and ministry interface: verificationEmptyDescription."
+  },
+  "approve": "اعتماد",
+  "@approve": {
+    "description": "Administration and ministry interface: approve."
+  },
+  "reject": "رفض",
+  "@reject": {
+    "description": "Administration and ministry interface: reject."
+  },
+  "underReview": "قيد المراجعة",
+  "@underReview": {
+    "description": "Administration and ministry interface: underReview."
+  },
+  "suggestedTeacher": "المعلم المقترح",
+  "@suggestedTeacher": {
+    "description": "Administration and ministry interface: suggestedTeacher."
+  },
+  "approvedStatus": "معتمدة",
+  "@approvedStatus": {
+    "description": "Administration and ministry interface: approvedStatus."
+  },
+  "rejectedStatus": "مرفوضة",
+  "@rejectedStatus": {
+    "description": "Administration and ministry interface: rejectedStatus."
+  },
+  "approvePlan": "اعتماد الخطة",
+  "@approvePlan": {
+    "description": "Administration and ministry interface: approvePlan."
+  },
+  "planApprovedNotice": "تم اعتماد الخطة وإشعار المختص والمعلم",
+  "@planApprovedNotice": {
+    "description": "Administration and ministry interface: planApprovedNotice."
+  },
+  "rejectPlan": "رفض الخطة",
+  "@rejectPlan": {
+    "description": "Administration and ministry interface: rejectPlan."
+  },
+  "rejectionReasonOptional": "سبب الرفض (اختياري)",
+  "@rejectionReasonOptional": {
+    "description": "Administration and ministry interface: rejectionReasonOptional."
+  },
+  "planRejectionReasonExample": "مثال: تحتاج مراجعة أهداف الخطة",
+  "@planRejectionReasonExample": {
+    "description": "Administration and ministry interface: planRejectionReasonExample."
+  },
+  "planRejectedNotice": "تم رفض الخطة وإشعار المختص",
+  "@planRejectedNotice": {
+    "description": "Administration and ministry interface: planRejectedNotice."
+  },
+  "requestsAwaitingReview": "طلبات بانتظار المراجعة",
+  "@requestsAwaitingReview": {
+    "description": "Administration and ministry interface: requestsAwaitingReview."
+  },
+  "noCurrentPendingRequests": "لا توجد طلبات معلّقة حالياً",
+  "@noCurrentPendingRequests": {
+    "description": "Administration and ministry interface: noCurrentPendingRequests."
+  },
+  "decisionHistory": "سجل القرارات",
+  "@decisionHistory": {
+    "description": "Administration and ministry interface: decisionHistory."
+  },
+  "ministryDashboardDescription": "إدارة شاملة للمؤسسات والموافقات",
+  "@ministryDashboardDescription": {
+    "description": "Administration and ministry interface: ministryDashboardDescription."
+  },
+  "lessonsLoadFailed": "تعذّر تحميل الدروس",
+  "@lessonsLoadFailed": {
+    "description": "Administration and ministry interface: lessonsLoadFailed."
+  },
+  "lessonRejectionReason": "سبب رفض الدرس",
+  "@lessonRejectionReason": {
+    "description": "Administration and ministry interface: lessonRejectionReason."
+  },
+  "teacherNoteOptional": "ملاحظة للمعلم (اختياري)",
+  "@teacherNoteOptional": {
+    "description": "Administration and ministry interface: teacherNoteOptional."
+  },
+  "rejectLesson": "رفض الدرس",
+  "@rejectLesson": {
+    "description": "Administration and ministry interface: rejectLesson."
+  },
+  "lessonReviewFailed": "تعذّرت مراجعة الدرس",
+  "@lessonReviewFailed": {
+    "description": "Administration and ministry interface: lessonReviewFailed."
+  },
+  "pendingReviewStatus": "معلّقة",
+  "@pendingReviewStatus": {
+    "description": "Administration and ministry interface: pendingReviewStatus."
+  },
+  "noLessonsWithStatus": "لا توجد دروس في هذه الحالة",
+  "@noLessonsWithStatus": {
+    "description": "Administration and ministry interface: noLessonsWithStatus."
+  },
+  "lesson": "درس",
+  "@lesson": {
+    "description": "Administration and ministry interface: lesson."
+  },
+  "pendingRequestMetric": "طلب معلّق",
+  "@pendingRequestMetric": {
+    "description": "Administration and ministry interface: pendingRequestMetric."
+  },
+  "administrationTools": "أدوات الإدارة",
+  "@administrationTools": {
+    "description": "Administration and ministry interface: administrationTools."
+  },
+  "viewAllLessonsDescription": "عرض جميع الدروس المضافة",
+  "@viewAllLessonsDescription": {
+    "description": "Administration and ministry interface: viewAllLessonsDescription."
+  },
+  "searchStudentUserDescription": "البحث عن طالب أو مستخدم",
+  "@searchStudentUserDescription": {
+    "description": "Administration and ministry interface: searchStudentUserDescription."
+  },
+  "monthlyReports": "التقارير الشهرية",
+  "@monthlyReports": {
+    "description": "Administration and ministry interface: monthlyReports."
+  },
+  "detailedStatsComingSoon": "إحصائيات مفصّلة (قريباً)",
+  "@detailedStatsComingSoon": {
+    "description": "Administration and ministry interface: detailedStatsComingSoon."
+  },
+  "comingSoon": "قريباً",
+  "@comingSoon": {
+    "description": "Administration and ministry interface: comingSoon."
+  },
+  "overview": "نظرة عامة",
+  "@overview": {
+    "description": "Administration and ministry interface: overview."
+  },
+  "requests": "الطلبات",
+  "@requests": {
+    "description": "Administration and ministry interface: requests."
+  },
+  "curricula": "المناهج",
+  "@curricula": {
+    "description": "Administration and ministry interface: curricula."
+  },
+  "ministryReadOnlyNotice": "وضع العرض فقط — لا يمكن التعديل أو الحذف",
+  "@ministryReadOnlyNotice": {
+    "description": "Administration and ministry interface: ministryReadOnlyNotice."
+  },
+  "ticketFromUser": "من: {name}",
+  "@ticketFromUser": {
+    "description": "Administration and ministry interface: ticketFromUser.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userChildrenTitle": "أطفال {role} {name}",
+  "@userChildrenTitle": {
+    "description": "Administration and ministry interface: userChildrenTitle.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteNamedUserConfirmation": "هل أنت متأكد من حذف المستخدم \"{name}\"؟",
+  "@deleteNamedUserConfirmation": {
+    "description": "Administration and ministry interface: deleteNamedUserConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteNamedChildConfirmation": "هل أنت متأكد من حذف الطفل \"{name}\"؟",
+  "@deleteNamedChildConfirmation": {
+    "description": "Administration and ministry interface: deleteNamedChildConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRegisteredGroup": "لا يوجد {group} مسجّلون",
+  "@noRegisteredGroup": {
+    "description": "Administration and ministry interface: noRegisteredGroup.",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedDate": "أُرسل: {date}",
+  "@submittedDate": {
+    "description": "Administration and ministry interface: submittedDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "decisionStatusDate": "{status} • {date}",
+  "@decisionStatusDate": {
+    "description": "Administration and ministry interface: decisionStatusDate.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "approveChildPlanConfirmation": "هل أنت متأكد من اعتماد خطة الطفل \"{name}\"؟\n\nسيتم إشعار المختص والمعلم.",
+  "@approveChildPlanConfirmation": {
+    "description": "Administration and ministry interface: approveChildPlanConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectChildPlanTitle": "رفض خطة الطفل \"{name}\"",
+  "@rejectChildPlanTitle": {
+    "description": "Administration and ministry interface: rejectChildPlanTitle.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonLevelLabel": "المستوى: {level}",
+  "@lessonLevelLabel": {
+    "description": "Administration and ministry interface: lessonLevelLabel.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonCategoryLabel": "الفئة: {category}",
+  "@lessonCategoryLabel": {
+    "description": "Administration and ministry interface: lessonCategoryLabel.",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonTeacherLabel": "المعلم: {name}",
+  "@lessonTeacherLabel": {
+    "description": "Administration and ministry interface: lessonTeacherLabel.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonReviewNoteLabel": "ملاحظة المراجعة: {note}",
+  "@lessonReviewNoteLabel": {
+    "description": "Administration and ministry interface: lessonReviewNoteLabel.",
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNameRequired": "أدخل الاسم",
+  "@adminNameRequired": {
+    "description": "Administration form: adminNameRequired."
+  },
+  "phoneOptional": "الهاتف (اختياري)",
+  "@phoneOptional": {
+    "description": "Administration form: phoneOptional."
+  },
+  "optional": "اختياري",
+  "@optional": {
+    "description": "Administration form: optional."
+  },
+  "edit": "تعديل",
+  "@edit": {
+    "description": "Administration form: edit."
   }
 }

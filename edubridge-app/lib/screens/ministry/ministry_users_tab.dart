@@ -14,7 +14,7 @@ class _MinistryUsersTabState extends State<_MinistryUsersTab> {
   List _users = [];
   List _children = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _search = '';
 
   @override
@@ -42,7 +42,7 @@ class _MinistryUsersTabState extends State<_MinistryUsersTab> {
       });
     } catch (_) {
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -106,12 +106,12 @@ Widget _buildMinistryUserSection({
             children: [
               Icon(icon, size: 22, color: color),
               const SizedBox(width: 8),
-              Text(title,
+              Flexible(child: Text(title,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: c.heading,
-                  )),
+                  ))),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -139,7 +139,7 @@ Widget _buildMinistryUserSection({
               border: Border.all(color: c.line),
             ),
             child: Center(
-              child: Text('لا يوجد $title مسجّلون',
+              child: Text(context.l10n.noRegisteredGroup(title),
                   style: TextStyle(color: c.muted, fontSize: 14)),
             ),
           )

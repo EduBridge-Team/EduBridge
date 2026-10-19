@@ -184,3 +184,20 @@ Child-profile screens, clinical recommendation forms, administrator/ministry
 screens and detailed child/report/evaluation workflows still require localization
 within phase 4. Child activities and the final completeness audit remain phases
 5 and 6. These dashboard changes do not complete the whole localization rollout.
+
+### Phase 4 — administrator and ministry workflows
+
+Administrator user/account management, verification, identity search and support
+screens now use the shared Arabic/English catalog. Ministry overview, read-only
+users, plan decisions and lesson moderation are localized. API role/status values
+and authored names, plan descriptions, lessons and review notes are preserved.
+The persisted legacy ministry author label is deliberately unchanged. Ministry
+monthly reports remain marked as coming soon; no new permission is enabled.
+
+Account-creation validation now correctly accepts ordinary email addresses; the
+previous raw regular expression double-escaped its whitespace and dot tokens.
+UI errors retain message identities until rendered in the selected language.
+
+Phase 4 still includes child-profile, clinical recommendation, detailed child,
+evaluation and reporting forms. Activities remain phase 5; completeness and
+accessibility/direction audits remain phase 6.

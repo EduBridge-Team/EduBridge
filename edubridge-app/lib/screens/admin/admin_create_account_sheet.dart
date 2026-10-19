@@ -16,7 +16,7 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
   final _confirmation = TextEditingController();
   String _role = 'institution';
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void dispose() {
@@ -45,9 +45,9 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
         return;
       }
       final data = ApiService.decodeMap(response.body);
-      setState(() => _error = (data['error'] ?? data['message'] ?? 'تعذّر إنشاء الحساب').toString());
+      setState(() => _error = data['error'] ?? data['message'] ?? SharedUiMessage.accountCreateFailed);
     } catch (_) {
-      if (mounted) setState(() => _error = 'تعذّر الاتصال بالسيرفر. حاول مجدداً.');
+      if (mounted) setState(() => _error = SharedUiMessage.connectionFailed);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -66,53 +66,53 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('إنشاء حساب مؤسسة أو وزارة', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(context.l10n.createInstitutionMinistryAccount, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: _role,
-                  decoration: const InputDecoration(labelText: 'نوع الحساب'),
-                  items: const [
-                    DropdownMenuItem(value: 'institution', child: Text('مؤسسة')),
-                    DropdownMenuItem(value: 'ministry', child: Text('وزارة')),
+                  decoration: InputDecoration(labelText: context.l10n.accountType),
+                  items: [
+                    DropdownMenuItem(value: 'institution', child: Text(context.l10n.institutionRole)),
+                    DropdownMenuItem(value: 'ministry', child: Text(context.l10n.ministryRole)),
                   ],
                   onChanged: _saving ? null : (value) => setState(() => _role = value!),
                 ),
                 TextFormField(
                   controller: _name, enabled: !_saving, maxLength: 150,
-                  decoration: const InputDecoration(labelText: 'اسم المؤسسة أو الوزارة'),
-                  validator: (value) => (value ?? '').trim().isEmpty ? 'أدخل الاسم' : null,
+                  decoration: InputDecoration(labelText: context.l10n.institutionMinistryName),
+                  validator: (value) => (value ?? '').trim().isEmpty ? context.l10n.adminNameRequired : null,
                 ),
                 TextFormField(
                   controller: _email, enabled: !_saving, maxLength: 255,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
-                  validator: (value) => RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch((value ?? '').trim()) ? null : 'أدخل بريداً إلكترونياً صالحاً',
+                  decoration: InputDecoration(labelText: context.l10n.email),
+                  validator: (value) => RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch((value ?? '').trim()) ? null : context.l10n.validEmailRequired,
                 ),
                 TextFormField(
                   controller: _phone, enabled: !_saving, maxLength: 20,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'الهاتف (اختياري)'),
+                  decoration: InputDecoration(labelText: context.l10n.phoneOptional),
                 ),
                 TextFormField(
                   controller: _password, enabled: !_saving, obscureText: true,
                   autocorrect: false, enableSuggestions: false,
-                  decoration: const InputDecoration(labelText: 'كلمة المرور'),
-                  validator: (value) => (value ?? '').length < 8 || (value ?? '').length > 128 ? 'استخدم كلمة مرور من 8 إلى 128 حرفاً' : null,
+                  decoration: InputDecoration(labelText: context.l10n.password),
+                  validator: (value) => (value ?? '').length < 8 || (value ?? '').length > 128 ? context.l10n.passwordLengthRange : null,
                 ),
                 TextFormField(
                   controller: _confirmation, enabled: !_saving, obscureText: true,
                   autocorrect: false, enableSuggestions: false,
-                  decoration: const InputDecoration(labelText: 'تأكيد كلمة المرور'),
-                  validator: (value) => value != _password.text ? 'تأكيد كلمة المرور غير مطابق' : null,
+                  decoration: InputDecoration(labelText: context.l10n.confirmPassword),
+                  validator: (value) => value != _password.text ? context.l10n.passwordConfirmationMismatch : null,
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
-                  Text(_error!, style: const TextStyle(color: AppColors.red)),
+                  Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red)),
                 ],
                 const SizedBox(height: 20),
                 FilledButton(
                   onPressed: _saving ? null : _save,
-                  child: Text(_saving ? 'جارٍ إنشاء الحساب...' : 'إنشاء الحساب'),
+                  child: Text(_saving ? context.l10n.creatingAccount : context.l10n.createAccount),
                 ),
               ],
             ),

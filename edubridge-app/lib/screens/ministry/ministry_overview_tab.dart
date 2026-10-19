@@ -51,12 +51,12 @@ class _MinistryOverviewTabState extends State<_MinistryOverviewTab> {
             children: [
               _MinistryInfoCard(
                 icon: AppIcons.child, value: '$totalChildren',
-                label: 'طفل', tint: c.tintTeal,
+                label: context.l10n.child, tint: c.tintTeal,
               ),
               const SizedBox(width: 10),
               _MinistryInfoCard(
                 icon: AppIcons.users, value: '$totalUsers',
-                label: 'مستخدم', tint: c.tintGreen,
+                label: context.l10n.user, tint: c.tintGreen,
               ),
             ],
           ),
@@ -65,25 +65,25 @@ class _MinistryOverviewTabState extends State<_MinistryOverviewTab> {
             children: [
               _MinistryInfoCard(
                 icon: AppIcons.upload, value: '$pendingApprovals',
-                label: 'طلب معلّق', tint: c.tintOrange,
+                label: context.l10n.pendingRequestMetric, tint: c.tintOrange,
               ),
               const SizedBox(width: 10),
               _MinistryInfoCard(
                 icon: AppIcons.institution, value: '$schools',
-                label: 'مؤسسة', tint: c.tintYellow,
+                label: context.l10n.institutionRole, tint: c.tintYellow,
               ),
             ],
           ),
           const SizedBox(height: 24),
-          const Text(
-            'أدوات الإدارة',
+          Text(
+            context.l10n.administrationTools,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           _MinistryMenuTile(
             icon: AppIcons.lesson, tint: c.tintTeal,
-            title: 'تصفح الدروس',
-            subtitle: 'عرض جميع الدروس المضافة',
+            title: context.l10n.browseLessons,
+            subtitle: context.l10n.viewAllLessonsDescription,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const LessonsScreen()),
@@ -91,8 +91,8 @@ class _MinistryOverviewTabState extends State<_MinistryOverviewTab> {
           ),
           _MinistryMenuTile(
             icon: AppIcons.search, tint: c.tintGreen,
-            title: 'البحث بالهوية',
-            subtitle: 'البحث عن طالب أو مستخدم',
+            title: context.l10n.searchByIdentity,
+            subtitle: context.l10n.searchStudentUserDescription,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
@@ -100,11 +100,11 @@ class _MinistryOverviewTabState extends State<_MinistryOverviewTab> {
           ),
           _MinistryMenuTile(
             icon: AppIcons.report, tint: c.tintOrange,
-            title: 'التقارير الشهرية',
-            subtitle: 'إحصائيات مفصّلة (قريباً)',
+            title: context.l10n.monthlyReports,
+            subtitle: context.l10n.detailedStatsComingSoon,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('قريباً')),
+                SnackBar(content: Text(context.l10n.comingSoon)),
               );
             },
           ),

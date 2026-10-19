@@ -41,14 +41,14 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Icon(icon, size: 22, color: color),
           const SizedBox(width: 8),
-          Text(
+          Flexible(child: Text(
             title,
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: c.heading,
             ),
-          ),
+          )),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -102,15 +102,15 @@ class _StatusBadge extends StatelessWidget {
     Color color;
     switch (status) {
       case 'evaluated':
-        label = 'تم التقييم';
+        label = context.l10n.evaluatedStatus;
         color = AppColors.green;
         break;
       case 'assigned':
-        label = 'تم التعيين';
+        label = context.l10n.assignedStatus;
         color = AppColors.brandBlue;
         break;
       default:
-        label = 'قيد الانتظار';
+        label = context.l10n.pendingStatus;
         color = AppColors.brandTealDeep;
     }
 

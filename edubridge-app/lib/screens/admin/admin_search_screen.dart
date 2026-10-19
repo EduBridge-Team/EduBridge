@@ -12,7 +12,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
   final _searchCtrl = TextEditingController();
   List _results = [];
   bool _loading = false;
-  String? _error;
+  Object? _error;
 
   Future<void> _search() async {
     final query = _searchCtrl.text.trim();
@@ -31,7 +31,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'تعذّر البحث';
+        _error = SharedUiMessage.identitySearchFailed;
         _loading = false;
       });
     }
@@ -42,7 +42,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'البحث بالهوية'),
+      appBar: JisrAppBar(title: context.l10n.searchByIdentity),
       body: Column(
         children: [
           Padding(
@@ -51,7 +51,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ابحث برقم الهوية',
+                  context.l10n.searchNationalId,
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
@@ -60,7 +60,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'اعثر بسرعة على المستخدم أو الطفل المرتبط برقم الهوية.',
+                  context.l10n.searchIdentityDescription,
                   style: TextStyle(fontSize: 13.5, color: c.muted),
                 ),
                 const SizedBox(height: 14),
@@ -71,7 +71,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                         controller: _searchCtrl,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: 'أدخل رقم الهوية...',
+                          hintText: context.l10n.enterNationalIdHint,
                           prefixIcon: const Icon(Icons.badge_outlined),
                           suffixIcon: _searchCtrl.text.isNotEmpty
                               ? IconButton(
@@ -100,7 +100,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                               ),
                             )
                           : const Icon(AppIcons.search),
-                      label: const Text('بحث'),
+                      label: Text(context.l10n.search),
                     ),
                   ],
                 ),
@@ -118,7 +118,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                           const Icon(AppIcons.error, size: 54, color: AppColors.red),
                           const SizedBox(height: 14),
                           Text(
-                            _error!,
+                            context.sharedMessage(_error),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: AppColors.red,
@@ -149,7 +149,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                               ),
                               const SizedBox(height: 18),
                               Text(
-                                'لا توجد نتائج مطابقة',
+                                context.l10n.noMatchingResults,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 19,
@@ -159,7 +159,7 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                'تحقق من رقم الهوية وحاول مرة أخرى.',
+                                context.l10n.checkNationalIdDescription,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 13.5, color: c.muted),
                               ),
@@ -171,9 +171,9 @@ class _SearchByIdentityScreenState extends State<SearchByIdentityScreen> {
                             itemBuilder: (context, i) {
                               final result = _results[i];
                               final typeLabel = result['type'] == 'child'
-                                  ? 'طفل'
+                                  ? context.l10n.child
                                   : result['role'] == 'parent'
-                                      ? 'ولي أمر'
+                                      ? context.l10n.parentRole
                                       : (result['role'] ?? '').toString();
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 12),
