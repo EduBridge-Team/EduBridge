@@ -287,17 +287,15 @@ Future<String?> _apiSuggestSpecialistToChild({
 Future<List<dynamic>> _apiGetMySpecialistSuggestions({
     String? status,
   }) async {
-    try {
-      final path = status != null
-          ? '/specialist-suggestions?status=$status'
-          : '/specialist-suggestions';
-      final res = await ApiService.authGet(path);
-      final data = ApiService._decodeBody(res);
-      if (res.statusCode == 200) return data['suggestions'] ?? [];
-      return [];
-    } catch (_) {
-      return [];
+    final path = status != null
+        ? '/specialist-suggestions?status=$status'
+        : '/specialist-suggestions';
+    final res = await ApiService.authGet(path);
+    final data = ApiService._decodeBody(res);
+    if (res.statusCode != 200) {
+      throw Exception(data['error'] ?? 'Could not load specialist suggestions');
     }
+    return data['suggestions'] ?? [];
   }
 
 Future<String?> _apiAcceptSuggestion(int suggestionId) async {

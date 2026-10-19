@@ -3860,5 +3860,90 @@
   "reportPlanEvaluation": "تقييم الخطة",
   "@reportPlanEvaluation": {
     "description": "Weekly report section label."
+  },
+  "followupSuggestionsTitle": "اقتراحات المتابعة",
+  "@followupSuggestionsTitle": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupSuggestionsLoadFailed": "تعذّر تحميل الاقتراحات",
+  "@followupSuggestionsLoadFailed": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupConfirmAccept": "تأكيد القبول",
+  "@followupConfirmAccept": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAccept": "قبول",
+  "@followupAccept": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectTitle": "رفض الاقتراح",
+  "@followupRejectTitle": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptQuestion": "هل تريد متابعة \"{name}\" كـ{specialty}؟",
+  "@followupAcceptQuestion": {
+    "description": "Specialist follow-up suggestions interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "followupRejectChild": "رفض متابعة \"{name}\"",
+  "@followupRejectChild": {
+    "description": "Specialist follow-up suggestions interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "followupAcceptedNotice": "تمت إضافة الطفل لمتابعتك",
+  "@followupAcceptedNotice": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectedNotice": "تم رفض الاقتراح",
+  "@followupRejectedNotice": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupPendingFilter": "معلقة",
+  "@followupPendingFilter": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptedFilter": "مقبولة",
+  "@followupAcceptedFilter": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptedStatus": "مقبول",
+  "@followupAcceptedStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectedStatus": "مرفوض",
+  "@followupRejectedStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupPendingStatus": "معلّق",
+  "@followupPendingStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupNoPending": "لا توجد اقتراحات معلقة",
+  "@followupNoPending": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupNoSuggestions": "لا توجد اقتراحات",
+  "@followupNoSuggestions": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptAndFollow": "قبول ومتابعة",
+  "@followupAcceptAndFollow": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRefresh": "تحديث الاقتراحات",
+  "@followupRefresh": {
+    "description": "Specialist follow-up suggestions interface."
   }
 }

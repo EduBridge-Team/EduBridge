@@ -4,6 +4,7 @@ import '../widgets/teacher_navigation_bar.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
 
 part 'specialist_suggestions_widgets.dart';
 
@@ -19,8 +20,9 @@ class _SpecialistSuggestionsScreenState
     extends State<SpecialistSuggestionsScreen> {
   List _suggestions = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _filter = 'pending';
+  int _loadGeneration = 0;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _SpecialistSuggestionsScreenState
   }
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
     setState(() {
       _loading = true;
       _error = null;
@@ -37,15 +40,15 @@ class _SpecialistSuggestionsScreenState
       final list = await ApiService.getMySpecialistSuggestions(
         status: _filter == 'all' ? null : _filter,
       );
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _suggestions = list;
         _loading = false;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
-        _error = 'تعذّر تحميل الاقتراحات';
+        _error = SharedUiMessage.followupSuggestionsLoadFailed;
         _loading = false;
       });
     }
@@ -54,31 +57,31 @@ class _SpecialistSuggestionsScreenState
   Future<void> _accept(Map s) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (context) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(AppIcons.check, color: AppColors.green, size: 28),
-            SizedBox(width: 8),
-            Text('تأكيد القبول'),
+            const Icon(AppIcons.check, color: AppColors.green, size: 28),
+            const SizedBox(width: 8),
+            Expanded(child: Text(context.l10n.followupConfirmAccept)),
           ],
         ),
         content: Text(
-          'هل تريد متابعة "${s['child_name']}" كـ'
-          '${s['specialty'] == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي'}؟',
+          context.l10n.followupAcceptQuestion((s['child_name'] ?? '').toString(), s['specialty'] == 'learning_support' ? context.l10n.learningSupportSpecialist : context.l10n.educationalSpecialist),
           style: const TextStyle(fontSize: 15, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             style:
                 FilledButton.styleFrom(backgroundColor: AppColors.green),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('قبول'),
+            child: Text(context.l10n.followupAccept),
           ),
         ],
       ),
@@ -91,14 +94,14 @@ class _SpecialistSuggestionsScreenState
 
     if (err != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(err), backgroundColor: AppColors.red),
+        SnackBar(content: Text(context.sharedMessage(err)), backgroundColor: AppColors.red),
       );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تمت إضافة الطفل لمتابعتك'),
+      SnackBar(
+        content: Text(context.l10n.followupAcceptedNotice),
         backgroundColor: AppColors.green,
       ),
     );
@@ -106,68 +109,30 @@ class _SpecialistSuggestionsScreenState
   }
 
   Future<void> _reject(Map s) async {
-    final reasonCtrl = TextEditingController();
-    final confirm = await showDialog<bool>(
+    final reason = await showDialog<String>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(AppIcons.error, color: AppColors.red, size: 28),
-            SizedBox(width: 8),
-            Text('رفض الاقتراح'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('رفض متابعة "${s['child_name']}"',
-                style: const TextStyle(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 12),
-            TextField(
-              controller: reasonCtrl,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'سبب الرفض (اختياري)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('رفض'),
-          ),
-        ],
+      builder: (_) => _FollowupRejectionDialog(
+        childName: (s['child_name'] ?? '').toString(),
       ),
     );
-    if (confirm != true) return;
-    if (!mounted) return;
+    if (reason == null || !mounted) return;
 
     final err = await ApiService.rejectSuggestion(
       s['id'] as int,
-      reason: reasonCtrl.text.trim(),
+      reason: reason,
     );
     if (!mounted) return;
 
     if (err != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(err), backgroundColor: AppColors.red),
+        SnackBar(content: Text(context.sharedMessage(err)), backgroundColor: AppColors.red),
       );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم رفض الاقتراح'),
+      SnackBar(
+        content: Text(context.l10n.followupRejectedNotice),
         backgroundColor: AppColors.orange,
       ),
     );
@@ -181,10 +146,11 @@ class _SpecialistSuggestionsScreenState
     return Scaffold(
       bottomNavigationBar: const TeacherNavigationBar(),
       appBar: JisrAppBar(
-        title: 'اقتراحات المتابعة',
+        title: context.l10n.followupSuggestionsTitle,
         actions: [
           IconButton(
             icon: const Icon(AppIcons.refresh),
+            tooltip: context.l10n.followupRefresh,
             onPressed: _load,
           ),
         ],
@@ -193,15 +159,14 @@ class _SpecialistSuggestionsScreenState
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-            child: Row(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                _filterChip('معلقة', 'pending', AppColors.orange),
-                const SizedBox(width: 8),
-                _filterChip('مقبولة', 'accepted', AppColors.green),
-                const SizedBox(width: 8),
-                _filterChip('مرفوضة', 'rejected', AppColors.red),
-                const SizedBox(width: 8),
-                _filterChip('الكل', 'all', AppColors.brandBlue),
+                _filterChip(context.l10n.followupPendingFilter, 'pending', AppColors.orange),
+                _filterChip(context.l10n.followupAcceptedFilter, 'accepted', AppColors.green),
+                _filterChip(context.l10n.rejectedStatus, 'rejected', AppColors.red),
+                _filterChip(context.l10n.all, 'all', AppColors.brandBlue),
               ],
             ),
           ),
@@ -218,35 +183,19 @@ class _SpecialistSuggestionsScreenState
 
   Widget _filterChip(String label, String value, Color color) {
     final selected = _filter == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() => _filter = value);
-          _load();
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: selected
-                ? color.withValues(alpha: 0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: selected ? color : JisrColors.of(context).line,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: selected ? color : JisrColors.of(context).muted,
-            ),
-          ),
-        ),
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      selectedColor: color.withValues(alpha: 0.15),
+      labelStyle: TextStyle(
+        color: selected ? color : JisrColors.of(context).muted,
+        fontWeight: FontWeight.w800,
       ),
+      onSelected: (_) {
+        if (_filter == value) return;
+        setState(() => _filter = value);
+        _load();
+      },
     );
   }
 }
