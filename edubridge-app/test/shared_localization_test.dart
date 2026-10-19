@@ -41,7 +41,7 @@ void main() {
     'register': const RegisterScreen(),
     'recover password': const ForgotPasswordScreen(),
     'change password': const ChangePasswordScreen(),
-    'certificate': AddCertificateSheet(onSaved: () {}),
+    'certificate': Scaffold(body: AddCertificateSheet(onSaved: () {})),
   };
   for (final entry in screens.entries) {
     for (final scale in [1.0, 2.0]) {
