@@ -19,7 +19,7 @@ http.Response _response(Object data, [int status = 200]) => http.Response(jsonEn
   headers: {'content-type': 'application/json; charset=utf-8'});
 MockClient _client({bool verified = true, bool dashboard = false,
   Future<http.Response> Function(http.Request)? post}) => MockClient((request) async {
-  if (request.method != 'GET') return post == null ? _response({}, 500) : post(request);
+  if (request.method != 'GET') return post == null ? _response({}, 500) : await post(request);
   if (request.url.path.endsWith('/me/verification')) return _response({
     'verification': {'verification_status': verified ? 'approved' : 'none'}});
   if (request.url.path.endsWith('/me')) return _response({'user': {'id': 2, 'specialty': 'educational'}});
