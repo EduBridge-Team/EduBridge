@@ -131,10 +131,10 @@ void main() {
         await _tap(tester, find.text(strings.homeworkPublish));
         expect(saved?.method, 'POST');
         expect(saved?.url.path, endsWith('/homeworks'));
-        expect(saved?.body, contains('عنوان أصلي'));
-        expect(saved?.body, contains('وصف أصلي'));
-        expect(saved?.body, contains('مادة أصلية'));
-        expect(saved?.body, contains('name="assigned_child_ids"\r\n\r\n[7]'));
+        expect(utf8.decode(saved!.bodyBytes), contains('عنوان أصلي'));
+        expect(utf8.decode(saved!.bodyBytes), contains('وصف أصلي'));
+        expect(utf8.decode(saved!.bodyBytes), contains('مادة أصلية'));
+        expect(utf8.decode(saved!.bodyBytes), contains('name="assigned_child_ids"\r\n\r\n[7]'));
         expect(find.text('Open'), findsOneWidget);
       }, () => _client(write: (request) async {
         saved = request;
@@ -156,7 +156,7 @@ void main() {
         expect(writes, 2);
       }, () => _client(write: (request) async {
         writes++;
-        expect(request.body, contains('عنوان أصلي'));
+        expect(utf8.decode(request.bodyBytes), contains('عنوان أصلي'));
         return _response({'homework': null}, 201);
       }));
     });
