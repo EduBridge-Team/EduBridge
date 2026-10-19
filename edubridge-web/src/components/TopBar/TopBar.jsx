@@ -97,13 +97,15 @@ export default function TopBar() {
           />
         ) : (
           <GuestTopBarMenu
-            allowRegistration={!institution}
             dark={dark}
             onLogin={() => {
               setOpen(false)
               navigate('/login')
             }}
-            onRegister={() => navigate('/register')}
+            onRegister={() => {
+              setOpen(false)
+              navigate('/register')
+            }}
             toggleTheme={toggleTheme}
           />
         )}
