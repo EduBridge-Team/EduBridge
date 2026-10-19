@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/main.dart';
 import 'package:edubridge_app/services/accessibility_service.dart';
@@ -22,6 +23,26 @@ void main() {
     const profile = AccessibilityProfile(type: DisabilityType.none, largeMouseCursor: true);
     AccessibilityService.instance.activeChildId.value = 9;
     AccessibilityService.instance.profile.value = profile;
+    Future<void> choose(String language) async {
+      // Preference I/O uses real async time; pumpAndSettle only advances frames.
+      // Wait for the persisted preference notification before settling the UI.
+      await tester.runAsync(() async {
+        final changed = Completer<void>();
+        void onChanged() {
+          if (locale.value.languageCode == language && !changed.isCompleted) {
+            changed.complete();
+          }
+        }
+        locale.addListener(onChanged);
+        try {
+          await tester.tap(find.byKey(ValueKey('language_$language')));
+          await changed.future.timeout(const Duration(seconds: 5));
+        } finally {
+          locale.removeListener(onChanged);
+        }
+      });
+      await tester.pumpAndSettle();
+    }
     await tester.pumpWidget(const EduBridgeApp(initialHome: _MenuTestHome()));
     await tester.pumpAndSettle();
     await tester.tap(find.text('افتح'));
@@ -32,8 +53,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('اللغة'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('language_en')));
-    await tester.pumpAndSettle();
+    await choose('en');
     final fieldContext = tester.element(find.byType(TextField));
     expect(locale.value, const Locale('en'));
     expect(Localizations.localeOf(fieldContext), const Locale('en'));
@@ -47,8 +67,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('language_ar')));
-    await tester.pumpAndSettle();
+    await choose('ar');
     expect(Directionality.of(tester.element(find.byType(TextField))), TextDirection.rtl);
     expect(find.text('درس أضافه المعلم'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
