@@ -61,5 +61,41 @@
         "example": "3"
       }
     }
+  },
+  "lessons": "الدروس",
+  "@lessons": {
+    "description": "Shared dashboard menu: lessons."
+  },
+  "technicalSupport": "الدعم الفني",
+  "@technicalSupport": {
+    "description": "Shared dashboard menu: technicalSupport."
+  },
+  "hideNoor": "إخفاء نور",
+  "@hideNoor": {
+    "description": "Shared dashboard menu: hideNoor."
+  },
+  "showNoor": "إظهار نور",
+  "@showNoor": {
+    "description": "Shared dashboard menu: showNoor."
+  },
+  "aboutApp": "عن التطبيق",
+  "@aboutApp": {
+    "description": "Shared dashboard menu: aboutApp."
+  },
+  "switchToLightMode": "التبديل للوضع الفاتح",
+  "@switchToLightMode": {
+    "description": "Shared dashboard menu: switchToLightMode."
+  },
+  "switchToDarkMode": "التبديل للوضع الداكن",
+  "@switchToDarkMode": {
+    "description": "Shared dashboard menu: switchToDarkMode."
+  },
+  "hideMicrophone": "إخفاء المايك",
+  "@hideMicrophone": {
+    "description": "Shared dashboard menu: hideMicrophone."
+  },
+  "showMicrophone": "إظهار المايك",
+  "@showMicrophone": {
+    "description": "Shared dashboard menu: showMicrophone."
   }
 }

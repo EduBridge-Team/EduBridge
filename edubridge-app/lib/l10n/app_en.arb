@@ -61,5 +61,41 @@
         "example": "3"
       }
     }
+  },
+  "lessons": "Lessons",
+  "@lessons": {
+    "description": "Shared dashboard menu: lessons."
+  },
+  "technicalSupport": "Technical support",
+  "@technicalSupport": {
+    "description": "Shared dashboard menu: technicalSupport."
+  },
+  "hideNoor": "Hide Noor",
+  "@hideNoor": {
+    "description": "Shared dashboard menu: hideNoor."
+  },
+  "showNoor": "Show Noor",
+  "@showNoor": {
+    "description": "Shared dashboard menu: showNoor."
+  },
+  "aboutApp": "About the app",
+  "@aboutApp": {
+    "description": "Shared dashboard menu: aboutApp."
+  },
+  "switchToLightMode": "Switch to light mode",
+  "@switchToLightMode": {
+    "description": "Shared dashboard menu: switchToLightMode."
+  },
+  "switchToDarkMode": "Switch to dark mode",
+  "@switchToDarkMode": {
+    "description": "Shared dashboard menu: switchToDarkMode."
+  },
+  "hideMicrophone": "Hide microphone",
+  "@hideMicrophone": {
+    "description": "Shared dashboard menu: hideMicrophone."
+  },
+  "showMicrophone": "Show microphone",
+  "@showMicrophone": {
+    "description": "Shared dashboard menu: showMicrophone."
   }
 }

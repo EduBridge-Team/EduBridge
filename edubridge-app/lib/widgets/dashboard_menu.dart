@@ -1,5 +1,7 @@
 // widgets/dashboard_menu.dart
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
+import 'language_selector.dart';
 import '../services/notification_listener_service.dart';
 import '../services/overlay_visibility_service.dart';
 import '../services/user_settings_sync_service.dart';
@@ -43,6 +45,7 @@ class DashboardMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppLocalizations.of(context);
     return ValueListenableBuilder<bool>(
       valueListenable: OverlayVisibilityService.assistantVisible,
       builder: (context, assistantVisible, _) {
@@ -60,7 +63,7 @@ class DashboardMenu extends StatelessWidget {
                     final isDark = themeMode == ThemeMode.dark;
 
                     return PopupMenuButton<String>(
-                      tooltip: 'القائمة',
+                      tooltip: strings.moreOptions,
                       color: Theme.of(context).colorScheme.surface,
                       surfaceTintColor: Colors.transparent,
                       elevation: 8,
@@ -86,6 +89,10 @@ class DashboardMenu extends StatelessWidget {
                         ),
                       ),
                       onSelected: (value) async {
+                        if (value == '_language') {
+                          await showLanguageSelector(context);
+                          return;
+                        }
                         if (value == '_theme') {
                           await toggleThemeMode();
                           await UserSettingsSyncService.pushCurrent();
@@ -112,22 +119,26 @@ class DashboardMenu extends StatelessWidget {
                           }
                         }
                       },
-                      itemBuilder: (context) => specialistFigmaMenu
-                          ? [
-                              const PopupMenuItem<String>(
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: '_language',
+                          child: _MenuRow(icon: Icons.language, label: strings.language),
+                        ),
+                        if (specialistFigmaMenu) ...[
+                              PopupMenuItem<String>(
                                 value: 'specialist_lessons',
                                 height: 46,
                                 child: _SpecialistFigmaMenuRow(
                                   icon: Icons.menu_book_outlined,
-                                  label: 'الدروس',
+                                  label: strings.lessons,
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'support',
                                 height: 46,
                                 child: _SpecialistFigmaMenuRow(
                                   icon: Icons.headset_mic_outlined,
-                                  label: 'الدعم الفني',
+                                  label: strings.technicalSupport,
                                 ),
                               ),
                               PopupMenuItem<String>(
@@ -137,19 +148,19 @@ class DashboardMenu extends StatelessWidget {
                                   icon: assistantVisible
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
-                                  label: assistantVisible ? 'إخفاء نور' : 'إظهار نور',
+                                  label: assistantVisible ? strings.hideNoor : strings.showNoor,
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'about_app',
                                 height: 46,
                                 child: _SpecialistFigmaMenuRow(
                                   icon: Icons.info_outline,
-                                  label: 'عن التطبيق',
+                                  label: strings.aboutApp,
                                 ),
                               ),
                             ]
-                          : [
+                          else ...[
                         for (final action in actions)
                           PopupMenuItem<String>(
                             value: action.id,
@@ -167,8 +178,8 @@ class DashboardMenu extends StatelessWidget {
                                 ? Icons.light_mode_outlined
                                 : Icons.dark_mode_outlined,
                             label: isDark
-                                ? 'التبديل للوضع الفاتح'
-                                : 'التبديل للوضع الداكن',
+                                ? strings.switchToLightMode
+                                : strings.switchToDarkMode,
                           ),
                         ),
                         PopupMenuItem<String>(
@@ -178,8 +189,8 @@ class DashboardMenu extends StatelessWidget {
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             label: assistantVisible
-                                ? 'إخفاء نور'
-                                : 'إظهار نور',
+                                ? strings.hideNoor
+                                : strings.showNoor,
                           ),
                         ),
                         if (showMicrophoneToggle)
@@ -190,10 +201,11 @@ class DashboardMenu extends StatelessWidget {
                                   ? Icons.mic_off_outlined
                                   : Icons.mic_none_outlined,
                               label: microphoneVisible
-                                  ? 'إخفاء المايك'
-                                  : 'إظهار المايك',
+                                  ? strings.hideMicrophone
+                                  : strings.showMicrophone,
                             ),
                           ),
+                      ],
                       ],
                     );
                   },
