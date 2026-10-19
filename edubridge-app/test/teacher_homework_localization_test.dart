@@ -54,9 +54,11 @@ Map<String, Object?> _homework(int id, {int? grade, bool submitted = false}) => 
 };
 MockClient _client({Future<http.Response> Function(http.Request)? write}) => MockClient((request) async {
   if (request.method != 'GET') return write == null ? _response({}, 500) : await write(request);
-  if (request.url.path.endsWith('/homeworks')) return _response({'homeworks': [
+  if (request.url.path.endsWith('/homeworks')) {
+    return _response({'homeworks': [
     _homework(1), _homework(2, submitted: true), _homework(3, submitted: true, grade: 80),
-  ]});
+    ]});
+  }
   if (request.url.path.endsWith('/lessons')) return _response({'lessons': [{'id': 8, 'title': 'درس المعلم الأصلي'}]});
   if (request.url.path.contains('/progress/')) return _response({'progress': [{'lesson_id': 8, 'status': 'done', 'score': 90, 'completed_at': '2026-10-12'}]});
   return _response({'reports': [], 'report': null, 'discussions': []});
