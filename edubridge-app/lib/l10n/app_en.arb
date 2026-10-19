@@ -2018,5 +2018,480 @@
   "add": "Add",
   "@add": {
     "description": "Confirm adding an item."
+  },
+  "createInstitutionMinistryAccount": "Create institution or ministry account",
+  "@createInstitutionMinistryAccount": {
+    "description": "Administration and ministry interface: createInstitutionMinistryAccount."
+  },
+  "institutionMinistryName": "Institution or ministry name",
+  "@institutionMinistryName": {
+    "description": "Administration and ministry interface: institutionMinistryName."
+  },
+  "accountCreateFailed": "Could not create the account",
+  "@accountCreateFailed": {
+    "description": "Administration and ministry interface: accountCreateFailed."
+  },
+  "changesSaveFailed": "Could not save changes",
+  "@changesSaveFailed": {
+    "description": "Administration and ministry interface: changesSaveFailed."
+  },
+  "editUser": "Edit user",
+  "@editUser": {
+    "description": "Administration and ministry interface: editUser."
+  },
+  "users": "Users",
+  "@users": {
+    "description": "Administration and ministry interface: users."
+  },
+  "verificationReview": "Verification review",
+  "@verificationReview": {
+    "description": "Administration and ministry interface: verificationReview."
+  },
+  "adminVerificationDescription": "Review verification requests and approve accounts",
+  "@adminVerificationDescription": {
+    "description": "Administration and ministry interface: adminVerificationDescription."
+  },
+  "adminSupportDescription": "Track technical support requests",
+  "@adminSupportDescription": {
+    "description": "Administration and ministry interface: adminSupportDescription."
+  },
+  "adminUsersDescription": "Manage users and platform accounts",
+  "@adminUsersDescription": {
+    "description": "Administration and ministry interface: adminUsersDescription."
+  },
+  "searchByIdentity": "Search by national ID",
+  "@searchByIdentity": {
+    "description": "Administration and ministry interface: searchByIdentity."
+  },
+  "adminManagementDescription": "Manage users, verification and support requests.",
+  "@adminManagementDescription": {
+    "description": "Administration and ministry interface: adminManagementDescription."
+  },
+  "searchNationalId": "Search using a national ID",
+  "@searchNationalId": {
+    "description": "Administration and ministry interface: searchNationalId."
+  },
+  "searchIdentityDescription": "Quickly find the user or child linked to a national ID.",
+  "@searchIdentityDescription": {
+    "description": "Administration and ministry interface: searchIdentityDescription."
+  },
+  "enterNationalIdHint": "Enter a national ID...",
+  "@enterNationalIdHint": {
+    "description": "Administration and ministry interface: enterNationalIdHint."
+  },
+  "identitySearchFailed": "Search failed",
+  "@identitySearchFailed": {
+    "description": "Administration and ministry interface: identitySearchFailed."
+  },
+  "noMatchingResults": "No matching results",
+  "@noMatchingResults": {
+    "description": "Administration and ministry interface: noMatchingResults."
+  },
+  "checkNationalIdDescription": "Check the national ID and try again.",
+  "@checkNationalIdDescription": {
+    "description": "Administration and ministry interface: checkNationalIdDescription."
+  },
+  "child": "Child",
+  "@child": {
+    "description": "Administration and ministry interface: child."
+  },
+  "certificate": "Certificate",
+  "@certificate": {
+    "description": "Administration and ministry interface: certificate."
+  },
+  "ticketsLoadFailed": "Could not load support tickets",
+  "@ticketsLoadFailed": {
+    "description": "Administration and ministry interface: ticketsLoadFailed."
+  },
+  "resolveTicket": "Resolve ticket",
+  "@resolveTicket": {
+    "description": "Administration and ministry interface: resolveTicket."
+  },
+  "resolveTicketConfirmation": "Resolve this ticket? The user will be notified.",
+  "@resolveTicketConfirmation": {
+    "description": "Administration and ministry interface: resolveTicketConfirmation."
+  },
+  "resolvedStatus": "Resolved",
+  "@resolvedStatus": {
+    "description": "Administration and ministry interface: resolvedStatus."
+  },
+  "ticketResolvedNotice": "Ticket resolved and user notified",
+  "@ticketResolvedNotice": {
+    "description": "Administration and ministry interface: ticketResolvedNotice."
+  },
+  "ticketResolveFailed": "Could not resolve the ticket. Please try again.",
+  "@ticketResolveFailed": {
+    "description": "Administration and ministry interface: ticketResolveFailed."
+  },
+  "noTickets": "No support tickets at the moment",
+  "@noTickets": {
+    "description": "Administration and ministry interface: noTickets."
+  },
+  "ticketsEmptyDescription": "New support requests will appear here for review.",
+  "@ticketsEmptyDescription": {
+    "description": "Administration and ministry interface: ticketsEmptyDescription."
+  },
+  "noSubject": "No subject",
+  "@noSubject": {
+    "description": "Administration and ministry interface: noSubject."
+  },
+  "noLinkedChildren": "No children are currently linked",
+  "@noLinkedChildren": {
+    "description": "Administration and ministry interface: noLinkedChildren."
+  },
+  "usersLoadFailed": "Could not load users",
+  "@usersLoadFailed": {
+    "description": "Administration and ministry interface: usersLoadFailed."
+  },
+  "deleteUser": "Delete user",
+  "@deleteUser": {
+    "description": "Administration and ministry interface: deleteUser."
+  },
+  "userDeleted": "User deleted",
+  "@userDeleted": {
+    "description": "Administration and ministry interface: userDeleted."
+  },
+  "userDeleteFailed": "Could not delete the user",
+  "@userDeleteFailed": {
+    "description": "Administration and ministry interface: userDeleteFailed."
+  },
+  "deleteChild": "Delete child",
+  "@deleteChild": {
+    "description": "Administration and ministry interface: deleteChild."
+  },
+  "childDeleted": "Child deleted",
+  "@childDeleted": {
+    "description": "Administration and ministry interface: childDeleted."
+  },
+  "childDeleteFailed": "Could not delete the child",
+  "@childDeleteFailed": {
+    "description": "Administration and ministry interface: childDeleteFailed."
+  },
+  "searchNameOrEmail": "Search by name or email...",
+  "@searchNameOrEmail": {
+    "description": "Administration and ministry interface: searchNameOrEmail."
+  },
+  "noRegisteredChildrenAdmin": "No registered children",
+  "@noRegisteredChildrenAdmin": {
+    "description": "Administration and ministry interface: noRegisteredChildrenAdmin."
+  },
+  "teachers": "Teachers",
+  "@teachers": {
+    "description": "Administration and ministry interface: teachers."
+  },
+  "specialists": "Specialists",
+  "@specialists": {
+    "description": "Administration and ministry interface: specialists."
+  },
+  "parents": "Parents",
+  "@parents": {
+    "description": "Administration and ministry interface: parents."
+  },
+  "institutions": "Institutions",
+  "@institutions": {
+    "description": "Administration and ministry interface: institutions."
+  },
+  "verificationRequestsLoadFailed": "Could not load requests",
+  "@verificationRequestsLoadFailed": {
+    "description": "Administration and ministry interface: verificationRequestsLoadFailed."
+  },
+  "requestApproved": "Request approved",
+  "@requestApproved": {
+    "description": "Administration and ministry interface: requestApproved."
+  },
+  "requestRejected": "Request rejected",
+  "@requestRejected": {
+    "description": "Administration and ministry interface: requestRejected."
+  },
+  "certificates": "Certificates",
+  "@certificates": {
+    "description": "Administration and ministry interface: certificates."
+  },
+  "noPendingRequests": "No pending requests",
+  "@noPendingRequests": {
+    "description": "Administration and ministry interface: noPendingRequests."
+  },
+  "verificationEmptyDescription": "Verification requests that need review will appear here.",
+  "@verificationEmptyDescription": {
+    "description": "Administration and ministry interface: verificationEmptyDescription."
+  },
+  "approve": "Approve",
+  "@approve": {
+    "description": "Administration and ministry interface: approve."
+  },
+  "reject": "Reject",
+  "@reject": {
+    "description": "Administration and ministry interface: reject."
+  },
+  "underReview": "Under review",
+  "@underReview": {
+    "description": "Administration and ministry interface: underReview."
+  },
+  "suggestedTeacher": "Suggested teacher",
+  "@suggestedTeacher": {
+    "description": "Administration and ministry interface: suggestedTeacher."
+  },
+  "approvedStatus": "Approved",
+  "@approvedStatus": {
+    "description": "Administration and ministry interface: approvedStatus."
+  },
+  "rejectedStatus": "Rejected",
+  "@rejectedStatus": {
+    "description": "Administration and ministry interface: rejectedStatus."
+  },
+  "approvePlan": "Approve plan",
+  "@approvePlan": {
+    "description": "Administration and ministry interface: approvePlan."
+  },
+  "planApprovedNotice": "Plan approved; specialist and teacher notified",
+  "@planApprovedNotice": {
+    "description": "Administration and ministry interface: planApprovedNotice."
+  },
+  "rejectPlan": "Reject plan",
+  "@rejectPlan": {
+    "description": "Administration and ministry interface: rejectPlan."
+  },
+  "rejectionReasonOptional": "Rejection reason (optional)",
+  "@rejectionReasonOptional": {
+    "description": "Administration and ministry interface: rejectionReasonOptional."
+  },
+  "planRejectionReasonExample": "Example: the plan goals need review",
+  "@planRejectionReasonExample": {
+    "description": "Administration and ministry interface: planRejectionReasonExample."
+  },
+  "planRejectedNotice": "Plan rejected; specialist notified",
+  "@planRejectedNotice": {
+    "description": "Administration and ministry interface: planRejectedNotice."
+  },
+  "requestsAwaitingReview": "Requests awaiting review",
+  "@requestsAwaitingReview": {
+    "description": "Administration and ministry interface: requestsAwaitingReview."
+  },
+  "noCurrentPendingRequests": "No pending requests at the moment",
+  "@noCurrentPendingRequests": {
+    "description": "Administration and ministry interface: noCurrentPendingRequests."
+  },
+  "decisionHistory": "Decision history",
+  "@decisionHistory": {
+    "description": "Administration and ministry interface: decisionHistory."
+  },
+  "ministryDashboardDescription": "Manage institutions and approvals",
+  "@ministryDashboardDescription": {
+    "description": "Administration and ministry interface: ministryDashboardDescription."
+  },
+  "lessonsLoadFailed": "Could not load lessons",
+  "@lessonsLoadFailed": {
+    "description": "Administration and ministry interface: lessonsLoadFailed."
+  },
+  "lessonRejectionReason": "Lesson rejection reason",
+  "@lessonRejectionReason": {
+    "description": "Administration and ministry interface: lessonRejectionReason."
+  },
+  "teacherNoteOptional": "Note to teacher (optional)",
+  "@teacherNoteOptional": {
+    "description": "Administration and ministry interface: teacherNoteOptional."
+  },
+  "rejectLesson": "Reject lesson",
+  "@rejectLesson": {
+    "description": "Administration and ministry interface: rejectLesson."
+  },
+  "lessonReviewFailed": "Could not review the lesson",
+  "@lessonReviewFailed": {
+    "description": "Administration and ministry interface: lessonReviewFailed."
+  },
+  "pendingReviewStatus": "Pending",
+  "@pendingReviewStatus": {
+    "description": "Administration and ministry interface: pendingReviewStatus."
+  },
+  "noLessonsWithStatus": "No lessons with this status",
+  "@noLessonsWithStatus": {
+    "description": "Administration and ministry interface: noLessonsWithStatus."
+  },
+  "lesson": "Lesson",
+  "@lesson": {
+    "description": "Administration and ministry interface: lesson."
+  },
+  "pendingRequestMetric": "Pending requests",
+  "@pendingRequestMetric": {
+    "description": "Administration and ministry interface: pendingRequestMetric."
+  },
+  "administrationTools": "Administration tools",
+  "@administrationTools": {
+    "description": "Administration and ministry interface: administrationTools."
+  },
+  "viewAllLessonsDescription": "View all added lessons",
+  "@viewAllLessonsDescription": {
+    "description": "Administration and ministry interface: viewAllLessonsDescription."
+  },
+  "searchStudentUserDescription": "Search for a student or user",
+  "@searchStudentUserDescription": {
+    "description": "Administration and ministry interface: searchStudentUserDescription."
+  },
+  "monthlyReports": "Monthly reports",
+  "@monthlyReports": {
+    "description": "Administration and ministry interface: monthlyReports."
+  },
+  "detailedStatsComingSoon": "Detailed statistics (coming soon)",
+  "@detailedStatsComingSoon": {
+    "description": "Administration and ministry interface: detailedStatsComingSoon."
+  },
+  "comingSoon": "Coming soon",
+  "@comingSoon": {
+    "description": "Administration and ministry interface: comingSoon."
+  },
+  "overview": "Overview",
+  "@overview": {
+    "description": "Administration and ministry interface: overview."
+  },
+  "requests": "Requests",
+  "@requests": {
+    "description": "Administration and ministry interface: requests."
+  },
+  "curricula": "Curricula",
+  "@curricula": {
+    "description": "Administration and ministry interface: curricula."
+  },
+  "ministryReadOnlyNotice": "View only — editing and deletion are unavailable",
+  "@ministryReadOnlyNotice": {
+    "description": "Administration and ministry interface: ministryReadOnlyNotice."
+  },
+  "ticketFromUser": "From: {name}",
+  "@ticketFromUser": {
+    "description": "Administration and ministry interface: ticketFromUser.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userChildrenTitle": "Children linked to {role} {name}",
+  "@userChildrenTitle": {
+    "description": "Administration and ministry interface: userChildrenTitle.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteNamedUserConfirmation": "Delete user \"{name}\"?",
+  "@deleteNamedUserConfirmation": {
+    "description": "Administration and ministry interface: deleteNamedUserConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteNamedChildConfirmation": "Delete child \"{name}\"?",
+  "@deleteNamedChildConfirmation": {
+    "description": "Administration and ministry interface: deleteNamedChildConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRegisteredGroup": "No registered {group}",
+  "@noRegisteredGroup": {
+    "description": "Administration and ministry interface: noRegisteredGroup.",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedDate": "Submitted: {date}",
+  "@submittedDate": {
+    "description": "Administration and ministry interface: submittedDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "decisionStatusDate": "{status} • {date}",
+  "@decisionStatusDate": {
+    "description": "Administration and ministry interface: decisionStatusDate.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "approveChildPlanConfirmation": "Approve the plan for \"{name}\"?\n\nThe specialist and teacher will be notified.",
+  "@approveChildPlanConfirmation": {
+    "description": "Administration and ministry interface: approveChildPlanConfirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectChildPlanTitle": "Reject the plan for \"{name}\"",
+  "@rejectChildPlanTitle": {
+    "description": "Administration and ministry interface: rejectChildPlanTitle.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonLevelLabel": "Level: {level}",
+  "@lessonLevelLabel": {
+    "description": "Administration and ministry interface: lessonLevelLabel.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonCategoryLabel": "Category: {category}",
+  "@lessonCategoryLabel": {
+    "description": "Administration and ministry interface: lessonCategoryLabel.",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonTeacherLabel": "Teacher: {name}",
+  "@lessonTeacherLabel": {
+    "description": "Administration and ministry interface: lessonTeacherLabel.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonReviewNoteLabel": "Review note: {note}",
+  "@lessonReviewNoteLabel": {
+    "description": "Administration and ministry interface: lessonReviewNoteLabel.",
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNameRequired": "Enter a name",
+  "@adminNameRequired": {
+    "description": "Administration form: adminNameRequired."
+  },
+  "phoneOptional": "Phone (optional)",
+  "@phoneOptional": {
+    "description": "Administration form: phoneOptional."
+  },
+  "optional": "Optional",
+  "@optional": {
+    "description": "Administration form: optional."
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Administration form: edit."
   }
 }

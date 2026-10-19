@@ -16,10 +16,10 @@ class _UserChildrenSheet extends StatelessWidget {
     final c = JisrColors.of(context);
     final role = (user['role'] ?? '').toString();
     final roleLabel = role == 'teacher'
-        ? 'المعلّم'
+        ? context.l10n.teacherRole
         : role == 'specialist'
-            ? 'المختص'
-            : 'ولي الأمر';
+            ? context.l10n.specialistRole
+            : context.l10n.parentRole;
     final roleIcon = role == 'teacher'
         ? AppIcons.teacher
         : role == 'specialist'
@@ -54,7 +54,7 @@ class _UserChildrenSheet extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'أطفال $roleLabel ${user['name'] ?? ''}',
+                  context.l10n.userChildrenTitle(roleLabel, (user['name'] ?? '').toString()),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -81,7 +81,7 @@ class _UserChildrenSheet extends StatelessWidget {
                 const Icon(AppIcons.child, size: 16, color: AppColors.brandBlue),
                 const SizedBox(width: 6),
                 Text(
-                  '${children.length} ${children.length == 1 ? 'طفل' : 'أطفال'}',
+                  context.l10n.dashboardChildCount(children.length),
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -100,7 +100,7 @@ class _UserChildrenSheet extends StatelessWidget {
                   children: [
                     Icon(Icons.person_off, size: 48, color: c.muted),
                     const SizedBox(height: 8),
-                    Text('لا يوجد أطفال مرتبطون حالياً',
+                    Text(context.l10n.noLinkedChildren,
                         style: TextStyle(color: c.muted, fontSize: 15)),
                   ],
                 ),
@@ -167,7 +167,7 @@ class _UserChildrenSheet extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    'العمر: $age سنة',
+                                    context.l10n.childAgeLabel(age.toString()),
                                     style: TextStyle(
                                       fontSize: 12.5,
                                       color: c.muted,

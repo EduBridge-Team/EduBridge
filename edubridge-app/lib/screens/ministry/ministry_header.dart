@@ -29,19 +29,19 @@ class _MinistryHeader extends StatelessWidget {
 
   Widget _buildTopRow(BuildContext context) {
     return Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: 'الوزارة', subtitle: 'إدارة شاملة للمؤسسات والموافقات')),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.ministryRole, subtitle: context.l10n.ministryDashboardDescription)),
 const SizedBox(width: 8),
 DashboardHeaderActions(
           actions: [
             DashboardMenuAction(
               id: 'support',
-              label: 'الدعم الفني',
+              label: context.l10n.technicalSupport,
               icon: AppIcons.support,
               onSelected: () => SupportSheet.show(context),
             ),
             DashboardMenuAction(
               id: 'chats',
-              label: 'المحادثات',
+              label: context.l10n.conversations,
               icon: AppIcons.chat,
               onSelected: () => Navigator.push(
                 context,
@@ -50,13 +50,13 @@ DashboardHeaderActions(
             ),
             DashboardMenuAction(
               id: 'legal',
-              label: 'الخصوصية والحساب',
+              label: context.l10n.privacyAndAccount,
               icon: AppIcons.privacy,
               onSelected: () => const LegalLinksButton().show(context),
             ),
             DashboardMenuAction(
               id: 'logout',
-              label: 'تسجيل الخروج',
+              label: context.l10n.logout,
               icon: AppIcons.logout,
               destructive: true,
               onSelected: () async {

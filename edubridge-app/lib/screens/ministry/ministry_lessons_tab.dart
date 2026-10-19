@@ -12,7 +12,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
   List<dynamic> _lessons = const [];
   bool _loading = true;
   int? _reviewingId;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
       );
       final data = ApiService.decodeMap(res.body);
       if (res.statusCode != 200) {
-        throw Exception(data['error'] ?? 'تعذّر تحميل الدروس');
+        throw (data['error'] ?? SharedUiMessage.lessonsLoadFailed);
       }
       if (!mounted) return;
       setState(() {
@@ -43,7 +43,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = e is SharedUiMessage ? e : e.toString().replaceFirst('Exception: ', '');
       });
     }
   }
@@ -55,23 +55,23 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
       final result = await showDialog<String>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('سبب رفض الدرس'),
+          title: Text(context.l10n.lessonRejectionReason),
           content: TextField(
             controller: controller,
             maxLines: 3,
-            decoration: const InputDecoration(
-              hintText: 'ملاحظة للمعلم (اختياري)',
+            decoration: InputDecoration(
+              hintText: context.l10n.teacherNoteOptional,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('إلغاء'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () =>
                   Navigator.pop(dialogContext, controller.text.trim()),
-              child: const Text('رفض الدرس'),
+              child: Text(context.l10n.rejectLesson),
             ),
           ],
         ),
@@ -95,13 +95,13 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
       );
       final data = ApiService.decodeMap(res.body);
       if (res.statusCode != 200) {
-        throw Exception(data['error'] ?? 'تعذّرت مراجعة الدرس');
+        throw (data['error'] ?? SharedUiMessage.lessonReviewFailed);
       }
       await _load();
     } catch (e) {
       if (mounted) {
         setState(() =>
-            _error = e.toString().replaceFirst('Exception: ', ''));
+            _error = e is SharedUiMessage ? e : e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _reviewingId = null);
@@ -120,10 +120,10 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
           Wrap(
             spacing: 8,
             children: [
-              for (final entry in const [
-                ('pending', 'معلّقة'),
-                ('approved', 'معتمدة'),
-                ('rejected', 'مرفوضة'),
+              for (final entry in [
+                ('pending', context.l10n.pendingReviewStatus),
+                ('approved', context.l10n.approvedStatus),
+                ('rejected', context.l10n.rejectedStatus),
               ])
                 ChoiceChip(
                   label: Text(entry.$2),
@@ -138,7 +138,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
-            Text(_error!, style: const TextStyle(color: AppColors.red)),
+            Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red)),
           ],
           const SizedBox(height: 12),
           if (_loading)
@@ -151,7 +151,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
               padding: const EdgeInsets.all(40),
               child: Center(
                 child: Text(
-                  'لا توجد دروس في هذه الحالة',
+                  context.l10n.noLessonsWithStatus,
                   style: TextStyle(color: c.muted),
                 ),
               ),
@@ -171,7 +171,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        (lesson['title'] ?? 'درس').toString(),
+                        (lesson['title'] ?? context.l10n.lesson).toString(),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -190,18 +190,18 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
                       Text(
                         [
                           if ((lesson['education_level'] ?? '').toString().isNotEmpty)
-                            'المستوى: ${lesson['education_level']}',
+                            context.l10n.lessonLevelLabel(lesson['education_level'].toString()),
                           if ((lesson['disability_name'] ?? '').toString().isNotEmpty)
-                            'الفئة: ${lesson['disability_name']}',
+                            context.l10n.lessonCategoryLabel(lesson['disability_name'].toString()),
                           if ((lesson['teacher_name'] ?? '').toString().isNotEmpty)
-                            'المعلم: ${lesson['teacher_name']}',
+                            context.l10n.lessonTeacherLabel(lesson['teacher_name'].toString()),
                         ].join(' · '),
                         style: TextStyle(fontSize: 12, color: c.muted),
                       ),
                       if ((lesson['review_note'] ?? '').toString().isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
-                          'ملاحظة المراجعة: ${lesson['review_note']}',
+                          context.l10n.lessonReviewNoteLabel(lesson['review_note'].toString()),
                           style: TextStyle(fontSize: 12, color: c.muted),
                         ),
                       ],
@@ -215,7 +215,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
                                     ? null
                                     : () => _review(lesson, 'approved'),
                                 icon: const Icon(Icons.check),
-                                label: const Text('اعتماد'),
+                                label: Text(context.l10n.approve),
                               ),
                             ),
                             if (_status != 'rejected') ...[
@@ -226,7 +226,7 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
                                       ? null
                                       : () => _review(lesson, 'rejected'),
                                   icon: const Icon(Icons.close),
-                                  label: const Text('رفض'),
+                                  label: Text(context.l10n.reject),
                                 ),
                               ),
                             ],

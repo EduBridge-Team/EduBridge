@@ -13,7 +13,7 @@ extension _UsersTabStateView on _UsersTabState {
             const Icon(AppIcons.error, color: AppColors.red, size: 52),
             const SizedBox(height: 12),
             Text(
-              _error!,
+              context.sharedMessage(_error),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.red,
@@ -25,7 +25,7 @@ extension _UsersTabStateView on _UsersTabState {
             FilledButton.icon(
               onPressed: _load,
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
             ),
           ],
         ),
@@ -42,30 +42,30 @@ extension _UsersTabStateView on _UsersTabState {
             FilledButton.icon(
               onPressed: _openCreateAccount,
               icon: const Icon(Icons.add_business_outlined),
-              label: const Text('إنشاء حساب مؤسسة أو وزارة'),
+              label: Text(context.l10n.createInstitutionMinistryAccount),
             ),
             const SizedBox(height: 16),
           ],
           _buildSearchBar(c),
           const SizedBox(height: 16),
           _buildUserSection(
-            icon: AppIcons.teacher, title: 'المعلّمون',
+            icon: AppIcons.teacher, title: context.l10n.teachers,
             users: _teachers, color: AppColors.brandGreen, bgTint: c.tintGreen,
           ),
           _buildUserSection(
-            icon: AppIcons.specialist, title: 'المختصون',
+            icon: AppIcons.specialist, title: context.l10n.specialists,
             users: _specialists, color: AppColors.brandTealDeep, bgTint: c.tintOrange,
           ),
           _buildUserSection(
-            icon: AppIcons.parent, title: 'أولياء الأمور',
+            icon: AppIcons.parent, title: context.l10n.parents,
             users: _parents, color: AppColors.brandBlue, bgTint: c.tintTeal,
           ),
           _buildUserSection(
-            icon: Icons.business_outlined, title: 'المؤسسات',
+            icon: Icons.business_outlined, title: context.l10n.institutions,
             users: _byRole('institution'), color: AppColors.brandBlue, bgTint: c.tintTeal,
           ),
           _buildUserSection(
-            icon: Icons.account_balance_outlined, title: 'الوزارة',
+            icon: Icons.account_balance_outlined, title: context.l10n.ministryRole,
             users: _byRole('ministry'), color: AppColors.brandTealDeep, bgTint: c.tintOrange,
           ),
           _buildChildrenSection(),

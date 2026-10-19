@@ -14,7 +14,7 @@ class _MinistryUsersTabState extends State<_MinistryUsersTab> {
   List _users = [];
   List _children = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _search = '';
 
   @override
@@ -42,7 +42,7 @@ class _MinistryUsersTabState extends State<_MinistryUsersTab> {
       });
     } catch (_) {
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -139,7 +139,7 @@ Widget _buildMinistryUserSection({
               border: Border.all(color: c.line),
             ),
             child: Center(
-              child: Text('لا يوجد $title مسجّلون',
+              child: Text(context.l10n.noRegisteredGroup(title),
                   style: TextStyle(color: c.muted, fontSize: 14)),
             ),
           )

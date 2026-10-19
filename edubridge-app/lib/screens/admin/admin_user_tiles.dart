@@ -92,14 +92,14 @@ class _UserListTile extends StatelessWidget {
                 const SizedBox(width: 4),
                 IconButton(
                   icon: Icon(AppIcons.edit, size: 20, color: c.infoText),
-                  tooltip: 'تعديل',
+                  tooltip: context.l10n.edit,
                   onPressed: onEdit,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
                 ),
                 IconButton(
                   icon: Icon(AppIcons.delete, size: 20, color: c.dangerText),
-                  tooltip: 'حذف',
+                  tooltip: context.l10n.deleteConfirmationWord,
                   onPressed: onDelete,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
@@ -226,7 +226,7 @@ class _ChildListTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'العمر: $age سنة'
+                        context.l10n.childAgeLabel(age.toString())
                         '${disability != null && disability.isNotEmpty ? ' • $disability' : ''}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -250,14 +250,14 @@ class _ChildListTile extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(AppIcons.edit, size: 20, color: c.infoText),
-                  tooltip: 'تعديل',
+                  tooltip: context.l10n.edit,
                   onPressed: onTap,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
                 ),
                 IconButton(
                   icon: Icon(AppIcons.delete, size: 20, color: c.dangerText),
-                  tooltip: 'حذف',
+                  tooltip: context.l10n.deleteConfirmationWord,
                   onPressed: onDelete,
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),

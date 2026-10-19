@@ -102,15 +102,15 @@ class _StatusBadge extends StatelessWidget {
     Color color;
     switch (status) {
       case 'evaluated':
-        label = 'تم التقييم';
+        label = context.l10n.evaluatedStatus;
         color = AppColors.green;
         break;
       case 'assigned':
-        label = 'تم التعيين';
+        label = context.l10n.assignedStatus;
         color = AppColors.brandBlue;
         break;
       default:
-        label = 'قيد الانتظار';
+        label = context.l10n.pendingStatus;
         color = AppColors.brandTealDeep;
     }
 

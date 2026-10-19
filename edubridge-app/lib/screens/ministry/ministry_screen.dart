@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/ministry/ministry_screen.dart
 import 'package:flutter/material.dart';

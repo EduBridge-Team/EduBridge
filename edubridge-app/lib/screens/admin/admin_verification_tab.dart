@@ -11,7 +11,7 @@ class _VerificationTab extends StatefulWidget {
 class _VerificationTabState extends State<_VerificationTab> {
   List _requests = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _filter = 'users';
 
   @override
@@ -34,7 +34,7 @@ class _VerificationTabState extends State<_VerificationTab> {
       });
     } catch (e) {
       setState(() {
-        _error = 'تعذّر جلب الطلبات';
+        _error = SharedUiMessage.verificationRequestsLoadFailed;
         _loading = false;
       });
     }
@@ -57,13 +57,13 @@ class _VerificationTabState extends State<_VerificationTab> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(approve ? 'تم اعتماد الطلب' : 'تم رفض الطلب'),
+          content: Text(approve ? context.l10n.requestApproved : context.l10n.requestRejected),
           backgroundColor: approve ? AppColors.green : AppColors.red,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('فشلت العملية')),
+        SnackBar(content: Text(context.l10n.operationFailed)),
       );
     }
   }
@@ -85,7 +85,7 @@ class _VerificationTabState extends State<_VerificationTab> {
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -97,7 +97,7 @@ class _VerificationTabState extends State<_VerificationTab> {
             child: FilledButton.icon(
               onPressed: _loadRequests,
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
             ),
           ),
         ],
@@ -111,19 +111,19 @@ class _VerificationTabState extends State<_VerificationTab> {
           child: Row(
             children: [
               _FilterChip(
-                label: 'المستخدمون',
+                label: context.l10n.users,
                 selected: _filter == 'users',
                 onTap: () => setState(() => _filter = 'users'),
               ),
               const SizedBox(width: 8),
               _FilterChip(
-                label: 'الأطفال',
+                label: context.l10n.children,
                 selected: _filter == 'children',
                 onTap: () => setState(() => _filter = 'children'),
               ),
               const SizedBox(width: 8),
               _FilterChip(
-                label: 'الشهادات',
+                label: context.l10n.certificates,
                 selected: _filter == 'certificates',
                 onTap: () => setState(() => _filter = 'certificates'),
               ),
@@ -153,7 +153,7 @@ class _VerificationTabState extends State<_VerificationTab> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'لا توجد طلبات معلقة',
+                      context.l10n.noPendingRequests,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 19,
@@ -163,7 +163,7 @@ class _VerificationTabState extends State<_VerificationTab> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'ستظهر هنا طلبات التوثيق التي تحتاج إلى مراجعة.',
+                      context.l10n.verificationEmptyDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13.5, color: c.muted),
                     ),
@@ -258,9 +258,9 @@ class _VerificationRequestCard extends StatelessWidget {
 
     String getTypeName() {
       switch (type) {
-        case 'children': return 'طفل';
-        case 'certificates': return 'شهادة';
-        default: return 'مستخدم';
+        case 'children': return context.l10n.child;
+        case 'certificates': return context.l10n.certificate;
+        default: return context.l10n.user;
       }
     }
 
@@ -332,7 +332,7 @@ class _VerificationRequestCard extends StatelessWidget {
                     minimumSize: const Size.fromHeight(40),
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                   ),
-                  child: const Text('اعتماد'),
+                  child: Text(context.l10n.approve),
                 ),
               ),
               const SizedBox(height: 8),
@@ -348,7 +348,7 @@ class _VerificationRequestCard extends StatelessWidget {
                       color: AppColors.red.withValues(alpha: .45),
                     ),
                   ),
-                  child: const Text('رفض'),
+                  child: Text(context.l10n.reject),
                 ),
               ),
             ],

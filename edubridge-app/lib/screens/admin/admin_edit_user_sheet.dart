@@ -1,11 +1,11 @@
 // lib/screens/admin/admin_edit_user_sheet.dart
 part of 'admin_screen.dart';
 
-const _roleNames = {
-  'parent': 'ولي أمر',
-  'teacher': 'معلّم',
-  'specialist': 'مختص',
-  'admin': 'أدمن',
+Map<String, String> _roleNames(BuildContext context) => {
+  'parent': context.l10n.parentRole,
+  'teacher': context.l10n.teacherRole,
+  'specialist': context.l10n.specialistRole,
+  'admin': context.l10n.adminRole,
 };
 
 class _EditUserSheet extends StatefulWidget {
@@ -24,7 +24,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
   late final TextEditingController _phone;
   late String _role;
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -63,14 +63,14 @@ class _EditUserSheetState extends State<_EditUserSheet> {
         Navigator.pop(context);
       } else {
         setState(() {
-          _error = data['error'] ?? 'تعذّر حفظ التعديلات';
+          _error = data['error'] ?? SharedUiMessage.changesSaveFailed;
           _saving = false;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'تعذّر الاتصال بالسيرفر';
+          _error = SharedUiMessage.connectionFailed;
           _saving = false;
         });
       }
@@ -108,7 +108,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      'تعديل المستخدم',
+                      context.l10n.editUser,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -125,8 +125,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               const SizedBox(height: 8),
               TextField(
                 controller: _name,
-                decoration: const InputDecoration(
-                  labelText: 'الاسم',
+                decoration: InputDecoration(
+                  labelText: context.l10n.name,
                   prefixIcon: Icon(AppIcons.profile),
                 ),
               ),
@@ -134,8 +134,8 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                decoration: InputDecoration(
+                  labelText: context.l10n.email,
                   prefixIcon: Icon(Icons.mail_outline_rounded),
                 ),
               ),
@@ -143,11 +143,11 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               DropdownButtonFormField<String>(
                 key: ValueKey(_role),
                 initialValue: _role,
-                decoration: const InputDecoration(
-                  labelText: 'الدور',
+                decoration: InputDecoration(
+                  labelText: context.l10n.role,
                   prefixIcon: Icon(AppIcons.users),
                 ),
-                items: _roleNames.entries
+                items: _roleNames(context).entries
                     .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
                     .toList(),
                 onChanged: (v) {
@@ -158,9 +158,9 @@ class _EditUserSheetState extends State<_EditUserSheet> {
               TextField(
                 controller: _phone,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'رقم الهاتف',
-                  hintText: 'اختياري',
+                decoration: InputDecoration(
+                  labelText: context.l10n.phone,
+                  hintText: context.l10n.optional,
                   prefixIcon: Icon(Icons.phone_outlined),
                 ),
               ),
@@ -178,7 +178,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          _error!,
+                          context.sharedMessage(_error),
                           style: const TextStyle(
                             color: AppColors.red,
                             fontWeight: FontWeight.w700,
@@ -195,7 +195,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: _saving ? null : () => Navigator.pop(context),
-                      child: const Text('إلغاء'),
+                      child: Text(context.l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -212,7 +212,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                               ),
                             )
                           : const Icon(AppIcons.check),
-                      label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ'),
+                      label: Text(_saving ? context.l10n.saving : context.l10n.save),
                     ),
                   ),
                 ],

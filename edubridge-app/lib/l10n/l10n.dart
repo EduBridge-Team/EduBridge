@@ -3,6 +3,15 @@ import 'generated/app_localizations.dart';
 
 /// Local UI state stores message identities, not a sentence in a previous locale.
 enum SharedUiMessage {
+  verificationRequestsLoadFailed,
+  usersLoadFailed,
+  ticketsLoadFailed,
+  ticketResolveFailed,
+  lessonsLoadFailed,
+  lessonReviewFailed,
+  identitySearchFailed,
+  changesSaveFailed,
+  accountCreateFailed,
   lessonRecommendationFailed,
   homeworksLoadFailed,
   dashboardLoadFailed,
@@ -36,6 +45,15 @@ extension LocalizedContext on BuildContext {
   String sharedMessage(Object? message) {
     if (message is SharedUiMessage) {
       return switch (message) {
+        SharedUiMessage.verificationRequestsLoadFailed => l10n.verificationRequestsLoadFailed,
+        SharedUiMessage.usersLoadFailed => l10n.usersLoadFailed,
+        SharedUiMessage.ticketsLoadFailed => l10n.ticketsLoadFailed,
+        SharedUiMessage.ticketResolveFailed => l10n.ticketResolveFailed,
+        SharedUiMessage.lessonsLoadFailed => l10n.lessonsLoadFailed,
+        SharedUiMessage.lessonReviewFailed => l10n.lessonReviewFailed,
+        SharedUiMessage.identitySearchFailed => l10n.identitySearchFailed,
+        SharedUiMessage.changesSaveFailed => l10n.changesSaveFailed,
+        SharedUiMessage.accountCreateFailed => l10n.accountCreateFailed,
         SharedUiMessage.lessonRecommendationFailed => l10n.lessonRecommendationFailed,
         SharedUiMessage.homeworksLoadFailed => l10n.homeworksLoadFailed,
         SharedUiMessage.dashboardLoadFailed => l10n.dashboardLoadFailed,

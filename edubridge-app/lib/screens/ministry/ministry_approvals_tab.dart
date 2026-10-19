@@ -57,27 +57,26 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(AppIcons.check, color: AppColors.brandTealDeep, size: 32),
             SizedBox(width: 8),
-            Text('اعتماد الخطة'),
+            Text(context.l10n.approvePlan),
           ],
         ),
         content: Text(
-          'هل أنت متأكد من اعتماد خطة الطفل "${approval['child_name']}"؟\n\n'
-          'سيتم إشعار المختص والمعلم.',
+          context.l10n.approveChildPlanConfirmation((approval['child_name'] ?? '').toString()),
           style: const TextStyle(fontSize: 15, height: 1.6),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTealDeep),
             icon: const Icon(AppIcons.check),
-            label: const Text('اعتماد'),
+            label: Text(context.l10n.approve),
             onPressed: () => Navigator.pop(context, true),
           ),
         ],
@@ -98,8 +97,8 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم اعتماد الخطة وإشعار المختص والمعلم'),
+      SnackBar(
+        content: Text(context.l10n.planApprovedNotice),
         backgroundColor: AppColors.green,
       ),
     );
@@ -113,11 +112,11 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(AppIcons.error, color: AppColors.red, size: 32),
             SizedBox(width: 8),
-            Text('رفض الخطة'),
+            Text(context.l10n.rejectPlan),
           ],
         ),
         content: Column(
@@ -125,16 +124,16 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'رفض خطة الطفل "${approval['child_name']}"',
+              context.l10n.rejectChildPlanTitle((approval['child_name'] ?? '').toString()),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: reasonCtrl,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'سبب الرفض (اختياري)',
-                hintText: 'مثال: تحتاج مراجعة أهداف الخطة',
+              decoration: InputDecoration(
+                labelText: context.l10n.rejectionReasonOptional,
+                hintText: context.l10n.planRejectionReasonExample,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -143,12 +142,12 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
             icon: const Icon(AppIcons.close),
-            label: const Text('رفض'),
+            label: Text(context.l10n.reject),
             onPressed: () => Navigator.pop(context, true),
           ),
         ],
@@ -170,8 +169,8 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم رفض الخطة وإشعار المختص'),
+      SnackBar(
+        content: Text(context.l10n.planRejectedNotice),
         backgroundColor: AppColors.red,
       ),
     );
@@ -188,13 +187,13 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
         padding: const EdgeInsets.all(12),
         children: [
           _MinistrySectionHeader(
-            title: 'طلبات بانتظار المراجعة',
+            title: context.l10n.requestsAwaitingReview,
             count: '${_pending.length}',
             color: AppColors.brandBlueLight,
           ),
           if (_pending.isEmpty)
             _MinistryEmptyCard(
-              message: 'لا توجد طلبات معلّقة حالياً',
+              message: context.l10n.noCurrentPendingRequests,
               icon: Icons.inbox_outlined,
             )
           else
@@ -206,7 +205,7 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
           const SizedBox(height: 24),
           if (_processed.isNotEmpty) ...[
             _MinistrySectionHeader(
-              title: 'سجل القرارات',
+              title: context.l10n.decisionHistory,
               count: '${_processed.length}',
               color: AppColors.brandTeal,
             ),
