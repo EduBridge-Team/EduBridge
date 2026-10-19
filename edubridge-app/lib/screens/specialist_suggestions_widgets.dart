@@ -7,13 +7,14 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
     }
     if (_error != null) {
       return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 90),
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -25,7 +26,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
             child: FilledButton.icon(
               onPressed: _load,
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
             ),
           ),
         ],
@@ -33,6 +34,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
     }
     if (_suggestions.isEmpty) {
       return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 90),
@@ -54,8 +56,8 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
           const SizedBox(height: 18),
           Text(
             _filter == 'pending'
-                ? 'لا توجد اقتراحات معلقة'
-                : 'لا توجد اقتراحات',
+                ? context.l10n.followupNoPending
+                : context.l10n.followupNoSuggestions,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
@@ -68,6 +70,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
     }
 
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
       itemCount: _suggestions.length,
       itemBuilder: (context, i) =>
@@ -85,17 +88,17 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
     switch (status) {
       case 'accepted':
         statusColor = AppColors.green;
-        statusLabel = 'مقبول';
+        statusLabel = context.l10n.followupAcceptedStatus;
         statusIcon = AppIcons.check;
         break;
       case 'rejected':
         statusColor = AppColors.red;
-        statusLabel = 'مرفوض';
+        statusLabel = context.l10n.followupRejectedStatus;
         statusIcon = AppIcons.error;
         break;
       default:
         statusColor = AppColors.orange;
-        statusLabel = 'معلّق';
+        statusLabel = context.l10n.followupPendingStatus;
         statusIcon = AppIcons.clock;
     }
 
@@ -118,7 +121,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                       ? AppColors.purple
                       : AppColors.brandBlue,
                   child: Text(
-                    (s['child_name'] ?? '؟').toString().characters.first,
+                    (s['child_name'] ?? '').toString().trim().characters.firstOrNull ?? '?',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -140,13 +143,13 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                         ),
                       ),
                       Text(
-                        'من: ${s['suggested_by_name'] ?? ''}',
+                        context.l10n.followupSuggestedBy((s['suggested_by_name'] ?? '').toString()),
                         style: TextStyle(fontSize: 12, color: c.muted),
                       ),
                     ],
                   ),
                 ),
-                Container(
+                Flexible(child: Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -158,17 +161,17 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                     children: [
                       Icon(statusIcon, size: 12, color: statusColor),
                       const SizedBox(width: 4),
-                      Text(
+                      Flexible(child: Text(
                         statusLabel,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: statusColor,
                         ),
-                      ),
+                      )),
                     ],
                   ),
-                ),
+                )),
               ],
             ),
             const SizedBox(height: 12),
@@ -190,8 +193,8 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                     size: 20,
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    isLearningSupport ? 'مختص دعم تعليمي' : 'مختص تعليمي',
+                  Expanded(child: Text(
+                    isLearningSupport ? context.l10n.learningSupportSpecialist : context.l10n.educationalSpecialist,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -199,7 +202,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                           ? AppColors.brandTealDeep
                           : AppColors.brandBlue,
                     ),
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -211,33 +214,29 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
 
             if (status == 'pending') ...[
               const SizedBox(height: 14),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
+                  OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 44),
                         foregroundColor: AppColors.red,
                         side: const BorderSide(color: AppColors.red),
                       ),
                       icon: const Icon(AppIcons.close),
-                      label: const Text('رفض'),
+                      label: Text(context.l10n.reject),
                       onPressed: () => _reject(s),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: FilledButton.icon(
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 44),
                         backgroundColor: AppColors.green,
                       ),
                       icon: const Icon(AppIcons.check),
-                      label: const Text('قبول ومتابعة'),
+                      label: Text(context.l10n.followupAcceptAndFollow),
                       onPressed: () => _accept(s),
                     ),
-                  ),
                 ],
               ),
             ],
@@ -245,4 +244,60 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
         ),
     );
   }
+}
+
+
+/// Owns the draft for the entire dialog route, including its closing animation.
+class _FollowupRejectionDialog extends StatefulWidget {
+  const _FollowupRejectionDialog({required this.childName});
+  final String childName;
+
+  @override
+  State<_FollowupRejectionDialog> createState() => _FollowupRejectionDialogState();
+}
+
+class _FollowupRejectionDialogState extends State<_FollowupRejectionDialog> {
+  final _reasonController = TextEditingController();
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    scrollable: true,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    title: Row(children: [
+      const Icon(AppIcons.error, color: AppColors.red, size: 28),
+      const SizedBox(width: 8),
+      Expanded(child: Text(context.l10n.followupRejectTitle)),
+    ]),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(context.l10n.followupRejectChild(widget.childName),
+          style: const TextStyle(fontWeight: FontWeight.w800)),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _reasonController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            labelText: context.l10n.followupRejectReasonOptional,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
+      FilledButton(
+        style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+        onPressed: () => Navigator.pop(context, _reasonController.text.trim()),
+        child: Text(context.l10n.reject),
+      ),
+    ],
+  );
 }

@@ -3860,5 +3860,90 @@
   "reportPlanEvaluation": "Plan evaluation",
   "@reportPlanEvaluation": {
     "description": "Weekly report section label."
+  },
+  "followupSuggestionsTitle": "Follow-up suggestions",
+  "@followupSuggestionsTitle": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupSuggestionsLoadFailed": "Could not load suggestions",
+  "@followupSuggestionsLoadFailed": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupConfirmAccept": "Confirm acceptance",
+  "@followupConfirmAccept": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAccept": "Accept",
+  "@followupAccept": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectTitle": "Reject suggestion",
+  "@followupRejectTitle": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptQuestion": "Do you want to follow up with \"{name}\" as {specialty}?",
+  "@followupAcceptQuestion": {
+    "description": "Specialist follow-up suggestions interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "followupRejectChild": "Decline follow-up for \"{name}\"",
+  "@followupRejectChild": {
+    "description": "Specialist follow-up suggestions interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "followupAcceptedNotice": "The child was added to your follow-up list",
+  "@followupAcceptedNotice": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectedNotice": "Suggestion declined",
+  "@followupRejectedNotice": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupPendingFilter": "Pending",
+  "@followupPendingFilter": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptedFilter": "Accepted",
+  "@followupAcceptedFilter": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptedStatus": "Accepted",
+  "@followupAcceptedStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRejectedStatus": "Rejected",
+  "@followupRejectedStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupPendingStatus": "Pending",
+  "@followupPendingStatus": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupNoPending": "No pending suggestions",
+  "@followupNoPending": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupNoSuggestions": "No suggestions",
+  "@followupNoSuggestions": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupAcceptAndFollow": "Accept and follow up",
+  "@followupAcceptAndFollow": {
+    "description": "Specialist follow-up suggestions interface."
+  },
+  "followupRefresh": "Refresh suggestions",
+  "@followupRefresh": {
+    "description": "Specialist follow-up suggestions interface."
   }
 }
