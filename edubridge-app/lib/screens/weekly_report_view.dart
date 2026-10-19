@@ -5,7 +5,7 @@ extension _WeeklyReportScreenStateView on _WeeklyReportScreenState {
     final hasReport = _report != null;
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'تقرير ${widget.childName} الأسبوعي'),
+      appBar: JisrAppBar(title: context.l10n.reportWeeklyTitle(widget.childName)),
       body: Column(
         children: [
           Padding(
@@ -13,15 +13,15 @@ extension _WeeklyReportScreenStateView on _WeeklyReportScreenState {
             child: DropdownButtonFormField<String>(
               key: ValueKey(_selectedWeek == null ? '' : _weekKey(_selectedWeek!)),
               initialValue: _selectedWeek == null ? '' : _weekKey(_selectedWeek!),
-              decoration: const InputDecoration(labelText: 'أسبوع التقرير'),
+              decoration: InputDecoration(labelText: context.l10n.reportWeekLabel),
               isExpanded: true,
               items: [
-                const DropdownMenuItem(value: '', child: Text('الأسبوع الحالي')),
+                DropdownMenuItem(value: '', child: Text(context.l10n.reportCurrentWeek)),
                 for (final week in {
                   if (_selectedWeek != null) _weekKey(_selectedWeek!),
                   ..._history.map((report) => _weekKey(report.weekStart)),
                 })
-                  DropdownMenuItem(value: week, child: Text('الأسبوع الذي يبدأ في $week')),
+                  DropdownMenuItem(value: week, child: Text(context.l10n.reportWeekBeginning(MaterialLocalizations.of(context).formatShortDate(DateTime.parse(week))))),
               ],
               onChanged: _loading ? null : (value) {
                 _selectedWeek = value == null || value.isEmpty ? null : DateTime.parse(value);

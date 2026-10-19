@@ -8,9 +8,7 @@ extension _CreateSpecialistProgressScreenStateView
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: dark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFF5F9FC),
         appBar: BrandAppBar(
           toolbarHeight: 96,
@@ -18,7 +16,7 @@ extension _CreateSpecialistProgressScreenStateView
           titleSpacing: 0,
           leadingWidth: 56,
           leading: IconButton(
-            tooltip: 'رجوع',
+            tooltip: context.l10n.back,
             onPressed: () => Navigator.maybePop(context),
             icon: const CircleAvatar(
               radius: 19,
@@ -28,7 +26,7 @@ extension _CreateSpecialistProgressScreenStateView
             ),
           ),
           title: Text(
-            'تقييم تقدّم ${widget.childName}',
+            context.l10n.progressEvaluationFor(widget.childName),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -43,7 +41,7 @@ extension _CreateSpecialistProgressScreenStateView
             child: ListView(
               padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
               children: [
-                Text('تقرير المعلم (مرجع)', style: TextStyle(
+                Text(context.l10n.reportTeacherReference, style: TextStyle(
                   color: c.heading, fontSize: 16, fontWeight: FontWeight.w800,
                 )),
                 const SizedBox(height: 12),
@@ -57,25 +55,25 @@ extension _CreateSpecialistProgressScreenStateView
                 else
                   _buildNoReportCard(c),
                 const SizedBox(height: 12),
-                _notesField(c, _notesCtrl, 'ملاحظاتك على تقدّم الطفل',
+                _notesField(c, _notesCtrl, context.l10n.reportProgressNotes,
                     isRequired: true),
                 const SizedBox(height: 12),
-                _notesField(c, _recommendationsCtrl, 'توصياتك للمعلم'),
+                _notesField(c, _recommendationsCtrl, context.l10n.reportRecommendationsForTeacher),
                 const SizedBox(height: 12),
                 _surface(c, Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _question(c, 'هل الخطة التعليمية مناسبة لتقدّم الطفل؟'),
+                    _question(c, context.l10n.reportPlanAppropriateQuestion),
                     const SizedBox(height: 12),
                     // Keep the reference order: modification on the right.
                     Row(children: [
-                      Expanded(child: _planChoice(c, false, 'تحتاج تعديل')),
+                      Expanded(child: _planChoice(c, false, context.l10n.planNeedsChanges)),
                       const SizedBox(width: 8),
-                      Expanded(child: _planChoice(c, true, 'مناسبة')),
+                      Expanded(child: _planChoice(c, true, context.l10n.planSuitable)),
                     ]),
                     if (!_planAppropriate) ...[
                       const SizedBox(height: 12),
-                      _notesField(c, _planEvalCtrl, 'ما التعديلات المقترحة؟'),
+                      _notesField(c, _planEvalCtrl, context.l10n.reportProposedChanges),
                     ],
                   ],
                 )),
@@ -83,7 +81,7 @@ extension _CreateSpecialistProgressScreenStateView
                 _surface(c, Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _question(c, 'مشاركة الطفل التعليمية هذا الأسبوع:'),
+                    _question(c, context.l10n.reportParticipationQuestion),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,11 +92,10 @@ extension _CreateSpecialistProgressScreenStateView
                 )),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
-                  Text(_error!, style: const TextStyle(color: AppColors.red)),
+                  Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red)),
                 ],
                 const SizedBox(height: 12),
                 SizedBox(
-                  height: 48,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: _s25Blue,
@@ -117,7 +114,8 @@ extension _CreateSpecialistProgressScreenStateView
                               strokeWidth: 2, color: Colors.white)),
                         if (!_saving) const Icon(Icons.check_rounded, size: 20),
                         const SizedBox(width: 10),
-                        Text(_saving ? 'جارِ الحفظ...' : 'حفظ التقييم'),
+                        Flexible(child: Text(_saving ? context.l10n.saving : context.l10n.saveEvaluation,
+                          textAlign: TextAlign.center)),
                       ],
                     ),
                   ),
@@ -126,7 +124,6 @@ extension _CreateSpecialistProgressScreenStateView
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -146,19 +143,19 @@ extension _CreateSpecialistProgressScreenStateView
     Column(children: [
       IntrinsicHeight(child: Row(children: [
         _reportMetric(c, Icons.task_alt_rounded,
-            '${report.progressPercentage.round()}%', 'الإنجاز',
+            '${report.progressPercentage.round()}%', context.l10n.achievement,
             const Color(0xFF69D78B)),
         VerticalDivider(color: c.line, width: 1, indent: 26, endIndent: 18),
         _reportMetric(c, Icons.menu_book_outlined,
-            '${report.lessonsCompleted}/${report.lessonsTotal}', 'الدروس', _s25Teal),
+            '${report.lessonsCompleted}/${report.lessonsTotal}', context.l10n.lessons, _s25Teal),
         VerticalDivider(color: c.line, width: 1, indent: 26, endIndent: 18),
         _reportMetric(c, Icons.description_outlined,
-            '${report.homeworkSubmitted}/${report.homeworkAssigned}', 'الواجبات', _s25Teal),
+            '${report.homeworkSubmitted}/${report.homeworkAssigned}', context.l10n.homeworks, _s25Teal),
       ])),
       if (report.teacherNotes?.trim().isNotEmpty ?? false) ...[
         const SizedBox(height: 12),
         Align(alignment: AlignmentDirectional.centerStart,
-          child: Text('ملاحظات المعلم: ${report.teacherNotes!}',
+          child: Text(context.l10n.reportTeacherNotesValue(report.teacherNotes!),
             style: TextStyle(color: c.heading, fontSize: 13, height: 1.5))),
       ],
     ]),
@@ -193,7 +190,7 @@ extension _CreateSpecialistProgressScreenStateView
     maxLines: null,
     style: TextStyle(color: c.heading, fontSize: 14, height: 1.5),
     validator: isRequired
-        ? (value) => value == null || value.trim().isEmpty ? 'مطلوب' : null
+        ? (value) => value == null || value.trim().isEmpty ? context.l10n.fieldRequired : null
         : null,
     decoration: InputDecoration(
       hintText: label,
@@ -248,10 +245,10 @@ extension _CreateSpecialistProgressScreenStateView
     const icons = [Icons.sentiment_very_dissatisfied_outlined,
       Icons.sentiment_dissatisfied, Icons.sentiment_neutral,
       Icons.sentiment_satisfied_outlined, Icons.sentiment_very_satisfied_outlined];
-    const labels = ['ضعيفة جدًا', 'ضعيفة', 'متوسطة', 'جيدة', 'ممتازة'];
+    final labels = [context.l10n.reportRatingVeryLow, context.l10n.reportRatingLow, context.l10n.reportRatingAverage, context.l10n.reportRatingGood, context.l10n.reportRatingExcellent];
     final selected = _moodRating == rating;
     return Semantics(
-      label: 'مشاركة الطفل: ${labels[rating - 1]}',
+      label: context.l10n.reportParticipationValue(labels[rating - 1]),
       selected: selected,
       button: true,
       child: Tooltip(

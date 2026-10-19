@@ -16,7 +16,7 @@ class _TeacherReportsTab extends StatefulWidget {
 class _TeacherReportsTabState extends State<_TeacherReportsTab> {
   List<WeeklyReport> _reports = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل التقارير';
+        _error = SharedUiMessage.reportsLoadFailed;
         _loading = false;
       });
     }
@@ -104,7 +104,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                         const Icon(AppIcons.error, size: 52, color: AppColors.red),
                         const SizedBox(height: 12),
                         Text(
-                          _error!,
+                          context.sharedMessage(_error),
                           style: const TextStyle(
                             color: AppColors.red,
                             fontWeight: FontWeight.w700,
@@ -114,7 +114,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                         OutlinedButton.icon(
                           onPressed: _load,
                           icon: const Icon(AppIcons.refresh),
-                          label: const Text('إعادة المحاولة'),
+                          label: Text(context.l10n.retryAction),
                         ),
                       ],
                     ),
@@ -139,7 +139,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'لا توجد تقارير بعد',
+                          context.l10n.reportListEmpty,
                           style: TextStyle(
                             color: c.heading,
                             fontSize: 18,
@@ -148,7 +148,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'أضف أول تقرير أسبوعي لهذا الطالب.',
+                          context.l10n.reportListEmptyHint,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: c.muted, fontSize: 13.5),
                         ),
@@ -158,14 +158,14 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                 else ...[
                   Row(
                     children: [
-                      Text(
-                        'كل التقارير',
+                      Expanded(child: Text(
+                        context.l10n.reportListAll,
                         style: TextStyle(
                           color: c.heading,
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                         ),
-                      ),
+                      )),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
@@ -193,16 +193,16 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
             ),
           ),
         ),
-        Positioned(
-          left: 16,
+        PositionedDirectional(
+          start: 16,
           bottom: 24 + bottomInset,
           child: FloatingActionButton.extended(
             heroTag: 'create-report-${widget.childId}',
             onPressed: _createReport,
             icon: const Icon(AppIcons.add),
-            label: const Text(
-              'إضافة تقرير',
-              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+            label: Text(
+              context.l10n.reportAdd,
+              style: const TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),
         ),
@@ -258,7 +258,7 @@ class _ReportTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'تقرير الأسبوع ${start.day}/${start.month} — ${end.day}/${end.month}',
+                      context.l10n.reportListWeekRange(MaterialLocalizations.of(context).formatShortDate(start), MaterialLocalizations.of(context).formatShortDate(end)),
                       style: TextStyle(
                         color: c.heading,
                         fontSize: 15,
@@ -267,14 +267,14 @@ class _ReportTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'نسبة التقدّم ${report.progressPercentage.toStringAsFixed(0)}%  •  الدروس ${report.lessonsCompleted}/${report.lessonsTotal}',
+                      context.l10n.reportListSummary(report.progressPercentage.toStringAsFixed(0), report.lessonsCompleted.toString(), report.lessonsTotal.toString()),
                       style: TextStyle(color: c.muted, fontSize: 12.5),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_left, color: c.muted),
+              Icon(Directionality.of(context) == TextDirection.rtl ? Icons.chevron_left : Icons.chevron_right, color: c.muted),
             ],
           ),
         ),

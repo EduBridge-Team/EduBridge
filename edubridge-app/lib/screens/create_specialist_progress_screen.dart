@@ -4,6 +4,8 @@ import '../app_icons.dart';
 import '../model/weekly_report_model.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+import '../utils/locale_form_validation.dart';
 part 'create_specialist_progress_view.dart';
 
 class CreateSpecialistProgressScreen extends StatefulWidget {
@@ -28,10 +30,13 @@ class CreateSpecialistProgressScreen extends StatefulWidget {
 }
 
 class _CreateSpecialistProgressScreenState
-    extends State<CreateSpecialistProgressScreen> {
+    extends State<CreateSpecialistProgressScreen> with LocaleFormValidation<CreateSpecialistProgressScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  GlobalKey<FormState> get validationFormKey => _formKey;
 
   WeeklyReport? _teacherReport;
   bool _loadingReport = true;
@@ -42,7 +47,7 @@ class _CreateSpecialistProgressScreenState
   bool _planAppropriate = true;
   int _moodRating = 3;
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -77,7 +82,7 @@ class _CreateSpecialistProgressScreenState
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
 
     setState(() {
       _saving = true;
@@ -98,22 +103,22 @@ class _CreateSpecialistProgressScreenState
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ تقدّم الطفل'),
+          SnackBar(
+            content: Text(context.l10n.childProgressSaved),
             backgroundColor: AppColors.green,
           ),
         );
         Navigator.pop(context, true);
       } else {
         setState(() {
-          _error = 'فشل الحفظ';
+          _error = SharedUiMessage.changesSaveFailed;
           _saving = false;
         });
       }
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _saving = false;
       });
     }
@@ -135,7 +140,7 @@ class _CreateSpecialistProgressScreenState
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'لم يكتب المعلم تقريراً لهذا الأسبوع بعد.\nيمكنك كتابة تقييمك بشكل مستقل.',
+              context.l10n.reportNoTeacherReference,
               style: TextStyle(fontSize: 13, color: c.onTint, height: 1.5),
             ),
           ),
