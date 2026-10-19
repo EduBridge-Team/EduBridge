@@ -19,14 +19,23 @@ http.Response _response(Object data, [int status = 200]) => http.Response(jsonEn
   headers: {'content-type': 'application/json; charset=utf-8'});
 MockClient _client({bool verified = true, bool dashboard = false,
   Future<http.Response> Function(http.Request)? post}) => MockClient((request) async {
-  if (request.method != 'GET') return post == null ? _response({}, 500) : await post(request);
-  if (request.url.path.endsWith('/me/verification')) return _response({
-    'verification': {'verification_status': verified ? 'approved' : 'none'}});
-  if (request.url.path.endsWith('/me')) return _response({'user': {'id': 2, 'specialty': 'educational'}});
-  if (request.url.path.endsWith('/users')) return _response({'users': [
-    {'id': 3, 'name': 'مختص الدعم', 'specialty': 'learning_support'},
-    {'id': 4, 'name': 'مختص تعليمي', 'specialty': 'educational'},
-  ]});
+  if (request.method != 'GET') {
+    return post == null ? _response({}, 500) : await post(request);
+  }
+  if (request.url.path.endsWith('/me/verification')) {
+    return _response({'verification': {
+      'verification_status': verified ? 'approved' : 'none',
+    }});
+  }
+  if (request.url.path.endsWith('/me')) {
+    return _response({'user': {'id': 2, 'specialty': 'educational'}});
+  }
+  if (request.url.path.endsWith('/users')) {
+    return _response({'users': [
+      {'id': 3, 'name': 'مختص الدعم', 'specialty': 'learning_support'},
+      {'id': 4, 'name': 'مختص تعليمي', 'specialty': 'educational'},
+    ]});
+  }
   return _response({'children': dashboard ? [
     {'id': 8, 'name': 'محمود', 'age': 9, 'status': 'active', 'specialist_ids': [2]},
   ] : [], 'lessons': [], 'disability_types': [], 'progress': []});
