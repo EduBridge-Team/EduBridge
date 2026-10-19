@@ -55,7 +55,8 @@ test('web defaults and every disability recommendation match the mobile shared m
   assert.equal(typeFromText('color blindness'), 'colorBlindness')
   const displayed = ACCESSIBILITY_SETTINGS.map(([key]) => key)
   assert.equal(new Set(displayed).size, displayed.length)
-  for (const [key, value] of Object.entries(defaultProfile)) if (typeof value === 'boolean') assert.ok(displayed.includes(key), key)
+  for (const [key, value] of Object.entries(defaultProfile)) if (typeof value === 'boolean' && key !== 'pictureCommunication') assert.ok(displayed.includes(key), key)
+  assert.equal(displayed.includes('pictureCommunication'), false)
 })
 
 test('picture messages remain in the normal conversation draft and respect the API limit', () => {
