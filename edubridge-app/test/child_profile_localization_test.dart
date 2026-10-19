@@ -46,9 +46,10 @@ void main() {
             expect(find.text(s.studentProfileFor('ليان')), findsOneWidget);
             expect(find.text('ليان'), findsWidgets);
             if (specialist) {
-              await tester.scrollUntilVisible(find.text(s.childInformation), 250,
+              await tester.scrollUntilVisible(find.text(s.childInformation).hitTestable(), 150,
                   scrollable: find.byType(Scrollable).first);
-              await tester.tap(find.text(s.childInformation));
+              await tester.pumpAndSettle();
+              await tester.tap(find.text(s.childInformation).hitTestable());
               await tester.pumpAndSettle();
               await tester.scrollUntilVisible(find.text('وصف كتبه المختص'), 150,
                   scrollable: find.byType(Scrollable).first);
