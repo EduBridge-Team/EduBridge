@@ -30,11 +30,22 @@ per-widget locale ternaries. Use generated plural messages and locale-aware
 number/date formatting. Retain stored/API role IDs and status values; translate
 only their presentation. Avoid applying translation to arbitrary server strings.
 
+## Phase 2 language selection
+
+The shared dashboard menu contains the language entry in both its regular and
+specialist-style layouts, which are reused by all role dashboards. The preference
+is local to the device, loaded at bootstrap and persists independently of auth
+and child profiles. Unsupported saved values fall back to Arabic. Writes are
+serialized and the visible locale changes only after a successful save.
+
+Changing the root MaterialApp locale preserves Navigator state and current input.
+Directionality now follows Flutter localization delegates. Remaining screen-level
+RTL overrides and untranslated text are tracked below; phase 2 alone does not
+represent complete English support. User manual testing is deferred until all
+six stages finish, as requested; automated checks run for every PR.
+
 ## Pending stages
 
-2. Central locale controller with saved preference; shared hamburger language
-   selector for all roles; remove root hard-coded direction. Keep navigation and
-   active child settings intact. Default existing installs to Arabic.
 3. Shared screens/components, authentication, errors, dialogs and empty/loading
    states. Translate accessibility/tooltip labels too.
 4. Role-specific screens and visible labels in assessments, reports, progress,

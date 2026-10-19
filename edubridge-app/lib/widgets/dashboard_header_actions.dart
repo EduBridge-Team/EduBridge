@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../screens/notifications_screen.dart';
 import '../services/notification_listener_service.dart';
 import 'dashboard_menu.dart';
@@ -25,7 +26,7 @@ class DashboardHeaderActions extends StatelessWidget {
           color: Colors.white.withValues(alpha: .16),
           shape: const CircleBorder(),
           child: IconButton(
-            tooltip: 'الإشعارات',
+            tooltip: AppLocalizations.of(context).notifications,
             icon: Badge(
               isLabelVisible: unreadCount > 0,
               smallSize: 9,

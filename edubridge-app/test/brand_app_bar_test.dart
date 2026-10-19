@@ -1,4 +1,5 @@
 import 'package:edubridge_app/theme.dart';
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/widgets/dashboard_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,7 +8,10 @@ void main() {
   for (final brightness in Brightness.values) {
     testWidgets('gradient keeps its physical direction and actions in $brightness', (tester) async {
       var taps = 0;
-      await tester.pumpWidget(MaterialApp(theme: ThemeData(brightness: brightness),
+      await tester.pumpWidget(MaterialApp(locale: const Locale('ar'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: ThemeData(brightness: brightness),
         home: Directionality(textDirection: TextDirection.rtl, child: Scaffold(
           appBar: BrandAppBar(title: const Text('الدروس'), toolbarHeight: 74,
             actions: [IconButton(tooltip: 'الإشعارات', onPressed: () { taps++; },
@@ -51,7 +55,10 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(320, 568));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       var taps = 0;
-      await tester.pumpWidget(MaterialApp(theme: ThemeData(brightness: brightness,
+      await tester.pumpWidget(MaterialApp(locale: const Locale('ar'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: ThemeData(brightness: brightness,
         appBarTheme: const AppBarTheme(backgroundColor: Colors.white)),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(padding: const EdgeInsets.only(top: 24),
@@ -77,9 +84,9 @@ void main() {
       final surface = find.byType(BrandHeaderSurface);
       expect(tester.getSize(surface).height, 124);
       final logo = find.byWidgetPredicate((widget) => widget is Image && widget.semanticLabel == 'EduBridge');
-      expect(tester.getCenter(find.byTooltip('القائمة')).dx,
+      expect(tester.getCenter(find.byTooltip('المزيد من الخيارات')).dx,
         greaterThan(tester.getCenter(logo).dx));
-      await tester.tap(find.byTooltip('القائمة'));
+      await tester.tap(find.byTooltip('المزيد من الخيارات'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('الإشعارات'));
       await tester.pumpAndSettle();

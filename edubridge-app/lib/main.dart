@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'l10n/generated/app_localizations.dart';
+import 'services/app_locale_controller.dart';
 import 'services/accessibility_service.dart';
 import 'services/api_service.dart';
 import 'services/notification_listener_service.dart';
@@ -55,6 +56,7 @@ class _EduBridgeBootstrapState extends State<_EduBridgeBootstrap> {
 
     await Future.wait([
       loadSavedThemeMode(),
+      AppLocaleController.instance.load(),
       ApiService.initializeAuthState(),
       AccessibilityService.instance.load(),
       OverlayVisibilityService.initialize(),
@@ -134,7 +136,12 @@ class EduBridgeApp extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ValueListenableBuilder<Locale>(
+    valueListenable: AppLocaleController.instance,
+    builder: (context, locale, _) => _buildApplication(locale),
+  );
+
+  Widget _buildApplication(Locale locale) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: jisrThemeMode,
       builder: (context, mode, _) =>
@@ -147,13 +154,12 @@ class EduBridgeApp extends StatelessWidget {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           debugShowCheckedModeBanner: false,
-          locale: const Locale('ar'),
+          locale: locale,
           theme: buildJisrTheme(),
           darkTheme: buildJisrDarkTheme(),
           themeMode: mode,
-          builder: (context, child) => Directionality(
-            textDirection: TextDirection.rtl,
-            child: ChildMouseCursor(child: NotificationSnackbarHost(
+          builder: (context, child) => ChildMouseCursor(
+            child: NotificationSnackbarHost(
               child: PetAssistantOverlay(
                 child: VoiceMicOverlay(
                   child: SafeArea(
@@ -165,7 +171,7 @@ class EduBridgeApp extends StatelessWidget {
                   ),
                 ),
               ),
-            )),
+            ),
           ),
           home: initialHome,
           routes: {
