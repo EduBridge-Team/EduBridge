@@ -9,7 +9,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            'تقييم $childName',
+            context.l10n.evaluationForChild(childName),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -38,7 +38,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'اختر في الأسفل: هل تُرسل الخطة للوزارة للموافقة، أم تُرسل للمعلم مباشرة؟',
+              context.l10n.evaluationRoutingNotice,
               style: TextStyle(
                 fontSize: 12.5,
                 color: c.onTint,
@@ -53,15 +53,17 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
 
   Widget _buildEvaluationTypeDropdown() {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
+      itemHeight: null,
       initialValue: _evaluationType,
-      decoration: const InputDecoration(
-        labelText: 'نوع التقييم *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.evaluationType),
         prefixIcon: Icon(AppIcons.filter),
       ),
-      items: const [
-        DropdownMenuItem(value: 'initial', child: Text('تقييم أولي')),
-        DropdownMenuItem(value: 'follow_up', child: Text('متابعة')),
-        DropdownMenuItem(value: 'final', child: Text('تقييم نهائي')),
+      items: [
+        DropdownMenuItem(value: 'initial', child: Text(context.l10n.initialEvaluation, maxLines: 1, overflow: TextOverflow.ellipsis)),
+        DropdownMenuItem(value: 'follow_up', child: Text(context.l10n.followUpEvaluation, maxLines: 1, overflow: TextOverflow.ellipsis)),
+        DropdownMenuItem(value: 'final', child: Text(context.l10n.finalEvaluation, maxLines: 1, overflow: TextOverflow.ellipsis)),
       ],
       onChanged: (v) => _refreshState(() => _evaluationType = v ?? 'initial'),
     );
@@ -71,13 +73,13 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _cognitiveCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'التقييم المعرفي *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.cognitiveAssessment),
         prefixIcon: Icon(AppIcons.cognitive),
-        hintText: 'مستوى التفكير، الانتباه، الذاكرة، ...',
+        hintText: context.l10n.cognitiveAssessmentHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
@@ -85,13 +87,13 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _motorCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'التقييم الحركي *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.motorAssessment),
         prefixIcon: Icon(AppIcons.motor),
-        hintText: 'المهارات الحركية الدقيقة والخشنة، ...',
+        hintText: context.l10n.motorAssessmentHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
@@ -99,13 +101,13 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _emotionalCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'التفاعل أثناء التعلم *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.learningInteraction),
         prefixIcon: Icon(AppIcons.speech),
-        hintText: 'التفاعل مع الأنشطة، الاستجابة للتوجيه، المشاركة، ...',
+        hintText: context.l10n.learningInteractionHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
@@ -113,13 +115,13 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _socialCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'التقييم الاجتماعي *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.socialAssessment),
         prefixIcon: Icon(AppIcons.users),
-        hintText: 'التفاعل مع الآخرين، المهارات الاجتماعية، ...',
+        hintText: context.l10n.socialAssessmentHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
@@ -127,13 +129,13 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _recommendationsCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'التوصيات *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.recommendations),
         prefixIcon: Icon(AppIcons.info),
-        hintText: 'توصيات للمعلم وولي الأمر، ...',
+        hintText: context.l10n.recommendationsHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
@@ -141,39 +143,41 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
     return TextFormField(
       controller: _educationalPlanCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'الخطة التعليمية *',
+      decoration: InputDecoration(
+        labelText: context.l10n.requiredFieldLabel(context.l10n.educationalPlan),
         prefixIcon: Icon(AppIcons.plan),
-        hintText: 'الخطة الدراسية المقترحة، ...',
+        hintText: context.l10n.educationalPlanHint,
       ),
       validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+          (v == null || v.trim().isEmpty) ? context.l10n.fieldRequired : null,
     );
   }
 
   Widget _buildTeachingMethodsField() {
     return TextFormField(
       controller: _teachingMethodsCtrl,
-      decoration: const InputDecoration(
-        labelText: 'طرق التدريس (اختياري)',
+      decoration: InputDecoration(
+        labelText: context.l10n.teachingMethodsOptional,
         prefixIcon: Icon(AppIcons.lesson),
-        hintText: 'أدخل الطرق مفصولة بفواصل، مثال: بصري، سمعي،...',
+        hintText: context.l10n.teachingMethodsHint,
       ),
     );
   }
 
   Widget _buildTeacherDropdown() {
     return DropdownButtonFormField<int?>(
+      isExpanded: true,
+      itemHeight: null,
       initialValue: _selectedTeacherId,
-      decoration: const InputDecoration(
-        labelText: 'تعيين معلم (اختياري)',
+      decoration: InputDecoration(
+        labelText: context.l10n.assignTeacherOptional,
         prefixIcon: Icon(AppIcons.teacher),
       ),
       items: [
-        const DropdownMenuItem(value: null, child: Text('— لا تعيين —')),
+        DropdownMenuItem(value: null, child: Text(context.l10n.noTeacherAssignment, maxLines: 1, overflow: TextOverflow.ellipsis)),
         ...widget.teachers.map((t) => DropdownMenuItem(
               value: t['id'],
-              child: Text('${t['name'] ?? ''} (${t['email'] ?? ''})'),
+              child: Text('${t['name'] ?? ''} (${t['email'] ?? ''})', maxLines: 1, overflow: TextOverflow.ellipsis),
             )),
       ],
       onChanged: (v) => _refreshState(() => _selectedTeacherId = v),
@@ -183,8 +187,8 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
   Widget _buildTeacherHint(JisrColors c) {
     return Text(
       _sendToMinistry
-          ? 'سيتم إشعار المعلم بعد موافقة الوزارة'
-          : 'سيتم إشعار المعلم فوراً (بدون انتظار)',
+          ? context.l10n.teacherNotifiedAfterApproval
+          : context.l10n.teacherNotifiedImmediately,
       style: TextStyle(fontSize: 12, color: c.muted),
     );
   }
@@ -199,7 +203,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
-          _error!,
+          context.sharedMessage(_error),
           style: const TextStyle(color: AppColors.red, fontSize: 14),
         ),
       ),
@@ -215,7 +219,7 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(0, 48),
             ),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
         ),
         const SizedBox(width: 12),
@@ -240,10 +244,10 @@ extension _EvaluationFieldsExtension on _EvaluationSheetState {
                 : Icon(_sendToMinistry ? AppIcons.upload : AppIcons.send),
             label: Text(
               _loading
-                  ? 'جارٍ الإرسال...'
+                  ? context.l10n.sendingAlt
                   : _sendToMinistry
-                      ? 'إرسال للوزارة'
-                      : 'إرسال للمعلمين',
+                      ? context.l10n.sendToMinistry
+                      : context.l10n.sendToTeachers,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

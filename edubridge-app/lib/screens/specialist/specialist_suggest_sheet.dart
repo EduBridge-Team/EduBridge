@@ -24,10 +24,10 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
   int? _selectedId;
   final _reasonCtrl = TextEditingController();
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   String get _label =>
-      widget.specialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي';
+      widget.specialty == 'learning_support' ? context.l10n.learningSupportSpecialist : context.l10n.educationalSpecialist;
 
   Color get _color =>
       widget.specialty == 'learning_support' ? AppColors.brandTealDeep : AppColors.brandBlue;
@@ -40,11 +40,11 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
 
   Future<void> _save() async {
     if (_selectedId == null) {
-      setState(() => _error = 'اختر مختصاً');
+      setState(() => _error = SharedUiMessage.chooseSpecialist);
       return;
     }
     if (_reasonCtrl.text.trim().length < 10) {
-      setState(() => _error = 'اكتب سبب التوصية (10 أحرف على الأقل)');
+      setState(() => _error = SharedUiMessage.recommendationReasonMinimum);
       return;
     }
 
@@ -71,7 +71,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('تم إرسال التوصية لـ$_label'),
+        content: Text(context.l10n.specialistRecommendationSent(_label)),
         backgroundColor: AppColors.brandTealDeep,
       ),
     );
@@ -88,9 +88,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
           spec.contains(widget.specialty == 'learning_support' ? 'نفس' : 'تعليم');
     }).toList();
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Dialog(
+    return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
@@ -102,100 +100,96 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
             maxWidth: 360,
             maxHeight: MediaQuery.sizeOf(context).height * 0.82,
           ),
-          child: Padding(
+          child: SingleChildScrollView(child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('اقتراح مختص دعم تعليمي',
+                    Flexible(child: Text(context.l10n.recommendSupportSpecialist,
                       style: TextStyle(
-                        color: ink, fontSize: 20, fontWeight: FontWeight.w800)),
+                        color: ink, fontSize: 20, fontWeight: FontWeight.w800))),
                     SizedBox(width: 10),
                     Icon(Icons.lightbulb_outline_rounded,
                       color: blue, size: 23),
                   ],
                 ),
                 const SizedBox(height: 15),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        if (filtered.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Text('لا يوجد مختصون متاحون'),
-                          )
-                        else
-                          RadioGroup<int>(
-                            groupValue: _selectedId,
-                            onChanged: (v) {
-                              if (_saving) return;
-                              setState(() => _selectedId = v);
-                            },
-                            child: Column(
-                              children: [
-                                for (final person in filtered) ...[
-                                  Container(
-                                    margin: const EdgeInsets.only(bottom: 9),
-                                    decoration: BoxDecoration(
-                                      color: pale,
-                                      borderRadius: BorderRadius.circular(19),
-                                    ),
-                                    child: RadioListTile<int>(
-                                      key: ValueKey('s22_specialist_${person['id']}'),
-                                      value: person['id'] as int,
-                                      activeColor: blue,
-                                      controlAffinity:
-                                          ListTileControlAffinity.trailing,
-                                      dense: true,
-                                      title: Text(
-                                        (person['name'] ?? '').toString(),
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(
-                                          color: ink, fontSize: 15)),
-                                    ),
+                Column(
+                  children: [
+                    if (filtered.isEmpty)
+                      Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Text(context.l10n.noAvailableSpecialists),
+                      )
+                    else
+                      RadioGroup<int>(
+                        groupValue: _selectedId,
+                        onChanged: (v) {
+                          if (_saving) return;
+                          setState(() => _selectedId = v);
+                        },
+                        child: Column(
+                          children: [
+                            for (final person in filtered) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 9),
+                                child: Material(
+                                  color: pale,
+                                  borderRadius: BorderRadius.circular(19),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: RadioListTile<int>(
+                                  key: ValueKey('s22_specialist_${person['id']}'),
+                                  value: person['id'] as int,
+                                  activeColor: blue,
+                                  controlAffinity:
+                                      ListTileControlAffinity.trailing,
+                                  dense: true,
+                                  title: Text(
+                                    (person['name'] ?? '').toString(),
+                                    textAlign: TextAlign.start,
+                                    style: const TextStyle(
+                                      color: ink, fontSize: 15)),
                                   ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 3),
-                        TextField(
-                          key: const ValueKey('s22_reason'),
-                          controller: _reasonCtrl,
-                          enabled: !_saving,
-                          maxLength: 300,
-                          minLines: 3,
-                          maxLines: 3,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.right,
-                          decoration: InputDecoration(
-                            hintText: 'سبب التوصية *',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFF728AA0), fontSize: 14),
-                            counterText: '',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD6E6F2))),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD6E6F2))),
-                          ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
+                      ),
+                    const SizedBox(height: 3),
+                    TextField(
+                      key: const ValueKey('s22_reason'),
+                      controller: _reasonCtrl,
+                      enabled: !_saving,
+                      maxLength: 300,
+                      minLines: 3,
+                      maxLines: 3,
+
+                      textAlign: TextAlign.start,
+                      decoration: InputDecoration(
+                        hintText: context.l10n.requiredFieldLabel(context.l10n.recommendationReason),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF728AA0), fontSize: 14),
+                        counterText: '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD6E6F2))),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD6E6F2))),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 8),
-                  Text(_error!, textAlign: TextAlign.right,
+                  Text(context.sharedMessage(_error), textAlign: TextAlign.start,
                     style: const TextStyle(
                       color: AppColors.red, fontSize: 12)),
                 ],
@@ -203,8 +197,8 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                 Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 34,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 34),
                         child: OutlinedButton(
                           onPressed: _saving ? null :
                               () => Navigator.pop(context),
@@ -215,14 +209,14 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                             padding: EdgeInsets.zero,
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text('إلغاء'),
+                          child: Text(context.l10n.cancel),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: SizedBox(
-                        height: 34,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 34),
                         child: FilledButton(
                           onPressed: _saving ? null : _save,
                           style: FilledButton.styleFrom(
@@ -236,8 +230,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                                   width: 17, height: 17,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white))
-                              : const Text('إرسال التوصية',
-                                  maxLines: 1,
+                              : Text(context.l10n.sendRecommendation,
                                   style: TextStyle(fontSize: 12)),
                         ),
                       ),
@@ -246,9 +239,8 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                 ),
               ],
             ),
-          ),
+          )),
         ),
-      ),
     );
   }
 
@@ -284,7 +276,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                   Icon(AppIcons.specialist, color: _color, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text('اقتراح $_label',
+                    child: Text(context.l10n.suggestSpecialistTitle(_label),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -311,7 +303,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'سيُرسَل إشعار للمختص المقترح لمتابعة ${widget.child['name']}.',
+                        context.l10n.specialistFollowUpNotification((widget.child['name'] ?? '').toString()),
                         style: TextStyle(fontSize: 12, color: c.onTint, height: 1.5),
                       ),
                     ),
@@ -323,7 +315,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   alignment: Alignment.center,
-                  child: Text('لا يوجد مختصون متاحون',
+                  child: Text(context.l10n.noAvailableSpecialists,
                       style: TextStyle(color: c.muted), textAlign: TextAlign.center),
                 )
               else
@@ -349,9 +341,9 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                 maxLines: 3,
                 maxLength: 300,
                 decoration: InputDecoration(
-                  labelText: 'سبب التوصية *',
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.recommendationReason),
                   alignLabelWithHint: true,
-                  hintText: 'لماذا ترشح هذا المختص؟',
+                  hintText: context.l10n.whyRecommendSpecialist,
                   prefixIcon: const Icon(AppIcons.edit),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -366,7 +358,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                     color: AppColors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(_error!, style: const TextStyle(color: AppColors.red)),
+                  child: Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red)),
                 ),
               ],
               const SizedBox(height: 16),
@@ -375,7 +367,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('إلغاء'),
+                      child: Text(context.l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -394,7 +386,7 @@ class _SuggestSpecialistSheetState extends State<_SuggestSpecialistSheet> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2, color: Colors.white))
                           : const Icon(AppIcons.send),
-                      label: Text(_saving ? '...' : 'إرسال التوصية',
+                      label: Text(_saving ? '...' : context.l10n.sendRecommendation,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),

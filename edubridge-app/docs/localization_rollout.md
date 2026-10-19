@@ -241,3 +241,28 @@ Tests cover both picker layouts/languages at 320 pixels, doubled text, keyboard
 insets, special choices, dismissal, required form fields and draft preservation.
 Phase 4 still includes clinical recommendations and evaluation/report workflows.
 Child activities remain phase 5; the final audit remains phase 6.
+
+
+### Phase 4 — specialist recommendations and evaluations
+
+Specialist recommendation dialogs/sheets, child evaluation fields and ministry
+routing prompts, success dialogs and plan suitability evaluation now use the
+Arabic/English catalog. Dialogs and inputs inherit the selected direction and
+allow their complete contents to scroll with large text or keyboard constraints.
+Canonical reason strings, urgency/type/specialty values, IDs, authored assessment
+and plan text, legacy teaching-method defaults and persisted notification payloads
+remain unchanged. Verification and specialty filters retain their existing gates.
+
+Previously submitted forms share LocaleFormValidation to refresh displayed errors
+on locale change without replacing the draft. The helper also replaces the same
+logic previously embedded in child registration.
+
+Recommendation HTTP rejection no longer reports success; plan-evaluation failure
+shows an error and unlocks retry. Child evaluation now awaits success-dialog
+acknowledgement before closing its sheet. Existing ministry offline approval
+storage/synchronization behavior is retained.
+
+Tests cover bilingual/large-text forms, direct-teacher and ministry payloads,
+verification, original user content, failed requests/retries, canonical recommendation
+values and success acknowledgement. Phase 4 still includes detailed reports and
+remaining follow-up workflows. Activities remain phase 5; the final audit is phase 6.

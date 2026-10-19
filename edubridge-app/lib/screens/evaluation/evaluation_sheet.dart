@@ -1,3 +1,5 @@
+import '../../utils/locale_form_validation.dart';
+import '../../l10n/l10n.dart';
 // lib/screens/evaluation/evaluation_sheet.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -25,10 +27,12 @@ class EvaluationSheet extends StatefulWidget {
   State<EvaluationSheet> createState() => _EvaluationSheetState();
 }
 
-class _EvaluationSheetState extends State<EvaluationSheet> {
+class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValidation<EvaluationSheet> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
+  @override
+  GlobalKey<FormState> get validationFormKey => _formKey;
 
   final _cognitiveCtrl = TextEditingController();
   final _motorCtrl = TextEditingController();
@@ -41,7 +45,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
   String _evaluationType = 'initial';
   int? _selectedTeacherId;
   bool _loading = false;
-  String? _error;
+  Object? _error;
 
   bool _sendToMinistry = false;
 
@@ -58,7 +62,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
 
     setState(() {
       _loading = true;
@@ -91,7 +95,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
       if (result == null) {
         setState(() {
-          _error = 'فشل حفظ التقييم';
+          _error = SharedUiMessage.evaluationSaveFailed;
           _loading = false;
         });
         return;
@@ -152,13 +156,11 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
     if (!mounted) return;
 
-    _showSuccessDialog(
+    await _showSuccessDialog(
       icon: AppIcons.upload,
       iconColor: AppColors.orange,
-      title: 'تم الإرسال للوزارة',
-      message: 'سيتم مراجعة الخطة من الوزارة.\n\n'
-          '• عند الموافقة: يُشعَر المعلم والمعلمون المعنيون\n'
-          '• عند الرفض: تعود إليك الخطة للتعديل',
+      title: context.l10n.evaluationSentToMinistry,
+      message: context.l10n.ministryEvaluationSuccessDetails,
     );
 
     if (mounted) Navigator.pop(context, true);
@@ -185,28 +187,29 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
 
     if (!mounted) return;
 
-    _showSuccessDialog(
+    await _showSuccessDialog(
       icon: AppIcons.check,
       iconColor: AppColors.brandTealDeep,
-      title: 'تم التقييم بنجاح',
+      title: context.l10n.evaluationCompleted,
       message: _selectedTeacherId != null
-          ? 'تم إرسال التقييم للمعلم المسؤول لبدء التنفيذ مباشرة.'
-          : 'تم حفظ التقييم. يمكن تعيين معلم لاحقاً.',
+          ? context.l10n.evaluationSentToTeacher
+          : context.l10n.evaluationSavedAssignLater,
     );
 
     if (mounted) Navigator.pop(context, true);
   }
 
-  void _showSuccessDialog({
+  Future<void> _showSuccessDialog({
     required IconData icon,
     required Color iconColor,
     required String title,
     required String message,
   }) {
-    showDialog(
+    return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -247,7 +250,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                   minimumSize: const Size(0, 46),
                 ),
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('حسناً'),
+                child: Text(context.l10n.acknowledge),
               ),
             ),
           ],
@@ -302,6 +305,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> {
                 _buildTeacherHint(c),
                 const SizedBox(height: 16),
                 buildMinistryToggleCard(
+                  context: context,
                   c: c,
                   active: _sendToMinistry,
                   onChanged: (v) => setState(() => _sendToMinistry = v),
