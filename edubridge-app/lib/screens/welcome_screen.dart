@@ -120,10 +120,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               const Flexible(child: BrandLockup(iconSize: 64, fontSize: 30)),
-              const LanguageMenuButton(),
-              IconButton.filledTonal(onPressed: toggleThemeMode,
-                tooltip: dark ? context.l10n.lightMode : context.l10n.darkMode,
-                icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined)),
+              const SizedBox(width: 16),
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton.filledTonal(
+                  key: const ValueKey('welcome-language'),
+                  tooltip: context.l10n.language,
+                  onPressed: () => showLanguageSelector(context),
+                  icon: const Icon(Icons.language),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(onPressed: toggleThemeMode,
+                  tooltip: dark ? context.l10n.lightMode : context.l10n.darkMode,
+                  icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined)),
+              ]),
             ]),
             const SizedBox(height: 24),
             _motion(0, Container(padding: const EdgeInsets.all(26), decoration: BoxDecoration(

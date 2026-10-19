@@ -46,10 +46,14 @@ extension _WelcomePageContent on _WelcomeScreenState {
       child: Column(children: [
         Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Flexible(child: Text(context.l10n.tourStep(_page + 1, 3))),
+            IconButton.filledTonal(
+              key: const ValueKey('onboarding-language'),
+              tooltip: context.l10n.language,
+              onPressed: () => showLanguageSelector(context),
+              icon: const Icon(Icons.language),
+            ),
             const SizedBox(width: 12),
             TextButton(onPressed: _leaveTour, child: Text(context.l10n.skip)),
-            const LanguageMenuButton(),
           ])),
         Expanded(child: PageView.builder(controller: _controller, itemCount: 3,
           onPageChanged: _onTourPageChanged,
