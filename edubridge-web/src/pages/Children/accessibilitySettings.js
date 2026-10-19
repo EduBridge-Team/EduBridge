@@ -83,11 +83,6 @@ export const ACCESSIBILITY_GROUPS = [
         "Word Prediction أثناء الكتابة"
       ],
       [
-        "pictureCommunication",
-        "تواصل بالصور",
-        "AAC — اختيار صور بدل الكلام"
-      ],
-      [
         "shortSentences",
         "جمل قصيرة جداً",
         "8-10 كلمات كحد أقصى"

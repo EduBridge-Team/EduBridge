@@ -56,7 +56,6 @@ AccessibilityProfile _recommendedAccessibilityProfile(
           rewardSystem: true,
           routineStructure: true,
           maxOptionsCount3: true,
-          pictureCommunication: true,
           unlimitedTime: true,
           videoCaptions: true,
           detailedAltText: true,
@@ -102,7 +101,6 @@ AccessibilityProfile _recommendedAccessibilityProfile(
           autoReadOnTap: true,
           timerRenewalMinutes: 5,
           voiceToText: true,
-          pictureCommunication: true,
           shortSentences: true,
           unlimitedTime: true,
           noTimedInteractions: true,
@@ -118,7 +116,6 @@ AccessibilityProfile _recommendedAccessibilityProfile(
           timerRenewalMinutes: 5,
           voiceToText: true,
           wordPrediction: true,
-          pictureCommunication: true,
           shortSentences: true,
           unlimitedTime: true,
         );
@@ -140,7 +137,6 @@ AccessibilityProfile _recommendedAccessibilityProfile(
           routineStructure: true,
           repetitionMode: true,
           maxOptionsCount3: true,
-          pictureCommunication: true,
         );
 
       case DisabilityType.colorBlindness:
@@ -199,7 +195,6 @@ AccessibilityProfile _recommendedAccessibilityProfile(
           videoCaptions: true,
           signLanguageTranslation: true,
           verySimpleLanguage: true,
-          pictureCommunication: true,
           keyboardOnlyNavigation: true,
           voiceControl: true,
           rewardSystem: true,

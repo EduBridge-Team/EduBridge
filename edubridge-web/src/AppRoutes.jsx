@@ -160,7 +160,6 @@ export default function AppRoutes() {
           <Route path="/case-discussions" element={<RolePage roles={['teacher','specialist','admin']}><CaseDiscussionsPage /></RolePage>} />
           <Route path="/specialist-workflow" element={<RolePage roles={['specialist','admin']}><SpecialistWorkflowPage /></RolePage>} />
           <Route path="/parent-lessons" element={<RolePage roles={CHILD_ROLES}><ParentLessonsPage /></RolePage>} />
-          <Route path="/aac" element={<RolePage roles={CHILD_ROLES}><Navigate to="/conversations?mode=aac" replace /></RolePage>} />
           <Route path="/admin/verifications" element={<RolePage roles={['admin']}><VerificationsPage /></RolePage>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
