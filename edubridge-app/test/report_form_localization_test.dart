@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/create_weekly_report_screen.dart';
+import 'package:edubridge_app/screens/weekly_report_screen.dart';
 import 'package:edubridge_app/screens/create_specialist_progress_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -97,5 +98,52 @@ void main() {
       return http.Response('{}', 201);
     }));
   });
+
+  for (final specialist in [false, true]) {
+    for (final language in ['ar', 'en']) {
+      testWidgets('$language report view specialist=$specialist supports large text', (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(360, 800);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        await tester.binding.setSurfaceSize(const Size(360, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final strings = await AppLocalizations.delegate.load(Locale(language));
+        await http.runWithClient(() async {
+          await tester.runAsync(() async {
+            await tester.pumpWidget(MaterialApp(
+              locale: Locale(language), supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)), child: child!),
+              home: WeeklyReportScreen(childId: 7, childName: 'محمود', specialistS26: specialist),
+            ));
+            await Future<void>.delayed(Duration.zero);
+          });
+          await tester.pumpAndSettle();
+          expect(find.text(strings.reportWeeklyTitle('محمود')), findsOneWidget);
+          expect(Directionality.of(tester.element(find.byType(Scaffold))), language == 'ar' ? TextDirection.rtl : TextDirection.ltr);
+          await tester.scrollUntilVisible(find.text('إنجاز أصلي'), 150, scrollable: find.byType(Scrollable).first);
+          expect(find.text('إنجاز أصلي'), findsOneWidget);
+          await tester.scrollUntilVisible(find.text('نقطة أصلية'), 150, scrollable: find.byType(Scrollable).first);
+          expect(find.text('نقطة أصلية'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        }, () => MockClient((request) async {
+          final report = {
+            'id': 1, 'child_id': 7, 'child_name': 'محمود',
+            'week_start': '2026-10-12', 'week_end': '2026-10-18', 'generated_at': '2026-10-18',
+            'progress_percentage': 50, 'lessons_completed': 1, 'lessons_total': 4,
+            'homework_submitted': 2, 'homework_assigned': 3,
+            'learning_support_meetings_attended': 1, 'learning_support_meetings_scheduled': 2,
+            'teacher_notes': 'نص المعلم الأصلي', 'specialist_notes': 'نص المختص الأصلي',
+            'achievements': ['إنجاز أصلي'], 'concerns': ['نقطة أصلية'],
+          };
+          return http.Response(jsonEncode(request.url.path.endsWith('/child/7')
+            ? {'reports': [report]} : {'report': report}), 200,
+            headers: {'content-type': 'application/json; charset=utf-8'});
+        }));
+      });
+    }
+  }
 
 }

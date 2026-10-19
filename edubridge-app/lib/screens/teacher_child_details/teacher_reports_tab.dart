@@ -158,14 +158,14 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
                 else ...[
                   Row(
                     children: [
-                      Text(
+                      Expanded(child: Text(
                         context.l10n.reportListAll,
                         style: TextStyle(
                           color: c.heading,
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                         ),
-                      ),
+                      )),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),

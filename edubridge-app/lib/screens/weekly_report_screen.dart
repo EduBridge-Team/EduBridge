@@ -258,10 +258,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const Icon(AppIcons.trophy,
                   size: 22, color: AppColors.yellow),
               const SizedBox(width: 8),
-              Text(
+              Expanded(child: Text(
                 context.l10n.reportAchievements,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: 8),
@@ -292,10 +292,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const Icon(AppIcons.warning,
                   size: 22, color: AppColors.orangeDeep),
               const SizedBox(width: 8),
-              Text(
+              Expanded(child: Text(
                 context.l10n.reportConcerns,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: 8),
