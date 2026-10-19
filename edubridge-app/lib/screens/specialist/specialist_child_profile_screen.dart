@@ -189,20 +189,20 @@ class _SpecialistChildProfileScreenState
           ),
           Flexible(
             child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: .16),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              isPreview ? context.l10n.beforeAssignment : context.l10n.underFollowUp,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .16),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                isPreview ? context.l10n.beforeAssignment : context.l10n.underFollowUp,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-          ),
           ),
         ],
       ),
