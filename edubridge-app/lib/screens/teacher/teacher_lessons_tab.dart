@@ -19,95 +19,98 @@ Widget _buildLessonsTab(
           return title.contains(q) || content.contains(q);
         }).toList();
 
-  return Column(
-    children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+  return CustomScrollView(
+    slivers: [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.lessonLibrary,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                context.l10n.lessonLibraryDescription,
+                style: TextStyle(fontSize: 13, color: c.muted),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: context.l10n.searchLessonsHint,
+                  prefixIcon: const Icon(AppIcons.search),
+                  suffixIcon: query.isNotEmpty
+                      ? IconButton(
+                          tooltip: context.l10n.clearSearch,
+                          onPressed: () => onQueryChanged(''),
+                          icon: const Icon(Icons.close_rounded),
+                        )
+                      : null,
+                ),
+                onChanged: onQueryChanged,
+              ),
+            ],
+          ),
+        ),
+      ),
+      if (filtered.isEmpty)
+        SliverPadding(
+          padding: const EdgeInsets.all(24),
+          sliver: SliverList.list(children: [
+            const SizedBox(height: 80),
+            Center(
+              child: Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  color: c.tintTeal,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  AppIcons.lesson,
+                  size: 40,
+                  color: AppColors.brandBlue,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
             Text(
-              context.l10n.lessonLibrary,
+              lessons.isEmpty
+                  ? context.l10n.noLessonsYet
+                  : context.l10n.noSearchResults,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
                 color: c.heading,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
-              context.l10n.lessonLibraryDescription,
-              style: TextStyle(fontSize: 13, color: c.muted),
+              lessons.isEmpty
+                  ? context.l10n.addFirstLessonDescription
+                  : context.l10n.tryDifferentSearch,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13.5, color: c.muted),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              style: const TextStyle(fontSize: 16),
-              decoration: InputDecoration(
-                hintText: context.l10n.searchLessonsHint,
-                prefixIcon: const Icon(AppIcons.search),
-                suffixIcon: query.isNotEmpty
-                    ? IconButton(
-                        tooltip: context.l10n.clearSearch,
-                        onPressed: () => onQueryChanged(''),
-                        icon: const Icon(Icons.close_rounded),
-                      )
-                    : null,
-              ),
-              onChanged: onQueryChanged,
-            ),
-          ],
+          ]),
+        )
+      else
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
+          sliver: SliverList.builder(
+            itemCount: filtered.length,
+            itemBuilder: (context, i) =>
+                _buildTeacherLessonCard(context, filtered[i], c, types, onViewLesson),
+          ),
         ),
-      ),
-      Expanded(
-        child: filtered.isEmpty
-            ? ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  const SizedBox(height: 80),
-                  Center(
-                    child: Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        color: c.tintTeal,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        AppIcons.lesson,
-                        size: 40,
-                        color: AppColors.brandBlue,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    lessons.isEmpty
-                        ? context.l10n.noLessonsYet
-                        : context.l10n.noSearchResults,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w800,
-                      color: c.heading,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    lessons.isEmpty
-                        ? context.l10n.addFirstLessonDescription
-                        : context.l10n.tryDifferentSearch,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13.5, color: c.muted),
-                  ),
-                ],
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 6, 16, 92),
-                itemCount: filtered.length,
-                itemBuilder: (context, i) =>
-                    _buildTeacherLessonCard(context, filtered[i], c, types, onViewLesson),
-              ),
-      ),
     ],
   );
 }

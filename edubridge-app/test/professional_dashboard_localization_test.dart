@@ -70,6 +70,9 @@ void main() {
               final strings = await AppLocalizations.delegate.load(Locale(language));
               expect(find.text(strings.children), findsWidgets);
               if (tab == 1) {
+                await tester.scrollUntilVisible(find.text(strings.noLessonsYet), 120,
+                  scrollable: find.descendant(of: find.byType(CustomScrollView),
+                    matching: find.byType(Scrollable)).first);
                 expect(find.text(strings.noLessonsYet), findsOneWidget);
               } else if (teacher && tab == 2) {
                 expect(find.text(strings.noHomeworkInCategory), findsOneWidget);

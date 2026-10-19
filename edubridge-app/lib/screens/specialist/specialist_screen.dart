@@ -490,7 +490,10 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: Size.fromHeight(
+          100 + (MediaQuery.textScalerOf(context).scale(20) - 20)
+              .clamp(0.0, 80.0).toDouble() * 2,
+        ),
         child: _buildHeader(
             context: context,
             c: c,
