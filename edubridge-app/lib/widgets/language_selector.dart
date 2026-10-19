@@ -55,18 +55,12 @@ class _LanguageSelectorState extends State<_LanguageSelector> {
 
 /// Language remains reachable before sign-in, through the same menu convention.
 class LanguageMenuButton extends StatelessWidget {
-  const LanguageMenuButton({super.key, this.color, this.filledTonal = false});
+  const LanguageMenuButton({super.key, this.color});
   final Color? color;
-  final bool filledTonal;
 
   @override
   Widget build(BuildContext context) => PopupMenuButton<String>(
     tooltip: context.l10n.moreOptions,
-    style: filledTonal ? IconButton.styleFrom(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-      shape: const CircleBorder(),
-    ) : null,
     icon: Icon(Icons.menu_rounded, color: color),
     onSelected: (_) => showLanguageSelector(context),
     itemBuilder: (context) => [PopupMenuItem<String>(

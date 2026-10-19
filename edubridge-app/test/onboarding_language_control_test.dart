@@ -62,20 +62,22 @@ void main() {
   });
 
   for (final brightness in Brightness.values) {
-    testWidgets('landing language menu uses a circular tonal surface in $brightness', (tester) async {
+    testWidgets('landing globe button sits beside the theme control in $brightness', (tester) async {
       await tester.pumpWidget(_host(brightness: brightness));
       await tester.pumpAndSettle();
       await tester.tap(find.text('تخطي'));
       await tester.pumpAndSettle();
-      final menu = find.byType(PopupMenuButton<String>);
-      final button = tester.widget<PopupMenuButton<String>>(menu);
-      final scheme = Theme.of(tester.element(menu)).colorScheme;
-      expect(button.style?.backgroundColor?.resolve({}), scheme.secondaryContainer);
-      expect(button.style?.foregroundColor?.resolve({}), scheme.onSecondaryContainer);
-      expect(button.style?.shape?.resolve({}), isA<CircleBorder>());
-      await tester.tap(menu);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('اللغة'));
+      final language = find.byKey(const ValueKey('welcome-language'));
+      final button = tester.widget<IconButton>(language);
+      expect((button.icon as Icon).icon, Icons.language);
+      expect(find.byType(PopupMenuButton<String>), findsNothing);
+      final themeIcon = brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined;
+      final themeButton = find.widgetWithIcon(IconButton, themeIcon);
+      expect(tester.getSize(language), tester.getSize(themeButton));
+      expect(tester.getCenter(language).dy, tester.getCenter(themeButton).dy);
+      expect((tester.getCenter(language).dx - tester.getCenter(themeButton).dx).abs(),
+        (tester.getSize(language).width + tester.getSize(themeButton).width) / 2 + 8);
+      await tester.tap(language);
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('language_en')), findsOneWidget);
       expect(tester.takeException(), isNull);

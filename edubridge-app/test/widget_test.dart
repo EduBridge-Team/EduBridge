@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show ValueKey;
 // اختبارات بدء التطبيق واستعادة الجلسة المحفوظة.
 import 'package:edubridge_app/screens/admin/admin_screen.dart' show AdminScreen;
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +19,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
 
-    expect(find.text('الخطوة 1 من 3'), findsOneWidget);
+    expect(find.byKey(const ValueKey('onboarding-language')), findsOneWidget);
+    expect(find.text('الخطوة 1 من 3'), findsNothing);
     expect(find.text('تعليم يتكيف مع كل طفل'), findsOneWidget);
     expect(find.text('التالي'), findsOneWidget);
 
