@@ -52,6 +52,12 @@ Future<void> _mount(WidgetTester tester, Widget screen, String language, {double
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)), child: child!), home: screen));
+    // Locale delegates and the nested list/detail state need real async frames
+    // before secure-storage-backed requests can settle under the fake clock.
+    for (var frame = 0; frame < 3; frame++) {
+      await Future<void>.delayed(Duration.zero);
+      await tester.pump();
+    }
     await Future<void>.delayed(Duration.zero);
   });
   await tester.pumpAndSettle();
