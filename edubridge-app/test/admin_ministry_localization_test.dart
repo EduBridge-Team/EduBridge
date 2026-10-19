@@ -30,7 +30,7 @@ Future<void> _open(WidgetTester tester, bool admin, String language, double scal
   await tester.binding.setSurfaceSize(const Size(360, 800));
   addTearDown(() => tester.binding.setSurfaceSize(null));
   await tester.runAsync(() async {
-    await tester.pumpWidget(_host(admin ? const AdminScreen(admin: {'id': 1}) : const MinistryScreen(), language, scale));
+    await tester.pumpWidget(_host(admin ? const AdminScreen(admin: {'id': 1, 'role': 'admin'}) : const MinistryScreen(), language, scale));
     await Future<void>.delayed(Duration.zero);
   });
   await tester.pumpAndSettle();

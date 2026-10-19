@@ -108,26 +108,29 @@ class _VerificationTabState extends State<_VerificationTab> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: Row(
-            children: [
-              _FilterChip(
-                label: context.l10n.users,
-                selected: _filter == 'users',
-                onTap: () => setState(() => _filter = 'users'),
-              ),
-              const SizedBox(width: 8),
-              _FilterChip(
-                label: context.l10n.children,
-                selected: _filter == 'children',
-                onTap: () => setState(() => _filter = 'children'),
-              ),
-              const SizedBox(width: 8),
-              _FilterChip(
-                label: context.l10n.certificates,
-                selected: _filter == 'certificates',
-                onTap: () => setState(() => _filter = 'certificates'),
-              ),
-            ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _FilterChip(
+                  label: context.l10n.users,
+                  selected: _filter == 'users',
+                  onTap: () => setState(() => _filter = 'users'),
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: context.l10n.children,
+                  selected: _filter == 'children',
+                  onTap: () => setState(() => _filter = 'children'),
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: context.l10n.certificates,
+                  selected: _filter == 'certificates',
+                  onTap: () => setState(() => _filter = 'certificates'),
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(

@@ -19,14 +19,14 @@ class _MinistrySectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12, top: 8),
       child: Row(
         children: [
-          Text(
+          Flexible(child: Text(
             title,
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
               color: c.heading,
             ),
-          ),
+          )),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),

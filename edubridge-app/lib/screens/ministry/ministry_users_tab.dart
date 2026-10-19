@@ -106,12 +106,12 @@ Widget _buildMinistryUserSection({
             children: [
               Icon(icon, size: 22, color: color),
               const SizedBox(width: 8),
-              Text(title,
+              Flexible(child: Text(title,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: c.heading,
-                  )),
+                  ))),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),

@@ -51,32 +51,10 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
   Future<void> _review(Map lesson, String status) async {
     String note = '';
     if (status == 'rejected') {
-      final controller = TextEditingController();
       final result = await showDialog<String>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(context.l10n.lessonRejectionReason),
-          content: TextField(
-            controller: controller,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: context.l10n.teacherNoteOptional,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(context.l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, controller.text.trim()),
-              child: Text(context.l10n.rejectLesson),
-            ),
-          ],
-        ),
+        builder: (_) => const _LessonRejectionDialog(),
       );
-      controller.dispose();
       if (result == null) return;
       note = result;
     }
@@ -242,4 +220,37 @@ class _MinistryLessonsTabState extends State<_MinistryLessonsTab> {
       ),
     );
   }
+}
+
+/// The controller lives until the dialog route finishes its exit transition.
+class _LessonRejectionDialog extends StatefulWidget {
+  const _LessonRejectionDialog();
+
+  @override
+  State<_LessonRejectionDialog> createState() => _LessonRejectionDialogState();
+}
+
+class _LessonRejectionDialogState extends State<_LessonRejectionDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.lessonRejectionReason),
+    content: TextField(
+      controller: _controller,
+      maxLines: 3,
+      decoration: InputDecoration(hintText: context.l10n.teacherNoteOptional),
+    ),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
+      FilledButton(onPressed: () => Navigator.pop(context, _controller.text.trim()),
+        child: Text(context.l10n.rejectLesson)),
+    ],
+  );
 }
