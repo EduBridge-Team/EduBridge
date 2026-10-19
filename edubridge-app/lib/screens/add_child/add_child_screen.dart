@@ -1,3 +1,4 @@
+import '../../utils/locale_form_validation.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/disability/disability_display.dart';
 // lib/screens/add_child/add_child_screen.dart
@@ -21,7 +22,7 @@ class AddChildScreen extends StatefulWidget {
   State<AddChildScreen> createState() => _AddChildScreenState();
 }
 
-class _AddChildScreenState extends State<AddChildScreen> {
+class _AddChildScreenState extends State<AddChildScreen> with LocaleFormValidation<AddChildScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
@@ -45,20 +46,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   bool _loading = false;
   Object? _error;
-  bool _hasSubmitted = false;
-  Locale? _validationLocale;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final locale = Localizations.localeOf(context);
-    if (_hasSubmitted && _validationLocale != locale) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _formKey.currentState?.validate();
-      });
-    }
-    _validationLocale = locale;
-  }
+  GlobalKey<FormState> get validationFormKey => _formKey;
 
   @override
   void dispose() {
@@ -125,8 +114,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   }
 
   Future<void> _submit() async {
-    _hasSubmitted = true;
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
 
     if (_selectedDisabilityType == null) {
       setState(() => _error = SharedUiMessage.chooseDisabilityRequired);

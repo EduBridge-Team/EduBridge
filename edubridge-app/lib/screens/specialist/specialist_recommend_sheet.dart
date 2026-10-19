@@ -17,18 +17,18 @@ class _RecommendLearningSupportSheetState
   String? _reason;
   String _urgency = 'medium';
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
-  static const _reasons = [
-    'صعوبة في فهم الدروس',
-    'الحاجة إلى تكييف أسلوب التعلم',
-    'صعوبة في التركيز أثناء الأنشطة التعليمية',
-    'الحاجة إلى متابعة الواجبات',
-    'صعوبة في التواصل داخل البيئة التعليمية',
-    'الحاجة إلى خطة تعلم فردية',
-    'الحاجة إلى متابعة تقدم أكاديمي',
-    'أخرى',
-  ];
+  Map<String, String> get _reasons => {
+    'صعوبة في فهم الدروس': context.l10n.reasonUnderstandingLessons,
+    'الحاجة إلى تكييف أسلوب التعلم': context.l10n.reasonLearningAdaptation,
+    'صعوبة في التركيز أثناء الأنشطة التعليمية': context.l10n.reasonLearningFocus,
+    'الحاجة إلى متابعة الواجبات': context.l10n.reasonHomeworkFollowUp,
+    'صعوبة في التواصل داخل البيئة التعليمية': context.l10n.reasonLearningCommunication,
+    'الحاجة إلى خطة تعلم فردية': context.l10n.reasonIndividualPlan,
+    'الحاجة إلى متابعة تقدم أكاديمي': context.l10n.reasonAcademicFollowUp,
+    'أخرى': context.l10n.otherDisability,
+  };
 
   @override
   void dispose() {
@@ -38,11 +38,11 @@ class _RecommendLearningSupportSheetState
 
   Future<void> _save() async {
     if (_reason == null) {
-      setState(() => _error = 'اختر سبب التوصية');
+      setState(() => _error = SharedUiMessage.chooseRecommendationReason);
       return;
     }
     if (_descCtrl.text.trim().length < 15) {
-      setState(() => _error = 'اكتب شرحاً (15 حرفاً على الأقل)');
+      setState(() => _error = SharedUiMessage.recommendationDescriptionMinimum);
       return;
     }
     setState(() {
@@ -50,17 +50,24 @@ class _RecommendLearningSupportSheetState
       _error = null;
     });
     try {
-      await ApiService.authPost('/learning-support/recommendations', {
+      final response = await ApiService.authPost('/learning-support/recommendations', {
         'child_id': widget.child['id'],
         'reason': _reason,
         'description': _descCtrl.text.trim(),
         'urgency': _urgency,
       });
       if (!mounted) return;
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        setState(() {
+          _error = SharedUiMessage.recommendationSendFailed;
+          _saving = false;
+        });
+        return;
+      }
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إرسال التوصية لولي الأمر'),
+        SnackBar(
+          content: Text(context.l10n.recommendationSentToParent),
           backgroundColor: AppColors.brandTealDeep,
         ),
       );
@@ -97,9 +104,7 @@ class _RecommendLearningSupportSheetState
       );
     }
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Dialog(
+    return Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
@@ -110,7 +115,7 @@ class _RecommendLearningSupportSheetState
             maxWidth: 360,
             maxHeight: MediaQuery.sizeOf(context).height * 0.84,
           ),
-          child: Padding(
+          child: SingleChildScrollView(child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -121,7 +126,7 @@ class _RecommendLearningSupportSheetState
                   children: [
                     Flexible(
                       child: Text(
-                        'اقتراح دعم تعليمي — $childName',
+                        context.l10n.supportRecommendationFor(childName),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -134,63 +139,58 @@ class _RecommendLearningSupportSheetState
                   ],
                 ),
                 const SizedBox(height: 17),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: SingleChildScrollView(
-                    child: Column(
+                Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      key: const ValueKey('s23_reason'),
+                      initialValue: _reason,
+                      isExpanded: true,
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: blue),
+                      hint: Text(context.l10n.requiredFieldLabel(context.l10n.recommendationReason),
+                          style: TextStyle(color: Color(0xFF728AA0), fontSize: 14)),
+                      decoration: fieldDecoration('', multiline: false),
+                      items: _reasons.entries.map((reason) => DropdownMenuItem(
+                        value: reason.key,
+                        child: Text(reason.value, overflow: TextOverflow.ellipsis),
+                      )).toList(),
+                      onChanged: _saving ? null : (value) => setState(() => _reason = value),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      key: const ValueKey('s23_description'),
+                      controller: _descCtrl,
+                      enabled: !_saving,
+                      minLines: 4,
+                      maxLines: 4,
+                      maxLength: 500,
+
+                      textAlign: TextAlign.start,
+                      decoration: fieldDecoration(context.l10n.requiredFieldLabel(context.l10n.detailedExplanation), multiline: true)
+                          .copyWith(counterText: ''),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
                       children: [
-                        DropdownButtonFormField<String>(
-                          key: const ValueKey('s23_reason'),
-                          initialValue: _reason,
-                          isExpanded: true,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: blue),
-                          hint: const Text('سبب التوصية *',
-                              style: TextStyle(color: Color(0xFF728AA0), fontSize: 14)),
-                          decoration: fieldDecoration('', multiline: false),
-                          items: _reasons.map((reason) => DropdownMenuItem(
-                            value: reason,
-                            child: Text(reason, overflow: TextOverflow.ellipsis),
-                          )).toList(),
-                          onChanged: _saving ? null : (value) => setState(() => _reason = value),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          key: const ValueKey('s23_description'),
-                          controller: _descCtrl,
-                          enabled: !_saving,
-                          minLines: 4,
-                          maxLines: 4,
-                          maxLength: 500,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.right,
-                          decoration: fieldDecoration('شرح مفصّل *', multiline: true)
-                              .copyWith(counterText: ''),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(child: _s23Urgency('عادية', 'low')),
-                            const SizedBox(width: 6),
-                            Expanded(child: _s23Urgency('متوسطة', 'medium')),
-                            const SizedBox(width: 6),
-                            Expanded(child: _s23Urgency('عاجلة', 'high')),
-                          ],
-                        ),
+                        Expanded(child: _s23Urgency(context.l10n.normalUrgency, 'low')),
+                        const SizedBox(width: 6),
+                        Expanded(child: _s23Urgency(context.l10n.mediumUrgency, 'medium')),
+                        const SizedBox(width: 6),
+                        Expanded(child: _s23Urgency(context.l10n.urgentUrgency, 'high')),
                       ],
                     ),
-                  ),
+                  ],
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 9),
-                  Text(_error!, textAlign: TextAlign.right,
+                  Text(context.sharedMessage(_error), textAlign: TextAlign.start,
                     style: const TextStyle(color: AppColors.red, fontSize: 12)),
                 ],
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        height: 35,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 35),
                         child: OutlinedButton(
                           key: const ValueKey('s23_cancel'),
                           onPressed: _saving ? null : () => Navigator.pop(context),
@@ -201,14 +201,14 @@ class _RecommendLearningSupportSheetState
                             padding: EdgeInsets.zero,
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text('إلغاء'),
+                          child: Text(context.l10n.cancel),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: SizedBox(
-                        height: 35,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 35),
                         child: FilledButton(
                           key: const ValueKey('s23_send'),
                           onPressed: _saving ? null : _save,
@@ -223,8 +223,7 @@ class _RecommendLearningSupportSheetState
                                   height: 17, width: 17,
                                   child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2))
-                              : const Text('إرسال لولي الأمر',
-                                  maxLines: 1,
+                              : Text(context.l10n.sendToParent,
                                   style: TextStyle(fontSize: 12,
                                     fontWeight: FontWeight.w700)),
                         ),
@@ -234,9 +233,8 @@ class _RecommendLearningSupportSheetState
                 ),
               ],
             ),
-          ),
+          )),
         ),
-      ),
     );
   }
 
@@ -285,7 +283,7 @@ class _RecommendLearningSupportSheetState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'اقتراح دعم تعليمي — ${widget.child['name']}',
+                      context.l10n.supportRecommendationFor((widget.child['name'] ?? '').toString()),
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -301,13 +299,14 @@ class _RecommendLearningSupportSheetState
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _reason,
-                decoration: const InputDecoration(
-                  labelText: 'سبب التوصية *',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.recommendationReason),
                   prefixIcon: Icon(AppIcons.warning),
                 ),
-                items: _reasons
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                items: _reasons.entries
+                    .map((r) => DropdownMenuItem(value: r.key, child: Text(r.value)))
                     .toList(),
                 onChanged: (v) => setState(() => _reason = v),
               ),
@@ -316,8 +315,8 @@ class _RecommendLearningSupportSheetState
                 controller: _descCtrl,
                 maxLines: 5,
                 maxLength: 500,
-                decoration: const InputDecoration(
-                  labelText: 'شرح مفصّل *',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.detailedExplanation),
                   alignLabelWithHint: true,
                   prefixIcon: Icon(AppIcons.edit),
                 ),
@@ -325,16 +324,16 @@ class _RecommendLearningSupportSheetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Expanded(child: _urgencyChip('منخفضة', 'low', AppColors.green)),
+                  Expanded(child: _urgencyChip(context.l10n.lowUrgency, 'low', AppColors.green)),
                   const SizedBox(width: 8),
-                  Expanded(child: _urgencyChip('متوسطة', 'medium', AppColors.orange)),
+                  Expanded(child: _urgencyChip(context.l10n.mediumUrgency, 'medium', AppColors.orange)),
                   const SizedBox(width: 8),
-                  Expanded(child: _urgencyChip('عاجلة', 'high', AppColors.red)),
+                  Expanded(child: _urgencyChip(context.l10n.urgentUrgency, 'high', AppColors.red)),
                 ],
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: AppColors.red)),
+                Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red)),
               ],
               const SizedBox(height: 16),
               Row(
@@ -342,7 +341,7 @@ class _RecommendLearningSupportSheetState
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('إلغاء'),
+                      child: Text(context.l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -361,7 +360,7 @@ class _RecommendLearningSupportSheetState
                               child: CircularProgressIndicator(
                                   strokeWidth: 2, color: Colors.white))
                           : const Icon(AppIcons.send),
-                      label: Text(_saving ? '...' : 'إرسال لولي الأمر',
+                      label: Text(_saving ? '...' : context.l10n.sendToParent,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),

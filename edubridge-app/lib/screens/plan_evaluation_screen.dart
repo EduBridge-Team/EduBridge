@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/plan_evaluation_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -56,17 +57,23 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
       if (ok) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ التقييم'),
+          SnackBar(
+            content: Text(context.l10n.evaluationSaved),
             backgroundColor: AppColors.green,
           ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.evaluationSaveFailed)),
+        );
       }
-    } catch (e) {
-      setState(() => _saving = false);
+    } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل: $e')),
+        SnackBar(content: Text(context.l10n.evaluationSaveFailed)),
       );
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -75,21 +82,21 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'تقييم الخطة — ${widget.childName}'),
+      appBar: JisrAppBar(title: context.l10n.planEvaluationForChild(widget.childName)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: c.tintTeal,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
+          Material(
+            color: c.tintTeal,
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'هل الخطة مناسبة لتقدّم الطفل؟',
+                Text(
+                  context.l10n.planSuitabilityQuestion,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -98,24 +105,25 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
                   onChanged: (v) {
                     if (v != null) setState(() => _isAppropriate = v);
                   },
-                  child: const Row(
+                  child: Column(
                     children: [
-                      Expanded(child: RadioListTile<bool>(title: Text('مناسبة'), value: true)),
-                      Expanded(child: RadioListTile<bool>(title: Text('تحتاج تعديل'), value: false)),
+                      RadioListTile<bool>(title: Text(context.l10n.planSuitable), value: true),
+                      RadioListTile<bool>(title: Text(context.l10n.planNeedsChanges), value: false),
                     ],
                   ),
                 ),
               ],
+              ),
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _notesCtrl,
             maxLines: 4,
-            decoration: const InputDecoration(
-              labelText: 'ملاحظاتك للمعلم',
+            decoration: InputDecoration(
+              labelText: context.l10n.notesForTeacher,
               alignLabelWithHint: true,
-              hintText: 'اكتب ملاحظاتك حول ما يحتاج تحسين...',
+              hintText: context.l10n.notesForTeacherHint,
               prefixIcon: Icon(AppIcons.edit),
             ),
           ),
@@ -123,22 +131,22 @@ class _PlanEvaluationScreenState extends State<PlanEvaluationScreen> {
           TextField(
             controller: _changesCtrl,
             maxLines: 5,
-            decoration: const InputDecoration(
-              labelText: 'التغييرات المقترحة',
+            decoration: InputDecoration(
+              labelText: context.l10n.recommendedChanges,
               alignLabelWithHint: true,
-              hintText: 'كل سطر = تغيير واحد',
+              hintText: context.l10n.oneChangePerLine,
               prefixIcon: Icon(AppIcons.attach),
             ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            height: 56,
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isAppropriate ? AppColors.green : AppColors.orange,
               ),
               icon: Icon(_isAppropriate ? AppIcons.check : AppIcons.warning),
-              label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ التقييم'),
+              label: Text(_saving ? context.l10n.saving : context.l10n.saveEvaluation),
               onPressed: _saving ? null : _save,
             ),
           ),

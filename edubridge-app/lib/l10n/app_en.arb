@@ -3257,5 +3257,327 @@
         "type": "int"
       }
     }
+  },
+  "chooseRecommendationReason": "Choose a recommendation reason",
+  "@chooseRecommendationReason": {
+    "description": "Specialist recommendation and evaluation interface: chooseRecommendationReason."
+  },
+  "recommendationDescriptionMinimum": "Enter a description (at least 15 characters)",
+  "@recommendationDescriptionMinimum": {
+    "description": "Specialist recommendation and evaluation interface: recommendationDescriptionMinimum."
+  },
+  "recommendationSentToParent": "Recommendation sent to the parent",
+  "@recommendationSentToParent": {
+    "description": "Specialist recommendation and evaluation interface: recommendationSentToParent."
+  },
+  "recommendationReason": "Recommendation reason",
+  "@recommendationReason": {
+    "description": "Specialist recommendation and evaluation interface: recommendationReason."
+  },
+  "detailedExplanation": "Detailed explanation",
+  "@detailedExplanation": {
+    "description": "Specialist recommendation and evaluation interface: detailedExplanation."
+  },
+  "normalUrgency": "Normal",
+  "@normalUrgency": {
+    "description": "Specialist recommendation and evaluation interface: normalUrgency."
+  },
+  "mediumUrgency": "Medium",
+  "@mediumUrgency": {
+    "description": "Specialist recommendation and evaluation interface: mediumUrgency."
+  },
+  "urgentUrgency": "Urgent",
+  "@urgentUrgency": {
+    "description": "Specialist recommendation and evaluation interface: urgentUrgency."
+  },
+  "lowUrgency": "Low",
+  "@lowUrgency": {
+    "description": "Specialist recommendation and evaluation interface: lowUrgency."
+  },
+  "sendToParent": "Send to parent",
+  "@sendToParent": {
+    "description": "Specialist recommendation and evaluation interface: sendToParent."
+  },
+  "chooseSpecialist": "Choose a specialist",
+  "@chooseSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: chooseSpecialist."
+  },
+  "recommendationReasonMinimum": "Enter a reason (at least 10 characters)",
+  "@recommendationReasonMinimum": {
+    "description": "Specialist recommendation and evaluation interface: recommendationReasonMinimum."
+  },
+  "noAvailableSpecialists": "No specialists available",
+  "@noAvailableSpecialists": {
+    "description": "Specialist recommendation and evaluation interface: noAvailableSpecialists."
+  },
+  "whyRecommendSpecialist": "Why do you recommend this specialist?",
+  "@whyRecommendSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: whyRecommendSpecialist."
+  },
+  "sendRecommendation": "Send recommendation",
+  "@sendRecommendation": {
+    "description": "Specialist recommendation and evaluation interface: sendRecommendation."
+  },
+  "recommendationSendFailed": "Could not send the recommendation",
+  "@recommendationSendFailed": {
+    "description": "Specialist recommendation and evaluation interface: recommendationSendFailed."
+  },
+  "evaluationSaveFailed": "Could not save the evaluation",
+  "@evaluationSaveFailed": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSaveFailed."
+  },
+  "evaluationRoutingNotice": "Choose below whether to send the plan to the ministry for approval or directly to the teacher.",
+  "@evaluationRoutingNotice": {
+    "description": "Specialist recommendation and evaluation interface: evaluationRoutingNotice."
+  },
+  "evaluationType": "Evaluation type",
+  "@evaluationType": {
+    "description": "Specialist recommendation and evaluation interface: evaluationType."
+  },
+  "initialEvaluation": "Initial evaluation",
+  "@initialEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: initialEvaluation."
+  },
+  "followUpEvaluation": "Follow-up",
+  "@followUpEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: followUpEvaluation."
+  },
+  "finalEvaluation": "Final evaluation",
+  "@finalEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: finalEvaluation."
+  },
+  "cognitiveAssessmentHint": "Thinking, attention, memory, ...",
+  "@cognitiveAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: cognitiveAssessmentHint."
+  },
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {
+    "description": "Specialist recommendation and evaluation interface: fieldRequired."
+  },
+  "motorAssessmentHint": "Fine and gross motor skills, ...",
+  "@motorAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: motorAssessmentHint."
+  },
+  "learningInteractionHint": "Engagement with activities, response to guidance, participation, ...",
+  "@learningInteractionHint": {
+    "description": "Specialist recommendation and evaluation interface: learningInteractionHint."
+  },
+  "socialAssessmentHint": "Interaction with others, social skills, ...",
+  "@socialAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: socialAssessmentHint."
+  },
+  "recommendationsHint": "Recommendations for the teacher and parent, ...",
+  "@recommendationsHint": {
+    "description": "Specialist recommendation and evaluation interface: recommendationsHint."
+  },
+  "educationalPlanHint": "Proposed learning plan, ...",
+  "@educationalPlanHint": {
+    "description": "Specialist recommendation and evaluation interface: educationalPlanHint."
+  },
+  "teachingMethodsOptional": "Teaching methods (optional)",
+  "@teachingMethodsOptional": {
+    "description": "Specialist recommendation and evaluation interface: teachingMethodsOptional."
+  },
+  "teachingMethodsHint": "Separate methods with commas, for example: visual, auditory, ...",
+  "@teachingMethodsHint": {
+    "description": "Specialist recommendation and evaluation interface: teachingMethodsHint."
+  },
+  "assignTeacherOptional": "Assign a teacher (optional)",
+  "@assignTeacherOptional": {
+    "description": "Specialist recommendation and evaluation interface: assignTeacherOptional."
+  },
+  "noTeacherAssignment": "— No assignment —",
+  "@noTeacherAssignment": {
+    "description": "Specialist recommendation and evaluation interface: noTeacherAssignment."
+  },
+  "teacherNotifiedAfterApproval": "The teacher will be notified after ministry approval.",
+  "@teacherNotifiedAfterApproval": {
+    "description": "Specialist recommendation and evaluation interface: teacherNotifiedAfterApproval."
+  },
+  "teacherNotifiedImmediately": "The teacher will be notified immediately.",
+  "@teacherNotifiedImmediately": {
+    "description": "Specialist recommendation and evaluation interface: teacherNotifiedImmediately."
+  },
+  "sendToMinistry": "Send to ministry",
+  "@sendToMinistry": {
+    "description": "Specialist recommendation and evaluation interface: sendToMinistry."
+  },
+  "sendToTeachers": "Send to teachers",
+  "@sendToTeachers": {
+    "description": "Specialist recommendation and evaluation interface: sendToTeachers."
+  },
+  "submitPlanForMinistryApproval": "Send the plan to the ministry for approval",
+  "@submitPlanForMinistryApproval": {
+    "description": "Specialist recommendation and evaluation interface: submitPlanForMinistryApproval."
+  },
+  "ministryWillReviewPlan": "The ministry will review the plan.",
+  "@ministryWillReviewPlan": {
+    "description": "Specialist recommendation and evaluation interface: ministryWillReviewPlan."
+  },
+  "planSentDirectlyToTeacher": "The plan goes directly to the teacher.",
+  "@planSentDirectlyToTeacher": {
+    "description": "Specialist recommendation and evaluation interface: planSentDirectlyToTeacher."
+  },
+  "approvalNotifiesTeacherSpecialist": "On approval: the teacher and specialist are notified.",
+  "@approvalNotifiesTeacherSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: approvalNotifiesTeacherSpecialist."
+  },
+  "rejectionReturnsPlan": "On rejection: the plan returns to you for revision.",
+  "@rejectionReturnsPlan": {
+    "description": "Specialist recommendation and evaluation interface: rejectionReturnsPlan."
+  },
+  "ministryResponseTime": "A response may take 24–48 hours.",
+  "@ministryResponseTime": {
+    "description": "Specialist recommendation and evaluation interface: ministryResponseTime."
+  },
+  "evaluationFastTrack": "Fast track",
+  "@evaluationFastTrack": {
+    "description": "Specialist recommendation and evaluation interface: evaluationFastTrack."
+  },
+  "evaluationFastTrackDescription": "The evaluation goes directly to the teacher to start implementation immediately, and the teacher is notified.",
+  "@evaluationFastTrackDescription": {
+    "description": "Specialist recommendation and evaluation interface: evaluationFastTrackDescription."
+  },
+  "evaluationSentToMinistry": "Sent to the ministry",
+  "@evaluationSentToMinistry": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSentToMinistry."
+  },
+  "evaluationCompleted": "Evaluation completed",
+  "@evaluationCompleted": {
+    "description": "Specialist recommendation and evaluation interface: evaluationCompleted."
+  },
+  "evaluationSentToTeacher": "The evaluation has been sent to the assigned teacher to start implementation immediately.",
+  "@evaluationSentToTeacher": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSentToTeacher."
+  },
+  "evaluationSavedAssignLater": "The evaluation has been saved. A teacher can be assigned later.",
+  "@evaluationSavedAssignLater": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSavedAssignLater."
+  },
+  "evaluationSaved": "Evaluation saved",
+  "@evaluationSaved": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSaved."
+  },
+  "planSuitabilityQuestion": "Is the plan suitable for the child's progress?",
+  "@planSuitabilityQuestion": {
+    "description": "Specialist recommendation and evaluation interface: planSuitabilityQuestion."
+  },
+  "planSuitable": "Suitable",
+  "@planSuitable": {
+    "description": "Specialist recommendation and evaluation interface: planSuitable."
+  },
+  "planNeedsChanges": "Needs changes",
+  "@planNeedsChanges": {
+    "description": "Specialist recommendation and evaluation interface: planNeedsChanges."
+  },
+  "notesForTeacher": "Your notes for the teacher",
+  "@notesForTeacher": {
+    "description": "Specialist recommendation and evaluation interface: notesForTeacher."
+  },
+  "notesForTeacherHint": "Describe what needs improvement...",
+  "@notesForTeacherHint": {
+    "description": "Specialist recommendation and evaluation interface: notesForTeacherHint."
+  },
+  "recommendedChanges": "Recommended changes",
+  "@recommendedChanges": {
+    "description": "Specialist recommendation and evaluation interface: recommendedChanges."
+  },
+  "oneChangePerLine": "One change per line",
+  "@oneChangePerLine": {
+    "description": "Specialist recommendation and evaluation interface: oneChangePerLine."
+  },
+  "saveEvaluation": "Save evaluation",
+  "@saveEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: saveEvaluation."
+  },
+  "reasonUnderstandingLessons": "Difficulty understanding lessons",
+  "@reasonUnderstandingLessons": {
+    "description": "Specialist recommendation and evaluation interface: reasonUnderstandingLessons."
+  },
+  "reasonLearningAdaptation": "Need to adapt the learning approach",
+  "@reasonLearningAdaptation": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningAdaptation."
+  },
+  "reasonLearningFocus": "Difficulty focusing during learning activities",
+  "@reasonLearningFocus": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningFocus."
+  },
+  "reasonHomeworkFollowUp": "Need for homework follow-up",
+  "@reasonHomeworkFollowUp": {
+    "description": "Specialist recommendation and evaluation interface: reasonHomeworkFollowUp."
+  },
+  "reasonLearningCommunication": "Difficulty communicating in the learning environment",
+  "@reasonLearningCommunication": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningCommunication."
+  },
+  "reasonIndividualPlan": "Need for an individual learning plan",
+  "@reasonIndividualPlan": {
+    "description": "Specialist recommendation and evaluation interface: reasonIndividualPlan."
+  },
+  "reasonAcademicFollowUp": "Need for academic progress follow-up",
+  "@reasonAcademicFollowUp": {
+    "description": "Specialist recommendation and evaluation interface: reasonAcademicFollowUp."
+  },
+  "supportRecommendationFor": "Learning support recommendation — {name}",
+  "@supportRecommendationFor": {
+    "description": "Specialist recommendation and evaluation interface: supportRecommendationFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestSpecialistTitle": "Recommend a {specialty}",
+  "@suggestSpecialistTitle": {
+    "description": "Specialist recommendation and evaluation interface: suggestSpecialistTitle.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "specialistRecommendationSent": "Recommendation sent to the {specialty}",
+  "@specialistRecommendationSent": {
+    "description": "Specialist recommendation and evaluation interface: specialistRecommendationSent.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "specialistFollowUpNotification": "The recommended specialist will be notified to follow up with {name}.",
+  "@specialistFollowUpNotification": {
+    "description": "Specialist recommendation and evaluation interface: specialistFollowUpNotification.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "evaluationForChild": "Evaluation for {name}",
+  "@evaluationForChild": {
+    "description": "Specialist recommendation and evaluation interface: evaluationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planEvaluationForChild": "Plan evaluation — {name}",
+  "@planEvaluationForChild": {
+    "description": "Specialist recommendation and evaluation interface: planEvaluationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ministryEvaluationSuccessDetails": "The ministry will review the plan.\n\n• On approval: the assigned teacher and relevant teachers are notified.\n• On rejection: the plan returns to you for revision.",
+  "@ministryEvaluationSuccessDetails": {
+    "description": "Specialist recommendation and evaluation interface: ministryEvaluationSuccessDetails."
+  },
+  "acknowledge": "OK",
+  "@acknowledge": {
+    "description": "Acknowledge an evaluation result."
   }
 }

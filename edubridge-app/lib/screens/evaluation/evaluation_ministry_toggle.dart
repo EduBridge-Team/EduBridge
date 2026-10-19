@@ -5,6 +5,7 @@ part of 'evaluation_sheet.dart';
 //  بطاقة "إرسال للوزارة"
 // ═══════════════════════════════════════════════════════════
 Widget buildMinistryToggleCard({
+  required BuildContext context,
   required JisrColors c,
   required bool active,
   required ValueChanged<bool> onChanged,
@@ -58,7 +59,7 @@ Widget buildMinistryToggleCard({
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'إرسال الخطة للوزارة للموافقة',
+                      context.l10n.submitPlanForMinistryApproval,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -68,8 +69,8 @@ Widget buildMinistryToggleCard({
                     const SizedBox(height: 3),
                     Text(
                       active
-                          ? 'سيتم مراجعة الخطة من الوزارة'
-                          : 'لن تُرسل للوزارة — تُرسل للمعلم مباشرة',
+                          ? context.l10n.ministryWillReviewPlan
+                          : context.l10n.planSentDirectlyToTeacher,
                       style: TextStyle(
                         fontSize: 12,
                         color: c.muted,
@@ -100,25 +101,25 @@ Widget buildMinistryToggleCard({
                   color: AppColors.brandBlueLight.withValues(alpha: 0.2),
                 ),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _MinistryStep(
                     icon: Icons.check_circle,
                     color: AppColors.brandTealDeep,
-                    text: 'عند الموافقة: يُشعَر المعلم والمختص',
+                    text: context.l10n.approvalNotifiesTeacherSpecialist,
                   ),
                   SizedBox(height: 8),
                   _MinistryStep(
                     icon: Icons.cancel,
                     color: AppColors.red,
-                    text: 'عند الرفض: تعود إليك الخطة للتعديل',
+                    text: context.l10n.rejectionReturnsPlan,
                   ),
                   SizedBox(height: 8),
                   _MinistryStep(
                     icon: Icons.schedule,
                     color: AppColors.brandBlueLight,
-                    text: 'قد يستغرق الرد من 24 إلى 48 ساعة',
+                    text: context.l10n.ministryResponseTime,
                   ),
                 ],
               ),
@@ -148,7 +149,7 @@ Widget buildMinistryToggleCard({
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'المسار السريع',
+                          context.l10n.evaluationFastTrack,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -157,7 +158,7 @@ Widget buildMinistryToggleCard({
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'التقييم يُرسل مباشرة للمعلم لبدء التنفيذ بدون انتظار، ويُشعَر المعلم فوراً.',
+                          context.l10n.evaluationFastTrackDescription,
                           style: TextStyle(
                             fontSize: 11.5,
                             color: c.onTint,

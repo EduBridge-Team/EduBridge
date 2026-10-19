@@ -3257,5 +3257,327 @@
         "type": "int"
       }
     }
+  },
+  "chooseRecommendationReason": "اختر سبب التوصية",
+  "@chooseRecommendationReason": {
+    "description": "Specialist recommendation and evaluation interface: chooseRecommendationReason."
+  },
+  "recommendationDescriptionMinimum": "اكتب شرحاً (15 حرفاً على الأقل)",
+  "@recommendationDescriptionMinimum": {
+    "description": "Specialist recommendation and evaluation interface: recommendationDescriptionMinimum."
+  },
+  "recommendationSentToParent": "تم إرسال التوصية لولي الأمر",
+  "@recommendationSentToParent": {
+    "description": "Specialist recommendation and evaluation interface: recommendationSentToParent."
+  },
+  "recommendationReason": "سبب التوصية",
+  "@recommendationReason": {
+    "description": "Specialist recommendation and evaluation interface: recommendationReason."
+  },
+  "detailedExplanation": "شرح مفصّل",
+  "@detailedExplanation": {
+    "description": "Specialist recommendation and evaluation interface: detailedExplanation."
+  },
+  "normalUrgency": "عادية",
+  "@normalUrgency": {
+    "description": "Specialist recommendation and evaluation interface: normalUrgency."
+  },
+  "mediumUrgency": "متوسطة",
+  "@mediumUrgency": {
+    "description": "Specialist recommendation and evaluation interface: mediumUrgency."
+  },
+  "urgentUrgency": "عاجلة",
+  "@urgentUrgency": {
+    "description": "Specialist recommendation and evaluation interface: urgentUrgency."
+  },
+  "lowUrgency": "منخفضة",
+  "@lowUrgency": {
+    "description": "Specialist recommendation and evaluation interface: lowUrgency."
+  },
+  "sendToParent": "إرسال لولي الأمر",
+  "@sendToParent": {
+    "description": "Specialist recommendation and evaluation interface: sendToParent."
+  },
+  "chooseSpecialist": "اختر مختصاً",
+  "@chooseSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: chooseSpecialist."
+  },
+  "recommendationReasonMinimum": "اكتب سبب التوصية (10 أحرف على الأقل)",
+  "@recommendationReasonMinimum": {
+    "description": "Specialist recommendation and evaluation interface: recommendationReasonMinimum."
+  },
+  "noAvailableSpecialists": "لا يوجد مختصون متاحون",
+  "@noAvailableSpecialists": {
+    "description": "Specialist recommendation and evaluation interface: noAvailableSpecialists."
+  },
+  "whyRecommendSpecialist": "لماذا ترشح هذا المختص؟",
+  "@whyRecommendSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: whyRecommendSpecialist."
+  },
+  "sendRecommendation": "إرسال التوصية",
+  "@sendRecommendation": {
+    "description": "Specialist recommendation and evaluation interface: sendRecommendation."
+  },
+  "recommendationSendFailed": "فشل إرسال التوصية",
+  "@recommendationSendFailed": {
+    "description": "Specialist recommendation and evaluation interface: recommendationSendFailed."
+  },
+  "evaluationSaveFailed": "فشل حفظ التقييم",
+  "@evaluationSaveFailed": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSaveFailed."
+  },
+  "evaluationRoutingNotice": "اختر في الأسفل: هل تُرسل الخطة للوزارة للموافقة، أم تُرسل للمعلم مباشرة؟",
+  "@evaluationRoutingNotice": {
+    "description": "Specialist recommendation and evaluation interface: evaluationRoutingNotice."
+  },
+  "evaluationType": "نوع التقييم",
+  "@evaluationType": {
+    "description": "Specialist recommendation and evaluation interface: evaluationType."
+  },
+  "initialEvaluation": "تقييم أولي",
+  "@initialEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: initialEvaluation."
+  },
+  "followUpEvaluation": "متابعة",
+  "@followUpEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: followUpEvaluation."
+  },
+  "finalEvaluation": "تقييم نهائي",
+  "@finalEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: finalEvaluation."
+  },
+  "cognitiveAssessmentHint": "مستوى التفكير، الانتباه، الذاكرة، ...",
+  "@cognitiveAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: cognitiveAssessmentHint."
+  },
+  "fieldRequired": "هذا الحقل مطلوب",
+  "@fieldRequired": {
+    "description": "Specialist recommendation and evaluation interface: fieldRequired."
+  },
+  "motorAssessmentHint": "المهارات الحركية الدقيقة والخشنة، ...",
+  "@motorAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: motorAssessmentHint."
+  },
+  "learningInteractionHint": "التفاعل مع الأنشطة، الاستجابة للتوجيه، المشاركة، ...",
+  "@learningInteractionHint": {
+    "description": "Specialist recommendation and evaluation interface: learningInteractionHint."
+  },
+  "socialAssessmentHint": "التفاعل مع الآخرين، المهارات الاجتماعية، ...",
+  "@socialAssessmentHint": {
+    "description": "Specialist recommendation and evaluation interface: socialAssessmentHint."
+  },
+  "recommendationsHint": "توصيات للمعلم وولي الأمر، ...",
+  "@recommendationsHint": {
+    "description": "Specialist recommendation and evaluation interface: recommendationsHint."
+  },
+  "educationalPlanHint": "الخطة الدراسية المقترحة، ...",
+  "@educationalPlanHint": {
+    "description": "Specialist recommendation and evaluation interface: educationalPlanHint."
+  },
+  "teachingMethodsOptional": "طرق التدريس (اختياري)",
+  "@teachingMethodsOptional": {
+    "description": "Specialist recommendation and evaluation interface: teachingMethodsOptional."
+  },
+  "teachingMethodsHint": "أدخل الطرق مفصولة بفواصل، مثال: بصري، سمعي،...",
+  "@teachingMethodsHint": {
+    "description": "Specialist recommendation and evaluation interface: teachingMethodsHint."
+  },
+  "assignTeacherOptional": "تعيين معلم (اختياري)",
+  "@assignTeacherOptional": {
+    "description": "Specialist recommendation and evaluation interface: assignTeacherOptional."
+  },
+  "noTeacherAssignment": "— لا تعيين —",
+  "@noTeacherAssignment": {
+    "description": "Specialist recommendation and evaluation interface: noTeacherAssignment."
+  },
+  "teacherNotifiedAfterApproval": "سيتم إشعار المعلم بعد موافقة الوزارة",
+  "@teacherNotifiedAfterApproval": {
+    "description": "Specialist recommendation and evaluation interface: teacherNotifiedAfterApproval."
+  },
+  "teacherNotifiedImmediately": "سيتم إشعار المعلم فوراً (بدون انتظار)",
+  "@teacherNotifiedImmediately": {
+    "description": "Specialist recommendation and evaluation interface: teacherNotifiedImmediately."
+  },
+  "sendToMinistry": "إرسال للوزارة",
+  "@sendToMinistry": {
+    "description": "Specialist recommendation and evaluation interface: sendToMinistry."
+  },
+  "sendToTeachers": "إرسال للمعلمين",
+  "@sendToTeachers": {
+    "description": "Specialist recommendation and evaluation interface: sendToTeachers."
+  },
+  "submitPlanForMinistryApproval": "إرسال الخطة للوزارة للموافقة",
+  "@submitPlanForMinistryApproval": {
+    "description": "Specialist recommendation and evaluation interface: submitPlanForMinistryApproval."
+  },
+  "ministryWillReviewPlan": "سيتم مراجعة الخطة من الوزارة",
+  "@ministryWillReviewPlan": {
+    "description": "Specialist recommendation and evaluation interface: ministryWillReviewPlan."
+  },
+  "planSentDirectlyToTeacher": "لن تُرسل للوزارة — تُرسل للمعلم مباشرة",
+  "@planSentDirectlyToTeacher": {
+    "description": "Specialist recommendation and evaluation interface: planSentDirectlyToTeacher."
+  },
+  "approvalNotifiesTeacherSpecialist": "عند الموافقة: يُشعَر المعلم والمختص",
+  "@approvalNotifiesTeacherSpecialist": {
+    "description": "Specialist recommendation and evaluation interface: approvalNotifiesTeacherSpecialist."
+  },
+  "rejectionReturnsPlan": "عند الرفض: تعود إليك الخطة للتعديل",
+  "@rejectionReturnsPlan": {
+    "description": "Specialist recommendation and evaluation interface: rejectionReturnsPlan."
+  },
+  "ministryResponseTime": "قد يستغرق الرد من 24 إلى 48 ساعة",
+  "@ministryResponseTime": {
+    "description": "Specialist recommendation and evaluation interface: ministryResponseTime."
+  },
+  "evaluationFastTrack": "المسار السريع",
+  "@evaluationFastTrack": {
+    "description": "Specialist recommendation and evaluation interface: evaluationFastTrack."
+  },
+  "evaluationFastTrackDescription": "التقييم يُرسل مباشرة للمعلم لبدء التنفيذ بدون انتظار، ويُشعَر المعلم فوراً.",
+  "@evaluationFastTrackDescription": {
+    "description": "Specialist recommendation and evaluation interface: evaluationFastTrackDescription."
+  },
+  "evaluationSentToMinistry": "تم الإرسال للوزارة",
+  "@evaluationSentToMinistry": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSentToMinistry."
+  },
+  "evaluationCompleted": "تم التقييم بنجاح",
+  "@evaluationCompleted": {
+    "description": "Specialist recommendation and evaluation interface: evaluationCompleted."
+  },
+  "evaluationSentToTeacher": "تم إرسال التقييم للمعلم المسؤول لبدء التنفيذ مباشرة.",
+  "@evaluationSentToTeacher": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSentToTeacher."
+  },
+  "evaluationSavedAssignLater": "تم حفظ التقييم. يمكن تعيين معلم لاحقاً.",
+  "@evaluationSavedAssignLater": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSavedAssignLater."
+  },
+  "evaluationSaved": "تم حفظ التقييم",
+  "@evaluationSaved": {
+    "description": "Specialist recommendation and evaluation interface: evaluationSaved."
+  },
+  "planSuitabilityQuestion": "هل الخطة مناسبة لتقدّم الطفل؟",
+  "@planSuitabilityQuestion": {
+    "description": "Specialist recommendation and evaluation interface: planSuitabilityQuestion."
+  },
+  "planSuitable": "مناسبة",
+  "@planSuitable": {
+    "description": "Specialist recommendation and evaluation interface: planSuitable."
+  },
+  "planNeedsChanges": "تحتاج تعديل",
+  "@planNeedsChanges": {
+    "description": "Specialist recommendation and evaluation interface: planNeedsChanges."
+  },
+  "notesForTeacher": "ملاحظاتك للمعلم",
+  "@notesForTeacher": {
+    "description": "Specialist recommendation and evaluation interface: notesForTeacher."
+  },
+  "notesForTeacherHint": "اكتب ملاحظاتك حول ما يحتاج تحسين...",
+  "@notesForTeacherHint": {
+    "description": "Specialist recommendation and evaluation interface: notesForTeacherHint."
+  },
+  "recommendedChanges": "التغييرات المقترحة",
+  "@recommendedChanges": {
+    "description": "Specialist recommendation and evaluation interface: recommendedChanges."
+  },
+  "oneChangePerLine": "كل سطر = تغيير واحد",
+  "@oneChangePerLine": {
+    "description": "Specialist recommendation and evaluation interface: oneChangePerLine."
+  },
+  "saveEvaluation": "حفظ التقييم",
+  "@saveEvaluation": {
+    "description": "Specialist recommendation and evaluation interface: saveEvaluation."
+  },
+  "reasonUnderstandingLessons": "صعوبة في فهم الدروس",
+  "@reasonUnderstandingLessons": {
+    "description": "Specialist recommendation and evaluation interface: reasonUnderstandingLessons."
+  },
+  "reasonLearningAdaptation": "الحاجة إلى تكييف أسلوب التعلم",
+  "@reasonLearningAdaptation": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningAdaptation."
+  },
+  "reasonLearningFocus": "صعوبة في التركيز أثناء الأنشطة التعليمية",
+  "@reasonLearningFocus": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningFocus."
+  },
+  "reasonHomeworkFollowUp": "الحاجة إلى متابعة الواجبات",
+  "@reasonHomeworkFollowUp": {
+    "description": "Specialist recommendation and evaluation interface: reasonHomeworkFollowUp."
+  },
+  "reasonLearningCommunication": "صعوبة في التواصل داخل البيئة التعليمية",
+  "@reasonLearningCommunication": {
+    "description": "Specialist recommendation and evaluation interface: reasonLearningCommunication."
+  },
+  "reasonIndividualPlan": "الحاجة إلى خطة تعلم فردية",
+  "@reasonIndividualPlan": {
+    "description": "Specialist recommendation and evaluation interface: reasonIndividualPlan."
+  },
+  "reasonAcademicFollowUp": "الحاجة إلى متابعة تقدم أكاديمي",
+  "@reasonAcademicFollowUp": {
+    "description": "Specialist recommendation and evaluation interface: reasonAcademicFollowUp."
+  },
+  "supportRecommendationFor": "اقتراح دعم تعليمي — {name}",
+  "@supportRecommendationFor": {
+    "description": "Specialist recommendation and evaluation interface: supportRecommendationFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestSpecialistTitle": "اقتراح {specialty}",
+  "@suggestSpecialistTitle": {
+    "description": "Specialist recommendation and evaluation interface: suggestSpecialistTitle.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "specialistRecommendationSent": "تم إرسال التوصية لـ{specialty}",
+  "@specialistRecommendationSent": {
+    "description": "Specialist recommendation and evaluation interface: specialistRecommendationSent.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "specialistFollowUpNotification": "سيُرسَل إشعار للمختص المقترح لمتابعة {name}.",
+  "@specialistFollowUpNotification": {
+    "description": "Specialist recommendation and evaluation interface: specialistFollowUpNotification.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "evaluationForChild": "تقييم {name}",
+  "@evaluationForChild": {
+    "description": "Specialist recommendation and evaluation interface: evaluationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planEvaluationForChild": "تقييم الخطة — {name}",
+  "@planEvaluationForChild": {
+    "description": "Specialist recommendation and evaluation interface: planEvaluationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ministryEvaluationSuccessDetails": "سيتم مراجعة الخطة من الوزارة.\n\n• عند الموافقة: يُشعَر المعلم والمعلمون المعنيون\n• عند الرفض: تعود إليك الخطة للتعديل",
+  "@ministryEvaluationSuccessDetails": {
+    "description": "Specialist recommendation and evaluation interface: ministryEvaluationSuccessDetails."
+  },
+  "acknowledge": "حسناً",
+  "@acknowledge": {
+    "description": "Acknowledge an evaluation result."
   }
 }
