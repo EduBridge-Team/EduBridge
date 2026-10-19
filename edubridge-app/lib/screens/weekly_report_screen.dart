@@ -187,7 +187,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               ),
               Text(
                 context.l10n.reportProgress,
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
           ),
@@ -260,7 +260,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const SizedBox(width: 8),
               Text(
                 context.l10n.reportAchievements,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -294,7 +294,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const SizedBox(width: 8),
               Text(
                 context.l10n.reportConcerns,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
           ),

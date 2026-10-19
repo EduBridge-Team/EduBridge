@@ -202,7 +202,7 @@ class _TeacherReportsTabState extends State<_TeacherReportsTab> {
             icon: const Icon(AppIcons.add),
             label: Text(
               context.l10n.reportAdd,
-              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+              style: const TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),
         ),

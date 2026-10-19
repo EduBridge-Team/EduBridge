@@ -104,7 +104,7 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
                   fontSize: 48, fontWeight: FontWeight.w900, height: 1))),
             const SizedBox(height: 6),
             Center(child: Text(context.l10n.reportProgress,
-              style: TextStyle(color: Colors.white70, fontSize: 13))),
+              style: const TextStyle(color: Colors.white70, fontSize: 13))),
             const SizedBox(height: 16),
             ClipRRect(borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(

@@ -59,4 +59,43 @@ void main() {
       }
     }
   }
+  testWidgets('weekly report keeps authored content and API values in English', (tester) async {
+    Map<String, dynamic>? payload;
+    await http.runWithClient(() async {
+      await tester.pumpWidget(MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Scaffold(body: Builder(builder: (context) => TextButton(
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+            builder: (_) => const CreateWeeklyReportScreen(childId: 7, childName: 'محمود'))),
+          child: const Text('Open')))),
+      ));
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, '4');
+      await tester.scrollUntilVisible(find.byType(TextFormField).last, 150,
+        scrollable: find.byType(Scrollable).first);
+      await tester.enterText(find.byType(TextFormField).last, 'ملاحظة المعلم الأصلية');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Save report'));
+        await Future<void>.delayed(Duration.zero);
+      });
+      await tester.pumpAndSettle();
+      expect(payload?['child_id'], 7);
+      expect(payload?['lessons_completed'], 4);
+      expect(payload?['progress_percentage'], 50);
+      expect(payload?['teacher_notes'], 'ملاحظة المعلم الأصلية');
+      expect(payload?['achievements'], isEmpty);
+      expect(payload?['concerns'], isEmpty);
+      expect(DateTime.tryParse(payload!['week_start'] as String), isNotNull);
+      expect(find.text('Open'), findsOneWidget);
+    }, () => MockClient((request) async {
+      payload = jsonDecode(request.body) as Map<String, dynamic>;
+      return http.Response('{}', 201);
+    }));
+  });
+
 }

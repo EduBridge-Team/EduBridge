@@ -53,7 +53,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(context.l10n.reportWeekStart, style: TextStyle(fontSize: 12)),
+                          Text(context.l10n.reportWeekStart, style: const TextStyle(fontSize: 12)),
                           Text(
                             MaterialLocalizations.of(context).formatMediumDate(_weekStart),
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -72,7 +72,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: context.l10n.reportCompletedLessons,
-                prefixIcon: Icon(Icons.menu_book),
+                prefixIcon: const Icon(Icons.menu_book),
               ),
               validator: (v) => v == null || v.trim().isEmpty ? context.l10n.fieldRequired : null,
             ),
@@ -113,7 +113,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
               maxLines: 4,
               decoration: InputDecoration(
                 labelText: context.l10n.reportTeacherNotesLabel,
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: const Icon(Icons.note),
                 alignLabelWithHint: true,
                 hintText: context.l10n.reportTeacherNotesHint,
               ),
@@ -129,7 +129,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     controller: _achievementsCtrl,
                     decoration: InputDecoration(
                       hintText: context.l10n.reportAchievementHint,
-                      prefixIcon: Icon(Icons.star, color: AppColors.yellow),
+                      prefixIcon: const Icon(Icons.star, color: AppColors.yellow),
                     ),
                     onSubmitted: (_) => _addAchievement(),
                   ),
@@ -168,7 +168,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     controller: _concernsCtrl,
                     decoration: InputDecoration(
                       hintText: context.l10n.reportConcernHint,
-                      prefixIcon: Icon(Icons.warning, color: AppColors.orange),
+                      prefixIcon: const Icon(Icons.warning, color: AppColors.orange),
                     ),
                     onSubmitted: (_) => _addConcern(),
                   ),
