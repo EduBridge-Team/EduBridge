@@ -5,7 +5,7 @@ extension _AddChildScreenStateView on _AddChildScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'إضافة طفل جديد'),
+      appBar: JisrAppBar(title: context.l10n.addNewChild),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
         child: Form(
@@ -30,7 +30,7 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               ),
               const SizedBox(height: 18),
               Text(
-                'بيانات الطفل',
+                context.l10n.childData,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -41,25 +41,25 @@ extension _AddChildScreenStateView on _AddChildScreenState {
 
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'اسم الطفل *',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.childName),
                   prefixIcon: Icon(AppIcons.profile),
                 ),
                 validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'الاسم مطلوب' : null,
+                    (v == null || v.trim().isEmpty) ? context.l10n.nameRequired : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _ageCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'العمر *',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.age),
                   prefixIcon: Icon(AppIcons.calendar),
                 ),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'العمر مطلوب';
-                  if (int.tryParse(v.trim()) == null) return 'أدخل عمراً صحيحاً';
+                  if (v == null || v.trim().isEmpty) return context.l10n.ageRequired;
+                  if (int.tryParse(v.trim()) == null) return context.l10n.validAgeRequired;
                   return null;
                 },
               ),
@@ -76,15 +76,15 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _customDisabilityCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'اكتب نوع الإعاقة *',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.requiredFieldLabel(context.l10n.enterDisabilityType),
                     prefixIcon: Icon(AppIcons.edit),
-                    hintText: 'مثال: اضطراب المعالجة السمعية',
+                    hintText: context.l10n.customDisabilityExample,
                   ),
                   validator: (v) {
                     if (_selectedDisabilityType != 'أخرى') return null;
                     return (v == null || v.trim().isEmpty)
-                        ? 'يجب كتابة نوع الإعاقة'
+                        ? context.l10n.customDisabilityRequired
                         : null;
                   },
                 ),
@@ -94,9 +94,9 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               TextFormField(
                 controller: _childIdCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'رقم هوية الطفل *'),
+                decoration: InputDecoration(labelText: context.l10n.requiredFieldLabel(context.l10n.childIdNumber)),
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'رقم الهوية مطلوب'
+                    ? context.l10n.nationalIdRequired
                     : null,
               ),
               const SizedBox(height: 16),
@@ -104,9 +104,9 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                 controller: _guardianIdCtrl,
                 keyboardType: TextInputType.number,
                 decoration:
-                    const InputDecoration(labelText: 'رقم هوية ولي الأمر *'),
+                    InputDecoration(labelText: context.l10n.requiredFieldLabel(context.l10n.guardianIdNumber)),
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'رقم الهوية مطلوب'
+                    ? context.l10n.nationalIdRequired
                     : null,
               ),
               const SizedBox(height: 16),
@@ -130,12 +130,12 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               TextFormField(
                 controller: _disabilityDescCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: '*وصف الإعاقة',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.disabilityDescription),
                   prefixIcon: Icon(AppIcons.info),
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'وصف الإعاقة مطلوب'
+                    ? context.l10n.disabilityDescriptionRequired
                     : null,
               ),
               const SizedBox(height: 16),
@@ -143,51 +143,51 @@ extension _AddChildScreenStateView on _AddChildScreenState {
               TextFormField(
                 controller: _specialNeedsCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'احتياجات خاصة *',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.specialNeeds),
                   prefixIcon: Icon(AppIcons.info),
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'احتياجات الخاصة مطلوب'
+                    ? context.l10n.specialNeedsRequired
                     : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _learningStyleCtrl,
-                decoration: const InputDecoration(
-                  labelText: '*أسلوب التعلم المفضل',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.preferredLearningStyle),
                   prefixIcon: Icon(AppIcons.lesson),
-                  hintText: 'مثال: بصري، سمعي، حركي',
+                  hintText: context.l10n.learningStyleExample,
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'أسلوب التعلم مطلوب'
+                    ? context.l10n.learningStyleRequired
                     : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _strengthsCtrl,
-                decoration: const InputDecoration(
-                  labelText: '*نقاط القوة',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.strengths),
                   prefixIcon: Icon(AppIcons.starFilled),
-                  hintText: 'مفصولة بفواصل: قراءة، رسم،...',
+                  hintText: context.l10n.strengthsCommaHint,
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'نقاط القوة مطلوبة'
+                    ? context.l10n.strengthsRequired
                     : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _challengesCtrl,
-                decoration: const InputDecoration(
-                  labelText: '*التحديات',
+                decoration: InputDecoration(
+                  labelText: context.l10n.requiredFieldLabel(context.l10n.challenges),
                   prefixIcon: Icon(AppIcons.warning),
-                  hintText: 'مفصولة بفواصل',
+                  hintText: context.l10n.commaSeparatedHint,
                 ),
                 validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'التحديات مطلوبة' : null,
+                    (v == null || v.trim().isEmpty) ? context.l10n.challengesRequired : null,
               ),
               const SizedBox(height: 16),
 
@@ -204,7 +204,7 @@ extension _AddChildScreenStateView on _AddChildScreenState {
                       )
                     : const Icon(AppIcons.send),
                 label: Text(
-                  _loading ? 'جارٍ الإرسال...' : 'إرسال للمراجعة',
+                  _loading ? context.l10n.sendingAlt : context.l10n.submitForReview,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,

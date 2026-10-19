@@ -35,7 +35,7 @@ Widget buildDisabilityField({
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'نوع الإعاقة *',
+                  context.l10n.requiredFieldLabel(context.l10n.disabilityType),
                   style: TextStyle(
                     fontSize: 12,
                     color: hasValue ? AppColors.brandBlue : c.muted,
@@ -44,7 +44,7 @@ Widget buildDisabilityField({
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  hasValue ? selectedValue : 'اضغط للاختيار',
+                  hasValue ? DisabilityDisplay.label(selectedValue, context.l10n) : context.l10n.tapToChoose,
                   style: TextStyle(
                     fontSize: 15,
                     color: hasValue ? c.heading : c.muted,

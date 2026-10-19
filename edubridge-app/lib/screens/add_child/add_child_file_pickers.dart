@@ -34,27 +34,31 @@ Widget buildDocumentsSection({
             const Icon(AppIcons.attach,
                 color: AppColors.brandBlue, size: 26),
             const SizedBox(width: 8),
-            Text(
-              'المستندات الرسمية',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: c.heading,
+            Expanded(
+              child: Text(
+                context.l10n.officialDocuments,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
               ),
             ),
             const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.brandBlue.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'مطلوب',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.brandBlue,
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.brandBlue.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  context.l10n.requiredBadge,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.brandBlue,
+                  ),
                 ),
               ),
             ),
@@ -63,8 +67,8 @@ Widget buildDocumentsSection({
         const SizedBox(height: 14),
         _buildFilePicker(
           context: context,
-          label: 'هوية ولي الأمر',
-          sublabel: 'صورة واضحة للوجه الأمامي للهوية',
+          label: context.l10n.guardianNationalId,
+          sublabel: context.l10n.guardianIdFrontDescription,
           icon: AppIcons.profile,
           file: idCardFile,
           onPick: onPickId,
@@ -75,8 +79,8 @@ Widget buildDocumentsSection({
         const SizedBox(height: 12),
         _buildFilePicker(
           context: context,
-          label: 'شهادة الميلاد',
-          sublabel: 'صورة واضحة للشهادة كاملة',
+          label: context.l10n.birthCertificate,
+          sublabel: context.l10n.birthCertificateDescription,
           icon: AppIcons.certificate,
           file: birthCertFile,
           onPick: onPickBirth,
@@ -147,51 +151,42 @@ Widget _buildFilePicker({
         Text(sublabel, style: TextStyle(fontSize: 12, color: c.muted)),
         const SizedBox(height: 10),
         if (!hasFile)
-          Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 42,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: color,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                    ),
-                    icon: const Icon(AppIcons.upload, size: 18),
-                    label: const Text('من المعرض',
-                        style: TextStyle(fontSize: 13)),
-                    onPressed: onPick,
+          _DocumentActions(children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 42),
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: color,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.upload, size: 18),
+                label: Text(context.l10n.fromGallery,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onPick,
               ),
-              if (onCapture != null) ...[
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SizedBox(
-                    height: 42,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: color,
-                        side: BorderSide(color: color, width: 1.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-                      icon: const Icon(AppIcons.camera, size: 18),
-                      label: const Text('الكاميرا',
-                          style: TextStyle(fontSize: 13)),
-                      onPressed: onCapture,
-                    ),
+            ),
+            if (onCapture != null) ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 42),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: color,
+                  side: BorderSide(color: color, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
-              ],
-            ],
-          )
+                icon: const Icon(AppIcons.camera, size: 18),
+                label: Text(context.l10n.camera,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onCapture,
+              ),
+            ),
+          ])
         else
           Row(
             children: [
@@ -225,21 +220,21 @@ Widget _buildFilePicker({
                         color: c.onTint,
                       ),
                     ),
-                    Text('تم الرفع',
+                    Text(context.l10n.uploaded,
                         style: TextStyle(fontSize: 11, color: c.success)),
                   ],
                 ),
               ),
               IconButton(
                 icon: Icon(AppIcons.refresh, color: color, size: 20),
-                tooltip: 'تغيير',
+                tooltip: context.l10n.changeFile,
                 onPressed: onPick,
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(6),
               ),
               IconButton(
                 icon: const Icon(AppIcons.delete, color: AppColors.red, size: 20),
-                tooltip: 'حذف',
+                tooltip: context.l10n.deleteConfirmationWord,
                 onPressed: onRemove,
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(6),
@@ -249,4 +244,31 @@ Widget _buildFilePicker({
       ],
     ),
   );
+}
+
+
+/// Stack document actions when large text or a narrow card needs more room.
+class _DocumentActions extends StatelessWidget {
+  const _DocumentActions({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
+    final stack = constraints.maxWidth < 220 ||
+        MediaQuery.textScalerOf(context).scale(13) > 18;
+    if (stack) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        for (var i = 0; i < children.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          children[i],
+        ],
+      ]);
+    }
+    return Row(children: [
+      for (var i = 0; i < children.length; i++) ...[
+        if (i > 0) const SizedBox(width: 8),
+        Expanded(child: children[i]),
+      ],
+    ]);
+  });
 }

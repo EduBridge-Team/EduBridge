@@ -29,28 +29,32 @@ Widget buildMedicalReportSection({
             const Icon(AppIcons.certificate,
                 color: AppColors.brandTeal, size: 26),
             const SizedBox(width: 8),
-            Text(
-              'التقرير الطبي',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: c.heading,
+            Expanded(
+              child: Text(
+                context.l10n.medicalReport,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: c.heading,
+                ),
               ),
             ),
             const SizedBox(width: 6),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.brandTeal.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'مطلوب',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.brandTeal,
+            Flexible(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.brandTeal.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  context.l10n.requiredBadge,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.brandTeal,
+                  ),
                 ),
               ),
             ),
@@ -58,7 +62,7 @@ Widget buildMedicalReportSection({
         ),
         const SizedBox(height: 6),
         Text(
-          'ارفع صورة أو أكثر للتقرير الطبي الخاص بالطفل',
+          context.l10n.medicalReportUploadDescription,
           style: TextStyle(fontSize: 12, color: c.muted),
         ),
         const SizedBox(height: 14),
@@ -78,52 +82,45 @@ Widget buildMedicalReportSection({
           ),
           const SizedBox(height: 12),
         ],
-        Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 44,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandTeal,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+        _DocumentActions(children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandTeal,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  icon: const Icon(AppIcons.upload, size: 18),
-                  label: Text(
-                    hasFiles ? 'إضافة المزيد' : 'من المعرض',
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                  onPressed: onPick,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.upload, size: 18),
+                label: Text(
+                  hasFiles ? context.l10n.addMoreFiles : context.l10n.fromGallery,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                onPressed: onPick,
               ),
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: SizedBox(
-                height: 44,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.brandTeal,
-                    side: const BorderSide(
-                        color: AppColors.brandTeal, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.brandTeal,
+                  side: const BorderSide(
+                      color: AppColors.brandTeal, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  icon: const Icon(AppIcons.camera, size: 18),
-                  label: const Text('الكاميرا',
-                      style: TextStyle(fontSize: 13)),
-                  onPressed: onCapture,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
+                icon: const Icon(AppIcons.camera, size: 18),
+                label: Text(context.l10n.camera,
+                    style: TextStyle(fontSize: 13)),
+                onPressed: onCapture,
               ),
             ),
-          ],
-        ),
+          ]),
       ],
     ),
   );
