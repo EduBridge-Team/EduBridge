@@ -2493,5 +2493,391 @@
   "edit": "تعديل",
   "@edit": {
     "description": "Administration form: edit."
+  },
+  "weeklyProgress": "التقدم الأسبوعي",
+  "@weeklyProgress": {
+    "description": "Child profile interface: weeklyProgress."
+  },
+  "chooseChildForProgress": "اختر طفلاً لعرض تقدّمه",
+  "@chooseChildForProgress": {
+    "description": "Child profile interface: chooseChildForProgress."
+  },
+  "searchChildOrTeacher": "ابحث عن طفل أو معلّم...",
+  "@searchChildOrTeacher": {
+    "description": "Child profile interface: searchChildOrTeacher."
+  },
+  "noChildrenYet": "لا يوجد أطفال بعد",
+  "@noChildrenYet": {
+    "description": "Child profile interface: noChildrenYet."
+  },
+  "linkedChildrenDescription": "سيظهر الأطفال المرتبطون بحسابك هنا.",
+  "@linkedChildrenDescription": {
+    "description": "Child profile interface: linkedChildrenDescription."
+  },
+  "viewProgressAchievements": "عرض التقدّم والإنجازات",
+  "@viewProgressAchievements": {
+    "description": "Child profile interface: viewProgressAchievements."
+  },
+  "viewStudentProfile": "عرض ملف الطالب",
+  "@viewStudentProfile": {
+    "description": "Child profile interface: viewStudentProfile."
+  },
+  "viewLessonsActivities": "عرض الدروس والأنشطة",
+  "@viewLessonsActivities": {
+    "description": "Child profile interface: viewLessonsActivities."
+  },
+  "changesSaved": "تم حفظ التعديلات بنجاح",
+  "@changesSaved": {
+    "description": "Child profile interface: changesSaved."
+  },
+  "editChildDetails": "تعديل بيانات الطفل",
+  "@editChildDetails": {
+    "description": "Child profile interface: editChildDetails."
+  },
+  "basicDetailsOnlyNotice": "يمكنك تعديل البيانات الأساسية فقط. لا يمكنك تغيير المعلّم أو الأخصائي.",
+  "@basicDetailsOnlyNotice": {
+    "description": "Child profile interface: basicDetailsOnlyNotice."
+  },
+  "childName": "اسم الطفل",
+  "@childName": {
+    "description": "Child profile interface: childName."
+  },
+  "age": "العمر",
+  "@age": {
+    "description": "Child profile interface: age."
+  },
+  "generalNotesOptional": "ملاحظات عامة (اختياري)",
+  "@generalNotesOptional": {
+    "description": "Child profile interface: generalNotesOptional."
+  },
+  "adminFollowUpManagement": "إدارة المتابعة (للأدمن)",
+  "@adminFollowUpManagement": {
+    "description": "Child profile interface: adminFollowUpManagement."
+  },
+  "assignedTeacher": "المعلم المسؤول",
+  "@assignedTeacher": {
+    "description": "Child profile interface: assignedTeacher."
+  },
+  "assignedSpecialist": "المختص المسؤول",
+  "@assignedSpecialist": {
+    "description": "Child profile interface: assignedSpecialist."
+  },
+  "specialistChangeTeacher": "تغيير المعلم (للمختص)",
+  "@specialistChangeTeacher": {
+    "description": "Child profile interface: specialistChangeTeacher."
+  },
+  "newTeacher": "المعلم الجديد",
+  "@newTeacher": {
+    "description": "Child profile interface: newTeacher."
+  },
+  "changeReasons": "أسباب التغيير",
+  "@changeReasons": {
+    "description": "Child profile interface: changeReasons."
+  },
+  "changeTeacherReasonHint": "اكتب سبب تغيير المعلم هنا...",
+  "@changeTeacherReasonHint": {
+    "description": "Child profile interface: changeTeacherReasonHint."
+  },
+  "saveChanges": "حفظ التعديلات",
+  "@saveChanges": {
+    "description": "Child profile interface: saveChanges."
+  },
+  "careTeamLoadFailed": "تعذّر تحميل الفريق",
+  "@careTeamLoadFailed": {
+    "description": "Child profile interface: careTeamLoadFailed."
+  },
+  "noAssignedTeam": "لم يتم تعيين فريق بعد",
+  "@noAssignedTeam": {
+    "description": "Child profile interface: noAssignedTeam."
+  },
+  "studentProfileRefreshFailed": "تعذّر تحديث معلومات الطالب. حاول مرة أخرى.",
+  "@studentProfileRefreshFailed": {
+    "description": "Child profile interface: studentProfileRefreshFailed."
+  },
+  "studentProfile": "ملف الطالب",
+  "@studentProfile": {
+    "description": "Child profile interface: studentProfile."
+  },
+  "notAdded": "غير مضاف",
+  "@notAdded": {
+    "description": "Child profile interface: notAdded."
+  },
+  "birthDate": "تاريخ الميلاد",
+  "@birthDate": {
+    "description": "Child profile interface: birthDate."
+  },
+  "gender": "الجنس",
+  "@gender": {
+    "description": "Child profile interface: gender."
+  },
+  "male": "ذكر",
+  "@male": {
+    "description": "Child profile interface: male."
+  },
+  "female": "أنثى",
+  "@female": {
+    "description": "Child profile interface: female."
+  },
+  "disabilityType": "نوع الإعاقة",
+  "@disabilityType": {
+    "description": "Child profile interface: disabilityType."
+  },
+  "notSpecified": "غير محدد",
+  "@notSpecified": {
+    "description": "Child profile interface: notSpecified."
+  },
+  "strengthsChallenges": "نقاط القوة والتحديات",
+  "@strengthsChallenges": {
+    "description": "Child profile interface: strengthsChallenges."
+  },
+  "followUpTeamPlan": "فريق المتابعة والخطة",
+  "@followUpTeamPlan": {
+    "description": "Child profile interface: followUpTeamPlan."
+  },
+  "learningNotes": "ملاحظات تعليمية",
+  "@learningNotes": {
+    "description": "Child profile interface: learningNotes."
+  },
+  "student": "طالب",
+  "@student": {
+    "description": "Child profile interface: student."
+  },
+  "studentInformation": "معلومات الطالب",
+  "@studentInformation": {
+    "description": "Child profile interface: studentInformation."
+  },
+  "beforeAssignment": "قبل التعيين",
+  "@beforeAssignment": {
+    "description": "Child profile interface: beforeAssignment."
+  },
+  "underFollowUp": "قيد المتابعة",
+  "@underFollowUp": {
+    "description": "Child profile interface: underFollowUp."
+  },
+  "completedStatus": "مكتمل",
+  "@completedStatus": {
+    "description": "Child profile interface: completedStatus."
+  },
+  "previewInformationNotice": "تظهر المعلومات المتاحة قبل قبول المتابعة. بيانات الهوية والمستندات تظهر بعد التعيين.",
+  "@previewInformationNotice": {
+    "description": "Child profile interface: previewInformationNotice."
+  },
+  "childFollowUp": "متابعة الطفل",
+  "@childFollowUp": {
+    "description": "Child profile interface: childFollowUp."
+  },
+  "evaluateChildPlan": "تقييم الطفل والخطة",
+  "@evaluateChildPlan": {
+    "description": "Child profile interface: evaluateChildPlan."
+  },
+  "addReviewChildEvaluation": "إضافة أو مراجعة تقييم الطفل",
+  "@addReviewChildEvaluation": {
+    "description": "Child profile interface: addReviewChildEvaluation."
+  },
+  "viewProgress": "عرض التقدّم",
+  "@viewProgress": {
+    "description": "Child profile interface: viewProgress."
+  },
+  "trackChildDevelopment": "متابعة إنجاز الطفل وتطوره",
+  "@trackChildDevelopment": {
+    "description": "Child profile interface: trackChildDevelopment."
+  },
+  "childLessons": "دروس الطفل",
+  "@childLessons": {
+    "description": "Child profile interface: childLessons."
+  },
+  "viewLessonsMaterials": "عرض الدروس والمواد التعليمية",
+  "@viewLessonsMaterials": {
+    "description": "Child profile interface: viewLessonsMaterials."
+  },
+  "recommendSupportSpecialist": "اقتراح مختص دعم تعليمي",
+  "@recommendSupportSpecialist": {
+    "description": "Child profile interface: recommendSupportSpecialist."
+  },
+  "recommendSpecialistForChild": "اقتراح مختص لهذا الطفل",
+  "@recommendSpecialistForChild": {
+    "description": "Child profile interface: recommendSpecialistForChild."
+  },
+  "discussCase": "مناقشة الحالة",
+  "@discussCase": {
+    "description": "Child profile interface: discussCase."
+  },
+  "contactChildCareTeam": "التواصل مع فريق متابعة الطفل",
+  "@contactChildCareTeam": {
+    "description": "Child profile interface: contactChildCareTeam."
+  },
+  "childDetails": "تفاصيل الطفل",
+  "@childDetails": {
+    "description": "Child profile interface: childDetails."
+  },
+  "childInformation": "معلومات الطفل",
+  "@childInformation": {
+    "description": "Child profile interface: childInformation."
+  },
+  "learningStyle": "أسلوب التعلّم",
+  "@learningStyle": {
+    "description": "Child profile interface: learningStyle."
+  },
+  "notes": "ملاحظات",
+  "@notes": {
+    "description": "Child profile interface: notes."
+  },
+  "documentsVerification": "المستندات والتوثيق",
+  "@documentsVerification": {
+    "description": "Child profile interface: documentsVerification."
+  },
+  "childNationalId": "هوية الطفل",
+  "@childNationalId": {
+    "description": "Child profile interface: childNationalId."
+  },
+  "guardianNationalId": "هوية ولي الأمر",
+  "@guardianNationalId": {
+    "description": "Child profile interface: guardianNationalId."
+  },
+  "guardianIdPhoto": "صورة هوية ولي الأمر",
+  "@guardianIdPhoto": {
+    "description": "Child profile interface: guardianIdPhoto."
+  },
+  "attached": "مرفقة",
+  "@attached": {
+    "description": "Child profile interface: attached."
+  },
+  "kinshipDocument": "مستند صلة القرابة",
+  "@kinshipDocument": {
+    "description": "Child profile interface: kinshipDocument."
+  },
+  "medicalReport": "التقرير الطبي",
+  "@medicalReport": {
+    "description": "Child profile interface: medicalReport."
+  },
+  "additionalFollowUpTools": "أدوات متابعة إضافية",
+  "@additionalFollowUpTools": {
+    "description": "Child profile interface: additionalFollowUpTools."
+  },
+  "noorReportsAdaptation": "نور • التقارير • التكييف",
+  "@noorReportsAdaptation": {
+    "description": "Child profile interface: noorReportsAdaptation."
+  },
+  "askNoorAboutStudent": "اسأل نور عن هذا الطالب",
+  "@askNoorAboutStudent": {
+    "description": "Child profile interface: askNoorAboutStudent."
+  },
+  "studentDataSummary": "ملخص ذكي مبني على بيانات الطالب",
+  "@studentDataSummary": {
+    "description": "Child profile interface: studentDataSummary."
+  },
+  "weeklyProgressTeacherReports": "التقدم الأسبوعي وتقارير المعلم",
+  "@weeklyProgressTeacherReports": {
+    "description": "Child profile interface: weeklyProgressTeacherReports."
+  },
+  "teacherReportsProgressHistory": "تقارير المعلم وسجل التقدم",
+  "@teacherReportsProgressHistory": {
+    "description": "Child profile interface: teacherReportsProgressHistory."
+  },
+  "adjustAdaptationFeatures": "ضبط ميزات التكيّف",
+  "@adjustAdaptationFeatures": {
+    "description": "Child profile interface: adjustAdaptationFeatures."
+  },
+  "measurePlanEffectiveness": "قياس فعالية الخطة التعليمية",
+  "@measurePlanEffectiveness": {
+    "description": "Child profile interface: measurePlanEffectiveness."
+  },
+  "acceptChildFollowUp": "قبول متابعة الطفل",
+  "@acceptChildFollowUp": {
+    "description": "Child profile interface: acceptChildFollowUp."
+  },
+  "achievement": "الإنجاز",
+  "@achievement": {
+    "description": "Child profile interface: achievement."
+  },
+  "chooseStudentForDestination": "اختر طالباً لعرض {destination}",
+  "@chooseStudentForDestination": {
+    "description": "Child profile interface: chooseStudentForDestination.",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "studentProfileFor": "ملف {name}",
+  "@studentProfileFor": {
+    "description": "Child profile interface: studentProfileFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careTeamFor": "فريق {name}",
+  "@careTeamFor": {
+    "description": "Child profile interface: careTeamFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careTeamMemberCount": "{count, plural, =0{لا يوجد أعضاء في الفريق} =1{عضو واحد في الفريق} =2{عضوان في الفريق} few{{count} أعضاء في الفريق} many{{count} عضوًا في الفريق} other{{count} عضو في الفريق}}",
+  "@careTeamMemberCount": {
+    "description": "Child profile interface: careTeamMemberCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careTeamComposition": "{teachers, plural, =0{لا معلمين} =1{معلم واحد} =2{معلمان} few{{teachers} معلمين} many{{teachers} معلمًا} other{{teachers} معلم}} • {specialists, plural, =0{لا مختصين} =1{مختص واحد} =2{مختصان} few{{specialists} مختصين} many{{specialists} مختصًا} other{{specialists} مختص}}",
+  "@careTeamComposition": {
+    "description": "Child profile interface: careTeamComposition.",
+    "placeholders": {
+      "teachers": {
+        "type": "int"
+      },
+      "specialists": {
+        "type": "int"
+      }
+    }
+  },
+  "teachersCountTitle": "المعلمون ({count})",
+  "@teachersCountTitle": {
+    "description": "Child profile interface: teachersCountTitle.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "teacherSubjectLabel": "معلّم — {subject}",
+  "@teacherSubjectLabel": {
+    "description": "Child profile interface: teacherSubjectLabel.",
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "profileLessonCount": "{count, plural, =0{لا دروس} =1{درس واحد} =2{درسان} few{{count} دروس} many{{count} درسًا} other{{count} درس}}",
+  "@profileLessonCount": {
+    "description": "Child profile interface: profileLessonCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "paginationSummary": "صفحة {page} من {lastPage} · {total} نتيجة",
+  "@paginationSummary": {
+    "description": "Child profile interface: paginationSummary.",
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "lastPage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'تعديل بيانات الطفل'),
+      appBar: JisrAppBar(title: context.l10n.editChildDetails),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -25,7 +25,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'يمكنك تعديل البيانات الأساسية فقط. لا يمكنك تغيير المعلّم أو الأخصائي.',
+                        context.l10n.basicDetailsOnlyNotice,
                         style: TextStyle(
                             color: c.onTint,
                             fontWeight: FontWeight.bold),
@@ -37,20 +37,20 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'اسم الطفل'),
+              decoration: InputDecoration(labelText: context.l10n.childName),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _ageController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'العمر'),
+              decoration: InputDecoration(labelText: context.l10n.age),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
               maxLines: 3,
               decoration:
-                  const InputDecoration(labelText: 'ملاحظات عامة (اختياري)'),
+                  InputDecoration(labelText: context.l10n.generalNotesOptional),
             ),
 
             if (_isAdmin) ...[
@@ -58,7 +58,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
               Divider(color: c.line),
               const SizedBox(height: 16),
               Text(
-                'إدارة المتابعة (للأدمن)',
+                context.l10n.adminFollowUpManagement,
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
               else
                 DropdownButtonFormField<String>(
                   decoration:
-                      const InputDecoration(labelText: 'المعلم المسؤول'),
+                      InputDecoration(labelText: context.l10n.assignedTeacher),
                   items: _teachers
                       .map((t) => DropdownMenuItem(
                             value: t['id'].toString(),
@@ -88,7 +88,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
               else
                 DropdownButtonFormField<String>(
                   decoration:
-                      const InputDecoration(labelText: 'المختص المسؤول'),
+                      InputDecoration(labelText: context.l10n.assignedSpecialist),
                   items: _specialists
                       .map((s) => DropdownMenuItem(
                             value: s['id'].toString(),
@@ -104,7 +104,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
               Divider(color: c.line),
               const SizedBox(height: 16),
               Text(
-                'تغيير المعلم (للمختص)',
+                context.l10n.specialistChangeTeacher,
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -115,7 +115,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                 const Center(child: CircularProgressIndicator())
               else
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'المعلم الجديد'),
+                  decoration: InputDecoration(labelText: context.l10n.newTeacher),
                   items: _teachers
                       .map((t) => DropdownMenuItem(
                             value: t['id'].toString(),
@@ -128,9 +128,9 @@ extension _EditChildScreenStateView on _EditChildScreenState {
               TextField(
                 controller: _reasonController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'أسباب التغيير',
-                  hintText: 'اكتب سبب تغيير المعلم هنا...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.changeReasons,
+                  hintText: context.l10n.changeTeacherReasonHint,
                 ),
               ),
             ],
@@ -149,7 +149,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                         color: AppColors.red, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(_error!,
+                      child: Text(context.sharedMessage(_error),
                           style: const TextStyle(color: AppColors.red)),
                     ),
                   ],
@@ -171,7 +171,7 @@ extension _EditChildScreenStateView on _EditChildScreenState {
                           color: Colors.white, strokeWidth: 2),
                     )
                   : const Icon(AppIcons.save),
-              label: Text(_loading ? 'جارِ الحفظ...' : 'حفظ التعديلات'),
+              label: Text(_loading ? context.l10n.saving : context.l10n.saveChanges),
             ),
           ],
         ),

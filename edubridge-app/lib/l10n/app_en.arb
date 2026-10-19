@@ -2493,5 +2493,391 @@
   "edit": "Edit",
   "@edit": {
     "description": "Administration form: edit."
+  },
+  "weeklyProgress": "Weekly progress",
+  "@weeklyProgress": {
+    "description": "Child profile interface: weeklyProgress."
+  },
+  "chooseChildForProgress": "Choose a child to view progress",
+  "@chooseChildForProgress": {
+    "description": "Child profile interface: chooseChildForProgress."
+  },
+  "searchChildOrTeacher": "Search for a child or teacher...",
+  "@searchChildOrTeacher": {
+    "description": "Child profile interface: searchChildOrTeacher."
+  },
+  "noChildrenYet": "No children yet",
+  "@noChildrenYet": {
+    "description": "Child profile interface: noChildrenYet."
+  },
+  "linkedChildrenDescription": "Children linked to your account will appear here.",
+  "@linkedChildrenDescription": {
+    "description": "Child profile interface: linkedChildrenDescription."
+  },
+  "viewProgressAchievements": "View progress and achievements",
+  "@viewProgressAchievements": {
+    "description": "Child profile interface: viewProgressAchievements."
+  },
+  "viewStudentProfile": "View student profile",
+  "@viewStudentProfile": {
+    "description": "Child profile interface: viewStudentProfile."
+  },
+  "viewLessonsActivities": "View lessons and activities",
+  "@viewLessonsActivities": {
+    "description": "Child profile interface: viewLessonsActivities."
+  },
+  "changesSaved": "Changes saved",
+  "@changesSaved": {
+    "description": "Child profile interface: changesSaved."
+  },
+  "editChildDetails": "Edit child details",
+  "@editChildDetails": {
+    "description": "Child profile interface: editChildDetails."
+  },
+  "basicDetailsOnlyNotice": "You can edit basic details only. You cannot change the teacher or specialist.",
+  "@basicDetailsOnlyNotice": {
+    "description": "Child profile interface: basicDetailsOnlyNotice."
+  },
+  "childName": "Child name",
+  "@childName": {
+    "description": "Child profile interface: childName."
+  },
+  "age": "Age",
+  "@age": {
+    "description": "Child profile interface: age."
+  },
+  "generalNotesOptional": "General notes (optional)",
+  "@generalNotesOptional": {
+    "description": "Child profile interface: generalNotesOptional."
+  },
+  "adminFollowUpManagement": "Follow-up management (administrator)",
+  "@adminFollowUpManagement": {
+    "description": "Child profile interface: adminFollowUpManagement."
+  },
+  "assignedTeacher": "Assigned teacher",
+  "@assignedTeacher": {
+    "description": "Child profile interface: assignedTeacher."
+  },
+  "assignedSpecialist": "Assigned specialist",
+  "@assignedSpecialist": {
+    "description": "Child profile interface: assignedSpecialist."
+  },
+  "specialistChangeTeacher": "Change teacher (specialist)",
+  "@specialistChangeTeacher": {
+    "description": "Child profile interface: specialistChangeTeacher."
+  },
+  "newTeacher": "New teacher",
+  "@newTeacher": {
+    "description": "Child profile interface: newTeacher."
+  },
+  "changeReasons": "Reasons for change",
+  "@changeReasons": {
+    "description": "Child profile interface: changeReasons."
+  },
+  "changeTeacherReasonHint": "Enter the reason for changing the teacher...",
+  "@changeTeacherReasonHint": {
+    "description": "Child profile interface: changeTeacherReasonHint."
+  },
+  "saveChanges": "Save changes",
+  "@saveChanges": {
+    "description": "Child profile interface: saveChanges."
+  },
+  "careTeamLoadFailed": "Could not load the care team",
+  "@careTeamLoadFailed": {
+    "description": "Child profile interface: careTeamLoadFailed."
+  },
+  "noAssignedTeam": "No team has been assigned yet",
+  "@noAssignedTeam": {
+    "description": "Child profile interface: noAssignedTeam."
+  },
+  "studentProfileRefreshFailed": "Could not refresh student details. Please try again.",
+  "@studentProfileRefreshFailed": {
+    "description": "Child profile interface: studentProfileRefreshFailed."
+  },
+  "studentProfile": "Student profile",
+  "@studentProfile": {
+    "description": "Child profile interface: studentProfile."
+  },
+  "notAdded": "Not added",
+  "@notAdded": {
+    "description": "Child profile interface: notAdded."
+  },
+  "birthDate": "Date of birth",
+  "@birthDate": {
+    "description": "Child profile interface: birthDate."
+  },
+  "gender": "Gender",
+  "@gender": {
+    "description": "Child profile interface: gender."
+  },
+  "male": "Male",
+  "@male": {
+    "description": "Child profile interface: male."
+  },
+  "female": "Female",
+  "@female": {
+    "description": "Child profile interface: female."
+  },
+  "disabilityType": "Disability type",
+  "@disabilityType": {
+    "description": "Child profile interface: disabilityType."
+  },
+  "notSpecified": "Not specified",
+  "@notSpecified": {
+    "description": "Child profile interface: notSpecified."
+  },
+  "strengthsChallenges": "Strengths and challenges",
+  "@strengthsChallenges": {
+    "description": "Child profile interface: strengthsChallenges."
+  },
+  "followUpTeamPlan": "Care team and plan",
+  "@followUpTeamPlan": {
+    "description": "Child profile interface: followUpTeamPlan."
+  },
+  "learningNotes": "Learning notes",
+  "@learningNotes": {
+    "description": "Child profile interface: learningNotes."
+  },
+  "student": "Student",
+  "@student": {
+    "description": "Child profile interface: student."
+  },
+  "studentInformation": "Student information",
+  "@studentInformation": {
+    "description": "Child profile interface: studentInformation."
+  },
+  "beforeAssignment": "Before assignment",
+  "@beforeAssignment": {
+    "description": "Child profile interface: beforeAssignment."
+  },
+  "underFollowUp": "Under follow-up",
+  "@underFollowUp": {
+    "description": "Child profile interface: underFollowUp."
+  },
+  "completedStatus": "Completed",
+  "@completedStatus": {
+    "description": "Child profile interface: completedStatus."
+  },
+  "previewInformationNotice": "Available details are shown before you accept follow-up. Identity details and documents appear after assignment.",
+  "@previewInformationNotice": {
+    "description": "Child profile interface: previewInformationNotice."
+  },
+  "childFollowUp": "Child follow-up",
+  "@childFollowUp": {
+    "description": "Child profile interface: childFollowUp."
+  },
+  "evaluateChildPlan": "Evaluate child and plan",
+  "@evaluateChildPlan": {
+    "description": "Child profile interface: evaluateChildPlan."
+  },
+  "addReviewChildEvaluation": "Add or review the child's evaluation",
+  "@addReviewChildEvaluation": {
+    "description": "Child profile interface: addReviewChildEvaluation."
+  },
+  "viewProgress": "View progress",
+  "@viewProgress": {
+    "description": "Child profile interface: viewProgress."
+  },
+  "trackChildDevelopment": "Track the child's achievements and development",
+  "@trackChildDevelopment": {
+    "description": "Child profile interface: trackChildDevelopment."
+  },
+  "childLessons": "Child lessons",
+  "@childLessons": {
+    "description": "Child profile interface: childLessons."
+  },
+  "viewLessonsMaterials": "View lessons and learning materials",
+  "@viewLessonsMaterials": {
+    "description": "Child profile interface: viewLessonsMaterials."
+  },
+  "recommendSupportSpecialist": "Recommend a learning support specialist",
+  "@recommendSupportSpecialist": {
+    "description": "Child profile interface: recommendSupportSpecialist."
+  },
+  "recommendSpecialistForChild": "Recommend a specialist for this child",
+  "@recommendSpecialistForChild": {
+    "description": "Child profile interface: recommendSpecialistForChild."
+  },
+  "discussCase": "Discuss case",
+  "@discussCase": {
+    "description": "Child profile interface: discussCase."
+  },
+  "contactChildCareTeam": "Contact the child's care team",
+  "@contactChildCareTeam": {
+    "description": "Child profile interface: contactChildCareTeam."
+  },
+  "childDetails": "Child details",
+  "@childDetails": {
+    "description": "Child profile interface: childDetails."
+  },
+  "childInformation": "Child information",
+  "@childInformation": {
+    "description": "Child profile interface: childInformation."
+  },
+  "learningStyle": "Learning style",
+  "@learningStyle": {
+    "description": "Child profile interface: learningStyle."
+  },
+  "notes": "Notes",
+  "@notes": {
+    "description": "Child profile interface: notes."
+  },
+  "documentsVerification": "Documents and verification",
+  "@documentsVerification": {
+    "description": "Child profile interface: documentsVerification."
+  },
+  "childNationalId": "Child national ID",
+  "@childNationalId": {
+    "description": "Child profile interface: childNationalId."
+  },
+  "guardianNationalId": "Guardian national ID",
+  "@guardianNationalId": {
+    "description": "Child profile interface: guardianNationalId."
+  },
+  "guardianIdPhoto": "Guardian ID photo",
+  "@guardianIdPhoto": {
+    "description": "Child profile interface: guardianIdPhoto."
+  },
+  "attached": "Attached",
+  "@attached": {
+    "description": "Child profile interface: attached."
+  },
+  "kinshipDocument": "Proof of relationship",
+  "@kinshipDocument": {
+    "description": "Child profile interface: kinshipDocument."
+  },
+  "medicalReport": "Medical report",
+  "@medicalReport": {
+    "description": "Child profile interface: medicalReport."
+  },
+  "additionalFollowUpTools": "More follow-up tools",
+  "@additionalFollowUpTools": {
+    "description": "Child profile interface: additionalFollowUpTools."
+  },
+  "noorReportsAdaptation": "Noor • Reports • Adaptation",
+  "@noorReportsAdaptation": {
+    "description": "Child profile interface: noorReportsAdaptation."
+  },
+  "askNoorAboutStudent": "Ask Noor about this student",
+  "@askNoorAboutStudent": {
+    "description": "Child profile interface: askNoorAboutStudent."
+  },
+  "studentDataSummary": "A smart summary based on student data",
+  "@studentDataSummary": {
+    "description": "Child profile interface: studentDataSummary."
+  },
+  "weeklyProgressTeacherReports": "Weekly progress and teacher reports",
+  "@weeklyProgressTeacherReports": {
+    "description": "Child profile interface: weeklyProgressTeacherReports."
+  },
+  "teacherReportsProgressHistory": "Teacher reports and progress history",
+  "@teacherReportsProgressHistory": {
+    "description": "Child profile interface: teacherReportsProgressHistory."
+  },
+  "adjustAdaptationFeatures": "Adjust adaptation features",
+  "@adjustAdaptationFeatures": {
+    "description": "Child profile interface: adjustAdaptationFeatures."
+  },
+  "measurePlanEffectiveness": "Assess the learning plan's effectiveness",
+  "@measurePlanEffectiveness": {
+    "description": "Child profile interface: measurePlanEffectiveness."
+  },
+  "acceptChildFollowUp": "Accept child follow-up",
+  "@acceptChildFollowUp": {
+    "description": "Child profile interface: acceptChildFollowUp."
+  },
+  "achievement": "Achievement",
+  "@achievement": {
+    "description": "Child profile interface: achievement."
+  },
+  "chooseStudentForDestination": "Choose a student to view {destination}",
+  "@chooseStudentForDestination": {
+    "description": "Child profile interface: chooseStudentForDestination.",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "studentProfileFor": "Profile of {name}",
+  "@studentProfileFor": {
+    "description": "Child profile interface: studentProfileFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careTeamFor": "{name}'s care team",
+  "@careTeamFor": {
+    "description": "Child profile interface: careTeamFor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careTeamMemberCount": "{count, plural, =0{No team members} =1{1 team member} other{{count} team members}}",
+  "@careTeamMemberCount": {
+    "description": "Child profile interface: careTeamMemberCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careTeamComposition": "{teachers, plural, =1{1 teacher} other{{teachers} teachers}} • {specialists, plural, =1{1 specialist} other{{specialists} specialists}}",
+  "@careTeamComposition": {
+    "description": "Child profile interface: careTeamComposition.",
+    "placeholders": {
+      "teachers": {
+        "type": "int"
+      },
+      "specialists": {
+        "type": "int"
+      }
+    }
+  },
+  "teachersCountTitle": "Teachers ({count})",
+  "@teachersCountTitle": {
+    "description": "Child profile interface: teachersCountTitle.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "teacherSubjectLabel": "Teacher — {subject}",
+  "@teacherSubjectLabel": {
+    "description": "Child profile interface: teacherSubjectLabel.",
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "profileLessonCount": "{count, plural, =0{No lessons} =1{1 lesson} other{{count} lessons}}",
+  "@profileLessonCount": {
+    "description": "Child profile interface: profileLessonCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "paginationSummary": "Page {page} of {lastPage} · {total, plural, =1{1 result} other{{total} results}}",
+  "@paginationSummary": {
+    "description": "Child profile interface: paginationSummary.",
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "lastPage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

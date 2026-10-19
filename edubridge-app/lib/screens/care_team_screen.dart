@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/care_team_screen.dart
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
   List<Map<String, dynamic>> _teachers = [];
   Map<String, dynamic>? _specialists;
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -57,7 +58,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الفريق';
+        _error = SharedUiMessage.careTeamLoadFailed;
         _loading = false;
       });
     }
@@ -66,7 +67,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: 'فريق ${widget.childName}'),
+      appBar: JisrAppBar(title: context.l10n.careTeamFor(widget.childName)),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _loading
@@ -85,7 +86,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           const Icon(AppIcons.error, size: 56, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -97,7 +98,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           Center(
             child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ),
@@ -122,7 +123,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               const Icon(AppIcons.users, color: Colors.white, size: 48),
               const SizedBox(height: 8),
               Text(
-                '${_teachers.length + totalSpecialists} أعضاء في الفريق',
+                context.l10n.careTeamMemberCount(_teachers.length + totalSpecialists),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -131,7 +132,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${_teachers.length} معلم • $totalSpecialists مختص',
+                context.l10n.careTeamComposition(_teachers.length, totalSpecialists),
                 style: const TextStyle(color: Colors.white70),
               ),
             ],
@@ -139,30 +140,30 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         ),
         const SizedBox(height: 20),
         if (totalSpecialists > 0) ...[
-          _sectionTitle('المختصون', c),
+          _sectionTitle(context.l10n.specialists, c),
           const SizedBox(height: 10),
           if (_specialists?['learning_support'] != null)
             _specialistCard(
               _specialists!['learning_support'],
-              'مختص دعم تعليمي',
+              context.l10n.learningSupportSpecialist,
               AppIcons.specialist,
               AppColors.purple,
             ),
           if (_specialists?['educational'] != null)
             _specialistCard(
               _specialists!['educational'],
-              'مختص تعليمي',
+              context.l10n.educationalSpecialist,
               AppIcons.lesson,
               AppColors.brandBlue,
             ),
           if (_specialists?['others'] is List)
             ...(_specialists!['others'] as List).map((s) =>
-                _specialistCard(s, 'مختص', AppIcons.specialist,
+                _specialistCard(s, context.l10n.specialistRole, AppIcons.specialist,
                     AppColors.pink)),
           const SizedBox(height: 20),
         ],
         if (_teachers.isNotEmpty) ...[
-          _sectionTitle('المعلمون (${_teachers.length})', c),
+          _sectionTitle(context.l10n.teachersCountTitle(_teachers.length), c),
           const SizedBox(height: 10),
           ..._teachers.map((t) => _teacherCard(t)),
         ],
@@ -185,7 +186,7 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'لم يتم تعيين فريق بعد',
+            context.l10n.noAssignedTeam,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
@@ -256,8 +257,8 @@ class _CareTeamScreenState extends State<CareTeamScreen> {
         ),
         subtitle: Text(
           subject != null && subject.isNotEmpty
-              ? 'معلّم — $subject'
-              : 'معلّم',
+              ? context.l10n.teacherSubjectLabel(subject)
+              : context.l10n.teacherRole,
           style: TextStyle(color: c.muted),
         ),
         trailing: Container(

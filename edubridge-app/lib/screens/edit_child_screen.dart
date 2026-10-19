@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/edit_child_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _EditChildScreenState extends State<EditChildScreen> {
   bool _loadingSpecialists = false;
 
   bool _loading = false;
-  String? _error;
+  Object? _error;
 
   bool get _isAdmin => widget.currentUserRole == 'admin';
   bool get _isSpecialist => widget.currentUserRole == 'specialist';
@@ -140,20 +141,20 @@ class _EditChildScreenState extends State<EditChildScreen> {
       if (res.statusCode == 200) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ التعديلات بنجاح'),
+          SnackBar(
+            content: Text(context.l10n.changesSaved),
             backgroundColor: AppColors.brandTealDeep,
           ),
         );
       } else {
         setState(() {
-          _error = data['error']?.toString() ?? 'تعذّر حفظ التعديلات';
+          _error = data['error']?.toString() ?? SharedUiMessage.changesSaveFailed;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'تعذّر الاتصال بالسيرفر';
+          _error = SharedUiMessage.connectionFailed;
         });
       }
     } finally {

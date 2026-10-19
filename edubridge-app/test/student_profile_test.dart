@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart' show Locale;
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:edubridge_app/features/students/data/student_profile_repository.dart';
@@ -45,7 +47,7 @@ void main() {
 
   test('specialist and teacher status labels remain distinct', () {
     final assigned = StudentProfile.fromJson({'status': ' assigned '});
-    expect(StudentProfileLabels.specialistStatus(assigned), 'assigned');
+    expect(StudentProfileLabels.specialistStatus(assigned), 'تم التعيين');
     expect(StudentProfileLabels.teacherStatus(assigned), 'قيد المتابعة');
     final preview = StudentProfile.fromJson({
       'assignment_preview': true, 'status': 'active',
@@ -55,6 +57,27 @@ void main() {
     expect(StudentProfileLabels.specialistStatus(StudentProfile.fromJson({})),
         'قيد المتابعة');
   });
+
+  for (final language in ['ar', 'en']) {
+    test('$language localizes statuses without changing profile data', () async {
+      final strings = await AppLocalizations.delegate.load(Locale(language));
+      final data = <String, dynamic>{
+        'status': 'assigned', 'name': 'ليان', 'notes': 'ملاحظات المعلم',
+      };
+      final profile = StudentProfile.fromJson(data);
+      expect(StudentProfileLabels.specialistStatus(profile, strings: strings),
+          language == 'ar' ? 'تم التعيين' : 'Assigned');
+      expect(StudentProfileLabels.teacherStatus(profile, strings: strings),
+          language == 'ar' ? 'قيد المتابعة' : 'Under follow-up');
+      final preview = StudentProfile.fromJson({...data, 'assignment_preview': true});
+      expect(StudentProfileLabels.specialistStatus(preview, strings: strings),
+          language == 'ar' ? 'قبل التعيين' : 'Before assignment');
+      expect(profile.toJson(), data);
+      expect(StudentProfileLabels.teacherStatus(
+          StudentProfile.fromJson({'status': 'future_status'}), strings: strings),
+          'future_status');
+    });
+  }
 
   test('successful profile fetch uses only the child endpoint', () async {
     final calls = <String>[];

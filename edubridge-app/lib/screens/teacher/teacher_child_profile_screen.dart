@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -22,7 +23,7 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
   final _repository = StudentProfileRepository();
   late StudentProfile _profile;
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   int get _childId => widget.child['id'] as int;
   String get _childName => (widget.child['name'] ?? '').toString();
@@ -48,7 +49,7 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
       setState(() => _profile = profile);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = 'تعذّر تحديث معلومات الطالب. حاول مرة أخرى.');
+      setState(() => _error = SharedUiMessage.studentProfileRefreshFailed);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -78,7 +79,7 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
         toolbarHeight: 76,
         elevation: 0,
         title: Text(
-          _childName.isEmpty ? 'ملف الطالب' : 'ملف $_childName',
+          _childName.isEmpty ? context.l10n.studentProfile : context.l10n.studentProfileFor(_childName),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
@@ -110,11 +111,11 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        _error!,
+                        context.sharedMessage(_error),
                         style: const TextStyle(color: AppColors.red),
                       ),
                     ),
-                    TextButton(onPressed: _load, child: const Text('إعادة المحاولة')),
+                    TextButton(onPressed: _load, child: Text(context.l10n.retryAction)),
                   ],
                 ),
               ),
@@ -124,72 +125,72 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
             const SizedBox(height: 14),
             _section(
               c,
-              title: 'المعلومات الأساسية',
+              title: context.l10n.basicInformation,
               icon: Icons.badge_outlined,
               children: [
-                _row(c, 'الاسم', _childName.isEmpty ? 'غير مضاف' : _childName, Icons.person_outline),
-                if (age != null) _row(c, 'العمر', '$age سنة', Icons.cake_outlined),
+                _row(c, context.l10n.name, _childName.isEmpty ? context.l10n.notAdded : _childName, Icons.person_outline),
+                if (age != null) _row(c, context.l10n.age, context.l10n.childAgeYears(age.toString()), Icons.cake_outlined),
                 if (child.birthDate.isNotEmpty)
-                  _row(c, 'تاريخ الميلاد', child.birthDate, Icons.calendar_today_outlined),
+                  _row(c, context.l10n.birthDate, child.birthDate, Icons.calendar_today_outlined),
                 if (child.gender.isNotEmpty)
                   _row(
                     c,
-                    'الجنس',
+                    context.l10n.gender,
                     switch (child.gender) {
-                      'male' => 'ذكر',
-                      'female' => 'أنثى',
+                      'male' => context.l10n.male,
+                      'female' => context.l10n.female,
                       final value => value,
                     },
                     Icons.person_outline,
                   ),
                 _row(
                   c,
-                  'نوع الإعاقة',
-                  disability.isEmpty ? 'غير محدد' : disability,
+                  context.l10n.disabilityType,
+                  disability.isEmpty ? context.l10n.notSpecified : disability,
                   Icons.accessibility_new_rounded,
                 ),
                 if (description.isNotEmpty)
-                  _row(c, 'وصف الإعاقة', description, AppIcons.info),
+                  _row(c, context.l10n.disabilityDescription, description, AppIcons.info),
                 if (specialNeeds.isNotEmpty)
-                  _row(c, 'الاحتياجات الخاصة', specialNeeds, AppIcons.support),
+                  _row(c, context.l10n.specialNeeds, specialNeeds, AppIcons.support),
                 if (preferredStyle.isNotEmpty)
-                  _row(c, 'أسلوب التعلم المفضّل', preferredStyle, AppIcons.lesson),
+                  _row(c, context.l10n.preferredLearningStyle, preferredStyle, AppIcons.lesson),
               ],
             ),
             if (strengths.isNotEmpty || challenges.isNotEmpty) ...[
               const SizedBox(height: 14),
               _section(
                 c,
-                title: 'نقاط القوة والتحديات',
+                title: context.l10n.strengthsChallenges,
                 icon: Icons.auto_awesome_outlined,
                 children: [
                   if (strengths.isNotEmpty)
-                    _chips(c, 'نقاط القوة', strengths, AppColors.greenDeep),
+                    _chips(c, context.l10n.strengths, strengths, AppColors.greenDeep),
                   if (challenges.isNotEmpty)
-                    _chips(c, 'التحديات', challenges, AppColors.orangeDeep),
+                    _chips(c, context.l10n.challenges, challenges, AppColors.orangeDeep),
                 ],
               ),
             ],
             const SizedBox(height: 14),
             _section(
               c,
-              title: 'فريق المتابعة والخطة',
+              title: context.l10n.followUpTeamPlan,
               icon: Icons.groups_outlined,
               children: [
                 if (guardianNames.isNotEmpty)
-                  _row(c, 'ولي الأمر', guardianNames, AppIcons.parent),
+                  _row(c, context.l10n.parentRole, guardianNames, AppIcons.parent),
                 if (teacherName.isNotEmpty)
-                  _row(c, 'المعلم المسؤول', teacherName, AppIcons.teacher),
+                  _row(c, context.l10n.assignedTeacher, teacherName, AppIcons.teacher),
                 if (specialistNames.isNotEmpty)
-                  _row(c, 'المختصون', specialistNames, AppIcons.specialist),
+                  _row(c, context.l10n.specialists, specialistNames, AppIcons.specialist),
                 if (organizationName.isNotEmpty)
-                  _row(c, 'المؤسسة', organizationName, Icons.business_outlined),
+                  _row(c, context.l10n.institutionRole, organizationName, Icons.business_outlined),
                 if (educationalPlan.isNotEmpty)
-                  _row(c, 'الخطة التعليمية', educationalPlan, AppIcons.lesson),
+                  _row(c, context.l10n.educationalPlan, educationalPlan, AppIcons.lesson),
                 if (status.isNotEmpty)
-                  _row(c, 'الحالة', StudentProfileLabels.teacherStatus(child), Icons.info_outline),
+                  _row(c, context.l10n.status, StudentProfileLabels.teacherStatus(child, strings: context.l10n), Icons.info_outline),
                 if (notes.isNotEmpty)
-                  _row(c, 'ملاحظات تعليمية', notes, AppIcons.info),
+                  _row(c, context.l10n.learningNotes, notes, AppIcons.info),
               ],
             ),
           ],
@@ -241,7 +242,7 @@ class _TeacherChildProfileScreenState extends State<TeacherChildProfileScreen> {
                 const SizedBox(height: 5),
                 Text(
                   [
-                    if (age != null) '$age سنة',
+                    if (age != null) context.l10n.childAgeYears(age.toString()),
                     if (disability.isNotEmpty) disability,
                   ].join(' • '),
                   style: const TextStyle(color: Colors.white70, fontSize: 13.5),
