@@ -33,6 +33,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('أسرة ومعلم ومختص\nفي مكان واحد'), findsOneWidget);
     expect(find.text('الخطوة 2 من 3'), findsNothing);
+    final languageButton = tester.widget<IconButton>(find.byKey(const ValueKey('onboarding-language')));
+    expect((languageButton.icon as Icon).icon, Icons.language);
     await tester.tap(find.byKey(const ValueKey('onboarding-language')));
     await tester.pumpAndSettle();
     expect(find.text('اختر اللغة'), findsOneWidget);
@@ -53,7 +55,8 @@ void main() {
     final strings = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(strings.tourTeamTitle), findsOneWidget);
     expect(find.text('Previous'), findsOneWidget);
-    expect(find.text('Language'), findsOneWidget);
+    expect(find.byTooltip('Language'), findsOneWidget);
+    expect(find.text('Language'), findsNothing);
     expect(Directionality.of(tester.element(find.byKey(const ValueKey('onboarding-language')))), TextDirection.ltr);
     expect(tester.takeException(), isNull);
   });

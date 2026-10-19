@@ -64,16 +64,16 @@ void main() {
   testWidgets('English onboarding retains every tour page and navigates to landing', (tester) async {
     await tester.pumpWidget(_host(const WelcomeScreen()));
     await tester.pumpAndSettle();
-    expect(find.text('Language'), findsOneWidget);
+    expect(find.byTooltip('Language'), findsOneWidget);
     expect(find.text('Step 1 of 3'), findsNothing);
     expect(find.text('Learning that adapts to every child'), findsOneWidget);
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
-    expect(find.text('Language'), findsOneWidget);
+    expect(find.byTooltip('Language'), findsOneWidget);
     expect(find.text('Specialist'), findsOneWidget);
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
-    expect(find.text('Language'), findsOneWidget);
+    expect(find.byTooltip('Language'), findsOneWidget);
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
     expect(find.text('Sign in'), findsOneWidget);
