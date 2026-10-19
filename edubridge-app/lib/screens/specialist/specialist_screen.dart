@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
 // lib/screens/specialist/specialist_screen.dart
 import 'dart:convert';
@@ -66,7 +67,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
   List _teachers = [];
   List _specialists = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   int? _approvingId;
   bool _adding = false;
   String _searchQuery = '';
@@ -159,7 +160,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       if (responses[0].statusCode != 200) {
         if (!mounted) return;
         setState(() {
-          _error = childrenData['error'] ?? 'تعذّر جلب البيانات';
+          _error = childrenData['error'] ?? SharedUiMessage.dashboardLoadFailed;
           _loading = false;
         });
         return;
@@ -221,7 +222,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _loading = false;
       });
     }
@@ -261,7 +262,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'توثيق الهوية مطلوب',
+                context.l10n.verificationRequired,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -271,7 +272,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'عزيزي المختص، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.',
+                context.l10n.specialistVerificationDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -292,8 +293,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                     ),
                   ),
                   icon: const Icon(AppIcons.verified, size: 22),
-                  label: const Text(
-                    'توثيق الهوية والشهادة',
+                  label: Text(
+                    context.l10n.verifyIdentityAndCertificate,
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () async {
@@ -327,8 +328,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     if (!await ApiService.isVerified()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('يرجى توثيق الهوية أولاً'),
+          SnackBar(
+            content: Text(context.l10n.verifyIdentityFirst),
             backgroundColor: AppColors.brandBlueLight,
           ),
         );
@@ -343,13 +344,13 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     final result = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('البحث عن طفل'),
+        title: Text(context.l10n.searchForChild),
         content: TextField(
           controller: controller,
           autofocus: true,
           textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(
-            hintText: 'اكتب اسم الطفل...',
+          decoration: InputDecoration(
+            hintText: context.l10n.enterChildName,
             prefixIcon: Icon(AppIcons.search),
           ),
           onSubmitted: (value) => Navigator.pop(dialogContext, value),
@@ -358,15 +359,15 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
           if (_searchQuery.isNotEmpty)
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, ''),
-              child: const Text('مسح البحث'),
+              child: Text(context.l10n.clearSearch),
             ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, controller.text),
-            child: const Text('بحث'),
+            child: Text(context.l10n.search),
           ),
         ],
       ),
@@ -384,19 +385,19 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
     return [
       DashboardMenuAction(
         id: 'specialist_lessons',
-        label: 'الدروس',
+        label: context.l10n.lessons,
         icon: AppIcons.lesson,
         onSelected: () => setState(() => _tabIndex = 1),
       ),
       DashboardMenuAction(
         id: 'search_children',
-        label: _searchQuery.isEmpty ? 'البحث عن طفل' : 'تعديل بحث الأطفال',
+        label: _searchQuery.isEmpty ? context.l10n.searchForChild : context.l10n.editChildSearch,
         icon: AppIcons.search,
         onSelected: _openChildSearch,
       ),
       DashboardMenuAction(
         id: 'case_discussion',
-        label: 'دراسات الحالة',
+        label: context.l10n.caseStudies,
         icon: AppIcons.forum,
         onSelected: () => Navigator.push(
           context,
@@ -405,7 +406,7 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       DashboardMenuAction(
         id: 'support_requests',
-        label: 'طلبات الدعم',
+        label: context.l10n.supportRequests,
         icon: AppIcons.specialist,
         onSelected: () => Navigator.push(
           context,
@@ -416,13 +417,13 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       DashboardMenuAction(
         id: 'add_certificate',
-        label: 'إضافة شهادة',
+        label: context.l10n.addCertificate,
         icon: AppIcons.certificate,
         onSelected: _openAddCertificate,
       ),
       DashboardMenuAction(
         id: 'chats',
-        label: 'المحادثات',
+        label: context.l10n.conversations,
         icon: AppIcons.chat,
         onSelected: () => Navigator.push(
           context,
@@ -431,31 +432,31 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
       ),
       DashboardMenuAction(
         id: 'support',
-        label: 'الدعم الفني',
+        label: context.l10n.technicalSupport,
         icon: AppIcons.support,
         onSelected: () => SupportSheet.show(context),
       ),
       DashboardMenuAction(
         id: 'about_app',
-        label: 'عن التطبيق',
+        label: context.l10n.aboutApp,
         icon: Icons.info_outline,
         onSelected: () => showAboutDialog(
           context: context,
           applicationName: 'EduBridge',
-          children: const [
-            Text('منصة تعليمية لدعم الأطفال ذوي الاحتياجات الخاصة.'),
+          children: [
+            Text(context.l10n.aboutEduBridge),
           ],
         ),
       ),
       DashboardMenuAction(
         id: 'legal',
-        label: 'الخصوصية والحساب',
+        label: context.l10n.privacyAndAccount,
         icon: AppIcons.privacy,
         onSelected: () => const LegalLinksButton().show(context),
       ),
       DashboardMenuAction(
         id: 'logout',
-        label: 'تسجيل الخروج',
+        label: context.l10n.logout,
         icon: AppIcons.logout,
         destructive: true,
         onSelected: _logoutSpecialist,
@@ -508,11 +509,11 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                   child: TextFormField(
                     initialValue: _searchQuery,
                     textInputAction: TextInputAction.search,
-                    textDirection: TextDirection.rtl,
+                    textDirection: Directionality.of(context),
                     onChanged: (value) =>
                         setState(() => _searchQuery = value.trim()),
                     decoration: InputDecoration(
-                      hintText: 'ابحث عن طفل بالاسم',
+                      hintText: context.l10n.searchChildrenByName,
                       prefixIcon: const Icon(
                         AppIcons.search,
                         color: Color(0xFF1A73C9),
@@ -554,19 +555,19 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                               children: [
                                 _StatsCard(
                                   value: '$_pendingCount',
-                                  label: 'بانتظار التقييم',
+                                  label: context.l10n.awaitingAssessment,
                                   color: AppColors.blue,
                                 ),
                                 const SizedBox(width: 7),
                                 _StatsCard(
                                   value: '$_doneToday',
-                                  label: 'منجز اليوم',
+                                  label: context.l10n.completedToday,
                                   color: AppColors.brandTealDeep,
                                 ),
                                 const SizedBox(width: 7),
                                 _StatsCard(
                                   value: '$_pendingProgress',
-                                  label: 'قيد التنفيذ',
+                                  label: context.l10n.inProgress,
                                   color: AppColors.brandTeal,
                                 ),
                               ],
@@ -660,23 +661,23 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                       MaterialPageRoute(builder: (_) => destination),
                     );
                   },
-                  destinations: const [
+                  destinations: [
                     NavigationDestination(
                       icon: Icon(Icons.people_outline),
                       selectedIcon: Icon(Icons.people_rounded),
-                      label: 'الأطفال',
+                      label: context.l10n.children,
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.description_outlined),
-                      label: 'دراسات الحالة',
+                      label: context.l10n.caseStudies,
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.chat_bubble_outline),
-                      label: 'المحادثات',
+                      label: context.l10n.conversations,
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.inbox_outlined),
-                      label: 'طلبات الدعم',
+                      label: context.l10n.supportRequests,
                     ),
                   ],
                 ),
@@ -691,8 +692,8 @@ class _SpecialistDashboardScreenState extends State<SpecialistDashboardScreen> {
                 if (await _checkVerification()) _setAdding(true);
               },
               icon: const Icon(AppIcons.add),
-              label: const Text(
-                'اقتراح درس',
+              label: Text(
+                context.l10n.suggestLesson,
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             )
@@ -712,7 +713,7 @@ Future<bool> showChildSpecialistSuggestion(
   if (!await ApiService.isVerified()) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى توثيق الهوية أولاً')),
+        SnackBar(content: Text(context.l10n.verifyIdentityFirst)),
       );
     }
     return false;
@@ -734,7 +735,7 @@ Future<bool> showChildSpecialistSuggestion(
   } catch (_) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر جلب قائمة المختصين')),
+        SnackBar(content: Text(context.l10n.specialistsLoadFailed)),
       );
     }
     return false;

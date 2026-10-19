@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum SupportRecommendationTarget { specialist, parent }
@@ -21,7 +22,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final textColor = dark ? Colors.white : ink;
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: dark ? Theme.of(context).colorScheme.surface : Colors.white,
@@ -37,8 +38,8 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
               Row(children: [
                 const Icon(Icons.lightbulb_outline_rounded, color: blue, size: 23),
                 const SizedBox(width: 8),
-                Expanded(child: Text('اقتراح دعم تعليمي — ${widget.childName}',
-                  textAlign: TextAlign.right,
+                Expanded(child: Text(context.l10n.supportRecommendationForChild(widget.childName),
+                  textAlign: TextAlign.start,
                   style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w800))),
               ]),
               const SizedBox(height: 16),
@@ -64,7 +65,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                         dense: true,
                         title: Text(target == SupportRecommendationTarget.specialist
-                            ? 'مختص دعم تعليمي' : 'ولي الأمر',
+                            ? context.l10n.learningSupportSpecialist : context.l10n.parentRole,
                           style: TextStyle(color: textColor, fontSize: 16)),
                       ),
                       ),
@@ -72,7 +73,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                 ]),
               ),
               if (_showError) ...[
-                const Text('اختر جهة اقتراح الدعم', style: TextStyle(color: Colors.red, fontSize: 12)),
+                Text(context.l10n.chooseSupportTarget, style: TextStyle(color: Colors.red, fontSize: 12)),
                 const SizedBox(height: 8),
               ],
               Row(children: [
@@ -83,7 +84,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                     foregroundColor: blue, backgroundColor: dark ? null : const Color(0xFFE6F1FD),
                     side: const BorderSide(color: blue), shape: const StadiumBorder(),
                     padding: EdgeInsets.zero),
-                  child: const Text('إلغاء'),
+                  child: Text(context.l10n.cancel),
                 ))),
                 const SizedBox(width: 8),
                 Expanded(child: SizedBox(height: 36, child: FilledButton(
@@ -97,7 +98,7 @@ class _SupportTargetDialogS28State extends State<SupportTargetDialogS28> {
                   },
                   style: FilledButton.styleFrom(backgroundColor: blue,
                     foregroundColor: Colors.white, shape: const StadiumBorder(), padding: EdgeInsets.zero),
-                  child: const Text('التالي'),
+                  child: Text(context.l10n.next),
                 ))),
               ]),
             ]),

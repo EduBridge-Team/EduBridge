@@ -35,9 +35,9 @@ Widget _buildHeader({
                 Expanded(
                   child: tabIndex == 1
                       ? Align(
-                          alignment: Alignment.centerRight,
+                          alignment: AlignmentDirectional.centerStart,
                           child: Text(
-                            'الدروس',
+                            context.l10n.lessons,
                             style: textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -52,7 +52,7 @@ Widget _buildHeader({
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            name == null || name.isEmpty ? 'المختص' : name,
+                            name == null || name.isEmpty ? context.l10n.specialistRole : name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textTheme.titleLarge?.copyWith(
@@ -62,7 +62,7 @@ Widget _buildHeader({
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            _subtitleFor(tabIndex, specialty),
+                            _subtitleFor(context, tabIndex, specialty),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textTheme.bodySmall?.copyWith(
@@ -81,7 +81,7 @@ Widget _buildHeader({
                     color: Colors.white.withValues(alpha: .16),
                     shape: const CircleBorder(),
                     child: IconButton(
-                      tooltip: 'الإشعارات',
+                      tooltip: context.l10n.notifications,
                       icon: Badge(
                         isLabelVisible: unreadCount > 0,
                         smallSize: 9,
@@ -116,14 +116,14 @@ Widget _buildHeader({
   );
 }
 
-String _subtitleFor(int tabIndex, String? specialty) {
-  if (tabIndex == 1) return 'الدروس';
+String _subtitleFor(BuildContext context, int tabIndex, String? specialty) {
+  if (tabIndex == 1) return context.l10n.lessons;
   switch (specialty) {
     case 'learning_support':
-      return 'مختص دعم تعليمي';
+      return context.l10n.learningSupportSpecialist;
     case 'educational':
-      return 'مختص تعليمي';
+      return context.l10n.educationalSpecialist;
     default:
-      return 'مختص';
+      return context.l10n.specialistRole;
   }
 }

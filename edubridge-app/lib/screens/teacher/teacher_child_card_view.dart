@@ -110,8 +110,8 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         ),
                       ),
                       icon: const Icon(Icons.folder_open_rounded, size: 21),
-                      label: const Text(
-                        'فتح ملف الطالب',
+                      label: Text(
+                        context.l10n.openStudentProfile,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -138,8 +138,8 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                         ),
                       ),
                       icon: const Icon(AppIcons.view, size: 20),
-                      label: const Text(
-                        'الخطة',
+                      label: Text(
+                        context.l10n.plan,
                         maxLines: 1,
                         style: TextStyle(
                           fontSize: 14.5,
@@ -167,7 +167,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                     const SizedBox(width: 9),
                     Expanded(
                       child: Text(
-                        'إجراءات سريعة',
+                        context.l10n.quickActions,
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -202,7 +202,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                           child: _quickAction(
                             context: context,
                             icon: AppIcons.report,
-                            label: 'التقارير',
+                            label: context.l10n.reports,
                             color: AppColors.brandBlue,
                             onTap: () => _openDetailsTab(context, 2),
                           ),
@@ -212,7 +212,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                           child: _quickAction(
                             context: context,
                             icon: AppIcons.edit,
-                            label: 'الواجبات',
+                            label: context.l10n.homeworks,
                             color: AppColors.brandBlue,
                             onTap: () => _openDetailsTab(context, 0),
                           ),
@@ -226,7 +226,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                           child: _quickAction(
                             context: context,
                             icon: AppIcons.forum,
-                            label: 'دراسة الحالة',
+                            label: context.l10n.caseStudy,
                             color: AppColors.brandBlue,
                             onTap: () => _openDetailsTab(context, 3),
                           ),
@@ -236,7 +236,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                           child: _quickAction(
                             context: context,
                             icon: AppIcons.lesson,
-                            label: 'الدروس',
+                            label: context.l10n.lessons,
                             color: AppColors.brandBlue,
                             onTap: () => _openDetailsTab(context, 1),
                           ),
@@ -279,7 +279,7 @@ extension _TeacherChildCardView on _TeacherChildCardState {
                               ),
                               const SizedBox(width: 9),
                               Text(
-                                'التقدم',
+                                context.l10n.progress,
                                 style: TextStyle(
                                   color: c.heading,
                                   fontSize: 16,

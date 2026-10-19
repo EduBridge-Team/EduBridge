@@ -168,3 +168,19 @@ a second implementation. Confirmation remains required in the current locale.
 Phase 4 remains in progress: teacher, specialist, administrator and ministry
 dashboards, followed by child, evaluation and reporting workflows. Activities
 and the final completeness audit remain in phases 5 and 6.
+
+### Phase 4 — teacher and specialist dashboards
+
+The teacher dashboard now localizes its children, lessons and homework tabs,
+verification prompts, lesson media labels and approved-plan headings. The
+specialist dashboard localizes its search, assignment preview/confirmation,
+waiting list, child cards, lesson recommendations and evaluation summary labels.
+The support-recipient dialog inherits the selected layout direction and retains
+its original enum values. Stored UI error identities resolve in the current
+locale. Names, authored lesson/assessment text and existing API identifiers are
+preserved, including compatibility checks for legacy Arabic specialty values.
+
+Child-profile screens, clinical recommendation forms, administrator/ministry
+screens and detailed child/report/evaluation workflows still require localization
+within phase 4. Child activities and the final completeness audit remain phases
+5 and 6. These dashboard changes do not complete the whole localization rollout.

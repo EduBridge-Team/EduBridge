@@ -1399,5 +1399,624 @@
         "type": "int"
       }
     }
+  },
+  "verificationRequired": "توثيق الهوية مطلوب",
+  "@verificationRequired": {
+    "description": "Professional dashboard interface: verificationRequired."
+  },
+  "teacherVerificationDescription": "عزيزي المعلم، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.",
+  "@teacherVerificationDescription": {
+    "description": "Professional dashboard interface: teacherVerificationDescription."
+  },
+  "specialistVerificationDescription": "عزيزي المختص، يجب توثيق هويتك ورفع شهادتك العلمية للاستفادة من كامل صلاحيات التطبيق.",
+  "@specialistVerificationDescription": {
+    "description": "Professional dashboard interface: specialistVerificationDescription."
+  },
+  "verifyIdentityAndCertificate": "توثيق الهوية والشهادة",
+  "@verifyIdentityAndCertificate": {
+    "description": "Professional dashboard interface: verifyIdentityAndCertificate."
+  },
+  "verifyFirstForPermission": "يرجى توثيق الهوية أولاً لتفعيل هذه الصلاحية",
+  "@verifyFirstForPermission": {
+    "description": "Professional dashboard interface: verifyFirstForPermission."
+  },
+  "verifyIdentityFirst": "يرجى توثيق الهوية أولاً",
+  "@verifyIdentityFirst": {
+    "description": "Professional dashboard interface: verifyIdentityFirst."
+  },
+  "openStudentProfile": "فتح ملف الطالب",
+  "@openStudentProfile": {
+    "description": "Professional dashboard interface: openStudentProfile."
+  },
+  "plan": "الخطة",
+  "@plan": {
+    "description": "Professional dashboard interface: plan."
+  },
+  "quickActions": "إجراءات سريعة",
+  "@quickActions": {
+    "description": "Professional dashboard interface: quickActions."
+  },
+  "reports": "التقارير",
+  "@reports": {
+    "description": "Professional dashboard interface: reports."
+  },
+  "homeworks": "الواجبات",
+  "@homeworks": {
+    "description": "Professional dashboard interface: homeworks."
+  },
+  "caseStudy": "دراسة الحالة",
+  "@caseStudy": {
+    "description": "Professional dashboard interface: caseStudy."
+  },
+  "noAssignedTeacherChildren": "لا يوجد أطفال موزّعون عليك حالياً",
+  "@noAssignedTeacherChildren": {
+    "description": "Professional dashboard interface: noAssignedTeacherChildren."
+  },
+  "assignedChildrenDescription": "سيظهر الأطفال هنا فور إسنادهم إلى حسابك.",
+  "@assignedChildrenDescription": {
+    "description": "Professional dashboard interface: assignedChildrenDescription."
+  },
+  "followUpCompleted": "طالب مكتمل المتابعة",
+  "@followUpCompleted": {
+    "description": "Professional dashboard interface: followUpCompleted."
+  },
+  "followUpPending": "طالب بانتظار المتابعة",
+  "@followUpPending": {
+    "description": "Professional dashboard interface: followUpPending."
+  },
+  "followUpActive": "طالب قيد المتابعة",
+  "@followUpActive": {
+    "description": "Professional dashboard interface: followUpActive."
+  },
+  "planUnderReview": "الخطة قيد المراجعة",
+  "@planUnderReview": {
+    "description": "Professional dashboard interface: planUnderReview."
+  },
+  "preliminaryPlan": "الخطة الأولية",
+  "@preliminaryPlan": {
+    "description": "Professional dashboard interface: preliminaryPlan."
+  },
+  "homeworksLoadFailed": "تعذّر تحميل الواجبات",
+  "@homeworksLoadFailed": {
+    "description": "Professional dashboard interface: homeworksLoadFailed."
+  },
+  "all": "الكل",
+  "@all": {
+    "description": "Professional dashboard interface: all."
+  },
+  "notSubmitted": "لم يُسلّم",
+  "@notSubmitted": {
+    "description": "Professional dashboard interface: notSubmitted."
+  },
+  "toGrade": "للتصحيح",
+  "@toGrade": {
+    "description": "Professional dashboard interface: toGrade."
+  },
+  "graded": "مُصحّح",
+  "@graded": {
+    "description": "Professional dashboard interface: graded."
+  },
+  "noHomeworkInCategory": "لا توجد واجبات ضمن هذا التصنيف",
+  "@noHomeworkInCategory": {
+    "description": "Professional dashboard interface: noHomeworkInCategory."
+  },
+  "createHomework": "إنشاء واجب",
+  "@createHomework": {
+    "description": "Professional dashboard interface: createHomework."
+  },
+  "lessonLibraryDescription": "استعرض الدروس الحالية أو ابحث عن محتوى محدد.",
+  "@lessonLibraryDescription": {
+    "description": "Professional dashboard interface: lessonLibraryDescription."
+  },
+  "searchLessonsHint": "ابحث عن درس...",
+  "@searchLessonsHint": {
+    "description": "Professional dashboard interface: searchLessonsHint."
+  },
+  "clearSearch": "مسح البحث",
+  "@clearSearch": {
+    "description": "Professional dashboard interface: clearSearch."
+  },
+  "noLessonsYet": "لا توجد دروس بعد",
+  "@noLessonsYet": {
+    "description": "Professional dashboard interface: noLessonsYet."
+  },
+  "noSearchResults": "لا نتائج مطابقة لبحثك",
+  "@noSearchResults": {
+    "description": "Professional dashboard interface: noSearchResults."
+  },
+  "addFirstLessonDescription": "ابدأ بإضافة أول درس إلى مكتبتك.",
+  "@addFirstLessonDescription": {
+    "description": "Professional dashboard interface: addFirstLessonDescription."
+  },
+  "tryDifferentSearch": "جرّب كلمة بحث مختلفة.",
+  "@tryDifferentSearch": {
+    "description": "Professional dashboard interface: tryDifferentSearch."
+  },
+  "forParents": "لأولياء الأمور",
+  "@forParents": {
+    "description": "Professional dashboard interface: forParents."
+  },
+  "byDisability": "حسب الإعاقة",
+  "@byDisability": {
+    "description": "Professional dashboard interface: byDisability."
+  },
+  "forEveryone": "للجميع",
+  "@forEveryone": {
+    "description": "Professional dashboard interface: forEveryone."
+  },
+  "videoAttached": "فيديو مرفق",
+  "@videoAttached": {
+    "description": "Professional dashboard interface: videoAttached."
+  },
+  "subtitlesAttached": "ملف ترجمات مرفق",
+  "@subtitlesAttached": {
+    "description": "Professional dashboard interface: subtitlesAttached."
+  },
+  "signLanguageVideoAttached": "فيديو لغة إشارة مرفق",
+  "@signLanguageVideoAttached": {
+    "description": "Professional dashboard interface: signLanguageVideoAttached."
+  },
+  "audioAttached": "تسجيل صوتي مرفق",
+  "@audioAttached": {
+    "description": "Professional dashboard interface: audioAttached."
+  },
+  "planApprovedByMinistry": "تم اعتماد هذه الخطة من الوزارة",
+  "@planApprovedByMinistry": {
+    "description": "Professional dashboard interface: planApprovedByMinistry."
+  },
+  "educationalPlan": "الخطة التعليمية",
+  "@educationalPlan": {
+    "description": "Professional dashboard interface: educationalPlan."
+  },
+  "cognitiveAssessment": "التقييم المعرفي",
+  "@cognitiveAssessment": {
+    "description": "Professional dashboard interface: cognitiveAssessment."
+  },
+  "motorAssessment": "التقييم الحركي",
+  "@motorAssessment": {
+    "description": "Professional dashboard interface: motorAssessment."
+  },
+  "emotionalAssessment": "التقييم العاطفي",
+  "@emotionalAssessment": {
+    "description": "Professional dashboard interface: emotionalAssessment."
+  },
+  "socialAssessment": "التقييم الاجتماعي",
+  "@socialAssessment": {
+    "description": "Professional dashboard interface: socialAssessment."
+  },
+  "recommendations": "التوصيات",
+  "@recommendations": {
+    "description": "Professional dashboard interface: recommendations."
+  },
+  "suggestedTeachingMethods": "طرق التدريس المقترحة",
+  "@suggestedTeachingMethods": {
+    "description": "Professional dashboard interface: suggestedTeachingMethods."
+  },
+  "dashboardLoadFailed": "تعذّر جلب البيانات",
+  "@dashboardLoadFailed": {
+    "description": "Professional dashboard interface: dashboardLoadFailed."
+  },
+  "lessonAdded": "تم إضافة الدرس بنجاح",
+  "@lessonAdded": {
+    "description": "Professional dashboard interface: lessonAdded."
+  },
+  "addLesson": "إضافة درس",
+  "@addLesson": {
+    "description": "Professional dashboard interface: addLesson."
+  },
+  "teacherLessonsDescription": "أضف دروساً جديدة أو تصفّح الدروس الموجودة",
+  "@teacherLessonsDescription": {
+    "description": "Professional dashboard interface: teacherLessonsDescription."
+  },
+  "teacherHomeworkDescription": "تابع الواجبات والتسليمات والتصحيح",
+  "@teacherHomeworkDescription": {
+    "description": "Professional dashboard interface: teacherHomeworkDescription."
+  },
+  "disabilityDescription": "وصف الإعاقة",
+  "@disabilityDescription": {
+    "description": "Professional dashboard interface: disabilityDescription."
+  },
+  "medicalHistory": "التاريخ الطبي",
+  "@medicalHistory": {
+    "description": "Professional dashboard interface: medicalHistory."
+  },
+  "specialNeeds": "احتياجات خاصة",
+  "@specialNeeds": {
+    "description": "Professional dashboard interface: specialNeeds."
+  },
+  "preferredLearningStyle": "أسلوب التعلم المفضّل",
+  "@preferredLearningStyle": {
+    "description": "Professional dashboard interface: preferredLearningStyle."
+  },
+  "psychologicalNotes": "ملاحظات نفسية",
+  "@psychologicalNotes": {
+    "description": "Professional dashboard interface: psychologicalNotes."
+  },
+  "strengths": "نقاط القوة",
+  "@strengths": {
+    "description": "Professional dashboard interface: strengths."
+  },
+  "challenges": "التحديات",
+  "@challenges": {
+    "description": "Professional dashboard interface: challenges."
+  },
+  "reviewCaseBeforeAccepting": "راجع معلومات الحالة ثم قرر إن كانت مناسبة لتخصصك قبل قبول المتابعة.",
+  "@reviewCaseBeforeAccepting": {
+    "description": "Professional dashboard interface: reviewCaseBeforeAccepting."
+  },
+  "selectSpecialtyFirst": "حدّد تخصصك أولاً",
+  "@selectSpecialtyFirst": {
+    "description": "Professional dashboard interface: selectSpecialtyFirst."
+  },
+  "acceptingFollowUp": "جارٍ قبول المتابعة...",
+  "@acceptingFollowUp": {
+    "description": "Professional dashboard interface: acceptingFollowUp."
+  },
+  "available": "متاح",
+  "@available": {
+    "description": "Professional dashboard interface: available."
+  },
+  "parentRequestsSupportMeeting": "ولي الأمر يطلب اجتماع دعم تعليمي",
+  "@parentRequestsSupportMeeting": {
+    "description": "Professional dashboard interface: parentRequestsSupportMeeting."
+  },
+  "adaptLearning": "تكييف التعلّم",
+  "@adaptLearning": {
+    "description": "Professional dashboard interface: adaptLearning."
+  },
+  "suggestLearningSupportSpecialist": "اقترح مختص دعم تعليمي",
+  "@suggestLearningSupportSpecialist": {
+    "description": "Professional dashboard interface: suggestLearningSupportSpecialist."
+  },
+  "suggestEducationalSpecialist": "اقترح مختص تعليمي",
+  "@suggestEducationalSpecialist": {
+    "description": "Professional dashboard interface: suggestEducationalSpecialist."
+  },
+  "specialtyMissingContactSupport": "لم يتم تحديد تخصصك — راجع الدعم",
+  "@specialtyMissingContactSupport": {
+    "description": "Professional dashboard interface: specialtyMissingContactSupport."
+  },
+  "casePreviewFailed": "تعذّر معاينة الحالة",
+  "@casePreviewFailed": {
+    "description": "Professional dashboard interface: casePreviewFailed."
+  },
+  "confirmAdding": "تأكيد الإضافة",
+  "@confirmAdding": {
+    "description": "Professional dashboard interface: confirmAdding."
+  },
+  "unspecified": "غير محددة",
+  "@unspecified": {
+    "description": "Professional dashboard interface: unspecified."
+  },
+  "lessonCompletionApproved": "تم اعتماد إنجاز الدرس",
+  "@lessonCompletionApproved": {
+    "description": "Professional dashboard interface: lessonCompletionApproved."
+  },
+  "myChildren": "أطفالي",
+  "@myChildren": {
+    "description": "Professional dashboard interface: myChildren."
+  },
+  "waitingList": "قائمة الانتظار",
+  "@waitingList": {
+    "description": "Professional dashboard interface: waitingList."
+  },
+  "noRecordedEvaluation": "لا يوجد تقييم مسجل",
+  "@noRecordedEvaluation": {
+    "description": "Professional dashboard interface: noRecordedEvaluation."
+  },
+  "evaluationDetails": "تفاصيل التقييم",
+  "@evaluationDetails": {
+    "description": "Professional dashboard interface: evaluationDetails."
+  },
+  "learningInteraction": "التفاعل أثناء التعلم",
+  "@learningInteraction": {
+    "description": "Professional dashboard interface: learningInteraction."
+  },
+  "parentTargetedLesson": "درس موجّه لأولياء الأمور",
+  "@parentTargetedLesson": {
+    "description": "Professional dashboard interface: parentTargetedLesson."
+  },
+  "lessonRecommendationFailed": "تعذّر إرسال الاقتراح",
+  "@lessonRecommendationFailed": {
+    "description": "Professional dashboard interface: lessonRecommendationFailed."
+  },
+  "lessonRecommendationSent": "تم إرسال اقتراح الدرس",
+  "@lessonRecommendationSent": {
+    "description": "Professional dashboard interface: lessonRecommendationSent."
+  },
+  "recommendLessonToChild": "اقتراح درس لطفل",
+  "@recommendLessonToChild": {
+    "description": "Professional dashboard interface: recommendLessonToChild."
+  },
+  "noChildrenForRecommendation": "لا يوجد أطفال مرتبطون بحسابك لإرسال الاقتراح لهم.",
+  "@noChildrenForRecommendation": {
+    "description": "Professional dashboard interface: noChildrenForRecommendation."
+  },
+  "sendRecommendationToParent": "إرسال الاقتراح لولي الأمر",
+  "@sendRecommendationToParent": {
+    "description": "Professional dashboard interface: sendRecommendationToParent."
+  },
+  "noLessonsInCategory": "لا توجد دروس لهذا التصنيف",
+  "@noLessonsInCategory": {
+    "description": "Professional dashboard interface: noLessonsInCategory."
+  },
+  "addLessonUsingSuggestion": "أضف درساً جديداً باستخدام زر اقتراح درس",
+  "@addLessonUsingSuggestion": {
+    "description": "Professional dashboard interface: addLessonUsingSuggestion."
+  },
+  "recommendToChild": "اقتراح لطفل",
+  "@recommendToChild": {
+    "description": "Professional dashboard interface: recommendToChild."
+  },
+  "currentActivity": "نشاط حالي",
+  "@currentActivity": {
+    "description": "Professional dashboard interface: currentActivity."
+  },
+  "openChildProfile": "فتح ملف الطفل",
+  "@openChildProfile": {
+    "description": "Professional dashboard interface: openChildProfile."
+  },
+  "evaluate": "تقييم",
+  "@evaluate": {
+    "description": "Professional dashboard interface: evaluate."
+  },
+  "evaluation": "التقييم",
+  "@evaluation": {
+    "description": "Professional dashboard interface: evaluation."
+  },
+  "teacherReport": "تقرير المعلم",
+  "@teacherReport": {
+    "description": "Professional dashboard interface: teacherReport."
+  },
+  "writeProgress": "اكتب تقدّم",
+  "@writeProgress": {
+    "description": "Professional dashboard interface: writeProgress."
+  },
+  "suggestSupport": "اقترح دعم",
+  "@suggestSupport": {
+    "description": "Professional dashboard interface: suggestSupport."
+  },
+  "evaluateCurrentPlan": "تقييم الخطة الحالية",
+  "@evaluateCurrentPlan": {
+    "description": "Professional dashboard interface: evaluateCurrentPlan."
+  },
+  "approving": "جارٍ الاعتماد...",
+  "@approving": {
+    "description": "Professional dashboard interface: approving."
+  },
+  "approveCurrentActivity": "اعتماد النشاط الحالي",
+  "@approveCurrentActivity": {
+    "description": "Professional dashboard interface: approveCurrentActivity."
+  },
+  "noAssignedChildren": "لا يوجد أطفال معيّنون لك حالياً",
+  "@noAssignedChildren": {
+    "description": "Professional dashboard interface: noAssignedChildren."
+  },
+  "noWaitingChildren": "لا يوجد أطفال في قائمة الانتظار",
+  "@noWaitingChildren": {
+    "description": "Professional dashboard interface: noWaitingChildren."
+  },
+  "followUpChildrenDescription": "سيظهر الأطفال هنا عند إضافتهم إلى قائمة المتابعة.",
+  "@followUpChildrenDescription": {
+    "description": "Professional dashboard interface: followUpChildrenDescription."
+  },
+  "waitingChildrenDescription": "ستظهر طلبات الأطفال هنا عند توفرها.",
+  "@waitingChildrenDescription": {
+    "description": "Professional dashboard interface: waitingChildrenDescription."
+  },
+  "searchForChild": "البحث عن طفل",
+  "@searchForChild": {
+    "description": "Professional dashboard interface: searchForChild."
+  },
+  "enterChildName": "اكتب اسم الطفل...",
+  "@enterChildName": {
+    "description": "Professional dashboard interface: enterChildName."
+  },
+  "search": "بحث",
+  "@search": {
+    "description": "Professional dashboard interface: search."
+  },
+  "editChildSearch": "تعديل بحث الأطفال",
+  "@editChildSearch": {
+    "description": "Professional dashboard interface: editChildSearch."
+  },
+  "aboutEduBridge": "منصة تعليمية لدعم الأطفال ذوي الاحتياجات الخاصة.",
+  "@aboutEduBridge": {
+    "description": "Professional dashboard interface: aboutEduBridge."
+  },
+  "searchChildrenByName": "ابحث عن طفل بالاسم",
+  "@searchChildrenByName": {
+    "description": "Professional dashboard interface: searchChildrenByName."
+  },
+  "awaitingAssessment": "بانتظار التقييم",
+  "@awaitingAssessment": {
+    "description": "Professional dashboard interface: awaitingAssessment."
+  },
+  "completedToday": "منجز اليوم",
+  "@completedToday": {
+    "description": "Professional dashboard interface: completedToday."
+  },
+  "inProgress": "قيد التنفيذ",
+  "@inProgress": {
+    "description": "Professional dashboard interface: inProgress."
+  },
+  "suggestLesson": "اقتراح درس",
+  "@suggestLesson": {
+    "description": "Professional dashboard interface: suggestLesson."
+  },
+  "specialistsLoadFailed": "تعذّر جلب قائمة المختصين",
+  "@specialistsLoadFailed": {
+    "description": "Professional dashboard interface: specialistsLoadFailed."
+  },
+  "noMatchingChildren": "لا يوجد أطفال مطابقون للبحث",
+  "@noMatchingChildren": {
+    "description": "Professional dashboard interface: noMatchingChildren."
+  },
+  "chooseSupportTarget": "اختر جهة اقتراح الدعم",
+  "@chooseSupportTarget": {
+    "description": "Professional dashboard interface: chooseSupportTarget."
+  },
+  "teacherChildrenResponsibility": "{count, plural, =0{لا يوجد أطفال تحت مسؤوليتك} =1{لديك طفل واحد تحت مسؤوليتك} =2{لديك طفلان تحت مسؤوليتك} few{لديك {count} أطفال تحت مسؤوليتك} many{لديك {count} طفلًا تحت مسؤوليتك} other{لديك {count} طفل تحت مسؤوليتك}}",
+  "@teacherChildrenResponsibility": {
+    "description": "Professional dashboard interface: teacherChildrenResponsibility.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "targetStudentCount": "{count, plural, =0{لا يوجد طلاب} =1{طالب واحد} =2{طالبان} few{{count} طلاب} many{{count} طالبًا} other{{count} طالب}}",
+  "@targetStudentCount": {
+    "description": "Professional dashboard interface: targetStudentCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inProgressActivityCount": "{count, plural, =0{لا أنشطة قيد التنفيذ} =1{نشاط واحد قيد التنفيذ} =2{نشاطان قيد التنفيذ} few{{count} أنشطة قيد التنفيذ} many{{count} نشاطًا قيد التنفيذ} other{{count} نشاط قيد التنفيذ}}",
+  "@inProgressActivityCount": {
+    "description": "Professional dashboard interface: inProgressActivityCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedActivityCount": "{count, plural, =0{لا أنشطة مكتملة} =1{نشاط واحد مكتمل} =2{نشاطان مكتملان} few{{count} أنشطة مكتملة} many{{count} نشاطًا مكتملًا} other{{count} نشاط مكتمل}}",
+  "@completedActivityCount": {
+    "description": "Professional dashboard interface: completedActivityCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "planPendingForChild": "لم يتم اعتماد خطة \"{name}\" من الوزارة بعد.\n\nيمكنك عرض الخطة الأولية من المختص.",
+  "@planPendingForChild": {
+    "description": "Professional dashboard interface: planPendingForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkDueDate": "التسليم: {date}",
+  "@homeworkDueDate": {
+    "description": "Professional dashboard interface: homeworkDueDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionContent": "وصف صوتي: {description}",
+  "@audioDescriptionContent": {
+    "description": "Professional dashboard interface: audioDescriptionContent.",
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "approvedPlanForChild": "الخطة المعتمدة - {name}",
+  "@approvedPlanForChild": {
+    "description": "Professional dashboard interface: approvedPlanForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "followChildAsSpecialist": "متابعة الطفل كـ {specialty}",
+  "@followChildAsSpecialist": {
+    "description": "Professional dashboard interface: followChildAsSpecialist.",
+    "placeholders": {
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "childAgeLabel": "العمر: {age} سنة",
+  "@childAgeLabel": {
+    "description": "Professional dashboard interface: childAgeLabel.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "childFollowUpAdded": "تمت إضافة {name} لمتابعتك",
+  "@childFollowUpAdded": {
+    "description": "Professional dashboard interface: childFollowUpAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "evaluationDate": "التاريخ: {date}",
+  "@evaluationDate": {
+    "description": "Professional dashboard interface: evaluationDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonAddedDate": "تاريخ الإضافة: {date}",
+  "@lessonAddedDate": {
+    "description": "Professional dashboard interface: lessonAddedDate.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonTargetCompletion": "{target} · إتمام {percent}%",
+  "@lessonTargetCompletion": {
+    "description": "Professional dashboard interface: lessonTargetCompletion.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "supportRecommendationForChild": "اقتراح دعم تعليمي — {name}",
+  "@supportRecommendationForChild": {
+    "description": "Professional dashboard interface: supportRecommendationForChild.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "acceptChildFollowUpConfirmation": "ولي الأمر: {guardians}\nحالة الطفل: {condition}\nالاحتياجات: {needs}\n\nهل تريد إضافة \"{name}\" لمتابعتك كـ {specialty}؟",
+  "@acceptChildFollowUpConfirmation": {
+    "description": "Professional dashboard interface: acceptChildFollowUpConfirmation.",
+    "placeholders": {
+      "guardians": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      },
+      "needs": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "specialty": {
+        "type": "String"
+      }
+    }
+  },
+  "add": "إضافة",
+  "@add": {
+    "description": "Confirm adding an item."
   }
 }

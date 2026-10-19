@@ -25,13 +25,13 @@ Widget _buildTeacherHeader({
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-Expanded(child: DashboardProfileIdentity(roleLabel: 'المعلم', subtitle: switch (tabIndex) { 0 => 'لديك $childrenCount طفل تحت مسؤوليتك', 1 => 'أضف دروساً جديدة أو تصفّح الدروس الموجودة', _ => 'تابع الواجبات والتسليمات والتصحيح' })),
+Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.teacherRole, subtitle: switch (tabIndex) { 0 => context.l10n.teacherChildrenResponsibility(childrenCount), 1 => context.l10n.teacherLessonsDescription, _ => context.l10n.teacherHomeworkDescription })),
 const SizedBox(width: 8),
 DashboardHeaderActions(
                   actions: [
                     DashboardMenuAction(
                       id: 'notifications',
-                      label: 'الإشعارات',
+                      label: context.l10n.notifications,
                       icon: AppIcons.notifications,
                       onSelected: () => Navigator.push(
                         context,
@@ -42,7 +42,7 @@ DashboardHeaderActions(
                     ),
                     DashboardMenuAction(
                       id: 'case_discussion',
-                      label: 'دراسات الحالة',
+                      label: context.l10n.caseStudies,
                       icon: AppIcons.forum,
                       onSelected: () => Navigator.push(
                         context,
@@ -53,13 +53,13 @@ DashboardHeaderActions(
                     ),
                     DashboardMenuAction(
                       id: 'support',
-                      label: 'الدعم الفني',
+                      label: context.l10n.technicalSupport,
                       icon: AppIcons.support,
                       onSelected: () => SupportSheet.show(context),
                     ),
                     DashboardMenuAction(
                       id: 'chats',
-                      label: 'المحادثات',
+                      label: context.l10n.conversations,
                       icon: AppIcons.chat,
                       onSelected: () => Navigator.push(
                         context,
@@ -68,13 +68,13 @@ DashboardHeaderActions(
                     ),
                     DashboardMenuAction(
                       id: 'legal',
-                      label: 'الخصوصية والحساب',
+                      label: context.l10n.privacyAndAccount,
                       icon: AppIcons.privacy,
                       onSelected: () => const LegalLinksButton().show(context),
                     ),
                     DashboardMenuAction(
                       id: 'logout',
-                      label: 'تسجيل الخروج',
+                      label: context.l10n.logout,
                       icon: AppIcons.logout,
                       destructive: true,
                       onSelected: () => onLogout(),
@@ -89,7 +89,7 @@ DashboardHeaderActions(
   );
 }
 
-Widget _buildTeacherError(String error, Future<void> Function() reload) {
+Widget _buildTeacherError(Object error, Future<void> Function() reload) {
   return Builder(
     builder: (context) {
       final textTheme = Theme.of(context).textTheme;
@@ -100,7 +100,7 @@ Widget _buildTeacherError(String error, Future<void> Function() reload) {
             child: Column(
               children: [
                 Text(
-                  error,
+                  context.sharedMessage(error),
                   style: textTheme.bodyMedium?.copyWith(color: AppColors.red),
                 ),
                 const SizedBox(height: 16),
@@ -108,8 +108,8 @@ Widget _buildTeacherError(String error, Future<void> Function() reload) {
                   height: 56,
                   child: ElevatedButton.icon(
                     icon: const Icon(AppIcons.refresh, size: 28),
-                    label: const Text(
-                      'إعادة المحاولة',
+                    label: Text(
+                      context.l10n.retryAction,
                       style: TextStyle(fontSize: 18),
                     ),
                     onPressed: reload,

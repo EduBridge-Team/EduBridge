@@ -32,7 +32,7 @@ Widget _buildChildrenTab(
         ),
         const SizedBox(height: 18),
         Text(
-          'لا يوجد أطفال موزّعون عليك حالياً',
+          context.l10n.noAssignedTeacherChildren,
           style: TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.w800,
@@ -42,7 +42,7 @@ Widget _buildChildrenTab(
         ),
         const SizedBox(height: 6),
         Text(
-          'سيظهر الأطفال هنا فور إسنادهم إلى حسابك.',
+          context.l10n.assignedChildrenDescription,
           style: TextStyle(fontSize: 13.5, color: c.muted),
           textAlign: TextAlign.center,
         ),
@@ -109,9 +109,9 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
   String get _followStatus {
     final status = (child['status'] ?? '').toString().toLowerCase();
     return switch (status) {
-      'completed' || 'done' => 'طالب مكتمل المتابعة',
-      'pending' => 'طالب بانتظار المتابعة',
-      _ => 'طالب قيد المتابعة',
+      'completed' || 'done' => context.l10n.followUpCompleted,
+      'pending' => context.l10n.followUpPending,
+      _ => context.l10n.followUpActive,
     };
   }
 
@@ -206,27 +206,26 @@ class _TeacherChildCardState extends State<_TeacherChildCard> {
         context: context,
         builder: (_) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
+          title: Row(
             children: [
               Icon(AppIcons.clock, color: AppColors.brandBlue, size: 32),
               SizedBox(width: 8),
-              Text('الخطة قيد المراجعة'),
+              Text(context.l10n.planUnderReview),
             ],
           ),
           content: Text(
-            'لم يتم اعتماد خطة "${child['name']}" من الوزارة بعد.\n\n'
-            'يمكنك عرض الخطة الأولية من المختص.',
+            context.l10n.planPendingForChild((child['name'] ?? '').toString()),
             style: const TextStyle(fontSize: 15, height: 1.6),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إغلاق'),
+              child: Text(context.l10n.close),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandTeal),
               icon: const Icon(AppIcons.lesson),
-              label: const Text('الخطة الأولية'),
+              label: Text(context.l10n.preliminaryPlan),
               onPressed: () {
                 Navigator.pop(context);
                 showModalBottomSheet(

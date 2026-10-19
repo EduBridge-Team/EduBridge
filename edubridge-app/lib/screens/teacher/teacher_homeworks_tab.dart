@@ -11,7 +11,7 @@ class _TeacherHomeworksTab extends StatefulWidget {
 class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
   List<Homework> _homeworks = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _filter = 'all';
 
   @override
@@ -36,7 +36,7 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'تعذّر تحميل الواجبات';
+        _error = SharedUiMessage.homeworksLoadFailed;
       });
     }
   }
@@ -97,13 +97,13 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(
             children: [
-              _filterChip('all', 'الكل'),
+              _filterChip('all', context.l10n.all),
               const SizedBox(width: 8),
-              _filterChip('pending', 'لم يُسلّم'),
+              _filterChip('pending', context.l10n.notSubmitted),
               const SizedBox(width: 8),
-              _filterChip('submitted', 'للتصحيح'),
+              _filterChip('submitted', context.l10n.toGrade),
               const SizedBox(width: 8),
-              _filterChip('graded', 'مُصحّح'),
+              _filterChip('graded', context.l10n.graded),
             ],
           ),
         ),
@@ -118,14 +118,14 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
                       : _error != null
                           ? ListView(children: [
                               const SizedBox(height: 100),
-                              Center(child: Text(_error!, style: const TextStyle(color: AppColors.red))),
+                              Center(child: Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red))),
                             ])
                           : _filtered.isEmpty
                               ? ListView(children: [
                                   const SizedBox(height: 110),
                                   Icon(AppIcons.homework, size: 64, color: c.muted),
                                   const SizedBox(height: 12),
-                                  Center(child: Text('لا توجد واجبات ضمن هذا التصنيف', style: TextStyle(color: c.muted))),
+                                  Center(child: Text(context.l10n.noHomeworkInCategory, style: TextStyle(color: c.muted))),
                                 ])
                               : ListView.builder(
                                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
@@ -148,7 +148,7 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
                                             Row(children: [
                                               Icon(AppIcons.calendar, size: 16, color: c.muted),
                                               const SizedBox(width: 5),
-                                              Text('التسليم: ${h.dueDate.day}/${h.dueDate.month}/${h.dueDate.year}', style: TextStyle(fontSize: 12, color: c.muted)),
+                                              Text(context.l10n.homeworkDueDate(MaterialLocalizations.of(context).formatShortDate(h.dueDate)), style: TextStyle(fontSize: 12, color: c.muted)),
                                               const Spacer(),
                                               Text('${h.submittedCount}/${h.totalAssigned}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brandBlue)),
                                             ]),
@@ -167,7 +167,7 @@ class _TeacherHomeworksTabState extends State<_TeacherHomeworksTab> {
                   heroTag: 'teacher-create-homework',
                   onPressed: _createHomework,
                   icon: const Icon(AppIcons.add),
-                  label: const Text('إنشاء واجب', style: TextStyle(fontWeight: FontWeight.w800, height: 1.15)),
+                  label: Text(context.l10n.createHomework, style: TextStyle(fontWeight: FontWeight.w800, height: 1.15)),
                 ),
               ),
             ],

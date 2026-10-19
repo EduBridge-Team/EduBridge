@@ -1,3 +1,4 @@
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/specialist/support_target_dialog_s28.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +10,9 @@ void main() {
       var closed = false;
       await tester.binding.setSurfaceSize(const Size(320, 640));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
+      await tester.pumpWidget(MaterialApp(locale: const Locale('ar'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates, home: Scaffold(body: Builder(
         builder: (context) => TextButton(onPressed: () async {
           result = await showDialog<SupportRecommendationTarget>(context: context,
             builder: (_) => const SupportTargetDialogS28(childName: 'محمود'));
@@ -39,7 +42,9 @@ void main() {
   testWidgets('S28 cancel returns no target even after a selection', (tester) async {
     var closed = false;
     SupportRecommendationTarget? result;
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
+    await tester.pumpWidget(MaterialApp(locale: const Locale('ar'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates, home: Scaffold(body: Builder(
       builder: (context) => TextButton(onPressed: () async {
         result = await showDialog<SupportRecommendationTarget>(context: context,
           builder: (_) => const SupportTargetDialogS28(childName: 'اسم طفل طويل للاختبار'));

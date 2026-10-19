@@ -142,8 +142,8 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     if (!mounted) return;
     if (_mySpecialty == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('لم يتم تحديد تخصصك — راجع الدعم'),
+        SnackBar(
+          content: Text(context.l10n.specialtyMissingContactSupport),
           backgroundColor: AppColors.red,
         ),
       );
@@ -154,10 +154,10 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
     try {
       final response = await ApiService.authGet('/children/${child['id']}/assignment-preview');
       final data = ApiService.decodeMap(response.body);
-      if (response.statusCode != 200) throw Exception(data['error'] ?? 'تعذّر معاينة الحالة');
+      if (response.statusCode != 200) throw StateError('case_preview_failed');
       preview = Map<String, dynamic>.from(data['child'] as Map);
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString().replaceFirst('Exception: ', ''))));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.casePreviewFailed)));
       return;
     }
     if (!mounted) return;
@@ -179,19 +179,23 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
               size: 28,
             ),
             const SizedBox(width: 8),
-            const Text('تأكيد الإضافة'),
+            Text(context.l10n.confirmAdding),
           ],
         ),
         content: Text(
-          'ولي الأمر: $guardians\nحالة الطفل: ${preview['disability_description'] ?? preview['disability_type'] ?? 'غير محددة'}\nالاحتياجات: ${preview['special_needs'] ?? 'غير محددة'}\n\n'
-          'هل تريد إضافة "${child['name']}" لمتابعتك كـ'
-          '${_mySpecialty == 'learning_support' ? 'مختص دعم تعليمي' : 'مختص تعليمي'}؟',
+          context.l10n.acceptChildFollowUpConfirmation(
+            guardians,
+            (preview['disability_description'] ?? preview['disability_type'] ?? context.l10n.unspecified).toString(),
+            (preview['special_needs'] ?? context.l10n.unspecified).toString(),
+            (child['name'] ?? '').toString(),
+            _mySpecialty == 'learning_support' ? context.l10n.learningSupportSpecialist : context.l10n.educationalSpecialist,
+          ),
           style: const TextStyle(fontSize: 14, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -200,7 +204,7 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
                   : AppColors.brandBlue,
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('إضافة'),
+            child: Text(context.l10n.add),
           ),
         ],
       ),
@@ -219,12 +223,12 @@ extension _SpecialistDashboardActionsExtension on _SpecialistDashboardScreenStat
       if (!mounted) return;
       if (err != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(err), backgroundColor: AppColors.red),
+          SnackBar(content: Text(context.sharedMessage(err)), backgroundColor: AppColors.red),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('تمت إضافة ${child['name']} لمتابعتك'),
+            content: Text(context.l10n.childFollowUpAdded((child['name'] ?? '').toString())),
             backgroundColor: AppColors.brandGreen,
           ),
         );

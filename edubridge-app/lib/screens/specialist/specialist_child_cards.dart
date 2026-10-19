@@ -18,17 +18,17 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
           const Icon(AppIcons.specialist,
               color: AppColors.brandTealDeep, size: 28),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('طلب دعم تعليمي',
+                Text(context.l10n.requestLearningSupport,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                       color: AppColors.purple,
                     )),
-                Text('ولي الأمر يطلب اجتماع دعم تعليمي',
+                Text(context.l10n.parentRequestsSupportMeeting,
                     style: TextStyle(
                         fontSize: 12, color: Colors.black54)),
               ],
@@ -48,7 +48,7 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
                     const LearningSupportRequestsScreen(),
               ),
             ),
-            child: const Text('اعرض',
+            child: Text(context.l10n.view,
                 style: TextStyle(
                     fontSize: 13, fontWeight: FontWeight.bold)),
           ),
@@ -76,14 +76,14 @@ extension _ChildCardsExtension on _SpecialistDashboardScreenState {
       Expanded(child: OutlinedButton.icon(
         style: style,
         icon: const Icon(Icons.accessibility_new_rounded, size: 17),
-        label: const Text('تكييف التعلّم'),
+        label: Text(context.l10n.adaptLearning),
         onPressed: () => _openChildAdaptation(child),
       )),
       const SizedBox(width: 10),
       Expanded(child: showSuggestion ? OutlinedButton.icon(
         style: style,
         icon: Icon(needsSupport ? AppIcons.specialist : AppIcons.lesson, size: 17),
-        label: Text(needsSupport ? 'اقترح مختص دعم تعليمي' : 'اقترح مختص تعليمي',
+        label: Text(needsSupport ? context.l10n.suggestLearningSupportSpecialist : context.l10n.suggestEducationalSpecialist,
             textAlign: TextAlign.center),
         onPressed: () => _openSuggestSpecialist(row, suggestionType),
       ) : const SizedBox.shrink()),

@@ -36,7 +36,7 @@ class _ApprovedPlanSheet extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'الخطة المعتمدة - ${plan['child_name'] ?? ''}',
+                    context.l10n.approvedPlanForChild((plan['child_name'] ?? '').toString()),
                     style: TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
@@ -63,7 +63,7 @@ class _ApprovedPlanSheet extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'تم اعتماد هذه الخطة من الوزارة',
+                      context.l10n.planApprovedByMinistry,
                       style: TextStyle(fontSize: 13, color: c.onTint),
                     ),
                   ),
@@ -73,44 +73,44 @@ class _ApprovedPlanSheet extends StatelessWidget {
             const SizedBox(height: 16),
             _planSection(
               AppIcons.lesson,
-              'الخطة التعليمية',
+              context.l10n.educationalPlan,
               plan['educational_plan'],
               c,
             ),
             _planSection(
               Icons.psychology_outlined,
-              'التقييم المعرفي',
+              context.l10n.cognitiveAssessment,
               plan['cognitive_assessment'],
               c,
             ),
             _planSection(
               Icons.directions_walk_outlined,
-              'التقييم الحركي',
+              context.l10n.motorAssessment,
               plan['motor_assessment'],
               c,
             ),
             _planSection(
               Icons.favorite_border_rounded,
-              'التقييم العاطفي',
+              context.l10n.emotionalAssessment,
               plan['emotional_assessment'],
               c,
             ),
             _planSection(
               AppIcons.users,
-              'التقييم الاجتماعي',
+              context.l10n.socialAssessment,
               plan['social_assessment'],
               c,
             ),
             _planSection(
               Icons.lightbulb_outline_rounded,
-              'التوصيات',
+              context.l10n.recommendations,
               plan['recommendations'],
               c,
             ),
             if (plan['teaching_methods'] != null) ...[
               const SizedBox(height: 12),
               Text(
-                'طرق التدريس المقترحة',
+                context.l10n.suggestedTeachingMethods,
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,

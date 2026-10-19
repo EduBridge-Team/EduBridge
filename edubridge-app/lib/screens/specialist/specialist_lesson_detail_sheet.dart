@@ -50,12 +50,12 @@ class _LessonDetailSheet extends StatelessWidget {
                   color: AppColors.brandTeal.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(AppIcons.parent, color: Color.fromARGB(255, 17, 120, 180), size: 16),
                     SizedBox(width: 4),
-                    Text('درس موجّه لأولياء الأمور',
+                    Text(context.l10n.parentTargetedLesson,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -66,7 +66,7 @@ class _LessonDetailSheet extends StatelessWidget {
               ),
             if (createdAt != null)
               Text(
-                'تاريخ الإضافة: ${createdAt.day}/${createdAt.month}/${createdAt.year}',
+                context.l10n.lessonAddedDate(MaterialLocalizations.of(context).formatShortDate(createdAt)),
                 style: TextStyle(fontSize: 12, color: c.muted),
               ),
             const SizedBox(height: 12),
