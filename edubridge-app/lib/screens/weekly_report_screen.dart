@@ -175,7 +175,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                   color: Colors.white,
                   fontSize: 15,
                 ),
-              )),
+              ),
               const SizedBox(height: 12),
               Text(
                 '${r.progressPercentage.toStringAsFixed(0)}%',
