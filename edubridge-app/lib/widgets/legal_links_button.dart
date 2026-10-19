@@ -86,58 +86,61 @@ class LegalLinksButton extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.privacyAndAccount,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              ListTile(
-                leading: const Icon(Icons.privacy_tip_outlined),
-                title: Text(context.l10n.privacyPolicy),
-                subtitle: Text(context.l10n.privacyPolicyDescription),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _open(context, _privacyUri);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.description_outlined),
-                title: Text(context.l10n.requestAccountDeletion),
-                subtitle: Text(context.l10n.deletionRequestSteps),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _open(context, _deleteAccountUri);
-                },
-              ),
-              const Divider(height: 24),
-              // ✅ زر حذف الحساب نهائياً
-              ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: Text(
-                  context.l10n.deleteAccountPermanently,
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  context.l10n.privacyAndAccount,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: Text(context.l10n.privacyPolicy),
+                  subtitle: Text(context.l10n.privacyPolicyDescription),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _open(context, _privacyUri);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: Text(context.l10n.requestAccountDeletion),
+                  subtitle: Text(context.l10n.deletionRequestSteps),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _open(context, _deleteAccountUri);
+                  },
+                ),
+                const Divider(height: 24),
+                // ✅ زر حذف الحساب نهائياً
+                ListTile(
+                  leading: const Icon(Icons.delete_forever, color: Colors.red),
+                  title: Text(
+                    context.l10n.deleteAccountPermanently,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  subtitle: Text(
+                    context.l10n.deleteAccountWarning,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _confirmDelete(context);
+                  },
                 ),
-                subtitle: Text(
-                  context.l10n.deleteAccountWarning,
-                  style: TextStyle(fontSize: 12),
-                ),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _confirmDelete(context);
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

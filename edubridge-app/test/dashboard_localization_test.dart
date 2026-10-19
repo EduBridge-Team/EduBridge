@@ -62,6 +62,26 @@ void main() {
     }
   }
 
+  for (final language in ['ar', 'en']) {
+    testWidgets('legal menu scrolls on a small screen with large $language text', (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(_host(const Scaffold(body: LegalLinksButton()), language, scale: 2));
+      await tester.tap(find.byType(IconButton));
+      await tester.pumpAndSettle();
+      final warning = find.text(language == 'en'
+          ? 'Your account and all its data will be deleted. This cannot be undone.'
+          : 'سيتم حذف حسابك وكل بياناتك — لا يمكن التراجع');
+      await tester.ensureVisible(warning);
+      await tester.pumpAndSettle();
+      expect(warning, findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('legal entry reuses localized confirmation and cancel never deletes', (tester) async {
     await tester.pumpWidget(_host(const Scaffold(body: LegalLinksButton()), 'en'));
     await tester.tap(find.byType(IconButton));
