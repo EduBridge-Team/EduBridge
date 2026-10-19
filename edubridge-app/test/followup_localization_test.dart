@@ -60,7 +60,7 @@ void main() {
           expect(find.text(strings.followupSuggestionsTitle), findsOneWidget);
           expect(find.text('محمود'), findsOneWidget);
           expect(find.text('سبب الاقتراح الأصلي'), findsOneWidget);
-          expect(find.text(strings.followupSuggestedBy('المعلم الأصلي')), findsOneWidget);
+          expect(find.text(strings.ticketFromUser('المعلم الأصلي')), findsOneWidget);
           expect(Directionality.of(tester.element(find.byType(Scaffold))), language == 'ar' ? TextDirection.rtl : TextDirection.ltr);
           for (final entry in {
             strings.followupAcceptedFilter: 'accepted', strings.rejectedStatus: 'rejected', strings.all: null,

@@ -143,7 +143,7 @@ extension _SpecialistSuggestionsWidgets on _SpecialistSuggestionsScreenState {
                         ),
                       ),
                       Text(
-                        context.l10n.followupSuggestedBy((s['suggested_by_name'] ?? '').toString()),
+                        context.l10n.ticketFromUser((s['suggested_by_name'] ?? '').toString()),
                         style: TextStyle(fontSize: 12, color: c.muted),
                       ),
                     ],
@@ -285,7 +285,7 @@ class _FollowupRejectionDialogState extends State<_FollowupRejectionDialog> {
           controller: _reasonController,
           maxLines: 3,
           decoration: InputDecoration(
-            labelText: context.l10n.followupRejectReasonOptional,
+            labelText: context.l10n.rejectionReasonOptional,
             border: const OutlineInputBorder(),
           ),
         ),
