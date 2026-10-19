@@ -118,7 +118,6 @@ const recommended = {
     "rewardSystem": true,
     "routineStructure": true,
     "maxOptionsCount3": true,
-    "pictureCommunication": true,
     "unlimitedTime": true,
     "videoCaptions": true,
     "detailedAltText": true
@@ -155,7 +154,6 @@ const recommended = {
     "autoReadOnTap": true,
     "timerRenewalMinutes": 5,
     "voiceToText": true,
-    "pictureCommunication": true,
     "shortSentences": true,
     "unlimitedTime": true,
     "noTimedInteractions": true
@@ -168,7 +166,6 @@ const recommended = {
     "timerRenewalMinutes": 5,
     "voiceToText": true,
     "wordPrediction": true,
-    "pictureCommunication": true,
     "shortSentences": true,
     "unlimitedTime": true
   },
@@ -187,7 +184,6 @@ const recommended = {
     "routineStructure": true,
     "repetitionMode": true,
     "maxOptionsCount3": true,
-    "pictureCommunication": true
   },
   "colorBlindness": {
     "colorSymbols": true,
@@ -228,7 +224,6 @@ const recommended = {
     "videoCaptions": true,
     "signLanguageTranslation": true,
     "verySimpleLanguage": true,
-    "pictureCommunication": true,
     "keyboardOnlyNavigation": true,
     "voiceControl": true,
     "rewardSystem": true,
