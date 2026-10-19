@@ -231,7 +231,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           const Icon(AppIcons.error, size: 56, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            context.l10n.caseLoadFailed,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
