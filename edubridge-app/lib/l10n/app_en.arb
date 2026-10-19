@@ -3579,5 +3579,286 @@
   "acknowledge": "OK",
   "@acknowledge": {
     "description": "Acknowledge an evaluation result."
+  },
+  "weeklyReportFor": "📊 Weekly report — {name}",
+  "@weeklyReportFor": {
+    "description": "Weekly report and progress evaluation interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "progressEvaluationFor": "Progress evaluation for {name}",
+  "@progressEvaluationFor": {
+    "description": "Weekly report and progress evaluation interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyReportSaved": "✅ Weekly report saved",
+  "@weeklyReportSaved": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "childProgressSaved": "Child progress saved",
+  "@childProgressSaved": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "weeklySaveReport": "Save report",
+  "@weeklySaveReport": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportWeekStart": "Week start",
+  "@reportWeekStart": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportCompletedLessons": "Completed lessons",
+  "@reportCompletedLessons": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportChildProgress": "Child progress",
+  "@reportChildProgress": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportTeacherNotesLabel": "Your notes (for parent and specialist)",
+  "@reportTeacherNotesLabel": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportTeacherNotesHint": "How did the child do this week?",
+  "@reportTeacherNotesHint": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportAchievementsHeading": "🏆 Achievements",
+  "@reportAchievementsHeading": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportAchievementHint": "Example: mastered the multiplication table",
+  "@reportAchievementHint": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportConcernsHeading": "⚠️ Areas needing attention",
+  "@reportConcernsHeading": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportConcernHint": "Example: needs to review letters",
+  "@reportConcernHint": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportTeacherReference": "Teacher report (reference)",
+  "@reportTeacherReference": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportProgressNotes": "Your notes on the child’s progress",
+  "@reportProgressNotes": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportRecommendationsForTeacher": "Your recommendations for the teacher",
+  "@reportRecommendationsForTeacher": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportPlanAppropriateQuestion": "Is the learning plan appropriate for the child’s progress?",
+  "@reportPlanAppropriateQuestion": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportProposedChanges": "What changes do you suggest?",
+  "@reportProposedChanges": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportParticipationQuestion": "Child participation in learning this week:",
+  "@reportParticipationQuestion": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportNoTeacherReference": "The teacher has not written a report for this week yet.\nYou can write your evaluation independently.",
+  "@reportNoTeacherReference": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportTeacherNotesValue": "Teacher notes: {notes}",
+  "@reportTeacherNotesValue": {
+    "description": "Weekly report and progress evaluation interface.",
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "reportParticipationValue": "Child participation: {rating}",
+  "@reportParticipationValue": {
+    "description": "Weekly report and progress evaluation interface.",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "reportRatingVeryLow": "Very low",
+  "@reportRatingVeryLow": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportRatingLow": "Low",
+  "@reportRatingLow": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportRatingGood": "Good",
+  "@reportRatingGood": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportRatingExcellent": "Excellent",
+  "@reportRatingExcellent": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportAddAchievement": "Add achievement",
+  "@reportAddAchievement": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportAddConcern": "Add an area needing attention",
+  "@reportAddConcern": {
+    "description": "Weekly report and progress evaluation interface."
+  },
+  "reportRatingAverage": "Average",
+  "@reportRatingAverage": {
+    "description": "Average participation in a weekly progress evaluation."
+  },
+  "reportWeeklyTitle": "Weekly report for {name}",
+  "@reportWeeklyTitle": {
+    "description": "Weekly report display.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportLoadFailed": "Could not load the report",
+  "@reportLoadFailed": {
+    "description": "Weekly report display."
+  },
+  "reportsLoadFailed": "Could not load reports",
+  "@reportsLoadFailed": {
+    "description": "Weekly report display."
+  },
+  "reportEmpty": "No weekly report",
+  "@reportEmpty": {
+    "description": "Weekly report display."
+  },
+  "reportEmptyHint": "The teacher report or specialist evaluation will appear here.\nYou can select a previous week above.",
+  "@reportEmptyHint": {
+    "description": "Weekly report display."
+  },
+  "reportWeekLabel": "Report week",
+  "@reportWeekLabel": {
+    "description": "Weekly report display."
+  },
+  "reportCurrentWeek": "Current week",
+  "@reportCurrentWeek": {
+    "description": "Weekly report display."
+  },
+  "reportWeekBeginning": "Week beginning {date}",
+  "@reportWeekBeginning": {
+    "description": "Weekly report display.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reportWeekRange": "Week: {start} — {end}",
+  "@reportWeekRange": {
+    "description": "Weekly report display.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "reportTeacherNote": "Teacher note",
+  "@reportTeacherNote": {
+    "description": "Weekly report display."
+  },
+  "reportParentNote": "Parent note",
+  "@reportParentNote": {
+    "description": "Weekly report display."
+  },
+  "reportPlanSuitability": "Plan suitability",
+  "@reportPlanSuitability": {
+    "description": "Weekly report display."
+  },
+  "reportInteractionRating": "Interaction rating",
+  "@reportInteractionRating": {
+    "description": "Weekly report display."
+  },
+  "reportNone": "None",
+  "@reportNone": {
+    "description": "Weekly report display."
+  },
+  "reportListEmpty": "No reports yet",
+  "@reportListEmpty": {
+    "description": "Weekly report display."
+  },
+  "reportListEmptyHint": "Add this student’s first weekly report.",
+  "@reportListEmptyHint": {
+    "description": "Weekly report display."
+  },
+  "reportListAll": "All reports",
+  "@reportListAll": {
+    "description": "Weekly report display."
+  },
+  "reportAdd": "Add report",
+  "@reportAdd": {
+    "description": "Weekly report display."
+  },
+  "reportListWeekRange": "Weekly report {start} — {end}",
+  "@reportListWeekRange": {
+    "description": "Weekly report display.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "reportListSummary": "Progress {progress}%  •  Lessons {completed}/{total}",
+  "@reportListSummary": {
+    "description": "Weekly report display.",
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "reportProgress": "Progress",
+  "@reportProgress": {
+    "description": "Weekly report section label."
+  },
+  "reportSupportMeetings": "Support meetings",
+  "@reportSupportMeetings": {
+    "description": "Weekly report section label."
+  },
+  "reportSpecialistEvaluation": "Specialist evaluation",
+  "@reportSpecialistEvaluation": {
+    "description": "Weekly report section label."
+  },
+  "reportAchievements": "Achievements",
+  "@reportAchievements": {
+    "description": "Weekly report section label."
+  },
+  "reportConcerns": "Areas needing attention",
+  "@reportConcerns": {
+    "description": "Weekly report section label."
+  },
+  "reportPlanEvaluation": "Plan evaluation",
+  "@reportPlanEvaluation": {
+    "description": "Weekly report section label."
   }
 }

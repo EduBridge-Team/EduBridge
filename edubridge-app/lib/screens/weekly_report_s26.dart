@@ -6,9 +6,7 @@ const _reportTeal = Color(0xFF04ACC0);
 extension _WeeklyReportS26 on _WeeklyReportScreenState {
   Widget buildS26(BuildContext context) {
     final c = JisrColors.of(context);
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFFF5F9FC),
         appBar: BrandAppBar(
@@ -17,12 +15,12 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
           titleSpacing: 0,
           leadingWidth: 52,
           leading: IconButton(
-            tooltip: 'رجوع',
+            tooltip: context.l10n.back,
             onPressed: () => Navigator.maybePop(context),
             icon: const CircleAvatar(radius: 19,
               backgroundColor: Color(0x33FFFFFF),
               child: Icon(Icons.arrow_back_rounded, size: 22, color: Colors.white))),
-          title: Text('تقرير ${widget.childName} الأسبوعي',
+          title: Text(context.l10n.reportWeeklyTitle(widget.childName),
             maxLines: 1, overflow: TextOverflow.ellipsis,
             style: const TextStyle(color: Colors.white,
               fontSize: 19, fontWeight: FontWeight.w800)),
@@ -37,7 +35,6 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
                 ])
               : _s26Report(c, _report!),
         )),
-      ),
     );
   }
 
@@ -64,15 +61,15 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
           color: onBlue ? Colors.white : _reportBlue),
         selectedItemBuilder: (_) => [
           for (var i = 0; i <= weeks.length; i++)
-            Text(r == null ? 'أسبوع التقرير' :
-              'الأسبوع: ${r.weekStart.day}/${r.weekStart.month} — ${r.weekEnd.day}/${r.weekEnd.month}',
+            Text(r == null ? context.l10n.reportWeekLabel :
+              context.l10n.reportWeekRange(MaterialLocalizations.of(context).formatShortDate(r.weekStart), MaterialLocalizations.of(context).formatShortDate(r.weekEnd)),
               maxLines: 1, overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 12, color: onBlue ? Colors.white : c.heading)),
         ],
         items: [
-          const DropdownMenuItem(value: '', child: Text('الأسبوع الحالي')),
+          DropdownMenuItem(value: '', child: Text(context.l10n.reportCurrentWeek)),
           for (final week in weeks)
-            DropdownMenuItem(value: week, child: Text('الأسبوع الذي يبدأ في $week',
+            DropdownMenuItem(value: week, child: Text(context.l10n.reportWeekBeginning(MaterialLocalizations.of(context).formatShortDate(DateTime.parse(week))),
               maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
         onChanged: (value) {
@@ -106,7 +103,7 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
                 style: const TextStyle(color: Colors.white,
                   fontSize: 48, fontWeight: FontWeight.w900, height: 1))),
             const SizedBox(height: 6),
-            const Center(child: Text('نسبة التقدّم',
+            Center(child: Text(context.l10n.reportProgress,
               style: TextStyle(color: Colors.white70, fontSize: 13))),
             const SizedBox(height: 16),
             ClipRRect(borderRadius: BorderRadius.circular(10),
@@ -119,55 +116,59 @@ extension _WeeklyReportS26 on _WeeklyReportScreenState {
         ),
         const SizedBox(height: 10),
         Row(children: [
-          _s26Stat(c, Icons.menu_book_outlined, 'الدروس',
+          _s26Stat(c, Icons.menu_book_outlined, context.l10n.lessons,
             '${r.lessonsCompleted}/${r.lessonsTotal}', _reportTeal),
           const SizedBox(width: 8),
-          _s26Stat(c, Icons.description_outlined, 'الواجبات',
+          _s26Stat(c, Icons.description_outlined, context.l10n.homeworks,
             '${r.homeworkSubmitted}/${r.homeworkAssigned}', _reportTeal),
         ]),
         const SizedBox(height: 8),
         Row(children: [
-          _s26Stat(c, Icons.psychology_outlined, 'اجتماعات الدعم',
+          _s26Stat(c, Icons.psychology_outlined, context.l10n.reportSupportMeetings,
             '${r.learningSupportMeetingsAttended}/${r.learningSupportMeetingsScheduled}',
             const Color(0xFFFF5685)),
           const SizedBox(width: 8),
-          _s26Stat(c, Icons.task_alt_rounded, 'الإنجاز',
+          _s26Stat(c, Icons.task_alt_rounded, context.l10n.achievement,
             '${(r.homeworkRate * 100).round()}%', const Color(0xFF69D78B)),
         ]),
         if (r.teacherNotes?.trim().isNotEmpty ?? false) ...[
           const SizedBox(height: 10),
-          _s26Card(c, 'ملاحظة المعلم', r.teacherNotes!),
+          _s26Card(c, context.l10n.reportTeacherNote, r.teacherNotes!),
         ],
         const SizedBox(height: 10),
         _s26Surface(c, Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          _s26Title(c, 'تقييم المختص', Icons.lightbulb_outline_rounded, _reportBlue),
+          _s26Title(c, context.l10n.reportSpecialistEvaluation, Icons.lightbulb_outline_rounded, _reportBlue),
           const SizedBox(height: 14),
-          Text(evaluation.notes.isEmpty ? 'لا يوجد' : evaluation.notes,
+          Text(evaluation.notes.isEmpty ? context.l10n.reportNone : evaluation.notes,
             style: TextStyle(color: c.heading, fontSize: 13, height: 1.6)),
           const SizedBox(height: 12),
-          _s26Detail(c, 'التوصيات', evaluation.recommendations.isEmpty
-              ? 'لا يوجد' : evaluation.recommendations),
+          _s26Detail(c, context.l10n.recommendations, evaluation.recommendations.isEmpty
+              ? context.l10n.reportNone : evaluation.recommendations),
           Divider(color: c.line, height: 20),
-          _s26Detail(c, 'ملاءمة الخطة', evaluation.suitability ?? '—'),
+          _s26Detail(c, context.l10n.reportPlanSuitability, switch (evaluation.suitability) {
+            'مناسبة' => context.l10n.planSuitable,
+            'تحتاج تعديل' => context.l10n.planNeedsChanges,
+            final value => value ?? '—',
+          }),
           if (evaluation.planChanges.isNotEmpty) ...[
             Divider(color: c.line, height: 20),
-            _s26Detail(c, 'تقييم الخطة', evaluation.planChanges),
+            _s26Detail(c, context.l10n.reportPlanEvaluation, evaluation.planChanges),
           ],
           Divider(color: c.line, height: 20),
-          _s26Detail(c, 'تقييم التفاعل', evaluation.interaction ?? '—'),
+          _s26Detail(c, context.l10n.reportInteractionRating, evaluation.interaction ?? '—'),
         ])),
         if (r.parentNotes?.trim().isNotEmpty ?? false) ...[
-          const SizedBox(height: 10), _s26Card(c, 'ملاحظة ولي الأمر', r.parentNotes!),
+          const SizedBox(height: 10), _s26Card(c, context.l10n.reportParentNote, r.parentNotes!),
         ],
         if (r.achievements.isNotEmpty) ...[
           const SizedBox(height: 16),
-          _s26Title(c, 'الإنجازات', Icons.emoji_events_outlined, _reportTeal),
+          _s26Title(c, context.l10n.reportAchievements, Icons.emoji_events_outlined, _reportTeal),
           for (final item in r.achievements) _s26Notice(c, item, positive: true),
         ],
         const SizedBox(height: 16),
-        _s26Title(c, 'نقاط للانتباه', Icons.info_outline_rounded, _reportTeal),
+        _s26Title(c, context.l10n.reportConcerns, Icons.info_outline_rounded, _reportTeal),
         const SizedBox(height: 10),
-        if (r.concerns.isEmpty) _s26Notice(c, 'لا يوجد', positive: true)
+        if (r.concerns.isEmpty) _s26Notice(c, context.l10n.reportNone, positive: true)
         else for (final concern in r.concerns) _s26Notice(c, concern, positive: false),
       ],
     );

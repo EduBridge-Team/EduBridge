@@ -5,6 +5,7 @@ import '../model/weekly_report_model.dart';
 import '../model/specialist_weekly_evaluation.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
 part 'weekly_report_view.dart';
 part 'weekly_report_s26.dart';
 
@@ -31,7 +32,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   List<WeeklyReport> _history = [];
   DateTime? _selectedWeek;
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -67,7 +68,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل التقرير';
+        _error = SharedUiMessage.reportLoadFailed;
         _loading = false;
       });
     }
@@ -88,7 +89,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         const Icon(AppIcons.error, size: 56, color: AppColors.red),
         const SizedBox(height: 14),
         Text(
-          _error!,
+          context.sharedMessage(_error),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 16,
@@ -100,7 +101,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         Center(
           child: FilledButton.icon(
             icon: const Icon(AppIcons.refresh),
-            label: const Text('إعادة المحاولة'),
+            label: Text(context.l10n.retryAction),
             onPressed: _load,
           ),
         ),
@@ -132,7 +133,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         ),
         const SizedBox(height: 18),
         Text(
-          'لا يوجد تقرير أسبوعي',
+          context.l10n.reportEmpty,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 19,
@@ -142,7 +143,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'سيظهر هنا تقرير المعلم أو تقييم المختص.\nيمكنك اختيار أسبوع سابق من الأعلى.',
+          context.l10n.reportEmptyHint,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13.5, color: c.muted),
         ),
@@ -169,13 +170,12 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const Icon(AppIcons.calendar, color: Colors.white, size: 36),
               const SizedBox(height: 8),
               Text(
-                'الأسبوع: ${r.weekStart.day}/${r.weekStart.month} — '
-                '${r.weekEnd.day}/${r.weekEnd.month}',
+                context.l10n.reportWeekRange(MaterialLocalizations.of(context).formatShortDate(r.weekStart), MaterialLocalizations.of(context).formatShortDate(r.weekEnd)),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                 ),
-              ),
+              )),
               const SizedBox(height: 12),
               Text(
                 '${r.progressPercentage.toStringAsFixed(0)}%',
@@ -185,8 +185,8 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const Text(
-                'نسبة التقدّم',
+              Text(
+                context.l10n.reportProgress,
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
@@ -198,14 +198,14 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           children: [
             _statCard(
               icon: AppIcons.lesson,
-              label: 'الدروس',
+              label: context.l10n.lessons,
               value: '${r.lessonsCompleted}/${r.lessonsTotal}',
               color: AppColors.brandTeal,
             ),
             const SizedBox(width: 8),
             _statCard(
               icon: AppIcons.homework,
-              label: 'الواجبات',
+              label: context.l10n.homeworks,
               value: '${r.homeworkSubmitted}/${r.homeworkAssigned}',
               color: AppColors.orange,
             ),
@@ -216,7 +216,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           children: [
             _statCard(
               icon: AppIcons.specialist,
-              label: 'اجتماعات الدعم',
+              label: context.l10n.reportSupportMeetings,
               value:
                   '${r.learningSupportMeetingsAttended}/${r.learningSupportMeetingsScheduled}',
               color: AppColors.pink,
@@ -224,7 +224,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             const SizedBox(width: 8),
             _statCard(
               icon: AppIcons.check,
-              label: 'الإنجاز',
+              label: context.l10n.achievement,
               value: '${(r.homeworkRate * 100).toStringAsFixed(0)}%',
               color: AppColors.green,
             ),
@@ -235,7 +235,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           const SizedBox(height: 20),
           _noteCard(
             icon: AppIcons.teacher,
-            title: 'ملاحظة المعلم',
+            title: context.l10n.reportTeacherNote,
             content: r.teacherNotes!,
             color: c.tintTeal,
           ),
@@ -245,7 +245,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           const SizedBox(height: 12),
           _noteCard(
             icon: AppIcons.specialist,
-            title: 'تقييم المختص',
+            title: context.l10n.reportSpecialistEvaluation,
             content: r.specialistNotes!,
             color: c.tintOrange,
           ),
@@ -258,8 +258,8 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const Icon(AppIcons.trophy,
                   size: 22, color: AppColors.yellow),
               const SizedBox(width: 8),
-              const Text(
-                'الإنجازات',
+              Text(
+                context.l10n.reportAchievements,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
@@ -292,8 +292,8 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               const Icon(AppIcons.warning,
                   size: 22, color: AppColors.orangeDeep),
               const SizedBox(width: 8),
-              const Text(
-                'نقاط للانتباه',
+              Text(
+                context.l10n.reportConcerns,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
@@ -378,13 +378,13 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             children: [
               Icon(icon, size: 22, color: AppColors.brandBlue),
               const SizedBox(width: 8),
-              Text(
+              Expanded(child: Text(
                 title,
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
                 ),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: 6),

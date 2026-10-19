@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../utils/report_week.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+import '../utils/locale_form_validation.dart';
 part 'create_weekly_report_view.dart';
 
 class CreateWeeklyReportScreen extends StatefulWidget {
@@ -21,10 +23,13 @@ class CreateWeeklyReportScreen extends StatefulWidget {
       _CreateWeeklyReportScreenState();
 }
 
-class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
+class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> with LocaleFormValidation<CreateWeeklyReportScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  GlobalKey<FormState> get validationFormKey => _formKey;
   final _lessonsCtrl = TextEditingController();
   final _teacherNotesCtrl = TextEditingController();
   final _achievementsCtrl = TextEditingController();
@@ -35,7 +40,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
   final List<String> _achievements = [];
   final List<String> _concerns = [];
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   static DateTime _lastMonday() {
     return reportWeekStart(DateTime.now());
@@ -69,7 +74,7 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
     setState(() {
       _saving = true;
       _error = null;
@@ -89,8 +94,8 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
       if (!mounted) return;
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ تم حفظ التقرير الأسبوعي'),
+          SnackBar(
+            content: Text(context.l10n.weeklyReportSaved),
             backgroundColor: Colors.green,
           ),
         );
@@ -98,13 +103,14 @@ class _CreateWeeklyReportScreenState extends State<CreateWeeklyReportScreen> {
       } else {
         final data = jsonDecode(res.body);
         setState(() {
-          _error = data['error']?.toString() ?? 'فشل الحفظ';
+          _error = data['error']?.toString() ?? SharedUiMessage.changesSaveFailed;
           _saving = false;
         });
       }
     } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = SharedUiMessage.connectionFailed;
         _saving = false;
       });
     }

@@ -5,7 +5,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: '📊 تقرير أسبوعي — ${widget.childName}'),
+      appBar: JisrAppBar(title: context.l10n.weeklyReportFor(widget.childName)),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saving ? null : _save,
@@ -17,7 +17,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
               )
             : const Icon(Icons.save),
         label: Text(
-          _saving ? 'جارِ الحفظ...' : 'حفظ التقرير',
+          _saving ? context.l10n.saving : context.l10n.weeklySaveReport,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -34,7 +34,9 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                   firstDate: DateTime.now().subtract(const Duration(days: 60)),
                   lastDate: DateTime.now(),
                 );
-                if (picked != null) _refreshState(() => _weekStart = picked);
+                if (picked != null && mounted) {
+                  _refreshState(() => _weekStart = picked);
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -51,9 +53,9 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('بداية الأسبوع', style: TextStyle(fontSize: 12)),
+                          Text(context.l10n.reportWeekStart, style: TextStyle(fontSize: 12)),
                           Text(
-                            '${_weekStart.day}/${_weekStart.month}/${_weekStart.year}',
+                            MaterialLocalizations.of(context).formatMediumDate(_weekStart),
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -68,11 +70,11 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
             TextFormField(
               controller: _lessonsCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'عدد الدروس المكتملة',
+              decoration: InputDecoration(
+                labelText: context.l10n.reportCompletedLessons,
                 prefixIcon: Icon(Icons.menu_book),
               ),
-              validator: (v) => v == null || v.trim().isEmpty ? 'مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? context.l10n.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             Container(
@@ -88,8 +90,8 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                     children: [
                       const Icon(Icons.trending_up, color: AppColors.tealDeep),
                       const SizedBox(width: 8),
-                      const Text('نسبة تقدّم الطفل', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      const Spacer(),
+                      Expanded(child: Text(context.l10n.reportChildProgress, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                      const SizedBox(width: 8),
                       Text('$_progressPercent%', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.tealDeep)),
                     ],
                   ),
@@ -109,24 +111,24 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
             TextFormField(
               controller: _teacherNotesCtrl,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'ملاحظاتك (للأهل والمختص)',
+              decoration: InputDecoration(
+                labelText: context.l10n.reportTeacherNotesLabel,
                 prefixIcon: Icon(Icons.note),
                 alignLabelWithHint: true,
-                hintText: 'كيف كان أداء الطفل هذا الأسبوع؟',
+                hintText: context.l10n.reportTeacherNotesHint,
               ),
-              validator: (v) => v == null || v.trim().isEmpty ? 'مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? context.l10n.fieldRequired : null,
             ),
             const SizedBox(height: 20),
-            Text('🏆 الإنجازات', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
+            Text(context.l10n.reportAchievementsHeading, style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _achievementsCtrl,
-                    decoration: const InputDecoration(
-                      hintText: 'مثال: أتقن جدول الضرب',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.reportAchievementHint,
                       prefixIcon: Icon(Icons.star, color: AppColors.yellow),
                     ),
                     onSubmitted: (_) => _addAchievement(),
@@ -136,6 +138,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 IconButton.filled(
                   style: IconButton.styleFrom(backgroundColor: AppColors.green),
                   icon: const Icon(Icons.add, color: Colors.white),
+                  tooltip: context.l10n.reportAddAchievement,
                   onPressed: _addAchievement,
                 ),
               ],
@@ -156,15 +159,15 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
               ),
             ],
             const SizedBox(height: 20),
-            Text('⚠️ نقاط للانتباه', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
+            Text(context.l10n.reportConcernsHeading, style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: c.heading)),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _concernsCtrl,
-                    decoration: const InputDecoration(
-                      hintText: 'مثال: يحتاج مراجعة الحروف',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.reportConcernHint,
                       prefixIcon: Icon(Icons.warning, color: AppColors.orange),
                     ),
                     onSubmitted: (_) => _addConcern(),
@@ -174,6 +177,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                 IconButton.filled(
                   style: IconButton.styleFrom(backgroundColor: AppColors.orange),
                   icon: const Icon(Icons.add, color: Colors.white),
+                  tooltip: context.l10n.reportAddConcern,
                   onPressed: _addConcern,
                 ),
               ],
@@ -201,7 +205,7 @@ extension _CreateWeeklyReportScreenStateView on _CreateWeeklyReportScreenState {
                   color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                child: Text(context.sharedMessage(_error), style: const TextStyle(color: Colors.red)),
               ),
             ],
           ],

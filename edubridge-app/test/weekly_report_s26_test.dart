@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/weekly_report_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -31,7 +32,7 @@ void main() {
     final paths = <Uri>[];
     await http.runWithClient(() async {
       await tester.runAsync(() async {
-        await tester.pumpWidget(const MaterialApp(home: WeeklyReportScreen(
+        await tester.pumpWidget(const MaterialApp(locale: Locale('ar'), supportedLocales: AppLocalizations.supportedLocales, localizationsDelegates: AppLocalizations.localizationsDelegates, home: WeeklyReportScreen(
           childId: 7, childName: 'محمود', specialistS26: true)));
         await Future<void>.delayed(Duration.zero);
       });
@@ -54,7 +55,9 @@ void main() {
       });
       await tester.pumpAndSettle();
       await tester.runAsync(() async {
-        await tester.tap(find.text('الأسبوع الذي يبدأ في 2026-10-05').last);
+        final strings = await AppLocalizations.delegate.load(const Locale('ar'));
+        final date = MaterialLocalizations.of(tester.element(find.byType(Scaffold))).formatShortDate(DateTime(2026, 10, 5));
+        await tester.tap(find.text(strings.reportWeekBeginning(date)).last);
         await Future<void>.delayed(Duration.zero);
       });
       await tester.pumpAndSettle();
