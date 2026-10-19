@@ -7,12 +7,12 @@ extension _CaseDiscussionDetailStateView on _CaseDiscussionDetailState {
 
     return Scaffold(
       appBar: JisrAppBar(
-        title: d != null ? 'دراسة حالة — ${d.childName}' : 'دراسة حالة',
+        title: d != null ? context.l10n.caseTitleFor(d.childName) : context.l10n.caseTitle,
         actions: [
           if (d != null && d.status != CaseDiscussionStatus.resolved)
             IconButton(
               icon: const Icon(AppIcons.check),
-              tooltip: 'إغلاق الدراسة',
+              tooltip: context.l10n.caseCloseAction,
               onPressed: _resolve,
             ),
         ],
@@ -20,11 +20,11 @@ extension _CaseDiscussionDetailStateView on _CaseDiscussionDetailState {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : d == null
-              ? const Center(child: Text('تعذّر التحميل'))
+              ? Center(child: Text(context.l10n.caseLoadFailed))
               : Column(
                   children: [
-                    _buildInfoHeader(d, c),
-                    Expanded(child: _buildMessages(d, c)),
+                    Flexible(flex: 2, child: SingleChildScrollView(child: _buildInfoHeader(d, c))),
+                    Expanded(flex: 3, child: _buildMessages(d, c)),
                     if (d.status != CaseDiscussionStatus.resolved)
                       _buildComposer(c)
                     else

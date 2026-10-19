@@ -4188,5 +4188,238 @@
   "homeworkDueDateLabel": "Due date",
   "@homeworkDueDateLabel": {
     "description": "Teacher student details and homework interface."
+  },
+  "caseCloseTitle": "Close case study",
+  "@caseCloseTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseCloseConfirm": "Mark this case study as resolved? New messages will no longer be accepted.",
+  "@caseCloseConfirm": {
+    "description": "Case discussion interface."
+  },
+  "caseClosedNotice": "Case study closed",
+  "@caseClosedNotice": {
+    "description": "Case discussion interface."
+  },
+  "caseNoMessages": "No messages yet — start the discussion",
+  "@caseNoMessages": {
+    "description": "Case discussion interface."
+  },
+  "caseMessage": "Message",
+  "@caseMessage": {
+    "description": "Case discussion interface."
+  },
+  "caseObservation": "Observation",
+  "@caseObservation": {
+    "description": "Case discussion interface."
+  },
+  "caseQuestion": "Question",
+  "@caseQuestion": {
+    "description": "Case discussion interface."
+  },
+  "caseDecision": "Decision",
+  "@caseDecision": {
+    "description": "Case discussion interface."
+  },
+  "caseClosedBanner": "This case study is closed",
+  "@caseClosedBanner": {
+    "description": "Case discussion interface."
+  },
+  "caseDataLoadFailed": "Could not load data",
+  "@caseDataLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseChild": "Select a child",
+  "@caseChooseChild": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseParticipant": "Select at least one other team member",
+  "@caseChooseParticipant": {
+    "description": "Case discussion interface."
+  },
+  "caseNewTitle": "New case study",
+  "@caseNewTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseNoAssignedChildrenHint": "No children are assigned to you yet — a case study cannot be started.",
+  "@caseNoAssignedChildrenHint": {
+    "description": "Case discussion interface."
+  },
+  "caseChildField": "Child *",
+  "@caseChildField": {
+    "description": "Case discussion interface."
+  },
+  "caseTopicField": "Topic *",
+  "@caseTopicField": {
+    "description": "Case discussion interface."
+  },
+  "caseTopicHint": "Example: difficulty focusing in class",
+  "@caseTopicHint": {
+    "description": "Case discussion interface."
+  },
+  "caseDescriptionField": "Case description (optional)",
+  "@caseDescriptionField": {
+    "description": "Case discussion interface."
+  },
+  "caseTeamCount": "Team participants ({count}):",
+  "@caseTeamCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseExtraTeamCount": "Team participants ({count})",
+  "@caseExtraTeamCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseAutomaticParticipant": "You are included automatically",
+  "@caseAutomaticParticipant": {
+    "description": "Case discussion interface."
+  },
+  "caseChooseChildForTeam": "Select a child to see their team",
+  "@caseChooseChildForTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseNoOtherTeam": "No other team members for this child yet",
+  "@caseNoOtherTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseNoExtraTeam": "No additional team members for this child",
+  "@caseNoExtraTeam": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmpty": "No case studies yet",
+  "@caseListEmpty": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmptyHint": "Start a case study to collaborate with specialists about the child.",
+  "@caseListEmptyHint": {
+    "description": "Case discussion interface."
+  },
+  "caseListEmptyHintS20": "Start a case study to collaborate with specialists\nabout the child.",
+  "@caseListEmptyHintS20": {
+    "description": "Case discussion interface."
+  },
+  "caseRefresh": "Refresh case studies",
+  "@caseRefresh": {
+    "description": "Case discussion interface."
+  },
+  "caseNewAction": "New study",
+  "@caseNewAction": {
+    "description": "Case discussion interface."
+  },
+  "caseListLoadFailed": "Could not load case studies",
+  "@caseListLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseRoleUnknown": "Could not determine the account role",
+  "@caseRoleUnknown": {
+    "description": "Case discussion interface."
+  },
+  "caseLoadFailed": "Could not load",
+  "@caseLoadFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseActive": "Active",
+  "@caseActive": {
+    "description": "Case discussion interface."
+  },
+  "caseResolved": "Resolved",
+  "@caseResolved": {
+    "description": "Case discussion interface."
+  },
+  "caseOpen": "Open",
+  "@caseOpen": {
+    "description": "Case discussion interface."
+  },
+  "caseSectionEmpty": "No case studies in this section",
+  "@caseSectionEmpty": {
+    "description": "Case discussion interface."
+  },
+  "caseActiveCount": "Active ({count})",
+  "@caseActiveCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseCompletedCount": "Completed ({count})",
+  "@caseCompletedCount": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "caseTitleFor": "Case study — {name}",
+  "@caseTitleFor": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseTitle": "Case study",
+  "@caseTitle": {
+    "description": "Case discussion interface."
+  },
+  "caseCloseAction": "Close study",
+  "@caseCloseAction": {
+    "description": "Case discussion interface."
+  },
+  "caseParticipant": "{role} — {name}",
+  "@caseParticipant": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseParticipantMe": "{role} — {name} (you)",
+  "@caseParticipantMe": {
+    "description": "Case discussion interface.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseCreateFailed": "Could not create the study",
+  "@caseCreateFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseResolveFailed": "Could not close the study",
+  "@caseResolveFailed": {
+    "description": "Case discussion interface."
+  },
+  "caseCreate": "Create",
+  "@caseCreate": {
+    "description": "Case discussion action."
+  },
+  "caseMenu": "Menu",
+  "@caseMenu": {
+    "description": "Case discussion action."
+  },
+  "caseRefreshAction": "Refresh",
+  "@caseRefreshAction": {
+    "description": "Case discussion action."
   }
 }

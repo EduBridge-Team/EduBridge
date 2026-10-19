@@ -31,7 +31,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
   final TextEditingController descriptionController;
   final bool loading;
   final bool saving;
-  final String? error;
+  final Object? error;
   final ValueChanged<int?> onChildSelected;
   final ValueChanged<int> onParticipantToggled;
   final VoidCallback onSave;
@@ -70,12 +70,12 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
     );
   }
 
-  Widget _childField() {
+  Widget _childField(BuildContext context) {
     return DropdownButtonFormField<int>(
       key: const ValueKey('s21_child_selector'),
       initialValue: selectedChildId,
       isExpanded: true,
-      hint: const Text('الطفل *', style: TextStyle(
+      hint: Text(context.l10n.caseChildField, style: const TextStyle(
         color: _muted, fontSize: 14)),
       icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _blue),
       decoration: _fieldDecoration('', icon: true),
@@ -95,14 +95,14 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
     );
   }
 
-  Widget _participantOptions() {
+  Widget _participantOptions(BuildContext context) {
     if (selectedChildId == null || team.isEmpty) {
       if (selectedChildId == null) return const SizedBox.shrink();
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.only(top: 9),
-        child: Text('لا يوجد أعضاء إضافيون في فريق هذا الطفل',
-          textAlign: TextAlign.right,
-          style: TextStyle(color: _muted, fontSize: 12)),
+        child: Text(context.l10n.caseNoExtraTeam,
+          textAlign: TextAlign.start,
+          style: const TextStyle(color: _muted, fontSize: 12)),
       );
     }
     return Column(
@@ -123,7 +123,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                 style: const TextStyle(color: _ink, fontSize: 13),
               ),
               subtitle: Text(
-                user['role'] == 'teacher' ? 'معلّم' : 'مختص',
+                user['role'] == 'teacher' ? context.l10n.teacherRole : context.l10n.specialistRole,
                 style: const TextStyle(color: _muted, fontSize: 11),
               ),
             ),
@@ -133,14 +133,11 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dialog creates its own route; set RTL explicitly to preserve the
-    // reference's right-hand Cancel and left-hand Create positions.
+    // Inherit the application locale across the dialog route.
     final additionalCount = selectedParticipants
         .where((id) => id != myUserId).length;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Dialog(
+    return Dialog(
         insetPadding: const EdgeInsets.symmetric(
           horizontal: 16, vertical: 24),
         backgroundColor: Colors.white,
@@ -156,19 +153,19 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.description_outlined,
                       color: _blue, size: 24),
-                    SizedBox(width: 9),
+                    const SizedBox(width: 9),
                     Flexible(
                       child: Text(
-                        'دراسة حالة جديدة',
+                        context.l10n.caseNewTitle,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: _ink,
                           fontSize: 20,
                           fontWeight: FontWeight.w800),
@@ -183,25 +180,25 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else ...[
-                  _childField(),
+                  _childField(context),
                   if (children.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(top: 7),
-                      child: Text('لا يوجد أطفال معيّنون لك حالياً',
-                        style: TextStyle(color: _muted, fontSize: 12)),
+                      child: Text(context.l10n.noAssignedChildren,
+                        style: const TextStyle(color: _muted, fontSize: 12)),
                     ),
                   const SizedBox(height: 11),
                   SizedBox(
-                    height: 53,
+                    height: MediaQuery.textScalerOf(context).scale(53),
                     child: TextField(
                       key: const ValueKey('s21_topic'),
                       controller: topicController,
                       enabled: !saving,
-                      textDirection: TextDirection.rtl,
-                      textAlign: TextAlign.right,
+                      textDirection: Directionality.of(context),
+                      textAlign: TextAlign.start,
                       maxLines: 1,
                       decoration: _fieldDecoration(
-                        'موضوع الدراسة *', icon: true),
+                        context.l10n.caseTopicField, icon: true),
                     ),
                   ),
                   const SizedBox(height: 11),
@@ -214,31 +211,31 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
-                      textDirection: TextDirection.rtl,
-                      textAlign: TextAlign.right,
+                      textDirection: Directionality.of(context),
+                      textAlign: TextAlign.start,
                       decoration: _fieldDecoration(
-                        'وصف الحالة (اختياري)'),
+                        context.l10n.caseDescriptionField),
                     ),
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'المشاركون من الفريق ($additionalCount)',
+                    context.l10n.caseExtraTeamCount(additionalCount),
                     style: const TextStyle(
                       color: _ink,
                       fontSize: 16,
                       fontWeight: FontWeight.w800),
                   ),
-                  _participantOptions(),
+                  _participantOptions(context),
                   if (error != null) ...[
                     const SizedBox(height: 9),
-                    Text(error!,
-                      textAlign: TextAlign.right,
+                    Text(context.sharedMessage(error),
+                      textAlign: TextAlign.start,
                       style: const TextStyle(
                         color: Color(0xFFC43A37), fontSize: 12)),
-                    if (error == 'تعذّر تحميل البيانات')
+                    if (error == SharedUiMessage.caseDataLoadFailed)
                       TextButton(
                         onPressed: onRetry,
-                        child: const Text('إعادة المحاولة'),
+                        child: Text(context.l10n.retryAction),
                       ),
                   ],
                 ],
@@ -247,7 +244,7 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 34,
+                        height: MediaQuery.textScalerOf(context).scale(34),
                         child: OutlinedButton(
                           key: const ValueKey('s21_cancel'),
                           onPressed: saving ? null : onCancel,
@@ -258,15 +255,15 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                             side: const BorderSide(color: _blue),
                             shape: const StadiumBorder(),
                           ),
-                          child: const Text('إلغاء',
-                            style: TextStyle(fontSize: 14)),
+                          child: Text(context.l10n.cancel,
+                            style: const TextStyle(fontSize: 14)),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: SizedBox(
-                        height: 34,
+                        height: MediaQuery.textScalerOf(context).scale(34),
                         child: FilledButton(
                           key: const ValueKey('s21_create'),
                           onPressed: saving || loading ? null : onSave,
@@ -282,8 +279,8 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
                                   child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2),
                                 )
-                              : const Text('إنشاء',
-                                  style: TextStyle(fontSize: 14)),
+                              : Text(context.l10n.caseCreate,
+                                  style: const TextStyle(fontSize: 14)),
                         ),
                       ),
                     ),
@@ -293,7 +290,6 @@ class NewCaseStudyDialogS21 extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

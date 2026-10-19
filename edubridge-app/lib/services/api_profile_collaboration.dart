@@ -180,17 +180,15 @@ Future<bool> _apiRemoveSpecialist({
   }
 
 Future<List<dynamic>> _apiGetCaseDiscussions({int? childId}) async {
-    try {
-      final path = childId != null
-          ? '/case-discussions?child_id=$childId'
-          : '/case-discussions';
-      final res = await ApiService.authGet(path);
-      final data = ApiService._decodeBody(res);
-      if (res.statusCode == 200) return data['discussions'] ?? [];
-      return [];
-    } catch (_) {
-      return [];
+    final path = childId != null
+        ? '/case-discussions?child_id=$childId'
+        : '/case-discussions';
+    final res = await ApiService.authGet(path);
+    final data = ApiService._decodeBody(res);
+    if (res.statusCode != 200) {
+      throw Exception(data['error'] ?? 'Could not load case studies');
     }
+    return data['discussions'] ?? [];
   }
 
 Future<Map<String, dynamic>?> _apiCreateCaseDiscussion({

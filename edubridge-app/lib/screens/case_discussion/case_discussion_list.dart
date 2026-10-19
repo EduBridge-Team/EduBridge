@@ -20,7 +20,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
   void _refreshS07State(VoidCallback callback) => setState(callback);
   List<CaseDiscussion> _items = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String? _viewerRole;
   bool _roleResolved = false;
   bool _s07Completed = false;
@@ -73,7 +73,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل دراسات الحالة';
+        _error = SharedUiMessage.caseListLoadFailed;
         _loading = false;
       });
     }
@@ -120,14 +120,14 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('تعذّر تحديد نوع الحساب'),
+              Text(context.l10n.caseRoleUnknown),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {
                   setState(() => _roleResolved = false);
                   _resolveRole();
                 },
-                child: const Text('إعادة المحاولة'),
+                child: Text(context.l10n.retryAction),
               ),
             ],
           ),
@@ -154,9 +154,9 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           backgroundColor: AppColors.brandBlue,
           foregroundColor: Colors.white,
           icon: const Icon(Icons.add_circle_outline),
-          label: const Text(
-            'دراسة جديدة',
-            style: TextStyle(fontWeight: FontWeight.w800),
+          label: Text(
+            context.l10n.caseNewAction,
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
         ),
       );
@@ -168,9 +168,9 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _openNewDiscussion,
           icon: const Icon(AppIcons.add),
-          label: const Text(
-            'دراسة جديدة',
-            style: TextStyle(fontWeight: FontWeight.w800),
+          label: Text(
+            context.l10n.caseNewAction,
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
         ),
         body: Column(
@@ -179,17 +179,17 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'دراسات الحالة',
-                      style: TextStyle(
+                      context.l10n.caseStudies,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                   IconButton(
-                    tooltip: 'تحديث',
+                    tooltip: context.l10n.caseRefreshAction,
                     icon: const Icon(AppIcons.refresh),
                     onPressed: _load,
                   ),
@@ -206,7 +206,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       bottomNavigationBar:
           widget.showBottomNavigation ? const TeacherNavigationBar() : null,
       appBar: JisrAppBar(
-        title: 'دراسات الحالة',
+        title: context.l10n.caseStudies,
         actions: [
           IconButton(icon: const Icon(AppIcons.refresh), onPressed: _load),
         ],
@@ -214,9 +214,9 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openNewDiscussion,
         icon: const Icon(AppIcons.add),
-        label: const Text(
-          'دراسة جديدة',
-          style: TextStyle(fontWeight: FontWeight.w800),
+        label: Text(
+          context.l10n.caseNewAction,
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
       body: _body(c),
@@ -230,10 +230,10 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           const SizedBox(height: 100),
           const Icon(AppIcons.error, size: 56, color: AppColors.red),
           const SizedBox(height: 14),
-          const Text(
-            'تعذّر التحميل',
+          Text(
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.red,
               fontWeight: FontWeight.w700,
@@ -243,7 +243,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           Center(
             child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ),
@@ -272,7 +272,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           ),
           const SizedBox(height: 18),
           Text(
-            'لا توجد دراسات حالة بعد',
+            context.l10n.caseListEmpty,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
@@ -282,7 +282,7 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
           ),
           const SizedBox(height: 6),
           Text(
-            'ابدأ دراسة جديدة للتعاون مع المختصين حول حالة الطفل.',
+            context.l10n.caseListEmptyHint,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: c.muted),
           ),
@@ -300,12 +300,12 @@ class _CaseDiscussionListState extends State<_CaseDiscussionList> {
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
       children: [
         if (open.isNotEmpty) ...[
-          _sectionHeader('نشطة', open.length, AppColors.brandBlue),
+          _sectionHeader(context.l10n.caseActive, open.length, AppColors.brandBlue),
           ...open.map((d) => _DiscussionTile(discussion: d)),
           const SizedBox(height: 16),
         ],
         if (resolved.isNotEmpty) ...[
-          _sectionHeader('محلولة', resolved.length, AppColors.brandTealDeep),
+          _sectionHeader(context.l10n.caseResolved, resolved.length, AppColors.brandTealDeep),
           ...resolved.map((d) => _DiscussionTile(discussion: d)),
         ],
       ],
