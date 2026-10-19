@@ -2879,5 +2879,383 @@
         "type": "int"
       }
     }
+  },
+  "selectDisability": "اختر نوع الإعاقة",
+  "@selectDisability": {
+    "description": "Child registration and disability selection: selectDisability."
+  },
+  "searchDisability": "ابحث عن إعاقة...",
+  "@searchDisability": {
+    "description": "Child registration and disability selection: searchDisability."
+  },
+  "noDisabilitySearchResults": "لا توجد نتائج",
+  "@noDisabilitySearchResults": {
+    "description": "Child registration and disability selection: noDisabilitySearchResults."
+  },
+  "noAdaptation": "بدون تكييف",
+  "@noAdaptation": {
+    "description": "Child registration and disability selection: noAdaptation."
+  },
+  "otherDisability": "أخرى",
+  "@otherDisability": {
+    "description": "Child registration and disability selection: otherDisability."
+  },
+  "enterDisabilityYourself": "اكتب نوع الإعاقة بنفسك",
+  "@enterDisabilityYourself": {
+    "description": "Child registration and disability selection: enterDisabilityYourself."
+  },
+  "addNewChild": "إضافة طفل جديد",
+  "@addNewChild": {
+    "description": "Child registration and disability selection: addNewChild."
+  },
+  "childData": "بيانات الطفل",
+  "@childData": {
+    "description": "Child registration and disability selection: childData."
+  },
+  "ageRequired": "العمر مطلوب",
+  "@ageRequired": {
+    "description": "Child registration and disability selection: ageRequired."
+  },
+  "validAgeRequired": "أدخل عمراً صحيحاً",
+  "@validAgeRequired": {
+    "description": "Child registration and disability selection: validAgeRequired."
+  },
+  "customDisabilityExample": "مثال: اضطراب المعالجة السمعية",
+  "@customDisabilityExample": {
+    "description": "Child registration and disability selection: customDisabilityExample."
+  },
+  "chooseDisabilityRequired": "يجب اختيار نوع الإعاقة",
+  "@chooseDisabilityRequired": {
+    "description": "Child registration and disability selection: chooseDisabilityRequired."
+  },
+  "customDisabilityRequired": "يجب كتابة نوع الإعاقة",
+  "@customDisabilityRequired": {
+    "description": "Child registration and disability selection: customDisabilityRequired."
+  },
+  "guardianPhotoRequired": "صورة هوية ولي الأمر مطلوبة",
+  "@guardianPhotoRequired": {
+    "description": "Child registration and disability selection: guardianPhotoRequired."
+  },
+  "kinshipDocumentRequired": "مستند صلة القرابة مطلوب",
+  "@kinshipDocumentRequired": {
+    "description": "Child registration and disability selection: kinshipDocumentRequired."
+  },
+  "medicalReportRequired": "التقرير الطبي مطلوب",
+  "@medicalReportRequired": {
+    "description": "Child registration and disability selection: medicalReportRequired."
+  },
+  "childRegistrationSubmitted": "تم إرسال بيانات الطفل بنجاح\nبانتظار مراجعة الإدارة",
+  "@childRegistrationSubmitted": {
+    "description": "Child registration and disability selection: childRegistrationSubmitted."
+  },
+  "childRegistrationDocumentsNotice": "رقم هوية الطفل وهوية ولي الأمر وصورة الهوية ومستند صلة القرابة والتقرير الطبي مطلوبة لإتمام التسجيل.",
+  "@childRegistrationDocumentsNotice": {
+    "description": "Child registration and disability selection: childRegistrationDocumentsNotice."
+  },
+  "tapToChoose": "اضغط للاختيار",
+  "@tapToChoose": {
+    "description": "Child registration and disability selection: tapToChoose."
+  },
+  "officialDocuments": "المستندات الرسمية",
+  "@officialDocuments": {
+    "description": "Child registration and disability selection: officialDocuments."
+  },
+  "requiredBadge": "مطلوب",
+  "@requiredBadge": {
+    "description": "Child registration and disability selection: requiredBadge."
+  },
+  "guardianIdFrontDescription": "صورة واضحة للوجه الأمامي للهوية",
+  "@guardianIdFrontDescription": {
+    "description": "Child registration and disability selection: guardianIdFrontDescription."
+  },
+  "birthCertificate": "شهادة الميلاد",
+  "@birthCertificate": {
+    "description": "Child registration and disability selection: birthCertificate."
+  },
+  "birthCertificateDescription": "صورة واضحة للشهادة كاملة",
+  "@birthCertificateDescription": {
+    "description": "Child registration and disability selection: birthCertificateDescription."
+  },
+  "fromGallery": "من المعرض",
+  "@fromGallery": {
+    "description": "Child registration and disability selection: fromGallery."
+  },
+  "uploaded": "تم الرفع",
+  "@uploaded": {
+    "description": "Child registration and disability selection: uploaded."
+  },
+  "changeFile": "تغيير",
+  "@changeFile": {
+    "description": "Child registration and disability selection: changeFile."
+  },
+  "medicalReportUploadDescription": "ارفع صورة أو أكثر للتقرير الطبي الخاص بالطفل",
+  "@medicalReportUploadDescription": {
+    "description": "Child registration and disability selection: medicalReportUploadDescription."
+  },
+  "addMoreFiles": "إضافة المزيد",
+  "@addMoreFiles": {
+    "description": "Child registration and disability selection: addMoreFiles."
+  },
+  "disabilityDescriptionRequired": "وصف الإعاقة مطلوب",
+  "@disabilityDescriptionRequired": {
+    "description": "Child registration and disability selection: disabilityDescriptionRequired."
+  },
+  "specialNeedsRequired": "احتياجات الخاصة مطلوب",
+  "@specialNeedsRequired": {
+    "description": "Child registration and disability selection: specialNeedsRequired."
+  },
+  "learningStyleExample": "مثال: بصري، سمعي، حركي",
+  "@learningStyleExample": {
+    "description": "Child registration and disability selection: learningStyleExample."
+  },
+  "learningStyleRequired": "أسلوب التعلم مطلوب",
+  "@learningStyleRequired": {
+    "description": "Child registration and disability selection: learningStyleRequired."
+  },
+  "strengthsCommaHint": "مفصولة بفواصل: قراءة، رسم،...",
+  "@strengthsCommaHint": {
+    "description": "Child registration and disability selection: strengthsCommaHint."
+  },
+  "strengthsRequired": "نقاط القوة مطلوبة",
+  "@strengthsRequired": {
+    "description": "Child registration and disability selection: strengthsRequired."
+  },
+  "commaSeparatedHint": "مفصولة بفواصل",
+  "@commaSeparatedHint": {
+    "description": "Child registration and disability selection: commaSeparatedHint."
+  },
+  "challengesRequired": "التحديات مطلوبة",
+  "@challengesRequired": {
+    "description": "Child registration and disability selection: challengesRequired."
+  },
+  "childIdNumber": "رقم هوية الطفل",
+  "@childIdNumber": {
+    "description": "Child registration and disability selection: childIdNumber."
+  },
+  "guardianIdNumber": "رقم هوية ولي الأمر",
+  "@guardianIdNumber": {
+    "description": "Child registration and disability selection: guardianIdNumber."
+  },
+  "enterDisabilityType": "اكتب نوع الإعاقة",
+  "@enterDisabilityType": {
+    "description": "Child registration and disability selection: enterDisabilityType."
+  },
+  "disabilityVisual": "الإعاقات البصرية",
+  "@disabilityVisual": {
+    "description": "Child registration and disability selection: disabilityVisual."
+  },
+  "disabilityHearing": "الإعاقات السمعية",
+  "@disabilityHearing": {
+    "description": "Child registration and disability selection: disabilityHearing."
+  },
+  "disabilitySpeechLanguage": "اضطرابات النطق واللغة",
+  "@disabilitySpeechLanguage": {
+    "description": "Child registration and disability selection: disabilitySpeechLanguage."
+  },
+  "disabilityMotor": "الإعاقات الحركية والشلل",
+  "@disabilityMotor": {
+    "description": "Child registration and disability selection: disabilityMotor."
+  },
+  "disabilityBrain": "إصابات وأمراض الدماغ",
+  "@disabilityBrain": {
+    "description": "Child registration and disability selection: disabilityBrain."
+  },
+  "disabilityDevelopmentBehavior": "الاضطرابات النمائية والسلوكية",
+  "@disabilityDevelopmentBehavior": {
+    "description": "Child registration and disability selection: disabilityDevelopmentBehavior."
+  },
+  "disabilityIntellectualLearning": "الإعاقات الذهنية وصعوبات التعلم",
+  "@disabilityIntellectualLearning": {
+    "description": "Child registration and disability selection: disabilityIntellectualLearning."
+  },
+  "disabilityPartialBlindness": "شبه كفيف",
+  "@disabilityPartialBlindness": {
+    "description": "Child registration and disability selection: disabilityPartialBlindness."
+  },
+  "disabilityTotalBlindness": "كفيف كلي",
+  "@disabilityTotalBlindness": {
+    "description": "Child registration and disability selection: disabilityTotalBlindness."
+  },
+  "disabilityLossOneEye": "فقد عين واحدة",
+  "@disabilityLossOneEye": {
+    "description": "Child registration and disability selection: disabilityLossOneEye."
+  },
+  "disabilityColorBlindness": "عمى الألوان",
+  "@disabilityColorBlindness": {
+    "description": "Child registration and disability selection: disabilityColorBlindness."
+  },
+  "disabilityMildHearing": "ضعف سمع خفيف (25 - 40 ديسبل)",
+  "@disabilityMildHearing": {
+    "description": "Child registration and disability selection: disabilityMildHearing."
+  },
+  "disabilityModerateHearing": "ضعف سمع متوسط (41 - 60 ديسبل)",
+  "@disabilityModerateHearing": {
+    "description": "Child registration and disability selection: disabilityModerateHearing."
+  },
+  "disabilitySevereHearing": "ضعف سمع شديد (61 - 85 ديسبل)",
+  "@disabilitySevereHearing": {
+    "description": "Child registration and disability selection: disabilitySevereHearing."
+  },
+  "disabilityProfoundHearing": "ضعف سمع شديد جداً (من 90 ديسبل فما فوق)",
+  "@disabilityProfoundHearing": {
+    "description": "Child registration and disability selection: disabilityProfoundHearing."
+  },
+  "disabilityDeaf": "أصم",
+  "@disabilityDeaf": {
+    "description": "Child registration and disability selection: disabilityDeaf."
+  },
+  "disabilityCochlearImplant": "زارعي القوقعة",
+  "@disabilityCochlearImplant": {
+    "description": "Child registration and disability selection: disabilityCochlearImplant."
+  },
+  "disabilityStuttering": "تأتأة",
+  "@disabilityStuttering": {
+    "description": "Child registration and disability selection: disabilityStuttering."
+  },
+  "disabilityReceptiveLanguage": "تأخر اللغة الاستيعابية",
+  "@disabilityReceptiveLanguage": {
+    "description": "Child registration and disability selection: disabilityReceptiveLanguage."
+  },
+  "disabilityExpressiveLanguage": "تأخر اللغة التعبيرية",
+  "@disabilityExpressiveLanguage": {
+    "description": "Child registration and disability selection: disabilityExpressiveLanguage."
+  },
+  "disabilityAphasia": "الحبسة الكلامية",
+  "@disabilityAphasia": {
+    "description": "Child registration and disability selection: disabilityAphasia."
+  },
+  "disabilitySpeechDelay": "تأخر النطق",
+  "@disabilitySpeechDelay": {
+    "description": "Child registration and disability selection: disabilitySpeechDelay."
+  },
+  "disabilitySpeechLanguageDelay": "تأخر في الكلام والنطق واللغة",
+  "@disabilitySpeechLanguageDelay": {
+    "description": "Child registration and disability selection: disabilitySpeechLanguageDelay."
+  },
+  "disabilityCerebralPalsy": "شلل دماغي",
+  "@disabilityCerebralPalsy": {
+    "description": "Child registration and disability selection: disabilityCerebralPalsy."
+  },
+  "disabilityQuadriplegia": "شلل رباعي",
+  "@disabilityQuadriplegia": {
+    "description": "Child registration and disability selection: disabilityQuadriplegia."
+  },
+  "disabilityParaplegia": "شلل نصفي سفلي",
+  "@disabilityParaplegia": {
+    "description": "Child registration and disability selection: disabilityParaplegia."
+  },
+  "disabilityHemiplegia": "شلل نصفي طولي",
+  "@disabilityHemiplegia": {
+    "description": "Child registration and disability selection: disabilityHemiplegia."
+  },
+  "disabilityTriplegia": "شلل ثلاثي",
+  "@disabilityTriplegia": {
+    "description": "Child registration and disability selection: disabilityTriplegia."
+  },
+  "disabilityMonoplegia": "شلل أحادي",
+  "@disabilityMonoplegia": {
+    "description": "Child registration and disability selection: disabilityMonoplegia."
+  },
+  "disabilityPolioOneLimb": "شلل أطفال أحادي",
+  "@disabilityPolioOneLimb": {
+    "description": "Child registration and disability selection: disabilityPolioOneLimb."
+  },
+  "disabilityPolioTwoLimbs": "شلل أطفال مزدوج",
+  "@disabilityPolioTwoLimbs": {
+    "description": "Child registration and disability selection: disabilityPolioTwoLimbs."
+  },
+  "disabilitySpinalHydrocephalus": "استسقاء الحبل الشوكي",
+  "@disabilitySpinalHydrocephalus": {
+    "description": "Child registration and disability selection: disabilitySpinalHydrocephalus."
+  },
+  "disabilitySpinalInjury": "إصابات الحبل الشوكي",
+  "@disabilitySpinalInjury": {
+    "description": "Child registration and disability selection: disabilitySpinalInjury."
+  },
+  "disabilityBrittleBone": "العظم الزجاجي",
+  "@disabilityBrittleBone": {
+    "description": "Child registration and disability selection: disabilityBrittleBone."
+  },
+  "disabilityNeurological": "أمراض عصبية",
+  "@disabilityNeurological": {
+    "description": "Child registration and disability selection: disabilityNeurological."
+  },
+  "disabilityBrainAtrophy": "ضمور في الدماغ",
+  "@disabilityBrainAtrophy": {
+    "description": "Child registration and disability selection: disabilityBrainAtrophy."
+  },
+  "disabilityBrainInjury": "إصابات دماغ",
+  "@disabilityBrainInjury": {
+    "description": "Child registration and disability selection: disabilityBrainInjury."
+  },
+  "disabilityEpilepsy": "الصرع",
+  "@disabilityEpilepsy": {
+    "description": "Child registration and disability selection: disabilityEpilepsy."
+  },
+  "disabilityAutismMild": "طيف التوحّد (بسيط/متوسط)",
+  "@disabilityAutismMild": {
+    "description": "Child registration and disability selection: disabilityAutismMild."
+  },
+  "disabilityAutismSevere": "طيف التوحّد (شديد)",
+  "@disabilityAutismSevere": {
+    "description": "Child registration and disability selection: disabilityAutismSevere."
+  },
+  "disabilityAdhd": "فرط الحركة وتشتت الانتباه",
+  "@disabilityAdhd": {
+    "description": "Child registration and disability selection: disabilityAdhd."
+  },
+  "disabilitySchizophrenia": "اضطرابات فصام الشخصية",
+  "@disabilitySchizophrenia": {
+    "description": "Child registration and disability selection: disabilitySchizophrenia."
+  },
+  "disabilityConversion": "اضطرابات عصاب التحول",
+  "@disabilityConversion": {
+    "description": "Child registration and disability selection: disabilityConversion."
+  },
+  "disabilityChildBehavior": "اضطرابات سلوك الأطفال",
+  "@disabilityChildBehavior": {
+    "description": "Child registration and disability selection: disabilityChildBehavior."
+  },
+  "disabilityLearningIq": "صعوبة تعلم - معامل الذكاء (I.Q 71 - 89)",
+  "@disabilityLearningIq": {
+    "description": "Child registration and disability selection: disabilityLearningIq."
+  },
+  "disabilityIntellectualMild": "تخلف عقلي بسيط - معامل الذكاء (I.Q 55 - 70)",
+  "@disabilityIntellectualMild": {
+    "description": "Child registration and disability selection: disabilityIntellectualMild."
+  },
+  "disabilityIntellectualModerate": "تخلف عقلي متوسط - معامل الذكاء (I.Q 41 - 54)",
+  "@disabilityIntellectualModerate": {
+    "description": "Child registration and disability selection: disabilityIntellectualModerate."
+  },
+  "disabilityIntellectualSevere": "تخلف عقلي شديد - معامل الذكاء (I.Q 26 - 40)",
+  "@disabilityIntellectualSevere": {
+    "description": "Child registration and disability selection: disabilityIntellectualSevere."
+  },
+  "disabilityIntellectualProfound": "تخلف عقلي شديد جداً - معامل الذكاء (I.Q < 25)",
+  "@disabilityIntellectualProfound": {
+    "description": "Child registration and disability selection: disabilityIntellectualProfound."
+  },
+  "disabilityDownSyndrome": "متلازمة داون",
+  "@disabilityDownSyndrome": {
+    "description": "Child registration and disability selection: disabilityDownSyndrome."
+  },
+  "requiredFieldLabel": "{label} *",
+  "@requiredFieldLabel": {
+    "description": "Child registration and disability selection: requiredFieldLabel.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "disabilityCaseCount": "{count, plural, =0{لا توجد حالات} =1{حالة واحدة} =2{حالتان} few{{count} حالات} many{{count} حالة} other{{count} حالة}}",
+  "@disabilityCaseCount": {
+    "description": "Child registration and disability selection: disabilityCaseCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

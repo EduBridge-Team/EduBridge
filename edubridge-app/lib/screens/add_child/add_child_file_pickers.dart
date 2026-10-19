@@ -34,12 +34,14 @@ Widget buildDocumentsSection({
             const Icon(AppIcons.attach,
                 color: AppColors.brandBlue, size: 26),
             const SizedBox(width: 8),
-            Text(
-              'المستندات الرسمية',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: c.heading,
+            Expanded(
+              child: Text(
+                context.l10n.officialDocuments,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: c.heading,
+                ),
               ),
             ),
             const SizedBox(width: 6),
@@ -49,8 +51,8 @@ Widget buildDocumentsSection({
                 color: AppColors.brandBlue.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'مطلوب',
+              child: Text(
+                context.l10n.requiredBadge,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -63,8 +65,8 @@ Widget buildDocumentsSection({
         const SizedBox(height: 14),
         _buildFilePicker(
           context: context,
-          label: 'هوية ولي الأمر',
-          sublabel: 'صورة واضحة للوجه الأمامي للهوية',
+          label: context.l10n.guardianNationalId,
+          sublabel: context.l10n.guardianIdFrontDescription,
           icon: AppIcons.profile,
           file: idCardFile,
           onPick: onPickId,
@@ -75,8 +77,8 @@ Widget buildDocumentsSection({
         const SizedBox(height: 12),
         _buildFilePicker(
           context: context,
-          label: 'شهادة الميلاد',
-          sublabel: 'صورة واضحة للشهادة كاملة',
+          label: context.l10n.birthCertificate,
+          sublabel: context.l10n.birthCertificateDescription,
           icon: AppIcons.certificate,
           file: birthCertFile,
           onPick: onPickBirth,
@@ -150,8 +152,8 @@ Widget _buildFilePicker({
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 42,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 42),
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: color,
@@ -162,7 +164,7 @@ Widget _buildFilePicker({
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                     icon: const Icon(AppIcons.upload, size: 18),
-                    label: const Text('من المعرض',
+                    label: Text(context.l10n.fromGallery,
                         style: TextStyle(fontSize: 13)),
                     onPressed: onPick,
                   ),
@@ -171,8 +173,8 @@ Widget _buildFilePicker({
               if (onCapture != null) ...[
                 const SizedBox(width: 8),
                 Expanded(
-                  child: SizedBox(
-                    height: 42,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 42),
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: color,
@@ -183,7 +185,7 @@ Widget _buildFilePicker({
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                       ),
                       icon: const Icon(AppIcons.camera, size: 18),
-                      label: const Text('الكاميرا',
+                      label: Text(context.l10n.camera,
                           style: TextStyle(fontSize: 13)),
                       onPressed: onCapture,
                     ),
@@ -225,21 +227,21 @@ Widget _buildFilePicker({
                         color: c.onTint,
                       ),
                     ),
-                    Text('تم الرفع',
+                    Text(context.l10n.uploaded,
                         style: TextStyle(fontSize: 11, color: c.success)),
                   ],
                 ),
               ),
               IconButton(
                 icon: Icon(AppIcons.refresh, color: color, size: 20),
-                tooltip: 'تغيير',
+                tooltip: context.l10n.changeFile,
                 onPressed: onPick,
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(6),
               ),
               IconButton(
                 icon: const Icon(AppIcons.delete, color: AppColors.red, size: 20),
-                tooltip: 'حذف',
+                tooltip: context.l10n.deleteConfirmationWord,
                 onPressed: onRemove,
                 constraints: const BoxConstraints(),
                 padding: const EdgeInsets.all(6),

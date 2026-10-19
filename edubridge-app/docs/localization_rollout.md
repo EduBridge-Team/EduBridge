@@ -219,3 +219,23 @@ verify localized labels do not mutate profile payloads.
 Phase 4 remains in progress: add-child forms/disability selection, clinical
 recommendations, evaluation and reporting forms are next. Child activities remain
 phase 5; the final completeness/accessibility/direction audit remains phase 6.
+
+
+### Phase 4 — child registration and disability selection
+
+Add-child fields, validation, required document prompts and image actions use
+Arabic/English resources. Changing language preserves the draft and refreshes
+validation already shown after submission. Pending image/submission callbacks
+check that the route remains mounted.
+
+A presentation-only disability adapter translates every known category/value.
+The canonical Arabic catalog, adaptation mapping, payload values and custom
+free-text disability descriptions are unchanged. Both picker layouts inherit the
+active direction, search canonical Arabic plus the displayed translation and
+return canonical identifiers, including Other/No adaptation. The regular picker
+now also finds those two options when categories have no match.
+
+Tests cover both picker layouts/languages at 320 pixels, doubled text, keyboard
+insets, special choices, dismissal, required form fields and draft preservation.
+Phase 4 still includes clinical recommendations and evaluation/report workflows.
+Child activities remain phase 5; the final audit remains phase 6.

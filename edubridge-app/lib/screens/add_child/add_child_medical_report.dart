@@ -29,12 +29,14 @@ Widget buildMedicalReportSection({
             const Icon(AppIcons.certificate,
                 color: AppColors.brandTeal, size: 26),
             const SizedBox(width: 8),
-            Text(
-              'التقرير الطبي',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: c.heading,
+            Expanded(
+              child: Text(
+                context.l10n.medicalReport,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: c.heading,
+                ),
               ),
             ),
             const SizedBox(width: 6),
@@ -45,8 +47,8 @@ Widget buildMedicalReportSection({
                 color: AppColors.brandTeal.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'مطلوب',
+              child: Text(
+                context.l10n.requiredBadge,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -58,7 +60,7 @@ Widget buildMedicalReportSection({
         ),
         const SizedBox(height: 6),
         Text(
-          'ارفع صورة أو أكثر للتقرير الطبي الخاص بالطفل',
+          context.l10n.medicalReportUploadDescription,
           style: TextStyle(fontSize: 12, color: c.muted),
         ),
         const SizedBox(height: 14),
@@ -81,8 +83,8 @@ Widget buildMedicalReportSection({
         Row(
           children: [
             Expanded(
-              child: SizedBox(
-                height: 44,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandTeal,
@@ -94,7 +96,7 @@ Widget buildMedicalReportSection({
                   ),
                   icon: const Icon(AppIcons.upload, size: 18),
                   label: Text(
-                    hasFiles ? 'إضافة المزيد' : 'من المعرض',
+                    hasFiles ? context.l10n.addMoreFiles : context.l10n.fromGallery,
                     style: const TextStyle(fontSize: 13),
                   ),
                   onPressed: onPick,
@@ -103,8 +105,8 @@ Widget buildMedicalReportSection({
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: SizedBox(
-                height: 44,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.brandTeal,
@@ -116,7 +118,7 @@ Widget buildMedicalReportSection({
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                   ),
                   icon: const Icon(AppIcons.camera, size: 18),
-                  label: const Text('الكاميرا',
+                  label: Text(context.l10n.camera,
                       style: TextStyle(fontSize: 13)),
                   onPressed: onCapture,
                 ),

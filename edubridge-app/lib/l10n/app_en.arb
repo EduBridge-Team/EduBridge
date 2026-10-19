@@ -2879,5 +2879,383 @@
         "type": "int"
       }
     }
+  },
+  "selectDisability": "Choose a disability type",
+  "@selectDisability": {
+    "description": "Child registration and disability selection: selectDisability."
+  },
+  "searchDisability": "Search for a disability...",
+  "@searchDisability": {
+    "description": "Child registration and disability selection: searchDisability."
+  },
+  "noDisabilitySearchResults": "No results",
+  "@noDisabilitySearchResults": {
+    "description": "Child registration and disability selection: noDisabilitySearchResults."
+  },
+  "noAdaptation": "No adaptation",
+  "@noAdaptation": {
+    "description": "Child registration and disability selection: noAdaptation."
+  },
+  "otherDisability": "Other",
+  "@otherDisability": {
+    "description": "Child registration and disability selection: otherDisability."
+  },
+  "enterDisabilityYourself": "Enter a disability type",
+  "@enterDisabilityYourself": {
+    "description": "Child registration and disability selection: enterDisabilityYourself."
+  },
+  "addNewChild": "Add a new child",
+  "@addNewChild": {
+    "description": "Child registration and disability selection: addNewChild."
+  },
+  "childData": "Child details",
+  "@childData": {
+    "description": "Child registration and disability selection: childData."
+  },
+  "ageRequired": "Age is required",
+  "@ageRequired": {
+    "description": "Child registration and disability selection: ageRequired."
+  },
+  "validAgeRequired": "Enter a valid age",
+  "@validAgeRequired": {
+    "description": "Child registration and disability selection: validAgeRequired."
+  },
+  "customDisabilityExample": "Example: auditory processing disorder",
+  "@customDisabilityExample": {
+    "description": "Child registration and disability selection: customDisabilityExample."
+  },
+  "chooseDisabilityRequired": "Choose a disability type",
+  "@chooseDisabilityRequired": {
+    "description": "Child registration and disability selection: chooseDisabilityRequired."
+  },
+  "customDisabilityRequired": "Enter a disability type",
+  "@customDisabilityRequired": {
+    "description": "Child registration and disability selection: customDisabilityRequired."
+  },
+  "guardianPhotoRequired": "A guardian ID photo is required",
+  "@guardianPhotoRequired": {
+    "description": "Child registration and disability selection: guardianPhotoRequired."
+  },
+  "kinshipDocumentRequired": "A kinship document is required",
+  "@kinshipDocumentRequired": {
+    "description": "Child registration and disability selection: kinshipDocumentRequired."
+  },
+  "medicalReportRequired": "A medical report is required",
+  "@medicalReportRequired": {
+    "description": "Child registration and disability selection: medicalReportRequired."
+  },
+  "childRegistrationSubmitted": "Child details submitted successfully\nAwaiting administrator review",
+  "@childRegistrationSubmitted": {
+    "description": "Child registration and disability selection: childRegistrationSubmitted."
+  },
+  "childRegistrationDocumentsNotice": "The child's and guardian's ID numbers, guardian ID photo, kinship document and medical report are required to complete registration.",
+  "@childRegistrationDocumentsNotice": {
+    "description": "Child registration and disability selection: childRegistrationDocumentsNotice."
+  },
+  "tapToChoose": "Tap to choose",
+  "@tapToChoose": {
+    "description": "Child registration and disability selection: tapToChoose."
+  },
+  "officialDocuments": "Official documents",
+  "@officialDocuments": {
+    "description": "Child registration and disability selection: officialDocuments."
+  },
+  "requiredBadge": "Required",
+  "@requiredBadge": {
+    "description": "Child registration and disability selection: requiredBadge."
+  },
+  "guardianIdFrontDescription": "A clear photo of the front of the ID",
+  "@guardianIdFrontDescription": {
+    "description": "Child registration and disability selection: guardianIdFrontDescription."
+  },
+  "birthCertificate": "Birth certificate",
+  "@birthCertificate": {
+    "description": "Child registration and disability selection: birthCertificate."
+  },
+  "birthCertificateDescription": "A clear photo of the full certificate",
+  "@birthCertificateDescription": {
+    "description": "Child registration and disability selection: birthCertificateDescription."
+  },
+  "fromGallery": "Gallery",
+  "@fromGallery": {
+    "description": "Child registration and disability selection: fromGallery."
+  },
+  "uploaded": "Uploaded",
+  "@uploaded": {
+    "description": "Child registration and disability selection: uploaded."
+  },
+  "changeFile": "Change",
+  "@changeFile": {
+    "description": "Child registration and disability selection: changeFile."
+  },
+  "medicalReportUploadDescription": "Upload one or more photos of the child's medical report",
+  "@medicalReportUploadDescription": {
+    "description": "Child registration and disability selection: medicalReportUploadDescription."
+  },
+  "addMoreFiles": "Add more",
+  "@addMoreFiles": {
+    "description": "Child registration and disability selection: addMoreFiles."
+  },
+  "disabilityDescriptionRequired": "A disability description is required",
+  "@disabilityDescriptionRequired": {
+    "description": "Child registration and disability selection: disabilityDescriptionRequired."
+  },
+  "specialNeedsRequired": "Special needs are required",
+  "@specialNeedsRequired": {
+    "description": "Child registration and disability selection: specialNeedsRequired."
+  },
+  "learningStyleExample": "Example: visual, auditory, movement-based",
+  "@learningStyleExample": {
+    "description": "Child registration and disability selection: learningStyleExample."
+  },
+  "learningStyleRequired": "A preferred learning style is required",
+  "@learningStyleRequired": {
+    "description": "Child registration and disability selection: learningStyleRequired."
+  },
+  "strengthsCommaHint": "Separate with commas: reading, drawing, ...",
+  "@strengthsCommaHint": {
+    "description": "Child registration and disability selection: strengthsCommaHint."
+  },
+  "strengthsRequired": "Strengths are required",
+  "@strengthsRequired": {
+    "description": "Child registration and disability selection: strengthsRequired."
+  },
+  "commaSeparatedHint": "Separate with commas",
+  "@commaSeparatedHint": {
+    "description": "Child registration and disability selection: commaSeparatedHint."
+  },
+  "challengesRequired": "Challenges are required",
+  "@challengesRequired": {
+    "description": "Child registration and disability selection: challengesRequired."
+  },
+  "childIdNumber": "Child ID number",
+  "@childIdNumber": {
+    "description": "Child registration and disability selection: childIdNumber."
+  },
+  "guardianIdNumber": "Guardian ID number",
+  "@guardianIdNumber": {
+    "description": "Child registration and disability selection: guardianIdNumber."
+  },
+  "enterDisabilityType": "Enter disability type",
+  "@enterDisabilityType": {
+    "description": "Child registration and disability selection: enterDisabilityType."
+  },
+  "disabilityVisual": "Visual disabilities",
+  "@disabilityVisual": {
+    "description": "Child registration and disability selection: disabilityVisual."
+  },
+  "disabilityHearing": "Hearing disabilities",
+  "@disabilityHearing": {
+    "description": "Child registration and disability selection: disabilityHearing."
+  },
+  "disabilitySpeechLanguage": "Speech and language disorders",
+  "@disabilitySpeechLanguage": {
+    "description": "Child registration and disability selection: disabilitySpeechLanguage."
+  },
+  "disabilityMotor": "Motor disabilities and paralysis",
+  "@disabilityMotor": {
+    "description": "Child registration and disability selection: disabilityMotor."
+  },
+  "disabilityBrain": "Brain injuries and conditions",
+  "@disabilityBrain": {
+    "description": "Child registration and disability selection: disabilityBrain."
+  },
+  "disabilityDevelopmentBehavior": "Developmental and behavioral disorders",
+  "@disabilityDevelopmentBehavior": {
+    "description": "Child registration and disability selection: disabilityDevelopmentBehavior."
+  },
+  "disabilityIntellectualLearning": "Intellectual disabilities and learning difficulties",
+  "@disabilityIntellectualLearning": {
+    "description": "Child registration and disability selection: disabilityIntellectualLearning."
+  },
+  "disabilityPartialBlindness": "Partial blindness",
+  "@disabilityPartialBlindness": {
+    "description": "Child registration and disability selection: disabilityPartialBlindness."
+  },
+  "disabilityTotalBlindness": "Total blindness",
+  "@disabilityTotalBlindness": {
+    "description": "Child registration and disability selection: disabilityTotalBlindness."
+  },
+  "disabilityLossOneEye": "Loss of one eye",
+  "@disabilityLossOneEye": {
+    "description": "Child registration and disability selection: disabilityLossOneEye."
+  },
+  "disabilityColorBlindness": "Color blindness",
+  "@disabilityColorBlindness": {
+    "description": "Child registration and disability selection: disabilityColorBlindness."
+  },
+  "disabilityMildHearing": "Mild hearing loss (25–40 dB)",
+  "@disabilityMildHearing": {
+    "description": "Child registration and disability selection: disabilityMildHearing."
+  },
+  "disabilityModerateHearing": "Moderate hearing loss (41–60 dB)",
+  "@disabilityModerateHearing": {
+    "description": "Child registration and disability selection: disabilityModerateHearing."
+  },
+  "disabilitySevereHearing": "Severe hearing loss (61–85 dB)",
+  "@disabilitySevereHearing": {
+    "description": "Child registration and disability selection: disabilitySevereHearing."
+  },
+  "disabilityProfoundHearing": "Profound hearing loss (90 dB or above)",
+  "@disabilityProfoundHearing": {
+    "description": "Child registration and disability selection: disabilityProfoundHearing."
+  },
+  "disabilityDeaf": "Deafness",
+  "@disabilityDeaf": {
+    "description": "Child registration and disability selection: disabilityDeaf."
+  },
+  "disabilityCochlearImplant": "Cochlear implant users",
+  "@disabilityCochlearImplant": {
+    "description": "Child registration and disability selection: disabilityCochlearImplant."
+  },
+  "disabilityStuttering": "Stuttering",
+  "@disabilityStuttering": {
+    "description": "Child registration and disability selection: disabilityStuttering."
+  },
+  "disabilityReceptiveLanguage": "Receptive language delay",
+  "@disabilityReceptiveLanguage": {
+    "description": "Child registration and disability selection: disabilityReceptiveLanguage."
+  },
+  "disabilityExpressiveLanguage": "Expressive language delay",
+  "@disabilityExpressiveLanguage": {
+    "description": "Child registration and disability selection: disabilityExpressiveLanguage."
+  },
+  "disabilityAphasia": "Aphasia",
+  "@disabilityAphasia": {
+    "description": "Child registration and disability selection: disabilityAphasia."
+  },
+  "disabilitySpeechDelay": "Speech delay",
+  "@disabilitySpeechDelay": {
+    "description": "Child registration and disability selection: disabilitySpeechDelay."
+  },
+  "disabilitySpeechLanguageDelay": "Speech and language delay",
+  "@disabilitySpeechLanguageDelay": {
+    "description": "Child registration and disability selection: disabilitySpeechLanguageDelay."
+  },
+  "disabilityCerebralPalsy": "Cerebral palsy",
+  "@disabilityCerebralPalsy": {
+    "description": "Child registration and disability selection: disabilityCerebralPalsy."
+  },
+  "disabilityQuadriplegia": "Quadriplegia",
+  "@disabilityQuadriplegia": {
+    "description": "Child registration and disability selection: disabilityQuadriplegia."
+  },
+  "disabilityParaplegia": "Paraplegia",
+  "@disabilityParaplegia": {
+    "description": "Child registration and disability selection: disabilityParaplegia."
+  },
+  "disabilityHemiplegia": "Hemiplegia",
+  "@disabilityHemiplegia": {
+    "description": "Child registration and disability selection: disabilityHemiplegia."
+  },
+  "disabilityTriplegia": "Triplegia",
+  "@disabilityTriplegia": {
+    "description": "Child registration and disability selection: disabilityTriplegia."
+  },
+  "disabilityMonoplegia": "Monoplegia",
+  "@disabilityMonoplegia": {
+    "description": "Child registration and disability selection: disabilityMonoplegia."
+  },
+  "disabilityPolioOneLimb": "Polio affecting one limb",
+  "@disabilityPolioOneLimb": {
+    "description": "Child registration and disability selection: disabilityPolioOneLimb."
+  },
+  "disabilityPolioTwoLimbs": "Polio affecting two limbs",
+  "@disabilityPolioTwoLimbs": {
+    "description": "Child registration and disability selection: disabilityPolioTwoLimbs."
+  },
+  "disabilitySpinalHydrocephalus": "Spinal cord hydrocephalus",
+  "@disabilitySpinalHydrocephalus": {
+    "description": "Child registration and disability selection: disabilitySpinalHydrocephalus."
+  },
+  "disabilitySpinalInjury": "Spinal cord injuries",
+  "@disabilitySpinalInjury": {
+    "description": "Child registration and disability selection: disabilitySpinalInjury."
+  },
+  "disabilityBrittleBone": "Brittle bone disease",
+  "@disabilityBrittleBone": {
+    "description": "Child registration and disability selection: disabilityBrittleBone."
+  },
+  "disabilityNeurological": "Neurological conditions",
+  "@disabilityNeurological": {
+    "description": "Child registration and disability selection: disabilityNeurological."
+  },
+  "disabilityBrainAtrophy": "Brain atrophy",
+  "@disabilityBrainAtrophy": {
+    "description": "Child registration and disability selection: disabilityBrainAtrophy."
+  },
+  "disabilityBrainInjury": "Brain injuries",
+  "@disabilityBrainInjury": {
+    "description": "Child registration and disability selection: disabilityBrainInjury."
+  },
+  "disabilityEpilepsy": "Epilepsy",
+  "@disabilityEpilepsy": {
+    "description": "Child registration and disability selection: disabilityEpilepsy."
+  },
+  "disabilityAutismMild": "Autism spectrum (mild/moderate)",
+  "@disabilityAutismMild": {
+    "description": "Child registration and disability selection: disabilityAutismMild."
+  },
+  "disabilityAutismSevere": "Autism spectrum (severe)",
+  "@disabilityAutismSevere": {
+    "description": "Child registration and disability selection: disabilityAutismSevere."
+  },
+  "disabilityAdhd": "Attention deficit hyperactivity disorder",
+  "@disabilityAdhd": {
+    "description": "Child registration and disability selection: disabilityAdhd."
+  },
+  "disabilitySchizophrenia": "Schizophrenia disorders",
+  "@disabilitySchizophrenia": {
+    "description": "Child registration and disability selection: disabilitySchizophrenia."
+  },
+  "disabilityConversion": "Conversion disorders",
+  "@disabilityConversion": {
+    "description": "Child registration and disability selection: disabilityConversion."
+  },
+  "disabilityChildBehavior": "Child behavioral disorders",
+  "@disabilityChildBehavior": {
+    "description": "Child registration and disability selection: disabilityChildBehavior."
+  },
+  "disabilityLearningIq": "Learning difficulty — IQ 71–89",
+  "@disabilityLearningIq": {
+    "description": "Child registration and disability selection: disabilityLearningIq."
+  },
+  "disabilityIntellectualMild": "Mild intellectual disability — IQ 55–70",
+  "@disabilityIntellectualMild": {
+    "description": "Child registration and disability selection: disabilityIntellectualMild."
+  },
+  "disabilityIntellectualModerate": "Moderate intellectual disability — IQ 41–54",
+  "@disabilityIntellectualModerate": {
+    "description": "Child registration and disability selection: disabilityIntellectualModerate."
+  },
+  "disabilityIntellectualSevere": "Severe intellectual disability — IQ 26–40",
+  "@disabilityIntellectualSevere": {
+    "description": "Child registration and disability selection: disabilityIntellectualSevere."
+  },
+  "disabilityIntellectualProfound": "Profound intellectual disability — IQ below 25",
+  "@disabilityIntellectualProfound": {
+    "description": "Child registration and disability selection: disabilityIntellectualProfound."
+  },
+  "disabilityDownSyndrome": "Down syndrome",
+  "@disabilityDownSyndrome": {
+    "description": "Child registration and disability selection: disabilityDownSyndrome."
+  },
+  "requiredFieldLabel": "{label} *",
+  "@requiredFieldLabel": {
+    "description": "Child registration and disability selection: requiredFieldLabel.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "disabilityCaseCount": "{count, plural, =1{1 condition} other{{count} conditions}}",
+  "@disabilityCaseCount": {
+    "description": "Child registration and disability selection: disabilityCaseCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

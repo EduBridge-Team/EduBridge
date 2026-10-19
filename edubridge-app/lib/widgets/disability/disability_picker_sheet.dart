@@ -1,3 +1,5 @@
+import '../../l10n/l10n.dart';
+import 'disability_display.dart';
 // lib/widgets/disability/disability_picker_sheet.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -8,14 +10,14 @@ part 'disability_picker_s30.dart';
 
 class DisabilityPickerSheet extends StatefulWidget {
   final String? currentValue;
-  final String title;
+  final String? title;
   final bool figmaS30;
 
   const DisabilityPickerSheet({
     super.key,
     this.currentValue,
     this.figmaS30 = false,
-    this.title = 'اختر نوع الإعاقة',
+    this.title,
   });
 
   @override
@@ -34,15 +36,20 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
     super.dispose();
   }
 
+  bool _matches(String value) =>
+      DisabilityDisplay.matches(value, _search, context.l10n);
+  bool get _showOther => _matches('أخرى');
+  bool get _showNoAdaptation => _matches('بدون تكييف');
+
   List<DisabilityCategory> get _filteredCategories {
     if (_search.trim().isEmpty) return kDisabilityCategories;
-    final q = _search.trim().toLowerCase();
+
     final result = <DisabilityCategory>[];
     for (final cat in kDisabilityCategories) {
       final matching = cat.items
-          .where((item) => item.toLowerCase().contains(q))
+          .where(_matches)
           .toList();
-      if (matching.isNotEmpty || cat.label.toLowerCase().contains(q)) {
+      if (matching.isNotEmpty || _matches(cat.label)) {
         result.add(DisabilityCategory(
           label: cat.label,
           emoji: cat.emoji,
@@ -75,7 +82,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              widget.title,
+              widget.title ?? context.l10n.selectDisability,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -84,6 +91,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
             ),
           ),
           IconButton(
+            tooltip: context.l10n.close,
             icon: const Icon(AppIcons.close),
             onPressed: () => Navigator.pop(context),
           ),
@@ -98,10 +106,11 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
       child: TextField(
         controller: _searchCtrl,
         decoration: InputDecoration(
-          hintText: 'ابحث عن إعاقة...',
+          hintText: context.l10n.searchDisability,
           prefixIcon: const Icon(AppIcons.search),
           suffixIcon: _search.isNotEmpty
               ? IconButton(
+                  tooltip: context.l10n.clearSearch,
                   icon: const Icon(AppIcons.close),
                   onPressed: () {
                     _searchCtrl.clear();
@@ -124,14 +133,14 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
 
   Widget _buildEmpty(JisrColors c) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(AppIcons.search, size: 64, color: c.muted),
             const SizedBox(height: 12),
-            Text('لا توجد نتائج',
+            Text(context.l10n.noDisabilitySearchResults,
                 style: TextStyle(fontSize: 16, color: c.muted)),
           ],
         ),
@@ -146,7 +155,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
       selected: isSelected,
       onTap: () => Navigator.pop(context, 'بدون تكييف'),
       leading: const Icon(AppIcons.info, size: 22, color: AppColors.muted),
-      title: 'بدون تكييف',
+      title: context.l10n.noAdaptation,
     );
   }
 
@@ -185,13 +194,13 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('أخرى',
+                  Text(context.l10n.otherDisability,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: c.heading,
                       )),
-                  Text('اكتب نوع الإعاقة بنفسك',
+                  Text(context.l10n.enterDisabilityYourself,
                       style: TextStyle(fontSize: 12, color: c.muted)),
                 ],
               ),
@@ -256,7 +265,8 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
         border: Border.all(color: c.line, width: 1.5),
       ),
       child: ExpansionTile(
-        initiallyExpanded: hasCurrent,
+        key: ValueKey('disability-${cat.label}-$_search'),
+        initiallyExpanded: hasCurrent || _search.trim().isNotEmpty,
         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
         childrenPadding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
         iconColor: AppColors.brandBlue,
@@ -271,14 +281,14 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
           alignment: Alignment.center,
           child: Text(cat.emoji, style: const TextStyle(fontSize: 22)),
         ),
-        title: Text(cat.label,
+        title: Text(DisabilityDisplay.label(cat.label, context.l10n),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
               color: c.heading,
             )),
         subtitle: Text(
-          '${cat.items.length} ${cat.items.length == 1 ? 'حالة' : 'حالات'}',
+          context.l10n.disabilityCaseCount(cat.items.length),
           style: TextStyle(fontSize: 12, color: c.muted),
         ),
         children: cat.items.map((item) {
@@ -308,7 +318,7 @@ class _DisabilityPickerSheetState extends State<DisabilityPickerSheet> {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      item,
+                      DisabilityDisplay.label(item, context.l10n),
                       style: TextStyle(
                         fontSize: 14,
                         color: c.heading,

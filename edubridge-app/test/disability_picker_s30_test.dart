@@ -1,12 +1,15 @@
 import 'package:edubridge_app/widgets/disability/disability_picker_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Future<void> open(WidgetTester tester, ValueChanged<String?> done, {String? current}) async {
     await tester.binding.setSurfaceSize(const Size(320, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(
+    await tester.pumpWidget(MaterialApp(locale: const Locale('ar'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates, home: Scaffold(body: Builder(
       builder: (context) => TextButton(onPressed: () async {
         done(await showModalBottomSheet<String>(context: context,
           isScrollControlled: true, backgroundColor: Colors.transparent,

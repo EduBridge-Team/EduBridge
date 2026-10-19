@@ -9,6 +9,7 @@ extension _DisabilityPickerSheetStateView on _DisabilityPickerSheetState {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       decoration: BoxDecoration(
         color: c.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -20,22 +21,25 @@ extension _DisabilityPickerSheetStateView on _DisabilityPickerSheetState {
           _buildHeader(c),
           _buildSearch(c),
           Flexible(
-            child: categories.isEmpty
+            child: categories.isEmpty && !_showOther && !_showNoAdaptation
                 ? _buildEmpty(c)
                 : ListView(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                     children: [
-                      _buildNoDisabilityOption(c),
-                      const SizedBox(height: 8),
+                      if (_showNoAdaptation) ...[
+                        _buildNoDisabilityOption(c),
+                        const SizedBox(height: 8),
+                      ],
                       ...categories.map((cat) => _buildCategory(cat, c)),
                       const SizedBox(height: 8),
-                      _buildOtherOption(c),
+                      if (_showOther) _buildOtherOption(c),
                     ],
                   ),
           ),
         ],
       ),
     );
-  
+
   }
 }

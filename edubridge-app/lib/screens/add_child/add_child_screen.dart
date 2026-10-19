@@ -1,3 +1,5 @@
+import '../../l10n/l10n.dart';
+import '../../widgets/disability/disability_display.dart';
 // lib/screens/add_child/add_child_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -42,7 +44,21 @@ class _AddChildScreenState extends State<AddChildScreen> {
   final ImagePicker _picker = ImagePicker();
 
   bool _loading = false;
-  String? _error;
+  Object? _error;
+  bool _hasSubmitted = false;
+  Locale? _validationLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = Localizations.localeOf(context);
+    if (_hasSubmitted && _validationLocale != locale) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _formKey.currentState?.validate();
+      });
+    }
+    _validationLocale = locale;
+  }
 
   @override
   void dispose() {
@@ -62,19 +78,19 @@ class _AddChildScreenState extends State<AddChildScreen> {
   Future<void> _pickIdCard() async {
     final picked = await _picker.pickImage(
         source: ImageSource.gallery, imageQuality: 85);
-    if (picked != null) setState(() => _idCardFile = File(picked.path));
+    if (mounted && picked != null) setState(() => _idCardFile = File(picked.path));
   }
 
   Future<void> _pickBirthCert() async {
     final picked = await _picker.pickImage(
         source: ImageSource.gallery, imageQuality: 85);
-    if (picked != null) setState(() => _birthCertFile = File(picked.path));
+    if (mounted && picked != null) setState(() => _birthCertFile = File(picked.path));
   }
 
   Future<void> _captureIdCard() async {
     final picked = await _picker.pickImage(
         source: ImageSource.camera, imageQuality: 85);
-    if (picked != null) setState(() => _idCardFile = File(picked.path));
+    if (mounted && picked != null) setState(() => _idCardFile = File(picked.path));
   }
 
   Future<void> _openDisabilityPicker() async {
@@ -86,12 +102,12 @@ class _AddChildScreenState extends State<AddChildScreen> {
         currentValue: _selectedDisabilityType,
       ),
     );
-    if (result != null) setState(() => _selectedDisabilityType = result);
+    if (mounted && result != null) setState(() => _selectedDisabilityType = result);
   }
 
   Future<void> _pickMedicalReport() async {
     final picked = await _picker.pickMultiImage(imageQuality: 85);
-    if (picked.isEmpty) return;
+    if (!mounted || picked.isEmpty) return;
     setState(() {
       _medicalReportFiles.addAll(picked.map((x) => File(x.path)));
     });
@@ -100,7 +116,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   Future<void> _captureMedicalReport() async {
     final picked = await _picker.pickImage(
         source: ImageSource.camera, imageQuality: 85);
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     setState(() => _medicalReportFiles.add(File(picked.path)));
   }
 
@@ -109,27 +125,28 @@ class _AddChildScreenState extends State<AddChildScreen> {
   }
 
   Future<void> _submit() async {
+    _hasSubmitted = true;
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDisabilityType == null) {
-      setState(() => _error = 'يجب اختيار نوع الإعاقة');
+      setState(() => _error = SharedUiMessage.chooseDisabilityRequired);
       return;
     }
     if (_selectedDisabilityType == 'أخرى' &&
         _customDisabilityCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'يجب كتابة نوع الإعاقة');
+      setState(() => _error = SharedUiMessage.customDisabilityRequired);
       return;
     }
     if (_idCardFile == null) {
-      setState(() => _error = 'صورة هوية ولي الأمر مطلوبة');
+      setState(() => _error = SharedUiMessage.guardianPhotoRequired);
       return;
     }
     if (_birthCertFile == null) {
-      setState(() => _error = 'مستند صلة القرابة مطلوب');
+      setState(() => _error = SharedUiMessage.kinshipDocumentRequired);
       return;
     }
     if (_medicalReportFiles.isEmpty) {
-      setState(() => _error = 'التقرير الطبي مطلوب');
+      setState(() => _error = SharedUiMessage.medicalReportRequired);
       return;
     }
 
@@ -164,14 +181,15 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إرسال بيانات الطفل بنجاح\nبانتظار مراجعة الإدارة'),
+        SnackBar(
+          content: Text(context.l10n.childRegistrationSubmitted),
           backgroundColor: AppColors.brandTeal,
           duration: Duration(seconds: 4),
         ),
       );
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
@@ -222,7 +240,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'رقم هوية الطفل وهوية ولي الأمر وصورة الهوية ومستند صلة القرابة والتقرير الطبي مطلوبة لإتمام التسجيل.',
+              context.l10n.childRegistrationDocumentsNotice,
               style: TextStyle(
                 color: c.onTint,
                 fontSize: 13.5,
@@ -235,7 +253,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildErrorBox(String error) {
+  Widget _buildErrorBox(Object error) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
@@ -250,7 +268,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
             const Icon(AppIcons.error, color: AppColors.red, size: 22),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(error,
+              child: Text(context.sharedMessage(error),
                   style: const TextStyle(color: AppColors.red, fontSize: 15)),
             ),
           ],
