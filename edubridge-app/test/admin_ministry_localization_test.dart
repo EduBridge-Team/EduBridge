@@ -39,6 +39,8 @@ Future<void> _tap(WidgetTester tester, Finder target) async {
   await tester.ensureVisible(target);
   await tester.runAsync(() async {
     await tester.tap(target);
+    // Build the selected tab while preference/token I/O can use real async time.
+    await tester.pump();
     await Future<void>.delayed(Duration.zero);
   });
   await tester.pumpAndSettle();
