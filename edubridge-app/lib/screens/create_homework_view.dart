@@ -5,7 +5,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'واجب جديد'),
+      appBar: JisrAppBar(title: context.l10n.homeworkNew),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saving ? null : _save,
@@ -17,7 +17,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
               )
             : const Icon(AppIcons.save),
         label: Text(
-          _saving ? 'جارِ النشر...' : 'نشر الواجب',
+          _saving ? context.l10n.homeworkPublishing : context.l10n.homeworkPublish,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -33,30 +33,30 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
           children: [
             TextFormField(
               controller: _titleCtrl,
-              decoration: const InputDecoration(
-                labelText: 'عنوان الواجب *',
-                prefixIcon: Icon(AppIcons.edit),
+              decoration: InputDecoration(
+                labelText: context.l10n.homeworkTitleField,
+                prefixIcon: const Icon(AppIcons.edit),
               ),
-              validator: (v) => v == null || v.trim().isEmpty ? 'العنوان مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? context.l10n.homeworkTitleRequired : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _descCtrl,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'الوصف *',
-                prefixIcon: Icon(AppIcons.info),
+              decoration: InputDecoration(
+                labelText: context.l10n.homeworkDescriptionField,
+                prefixIcon: const Icon(AppIcons.info),
                 alignLabelWithHint: true,
               ),
-              validator: (v) => v == null || v.trim().isEmpty ? 'الوصف مطلوب' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? context.l10n.homeworkDescriptionRequired : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _subjectCtrl,
-              decoration: const InputDecoration(
-                labelText: 'المادة (اختياري)',
-                prefixIcon: Icon(AppIcons.lesson),
-                hintText: 'مثال: رياضيات',
+              decoration: InputDecoration(
+                labelText: context.l10n.homeworkSubjectOptional,
+                prefixIcon: const Icon(AppIcons.lesson),
+                hintText: context.l10n.homeworkSubjectHint,
               ),
             ),
             const SizedBox(height: 12),
@@ -77,9 +77,9 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('موعد التسليم', style: TextStyle(fontSize: 12)),
+                          Text(context.l10n.homeworkDueDateLabel, style: const TextStyle(fontSize: 12)),
                           Text(
-                            '${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
+                            MaterialLocalizations.of(context).formatMediumDate(_dueDate),
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -92,7 +92,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
             ),
             const SizedBox(height: 16),
             Text(
-              'تعيين لطلاب (${_selectedChildIds.length} محدد):',
+              context.l10n.homeworkAssignCount(_selectedChildIds.length),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -103,7 +103,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
               return CheckboxListTile(
                 value: selected,
                 title: Text(name),
-                subtitle: Text(child['disability_type']?.toString() ?? ''),
+                subtitle: Text(DisabilityDisplay.label(child['disability_type']?.toString() ?? '', context.l10n)),
                 onChanged: (v) {
                   _refreshState(() {
                     if (v == true) {
@@ -117,14 +117,13 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
             }),
             const SizedBox(height: 16),
             SizedBox(
-              height: 48,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandBlue,
                   foregroundColor: Colors.white,
                 ),
                 icon: const Icon(AppIcons.upload),
-                label: const Text('رفع مرفق'),
+                label: Text(context.l10n.homeworkUploadAttachment),
                 onPressed: _pickAttachment,
               ),
             ),
@@ -136,6 +135,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                     title: Text(e.value.path.split('/').last),
                     trailing: IconButton(
                       icon: const Icon(AppIcons.close, color: AppColors.red),
+                      tooltip: context.l10n.homeworkRemoveAttachment,
                       onPressed: () => _refreshState(() => _attachments.removeAt(e.key)),
                     ),
                   )),
@@ -152,7 +152,7 @@ extension _CreateHomeworkScreenStateView on _CreateHomeworkScreenState {
                   children: [
                     const Icon(AppIcons.error, color: AppColors.red, size: 20),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.red))),
+                    Expanded(child: Text(context.sharedMessage(_error), style: const TextStyle(color: AppColors.red))),
                   ],
                 ),
               ),

@@ -14,7 +14,7 @@ extension _LessonsTabStateView on _LessonsTabState {
           const Icon(AppIcons.error, size: 54, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.sharedMessage(_error),
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -26,7 +26,7 @@ extension _LessonsTabStateView on _LessonsTabState {
           Center(
             child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ),
@@ -55,7 +55,7 @@ extension _LessonsTabStateView on _LessonsTabState {
           ),
           const SizedBox(height: 18),
           Text(
-            'لا توجد دروس متاحة لهذا الطفل',
+            context.l10n.studentNoLessons,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
@@ -73,9 +73,9 @@ extension _LessonsTabStateView on _LessonsTabState {
           children: [
             _buildSummaryCard(),
             const SizedBox(height: 16),
-            const Text(
-              'تفاصيل الدروس',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+            Text(
+              context.l10n.studentLessonDetails,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             ..._lessons.map((l) => _buildLessonCard(l)),
@@ -96,8 +96,8 @@ extension _LessonsTabStateView on _LessonsTabState {
             heroTag: 'add-lesson-${widget.childId}',
             onPressed: _addLesson,
             icon: const Icon(AppIcons.add),
-            label: const Text(
-              'إضافة درس',
+            label: Text(
+              context.l10n.addLesson,
               style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),

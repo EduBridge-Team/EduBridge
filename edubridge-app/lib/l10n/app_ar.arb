@@ -3945,5 +3945,248 @@
   "followupRefresh": "تحديث الاقتراحات",
   "@followupRefresh": {
     "description": "Specialist follow-up suggestions interface."
+  },
+  "studentHomeworkTab": "واجبات الطالب",
+  "@studentHomeworkTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonsTab": "دروس الطالب",
+  "@studentLessonsTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentReportsTab": "تقارير الطالب",
+  "@studentReportsTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentCaseTab": "حالة الطالب",
+  "@studentCaseTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPendingFilter": "لم يُسلَّم",
+  "@homeworkPendingFilter": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkChildEmpty": "لا توجد واجبات لهذا الطفل",
+  "@homeworkChildEmpty": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFilterEmpty": "لا توجد واجبات في هذا التصنيف",
+  "@homeworkFilterEmpty": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkOverduePending": "متأخر — لم يُسلَّم",
+  "@homeworkOverduePending": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNotSubmittedYet": "لم يُسلَّم بعد",
+  "@homeworkNotSubmittedYet": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkAwaitingGrade": "بانتظار التصحيح",
+  "@homeworkAwaitingGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubmittedLate": "سُلِّم متأخراً",
+  "@homeworkSubmittedLate": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubmittedOnTime": "سُلِّم في الوقت",
+  "@homeworkSubmittedOnTime": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkStudentAnswer": "إجابة الطالب:",
+  "@homeworkStudentAnswer": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeValue": "الدرجة: {grade}/100",
+  "@homeworkGradeValue": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkFeedbackValue": "ملاحظتك: {feedback}",
+  "@homeworkFeedbackValue": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "feedback": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkStudentNotSubmitted": "لم يقم الطالب بالتسليم بعد",
+  "@homeworkStudentNotSubmitted": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeAction": "تصحيح الحل",
+  "@homeworkGradeAction": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkEditGrade": "تعديل التصحيح",
+  "@homeworkEditGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeRequired": "الدرجة مطلوبة",
+  "@homeworkGradeRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeRange": "الدرجة يجب أن تكون بين 0 و 100",
+  "@homeworkGradeRange": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeSaved": "تم حفظ التصحيح وإرساله للطالب",
+  "@homeworkGradeSaved": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeSaveFailed": "فشل حفظ التصحيح",
+  "@homeworkGradeSaveFailed": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeTitle": "تصحيح: {title}",
+  "@homeworkGradeTitle": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkGradeField": "الدرجة (0-100) *",
+  "@homeworkGradeField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeHint": "مثال: 85",
+  "@homeworkGradeHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFeedbackOptional": "ملاحظتك للطالب (اختياري)",
+  "@homeworkFeedbackOptional": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFeedbackHint": "مثال: عمل ممتاز، لكن راجع النقطة الثانية",
+  "@homeworkFeedbackHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSaveGrade": "حفظ التصحيح",
+  "@homeworkSaveGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNoTextAnswer": "— لم يكتب إجابة نصية —",
+  "@homeworkNoTextAnswer": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNew": "واجب جديد",
+  "@homeworkNew": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublishing": "جارِ النشر...",
+  "@homeworkPublishing": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublish": "نشر الواجب",
+  "@homeworkPublish": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkTitleField": "عنوان الواجب *",
+  "@homeworkTitleField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkTitleRequired": "العنوان مطلوب",
+  "@homeworkTitleRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkDescriptionField": "الوصف *",
+  "@homeworkDescriptionField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkDescriptionRequired": "الوصف مطلوب",
+  "@homeworkDescriptionRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubjectOptional": "المادة (اختياري)",
+  "@homeworkSubjectOptional": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubjectHint": "مثال: رياضيات",
+  "@homeworkSubjectHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkAssignCount": "تعيين لطلاب ({count} محدد):",
+  "@homeworkAssignCount": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeworkUploadAttachment": "رفع مرفق",
+  "@homeworkUploadAttachment": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkChooseStudent": "اختر طالباً واحداً على الأقل",
+  "@homeworkChooseStudent": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublished": "تم نشر الواجب بنجاح",
+  "@homeworkPublished": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublishFailed": "تعذّر نشر الواجب",
+  "@homeworkPublishFailed": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonAdded": "تمت إضافة الدرس لـ {name}",
+  "@studentLessonAdded": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentLessonTotal": "إجمالي الدروس: {total}",
+  "@studentLessonTotal": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "studentLessonCompletedAt": "أُكمل: {date}",
+  "@studentLessonCompletedAt": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "studentNoLessons": "لا توجد دروس متاحة لهذا الطفل",
+  "@studentNoLessons": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonDetails": "تفاصيل الدروس",
+  "@studentLessonDetails": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkRemoveAttachment": "إزالة المرفق",
+  "@homeworkRemoveAttachment": {
+    "description": "Teacher student details and homework interface."
+  },
+  "savingGrade": "جارٍ الحفظ...",
+  "@savingGrade": {
+    "description": "Teacher interface label."
+  },
+  "studentLessonNotStarted": "لم يبدأ",
+  "@studentLessonNotStarted": {
+    "description": "Teacher interface label."
+  },
+  "homeworkDueDateLabel": "موعد التسليم",
+  "@homeworkDueDateLabel": {
+    "description": "Teacher student details and homework interface."
   }
 }
