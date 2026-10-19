@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'accessibility/profile_avatar_button.dart';
@@ -30,7 +31,7 @@ class _DashboardProfileIdentityState extends State<DashboardProfileIdentity> {
         return Column(mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('مرحباً، ${name == null || name.isEmpty ? widget.roleLabel : name}',
+            Text(context.l10n.dashboardGreeting(name == null || name.isEmpty ? widget.roleLabel : name),
               maxLines: 1, overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.white, fontSize: 20,
                   fontWeight: FontWeight.w800)),

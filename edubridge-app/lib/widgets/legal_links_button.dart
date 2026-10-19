@@ -1,8 +1,9 @@
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../screens/welcome_screen.dart';
 import '../services/api_service.dart';
-import '../theme.dart';
+import '../screens/profile/profile_screen.dart' show DeleteAccountDialog;
 part 'legal_links_button_view.dart';
 
 class LegalLinksButton extends StatelessWidget {
@@ -17,7 +18,7 @@ class LegalLinksButton extends StatelessWidget {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر فتح الصفحة. حاول مرة أخرى.')),
+        SnackBar(content: Text(context.l10n.pageOpenFailed)),
       );
     }
   }
@@ -26,7 +27,7 @@ class LegalLinksButton extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const _DeleteAccountDialog(),
+      builder: (ctx) => const DeleteAccountDialog(),
     );
 
     if (confirmed != true) return;
@@ -53,8 +54,8 @@ class LegalLinksButton extends StatelessWidget {
       Navigator.of(context).pop();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم حذف حسابك بنجاح'),
+        SnackBar(
+          content: Text(context.l10n.accountDeleted),
           backgroundColor: Colors.green,
         ),
       );
@@ -74,7 +75,7 @@ class LegalLinksButton extends StatelessWidget {
       final msg = e.toString().replaceFirst('Exception: ', '');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(msg),
+          content: Text(context.sharedMessage(msg)),
           backgroundColor: Colors.red,
         ),
       );
@@ -85,58 +86,61 @@ class LegalLinksButton extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'الخصوصية والحساب',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              ListTile(
-                leading: const Icon(Icons.privacy_tip_outlined),
-                title: const Text('سياسة الخصوصية'),
-                subtitle: const Text('اعرف كيف نجمع بياناتك ونحميها'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _open(context, _privacyUri);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.description_outlined),
-                title: const Text('طلب حذف الحساب والبيانات'),
-                subtitle: const Text('افتح خطوات إرسال طلب الحذف'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _open(context, _deleteAccountUri);
-                },
-              ),
-              const Divider(height: 24),
-              // ✅ زر حذف الحساب نهائياً
-              ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: const Text(
-                  'حذف الحساب نهائياً',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  context.l10n.privacyAndAccount,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: Text(context.l10n.privacyPolicy),
+                  subtitle: Text(context.l10n.privacyPolicyDescription),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _open(context, _privacyUri);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: Text(context.l10n.requestAccountDeletion),
+                  subtitle: Text(context.l10n.deletionRequestSteps),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _open(context, _deleteAccountUri);
+                  },
+                ),
+                const Divider(height: 24),
+                // ✅ زر حذف الحساب نهائياً
+                ListTile(
+                  leading: const Icon(Icons.delete_forever, color: Colors.red),
+                  title: Text(
+                    context.l10n.deleteAccountPermanently,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  subtitle: Text(
+                    context.l10n.deleteAccountWarning,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _confirmDelete(context);
+                  },
                 ),
-                subtitle: const Text(
-                  'سيتم حذف حسابك وكل بياناتك — لا يمكن التراجع',
-                  style: TextStyle(fontSize: 12),
-                ),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _confirmDelete(context);
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -145,157 +149,4 @@ class LegalLinksButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => buildView(context);
-}
-
-class _DeleteAccountDialog extends StatefulWidget {
-  const _DeleteAccountDialog();
-
-  @override
-  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
-}
-
-class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
-  final _confirmCtrl = TextEditingController();
-  bool _canDelete = false;
-
-  // الكلمة المطلوبة للتأكيد
-  static const _confirmWord = 'حذف';
-
-  @override
-  void initState() {
-    super.initState();
-    _confirmCtrl.addListener(() {
-      final ok = _confirmCtrl.text.trim() == _confirmWord;
-      if (ok != _canDelete) {
-        setState(() => _canDelete = ok);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _confirmCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      title: const Row(
-        children: [
-          Icon(Icons.warning_amber_rounded, color: Colors.red, size: 32),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'حذف الحساب نهائياً',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // تحذير
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.3),
-                ),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '⚠️ تحذير: هذا الإجراء نهائي',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'سيتم حذف:',
-                    style: TextStyle(fontSize: 13),
-                  ),
-                  SizedBox(height: 4),
-                  Text('• حسابك وبياناتك الشخصية', style: TextStyle(fontSize: 13)),
-                  Text('• جميع الأطفال المرتبطين بحسابك', style: TextStyle(fontSize: 13)),
-                  Text('• كل الدروس والتقدّم المسجّل', style: TextStyle(fontSize: 13)),
-                  Text('• الإشعارات والمحادثات', style: TextStyle(fontSize: 13)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'للتأكيد، اكتب كلمة "$_confirmWord" في الحقل أدناه:',
-              style: TextStyle(
-                fontSize: 14,
-                color: c.body,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _confirmCtrl,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              decoration: InputDecoration(
-                hintText: _confirmWord,
-                hintStyle: TextStyle(color: c.muted),
-                filled: true,
-                fillColor: c.card,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: c.line),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.red, width: 2),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        // زر إلغاء
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('إلغاء'),
-        ),
-        // زر حذف — معطّل حتى الكتابة الصحيحة
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                _canDelete ? Colors.red : Colors.red.withValues(alpha: 0.4),
-            foregroundColor: Colors.white,
-          ),
-          icon: const Icon(Icons.delete_forever),
-          label: const Text('حذف نهائي'),
-          onPressed: _canDelete
-              ? () => Navigator.pop(context, true)
-              : null,
-        ),
-      ],
-    );
-  }
 }

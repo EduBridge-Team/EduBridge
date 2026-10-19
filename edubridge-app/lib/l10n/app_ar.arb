@@ -660,7 +660,7 @@
   },
   "conversations": "المحادثات",
   "@conversations": {
-    "description": "Shared interface: conversations."
+    "description": "Dashboard interface: conversations."
   },
   "supportRequests": "طلبات الدعم",
   "@supportRequests": {
@@ -868,7 +868,7 @@
   },
   "switchAppearance": "تبديل وضع العرض",
   "@switchAppearance": {
-    "description": "Shared interface: switchAppearance."
+    "description": "Dashboard interface: switchAppearance."
   },
   "lightDarkAppearance": "فاتح / ليلي",
   "@lightDarkAppearance": {
@@ -1172,5 +1172,232 @@
   "verificationRejectedDescription": "يرجى مراجعة البيانات والصور وإعادة المحاولة، أو التواصل مع الدعم الفني.",
   "@verificationRejectedDescription": {
     "description": "Identity verification interface: verificationRejectedDescription."
+  },
+  "privacyAndAccount": "الخصوصية والحساب",
+  "@privacyAndAccount": {
+    "description": "Dashboard interface: privacyAndAccount."
+  },
+  "logout": "تسجيل الخروج",
+  "@logout": {
+    "description": "Dashboard interface: logout."
+  },
+  "privacyAndDeletion": "الخصوصية وحذف الحساب",
+  "@privacyAndDeletion": {
+    "description": "Dashboard interface: privacyAndDeletion."
+  },
+  "privacyPolicy": "سياسة الخصوصية",
+  "@privacyPolicy": {
+    "description": "Dashboard interface: privacyPolicy."
+  },
+  "privacyPolicyDescription": "اعرف كيف نجمع بياناتك ونحميها",
+  "@privacyPolicyDescription": {
+    "description": "Dashboard interface: privacyPolicyDescription."
+  },
+  "requestAccountDeletion": "طلب حذف الحساب والبيانات",
+  "@requestAccountDeletion": {
+    "description": "Dashboard interface: requestAccountDeletion."
+  },
+  "deletionRequestSteps": "افتح خطوات إرسال طلب الحذف",
+  "@deletionRequestSteps": {
+    "description": "Dashboard interface: deletionRequestSteps."
+  },
+  "pageOpenFailed": "تعذّر فتح الصفحة. حاول مرة أخرى.",
+  "@pageOpenFailed": {
+    "description": "Dashboard interface: pageOpenFailed."
+  },
+  "parentDashboard": "لوحة ولي الأمر",
+  "@parentDashboard": {
+    "description": "Dashboard interface: parentDashboard."
+  },
+  "addChild": "إضافة طفل",
+  "@addChild": {
+    "description": "Dashboard interface: addChild."
+  },
+  "parentLessons": "دروس ولي الأمر",
+  "@parentLessons": {
+    "description": "Dashboard interface: parentLessons."
+  },
+  "parentDashboardDescription": "تابع أطفالك وتقدّمهم التعليمي من مكان واحد",
+  "@parentDashboardDescription": {
+    "description": "Dashboard interface: parentDashboardDescription."
+  },
+  "yourChildren": "أطفالك",
+  "@yourChildren": {
+    "description": "Dashboard interface: yourChildren."
+  },
+  "childQuickAccessDescription": "وصول سريع للواجبات والتقارير والتقدّم وفريق الرعاية.",
+  "@childQuickAccessDescription": {
+    "description": "Dashboard interface: childQuickAccessDescription."
+  },
+  "noRegisteredChildren": "لا يوجد أطفال مسجلون بعد",
+  "@noRegisteredChildren": {
+    "description": "Dashboard interface: noRegisteredChildren."
+  },
+  "addChildDescription": "أضف طفلك للبدء بمتابعة الدروس والتقدّم وفريق الرعاية.",
+  "@addChildDescription": {
+    "description": "Dashboard interface: addChildDescription."
+  },
+  "report": "التقرير",
+  "@report": {
+    "description": "Dashboard interface: report."
+  },
+  "team": "الفريق",
+  "@team": {
+    "description": "Dashboard interface: team."
+  },
+  "progress": "التقدّم",
+  "@progress": {
+    "description": "Dashboard interface: progress."
+  },
+  "requestLearningSupport": "طلب دعم تعليمي",
+  "@requestLearningSupport": {
+    "description": "Dashboard interface: requestLearningSupport."
+  },
+  "editDetails": "تعديل البيانات",
+  "@editDetails": {
+    "description": "Dashboard interface: editDetails."
+  },
+  "evaluatedStatus": "تم التقييم",
+  "@evaluatedStatus": {
+    "description": "Dashboard interface: evaluatedStatus."
+  },
+  "assignedStatus": "تم التعيين",
+  "@assignedStatus": {
+    "description": "Dashboard interface: assignedStatus."
+  },
+  "pendingStatus": "قيد الانتظار",
+  "@pendingStatus": {
+    "description": "Dashboard interface: pendingStatus."
+  },
+  "childrenLoadFailed": "تعذّر جلب الأطفال",
+  "@childrenLoadFailed": {
+    "description": "Dashboard interface: childrenLoadFailed."
+  },
+  "institutionDashboardDescription": "أدر الفريق وتابع الحالات والمحتوى من مساحة واحدة.",
+  "@institutionDashboardDescription": {
+    "description": "Dashboard interface: institutionDashboardDescription."
+  },
+  "teamMembersMetric": "عضوًا بالفريق",
+  "@teamMembersMetric": {
+    "description": "Dashboard interface: teamMembersMetric."
+  },
+  "activeCasesMetric": "حالة نشطة",
+  "@activeCasesMetric": {
+    "description": "Dashboard interface: activeCasesMetric."
+  },
+  "institutionTasks": "مهام المؤسسة",
+  "@institutionTasks": {
+    "description": "Dashboard interface: institutionTasks."
+  },
+  "studentRecords": "ملفات الطلاب",
+  "@studentRecords": {
+    "description": "Dashboard interface: studentRecords."
+  },
+  "institutionStudentsDescription": "عرض الطلاب والحالات المرتبطة بالمؤسسة",
+  "@institutionStudentsDescription": {
+    "description": "Dashboard interface: institutionStudentsDescription."
+  },
+  "lessonLibrary": "مكتبة الدروس",
+  "@lessonLibrary": {
+    "description": "Dashboard interface: lessonLibrary."
+  },
+  "approvedContentDescription": "الوصول إلى المحتوى التعليمي المعتمد",
+  "@approvedContentDescription": {
+    "description": "Dashboard interface: approvedContentDescription."
+  },
+  "teamCommunication": "تواصل الفريق",
+  "@teamCommunication": {
+    "description": "Dashboard interface: teamCommunication."
+  },
+  "teamCommunicationDescription": "محادثات المعلمين والمختصين",
+  "@teamCommunicationDescription": {
+    "description": "Dashboard interface: teamCommunicationDescription."
+  },
+  "institutionVerification": "توثيق المؤسسة",
+  "@institutionVerification": {
+    "description": "Dashboard interface: institutionVerification."
+  },
+  "institutionVerificationDescription": "متابعة حالة الهوية والصلاحيات",
+  "@institutionVerificationDescription": {
+    "description": "Dashboard interface: institutionVerificationDescription."
+  },
+  "welcomeToEduBridge": "مرحباً بك في EduBridge",
+  "@welcomeToEduBridge": {
+    "description": "Dashboard interface: welcomeToEduBridge."
+  },
+  "homeDashboardDescription": "كل ما تحتاجه لدعم رحلة التعلّم في مكان واحد.",
+  "@homeDashboardDescription": {
+    "description": "Dashboard interface: homeDashboardDescription."
+  },
+  "startHere": "ابدأ من هنا",
+  "@startHere": {
+    "description": "Dashboard interface: startHere."
+  },
+  "learningSpacesDescription": "وصول سريع لأهم مساحاتك التعليمية",
+  "@learningSpacesDescription": {
+    "description": "Dashboard interface: learningSpacesDescription."
+  },
+  "adminDashboard": "لوحة التحكم الإدارية",
+  "@adminDashboard": {
+    "description": "Dashboard interface: adminDashboard."
+  },
+  "adminDashboardDescription": "إدارة المستخدمين وربط الأطفال ومتابعة المنصة",
+  "@adminDashboardDescription": {
+    "description": "Dashboard interface: adminDashboardDescription."
+  },
+  "childRecordsDescription": "الملفات التعليمية والدروس والتقدّم لكل طفل",
+  "@childRecordsDescription": {
+    "description": "Dashboard interface: childRecordsDescription."
+  },
+  "browseLessons": "تصفّح الدروس",
+  "@browseLessons": {
+    "description": "Dashboard interface: browseLessons."
+  },
+  "browseLessonsDescription": "اكتشف المحتوى وابحث عن الدرس المناسب بسهولة",
+  "@browseLessonsDescription": {
+    "description": "Dashboard interface: browseLessonsDescription."
+  },
+  "progressAndRewards": "التقدّم والمكافآت",
+  "@progressAndRewards": {
+    "description": "Dashboard interface: progressAndRewards."
+  },
+  "progressAndRewardsDescription": "تابع الإنجاز والنجوم والشارات في عرض واضح",
+  "@progressAndRewardsDescription": {
+    "description": "Dashboard interface: progressAndRewardsDescription."
+  },
+  "simplerJourney": "رحلة أبسط، تركيز أكبر",
+  "@simplerJourney": {
+    "description": "Dashboard interface: simplerJourney."
+  },
+  "simplerJourneyDescription": "أعدنا ترتيب الواجهة لتصل للمعلومة المهمة بخطوات أقل.",
+  "@simplerJourneyDescription": {
+    "description": "Dashboard interface: simplerJourneyDescription."
+  },
+  "dashboardGreeting": "مرحباً، {name}",
+  "@dashboardGreeting": {
+    "description": "Dashboard interface: dashboardGreeting.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childAgeYears": "{age} سنة",
+  "@childAgeYears": {
+    "description": "Dashboard interface: childAgeYears.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardChildCount": "{count, plural, =0{لا يوجد أطفال} =1{طفل واحد} =2{طفلان} few{{count} أطفال} many{{count} طفلًا} other{{count} طفل}}",
+  "@dashboardChildCount": {
+    "description": "Dashboard interface: dashboardChildCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

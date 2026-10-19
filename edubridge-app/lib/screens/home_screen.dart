@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -16,11 +17,11 @@ part 'home_screen_view.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const _roleNames = {
-    'parent': 'ولي أمر',
-    'teacher': 'معلّم',
-    'specialist': 'مختص',
-    'admin': 'أدمن',
+  static Map<String, String> _roleNames(BuildContext context) => {
+    'parent': context.l10n.parentRole,
+    'teacher': context.l10n.teacherRole,
+    'specialist': context.l10n.specialistRole,
+    'admin': context.l10n.adminRole,
   };
 
   Future<void> _logout(BuildContext context) async {
@@ -121,7 +122,7 @@ class _MenuTile extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Icons.arrow_back_rounded,
+                    Icons.arrow_forward_rounded,
                     color: c.heading,
                     size: 19,
                   ),

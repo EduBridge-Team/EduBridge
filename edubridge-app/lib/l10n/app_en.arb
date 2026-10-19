@@ -660,7 +660,7 @@
   },
   "conversations": "Conversations",
   "@conversations": {
-    "description": "Shared interface: conversations."
+    "description": "Dashboard interface: conversations."
   },
   "supportRequests": "Support requests",
   "@supportRequests": {
@@ -866,9 +866,9 @@
   "@settings": {
     "description": "Shared interface: settings."
   },
-  "switchAppearance": "Change appearance",
+  "switchAppearance": "Switch appearance",
   "@switchAppearance": {
-    "description": "Shared interface: switchAppearance."
+    "description": "Dashboard interface: switchAppearance."
   },
   "lightDarkAppearance": "Light / dark",
   "@lightDarkAppearance": {
@@ -1172,5 +1172,232 @@
   "verificationRejectedDescription": "Check your details and photos and try again, or contact technical support.",
   "@verificationRejectedDescription": {
     "description": "Identity verification interface: verificationRejectedDescription."
+  },
+  "privacyAndAccount": "Privacy and account",
+  "@privacyAndAccount": {
+    "description": "Dashboard interface: privacyAndAccount."
+  },
+  "logout": "Sign out",
+  "@logout": {
+    "description": "Dashboard interface: logout."
+  },
+  "privacyAndDeletion": "Privacy and account deletion",
+  "@privacyAndDeletion": {
+    "description": "Dashboard interface: privacyAndDeletion."
+  },
+  "privacyPolicy": "Privacy policy",
+  "@privacyPolicy": {
+    "description": "Dashboard interface: privacyPolicy."
+  },
+  "privacyPolicyDescription": "Learn how we collect and protect your data",
+  "@privacyPolicyDescription": {
+    "description": "Dashboard interface: privacyPolicyDescription."
+  },
+  "requestAccountDeletion": "Request account and data deletion",
+  "@requestAccountDeletion": {
+    "description": "Dashboard interface: requestAccountDeletion."
+  },
+  "deletionRequestSteps": "View the steps for submitting a deletion request",
+  "@deletionRequestSteps": {
+    "description": "Dashboard interface: deletionRequestSteps."
+  },
+  "pageOpenFailed": "Could not open the page. Please try again.",
+  "@pageOpenFailed": {
+    "description": "Dashboard interface: pageOpenFailed."
+  },
+  "parentDashboard": "Parent dashboard",
+  "@parentDashboard": {
+    "description": "Dashboard interface: parentDashboard."
+  },
+  "addChild": "Add child",
+  "@addChild": {
+    "description": "Dashboard interface: addChild."
+  },
+  "parentLessons": "Parent lessons",
+  "@parentLessons": {
+    "description": "Dashboard interface: parentLessons."
+  },
+  "parentDashboardDescription": "Follow your children and their learning progress in one place",
+  "@parentDashboardDescription": {
+    "description": "Dashboard interface: parentDashboardDescription."
+  },
+  "yourChildren": "Your children",
+  "@yourChildren": {
+    "description": "Dashboard interface: yourChildren."
+  },
+  "childQuickAccessDescription": "Quick access to homework, reports, progress and the care team.",
+  "@childQuickAccessDescription": {
+    "description": "Dashboard interface: childQuickAccessDescription."
+  },
+  "noRegisteredChildren": "No children registered yet",
+  "@noRegisteredChildren": {
+    "description": "Dashboard interface: noRegisteredChildren."
+  },
+  "addChildDescription": "Add your child to start following lessons, progress and the care team.",
+  "@addChildDescription": {
+    "description": "Dashboard interface: addChildDescription."
+  },
+  "report": "Report",
+  "@report": {
+    "description": "Dashboard interface: report."
+  },
+  "team": "Team",
+  "@team": {
+    "description": "Dashboard interface: team."
+  },
+  "progress": "Progress",
+  "@progress": {
+    "description": "Dashboard interface: progress."
+  },
+  "requestLearningSupport": "Request learning support",
+  "@requestLearningSupport": {
+    "description": "Dashboard interface: requestLearningSupport."
+  },
+  "editDetails": "Edit details",
+  "@editDetails": {
+    "description": "Dashboard interface: editDetails."
+  },
+  "evaluatedStatus": "Evaluated",
+  "@evaluatedStatus": {
+    "description": "Dashboard interface: evaluatedStatus."
+  },
+  "assignedStatus": "Assigned",
+  "@assignedStatus": {
+    "description": "Dashboard interface: assignedStatus."
+  },
+  "pendingStatus": "Pending",
+  "@pendingStatus": {
+    "description": "Dashboard interface: pendingStatus."
+  },
+  "childrenLoadFailed": "Could not load children",
+  "@childrenLoadFailed": {
+    "description": "Dashboard interface: childrenLoadFailed."
+  },
+  "institutionDashboardDescription": "Manage your team, cases and content in one place.",
+  "@institutionDashboardDescription": {
+    "description": "Dashboard interface: institutionDashboardDescription."
+  },
+  "teamMembersMetric": "Team members",
+  "@teamMembersMetric": {
+    "description": "Dashboard interface: teamMembersMetric."
+  },
+  "activeCasesMetric": "Active cases",
+  "@activeCasesMetric": {
+    "description": "Dashboard interface: activeCasesMetric."
+  },
+  "institutionTasks": "Institution tasks",
+  "@institutionTasks": {
+    "description": "Dashboard interface: institutionTasks."
+  },
+  "studentRecords": "Student records",
+  "@studentRecords": {
+    "description": "Dashboard interface: studentRecords."
+  },
+  "institutionStudentsDescription": "View students and cases linked to the institution",
+  "@institutionStudentsDescription": {
+    "description": "Dashboard interface: institutionStudentsDescription."
+  },
+  "lessonLibrary": "Lesson library",
+  "@lessonLibrary": {
+    "description": "Dashboard interface: lessonLibrary."
+  },
+  "approvedContentDescription": "Access approved learning content",
+  "@approvedContentDescription": {
+    "description": "Dashboard interface: approvedContentDescription."
+  },
+  "teamCommunication": "Team communication",
+  "@teamCommunication": {
+    "description": "Dashboard interface: teamCommunication."
+  },
+  "teamCommunicationDescription": "Conversations with teachers and specialists",
+  "@teamCommunicationDescription": {
+    "description": "Dashboard interface: teamCommunicationDescription."
+  },
+  "institutionVerification": "Institution verification",
+  "@institutionVerification": {
+    "description": "Dashboard interface: institutionVerification."
+  },
+  "institutionVerificationDescription": "Track identity verification and permissions",
+  "@institutionVerificationDescription": {
+    "description": "Dashboard interface: institutionVerificationDescription."
+  },
+  "welcomeToEduBridge": "Welcome to EduBridge",
+  "@welcomeToEduBridge": {
+    "description": "Dashboard interface: welcomeToEduBridge."
+  },
+  "homeDashboardDescription": "Everything you need to support the learning journey in one place.",
+  "@homeDashboardDescription": {
+    "description": "Dashboard interface: homeDashboardDescription."
+  },
+  "startHere": "Start here",
+  "@startHere": {
+    "description": "Dashboard interface: startHere."
+  },
+  "learningSpacesDescription": "Quick access to your learning spaces",
+  "@learningSpacesDescription": {
+    "description": "Dashboard interface: learningSpacesDescription."
+  },
+  "adminDashboard": "Administration dashboard",
+  "@adminDashboard": {
+    "description": "Dashboard interface: adminDashboard."
+  },
+  "adminDashboardDescription": "Manage users, link children and monitor the platform",
+  "@adminDashboardDescription": {
+    "description": "Dashboard interface: adminDashboardDescription."
+  },
+  "childRecordsDescription": "Learning records, lessons and progress for each child",
+  "@childRecordsDescription": {
+    "description": "Dashboard interface: childRecordsDescription."
+  },
+  "browseLessons": "Browse lessons",
+  "@browseLessons": {
+    "description": "Dashboard interface: browseLessons."
+  },
+  "browseLessonsDescription": "Explore content and find the right lesson easily",
+  "@browseLessonsDescription": {
+    "description": "Dashboard interface: browseLessonsDescription."
+  },
+  "progressAndRewards": "Progress and rewards",
+  "@progressAndRewards": {
+    "description": "Dashboard interface: progressAndRewards."
+  },
+  "progressAndRewardsDescription": "Track achievements, stars and badges in a clear view",
+  "@progressAndRewardsDescription": {
+    "description": "Dashboard interface: progressAndRewardsDescription."
+  },
+  "simplerJourney": "A simpler journey, more focus",
+  "@simplerJourney": {
+    "description": "Dashboard interface: simplerJourney."
+  },
+  "simplerJourneyDescription": "Find the information you need in fewer steps.",
+  "@simplerJourneyDescription": {
+    "description": "Dashboard interface: simplerJourneyDescription."
+  },
+  "dashboardGreeting": "Hello, {name}",
+  "@dashboardGreeting": {
+    "description": "Dashboard interface: dashboardGreeting.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childAgeYears": "{age} years",
+  "@childAgeYears": {
+    "description": "Dashboard interface: childAgeYears.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardChildCount": "{count, plural, =0{No children} =1{1 child} other{{count} children}}",
+  "@dashboardChildCount": {
+    "description": "Dashboard interface: dashboardChildCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
