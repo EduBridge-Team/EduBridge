@@ -14,7 +14,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             child: Row(
               children: [
                 IconButton.filledTonal(
-                  tooltip: 'رجوع',
+                  tooltip: context.l10n.back,
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.white.withValues(alpha: .18),
                     foregroundColor: Colors.white,
@@ -31,16 +31,16 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                       );
                     }
                   },
-                  icon: const Icon(
-                    Icons.arrow_forward_rounded,
-                    textDirection: TextDirection.ltr,
+                  icon: Icon(
+                    Icons.arrow_back_rounded,
+                    textDirection: Directionality.of(context),
                     size: 23,
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Flexible(
+                Flexible(
                   child: Text(
-                    'الملف الشخصي',
+                    context.l10n.profile,
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       color: Colors.white,
@@ -71,12 +71,12 @@ extension _SpecialistS04Profile on _ProfileScreenState {
         children: [
           _s04Hero(name, role, isVerified),
           const SizedBox(height: 20),
-          _s04Section('معلومات الحساب', c),
+          _s04Section(context.l10n.accountInformation, c),
           const SizedBox(height: 12),
           _s04InfoCard(c, name, email, phone, role, isVerified),
           if (['teacher', 'specialist'].contains(role)) ...[
           const SizedBox(height: 24),
-          _s04Section('الملف المهني', c),
+          _s04Section(context.l10n.professionalProfile, c),
           const SizedBox(height: 12),
           if (_certificates.isEmpty)
             _s04CertificateCard(c, null)
@@ -89,8 +89,8 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           _s04ActionCard(
             c,
             icon: Icons.workspace_premium_outlined,
-            title: 'إضافة شهادة',
-            subtitle: 'أضف شهاداتك ومؤهلاتك المهنية',
+            title: context.l10n.addCertificate,
+            subtitle: context.l10n.addQualifications,
             color: AppColors.brandTealDeep,
             onTap: () => showDialog<void>(
               context: context,
@@ -102,13 +102,13 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           ),
           ],
           const SizedBox(height: 22),
-          _s04Section('الأمان', c),
+          _s04Section(context.l10n.security, c),
           const SizedBox(height: 12),
           _s04ActionCard(
             c,
             icon: Icons.lock_outline,
-            title: 'تغيير كلمة المرور',
-            subtitle: 'حدّث كلمة المرور لحماية حسابك',
+            title: context.l10n.changePassword,
+            subtitle: context.l10n.updatePasswordDescription,
             color: AppColors.brandBlue,
             onTap: () async {
               final result = await Navigator.push(
@@ -121,24 +121,24 @@ extension _SpecialistS04Profile on _ProfileScreenState {
             },
           ),
           const SizedBox(height: 22),
-          _s04Section('الإعدادات', c),
+          _s04Section(context.l10n.settings, c),
           const SizedBox(height: 12),
           _s04ActionCard(
             c,
             icon: Icons.dark_mode_outlined,
-            title: 'تبديل وضع العرض',
-            subtitle: 'فاتح / ليلي',
+            title: context.l10n.switchAppearance,
+            subtitle: context.l10n.lightDarkAppearance,
             color: AppColors.brandBlue,
             onTap: () async => toggleThemeMode(),
           ),
           const SizedBox(height: 22),
-          _s04Section('منطقة الخطر', c),
+          _s04Section(context.l10n.dangerZone, c),
           const SizedBox(height: 12),
           _s04ActionCard(
             c,
             icon: Icons.delete_outline,
-            title: 'حذف الحساب نهائياً',
-            subtitle: 'سيتم حذف حسابك وكل بياناتك — لا يمكن التراجع',
+            title: context.l10n.deleteAccountPermanently,
+            subtitle: context.l10n.deleteAccountWarning,
             color: AppColors.red,
             danger: true,
             onTap: _deleting ? null : _confirmDeleteAccount,
@@ -147,8 +147,8 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           _s04ActionCard(
             c,
             icon: Icons.logout_outlined,
-            title: 'تسجيل الخروج',
-            subtitle: 'الخروج من التطبيق',
+            title: context.l10n.signOut,
+            subtitle: context.l10n.signOutDescription,
             color: AppColors.brandTealDeep,
             onTap: _logout,
           ),
@@ -237,7 +237,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
           ),
           const SizedBox(height: 14),
           Text(
-            name.isEmpty ? 'مستخدم' : name,
+            name.isEmpty ? context.l10n.user : name,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
@@ -268,12 +268,12 @@ extension _SpecialistS04Profile on _ProfileScreenState {
                 color: const Color(0xFF58BB55),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.check_circle_outline, color: Colors.white, size: 17),
                   SizedBox(width: 5),
-                  Text('موثّق',
+                  Text(context.l10n.verified,
                     style: TextStyle(color: Colors.white,
                         fontWeight: FontWeight.w700)),
                 ],
@@ -307,13 +307,13 @@ extension _SpecialistS04Profile on _ProfileScreenState {
   Widget _s04InfoCard(JisrColors c, String name, String email, String phone,
       String role, bool verified) {
     final rows = <Widget>[
-      _s04InfoRow(c, Icons.person_outline, 'الاسم', name),
-      _s04InfoRow(c, Icons.mail_outline, 'البريد الإلكتروني', email, latin: true),
+      _s04InfoRow(c, Icons.person_outline, context.l10n.name, name),
+      _s04InfoRow(c, Icons.mail_outline, context.l10n.email, email, latin: true),
       if (phone.isNotEmpty)
-        _s04InfoRow(c, Icons.phone_outlined, 'رقم الهاتف', phone, latin: true),
-      _s04InfoRow(c, Icons.people_outline, 'الدور', _roleLabel(role)),
-      _s04InfoRow(c, Icons.check_circle_outline, 'الحالة',
-          verified ? 'موثّق' : 'غير موثّق',
+        _s04InfoRow(c, Icons.phone_outlined, context.l10n.phone, phone, latin: true),
+      _s04InfoRow(c, Icons.people_outline, context.l10n.role, _roleLabel(role)),
+      _s04InfoRow(c, Icons.check_circle_outline, context.l10n.status,
+          verified ? context.l10n.verified : context.l10n.notVerified,
           valueColor: verified ? AppColors.brandBlue : c.muted),
     ];
     return Container(
@@ -371,8 +371,8 @@ extension _SpecialistS04Profile on _ProfileScreenState {
     final title = (data['title'] ?? '').toString();
     final status = (data['status'] ?? '').toString();
     final label = status == 'verified' || status == 'approved'
-        ? 'معتمدة'
-        : status == 'rejected' ? 'مرفوضة' : 'بانتظار المراجعة';
+        ? context.l10n.approved
+        : status == 'rejected' ? context.l10n.rejected : context.l10n.awaitingReview;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
       decoration: BoxDecoration(
@@ -390,7 +390,7 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title.isEmpty ? 'لا توجد شهادات مضافة بعد' : title,
+                  title.isEmpty ? context.l10n.noCertificates : title,
                   style: TextStyle(
                     color: c.heading,
                     fontWeight: FontWeight.w800,
@@ -526,23 +526,23 @@ extension _SpecialistS04Profile on _ProfileScreenState {
               MaterialPageRoute<void>(builder: (_) => destination),
             );
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
               icon: Icon(Icons.people_outline),
               selectedIcon: Icon(Icons.people_rounded),
-              label: 'الأطفال',
+              label: context.l10n.children,
             ),
             NavigationDestination(
               icon: Icon(Icons.description_outlined),
-              label: 'دراسات الحالة',
+              label: context.l10n.caseStudies,
             ),
             NavigationDestination(
               icon: Icon(Icons.chat_bubble_outline),
-              label: 'المحادثات',
+              label: context.l10n.conversations,
             ),
             NavigationDestination(
               icon: Icon(Icons.inbox_outlined),
-              label: 'طلبات الدعم',
+              label: context.l10n.supportRequests,
             ),
           ],
         ),

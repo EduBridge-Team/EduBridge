@@ -97,5 +97,1080 @@
   "showMicrophone": "Show microphone",
   "@showMicrophone": {
     "description": "Shared dashboard menu: showMicrophone."
+  },
+  "lightMode": "Light mode",
+  "@lightMode": {
+    "description": "Shared interface: lightMode."
+  },
+  "darkMode": "Dark mode",
+  "@darkMode": {
+    "description": "Shared interface: darkMode."
+  },
+  "welcomeHeadline": "Smart, inclusive\nlearning for\nevery child",
+  "@welcomeHeadline": {
+    "description": "Shared interface: welcomeHeadline."
+  },
+  "welcomeDescription": "Flexible learning tools connecting children, families, teachers and specialists in one safe experience.",
+  "@welcomeDescription": {
+    "description": "Shared interface: welcomeDescription."
+  },
+  "accessibleForEveryone": "Accessible to everyone",
+  "@accessibleForEveryone": {
+    "description": "Shared interface: accessibleForEveryone."
+  },
+  "personalizedLearning": "Personalized learning",
+  "@personalizedLearning": {
+    "description": "Shared interface: personalizedLearning."
+  },
+  "safeEnvironment": "A safe environment",
+  "@safeEnvironment": {
+    "description": "Shared interface: safeEnvironment."
+  },
+  "signIn": "Sign in",
+  "@signIn": {
+    "description": "Shared interface: signIn."
+  },
+  "createNewAccount": "Create a new account",
+  "@createNewAccount": {
+    "description": "Shared interface: createNewAccount."
+  },
+  "hide": "Hide",
+  "@hide": {
+    "description": "Shared interface: hide."
+  },
+  "learnAboutEduBridge": "About EduBridge",
+  "@learnAboutEduBridge": {
+    "description": "Shared interface: learnAboutEduBridge."
+  },
+  "visionWithoutLimits": "A vision without limits",
+  "@visionWithoutLimits": {
+    "description": "Shared interface: visionWithoutLimits."
+  },
+  "visionDescription": "We aim to lead accessible digital education in the Arab world, removing physical barriers so thinking and creativity can shine.",
+  "@visionDescription": {
+    "description": "Shared interface: visionDescription."
+  },
+  "ongoingSupport": "Ongoing support",
+  "@ongoingSupport": {
+    "description": "Shared interface: ongoingSupport."
+  },
+  "ongoingSupportDescription": "Supporting learners at every step towards success.",
+  "@ongoingSupportDescription": {
+    "description": "Shared interface: ongoingSupportDescription."
+  },
+  "variedCurricula": "Varied curricula",
+  "@variedCurricula": {
+    "description": "Shared interface: variedCurricula."
+  },
+  "variedCurriculaDescription": "Learning content for a range of disabilities.",
+  "@variedCurriculaDescription": {
+    "description": "Shared interface: variedCurriculaDescription."
+  },
+  "specializedLearningPaths": "Specialized learning paths",
+  "@specializedLearningPaths": {
+    "description": "Shared interface: specializedLearningPaths."
+  },
+  "advancedSignLanguage": "Advanced sign language",
+  "@advancedSignLanguage": {
+    "description": "Shared interface: advancedSignLanguage."
+  },
+  "advancedSignLanguageDescription": "A comprehensive sign language course, from the basics to advanced skills.",
+  "@advancedSignLanguageDescription": {
+    "description": "Shared interface: advancedSignLanguageDescription."
+  },
+  "accessibleReading": "Accessible reading techniques",
+  "@accessibleReading": {
+    "description": "Shared interface: accessibleReading."
+  },
+  "accessibleReadingDescription": "Practical training to help every child read and learn more independently.",
+  "@accessibleReadingDescription": {
+    "description": "Shared interface: accessibleReadingDescription."
+  },
+  "digitalLifeSkills": "Digital life skills",
+  "@digitalLifeSkills": {
+    "description": "Shared interface: digitalLifeSkills."
+  },
+  "digitalLifeSkillsDescription": "A program helping children with cognitive disabilities navigate the digital world safely.",
+  "@digitalLifeSkillsDescription": {
+    "description": "Shared interface: digitalLifeSkillsDescription."
+  },
+  "exploreEduBridge": "Explore EduBridge",
+  "@exploreEduBridge": {
+    "description": "Shared interface: exploreEduBridge."
+  },
+  "tourAdaptiveTitle": "Learning that adapts to every child",
+  "@tourAdaptiveTitle": {
+    "description": "Shared interface: tourAdaptiveTitle."
+  },
+  "tourTeamTitle": "Family, teacher and specialist\nin one place",
+  "@tourTeamTitle": {
+    "description": "Shared interface: tourTeamTitle."
+  },
+  "tourSafeTitle": "A safe, comfortable environment",
+  "@tourSafeTitle": {
+    "description": "Shared interface: tourSafeTitle."
+  },
+  "tourAdaptiveDescription": "Read-aloud support, calmer colors and larger icons, adjusted to help your child.",
+  "@tourAdaptiveDescription": {
+    "description": "Shared interface: tourAdaptiveDescription."
+  },
+  "tourTeamDescription": "Follow your child's progress and share messages and assessments easily.",
+  "@tourTeamDescription": {
+    "description": "Shared interface: tourTeamDescription."
+  },
+  "tourSafeDescription": "Movement breaks between lessons and an emergency button to alert family and specialists.",
+  "@tourSafeDescription": {
+    "description": "Shared interface: tourSafeDescription."
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Shared interface: skip."
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Shared interface: start."
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Shared interface: next."
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "Shared interface: previous."
+  },
+  "listen": "Listen",
+  "@listen": {
+    "description": "Shared interface: listen."
+  },
+  "readAloud": "Read aloud",
+  "@readAloud": {
+    "description": "Shared interface: readAloud."
+  },
+  "calmColors": "Calmer colors",
+  "@calmColors": {
+    "description": "Shared interface: calmColors."
+  },
+  "largerIcons": "Larger icons",
+  "@largerIcons": {
+    "description": "Shared interface: largerIcons."
+  },
+  "teacherLabel": "Teacher",
+  "@teacherLabel": {
+    "description": "Shared interface: teacherLabel."
+  },
+  "parentLabel": "Parent",
+  "@parentLabel": {
+    "description": "Shared interface: parentLabel."
+  },
+  "specialistLabel": "Specialist",
+  "@specialistLabel": {
+    "description": "Shared interface: specialistLabel."
+  },
+  "movementBreak": "Movement break",
+  "@movementBreak": {
+    "description": "Shared interface: movementBreak."
+  },
+  "emergency": "Emergency",
+  "@emergency": {
+    "description": "Shared interface: emergency."
+  },
+  "parentRole": "Parent",
+  "@parentRole": {
+    "description": "Shared interface: parentRole."
+  },
+  "teacherRole": "Teacher",
+  "@teacherRole": {
+    "description": "Shared interface: teacherRole."
+  },
+  "specialistRole": "Specialist",
+  "@specialistRole": {
+    "description": "Shared interface: specialistRole."
+  },
+  "learningSupportSpecialist": "Learning support specialist",
+  "@learningSupportSpecialist": {
+    "description": "Shared interface: learningSupportSpecialist."
+  },
+  "educationalSpecialist": "Education specialist",
+  "@educationalSpecialist": {
+    "description": "Shared interface: educationalSpecialist."
+  },
+  "enterEmailFirst": "Enter your email address first",
+  "@enterEmailFirst": {
+    "description": "Shared interface: enterEmailFirst."
+  },
+  "verificationEmailNotice": "If your account needs verification, a new message will be sent to your email address.",
+  "@verificationEmailNotice": {
+    "description": "Shared interface: verificationEmailNotice."
+  },
+  "welcomeBack": "Welcome back",
+  "@welcomeBack": {
+    "description": "Shared interface: welcomeBack."
+  },
+  "signInSubtitle": "Sign in to continue your learning journey",
+  "@signInSubtitle": {
+    "description": "Shared interface: signInSubtitle."
+  },
+  "loginDetails": "Sign-in details",
+  "@loginDetails": {
+    "description": "Shared interface: loginDetails."
+  },
+  "email": "Email address",
+  "@email": {
+    "description": "Shared interface: email."
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Shared interface: password."
+  },
+  "showPassword": "Show password",
+  "@showPassword": {
+    "description": "Shared interface: showPassword."
+  },
+  "hidePassword": "Hide password",
+  "@hidePassword": {
+    "description": "Shared interface: hidePassword."
+  },
+  "forgotPasswordQuestion": "Forgot your password?",
+  "@forgotPasswordQuestion": {
+    "description": "Shared interface: forgotPasswordQuestion."
+  },
+  "signingIn": "Signing in…",
+  "@signingIn": {
+    "description": "Shared interface: signingIn."
+  },
+  "orContinueWith": "Or continue with",
+  "@orContinueWith": {
+    "description": "Shared interface: orContinueWith."
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Shared interface: signInWithGoogle."
+  },
+  "newAccountType": "Account type for a new account",
+  "@newAccountType": {
+    "description": "Shared interface: newAccountType."
+  },
+  "newGoogleAccountRoleNotice": "This choice applies only to new accounts. Existing accounts keep their current role.",
+  "@newGoogleAccountRoleNotice": {
+    "description": "Shared interface: newGoogleAccountRoleNotice."
+  },
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {
+    "description": "Shared interface: continueWithGoogle."
+  },
+  "resendVerificationEmail": "Resend verification email",
+  "@resendVerificationEmail": {
+    "description": "Shared interface: resendVerificationEmail."
+  },
+  "noAccountQuestion": "Don't have an account?",
+  "@noAccountQuestion": {
+    "description": "Shared interface: noAccountQuestion."
+  },
+  "createAccountLink": "Create a new account",
+  "@createAccountLink": {
+    "description": "Shared interface: createAccountLink."
+  },
+  "accountCreatedVerifyEmail": "Account created. Check your email to verify it before signing in.",
+  "@accountCreatedVerifyEmail": {
+    "description": "Shared interface: accountCreatedVerifyEmail."
+  },
+  "createAccountTitle": "Create account",
+  "@createAccountTitle": {
+    "description": "Shared interface: createAccountTitle."
+  },
+  "startYourJourney": "Start your journey with EduBridge",
+  "@startYourJourney": {
+    "description": "Shared interface: startYourJourney."
+  },
+  "createAccountSubtitle": "Create your account now. You can complete your details and verify your account later.",
+  "@createAccountSubtitle": {
+    "description": "Shared interface: createAccountSubtitle."
+  },
+  "basicInformation": "Basic information",
+  "@basicInformation": {
+    "description": "Shared interface: basicInformation."
+  },
+  "fullName": "Full name",
+  "@fullName": {
+    "description": "Shared interface: fullName."
+  },
+  "nameRequired": "Name is required",
+  "@nameRequired": {
+    "description": "Shared interface: nameRequired."
+  },
+  "emailRequired": "Email address is required",
+  "@emailRequired": {
+    "description": "Shared interface: emailRequired."
+  },
+  "invalidEmail": "Enter a valid email address",
+  "@invalidEmail": {
+    "description": "Shared interface: invalidEmail."
+  },
+  "accountType": "Account type",
+  "@accountType": {
+    "description": "Shared interface: accountType."
+  },
+  "chooseRoleDescription": "Choose the role that gives you access to the EduBridge features you need.",
+  "@chooseRoleDescription": {
+    "description": "Shared interface: chooseRoleDescription."
+  },
+  "role": "Role",
+  "@role": {
+    "description": "Shared interface: role."
+  },
+  "specialty": "Specialty",
+  "@specialty": {
+    "description": "Shared interface: specialty."
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Shared interface: security."
+  },
+  "passwordEightHint": "Use a password with at least 8 characters.",
+  "@passwordEightHint": {
+    "description": "Shared interface: passwordEightHint."
+  },
+  "passwordRequired": "Password is required",
+  "@passwordRequired": {
+    "description": "Shared interface: passwordRequired."
+  },
+  "passwordLengthRange": "Password must contain between 8 and 128 characters",
+  "@passwordLengthRange": {
+    "description": "Shared interface: passwordLengthRange."
+  },
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {
+    "description": "Shared interface: confirmPassword."
+  },
+  "repeatPassword": "Enter your password again",
+  "@repeatPassword": {
+    "description": "Shared interface: repeatPassword."
+  },
+  "passwordMismatch": "Passwords do not match",
+  "@passwordMismatch": {
+    "description": "Shared interface: passwordMismatch."
+  },
+  "creatingAccount": "Creating account…",
+  "@creatingAccount": {
+    "description": "Shared interface: creatingAccount."
+  },
+  "createAccount": "Create account",
+  "@createAccount": {
+    "description": "Shared interface: createAccount."
+  },
+  "verifyBeforeSignIn": "After creating an account, you must verify your email address before signing in.",
+  "@verifyBeforeSignIn": {
+    "description": "Shared interface: verifyBeforeSignIn."
+  },
+  "validEmailRequired": "Enter a valid email address",
+  "@validEmailRequired": {
+    "description": "Shared interface: validEmailRequired."
+  },
+  "recoveryEmailNotice": "If this email is registered, you will receive a reset message. Open its link or paste it here to finish resetting your password.",
+  "@recoveryEmailNotice": {
+    "description": "Shared interface: recoveryEmailNotice."
+  },
+  "passwordRecovery": "Reset password",
+  "@passwordRecovery": {
+    "description": "Shared interface: passwordRecovery."
+  },
+  "recoveryDescription": "Enter your email address. We will send a reset link valid for 60 minutes.",
+  "@recoveryDescription": {
+    "description": "Shared interface: recoveryDescription."
+  },
+  "sending": "Sending…",
+  "@sending": {
+    "description": "Shared interface: sending."
+  },
+  "sendingAlt": "Sending…",
+  "@sendingAlt": {
+    "description": "Shared interface: sendingAlt."
+  },
+  "sendRecoveryLink": "Send reset link",
+  "@sendRecoveryLink": {
+    "description": "Shared interface: sendRecoveryLink."
+  },
+  "haveRecoveryLink": "I have a reset link",
+  "@haveRecoveryLink": {
+    "description": "Shared interface: haveRecoveryLink."
+  },
+  "invalidRecoveryLink": "The reset link is invalid",
+  "@invalidRecoveryLink": {
+    "description": "Shared interface: invalidRecoveryLink."
+  },
+  "passwordEightMinimum": "Password must contain at least 8 characters",
+  "@passwordEightMinimum": {
+    "description": "Shared interface: passwordEightMinimum."
+  },
+  "passwordConfirmationMismatch": "Password confirmation does not match",
+  "@passwordConfirmationMismatch": {
+    "description": "Shared interface: passwordConfirmationMismatch."
+  },
+  "pasteRecoveryLinkFirst": "Paste your reset link first",
+  "@pasteRecoveryLinkFirst": {
+    "description": "Shared interface: pasteRecoveryLinkFirst."
+  },
+  "passwordChanged": "Password changed successfully",
+  "@passwordChanged": {
+    "description": "Shared interface: passwordChanged."
+  },
+  "setNewPassword": "Set a new password",
+  "@setNewPassword": {
+    "description": "Shared interface: setNewPassword."
+  },
+  "pasteRecoveryLinkDescription": "Paste the reset link from your email, then choose a new password.",
+  "@pasteRecoveryLinkDescription": {
+    "description": "Shared interface: pasteRecoveryLinkDescription."
+  },
+  "recoveryLink": "Reset link",
+  "@recoveryLink": {
+    "description": "Shared interface: recoveryLink."
+  },
+  "readLink": "Read link",
+  "@readLink": {
+    "description": "Shared interface: readLink."
+  },
+  "newPassword": "New password",
+  "@newPassword": {
+    "description": "Shared interface: newPassword."
+  },
+  "updating": "Updating…",
+  "@updating": {
+    "description": "Shared interface: updating."
+  },
+  "changePassword": "Change password",
+  "@changePassword": {
+    "description": "Shared interface: changePassword."
+  },
+  "protectAccount": "Protect your account",
+  "@protectAccount": {
+    "description": "Shared interface: protectAccount."
+  },
+  "strongPasswordDescription": "Choose a strong password that differs from your current password.",
+  "@strongPasswordDescription": {
+    "description": "Shared interface: strongPasswordDescription."
+  },
+  "currentPasswordRequiredLabel": "Current password *",
+  "@currentPasswordRequiredLabel": {
+    "description": "Shared interface: currentPasswordRequiredLabel."
+  },
+  "enterCurrentPassword": "Enter your current password",
+  "@enterCurrentPassword": {
+    "description": "Shared interface: enterCurrentPassword."
+  },
+  "newPasswordRequiredLabel": "New password *",
+  "@newPasswordRequiredLabel": {
+    "description": "Shared interface: newPasswordRequiredLabel."
+  },
+  "enterNewPassword": "Enter your new password",
+  "@enterNewPassword": {
+    "description": "Shared interface: enterNewPassword."
+  },
+  "passwordSixMinimum": "Use at least 6 characters",
+  "@passwordSixMinimum": {
+    "description": "Shared interface: passwordSixMinimum."
+  },
+  "passwordMustDiffer": "It must differ from your current password",
+  "@passwordMustDiffer": {
+    "description": "Shared interface: passwordMustDiffer."
+  },
+  "confirmPasswordRequiredLabel": "Confirm password *",
+  "@confirmPasswordRequiredLabel": {
+    "description": "Shared interface: confirmPasswordRequiredLabel."
+  },
+  "confirmPasswordPrompt": "Confirm your password",
+  "@confirmPasswordPrompt": {
+    "description": "Shared interface: confirmPasswordPrompt."
+  },
+  "passwordSixHint": "Use at least 6 characters. Including numbers and symbols is recommended.",
+  "@passwordSixHint": {
+    "description": "Shared interface: passwordSixHint."
+  },
+  "saving": "Saving…",
+  "@saving": {
+    "description": "Shared interface: saving."
+  },
+  "savePassword": "Save password",
+  "@savePassword": {
+    "description": "Shared interface: savePassword."
+  },
+  "olderNotificationsError": "Could not load older notifications. Please try again.",
+  "@olderNotificationsError": {
+    "description": "Shared interface: olderNotificationsError."
+  },
+  "allNotificationsRead": "All notifications marked as read",
+  "@allNotificationsRead": {
+    "description": "Shared interface: allNotificationsRead."
+  },
+  "operationFailed": "Could not complete this action",
+  "@operationFailed": {
+    "description": "Shared interface: operationFailed."
+  },
+  "notAvailable": "Not available",
+  "@notAvailable": {
+    "description": "Shared interface: notAvailable."
+  },
+  "notificationDetails": "Notification details",
+  "@notificationDetails": {
+    "description": "Shared interface: notificationDetails."
+  },
+  "openRelatedDetails": "Open related details",
+  "@openRelatedDetails": {
+    "description": "Shared interface: openRelatedDetails."
+  },
+  "retryAction": "Try again",
+  "@retryAction": {
+    "description": "Shared interface: retryAction."
+  },
+  "noNotifications": "No notifications",
+  "@noNotifications": {
+    "description": "Shared interface: noNotifications."
+  },
+  "notificationsEmptyDescription": "Important updates will appear here when they arrive.",
+  "@notificationsEmptyDescription": {
+    "description": "Shared interface: notificationsEmptyDescription."
+  },
+  "loadingDots": "Loading…",
+  "@loadingDots": {
+    "description": "Shared interface: loadingDots."
+  },
+  "loadOlderNotifications": "Load older notifications",
+  "@loadOlderNotifications": {
+    "description": "Shared interface: loadOlderNotifications."
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Shared interface: back."
+  },
+  "refreshNotifications": "Refresh notifications",
+  "@refreshNotifications": {
+    "description": "Shared interface: refreshNotifications."
+  },
+  "markAllRead": "Mark all read",
+  "@markAllRead": {
+    "description": "Shared interface: markAllRead."
+  },
+  "children": "Children",
+  "@children": {
+    "description": "Shared interface: children."
+  },
+  "caseStudies": "Case studies",
+  "@caseStudies": {
+    "description": "Shared interface: caseStudies."
+  },
+  "conversations": "Conversations",
+  "@conversations": {
+    "description": "Shared interface: conversations."
+  },
+  "supportRequests": "Support requests",
+  "@supportRequests": {
+    "description": "Shared interface: supportRequests."
+  },
+  "supportFieldsRequired": "Enter a subject and message",
+  "@supportFieldsRequired": {
+    "description": "Shared interface: supportFieldsRequired."
+  },
+  "supportMessageSent": "Your message was sent to technical support",
+  "@supportMessageSent": {
+    "description": "Shared interface: supportMessageSent."
+  },
+  "supportSendFailed": "Could not send your message",
+  "@supportSendFailed": {
+    "description": "Shared interface: supportSendFailed."
+  },
+  "connectionFailed": "Could not connect to the server",
+  "@connectionFailed": {
+    "description": "Shared interface: connectionFailed."
+  },
+  "contactSupport": "Contact technical support",
+  "@contactSupport": {
+    "description": "Shared interface: contactSupport."
+  },
+  "subject": "Subject",
+  "@subject": {
+    "description": "Shared interface: subject."
+  },
+  "message": "Message",
+  "@message": {
+    "description": "Shared interface: message."
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Shared interface: send."
+  },
+  "conversationsLoadFailed": "Could not load conversations",
+  "@conversationsLoadFailed": {
+    "description": "Shared interface: conversationsLoadFailed."
+  },
+  "user": "User",
+  "@user": {
+    "description": "Shared interface: user."
+  },
+  "noMessagesYet": "No messages yet",
+  "@noMessagesYet": {
+    "description": "Shared interface: noMessagesYet."
+  },
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Shared interface: noConversationsYet."
+  },
+  "newConversation": "New conversation",
+  "@newConversation": {
+    "description": "Shared interface: newConversation."
+  },
+  "communicationTeam": "Communication team",
+  "@communicationTeam": {
+    "description": "Shared interface: communicationTeam."
+  },
+  "noUsersAvailable": "No users available",
+  "@noUsersAvailable": {
+    "description": "Shared interface: noUsersAvailable."
+  },
+  "messagesLoadFailed": "Could not load messages",
+  "@messagesLoadFailed": {
+    "description": "Shared interface: messagesLoadFailed."
+  },
+  "me": "Me",
+  "@me": {
+    "description": "Shared interface: me."
+  },
+  "administratorLabel": "Administrator",
+  "@administratorLabel": {
+    "description": "Shared interface: administratorLabel."
+  },
+  "refreshConversation": "Refresh conversation",
+  "@refreshConversation": {
+    "description": "Shared interface: refreshConversation."
+  },
+  "generalConversation": "General conversation",
+  "@generalConversation": {
+    "description": "Shared interface: generalConversation."
+  },
+  "startConversation": "Start a conversation",
+  "@startConversation": {
+    "description": "Shared interface: startConversation."
+  },
+  "startConversationDescription": "Send the first message to start the conversation.",
+  "@startConversationDescription": {
+    "description": "Shared interface: startConversationDescription."
+  },
+  "messagePlaceholder": "Write your message…",
+  "@messagePlaceholder": {
+    "description": "Shared interface: messagePlaceholder."
+  },
+  "certificatesLoadFailed": "Could not load certificates",
+  "@certificatesLoadFailed": {
+    "description": "Shared interface: certificatesLoadFailed."
+  },
+  "profileLoadFailed": "Could not load your profile",
+  "@profileLoadFailed": {
+    "description": "Shared interface: profileLoadFailed."
+  },
+  "galleryOpenFailed": "Could not open the gallery",
+  "@galleryOpenFailed": {
+    "description": "Shared interface: galleryOpenFailed."
+  },
+  "photoUpdated": "Photo updated",
+  "@photoUpdated": {
+    "description": "Shared interface: photoUpdated."
+  },
+  "deletePhoto": "Delete photo",
+  "@deletePhoto": {
+    "description": "Shared interface: deletePhoto."
+  },
+  "deletePhotoQuestion": "Delete your profile photo?",
+  "@deletePhotoQuestion": {
+    "description": "Shared interface: deletePhotoQuestion."
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Shared interface: delete."
+  },
+  "photoDeleted": "Photo deleted",
+  "@photoDeleted": {
+    "description": "Shared interface: photoDeleted."
+  },
+  "changeProfilePhoto": "Change profile photo",
+  "@changeProfilePhoto": {
+    "description": "Shared interface: changeProfilePhoto."
+  },
+  "takePhoto": "Take a photo",
+  "@takePhoto": {
+    "description": "Shared interface: takePhoto."
+  },
+  "fromDeviceCamera": "Using the device camera",
+  "@fromDeviceCamera": {
+    "description": "Shared interface: fromDeviceCamera."
+  },
+  "chooseFromGallery": "Choose from gallery",
+  "@chooseFromGallery": {
+    "description": "Shared interface: chooseFromGallery."
+  },
+  "savedDevicePhoto": "A photo saved on this device",
+  "@savedDevicePhoto": {
+    "description": "Shared interface: savedDevicePhoto."
+  },
+  "deleteCurrentPhoto": "Delete current photo",
+  "@deleteCurrentPhoto": {
+    "description": "Shared interface: deleteCurrentPhoto."
+  },
+  "accountDeleted": "Your account was deleted",
+  "@accountDeleted": {
+    "description": "Shared interface: accountDeleted."
+  },
+  "signOut": "Sign out",
+  "@signOut": {
+    "description": "Shared interface: signOut."
+  },
+  "signOutQuestion": "Sign out of the app?",
+  "@signOutQuestion": {
+    "description": "Shared interface: signOutQuestion."
+  },
+  "adminRole": "Administrator",
+  "@adminRole": {
+    "description": "Shared interface: adminRole."
+  },
+  "ministryRole": "Ministry",
+  "@ministryRole": {
+    "description": "Shared interface: ministryRole."
+  },
+  "institutionRole": "Institution",
+  "@institutionRole": {
+    "description": "Shared interface: institutionRole."
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Shared interface: profile."
+  },
+  "accountInformation": "Account information",
+  "@accountInformation": {
+    "description": "Shared interface: accountInformation."
+  },
+  "professionalProfile": "Professional profile",
+  "@professionalProfile": {
+    "description": "Shared interface: professionalProfile."
+  },
+  "addCertificate": "Add certificate",
+  "@addCertificate": {
+    "description": "Shared interface: addCertificate."
+  },
+  "addQualifications": "Add your certificates and professional qualifications",
+  "@addQualifications": {
+    "description": "Shared interface: addQualifications."
+  },
+  "updatePasswordDescription": "Update your password to protect your account",
+  "@updatePasswordDescription": {
+    "description": "Shared interface: updatePasswordDescription."
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Shared interface: settings."
+  },
+  "switchAppearance": "Change appearance",
+  "@switchAppearance": {
+    "description": "Shared interface: switchAppearance."
+  },
+  "lightDarkAppearance": "Light / dark",
+  "@lightDarkAppearance": {
+    "description": "Shared interface: lightDarkAppearance."
+  },
+  "dangerZone": "Danger zone",
+  "@dangerZone": {
+    "description": "Shared interface: dangerZone."
+  },
+  "deleteAccountPermanently": "Permanently delete account",
+  "@deleteAccountPermanently": {
+    "description": "Shared interface: deleteAccountPermanently."
+  },
+  "deleteAccountWarning": "Your account and all its data will be deleted. This cannot be undone.",
+  "@deleteAccountWarning": {
+    "description": "Shared interface: deleteAccountWarning."
+  },
+  "signOutDescription": "Sign out of the app",
+  "@signOutDescription": {
+    "description": "Shared interface: signOutDescription."
+  },
+  "verified": "Verified",
+  "@verified": {
+    "description": "Shared interface: verified."
+  },
+  "name": "Name",
+  "@name": {
+    "description": "Shared interface: name."
+  },
+  "phone": "Phone number",
+  "@phone": {
+    "description": "Shared interface: phone."
+  },
+  "status": "Status",
+  "@status": {
+    "description": "Shared interface: status."
+  },
+  "notVerified": "Not verified",
+  "@notVerified": {
+    "description": "Shared interface: notVerified."
+  },
+  "approved": "Approved",
+  "@approved": {
+    "description": "Shared interface: approved."
+  },
+  "rejected": "Rejected",
+  "@rejected": {
+    "description": "Shared interface: rejected."
+  },
+  "awaitingReview": "Awaiting review",
+  "@awaitingReview": {
+    "description": "Shared interface: awaitingReview."
+  },
+  "noCertificates": "No certificates added yet",
+  "@noCertificates": {
+    "description": "Shared interface: noCertificates."
+  },
+  "permanentDelete": "Delete permanently",
+  "@permanentDelete": {
+    "description": "Shared interface: permanentDelete."
+  },
+  "irreversibleActionWarning": "Warning: this action is permanent",
+  "@irreversibleActionWarning": {
+    "description": "Shared interface: irreversibleActionWarning."
+  },
+  "willBeDeleted": "The following will be deleted:",
+  "@willBeDeleted": {
+    "description": "Shared interface: willBeDeleted."
+  },
+  "deleteAccountData": "• Your account and personal data",
+  "@deleteAccountData": {
+    "description": "Shared interface: deleteAccountData."
+  },
+  "deleteLinkedChildren": "• All children linked to your account",
+  "@deleteLinkedChildren": {
+    "description": "Shared interface: deleteLinkedChildren."
+  },
+  "deleteLessonProgress": "• All lessons and recorded progress",
+  "@deleteLessonProgress": {
+    "description": "Shared interface: deleteLessonProgress."
+  },
+  "deleteMessagesNotifications": "• Notifications and conversations",
+  "@deleteMessagesNotifications": {
+    "description": "Shared interface: deleteMessagesNotifications."
+  },
+  "certificateTitleRequired": "Certificate title is required",
+  "@certificateTitleRequired": {
+    "description": "Shared interface: certificateTitleRequired."
+  },
+  "certificateFileRequired": "A certificate file is required",
+  "@certificateFileRequired": {
+    "description": "Shared interface: certificateFileRequired."
+  },
+  "certificateSubmitted": "Certificate submitted for review",
+  "@certificateSubmitted": {
+    "description": "Shared interface: certificateSubmitted."
+  },
+  "addQualificationCertificate": "Add certificate (proof of qualification)",
+  "@addQualificationCertificate": {
+    "description": "Shared interface: addQualificationCertificate."
+  },
+  "certificateTitle": "Certificate title",
+  "@certificateTitle": {
+    "description": "Shared interface: certificateTitle."
+  },
+  "certificateFileLabel": "Certificate file (image or PDF)",
+  "@certificateFileLabel": {
+    "description": "Shared interface: certificateFileLabel."
+  },
+  "chooseImageOrPdf": "Choose an image or PDF",
+  "@chooseImageOrPdf": {
+    "description": "Shared interface: chooseImageOrPdf."
+  },
+  "removeSelectedFile": "Remove selected file",
+  "@removeSelectedFile": {
+    "description": "Shared interface: removeSelectedFile."
+  },
+  "submitForReview": "Submit for review",
+  "@submitForReview": {
+    "description": "Shared interface: submitForReview."
+  },
+  "certificateUploadDescription": "Enter the document name and attach a clear image or PDF to submit for review.",
+  "@certificateUploadDescription": {
+    "description": "Shared interface: certificateUploadDescription."
+  },
+  "certificateTitleExample": "Example: Bachelor's degree in special education",
+  "@certificateTitleExample": {
+    "description": "Shared interface: certificateTitleExample."
+  },
+  "homework": "Homework",
+  "@homework": {
+    "description": "Shared interface: homework."
+  },
+  "students": "Students",
+  "@students": {
+    "description": "Shared interface: students."
+  },
+  "view": "View",
+  "@view": {
+    "description": "Shared interface: view."
+  },
+  "tourStep": "Step {step} of {total}",
+  "@tourStep": {
+    "description": "Shared interface: tourStep.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conversationWith": "Conversation with {name}",
+  "@conversationWith": {
+    "description": "Shared interface: conversationWith.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "caseDiscussionSubject": "Case discussion: {subject}",
+  "@caseDiscussionSubject": {
+    "description": "Shared interface: caseDiscussionSubject.",
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountInstruction": "To confirm, type \"{word}\" in the field below:",
+  "@deleteAccountInstruction": {
+    "description": "Shared interface: deleteAccountInstruction.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteConfirmationWord": "DELETE",
+  "@deleteConfirmationWord": {
+    "description": "Exact confirmation word required for destructive account deletion."
+  },
+  "notificationsLoadFailed": "Could not load notifications",
+  "@notificationsLoadFailed": {
+    "description": "Shared interface: notificationsLoadFailed."
+  },
+  "conversationCreateFailed": "Could not create the conversation",
+  "@conversationCreateFailed": {
+    "description": "Shared interface: conversationCreateFailed."
+  },
+  "messageSendFailed": "Could not send the message",
+  "@messageSendFailed": {
+    "description": "Shared interface: messageSendFailed."
+  },
+  "nationalIdRequired": "National ID number is required",
+  "@nationalIdRequired": {
+    "description": "Identity verification interface: nationalIdRequired."
+  },
+  "idPhotoRequired": "An identity document photo is required",
+  "@idPhotoRequired": {
+    "description": "Identity verification interface: idPhotoRequired."
+  },
+  "certificatePhotoRequired": "A certificate photo is required",
+  "@certificatePhotoRequired": {
+    "description": "Identity verification interface: certificatePhotoRequired."
+  },
+  "verifyIdentity": "Verify identity",
+  "@verifyIdentity": {
+    "description": "Identity verification interface: verifyIdentity."
+  },
+  "nationalIdLabel": "National ID number *",
+  "@nationalIdLabel": {
+    "description": "Identity verification interface: nationalIdLabel."
+  },
+  "nationalIdExample": "Example: 1234567890",
+  "@nationalIdExample": {
+    "description": "Identity verification interface: nationalIdExample."
+  },
+  "idPhotoLabel": "Identity document photo *",
+  "@idPhotoLabel": {
+    "description": "Identity verification interface: idPhotoLabel."
+  },
+  "idPhotoHint": "jpg, png, webp — a clear photo of the front side",
+  "@idPhotoHint": {
+    "description": "Identity verification interface: idPhotoHint."
+  },
+  "professionalVerificationRequired": "Verify your identity and upload your qualification certificate to activate all your permissions.",
+  "@professionalVerificationRequired": {
+    "description": "Identity verification interface: professionalVerificationRequired."
+  },
+  "identityVerificationRequired": "Verify your identity to access all your permissions.",
+  "@identityVerificationRequired": {
+    "description": "Identity verification interface: identityVerificationRequired."
+  },
+  "qualificationCertificateLabel": "Qualification certificate *",
+  "@qualificationCertificateLabel": {
+    "description": "Identity verification interface: qualificationCertificateLabel."
+  },
+  "required": "Required",
+  "@required": {
+    "description": "Identity verification interface: required."
+  },
+  "certificateTitleLabel": "Certificate title *",
+  "@certificateTitleLabel": {
+    "description": "Identity verification interface: certificateTitleLabel."
+  },
+  "uploadFromGallery": "Upload from gallery",
+  "@uploadFromGallery": {
+    "description": "Identity verification interface: uploadFromGallery."
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Identity verification interface: camera."
+  },
+  "submitVerification": "Save and submit for verification",
+  "@submitVerification": {
+    "description": "Identity verification interface: submitVerification."
+  },
+  "accountVerified": "Your account is verified",
+  "@accountVerified": {
+    "description": "Identity verification interface: accountVerified."
+  },
+  "professionalIdentityApproved": "Your identity and professional details have been approved. Your permissions are now available.",
+  "@professionalIdentityApproved": {
+    "description": "Identity verification interface: professionalIdentityApproved."
+  },
+  "identityApproved": "Your identity has been approved.",
+  "@identityApproved": {
+    "description": "Identity verification interface: identityApproved."
+  },
+  "returnAction": "Return",
+  "@returnAction": {
+    "description": "Identity verification interface: returnAction."
+  },
+  "verificationPending": "Your request is under review",
+  "@verificationPending": {
+    "description": "Identity verification interface: verificationPending."
+  },
+  "professionalVerificationPending": "Your identity and certificate will be checked within 24 hours. Thank you for your patience.",
+  "@professionalVerificationPending": {
+    "description": "Identity verification interface: professionalVerificationPending."
+  },
+  "verificationPendingDescription": "Your account will be activated once approved by administration. Thank you for your patience.",
+  "@verificationPendingDescription": {
+    "description": "Identity verification interface: verificationPendingDescription."
+  },
+  "refreshStatus": "Refresh status",
+  "@refreshStatus": {
+    "description": "Identity verification interface: refreshStatus."
+  },
+  "exit": "Exit",
+  "@exit": {
+    "description": "Identity verification interface: exit."
+  },
+  "verificationRejected": "Verification request rejected",
+  "@verificationRejected": {
+    "description": "Identity verification interface: verificationRejected."
+  },
+  "verificationRejectedDescription": "Check your details and photos and try again, or contact technical support.",
+  "@verificationRejectedDescription": {
+    "description": "Identity verification interface: verificationRejectedDescription."
   }
 }

@@ -1,3 +1,5 @@
+import '../widgets/language_selector.dart';
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
@@ -13,8 +15,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailCtrl = TextEditingController();
   bool _loading = false;
-  String? _error;
-  String? _notice;
+  Object? _error;
+  Object? _notice;
 
   @override
   void dispose() {
@@ -25,7 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _send() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'أدخل بريداً إلكترونياً صالحاً');
+      setState(() => _error = SharedUiMessage.validEmailRequired);
       return;
     }
 
@@ -42,7 +44,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _loading = false;
       if (error == null) {
         _notice =
-            'إذا كان البريد مسجلاً فستصلك رسالة استعادة. افتح الرابط في الرسالة أو الصقه هنا لإكمال التغيير.';
+            SharedUiMessage.recoveryEmailNotice;
       } else {
         _error = error;
       }
@@ -54,7 +56,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: const JisrAppBar(title: 'استعادة كلمة المرور'),
+      appBar: JisrAppBar(title: context.l10n.passwordRecovery, actions: const [LanguageMenuButton(color: Colors.white)]),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
@@ -86,7 +88,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'نسيت كلمة المرور؟',
+                      context.l10n.forgotPasswordQuestion,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: c.heading,
@@ -96,7 +98,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'أدخل بريدك وسنرسل رابط استعادة صالحاً لمدة 60 دقيقة.',
+                      context.l10n.recoveryDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: c.muted, height: 1.5),
                     ),
@@ -109,8 +111,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onSubmitted: (_) {
                         if (!_loading) _send();
                       },
-                      decoration: const InputDecoration(
-                        labelText: 'البريد الإلكتروني',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email,
                         prefixIcon: Icon(Icons.mail_outline_rounded),
                       ),
                     ),
@@ -133,7 +135,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _error!,
+                                context.sharedMessage(_error),
                                 style: const TextStyle(
                                   color: AppColors.red,
                                   height: 1.45,
@@ -164,7 +166,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _notice!,
+                                context.sharedMessage(_notice),
                                 style: const TextStyle(
                                   color: AppColors.green,
                                   height: 1.45,
@@ -190,7 +192,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             )
                           : const Icon(Icons.forward_to_inbox_outlined),
                       label: Text(
-                        _loading ? 'جارِ الإرسال...' : 'إرسال رابط الاستعادة',
+                        _loading ? context.l10n.sending : context.l10n.sendRecoveryLink,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -204,7 +206,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                         ),
                       ),
-                      label: const Text('لدي رابط استعادة'),
+                      label: Text(context.l10n.haveRecoveryLink),
                     ),
                   ],
                 ),
@@ -239,7 +241,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _confirmCtrl = TextEditingController();
   bool _loading = false;
   bool _obscure = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -264,7 +266,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final email = uri?.queryParameters['email'];
     final token = uri?.queryParameters['token'];
     if (email == null || token == null || email.isEmpty || token.isEmpty) {
-      setState(() => _error = 'رابط الاستعادة غير صالح');
+      setState(() => _error = SharedUiMessage.invalidRecoveryLink);
       return;
     }
     setState(() {
@@ -276,15 +278,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Future<void> _reset() async {
     if (_passwordCtrl.text.length < 8) {
-      setState(() => _error = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      setState(() => _error = SharedUiMessage.passwordEightMinimum);
       return;
     }
     if (_passwordCtrl.text != _confirmCtrl.text) {
-      setState(() => _error = 'تأكيد كلمة المرور غير مطابق');
+      setState(() => _error = SharedUiMessage.passwordConfirmationMismatch);
       return;
     }
     if (_emailCtrl.text.trim().isEmpty || _tokenCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'الصق رابط الاستعادة أولاً');
+      setState(() => _error = SharedUiMessage.pasteRecoveryLinkFirst);
       return;
     }
 
@@ -308,7 +310,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم تغيير كلمة المرور بنجاح')),
+      SnackBar(content: Text(context.l10n.passwordChanged)),
     );
     Navigator.popUntil(context, (route) => route.isFirst);
   }
@@ -316,7 +318,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const JisrAppBar(title: 'تعيين كلمة مرور جديدة'),
+      appBar: JisrAppBar(title: context.l10n.setNewPassword, actions: const [LanguageMenuButton(color: Colors.white)]),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(22),
@@ -328,16 +330,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'الصق رابط الاستعادة الذي وصلك بالبريد، ثم اختر كلمة مرور جديدة.',
+                    Text(
+                      context.l10n.pasteRecoveryLinkDescription,
                       style: TextStyle(height: 1.6),
                     ),
                     const SizedBox(height: 14),
                     TextField(
                       controller: _linkCtrl,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'رابط الاستعادة',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.recoveryLink,
                         prefixIcon: Icon(Icons.link),
                       ),
                     ),
@@ -345,14 +347,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     OutlinedButton.icon(
                       onPressed: _parseLink,
                       icon: const Icon(Icons.auto_fix_high),
-                      label: const Text('قراءة الرابط'),
+                      label: Text(context.l10n.readLink),
                     ),
                     const SizedBox(height: 14),
                     TextField(
                       controller: _passwordCtrl,
                       obscureText: _obscure,
                       decoration: InputDecoration(
-                        labelText: 'كلمة المرور الجديدة',
+                        labelText: context.l10n.newPassword,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           onPressed: () =>
@@ -367,22 +369,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     TextField(
                       controller: _confirmCtrl,
                       obscureText: _obscure,
-                      decoration: const InputDecoration(
-                        labelText: 'تأكيد كلمة المرور',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.confirmPassword,
                         prefixIcon: Icon(Icons.lock_reset_outlined),
                       ),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
-                      Text(_error!,
+                      Text(context.sharedMessage(_error),
                           style: const TextStyle(color: AppColors.red)),
                     ],
                     const SizedBox(height: 18),
                     FilledButton(
                       onPressed: _loading ? null : _reset,
                       child: Text(_loading
-                          ? 'جارِ التحديث...'
-                          : 'تغيير كلمة المرور'),
+                          ? context.l10n.updating
+                          : context.l10n.changePassword),
                     ),
                   ],
                 ),

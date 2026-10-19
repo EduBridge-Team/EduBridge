@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/add_certificate_sheet.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
   final _titleCtrl = TextEditingController();
   File? _file;
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void dispose() {
@@ -50,11 +51,11 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
 
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'عنوان الشهادة مطلوب');
+      setState(() => _error = SharedUiMessage.certificateTitleRequired);
       return;
     }
     if (_file == null) {
-      setState(() => _error = 'ملف الشهادة مطلوب');
+      setState(() => _error = SharedUiMessage.certificateFileRequired);
       return;
     }
 
@@ -73,8 +74,8 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
       widget.onSaved();
       Navigator.pop(context);
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('تم إرسال الشهادة للمراجعة'),
+        SnackBar(
+          content: Text(context.l10n.certificateSubmitted),
           backgroundColor: AppColors.green,
         ),
       );
@@ -87,7 +88,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
   }
 
   Widget _buildS18Dialog() => Directionality(
-    textDirection: TextDirection.rtl,
+    textDirection: Directionality.of(context),
     child: _buildS18DialogContent(),
   );
 
@@ -117,9 +118,9 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   const Icon(Icons.workspace_premium_outlined,
                       color: blue, size: 24),
                   const SizedBox(width: 9),
-                  const Flexible(
+                  Flexible(
                     child: Text(
-                      'إضافة شهادة (إثبات أهلية)',
+                      context.l10n.addQualificationCertificate,
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -139,11 +140,11 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   controller: _titleCtrl,
                   enabled: !_saving,
                   maxLines: 1,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
+                  textDirection: Directionality.of(context),
+                  textAlign: TextAlign.start,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    hintText: 'عنوان الشهادة',
+                    hintText: context.l10n.certificateTitle,
                     hintStyle: const TextStyle(
                       color: Color(0xFF708DA9),
                       fontSize: 15,
@@ -167,8 +168,8 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                 ),
               ),
               const SizedBox(height: 19),
-              const Text(
-                'ملف الشهادة (صورة أو PDF)',
+              Text(
+                context.l10n.certificateFileLabel,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: ink,
@@ -180,7 +181,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
               if (_file == null)
                 Semantics(
                   button: true,
-                  label: 'اختيار صورة أو ملف PDF',
+                  label: context.l10n.chooseImageOrPdf,
                   child: CustomPaint(
                     foregroundPainter: const _S18DashedOutlinePainter(),
                     child: Material(
@@ -190,7 +191,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                       child: InkWell(
                         key: const ValueKey('s18_choose_certificate_file'),
                         onTap: _saving ? null : _pickFile,
-                        child: const SizedBox(
+                        child: SizedBox(
                           height: 53,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -200,7 +201,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                               SizedBox(width: 10),
                               Flexible(
                                 child: Text(
-                                  'اختيار صورة أو ملف PDF',
+                                  context.l10n.chooseImageOrPdf,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -240,7 +241,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'إزالة الملف المختار',
+                          tooltip: context.l10n.removeSelectedFile,
                           onPressed: _saving
                               ? null : () => setState(() => _file = null),
                           icon: const Icon(Icons.close_rounded,
@@ -253,8 +254,8 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
               if (_error != null) ...[
                 const SizedBox(height: 9),
                 Text(
-                  _error!,
-                  textAlign: TextAlign.right,
+                  context.sharedMessage(_error),
+                  textAlign: TextAlign.start,
                   style: const TextStyle(
                     color: AppColors.red, fontSize: 12),
                 ),
@@ -275,7 +276,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                           padding: EdgeInsets.zero,
                           shape: const StadiumBorder(),
                         ),
-                        child: const Text('إلغاء',
+                        child: Text(context.l10n.cancel,
                           style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w700)),
                       ),
@@ -299,7 +300,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                                 width: 17, height: 17,
                                 child: CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2))
-                            : const Row(
+                            : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.outbox_outlined,
@@ -307,7 +308,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                                   SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
-                                      'إرسال للمراجعة',
+                                      context.l10n.submitForReview,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -365,7 +366,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'إضافة شهادة (إثبات أهلية)',
+                      context.l10n.addQualificationCertificate,
                       style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.w800,
@@ -381,15 +382,15 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
               ),
               const SizedBox(height: 6),
               Text(
-                'أضف اسم الوثيقة وارفق صورة واضحة أو ملف PDF لإرسالها للمراجعة.',
+                context.l10n.certificateUploadDescription,
                 style: TextStyle(fontSize: 13, height: 1.5, color: c.muted),
               ),
               const SizedBox(height: 14),
               TextField(
                 controller: _titleCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'عنوان الشهادة',
-                  hintText: 'مثال: بكالوريوس تربية خاصة',
+                decoration: InputDecoration(
+                  labelText: context.l10n.certificateTitle,
+                  hintText: context.l10n.certificateTitleExample,
                   prefixIcon: Icon(AppIcons.edit),
                 ),
               ),
@@ -410,7 +411,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            'ملف الشهادة (صورة أو PDF)',
+                            context.l10n.certificateFileLabel,
                             softWrap: true,
                             style: TextStyle(
                               fontWeight: FontWeight.w800,
@@ -428,8 +429,8 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                         height: 50,
                         child: FilledButton.icon(
                           icon: const Icon(AppIcons.upload),
-                          label: const Text(
-                            'اختيار صورة أو ملف PDF',
+                          label: Text(
+                            context.l10n.chooseImageOrPdf,
                             textAlign: TextAlign.center,
                           ),
                           onPressed: _pickFile,
@@ -475,7 +476,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                           color: AppColors.red, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(_error!,
+                        child: Text(context.sharedMessage(_error),
                             style: const TextStyle(color: AppColors.red)),
                       ),
                     ],
@@ -488,7 +489,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('إلغاء'),
+                      child: Text(context.l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -506,7 +507,7 @@ class _AddCertificateSheetState extends State<AddCertificateSheet> {
                             )
                           : const Icon(AppIcons.save),
                       onPressed: _saving ? null : _save,
-                      label: Text(_saving ? 'جارِ الحفظ...' : 'إرسال للمراجعة'),
+                      label: Text(_saving ? context.l10n.saving : context.l10n.submitForReview),
                     ),
                   ),
                 ],

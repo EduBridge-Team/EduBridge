@@ -1,3 +1,5 @@
+import '../widgets/language_selector.dart';
+import '../l10n/l10n.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme.dart';
@@ -109,7 +111,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
+    return Directionality(textDirection: Directionality.of(context), child: Scaffold(
       backgroundColor: dark ? const Color(0xFF101F2C) : const Color(0xFFF6FCFE),
       body: SafeArea(child: _tour ? _buildTour() : SingleChildScrollView(
         key: const ValueKey('onboarding-welcome'),
@@ -118,8 +120,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               const Flexible(child: BrandLockup(iconSize: 64, fontSize: 30)),
+              const LanguageMenuButton(),
               IconButton.filledTonal(onPressed: toggleThemeMode,
-                tooltip: dark ? 'الوضع الفاتح' : 'الوضع الداكن',
+                tooltip: dark ? context.l10n.lightMode : context.l10n.darkMode,
                 icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined)),
             ]),
             const SizedBox(height: 24),
@@ -131,26 +134,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                 stops: [0, .4, .85, 1]),
               boxShadow: [BoxShadow(color: _blue.withValues(alpha: .18), blurRadius: 24, offset: const Offset(0, 10))]),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('تعليم ذكي\nوشامل\nلكل طفل', style: TextStyle(color: Colors.white,
+                Text(context.l10n.welcomeHeadline, style: TextStyle(color: Colors.white,
                   fontSize: 32, height: 1.35, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 14),
-                const Text('أدوات تعليمية مرنة تربط الطفل بأسرته ومعلميه ومختصيه في تجربة واحدة آمنة.',
+                Text(context.l10n.welcomeDescription,
                   style: TextStyle(color: Colors.white, height: 1.8, fontSize: 15)),
                 const SizedBox(height: 16),
                 Wrap(spacing: 8, runSpacing: 8, children: [
-                  _badge('متاح للجميع', Icons.accessibility_new),
-                  _badge('تعلم مخصص', Icons.auto_awesome_outlined),
-                  _badge('بيئة آمنة', Icons.shield_outlined),
+                  _badge(context.l10n.accessibleForEveryone, Icons.accessibility_new),
+                  _badge(context.l10n.personalizedLearning, Icons.auto_awesome_outlined),
+                  _badge(context.l10n.safeEnvironment, Icons.shield_outlined),
                 ]),
               ]))),
             const SizedBox(height: 24),
-            _motion(.15, _button('تسجيل الدخول', Icons.login, () => _authenticate())),
+            _motion(.15, _button(context.l10n.signIn, Icons.login, () => _authenticate())),
             const SizedBox(height: 12),
-            _motion(.25, _button('إنشاء حساب جديد', Icons.person_add_alt, () => _authenticate(register: true), outlined: true)),
+            _motion(.25, _button(context.l10n.createNewAccount, Icons.person_add_alt, () => _authenticate(register: true), outlined: true)),
             const SizedBox(height: 12),
             TextButton(onPressed: () => setState(() => _expanded = !_expanded),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Flexible(child: Text(_expanded ? 'إخفاء' : 'تعرّف على EduBridge',
+                Flexible(child: Text(_expanded ? context.l10n.hide : context.l10n.learnAboutEduBridge,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: _teal, fontWeight: FontWeight.w700))),
                 const SizedBox(width: 8), AnimatedRotation(

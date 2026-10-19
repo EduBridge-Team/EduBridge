@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/support_sheet.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _SupportSheetState extends State<SupportSheet> {
   final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
   bool _sending = false;
-  String? _error;
+  Object? _error;
 
   @override
   void dispose() {
@@ -40,7 +41,7 @@ class _SupportSheetState extends State<SupportSheet> {
     if (_subjectController.text.trim().isEmpty ||
         _messageController.text.trim().isEmpty) {
       setState(() {
-        _error = 'الرجاء تعبئة الموضوع والرسالة';
+        _error = SharedUiMessage.supportFieldsRequired;
         _sending = false;
       });
       return;
@@ -58,17 +59,17 @@ class _SupportSheetState extends State<SupportSheet> {
       if (res.statusCode == 200 || res.statusCode == 201) {
         Navigator.pop(context);
         messenger.showSnackBar(
-          const SnackBar(content: Text('تم إرسال رسالتك للدعم الفني بنجاح')),
+          SnackBar(content: Text(context.l10n.supportMessageSent)),
         );
       } else {
         setState(() {
-          _error = data['error']?.toString() ?? 'تعذّر إرسال الرسالة';
+          _error = data['error']?.toString() ?? context.l10n.supportSendFailed;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'تعذّر الاتصال بالسيرفر';
+          _error = SharedUiMessage.connectionFailed;
         });
       }
     } finally {
@@ -141,9 +142,9 @@ class _SupportSheetState extends State<SupportSheet> {
                   const Icon(Icons.headset_mic_outlined,
                     size: 23, color: blue),
                   const SizedBox(width: 9),
-                  const Flexible(
+                  Flexible(
                     child: Text(
-                      'تواصل مع الدعم الفني',
+                      context.l10n.contactSupport,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
@@ -160,12 +161,12 @@ class _SupportSheetState extends State<SupportSheet> {
                 child: TextField(
                   controller: _subjectController,
                   enabled: !_sending,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
+                  textDirection: Directionality.of(context),
+                  textAlign: TextAlign.start,
                   maxLines: 1,
                   textInputAction: TextInputAction.next,
                   decoration: _s14FieldDecoration(
-                    'الموضوع',
+                    context.l10n.subject,
                     icon: const Icon(Icons.edit_outlined, size: 20,
                       color: blue),
                   ),
@@ -177,21 +178,21 @@ class _SupportSheetState extends State<SupportSheet> {
                 child: TextField(
                   controller: _messageController,
                   enabled: !_sending,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
+                  textDirection: Directionality.of(context),
+                  textAlign: TextAlign.start,
                   textAlignVertical: TextAlignVertical.top,
                   expands: true,
                   minLines: null,
                   maxLines: null,
                   textInputAction: TextInputAction.newline,
-                  decoration: _s14FieldDecoration('الرسالة'),
+                  decoration: _s14FieldDecoration(context.l10n.message),
                 ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 10),
                 Text(
-                  _error!,
-                  textAlign: TextAlign.right,
+                  context.sharedMessage(_error),
+                  textAlign: TextAlign.start,
                   style: const TextStyle(color: AppColors.red, fontSize: 12),
                 ),
               ],
@@ -212,7 +213,7 @@ class _SupportSheetState extends State<SupportSheet> {
                           padding: EdgeInsets.zero,
                           shape: const StadiumBorder(),
                         ),
-                        child: const Text('إلغاء', style: TextStyle(
+                        child: Text(context.l10n.cancel, style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w700)),
                       ),
                     ),
@@ -234,10 +235,10 @@ class _SupportSheetState extends State<SupportSheet> {
                                 width: 18, height: 18,
                                 child: CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2))
-                            : const Row(
+                            : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('إرسال', style: TextStyle(
+                                  Text(context.l10n.send, style: TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w700)),
                                   SizedBox(width: 6),
                                   Icon(Icons.mail_outline_rounded, size: 19),
@@ -257,7 +258,7 @@ class _SupportSheetState extends State<SupportSheet> {
 
   @override
   Widget build(BuildContext context) => Directionality(
-    textDirection: TextDirection.rtl,
+    textDirection: Directionality.of(context),
     child: _buildS14Dialog(context),
   );
 }

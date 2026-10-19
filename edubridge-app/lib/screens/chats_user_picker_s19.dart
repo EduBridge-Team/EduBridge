@@ -21,7 +21,7 @@ class ContactPickerDialog extends StatelessWidget {
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: Colors.white,
@@ -37,7 +37,7 @@ class ContactPickerDialog extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -45,7 +45,7 @@ class ContactPickerDialog extends StatelessWidget {
                     SizedBox(width: 9),
                     Flexible(
                       child: Text(
-                        'فريق التواصل',
+                        context.l10n.communicationTeam,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -59,10 +59,10 @@ class ContactPickerDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 17),
                 if (available.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: 22),
                     child: Text(
-                      'لا يوجد مستخدمون متاحون',
+                      context.l10n.noUsersAvailable,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFF637D97), fontSize: 14),
@@ -95,7 +95,7 @@ class ContactPickerDialog extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        name.isEmpty ? 'مستخدم' : name,
+                                        name.isEmpty ? context.l10n.user : name,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -106,10 +106,10 @@ class ContactPickerDialog extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    const Directionality(
-                                      textDirection: TextDirection.ltr,
+                                    Directionality(
+                                      textDirection: Directionality.of(context),
                                       child: Icon(
-                                        Icons.arrow_back_rounded,
+                                        Icons.arrow_forward_rounded,
                                         color: Colors.white,
                                         size: 23,
                                       ),
@@ -137,8 +137,8 @@ class ContactPickerDialog extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(17)),
                     ),
-                    child: const Text(
-                      'إلغاء',
+                    child: Text(
+                      context.l10n.cancel,
                       style: TextStyle(
                         fontSize: 15, fontWeight: FontWeight.w600),
                     ),

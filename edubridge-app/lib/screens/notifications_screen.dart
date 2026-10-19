@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
 import '../widgets/teacher_navigation_bar.dart';
@@ -61,7 +62,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر تحميل الإشعارات الأقدم، حاول مجدداً')),
+          SnackBar(content: Text(context.l10n.olderNotificationsError)),
         );
       }
     }
@@ -90,12 +91,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       final completed = await _operations.markAllRead();
       if (!mounted || !completed) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تحديد جميع الإشعارات كمقروءة')),
+        SnackBar(content: Text(context.l10n.allNotificationsRead)),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر تنفيذ العملية')),
+        SnackBar(content: Text(context.l10n.operationFailed)),
       );
     }
   }
@@ -170,9 +171,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'غير متوفر';
-    final minute = date.minute.toString().padLeft(2, '0');
-    return '${date.day}/${date.month}/${date.year} • ${date.hour}:$minute';
+    if (date == null) return context.l10n.notAvailable;
+    final labels = MaterialLocalizations.of(context);
+    return '${labels.formatShortDate(date)} • '
+        '${labels.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
   }
 
   Future<void> _openNotificationDetails(Map n, JisrColors c) async {
@@ -182,7 +184,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
     if (!mounted) return;
 
-    final title = (n['title'] ?? 'تفاصيل الإشعار').toString();
+    final title = (n['title'] ?? context.l10n.notificationDetails).toString();
     final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final date = n['created_at'] != null
@@ -249,7 +251,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'إغلاق',
+                    tooltip: context.l10n.close,
                     onPressed: () => Navigator.pop(sheetContext),
                     icon: const Icon(Icons.close_rounded),
                   ),
@@ -301,7 +303,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     );
                   },
                   icon: const Icon(Icons.open_in_new_rounded),
-                  label: const Text('فتح التفاصيل المرتبطة'),
+                  label: Text(context.l10n.openRelatedDetails),
                 ),
               ],
             ],
@@ -334,7 +336,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           const Icon(AppIcons.error, size: 56, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.l10n.notificationsLoadFailed,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.red,
@@ -346,7 +348,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Center(
             child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ),
@@ -379,7 +381,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
               const SizedBox(height: 18),
               Text(
-                'لا توجد إشعارات',
+                context.l10n.noNotifications,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 19,
@@ -389,7 +391,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'ستظهر التحديثات المهمة هنا عند وصولها.',
+                context.l10n.notificationsEmptyDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13.5, color: c.muted),
               ),
@@ -408,7 +410,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 valueListenable: NotificationListenerService.instance.hasMore,
                 builder: (context, more, _) => more ? TextButton(
                   onPressed: _loadingMore || _markingAll ? null : _loadMore,
-                  child: Text(_loadingMore ? 'جارِ التحميل...' : 'تحميل إشعارات أقدم'),
+                  child: Text(_loadingMore ? context.l10n.loadingDots : context.l10n.loadOlderNotifications),
                 ) : const SizedBox.shrink(),
               );
             },

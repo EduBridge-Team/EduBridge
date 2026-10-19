@@ -1,3 +1,4 @@
+import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/add_certificate_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,9 @@ void main() {
       (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('ar'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(

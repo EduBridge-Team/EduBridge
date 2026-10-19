@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/widgets/notification_snackbar.dart
 import 'package:flutter/material.dart';
 import '../services/notification_listener_service.dart';
@@ -99,7 +100,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
           ],
         ),
         action: SnackBarAction(
-          label: 'عرض',
+          label: context.l10n.view,
           textColor: AppColors.tealDeep,
           onPressed: () {
             final nav = appNavigatorKey.currentState;

@@ -14,20 +14,20 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
       titleSpacing: 4,
       centerTitle: false,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: () => Navigator.maybePop(context),
-        icon: const CircleAvatar(
+        icon: CircleAvatar(
           radius: 22,
           backgroundColor: Color(0x33FFFFFF),
           child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Icon(Icons.arrow_forward_rounded,
+            textDirection: Directionality.of(context),
+            child: Icon(Icons.arrow_back_rounded,
                 size: 23, color: Colors.white),
           ),
         ),
       ),
-      title: const Text(
-        'المحادثات',
+      title: Text(
+        context.l10n.conversations,
         style: TextStyle(
           fontWeight: FontWeight.w800,
           fontSize: 21,
@@ -92,26 +92,26 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
               MaterialPageRoute<void>(builder: (_) => destination),
             );
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
               icon: Icon(Icons.people_outline),
               selectedIcon: Icon(Icons.people_rounded),
-              label: 'الأطفال',
+              label: context.l10n.children,
             ),
             NavigationDestination(
               icon: Icon(Icons.description_outlined),
               selectedIcon: Icon(Icons.description_rounded),
-              label: 'دراسات الحالة',
+              label: context.l10n.caseStudies,
             ),
             NavigationDestination(
               icon: Icon(Icons.chat_bubble_outline_rounded),
               selectedIcon: Icon(Icons.chat_bubble_rounded),
-              label: 'المحادثات',
+              label: context.l10n.conversations,
             ),
             NavigationDestination(
               icon: Icon(Icons.inbox_outlined),
               selectedIcon: Icon(Icons.inbox_rounded),
-              label: 'طلبات الدعم',
+              label: context.l10n.supportRequests,
             ),
           ],
         ),
@@ -122,7 +122,7 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
   Widget _s15ConversationCard(Map conversation) {
     final id = int.tryParse('${conversation['id'] ?? ''}');
     final otherName = _text(
-      conversation['other_user_name'], fallback: 'مستخدم');
+      conversation['other_user_name'], fallback: context.l10n.user);
     final lastMessage = _text(conversation['last_message']);
     final lastDate = lastMessage.isNotEmpty &&
             conversation['last_message_at'] != null
@@ -202,7 +202,7 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
                       ),
                       const SizedBox(height: 7),
                       Text(
-                        lastMessage.isEmpty ? 'لا توجد رسائل بعد' : lastMessage,
+                        lastMessage.isEmpty ? context.l10n.noMessagesYet : lastMessage,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -214,9 +214,9 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
                   ),
                 ),
                 const SizedBox(width: 14),
-                const Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Icon(Icons.arrow_back_rounded,
+                Directionality(
+                  textDirection: Directionality.of(context),
+                  child: Icon(Icons.arrow_forward_rounded,
                       color: _s15Blue, size: 22),
                 ),
               ],
@@ -244,21 +244,21 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
               padding: const EdgeInsets.only(top: 92),
               child: Column(
                 children: [
-                  Text(_error!, textAlign: TextAlign.center,
+                  Text(context.l10n.conversationsLoadFailed, textAlign: TextAlign.center,
                     style: const TextStyle(color: AppColors.red)),
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: _loadConversations,
-                    child: const Text('إعادة المحاولة'),
+                    child: Text(context.l10n.retryAction),
                   ),
                 ],
               ),
             )
           else if (_conversations.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 96),
               child: Center(child: Text(
-                'لا توجد محادثات بعد',
+                context.l10n.noConversationsYet,
                 style: TextStyle(
                   fontSize: 15,
                   color: _s15Muted,
@@ -290,8 +290,8 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
           borderRadius: BorderRadius.circular(16),
         ),
         icon: const Icon(Icons.add_circle_outline_rounded, size: 23),
-        label: const Text(
-          'محادثة جديدة',
+        label: Text(
+          context.l10n.newConversation,
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
         ),
       ),

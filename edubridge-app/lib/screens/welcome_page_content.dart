@@ -22,33 +22,34 @@ extension _WelcomePageContent on _WelcomeScreenState {
 
   Widget _buildAbout() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
     const SizedBox(height: 14),
-    _card('رؤية بلا حدود', 'نسعى أن نكون المرجع الأول في الوطن العربي للتعليم الرقمي المتاح، حيث تذوب الفوارق الجسدية وتبرز القدرات العقلية والإبداعية.', Icons.visibility_outlined, const Color(0xFFD9F5FA), vision: true),
-    _card('الدعم المستمر', 'مرافقة المتعلم في كل خطوة لضمان النجاح.', Icons.favorite_border, const Color(0xFFE3F8FA)),
-    _card('تنوع المناهج', 'محتوى تعليمي يناسب مختلف أنواع الإعاقات.', Icons.menu_book_outlined, const Color(0xFFE7F3E3)),
-    const Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Text('مسارات تعليمية متخصصة',
+    _card(context.l10n.visionWithoutLimits, context.l10n.visionDescription, Icons.visibility_outlined, const Color(0xFFD9F5FA), vision: true),
+    _card(context.l10n.ongoingSupport, context.l10n.ongoingSupportDescription, Icons.favorite_border, const Color(0xFFE3F8FA)),
+    _card(context.l10n.variedCurricula, context.l10n.variedCurriculaDescription, Icons.menu_book_outlined, const Color(0xFFE7F3E3)),
+    Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Text(context.l10n.specializedLearningPaths,
       style: TextStyle(color: _WelcomeScreenState._blue, fontSize: 24, fontWeight: FontWeight.w800))),
-    _card('لغة الإشارة المتقدمة', 'دورة شاملة لتعلم لغة الإشارة من الأساسيات وحتى الاحتراف.', Icons.front_hand_outlined, const Color(0xFFE3F8FA)),
-    _card('تقنيات القراءة الميسّرة', 'تدريب عملي لتعزيز استقلالية القراءة والتعلم لكل طفل.', Icons.menu_book_outlined, const Color(0xFFE7F3E3)),
-    _card('المهارات الحياتية الرقمية', 'برنامج مخصص لتمكين الأطفال ذوي الإعاقات الإدراكية من التعامل مع العالم الرقمي بأمان.', Icons.extension_outlined, const Color(0xFFFFF1DF)),
-    _button('اكتشف تجربة EduBridge', Icons.arrow_back, _startTour),
+    _card(context.l10n.advancedSignLanguage, context.l10n.advancedSignLanguageDescription, Icons.front_hand_outlined, const Color(0xFFE3F8FA)),
+    _card(context.l10n.accessibleReading, context.l10n.accessibleReadingDescription, Icons.menu_book_outlined, const Color(0xFFE7F3E3)),
+    _card(context.l10n.digitalLifeSkills, context.l10n.digitalLifeSkillsDescription, Icons.extension_outlined, const Color(0xFFFFF1DF)),
+    _button(context.l10n.exploreEduBridge, Icons.arrow_forward, _startTour),
     const SizedBox(height: 12),
   ]);
 
   Widget _buildTour() {
-    const titles = ['تعليم يتكيف مع كل طفل', 'أسرة ومعلم ومختص\nفي مكان واحد', 'بيئة آمنة ومريحة'];
-    const descriptions = [
-      'قراءة صوتية، ألوان هادئة، ورموز أكبر — نضبط حسب ما يساعد طفلك.',
-      'تابعوا تقدم الطفل، وتبادلوا الرسائل والتقييمات بسهولة.',
-      'استراحات حركية بين الدروس، وزر طوارئ يبلغ الأهل والمختص فوراً.',
+    final titles = [context.l10n.tourAdaptiveTitle, context.l10n.tourTeamTitle, context.l10n.tourSafeTitle];
+    final descriptions = [
+      context.l10n.tourAdaptiveDescription,
+      context.l10n.tourTeamDescription,
+      context.l10n.tourSafeDescription,
     ];
     return Center(child: ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 420),
       child: Column(children: [
         Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Flexible(child: Text('الخطوة ${_page + 1} من 3')),
+            Flexible(child: Text(context.l10n.tourStep(_page + 1, 3))),
             const SizedBox(width: 12),
-            TextButton(onPressed: _leaveTour, child: const Text('تخطي')),
+            TextButton(onPressed: _leaveTour, child: Text(context.l10n.skip)),
+            const LanguageMenuButton(),
           ])),
         Expanded(child: PageView.builder(controller: _controller, itemCount: 3,
           onPageChanged: _onTourPageChanged,
@@ -84,14 +85,14 @@ extension _WelcomePageContent on _WelcomeScreenState {
                   ? _WelcomeScreenState._blue : const Color(0xFFD9EBF0),
                   borderRadius: BorderRadius.circular(8))))),
             const SizedBox(height: 12),
-            _button(_page == 2 ? 'ابدأ' : 'التالي',
-              _page == 2 ? Icons.check : Icons.arrow_back, () {
+            _button(_page == 2 ? context.l10n.start : context.l10n.next,
+              _page == 2 ? Icons.check : Icons.arrow_forward, () {
                 if (_page == 2) { _leaveTour(); }
                 else { _movePage(1); }
               }),
             const SizedBox(height: 8),
             if (_page > 0) TextButton(onPressed: () => _movePage(-1),
-              child: const Text('السابق'))
+              child: Text(context.l10n.previous))
             else const SizedBox(height: 48),
           ])),
       ]),
@@ -122,17 +123,17 @@ extension _WelcomePageContent on _WelcomeScreenState {
           decoration: BoxDecoration(color: Colors.white,
             borderRadius: BorderRadius.circular(22),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 20)]),
-          child: const Column(mainAxisSize: MainAxisSize.min, children: [
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.account_circle, color: _WelcomeScreenState._blue, size: 54),
             SizedBox(height: 14), LinearProgressIndicator(value: .8),
-            SizedBox(height: 16), Text('استمع', style: TextStyle(color: _WelcomeScreenState._blue)),
+            SizedBox(height: 16), Text(context.l10n.listen, style: TextStyle(color: _WelcomeScreenState._blue)),
           ])), vertical: 2),
         Positioned(top: 8, right: 0, child: _artMotion(index, 2,
-          _label('قراءة صوتية', Icons.volume_up_outlined, toggle: true), horizontal: 2)),
+          _label(context.l10n.readAloud, Icons.volume_up_outlined, toggle: true), horizontal: 2)),
         Positioned(left: 0, top: 116, child: _artMotion(index, 3,
-          _label('ألوان هادئة', Icons.palette_outlined, toggle: true), horizontal: -2, vertical: 2)),
+          _label(context.l10n.calmColors, Icons.palette_outlined, toggle: true), horizontal: -2, vertical: 2)),
         Positioned(bottom: 8, right: 0, child: _artMotion(index, 4,
-          _label('رموز أكبر', Icons.text_fields, toggle: true), vertical: 3)),
+          _label(context.l10n.largerIcons, Icons.text_fields, toggle: true), vertical: 3)),
       ] else if (index == 1) ...[
         const Positioned.fill(child: IgnorePointer(child: CustomPaint(
           painter: _FamilyConnectionsPainter()))),
@@ -144,18 +145,18 @@ extension _WelcomePageContent on _WelcomeScreenState {
           child: const CircleAvatar(backgroundColor: _WelcomeScreenState._blue,
             child: Icon(Icons.person_outline, size: 46, color: Colors.white))),
         Positioned(top: 4, right: 8, width: 96,
-          child: _person('المعلم', Icons.school_outlined, _WelcomeScreenState._teal)),
+          child: _person(context.l10n.teacherLabel, Icons.school_outlined, _WelcomeScreenState._teal)),
         Positioned(top: 4, left: 8, width: 96,
-          child: _person('ولي الأمر', Icons.family_restroom, _WelcomeScreenState._blue)),
+          child: _person(context.l10n.parentLabel, Icons.family_restroom, _WelcomeScreenState._blue)),
         Positioned(top: 220, left: 126, width: 96,
-          child: _person('المختص', Icons.psychology_outlined, AppColors.brandGreenDeep)),
+          child: _person(context.l10n.specialistLabel, Icons.psychology_outlined, AppColors.brandGreenDeep)),
       ] else ...[
         _artMotion(index, 1, const Icon(Icons.verified_user,
           color: _WelcomeScreenState._blue, size: 142), vertical: 2, pulse: true),
         Positioned(bottom: 44, right: 0, child: _artMotion(index, 2,
-          _label('استراحة حركية', Icons.accessibility_new), horizontal: 2)),
+          _label(context.l10n.movementBreak, Icons.accessibility_new), horizontal: 2)),
         Positioned(bottom: 0, left: 0, child: _artMotion(index, 3,
-          _label('طوارئ', Icons.notifications_active_outlined, emergency: true), vertical: 2)),
+          _label(context.l10n.emergency, Icons.notifications_active_outlined, emergency: true), vertical: 2)),
       ],
     ]),
   );

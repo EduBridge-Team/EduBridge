@@ -10,7 +10,7 @@ Widget buildFormState({
   required File? idImage,
   required File? certificateFile,
   required bool loading,
-  required String? error,
+  required Object? error,
   required VoidCallback onPickId,
   required VoidCallback onCaptureId,
   required VoidCallback onRemoveId,
@@ -20,28 +20,28 @@ Widget buildFormState({
   required VoidCallback onSubmit,
 }) {
   return Scaffold(
-    appBar: JisrAppBar(title: 'توثيق الهوية'),
+    appBar: JisrAppBar(title: context.l10n.verifyIdentity),
     body: SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildInfoBanner(c, isTeacherOrSpecialist),
+          _buildInfoBanner(context, c, isTeacherOrSpecialist),
           const SizedBox(height: 20),
           TextField(
             controller: nationalIdCtrl,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'رقم الهوية *',
+            decoration: InputDecoration(
+              labelText: context.l10n.nationalIdLabel,
               prefixIcon: Icon(Icons.badge_outlined),
-              hintText: 'مثال: 1234567890',
+              hintText: context.l10n.nationalIdExample,
             ),
           ),
           const SizedBox(height: 16),
-          _buildFileCard(
+          _buildFileCard(context: context,
             c: c,
-            title: 'صورة الهوية *',
-            subtitle: 'jpg, png, webp — صورة واضحة للوجه الأمامي',
+            title: context.l10n.idPhotoLabel,
+            subtitle: context.l10n.idPhotoHint,
             icon: Icons.badge_outlined,
             color: AppColors.teal,
             file: idImage,
@@ -51,7 +51,7 @@ Widget buildFormState({
           ),
           if (isTeacherOrSpecialist) ...[
             const SizedBox(height: 16),
-            _buildCertificateSection(
+            _buildCertificateSection(context: context,
               c: c,
               titleCtrl: certificateTitleCtrl,
               file: certificateFile,
@@ -62,17 +62,17 @@ Widget buildFormState({
           ],
           const SizedBox(height: 20),
           if (error != null) ...[
-            _buildErrorBox(error),
+            _buildErrorBox(context, error),
             const SizedBox(height: 12),
           ],
-          _buildSubmitButton(loading: loading, onSubmit: onSubmit),
+          _buildSubmitButton(context: context,loading: loading, onSubmit: onSubmit),
         ],
       ),
     ),
   );
 }
 
-Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
+Widget _buildInfoBanner(BuildContext context, JisrColors c, bool isTeacherOrSpecialist) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -86,8 +86,8 @@ Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
         Expanded(
           child: Text(
             isTeacherOrSpecialist
-                ? 'مطلوب توثيق الهوية + رفع الشهادة العلمية لتفعيل صلاحياتك الكاملة.'
-                : 'لا يمكنك استخدام الصلاحيات الكاملة قبل توثيق هويتك.',
+                ? context.l10n.professionalVerificationRequired
+                : context.l10n.identityVerificationRequired,
             style: TextStyle(color: c.onTint, fontWeight: FontWeight.w800, height: 1.5),
           ),
         ),
@@ -97,6 +97,7 @@ Widget _buildInfoBanner(JisrColors c, bool isTeacherOrSpecialist) {
 }
 
 Widget _buildCertificateSection({
+  required BuildContext context,
   required JisrColors c,
   required TextEditingController titleCtrl,
   required File? file,
@@ -120,7 +121,7 @@ Widget _buildCertificateSection({
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'الشهادة العلمية *',
+                context.l10n.qualificationCertificateLabel,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.heading),
               ),
             ),
@@ -130,8 +131,8 @@ Widget _buildCertificateSection({
                 color: AppColors.orange.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'إلزامي',
+              child: Text(
+                context.l10n.required,
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.orangeDeep),
               ),
             ),
@@ -140,9 +141,9 @@ Widget _buildCertificateSection({
         const SizedBox(height: 12),
         TextField(
           controller: titleCtrl,
-          decoration: const InputDecoration(
-            labelText: 'عنوان الشهادة *',
-            hintText: 'مثال: بكالوريوس تربية خاصة',
+          decoration: InputDecoration(
+            labelText: context.l10n.certificateTitleLabel,
+            hintText: context.l10n.certificateTitleExample,
             prefixIcon: Icon(Icons.school),
             filled: true,
             fillColor: Colors.white,
@@ -158,7 +159,7 @@ Widget _buildCertificateSection({
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(backgroundColor: AppColors.orange, foregroundColor: Colors.white),
                     icon: const Icon(Icons.upload_file, size: 18),
-                    label: const Text('رفع من المعرض'),
+                    label: Text(context.l10n.uploadFromGallery),
                     onPressed: onPick,
                   ),
                 ),
@@ -173,7 +174,7 @@ Widget _buildCertificateSection({
                       side: const BorderSide(color: AppColors.orange, width: 1.5),
                     ),
                     icon: const Icon(Icons.camera_alt, size: 18),
-                    label: const Text('الكاميرا'),
+                    label: Text(context.l10n.camera),
                     onPressed: onCapture,
                   ),
                 ),
@@ -211,6 +212,7 @@ Widget _buildSelectedFileRow(JisrColors c, File file, VoidCallback onClear) {
 }
 
 Widget _buildFileCard({
+  required BuildContext context,
   required JisrColors c,
   required String title,
   required String subtitle,
@@ -254,7 +256,7 @@ Widget _buildFileCard({
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(backgroundColor: color, foregroundColor: Colors.white),
                     icon: const Icon(Icons.upload_file, size: 18),
-                    label: const Text('رفع من المعرض'),
+                    label: Text(context.l10n.uploadFromGallery),
                     onPressed: onPick,
                   ),
                 ),
@@ -270,7 +272,7 @@ Widget _buildFileCard({
                         side: BorderSide(color: color, width: 1.5),
                       ),
                       icon: const Icon(Icons.camera_alt, size: 18),
-                      label: const Text('الكاميرا'),
+                      label: Text(context.l10n.camera),
                       onPressed: onCapture,
                     ),
                   ),
@@ -323,7 +325,7 @@ Widget _buildFileCard({
   );
 }
 
-Widget _buildErrorBox(String error) {
+Widget _buildErrorBox(BuildContext context, Object error) {
   return Container(
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
@@ -335,13 +337,14 @@ Widget _buildErrorBox(String error) {
       children: [
         const Icon(Icons.error_outline, color: Colors.red),
         const SizedBox(width: 8),
-        Expanded(child: Text(error, style: const TextStyle(color: Colors.red))),
+        Expanded(child: Text(context.sharedMessage(error), style: const TextStyle(color: Colors.red))),
       ],
     ),
   );
 }
 
 Widget _buildSubmitButton({
+  required BuildContext context,
   required bool loading,
   required VoidCallback onSubmit,
 }) {
@@ -358,7 +361,7 @@ Widget _buildSubmitButton({
             )
           : const Icon(Icons.send),
       label: Text(
-        loading ? 'جارٍ الإرسال...' : 'حفظ وإرسال للتوثيق',
+        loading ? context.l10n.sendingAlt : context.l10n.submitVerification,
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
       ),
     ),

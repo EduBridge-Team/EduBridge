@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../app_icons.dart';
@@ -26,33 +27,33 @@ class _TeacherNavigationBarState extends State<TeacherNavigationBar> {
           return const SizedBox.shrink();
         }
         final destinations = role == 'teacher'
-            ? const [
+            ? [
                 NavigationDestination(
                   icon: Icon(Icons.people_outline),
                   selectedIcon: Icon(Icons.people),
-                  label: 'الأطفال',
+                  label: context.l10n.children,
                 ),
                 NavigationDestination(
                   icon: Icon(AppIcons.lesson),
                   selectedIcon: Icon(Icons.menu_book),
-                  label: 'الدروس',
+                  label: context.l10n.lessons,
                 ),
                 NavigationDestination(
                   icon: Icon(AppIcons.homework),
                   selectedIcon: Icon(Icons.assignment),
-                  label: 'الواجبات',
+                  label: context.l10n.homework,
                 ),
               ]
-            : const [
+            : [
                 NavigationDestination(
                   icon: Icon(Icons.people_outline),
                   selectedIcon: Icon(Icons.people),
-                  label: 'الطلاب',
+                  label: context.l10n.students,
                 ),
                 NavigationDestination(
                   icon: Icon(AppIcons.lesson),
                   selectedIcon: Icon(Icons.menu_book),
-                  label: 'الدروس',
+                  label: context.l10n.lessons,
                 ),
               ];
 

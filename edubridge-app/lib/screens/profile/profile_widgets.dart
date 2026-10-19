@@ -9,12 +9,12 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
         children: [
           const Icon(AppIcons.error, size: 64, color: AppColors.red),
           const SizedBox(height: 16),
-          Text(_error!,
+          Text(context.sharedMessage(_error),
               style: const TextStyle(color: AppColors.red, fontSize: 16)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             icon: const Icon(AppIcons.refresh),
-            label: const Text('إعادة المحاولة'),
+            label: Text(context.l10n.retryAction),
             onPressed: _load,
           ),
         ],
@@ -25,19 +25,19 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
   String _roleLabel(String role) {
     switch (role) {
       case 'parent':
-        return 'ولي أمر';
+        return context.l10n.parentRole;
       case 'teacher':
-        return 'معلّم';
+        return context.l10n.teacherRole;
       case 'specialist':
-        return 'مختص';
+        return context.l10n.specialistRole;
       case 'admin':
-        return 'أدمن';
+        return context.l10n.adminRole;
       case 'ministry':
-        return 'وزارة';
+        return context.l10n.ministryRole;
       case 'institution':
-        return 'مؤسسة';
+        return context.l10n.institutionRole;
       default:
-        return role.isEmpty ? 'مستخدم' : role;
+        return role.isEmpty ? context.l10n.user : role;
     }
   }
 }

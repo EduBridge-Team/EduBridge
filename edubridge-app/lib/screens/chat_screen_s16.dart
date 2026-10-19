@@ -12,13 +12,13 @@ extension _S16SpecialistChat on _ChatScreenState {
     switch (role.toLowerCase().trim()) {
       case 'parent':
       case 'guardian':
-        return 'ولي الأمر';
+        return context.l10n.parentLabel;
       case 'specialist':
-        return 'المختص';
+        return context.l10n.specialistLabel;
       case 'teacher':
-        return 'المعلم';
+        return context.l10n.teacherLabel;
       case 'admin':
-        return 'مدير النظام';
+        return context.l10n.administratorLabel;
       default:
         return role;
     }
@@ -30,14 +30,14 @@ extension _S16SpecialistChat on _ChatScreenState {
       titleSpacing: 4,
       centerTitle: false,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: () => Navigator.maybePop(context),
-        icon: const CircleAvatar(
+        icon: CircleAvatar(
           radius: 22,
           backgroundColor: Color(0x33FFFFFF),
           child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Icon(Icons.arrow_forward_rounded,
+            textDirection: Directionality.of(context),
+            child: Icon(Icons.arrow_back_rounded,
               color: Colors.white, size: 23),
           ),
         ),
@@ -51,7 +51,7 @@ extension _S16SpecialistChat on _ChatScreenState {
       ),
       actions: [
         IconButton(
-          tooltip: 'تحديث المحادثة',
+          tooltip: context.l10n.refreshConversation,
           onPressed: _loading ? null : _loadMessages,
           icon: const Icon(Icons.refresh_rounded,
             color: Colors.white, size: 25),
@@ -64,8 +64,8 @@ extension _S16SpecialistChat on _ChatScreenState {
   Widget _s16ConversationHeader() {
     final subject = widget.childName.trim();
     final label = subject.isEmpty
-        ? 'محادثة عامة'
-        : 'مناقشة حالة: $subject';
+        ? context.l10n.generalConversation
+        : context.l10n.caseDiscussionSubject(subject);
     final role = _s16RoleLabel(widget.otherUserRole);
     return Container(
       width: double.infinity,
@@ -145,8 +145,8 @@ extension _S16SpecialistChat on _ChatScreenState {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          'ابدأ المحادثة',
+        Text(
+          context.l10n.startConversation,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: _ink, fontSize: 20,
@@ -154,8 +154,8 @@ extension _S16SpecialistChat on _ChatScreenState {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          'أرسل أول رسالة وابدأ التواصل مباشرة.',
+        Text(
+          context.l10n.startConversationDescription,
           textAlign: TextAlign.center,
           style: TextStyle(color: _muted, fontSize: 14, height: 1.45),
         ),

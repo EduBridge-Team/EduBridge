@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/screens/verify_identity/verify_identity_screen.dart
 import 'dart:async';
 import 'dart:io';
@@ -23,7 +24,7 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
   File? _idImage;
   File? _certificateFile;
   bool _loading = false;
-  String? _error;
+  Object? _error;
   String? _verificationStatus;
   Timer? _timer;
   bool _isTeacherOrSpecialist = false;
@@ -111,20 +112,20 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen>
 
   Future<void> _submit() async {
     if (_nationalIdCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'رقم الهوية مطلوب');
+      setState(() => _error = SharedUiMessage.nationalIdRequired);
       return;
     }
     if (_idImage == null) {
-      setState(() => _error = 'صورة الهوية مطلوبة');
+      setState(() => _error = SharedUiMessage.idPhotoRequired);
       return;
     }
     if (_isTeacherOrSpecialist) {
       if (_certificateTitleCtrl.text.trim().isEmpty) {
-        setState(() => _error = 'عنوان الشهادة مطلوب');
+        setState(() => _error = SharedUiMessage.certificateTitleRequired);
         return;
       }
       if (_certificateFile == null) {
-        setState(() => _error = 'صورة الشهادة مطلوبة');
+        setState(() => _error = SharedUiMessage.certificatePhotoRequired);
         return;
       }
     }

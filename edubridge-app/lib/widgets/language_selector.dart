@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../l10n/generated/app_localizations.dart';
+import '../l10n/l10n.dart';
 import '../services/app_locale_controller.dart';
 
 Future<void> showLanguageSelector(BuildContext context) => showDialog<void>(
@@ -29,7 +29,7 @@ class _LanguageSelectorState extends State<_LanguageSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppLocalizations.of(context);
+    final strings = context.l10n;
     return AlertDialog(
       title: Text(strings.chooseLanguage),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -51,4 +51,20 @@ class _LanguageSelectorState extends State<_LanguageSelector> {
         child: Text(strings.cancel))],
     );
   }
+}
+
+/// Language remains reachable before sign-in, through the same menu convention.
+class LanguageMenuButton extends StatelessWidget {
+  const LanguageMenuButton({super.key, this.color});
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => PopupMenuButton<String>(
+    tooltip: context.l10n.moreOptions,
+    icon: Icon(Icons.menu_rounded, color: color),
+    onSelected: (_) => showLanguageSelector(context),
+    itemBuilder: (context) => [PopupMenuItem<String>(
+      value: 'language', child: Text(context.l10n.language),
+    )],
+  );
 }

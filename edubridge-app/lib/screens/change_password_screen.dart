@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/change_password_screen.dart
 import 'package:flutter/material.dart';
 import '../app_icons.dart';
@@ -21,7 +22,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
-  String? _error;
+  Object? _error;
 
   @override
   void dispose() {
@@ -45,8 +46,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم تغيير كلمة المرور بنجاح'),
+        SnackBar(
+          content: Text(context.l10n.passwordChanged),
           backgroundColor: AppColors.green,
         ),
       );
@@ -66,7 +67,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'تغيير كلمة المرور'),
+      appBar: JisrAppBar(title: context.l10n.changePassword),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -96,7 +97,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'حماية حسابك',
+                    context.l10n.protectAccount,
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: c.heading,
@@ -104,7 +105,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'اختر كلمة مرور قوية ومختلفة عن الحالية.',
+                    context.l10n.strongPasswordDescription,
                     textAlign: TextAlign.center,
                     style: textTheme.bodySmall?.copyWith(color: c.muted),
                   ),
@@ -116,7 +117,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               controller: _currentCtrl,
               obscureText: _obscureCurrent,
               decoration: InputDecoration(
-                labelText: 'كلمة المرور الحالية *',
+                labelText: context.l10n.currentPasswordRequiredLabel,
                 prefixIcon: const Icon(AppIcons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -129,7 +130,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'أدخل كلمة المرور الحالية';
+                if (v == null || v.isEmpty) return context.l10n.enterCurrentPassword;
                 return null;
               },
             ),
@@ -138,7 +139,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               controller: _newCtrl,
               obscureText: _obscureNew,
               decoration: InputDecoration(
-                labelText: 'كلمة المرور الجديدة *',
+                labelText: context.l10n.newPasswordRequiredLabel,
                 prefixIcon: const Icon(AppIcons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -150,10 +151,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'أدخل كلمة المرور الجديدة';
-                if (v.length < 6) return 'يجب أن تكون 6 أحرف على الأقل';
+                if (v == null || v.isEmpty) return context.l10n.enterNewPassword;
+                if (v.length < 6) return context.l10n.passwordSixMinimum;
                 if (v == _currentCtrl.text) {
-                  return 'يجب أن تختلف عن كلمة المرور الحالية';
+                  return context.l10n.passwordMustDiffer;
                 }
                 return null;
               },
@@ -163,7 +164,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               controller: _confirmCtrl,
               obscureText: _obscureConfirm,
               decoration: InputDecoration(
-                labelText: 'تأكيد كلمة المرور *',
+                labelText: context.l10n.confirmPasswordRequiredLabel,
                 prefixIcon: const Icon(AppIcons.check),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -176,8 +177,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'أكّد كلمة المرور';
-                if (v != _newCtrl.text) return 'كلمتا المرور غير متطابقتين';
+                if (v == null || v.isEmpty) return context.l10n.confirmPasswordPrompt;
+                if (v != _newCtrl.text) return context.l10n.passwordMismatch;
                 return null;
               },
             ),
@@ -195,7 +196,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        _error!,
+                        context.sharedMessage(_error),
                         style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.red,
                         ),
@@ -218,7 +219,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'يجب أن تكون كلمة المرور 6 أحرف على الأقل، ويُفضّل أن تحتوي على أرقام ورموز.',
+                      context.l10n.passwordSixHint,
                       style: textTheme.bodySmall?.copyWith(color: c.onTint),
                     ),
                   ),
@@ -242,7 +243,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ),
                       )
                     : const Icon(AppIcons.check),
-                label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ كلمة المرور'),
+                label: Text(_saving ? context.l10n.saving : context.l10n.savePassword),
                 onPressed: _saving ? null : _save,
               ),
             ),
