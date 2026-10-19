@@ -227,6 +227,10 @@ void main() {
       tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).onChanged(false);
       await tester.enterText(find.byType(TextField).at(0), 'ملاحظات أصلية');
       await tester.enterText(find.byType(TextField).at(1), 'تغيير أول\nتغيير ثان');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('Save evaluation').hitTestable(), 150,
+        scrollable: find.byType(Scrollable).first);
       await _tap(tester, find.text('Save evaluation'));
       expect(find.text('Could not save the evaluation'), findsOneWidget);
       expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed, isNotNull);
