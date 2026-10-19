@@ -141,6 +141,25 @@ void main() {
         return _response({'homework': {'id': 5}}, 201);
       }));
     });
+    testWidgets('$language empty publish result unlocks retry without losing draft', (tester) async {
+      final strings = await AppLocalizations.delegate.load(Locale(language));
+      var writes = 0;
+      await http.runWithClient(() async {
+        await _mount(tester, const CreateHomeworkScreen(
+          children: [{'id': 7, 'name': 'محمود'}], initialChildId: 7,
+          initialTitle: 'عنوان أصلي', initialDescription: 'وصف أصلي'), language);
+        await _tap(tester, find.text(strings.homeworkPublish));
+        await _scrollTo(tester, find.text(strings.homeworkPublishFailed));
+        expect(find.text(strings.homeworkPublishFailed), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        await _tap(tester, find.text(strings.homeworkPublish));
+        expect(writes, 2);
+      }, () => _client(write: (request) async {
+        writes++;
+        expect(request.body, contains('عنوان أصلي'));
+        return _response({'homework': null}, 201);
+      }));
+    });
     testWidgets('$language publishing without students explains required selection', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       await _mount(tester, const CreateHomeworkScreen(children: [], initialTitle: 'عنوان', initialDescription: 'وصف'), language);
