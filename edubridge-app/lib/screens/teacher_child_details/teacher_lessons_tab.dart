@@ -16,7 +16,7 @@ class _LessonsTabState extends State<_LessonsTab>
   List _lessons = [];
   Map<int, Map> _progressMap = {};
   bool _loading = true;
-  String? _error;
+  Object? _error;
 
   @override
   bool get wantKeepAlive => true;
@@ -46,7 +46,7 @@ class _LessonsTabState extends State<_LessonsTab>
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('تمت إضافة الدرس لـ ${widget.childName}'),
+        content: Text(context.l10n.studentLessonAdded(widget.childName)),
         backgroundColor: AppColors.green,
       ),
     );
@@ -86,7 +86,7 @@ class _LessonsTabState extends State<_LessonsTab>
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الدروس';
+        _error = SharedUiMessage.lessonsLoadFailed;
         _loading = false;
       });
     }
@@ -101,15 +101,15 @@ class _LessonsTabState extends State<_LessonsTab>
   ({String label, Color color, IconData icon}) _statusInfo(String status) {
     switch (status) {
       case 'done':
-        return (label: 'مكتمل', color: AppColors.green, icon: AppIcons.check);
+        return (label: context.l10n.completedStatus, color: AppColors.green, icon: AppIcons.check);
       case 'in_progress':
         return (
-          label: 'قيد التنفيذ',
+          label: context.l10n.inProgress,
           color: AppColors.orange,
           icon: AppIcons.refresh,
         );
       default:
-        return (label: 'لم يبدأ', color: AppColors.muted, icon: AppIcons.clock);
+        return (label: context.l10n.studentLessonNotStarted, color: AppColors.muted, icon: AppIcons.clock);
     }
   }
 
@@ -173,7 +173,7 @@ class _LessonsTabState extends State<_LessonsTab>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'إجمالي الدروس: $total',
+                  context.l10n.studentLessonTotal(total),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -181,10 +181,10 @@ class _LessonsTabState extends State<_LessonsTab>
                   ),
                 ),
                 const SizedBox(height: 8),
-                _summaryRow('مكتمل', _doneCount, AppColors.brandGreen),
-                _summaryRow('قيد التنفيذ', _inProgressCount,
+                _summaryRow(context.l10n.completedStatus, _doneCount, AppColors.brandGreen),
+                _summaryRow(context.l10n.inProgress, _inProgressCount,
                     Colors.white.withValues(alpha: 0.9)),
-                _summaryRow('لم يبدأ', _notStartedCount,
+                _summaryRow(context.l10n.studentLessonNotStarted, _notStartedCount,
                     Colors.white.withValues(alpha: 0.85)),
               ],
             ),
@@ -199,8 +199,8 @@ class _LessonsTabState extends State<_LessonsTab>
       padding: const EdgeInsets.only(bottom: 2),
       child: Row(
         children: [
-          Text(label, style: TextStyle(color: color, fontSize: 13)),
-          const Spacer(),
+          Expanded(child: Text(label, style: TextStyle(color: color, fontSize: 13))),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
             decoration: BoxDecoration(
@@ -259,7 +259,9 @@ class _LessonsTabState extends State<_LessonsTab>
                         color: c.heading,
                       )),
                   const SizedBox(height: 3),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -293,7 +295,7 @@ class _LessonsTabState extends State<_LessonsTab>
                   if (completedAt != null && completedAt.isNotEmpty) ...[
                     const SizedBox(height: 3),
                     Text(
-                      'أُكمل: ${_formatDate(completedAt)}',
+                      context.l10n.studentLessonCompletedAt(_formatDate(completedAt)),
                       style: TextStyle(fontSize: 11, color: c.muted),
                     ),
                   ],
@@ -309,7 +311,7 @@ class _LessonsTabState extends State<_LessonsTab>
   String _formatDate(String raw) {
     try {
       final d = DateTime.parse(raw.replaceFirst(' ', 'T'));
-      return '${d.day}/${d.month}/${d.year}';
+      return MaterialLocalizations.of(context).formatMediumDate(d);
     } catch (_) {
       return raw;
     }

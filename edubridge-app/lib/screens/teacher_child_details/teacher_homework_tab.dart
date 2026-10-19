@@ -15,7 +15,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
     with AutomaticKeepAliveClientMixin {
   List<Homework> _homeworks = [];
   bool _loading = true;
-  String? _error;
+  Object? _error;
   String _filter = 'all';
 
   @override
@@ -46,7 +46,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الواجبات';
+        _error = SharedUiMessage.homeworksLoadFailed;
         _loading = false;
       });
     }
@@ -121,7 +121,7 @@ class _HomeworkTabState extends State<_HomeworkTab>
         submission: submission,
       ),
     );
-    if (result == true) _load();
+    if (result == true && mounted) _load();
   }
 
   @override
@@ -140,16 +140,16 @@ class _HomeworkTabState extends State<_HomeworkTab>
                   child: _buildBody(),
                 ),
               ),
-              Positioned(
-                left: 16,
+              PositionedDirectional(
+                start: 16,
                 bottom: 24 + bottomInset,
                 child: FloatingActionButton.extended(
                   heroTag: 'create-homework-${widget.childId}',
                   onPressed: _createHomework,
                   icon: const Icon(AppIcons.add),
-                  label: const Text(
-                    'إنشاء واجب',
-                    style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+                  label: Text(
+                    context.l10n.createHomework,
+                    style: const TextStyle(fontWeight: FontWeight.w800, height: 1.15),
                   ),
                 ),
               ),

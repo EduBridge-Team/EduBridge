@@ -3945,5 +3945,248 @@
   "followupRefresh": "Refresh suggestions",
   "@followupRefresh": {
     "description": "Specialist follow-up suggestions interface."
+  },
+  "studentHomeworkTab": "Student homework",
+  "@studentHomeworkTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonsTab": "Student lessons",
+  "@studentLessonsTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentReportsTab": "Student reports",
+  "@studentReportsTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentCaseTab": "Student case",
+  "@studentCaseTab": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPendingFilter": "Not submitted",
+  "@homeworkPendingFilter": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkChildEmpty": "No homework for this child",
+  "@homeworkChildEmpty": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFilterEmpty": "No homework in this category",
+  "@homeworkFilterEmpty": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkOverduePending": "Overdue — not submitted",
+  "@homeworkOverduePending": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNotSubmittedYet": "Not submitted yet",
+  "@homeworkNotSubmittedYet": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkAwaitingGrade": "Awaiting grading",
+  "@homeworkAwaitingGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubmittedLate": "Submitted late",
+  "@homeworkSubmittedLate": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubmittedOnTime": "Submitted on time",
+  "@homeworkSubmittedOnTime": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkStudentAnswer": "Student answer:",
+  "@homeworkStudentAnswer": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeValue": "Grade: {grade}/100",
+  "@homeworkGradeValue": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkFeedbackValue": "Your feedback: {feedback}",
+  "@homeworkFeedbackValue": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "feedback": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkStudentNotSubmitted": "The student has not submitted yet",
+  "@homeworkStudentNotSubmitted": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeAction": "Grade answer",
+  "@homeworkGradeAction": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkEditGrade": "Edit grade",
+  "@homeworkEditGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeRequired": "Grade is required",
+  "@homeworkGradeRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeRange": "Grade must be between 0 and 100",
+  "@homeworkGradeRange": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeSaved": "Grade saved and sent to the student",
+  "@homeworkGradeSaved": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeSaveFailed": "Could not save the grade",
+  "@homeworkGradeSaveFailed": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeTitle": "Grade: {title}",
+  "@homeworkGradeTitle": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "homeworkGradeField": "Grade (0–100) *",
+  "@homeworkGradeField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkGradeHint": "Example: 85",
+  "@homeworkGradeHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFeedbackOptional": "Feedback for the student (optional)",
+  "@homeworkFeedbackOptional": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkFeedbackHint": "Example: Great work; review the second point",
+  "@homeworkFeedbackHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSaveGrade": "Save grade",
+  "@homeworkSaveGrade": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNoTextAnswer": "— No written answer —",
+  "@homeworkNoTextAnswer": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkNew": "New homework",
+  "@homeworkNew": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublishing": "Publishing...",
+  "@homeworkPublishing": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublish": "Publish homework",
+  "@homeworkPublish": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkTitleField": "Homework title *",
+  "@homeworkTitleField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkTitleRequired": "Title is required",
+  "@homeworkTitleRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkDescriptionField": "Description *",
+  "@homeworkDescriptionField": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkDescriptionRequired": "Description is required",
+  "@homeworkDescriptionRequired": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubjectOptional": "Subject (optional)",
+  "@homeworkSubjectOptional": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkSubjectHint": "Example: Mathematics",
+  "@homeworkSubjectHint": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkAssignCount": "Assign to students ({count} selected):",
+  "@homeworkAssignCount": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeworkUploadAttachment": "Upload attachment",
+  "@homeworkUploadAttachment": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkChooseStudent": "Select at least one student",
+  "@homeworkChooseStudent": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublished": "Homework published successfully",
+  "@homeworkPublished": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkPublishFailed": "Could not publish homework",
+  "@homeworkPublishFailed": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonAdded": "Lesson added for {name}",
+  "@studentLessonAdded": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentLessonTotal": "Total lessons: {total}",
+  "@studentLessonTotal": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "studentLessonCompletedAt": "Completed: {date}",
+  "@studentLessonCompletedAt": {
+    "description": "Teacher student details and homework interface.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "studentNoLessons": "No lessons available for this child",
+  "@studentNoLessons": {
+    "description": "Teacher student details and homework interface."
+  },
+  "studentLessonDetails": "Lesson details",
+  "@studentLessonDetails": {
+    "description": "Teacher student details and homework interface."
+  },
+  "homeworkRemoveAttachment": "Remove attachment",
+  "@homeworkRemoveAttachment": {
+    "description": "Teacher student details and homework interface."
+  },
+  "savingGrade": "Saving...",
+  "@savingGrade": {
+    "description": "Teacher interface label."
+  },
+  "studentLessonNotStarted": "Not started",
+  "@studentLessonNotStarted": {
+    "description": "Teacher interface label."
+  },
+  "homeworkDueDateLabel": "Due date",
+  "@homeworkDueDateLabel": {
+    "description": "Teacher student details and homework interface."
   }
 }

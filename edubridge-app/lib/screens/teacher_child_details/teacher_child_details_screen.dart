@@ -1,5 +1,4 @@
 import '../../l10n/l10n.dart';
-import '../../utils/presentation_text.dart';
 // lib/screens/teacher_child_details/teacher_child_details_screen.dart
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
@@ -43,11 +42,11 @@ class TeacherChildDetailsScreen extends StatefulWidget {
 class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
   late int _selectedTab;
 
-  static const _tabTitles = [
-    'واجبات الطالب',
-    'دروس الطالب',
-    'تقارير الطالب',
-    'حالة الطالب',
+  List<String> get _tabTitles => [
+    context.l10n.studentHomeworkTab,
+    context.l10n.studentLessonsTab,
+    context.l10n.studentReportsTab,
+    context.l10n.studentCaseTab,
   ];
 
   @override
@@ -76,7 +75,9 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BrandAppBar(
-        toolbarHeight: 78,
+        toolbarHeight: ((MediaQuery.textScalerOf(context).scale(20) +
+                MediaQuery.textScalerOf(context).scale(12.5)) * 1.5 + 12)
+            .clamp(78.0, double.infinity).toDouble(),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -94,6 +95,8 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
             const SizedBox(height: 3),
             Text(
               _tabTitles[_selectedTab],
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w500,
@@ -105,7 +108,7 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
         actions: [
           IconButton(
             onPressed: _askNoorAboutStudent,
-            tooltip: 'اسأل نور عن هذا الطالب',
+            tooltip: context.l10n.askNoorAboutStudent,
             icon: const Icon(Icons.auto_awesome_rounded),
           ),
           const SizedBox(width: 6),
@@ -136,26 +139,26 @@ class _TeacherChildDetailsScreenState extends State<TeacherChildDetailsScreen> {
           ? NavigationBar(
               selectedIndex: _selectedTab,
               onDestinationSelected: _selectTab,
-              destinations: const [
+              destinations: [
                 NavigationDestination(
-                  icon: Icon(AppIcons.homework),
-                  selectedIcon: Icon(Icons.assignment),
-                  label: 'الواجبات',
+                  icon: const Icon(AppIcons.homework),
+                  selectedIcon: const Icon(Icons.assignment),
+                  label: context.l10n.homeworks,
                 ),
                 NavigationDestination(
-                  icon: Icon(AppIcons.lesson),
-                  selectedIcon: Icon(Icons.menu_book),
-                  label: 'الدروس',
+                  icon: const Icon(AppIcons.lesson),
+                  selectedIcon: const Icon(Icons.menu_book),
+                  label: context.l10n.lessons,
                 ),
                 NavigationDestination(
-                  icon: Icon(AppIcons.report),
-                  selectedIcon: Icon(Icons.description),
-                  label: 'التقارير',
+                  icon: const Icon(AppIcons.report),
+                  selectedIcon: const Icon(Icons.description),
+                  label: context.l10n.reports,
                 ),
                 NavigationDestination(
-                  icon: Icon(AppIcons.forum),
-                  selectedIcon: Icon(Icons.forum),
-                  label: 'الحالة',
+                  icon: const Icon(AppIcons.forum),
+                  selectedIcon: const Icon(Icons.forum),
+                  label: context.l10n.status,
                 ),
               ],
             )

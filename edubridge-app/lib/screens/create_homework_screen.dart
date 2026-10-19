@@ -5,6 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+import '../utils/locale_form_validation.dart';
+import '../widgets/disability/disability_display.dart';
 import '../utils/safe_bottom.dart';
 part 'create_homework_view.dart';
 
@@ -30,10 +33,13 @@ class CreateHomeworkScreen extends StatefulWidget {
   State<CreateHomeworkScreen> createState() => _CreateHomeworkScreenState();
 }
 
-class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
+class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> with LocaleFormValidation<CreateHomeworkScreen> {
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  GlobalKey<FormState> get validationFormKey => _formKey;
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _subjectCtrl = TextEditingController();
@@ -42,7 +48,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
   final Set<int> _selectedChildIds = {};
   final List<File> _attachments = [];
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   final _picker = ImagePicker();
 
@@ -68,7 +74,7 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
 
   Future<void> _pickAttachment() async {
     final file = await _picker.pickMedia();
-    if (file != null) {
+    if (file != null && mounted) {
       setState(() => _attachments.add(File(file.path)));
     }
   }
@@ -80,13 +86,15 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 90)),
     );
-    if (picked != null) setState(() => _dueDate = picked);
+    if (picked != null && mounted) {
+      setState(() => _dueDate = picked);
+    }
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
     if (_selectedChildIds.isEmpty) {
-      setState(() => _error = 'اختر طالباً واحداً على الأقل');
+      setState(() => _error = SharedUiMessage.homeworkChooseStudent);
       return;
     }
 
@@ -109,15 +117,21 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
 
       if (!mounted) return;
       if (result != null) {
-        Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم نشر الواجب بنجاح'),
+          SnackBar(
+            content: Text(context.l10n.homeworkPublished),
             backgroundColor: AppColors.green,
           ),
         );
+        Navigator.pop(context, true);
+      } else {
+        setState(() {
+          _error = SharedUiMessage.homeworkPublishFailed;
+          _saving = false;
+        });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _saving = false;

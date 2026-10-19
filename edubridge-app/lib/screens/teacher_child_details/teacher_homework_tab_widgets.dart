@@ -5,15 +5,14 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
+      child: Wrap(
+        spacing: 6,
+        runSpacing: 6,
         children: [
-          _filterChip('الكل', 'all', _homeworks.length, AppColors.brandBlue),
-          const SizedBox(width: 6),
-          _filterChip('لم يُسلَّم', 'pending', _pendingCount, AppColors.orange),
-          const SizedBox(width: 6),
-          _filterChip('للتصحيح', 'submitted', _submittedCount, AppColors.brandTeal),
-          const SizedBox(width: 6),
-          _filterChip('مُصحّح', 'graded', _gradedCount, AppColors.green),
+          _filterChip(context.l10n.all, 'all', _homeworks.length, AppColors.brandBlue),
+          _filterChip(context.l10n.homeworkPendingFilter, 'pending', _pendingCount, AppColors.orange),
+          _filterChip(context.l10n.toGrade, 'submitted', _submittedCount, AppColors.brandTeal),
+          _filterChip(context.l10n.graded, 'graded', _gradedCount, AppColors.green),
         ],
       ),
     );
@@ -21,55 +20,12 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
 
   Widget _filterChip(String label, String value, int count, Color color) {
     final selected = _filter == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _updateHomeworkState(() => _filter = value),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          decoration: BoxDecoration(
-            color: selected
-                ? color.withValues(alpha: 0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: selected ? color : Colors.grey.shade300,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.bold,
-                  color: selected ? color : Colors.grey.shade600,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 3),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                decoration: BoxDecoration(
-                  color: selected ? color : Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '$count',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return ChoiceChip(
+      selected: selected,
+      label: Text('$label ($count)'),
+      selectedColor: color.withValues(alpha: 0.15),
+      labelStyle: TextStyle(color: selected ? color : JisrColors.of(context).muted),
+      onSelected: (_) => _updateHomeworkState(() => _filter = value),
     );
   }
 
@@ -83,12 +39,12 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
           children: [
             const Icon(AppIcons.error, size: 64, color: AppColors.red),
             const SizedBox(height: 16),
-            Text(_error!,
+            Text(context.sharedMessage(_error),
                 style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ],
@@ -108,8 +64,9 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
           Center(
             child: Text(
               _homeworks.isEmpty
-                  ? 'لا توجد واجبات لهذا الطفل'
-                  : 'لا توجد واجبات في هذا التصنيف',
+                  ? context.l10n.homeworkChildEmpty
+                  : context.l10n.homeworkFilterEmpty,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
                 color: JisrColors.of(context).muted,
@@ -141,20 +98,20 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
     if (isPending) {
       if (isOverdue) {
         statusColor = AppColors.red;
-        statusLabel = 'متأخر — لم يُسلَّم';
+        statusLabel = context.l10n.homeworkOverduePending;
         statusIcon = AppIcons.warning;
       } else {
         statusColor = AppColors.orange;
-        statusLabel = 'لم يُسلَّم بعد';
+        statusLabel = context.l10n.homeworkNotSubmittedYet;
         statusIcon = AppIcons.clock;
       }
     } else if (isGraded) {
       statusColor = AppColors.green;
-      statusLabel = 'مُصحّح';
+      statusLabel = context.l10n.graded;
       statusIcon = AppIcons.check;
     } else {
       statusColor = AppColors.brandTeal;
-      statusLabel = 'بانتظار التصحيح';
+      statusLabel = context.l10n.homeworkAwaitingGrade;
       statusIcon = AppIcons.clock;
     }
 
@@ -202,7 +159,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
             ),
           ),
         ),
-        Container(
+        Flexible(child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: statusColor.withValues(alpha: 0.15),
@@ -213,47 +170,40 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
             children: [
               Icon(statusIcon, size: 14, color: statusColor),
               const SizedBox(width: 4),
-              Text(
+              Flexible(child: Text(
                 statusLabel,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   color: statusColor,
                 ),
-              ),
+              )),
             ],
           ),
-        ),
+        )),
       ],
     );
   }
 
   Widget _buildMetaRow(Homework hw, bool isOverdue, JisrColors c) {
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Icon(
-          AppIcons.calendar,
-          size: 15,
-          color: isOverdue ? AppColors.red : c.muted,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          'التسليم: ${hw.dueDate.day}/${hw.dueDate.month}/${hw.dueDate.year}',
-          style: TextStyle(
-            fontSize: 12,
-            color: isOverdue ? AppColors.red : c.muted,
-            fontWeight: isOverdue ? FontWeight.bold : null,
-          ),
-        ),
-        if (hw.subject != null && hw.subject!.isNotEmpty) ...[
-          const SizedBox(width: 12),
-          const Icon(AppIcons.lesson, size: 15, color: AppColors.brandBlue),
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(AppIcons.calendar, size: 15, color: isOverdue ? AppColors.red : c.muted),
           const SizedBox(width: 4),
-          Text(
-            hw.subject!,
-            style: const TextStyle(fontSize: 12, color: AppColors.brandBlue),
-          ),
-        ],
+          Flexible(child: Text(context.l10n.homeworkDueDate(MaterialLocalizations.of(context).formatMediumDate(hw.dueDate)),
+          style: TextStyle(fontSize: 12, color: isOverdue ? AppColors.red : c.muted,
+            fontWeight: isOverdue ? FontWeight.bold : null))),
+        ]),
+        if (hw.subject != null && hw.subject!.isNotEmpty)
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(AppIcons.lesson, size: 15, color: AppColors.brandBlue),
+            const SizedBox(width: 4),
+            Flexible(child: Text(hw.subject!, style: const TextStyle(fontSize: 12, color: AppColors.brandBlue))),
+          ]),
       ],
     );
   }
@@ -276,7 +226,10 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Icon(
                 submission.isLate ? AppIcons.clock : AppIcons.check,
@@ -285,17 +238,15 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
               ),
               const SizedBox(width: 6),
               Text(
-                submission.isLate ? 'سُلِّم متأخراً' : 'سُلِّم في الوقت',
+                submission.isLate ? context.l10n.homeworkSubmittedLate : context.l10n.homeworkSubmittedOnTime,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: submission.isLate ? AppColors.orange : AppColors.green,
                 ),
               ),
-              const Spacer(),
               Text(
-                '${submission.submittedAt.day}/${submission.submittedAt.month} '
-                '${PresentationText.clock(submission.submittedAt)}',
+                '${MaterialLocalizations.of(context).formatShortDate(submission.submittedAt)} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(submission.submittedAt))}',
                 style: TextStyle(fontSize: 11, color: c.muted),
               ),
             ],
@@ -303,7 +254,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
           if (submission.textAnswer != null &&
               submission.textAnswer!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text('إجابة الطالب:',
+            Text(context.l10n.homeworkStudentAnswer,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -320,14 +271,14 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
                 const Icon(AppIcons.starFilled,
                     color: AppColors.yellow, size: 18),
                 const SizedBox(width: 4),
-                Text(
-                  'الدرجة: ${submission.grade}/100',
+                Expanded(child: Text(
+                  context.l10n.homeworkGradeValue(submission.grade.toString()),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: AppColors.greenDeep,
                   ),
-                ),
+                )),
               ],
             ),
           ],
@@ -335,7 +286,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
               submission.feedback!.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
-              'ملاحظتك: ${submission.feedback}',
+              context.l10n.homeworkFeedbackValue(submission.feedback!),
               style: TextStyle(
                 fontSize: 12,
                 color: c.body,
@@ -368,7 +319,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
             minimumSize: const Size(0, 44),
           ),
           icon: const Icon(AppIcons.notifications, size: 18),
-          label: const Text('لم يقم الطالب بالتسليم بعد'),
+          label: Text(context.l10n.homeworkStudentNotSubmitted),
           onPressed: null,
         ),
       );
@@ -383,9 +334,9 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
             minimumSize: const Size(0, 46),
           ),
           icon: const Icon(AppIcons.grade, size: 20),
-          label: const Text(
-            'تصحيح الحل',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          label: Text(
+            context.l10n.homeworkGradeAction,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           onPressed: () => _openGradeSheet(hw, submission!),
         ),
@@ -399,7 +350,7 @@ extension _HomeworkTabWidgets on _HomeworkTabState {
           minimumSize: const Size(0, 44),
         ),
         icon: const Icon(AppIcons.edit, size: 18),
-        label: const Text('تعديل التصحيح'),
+        label: Text(context.l10n.homeworkEditGrade),
         onPressed: () => _openGradeSheet(hw, submission!),
       ),
     );

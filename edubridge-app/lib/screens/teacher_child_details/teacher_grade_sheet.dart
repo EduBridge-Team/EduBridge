@@ -18,7 +18,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
   final _gradeCtrl = TextEditingController();
   final _feedbackCtrl = TextEditingController();
   bool _saving = false;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -41,12 +41,12 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
   Future<void> _save() async {
     final gradeText = _gradeCtrl.text.trim();
     if (gradeText.isEmpty) {
-      setState(() => _error = 'الدرجة مطلوبة');
+      setState(() => _error = SharedUiMessage.homeworkGradeRequired);
       return;
     }
     final grade = int.tryParse(gradeText);
     if (grade == null || grade < 0 || grade > 100) {
-      setState(() => _error = 'الدرجة يجب أن تكون بين 0 و 100');
+      setState(() => _error = SharedUiMessage.homeworkGradeRange);
       return;
     }
 
@@ -67,16 +67,16 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
       if (!mounted) return;
 
       if (ok) {
-        Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ التصحيح وإرساله للطالب'),
+          SnackBar(
+            content: Text(context.l10n.homeworkGradeSaved),
             backgroundColor: AppColors.green,
           ),
         );
+        Navigator.pop(context, true);
       } else {
         setState(() {
-          _error = 'فشل حفظ التصحيح';
+          _error = SharedUiMessage.homeworkGradeSaveFailed;
           _saving = false;
         });
       }
@@ -113,7 +113,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'تصحيح: ${widget.homework.title}',
+                      context.l10n.homeworkGradeTitle(widget.homework.title),
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -123,6 +123,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                   ),
                   IconButton(
                     icon: const Icon(AppIcons.close),
+                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -133,21 +134,21 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
               TextField(
                 controller: _gradeCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'الدرجة (0-100) *',
-                  prefixIcon: Icon(AppIcons.starFilled),
-                  hintText: 'مثال: 85',
+                decoration: InputDecoration(
+                  labelText: context.l10n.homeworkGradeField,
+                  prefixIcon: const Icon(AppIcons.starFilled),
+                  hintText: context.l10n.homeworkGradeHint,
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _feedbackCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'ملاحظتك للطالب (اختياري)',
-                  prefixIcon: Icon(AppIcons.chat),
+                decoration: InputDecoration(
+                  labelText: context.l10n.homeworkFeedbackOptional,
+                  prefixIcon: const Icon(AppIcons.chat),
                   alignLabelWithHint: true,
-                  hintText: 'مثال: عمل ممتاز، لكن راجع النقطة الثانية',
+                  hintText: context.l10n.homeworkFeedbackHint,
                 ),
               ),
               if (_error != null) ...[
@@ -159,7 +160,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    _error!,
+                    context.sharedMessage(_error),
                     style: const TextStyle(color: AppColors.red, fontSize: 13),
                   ),
                 ),
@@ -173,7 +174,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 48),
                       ),
-                      child: const Text('إلغاء'),
+                      child: Text(context.l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -196,7 +197,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
                             )
                           : const Icon(AppIcons.check),
                       label: Text(
-                        _saving ? 'جارٍ الحفظ...' : 'حفظ التصحيح',
+                        _saving ? context.l10n.savingGrade : context.l10n.homeworkSaveGrade,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
@@ -225,7 +226,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'إجابة الطالب:',
+            context.l10n.homeworkStudentAnswer,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
@@ -241,7 +242,7 @@ class _GradeHomeworkSheetState extends State<_GradeHomeworkSheet> {
             )
           else
             Text(
-              '— لم يكتب إجابة نصية —',
+              context.l10n.homeworkNoTextAnswer,
               style: TextStyle(
                 fontSize: 13,
                 color: c.muted,
