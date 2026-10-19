@@ -98,7 +98,7 @@ extension _LessonsTabStateView on _LessonsTabState {
             icon: const Icon(AppIcons.add),
             label: Text(
               context.l10n.addLesson,
-              style: TextStyle(fontWeight: FontWeight.w800, height: 1.15),
+              style: const TextStyle(fontWeight: FontWeight.w800, height: 1.15),
             ),
           ),
         ),
