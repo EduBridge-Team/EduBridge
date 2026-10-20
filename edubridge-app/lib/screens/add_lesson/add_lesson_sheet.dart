@@ -151,7 +151,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
       setState(() => _error = _LessonError.titleRequired);
       return;
     }
-    if (_target == LessonTarget.specificChildren && _selectedChildIds.isEmpty) {
+    if (!_forParents &&
+        _target == LessonTarget.specificChildren &&
+        _selectedChildIds.isEmpty) {
       setState(() => _error = _LessonError.studentsRequired);
       return;
     }
@@ -179,7 +181,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? null
             : _audioDescriptionCtrl.text.trim(),
         targetType: targetType,
-        targetChildIds: _target == LessonTarget.specificChildren
+        targetChildIds: !_forParents && _target == LessonTarget.specificChildren
             ? _selectedChildIds.toList()
             : null,
       );

@@ -112,11 +112,28 @@ void main() {
         }, () => _client());
       });
     }
+    testWidgets('$language parent audience does not retain a student-only target', (tester) async {
+      final strings = await AppLocalizations.delegate.load(Locale(language));
+      final writes = <http.Request>[];
+      await http.runWithClient(() async {
+        await _mount(tester, Scaffold(body: AddLessonSheet(types: const [], fullScreen: true,
+          onClose: () {}, onCreated: (_) {})), language, 1);
+        await tester.enterText(find.byType(TextField).first, 'درس للأسرة');
+        await _tap(tester, find.text(strings.lessonSpecificStudents));
+        await _tap(tester, find.text(strings.lessonForParents));
+        await _tap(tester, find.text(strings.lessonSave));
+        final body = utf8.decode(writes.single.bodyBytes);
+        expect(body, contains('parents'));
+        expect(body, contains('درس للأسرة'));
+        expect(body, isNot(contains('target_child_ids')));
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+      }, () => _client(writes: writes));
+    });
     testWidgets('$language browsing empty and error states', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       await http.runWithClient(() async {
         await _mount(tester, const LessonsScreen(), language, 1);
-        expect(find.text(strings.lessonEmpty), findsOneWidget);
+        expect(find.text(strings.noLessonsYet), findsOneWidget);
       }, () => _client(empty: true));
       await tester.pumpWidget(const SizedBox.shrink());
       await http.runWithClient(() async {
