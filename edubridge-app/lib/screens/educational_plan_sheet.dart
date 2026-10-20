@@ -1,8 +1,11 @@
 // lib/screens/educational_plan_sheet.dart
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+
+enum _PlanError { empty, load }
 
 class EducationalPlanSheet extends StatefulWidget {
   final Map child;
@@ -16,7 +19,7 @@ class EducationalPlanSheet extends StatefulWidget {
 class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
   Map? _evaluation;
   bool _loading = true;
-  String? _error;
+  _PlanError? _error;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
 
     try {
       final evaluations = await ApiService.getChildEvaluations(widget.child['id']);
+      if (!mounted) return;
       if (evaluations.isNotEmpty) {
         setState(() {
           _evaluation = evaluations.last;
@@ -39,13 +43,14 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
         });
       } else {
         setState(() {
-          _error = 'لا يوجد تقييم مسجل لهذا الطفل';
+          _error = _PlanError.empty;
           _loading = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل التقييم';
+        _error = _PlanError.load;
         _loading = false;
       });
     }
@@ -71,7 +76,9 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                       children: [
                         Icon(AppIcons.error, size: 48, color: c.muted),
                         const SizedBox(height: 12),
-                        Text(_error!, style: TextStyle(color: c.muted)),
+                        Text(_error == _PlanError.empty
+                            ? context.l10n.planEvaluationMissing
+                            : context.l10n.planEvaluationFailed, style: TextStyle(color: c.muted)),
                       ],
                     ),
                   )
@@ -85,7 +92,7 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'الخطة التعليمية - ${widget.child['name'] ?? ''}',
+                              context.l10n.planChildTitle((widget.child['name'] ?? '').toString()),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -94,6 +101,7 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                             ),
                           ),
                           IconButton(
+                            tooltip: context.l10n.close,
                             icon: const Icon(AppIcons.close),
                             onPressed: () => Navigator.pop(context),
                           ),
@@ -115,49 +123,49 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                                 const Icon(AppIcons.info,
                                     color: AppColors.brandBlue, size: 20),
                                 const SizedBox(width: 6),
-                                const Text(
-                                  'ملخص التقييم',
+                                Expanded(child: Text(
+                                  context.l10n.planEvaluationSummary,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                ),
+                                )),
                               ],
                             ),
                             const SizedBox(height: 8),
                             if (_evaluation?['recommendations'] != null)
-                              Text('التوصيات: ${_evaluation?['recommendations']}'),
+                              Text(context.l10n.planRecommendationsValue(_evaluation!['recommendations'].toString())),
                             if (_evaluation?['educational_plan'] != null) ...[
                               const SizedBox(height: 8),
-                              Text('الخطة: ${_evaluation?['educational_plan']}'),
+                              Text(context.l10n.planContentValue(_evaluation!['educational_plan'].toString())),
                             ],
                           ],
                         ),
                       ),
                       const SizedBox(height: 16),
 
-                      const Text(
-                        'التقييمات التفصيلية',
+                      Text(
+                        context.l10n.planDetailedEvaluations,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _detailRow(AppIcons.cognitive, 'المعرفي',
+                      _detailRow(AppIcons.cognitive, context.l10n.planCognitive,
                           _evaluation?['cognitive_assessment']),
-                      _detailRow(AppIcons.motor, 'الحركي',
+                      _detailRow(AppIcons.motor, context.l10n.planMotor,
                           _evaluation?['motor_assessment']),
-                      _detailRow(AppIcons.speech, 'العاطفي',
+                      _detailRow(AppIcons.speech, context.l10n.planEmotional,
                           _evaluation?['emotional_assessment']),
-                      _detailRow(AppIcons.users, 'الاجتماعي',
+                      _detailRow(AppIcons.users, context.l10n.planSocial,
                           _evaluation?['social_assessment']),
 
                       const SizedBox(height: 16),
 
                       if (_evaluation?['teaching_methods'] != null) ...[
-                        const Text(
-                          'طرق التدريس المقترحة',
+                        Text(
+                          context.l10n.suggestedTeachingMethods,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -181,7 +189,7 @@ class _EducationalPlanSheetState extends State<EducationalPlanSheet> {
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('إغلاق'),
+                          child: Text(context.l10n.close),
                         ),
                       ),
                     ],

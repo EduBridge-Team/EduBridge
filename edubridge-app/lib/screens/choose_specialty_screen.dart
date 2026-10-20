@@ -1,10 +1,12 @@
 // lib/screens/choose_specialty_screen.dart
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 part 'choose_specialty_view.dart';
+
+enum _SpecialtyError { selection, save, connection }
 
 class ChooseSpecialtyScreen extends StatefulWidget {
   final VoidCallback? onDone;
@@ -20,11 +22,11 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
 
   String? _selected;
   bool _saving = false;
-  String? _error;
+  _SpecialtyError? _error;
 
   Future<void> _save() async {
     if (_selected == null) {
-      setState(() => _error = 'اختر تخصصك');
+      setState(() => _error = _SpecialtyError.selection);
       return;
     }
 
@@ -42,26 +44,25 @@ class _ChooseSpecialtyScreenState extends State<ChooseSpecialtyScreen> {
 
       if (res.statusCode == 200 || res.statusCode == 204) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ تخصصك بنجاح'),
+          SnackBar(
+            content: Text(context.l10n.specialtySaved),
             backgroundColor: AppColors.green,
           ),
         );
+        setState(() => _saving = false);
         widget.onDone?.call();
+        if (!mounted) return;
         Navigator.pop(context, _selected);
       } else {
-        final data = res.body.isNotEmpty
-            ? jsonDecode(res.body) as Map<String, dynamic>
-            : <String, dynamic>{};
         setState(() {
-          _error = data['error']?.toString() ?? 'فشل الحفظ';
+          _error = _SpecialtyError.save;
           _saving = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = _SpecialtyError.connection;
         _saving = false;
       });
     }

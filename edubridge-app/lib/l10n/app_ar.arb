@@ -5054,5 +5054,125 @@
   "supportReasonFamilyCoordination": "التنسيق بين الأسرة والفريق التعليمي",
   "@supportReasonFamilyCoordination": {
     "description": "Learning support: Coordination between family and the education team"
+  },
+  "specialtyChooseRequired": "اختر تخصصك",
+  "@specialtyChooseRequired": {
+    "description": "Specialty selection and educational plan: Choose your specialty"
+  },
+  "specialtySaved": "تم حفظ تخصصك بنجاح",
+  "@specialtySaved": {
+    "description": "Specialty selection and educational plan: Your specialty was saved"
+  },
+  "specialtySaveFailed": "فشل الحفظ",
+  "@specialtySaveFailed": {
+    "description": "Specialty selection and educational plan: Could not save"
+  },
+  "specialtyTitle": "تحديد التخصص",
+  "@specialtyTitle": {
+    "description": "Specialty selection and educational plan: Choose specialty"
+  },
+  "specialtyMissing": "تخصصك غير محدد",
+  "@specialtyMissing": {
+    "description": "Specialty selection and educational plan: Your specialty is not set"
+  },
+  "specialtyRequiredHint": "لتتمكن من متابعة الأطفال، يجب تحديد تخصصك. لا يمكن تغييره لاحقاً إلا عبر الدعم.",
+  "@specialtyRequiredHint": {
+    "description": "Specialty selection and educational plan: Choose your specialty to follow children. Changes after saving require support."
+  },
+  "specialtyChooseHeading": "اختر تخصصك:",
+  "@specialtyChooseHeading": {
+    "description": "Specialty selection and educational plan: Choose your specialty:"
+  },
+  "specialtyLearningSupportHint": "متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي",
+  "@specialtyLearningSupportHint": {
+    "description": "Specialty selection and educational plan: Follow learning needs and accommodations, and support participation and academic progress"
+  },
+  "specialtyEducationalHint": "تقييم الجانب التعليمي، تصميم الخطط التعليمية، ومتابعة تقدّم الأطفال",
+  "@specialtyEducationalHint": {
+    "description": "Specialty selection and educational plan: Assess learning, design educational plans and follow children’s progress"
+  },
+  "specialtyConfirm": "تأكيد التخصص",
+  "@specialtyConfirm": {
+    "description": "Specialty selection and educational plan: Confirm specialty"
+  },
+  "specialtyChangeHint": "بعد الحفظ، لا يمكن التغيير إلا بالتواصل مع الدعم الفني",
+  "@specialtyChangeHint": {
+    "description": "Specialty selection and educational plan: After saving, contact technical support to change your specialty"
+  },
+  "specialistPickerTitle": "تواصل مع مختص",
+  "@specialistPickerTitle": {
+    "description": "Specialty selection and educational plan: Contact a specialist"
+  },
+  "specialistPickerEmpty": "لا يوجد مختصون متاحون حالياً",
+  "@specialistPickerEmpty": {
+    "description": "Specialty selection and educational plan: No specialists are available right now"
+  },
+  "planEvaluationMissing": "لا يوجد تقييم مسجل لهذا الطفل",
+  "@planEvaluationMissing": {
+    "description": "Specialty selection and educational plan: No evaluation is recorded for this child"
+  },
+  "planEvaluationFailed": "تعذّر تحميل التقييم",
+  "@planEvaluationFailed": {
+    "description": "Specialty selection and educational plan: Could not load the evaluation"
+  },
+  "planEvaluationSummary": "ملخص التقييم",
+  "@planEvaluationSummary": {
+    "description": "Specialty selection and educational plan: Evaluation summary"
+  },
+  "planDetailedEvaluations": "التقييمات التفصيلية",
+  "@planDetailedEvaluations": {
+    "description": "Specialty selection and educational plan: Detailed assessments"
+  },
+  "planCognitive": "المعرفي",
+  "@planCognitive": {
+    "description": "Specialty selection and educational plan: Cognitive"
+  },
+  "planMotor": "الحركي",
+  "@planMotor": {
+    "description": "Specialty selection and educational plan: Motor"
+  },
+  "planEmotional": "العاطفي",
+  "@planEmotional": {
+    "description": "Specialty selection and educational plan: Emotional"
+  },
+  "planSocial": "الاجتماعي",
+  "@planSocial": {
+    "description": "Specialty selection and educational plan: Social"
+  },
+  "specialistPickerIntro": "اختر المختص للتواصل بشأن {name}",
+  "@specialistPickerIntro": {
+    "description": "Specialty selection and educational plan: Choose a specialist to contact about {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planChildTitle": "الخطة التعليمية - {name}",
+  "@planChildTitle": {
+    "description": "Specialty selection and educational plan: Educational plan - {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planRecommendationsValue": "التوصيات: {value}",
+  "@planRecommendationsValue": {
+    "description": "Specialty selection and educational plan: Recommendations: {value}",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "planContentValue": "الخطة: {value}",
+  "@planContentValue": {
+    "description": "Specialty selection and educational plan: Plan: {value}",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
   }
 }

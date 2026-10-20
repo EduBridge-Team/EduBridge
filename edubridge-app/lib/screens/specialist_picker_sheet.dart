@@ -1,8 +1,9 @@
 import '../utils/presentation_text.dart';
 // lib/screens/specialist_picker_sheet.dart
 import 'package:flutter/material.dart';
-import '../../app_icons.dart';
-import '../../theme.dart';
+import '../l10n/l10n.dart';
+import '../app_icons.dart';
+import '../theme.dart';
 
 class SpecialistPickerSheet extends StatelessWidget {
   final List specialists;
@@ -27,7 +28,10 @@ class SpecialistPickerSheet extends StatelessWidget {
         color: c.card,
         borderRadius: BorderRadius.circular(24),
       ),
-      child: Column(
+      child: Material(
+        type: MaterialType.transparency,
+        child: SingleChildScrollView(
+          child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,16 +39,16 @@ class SpecialistPickerSheet extends StatelessWidget {
             children: [
               const Icon(AppIcons.chat, color: AppColors.brandBlue),
               const SizedBox(width: 8),
-              Text(
-                'تواصل مع مختص',
+              Expanded(child: Text(
+                context.l10n.specialistPickerTitle,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: c.heading,
                 ),
-              ),
-              const Spacer(),
+              )),
               IconButton(
+                tooltip: context.l10n.close,
                 icon: const Icon(AppIcons.close),
                 onPressed: () => Navigator.pop(context),
               ),
@@ -52,7 +56,7 @@ class SpecialistPickerSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'اختر المختص للتواصل بشأن $childName',
+            context.l10n.specialistPickerIntro(childName),
             style: TextStyle(color: c.muted),
           ),
           const SizedBox(height: 16),
@@ -63,11 +67,11 @@ class SpecialistPickerSheet extends StatelessWidget {
               leading: CircleAvatar(
                 backgroundColor: AppColors.orange,
                 child: Text(
-                  PresentationText.initial(name, trim: true, fallback: 'م'),
+                  PresentationText.initial(name, trim: true, fallback: context.l10n.specialistRole.characters.first),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
-              title: Text(name.isEmpty ? 'مختص' : name),
+              title: Text(name.isEmpty ? context.l10n.specialistRole : name),
               subtitle: Text(email),
               trailing: const Icon(AppIcons.chat),
               onTap: () => onSelect(specialist),
@@ -76,11 +80,13 @@ class SpecialistPickerSheet extends StatelessWidget {
           if (specialists.isEmpty)
             Center(
               child: Text(
-                'لا يوجد مختصون متاحون حالياً',
+                context.l10n.specialistPickerEmpty,
                 style: TextStyle(color: c.muted),
               ),
             ),
         ],
+      ),
+        ),
       ),
     );
   }
