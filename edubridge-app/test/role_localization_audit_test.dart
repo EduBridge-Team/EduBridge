@@ -1,3 +1,6 @@
+import 'package:edubridge_app/screens/notifications_screen.dart';
+import 'package:edubridge_app/services/notification_listener_service.dart';
+import 'package:edubridge_app/widgets/notification_snackbar.dart';
 import 'dart:convert';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
 import 'package:edubridge_app/screens/ministry_statistics_screen.dart';
@@ -68,7 +71,11 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(const MethodChannel('flutter_tts'), (_) async => 1);
   });
-  tearDown(() { TtsService.instance.tapToRead.value = false; });
+  tearDown(() {
+    TtsService.instance.tapToRead.value = false;
+    NotificationListenerService.instance.notifications.value = [];
+    NotificationListenerService.instance.latestNotification.value = null;
+  });
   for (final language in ['ar', 'en']) {
     for (final scale in [1.0, 2.0]) {
       testWidgets('$language ministry statistics at $scale preserve counts and localize known disability labels', (tester) async {
@@ -89,6 +96,38 @@ void main() {
           final range = tester.widget<Text>(find.text('0-5'));
           expect(range.textDirection, TextDirection.ltr);
         }, () => _client());
+      });
+      testWidgets('$language notification list and details at $scale preserve body text', (tester) async {
+        final strings = await AppLocalizations.delegate.load(Locale(language));
+        final notification = <String, dynamic>{
+          'title': 'تم رفض هويتك',
+          'message': 'محتوى أصلي Original content',
+          'type': 'verification',
+          'is_read': true,
+        };
+        NotificationListenerService.instance.notifications.value = [notification];
+        await _mount(tester, const NotificationsScreen(), language, scale: scale);
+        expect(find.text(strings.notificationTitleIdentityRejected), findsOneWidget);
+        expect(find.text('محتوى أصلي Original content'), findsOneWidget);
+        await _tap(tester, find.text(strings.notificationTitleIdentityRejected));
+        expect(find.text(strings.notificationTitleIdentityRejected), findsNWidgets(2));
+        expect(find.text('محتوى أصلي Original content'), findsNWidgets(2));
+        expect(notification['title'], 'تم رفض هويتك');
+        expect(notification['message'], 'محتوى أصلي Original content');
+      });
+      testWidgets('$language notification snackbar at $scale preserves the written message', (tester) async {
+        final strings = await AppLocalizations.delegate.load(Locale(language));
+        await _mount(tester, const Scaffold(body: NotificationSnackbarHost(child: SizedBox())), language, scale: scale);
+        NotificationListenerService.instance.latestNotification.value = {
+          'id': 5,
+          'title': 'تم اعتماد شهادتك',
+          'message': 'محتوى أصلي Original content',
+          'type': 'certificate',
+        };
+        await tester.pump();
+        await tester.pumpAndSettle();
+        expect(find.text(strings.notificationTitleCertificateApproved), findsOneWidget);
+        expect(find.text('محتوى أصلي Original content'), findsOneWidget);
       });
       testWidgets('$language read controls and badge at $scale share the same state', (tester) async {
         final strings = await AppLocalizations.delegate.load(Locale(language));

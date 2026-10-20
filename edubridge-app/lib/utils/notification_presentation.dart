@@ -2,7 +2,7 @@ import '../l10n/generated/app_localizations.dart';
 
 /// Localizes recognized system titles without changing notification data.
 class NotificationPresentation {
-  static String title(Map<String, dynamic> notification, AppLocalizations strings) {
+  static String title(Map<dynamic, dynamic> notification, AppLocalizations strings) {
     final raw = (notification['title'] ?? '').toString();
     const emergencyPrefix = '🚨 تنبيه طوارئ: ';
     const englishEmergencyPrefix = '🚨 Emergency alert: ';
