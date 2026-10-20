@@ -5174,5 +5174,297 @@
         "type": "String"
       }
     }
+  },
+  "noorWelcome": "مرحباً! أنا نور\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟",
+  "@noorWelcome": {
+    "description": "Noor interface: Hi! I’m Noor\nI can simplify lessons and answer your questions. How can I help?"
+  },
+  "noorExplainCurrentLesson": "اشرح هذا الدرس ببساطة",
+  "@noorExplainCurrentLesson": {
+    "description": "Noor interface: Explain this lesson simply"
+  },
+  "noorExplainLesson": "اشرح الدرس ببساطة",
+  "@noorExplainLesson": {
+    "description": "Noor interface: Explain the lesson simply"
+  },
+  "noorParentToday": "لخّص لي ما يمكنني متابعته اليوم",
+  "@noorParentToday": {
+    "description": "Noor interface: Summarize what I can follow up on today"
+  },
+  "noorParentHelp": "كيف أساعد طفلي في هذا الدرس؟",
+  "@noorParentHelp": {
+    "description": "Noor interface: How can I help my child with this lesson?"
+  },
+  "noorHomeActivity": "اقترح نشاطاً منزلياً قصيراً",
+  "@noorHomeActivity": {
+    "description": "Noor interface: Suggest a short activity at home"
+  },
+  "noorSimplerTeaching": "اقترح طريقة أبسط لشرح الدرس",
+  "@noorSimplerTeaching": {
+    "description": "Noor interface: Suggest a simpler way to explain the lesson"
+  },
+  "noorShortQuestions": "أنشئ أسئلة قصيرة على هذا الموضوع",
+  "@noorShortQuestions": {
+    "description": "Noor interface: Create short questions about this topic"
+  },
+  "noorFeedbackHelp": "ساعدني في صياغة تغذية راجعة تعليمية",
+  "@noorFeedbackHelp": {
+    "description": "Noor interface: Help me write learning feedback"
+  },
+  "noorSessionGoals": "ساعدني في تجهيز أهداف الجلسة القادمة",
+  "@noorSessionGoals": {
+    "description": "Noor interface: Help me prepare goals for the next session"
+  },
+  "noorSummarizeProgress": "لخّص التقدم الموجود في السياق",
+  "@noorSummarizeProgress": {
+    "description": "Noor interface: Summarize the progress in this context"
+  },
+  "noorFollowupActivity": "اقترح نشاطاً تعليمياً مناسباً للمتابعة",
+  "@noorFollowupActivity": {
+    "description": "Noor interface: Suggest a suitable learning activity for follow-up"
+  },
+  "noorSimplifyTopic": "بسّط لي هذا الموضوع",
+  "@noorSimplifyTopic": {
+    "description": "Noor interface: Simplify this topic for me"
+  },
+  "noorLearningActivity": "اقترح نشاطاً تعليمياً",
+  "@noorLearningActivity": {
+    "description": "Noor interface: Suggest a learning activity"
+  },
+  "noorSimplifyMore": "بسّط أكثر",
+  "@noorSimplifyMore": {
+    "description": "Noor interface: Make it simpler"
+  },
+  "noorPracticalExample": "اعطني مثالاً عملياً",
+  "@noorPracticalExample": {
+    "description": "Noor interface: Give me a practical example"
+  },
+  "noorThreeQuestions": "اعمل 3 أسئلة قصيرة",
+  "@noorThreeQuestions": {
+    "description": "Noor interface: Create 3 short questions"
+  },
+  "noorShortFollowup": "اقترح نشاط متابعة قصيراً",
+  "@noorShortFollowup": {
+    "description": "Noor interface: Suggest a short follow-up activity"
+  },
+  "noorClassActivity": "حوّل الفكرة إلى نشاط صفي",
+  "@noorClassActivity": {
+    "description": "Noor interface: Turn this idea into a classroom activity"
+  },
+  "noorNextLearningStep": "اقترح خطوة متابعة تعليمية",
+  "@noorNextLearningStep": {
+    "description": "Noor interface: Suggest a learning follow-up step"
+  },
+  "noorShortExercise": "اعطني تمريناً قصيراً",
+  "@noorShortExercise": {
+    "description": "Noor interface: Give me a short exercise"
+  },
+  "noorReadFailed": "تعذّر تشغيل القراءة الصوتية على هذا الجهاز.",
+  "@noorReadFailed": {
+    "description": "Noor interface: Could not read aloud on this device."
+  },
+  "noorCopied": "تم نسخ رد نور",
+  "@noorCopied": {
+    "description": "Noor interface: Noor’s reply was copied"
+  },
+  "noorSpeechUnavailable": "التعرف الصوتي غير متاح على هذا الجهاز.",
+  "@noorSpeechUnavailable": {
+    "description": "Noor interface: Speech recognition is unavailable on this device."
+  },
+  "noorDictationFailed": "تعذّر بدء الإملاء الصوتي. تحقق من إذن الميكروفون.",
+  "@noorDictationFailed": {
+    "description": "Noor interface: Could not start dictation. Check microphone permission."
+  },
+  "noorImageTooLarge": "الصورة يجب ألا تتجاوز 3 ميجابايت.",
+  "@noorImageTooLarge": {
+    "description": "Noor interface: The image must be no larger than 3 MB."
+  },
+  "noorImagePickFailed": "تعذّر اختيار الصورة.",
+  "@noorImagePickFailed": {
+    "description": "Noor interface: Could not select an image."
+  },
+  "noorExplainImage": "اشرح محتوى هذه الصورة التعليمية.",
+  "@noorExplainImage": {
+    "description": "Noor interface: Explain the content of this learning image."
+  },
+  "noorCopyTooltip": "نسخ الرد",
+  "@noorCopyTooltip": {
+    "description": "Noor interface: Copy reply"
+  },
+  "noorStopReading": "إيقاف قراءة الرد",
+  "@noorStopReading": {
+    "description": "Noor interface: Stop reading the reply"
+  },
+  "noorReadReply": "قراءة الرد صوتيًا",
+  "@noorReadReply": {
+    "description": "Noor interface: Read reply aloud"
+  },
+  "noorRegenerateTooltip": "إعادة توليد الرد",
+  "@noorRegenerateTooltip": {
+    "description": "Noor interface: Regenerate reply"
+  },
+  "noorRegenerate": "إعادة",
+  "@noorRegenerate": {
+    "description": "Noor interface: Retry"
+  },
+  "noorHelpful": "الرد مفيد",
+  "@noorHelpful": {
+    "description": "Noor interface: Helpful reply"
+  },
+  "noorNotHelpful": "الرد غير مفيد",
+  "@noorNotHelpful": {
+    "description": "Noor interface: Unhelpful reply"
+  },
+  "noorTitle": "نور — المساعد الذكي",
+  "@noorTitle": {
+    "description": "Noor interface: Noor — Smart assistant"
+  },
+  "noorClearConversation": "مسح المحادثة",
+  "@noorClearConversation": {
+    "description": "Noor interface: Clear conversation"
+  },
+  "noorTyping": "نور يكتب الرد",
+  "@noorTyping": {
+    "description": "Noor interface: Noor is typing"
+  },
+  "noorUserMessage": "رسالة المستخدم",
+  "@noorUserMessage": {
+    "description": "Noor interface: User message"
+  },
+  "noorReply": "رد نور",
+  "@noorReply": {
+    "description": "Noor interface: Noor’s reply"
+  },
+  "noorLessonBanner": "نور يعرف الدرس المفتوح ودورك داخل EduBridge ويمكنه شرحه بطريقة أبسط.",
+  "@noorLessonBanner": {
+    "description": "Noor interface: Noor has the open lesson and your EduBridge role as context, and can explain it more simply."
+  },
+  "noorRoleBanner": "نور يراعي دورك داخل EduBridge ويمكنه مساعدتك في تبسيط الدروس والمتابعة.",
+  "@noorRoleBanner": {
+    "description": "Noor interface: Noor considers your EduBridge role and can help simplify lessons and follow-up."
+  },
+  "noorInputHint": "اكتب سؤالك لنور...",
+  "@noorInputHint": {
+    "description": "Noor interface: Ask Noor a question..."
+  },
+  "noorQuestionOptions": "خيارات السؤال",
+  "@noorQuestionOptions": {
+    "description": "Noor interface: Question options"
+  },
+  "noorAttachImage": "إرفاق صورة تعليمية",
+  "@noorAttachImage": {
+    "description": "Noor interface: Attach a learning image"
+  },
+  "noorStopDictation": "إيقاف الإملاء الصوتي",
+  "@noorStopDictation": {
+    "description": "Noor interface: Stop dictation"
+  },
+  "noorDictate": "إملاء السؤال صوتيًا",
+  "@noorDictate": {
+    "description": "Noor interface: Dictate your question"
+  },
+  "noorStudentSummary": "ملخص نور الذكي",
+  "@noorStudentSummary": {
+    "description": "Noor interface: Noor’s smart summary"
+  },
+  "noorStudentSummaryHint": "هذه اقتراحات تعليمية مبنية على بيانات EduBridge المتاحة للطالب. لا تمثل تشخيصاً طبياً أو نفسياً، ولا يتم تنفيذ أي إجراء تلقائياً.",
+  "@noorStudentSummaryHint": {
+    "description": "Noor interface: These learning suggestions use the student data available in EduBridge. They are not a medical or psychological diagnosis, and no action is performed automatically."
+  },
+  "noorAskStudent": "اسأل نور عن هذا الطفل",
+  "@noorAskStudent": {
+    "description": "Noor interface: Ask Noor about this child"
+  },
+  "noorSuggestedNextSteps": "الخطوات التالية المقترحة",
+  "@noorSuggestedNextSteps": {
+    "description": "Noor interface: Suggested next steps"
+  },
+  "noorNoFollowup": "لا توجد خطوات متابعة مقترحة حاليًا.",
+  "@noorNoFollowup": {
+    "description": "Noor interface: No follow-up steps are suggested right now."
+  },
+  "noorDraftLoading": "نور تجهّز المسودة...",
+  "@noorDraftLoading": {
+    "description": "Noor interface: Noor is preparing the draft..."
+  },
+  "noorCreateHomework": "إنشاء مسودة واجب بنور",
+  "@noorCreateHomework": {
+    "description": "Noor interface: Draft homework with Noor"
+  },
+  "noorDraftReviewHint": "ستفتح المسودة في نموذج الواجب لتراجعها وتعدّلها قبل النشر.",
+  "@noorDraftReviewHint": {
+    "description": "Noor interface: The draft will open in the homework form for you to review and edit before publishing."
+  },
+  "noorHighPriority": "أولوية عالية",
+  "@noorHighPriority": {
+    "description": "Noor interface: High priority"
+  },
+  "noorMediumPriority": "أولوية متوسطة",
+  "@noorMediumPriority": {
+    "description": "Noor interface: Medium priority"
+  },
+  "noorFollowupSuggestion": "اقتراح متابعة",
+  "@noorFollowupSuggestion": {
+    "description": "Noor interface: Follow-up suggestion"
+  },
+  "noorDiscuss": "ناقشها مع نور",
+  "@noorDiscuss": {
+    "description": "Noor interface: Discuss with Noor"
+  },
+  "noorStudentLoadFailed": "تعذّر تحميل سياق الطالب.",
+  "@noorStudentLoadFailed": {
+    "description": "Noor interface: Could not load the student context."
+  },
+  "noorDraftFailed": "تعذّر إنشاء مسودة الواجب.",
+  "@noorDraftFailed": {
+    "description": "Noor interface: Could not create a homework draft."
+  },
+  "noorLauncherLabel": "نور، المساعد الذكي. اضغط لفتحه أو اسحبه لتحريكه",
+  "@noorLauncherLabel": {
+    "description": "Noor interface: Noor, the smart assistant. Tap to open or drag to move"
+  },
+  "noorProgress": "التقدم",
+  "@noorProgress": {
+    "description": "Noor interface: Progress"
+  },
+  "noorCopy": "نسخ",
+  "@noorCopy": {
+    "description": "Noor interface: Copy"
+  },
+  "noorOpenPage": "فتح {page}",
+  "@noorOpenPage": {
+    "description": "Noor interface: Open {page}",
+    "placeholders": {
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "noorSelectedImage": "صورة محددة: {name}",
+  "@noorSelectedImage": {
+    "description": "Noor interface: Selected image: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noorImageQuestion": "[سؤال عن صورة] {question}",
+  "@noorImageQuestion": {
+    "description": "Noor interface: [Image question] {question}",
+    "placeholders": {
+      "question": {
+        "type": "String"
+      }
+    }
+  },
+  "noorStudentTitle": "نور • {name}",
+  "@noorStudentTitle": {
+    "description": "Noor interface: Noor • {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }
