@@ -5703,5 +5703,17 @@
         "type": "String"
       }
     }
+  },
+  "notificationTitleAbsence": "تنبيه غياب",
+  "@notificationTitleAbsence": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLateness": "تنبيه تأخر",
+  "@notificationTitleLateness": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLessonRecommendation": "درس مقترح لطفلك",
+  "@notificationTitleLessonRecommendation": {
+    "description": "System notification title for display only; preserve message content."
   }
 }

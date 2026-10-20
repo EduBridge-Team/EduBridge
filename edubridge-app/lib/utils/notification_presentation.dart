@@ -56,6 +56,9 @@ class NotificationPresentation {
       "تم رفض الدرس" || "Lesson rejected" => strings.notificationTitleLessonRejected,
       "تم اعتماد الخطة" || "Plan approved" => strings.notificationTitlePlanApproved,
       "تم رفض الخطة" || "Plan rejected" => strings.notificationTitlePlanRejected,
+      "تنبيه غياب" || "Absence alert" => strings.notificationTitleAbsence,
+      "تنبيه تأخر" || "Lateness alert" => strings.notificationTitleLateness,
+      "درس مقترح لطفلك" || "Suggested lesson for your child" => strings.notificationTitleLessonRecommendation,
       _ => raw.isEmpty ? strings.notificationDetails : raw,
     };
   }

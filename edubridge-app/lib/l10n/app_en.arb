@@ -5703,5 +5703,17 @@
         "type": "String"
       }
     }
+  },
+  "notificationTitleAbsence": "Absence alert",
+  "@notificationTitleAbsence": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLateness": "Lateness alert",
+  "@notificationTitleLateness": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLessonRecommendation": "Suggested lesson for your child",
+  "@notificationTitleLessonRecommendation": {
+    "description": "System notification title for display only; preserve message content."
   }
 }
