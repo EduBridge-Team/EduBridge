@@ -44,12 +44,12 @@ class LearningSupportRequestCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(request, statusColor, c),
+              _buildHeader(context, request, statusColor, c),
               const SizedBox(height: 10),
-              _buildReasonRow(request, c),
+              _buildReasonRow(context, request, c),
               if (request.isScheduled && request.scheduledAt != null) ...[
                 const SizedBox(height: 8),
-                _buildScheduleInfo(request, c),
+                _buildScheduleInfo(context, request, c),
               ],
             ],
           ),
@@ -59,7 +59,7 @@ class LearningSupportRequestCard extends StatelessWidget {
   }
 
   Widget _buildHeader(
-      LearningSupportRequest request, Color statusColor, JisrColors c) {
+      BuildContext context, LearningSupportRequest request, Color statusColor, JisrColors c) {
     return Row(
       children: [
         CircleAvatar(
@@ -92,52 +92,49 @@ class LearningSupportRequestCard extends StatelessWidget {
                 children: [
                   Icon(AppIcons.parent, size: 12, color: c.muted),
                   const SizedBox(width: 4),
-                  Text(
+                  Expanded(child: Text(
                     request.parentName,
                     style: TextStyle(fontSize: 12, color: c.muted),
-                  ),
+                  )),
                 ],
               ),
             ],
           ),
         ),
-        Container(
+        Flexible(child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: statusColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            request.statusLabel,
+            LearningSupportPresentation.requestStatus(request.status, context.l10n),
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
               color: statusColor,
             ),
           ),
-        ),
+        )),
       ],
     );
   }
 
-  Widget _buildReasonRow(LearningSupportRequest request, JisrColors c) {
-    return Row(
+  Widget _buildReasonRow(BuildContext context, LearningSupportRequest request, JisrColors c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(request.urgencyLabel, style: const TextStyle(fontSize: 13)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            'السبب: ${request.reason}',
-            style: TextStyle(fontSize: 13, color: c.body),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        Text(LearningSupportPresentation.urgency(request.urgency, context.l10n),
+            style: const TextStyle(fontSize: 13)),
+        const SizedBox(height: 6),
+        Text(context.l10n.supportReasonLabel(
+          LearningSupportPresentation.reason(request.reason, context.l10n)),
+          style: TextStyle(fontSize: 13, color: c.body)),
       ],
     );
   }
 
-  Widget _buildScheduleInfo(LearningSupportRequest request, JisrColors c) {
+  Widget _buildScheduleInfo(BuildContext context, LearningSupportRequest request, JisrColors c) {
     final s = request.scheduledAt!;
     return Container(
       padding: const EdgeInsets.all(8),
@@ -149,11 +146,10 @@ class LearningSupportRequestCard extends StatelessWidget {
         children: [
           const Icon(AppIcons.event, size: 16, color: AppColors.brandBlue),
           const SizedBox(width: 6),
-          Text(
-            'الموعد: ${s.day}/${s.month} '
-            '${PresentationText.clock(s)}',
+          Expanded(child: Text(
+            context.l10n.supportAppointmentDate(LearningSupportPresentation.date(s, context.l10n)),
             style: TextStyle(fontSize: 12, color: c.onTint),
-          ),
+          )),
         ],
       ),
     );

@@ -30,8 +30,8 @@ class SpecialistSupportEmptyState extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 19),
-        const Text(
-          'لا توجد طلبات حالياً',
+        Text(
+          context.l10n.supportRequestsEmpty,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Color(0xFF112F4A),
@@ -54,7 +54,7 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
       titleSpacing: 4,
       centerTitle: false,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: () async {
           final popped = await Navigator.maybePop(pageContext);
           if (!pageContext.mounted) return;
@@ -70,15 +70,11 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
         icon: const CircleAvatar(
           radius: 22,
           backgroundColor: Color(0x33FFFFFF),
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Icon(Icons.arrow_forward_rounded,
-                size: 23, color: Colors.white),
-          ),
+          child: BackButtonIcon(),
         ),
       ),
-      title: const Text(
-        'طلبات الدعم التعليمي',
+      title: Text(
+        context.l10n.supportRequestsTitle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -145,26 +141,26 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
               MaterialPageRoute<void>(builder: (_) => destination),
             );
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
               icon: Icon(Icons.people_outline),
               selectedIcon: Icon(Icons.people_rounded),
-              label: 'الأطفال',
+              label: context.l10n.children,
             ),
             NavigationDestination(
               icon: Icon(Icons.description_outlined),
               selectedIcon: Icon(Icons.description_rounded),
-              label: 'دراسات الحالة',
+              label: context.l10n.caseStudies,
             ),
             NavigationDestination(
               icon: Icon(Icons.chat_bubble_outline_rounded),
               selectedIcon: Icon(Icons.chat_bubble_rounded),
-              label: 'المحادثات',
+              label: context.l10n.conversations,
             ),
             NavigationDestination(
               icon: Icon(Icons.inbox_outlined),
               selectedIcon: Icon(Icons.inbox_rounded),
-              label: 'طلبات الدعم',
+              label: context.l10n.supportRequests,
             ),
           ],
         ),

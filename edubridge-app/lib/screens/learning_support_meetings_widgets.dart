@@ -14,12 +14,12 @@ extension _LearningSupportMeetingsWidgets on _LearningSupportMeetingsScreenState
           children: [
             const Icon(AppIcons.error, size: 64, color: AppColors.red),
             const SizedBox(height: 12),
-            Text(_error!,
+            Text(LearningSupportPresentation.error(_error!, context.l10n),
                 style: const TextStyle(color: AppColors.red, fontSize: 16)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ],
@@ -44,13 +44,13 @@ extension _LearningSupportMeetingsWidgets on _LearningSupportMeetingsScreenState
     String message;
     switch (_filter) {
       case 'scheduled':
-        message = 'لا توجد جلسات مجدولة';
+        message = context.l10n.supportNoScheduled;
         break;
       case 'completed':
-        message = 'لا توجد جلسات منتهية';
+        message = context.l10n.supportNoCompleted;
         break;
       default:
-        message = 'لا توجد جلسات بعد';
+        message = context.l10n.supportNoSessions;
     }
 
     return ListView(
@@ -74,7 +74,7 @@ extension _LearningSupportMeetingsWidgets on _LearningSupportMeetingsScreenState
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'ستظهر الجلسات هنا عند موافقة المختص على طلبات الدعم التعليمي',
+                context.l10n.supportSessionsHint,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: c.muted, height: 1.5),
               ),
@@ -121,14 +121,14 @@ class _FilterChip extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              Expanded(child: Text(
                 label,
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.bold,
                   color: selected ? color : Colors.grey.shade600,
                 ),
-              ),
+              )),
               const SizedBox(width: 4),
               Container(
                 padding: const EdgeInsets.symmetric(

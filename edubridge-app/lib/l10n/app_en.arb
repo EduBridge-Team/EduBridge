@@ -4742,5 +4742,317 @@
         "type": "int"
       }
     }
+  },
+  "supportRequestsTitle": "Learning support requests",
+  "@supportRequestsTitle": {
+    "description": "Learning support: Learning support requests"
+  },
+  "supportRequestsLoadFailed": "Could not load requests",
+  "@supportRequestsLoadFailed": {
+    "description": "Learning support: Could not load requests"
+  },
+  "supportMeetingsLoadFailed": "Could not load sessions",
+  "@supportMeetingsLoadFailed": {
+    "description": "Learning support: Could not load sessions"
+  },
+  "supportRequestsEmpty": "No requests right now",
+  "@supportRequestsEmpty": {
+    "description": "Learning support: No requests right now"
+  },
+  "supportScheduledSessions": "Scheduled sessions",
+  "@supportScheduledSessions": {
+    "description": "Learning support: Scheduled sessions"
+  },
+  "supportFinished": "Finished",
+  "@supportFinished": {
+    "description": "Learning support: Finished"
+  },
+  "supportReasonRequired": "Choose the main reason",
+  "@supportReasonRequired": {
+    "description": "Learning support: Choose the main reason"
+  },
+  "supportCreateFailed": "Could not send your support request",
+  "@supportCreateFailed": {
+    "description": "Learning support: Could not send your support request"
+  },
+  "supportDateTimeRequired": "Choose a date and time",
+  "@supportDateTimeRequired": {
+    "description": "Learning support: Choose a date and time"
+  },
+  "supportLinkRequired": "Enter the meeting link",
+  "@supportLinkRequired": {
+    "description": "Learning support: Enter the meeting link"
+  },
+  "supportScheduleFailed": "Could not save the appointment",
+  "@supportScheduleFailed": {
+    "description": "Learning support: Could not save the appointment"
+  },
+  "supportScheduleSuccess": "Appointment scheduled and the link sent to the parent",
+  "@supportScheduleSuccess": {
+    "description": "Learning support: Appointment scheduled and the link sent to the parent"
+  },
+  "supportChooseDate": "Choose date",
+  "@supportChooseDate": {
+    "description": "Learning support: Choose date"
+  },
+  "supportChooseTime": "Choose time",
+  "@supportChooseTime": {
+    "description": "Learning support: Choose time"
+  },
+  "supportMeetingLinkField": "Meeting link (Zoom / Google Meet) *",
+  "@supportMeetingLinkField": {
+    "description": "Learning support: Meeting link (Zoom / Google Meet) *"
+  },
+  "supportParentNotes": "Notes for the parent (optional)",
+  "@supportParentNotes": {
+    "description": "Learning support: Notes for the parent (optional)"
+  },
+  "supportEditAppointment": "Edit appointment:",
+  "@supportEditAppointment": {
+    "description": "Learning support: Edit appointment:"
+  },
+  "supportSetAppointment": "Set appointment:",
+  "@supportSetAppointment": {
+    "description": "Learning support: Set appointment:"
+  },
+  "supportRequestSent": "Request sent to the specialist. You will be notified of the appointment.",
+  "@supportRequestSent": {
+    "description": "Learning support: Request sent to the specialist. You will be notified of the appointment."
+  },
+  "supportReasonField": "Main reason *",
+  "@supportReasonField": {
+    "description": "Learning support: Main reason *"
+  },
+  "supportReasonHint": "Choose a reason...",
+  "@supportReasonHint": {
+    "description": "Learning support: Choose a reason..."
+  },
+  "supportDescriptionHeading": "Describe the learning support needed",
+  "@supportDescriptionHeading": {
+    "description": "Learning support: Describe the learning support needed"
+  },
+  "supportDescriptionHint": "Describe the learning difficulty, when it occurs and what helps your child learn...",
+  "@supportDescriptionHint": {
+    "description": "Learning support: Describe the learning difficulty, when it occurs and what helps your child learn..."
+  },
+  "supportDescriptionRequired": "Enter a brief description",
+  "@supportDescriptionRequired": {
+    "description": "Learning support: Enter a brief description"
+  },
+  "supportDescriptionMinimum": "Enter at least 20 characters",
+  "@supportDescriptionMinimum": {
+    "description": "Learning support: Enter at least 20 characters"
+  },
+  "supportPriorityHeading": "Follow-up priority",
+  "@supportPriorityHeading": {
+    "description": "Learning support: Follow-up priority"
+  },
+  "supportPriorityLow": "Flexible",
+  "@supportPriorityLow": {
+    "description": "Learning support: Flexible"
+  },
+  "supportPriorityHigh": "High",
+  "@supportPriorityHigh": {
+    "description": "Learning support: High"
+  },
+  "supportSchedulingHint": "The specialist will review your request and choose an appointment. You will receive a notification with the meeting link.",
+  "@supportSchedulingHint": {
+    "description": "Learning support: The specialist will review your request and choose an appointment. You will receive a notification with the meeting link."
+  },
+  "supportSendRequest": "Send support request",
+  "@supportSendRequest": {
+    "description": "Learning support: Send support request"
+  },
+  "supportMeetingsTitle": "Learning support meetings",
+  "@supportMeetingsTitle": {
+    "description": "Learning support: Learning support meetings"
+  },
+  "supportScheduled": "Scheduled",
+  "@supportScheduled": {
+    "description": "Learning support: Scheduled"
+  },
+  "supportCompleted": "Completed",
+  "@supportCompleted": {
+    "description": "Learning support: Completed"
+  },
+  "supportCancelled": "Cancelled",
+  "@supportCancelled": {
+    "description": "Learning support: Cancelled"
+  },
+  "supportNoShow": "Did not attend",
+  "@supportNoShow": {
+    "description": "Learning support: Did not attend"
+  },
+  "supportNoScheduled": "No scheduled sessions",
+  "@supportNoScheduled": {
+    "description": "Learning support: No scheduled sessions"
+  },
+  "supportNoCompleted": "No finished sessions",
+  "@supportNoCompleted": {
+    "description": "Learning support: No finished sessions"
+  },
+  "supportNoSessions": "No sessions yet",
+  "@supportNoSessions": {
+    "description": "Learning support: No sessions yet"
+  },
+  "supportSessionsHint": "Sessions will appear here when the specialist approves learning support requests",
+  "@supportSessionsHint": {
+    "description": "Learning support: Sessions will appear here when the specialist approves learning support requests"
+  },
+  "supportPlanning": "Learning planning meeting",
+  "@supportPlanning": {
+    "description": "Learning support: Learning planning meeting"
+  },
+  "supportTeamReview": "Support team review",
+  "@supportTeamReview": {
+    "description": "Learning support: Support team review"
+  },
+  "supportParentReview": "Parent follow-up",
+  "@supportParentReview": {
+    "description": "Learning support: Parent follow-up"
+  },
+  "supportGroup": "Group learning support",
+  "@supportGroup": {
+    "description": "Learning support: Group learning support"
+  },
+  "supportAppointment": "Appointment",
+  "@supportAppointment": {
+    "description": "Learning support: Appointment"
+  },
+  "supportDuration": "Duration",
+  "@supportDuration": {
+    "description": "Learning support: Duration"
+  },
+  "supportCompletedAt": "Completed",
+  "@supportCompletedAt": {
+    "description": "Learning support: Completed"
+  },
+  "supportParticipation": "Learning participation: ",
+  "@supportParticipation": {
+    "description": "Learning support: Learning participation: "
+  },
+  "supportPriorityHighLabel": "🟠 High priority",
+  "@supportPriorityHighLabel": {
+    "description": "Learning support: 🟠 High priority"
+  },
+  "supportPriorityLowLabel": "🟢 Flexible priority",
+  "@supportPriorityLowLabel": {
+    "description": "Learning support: 🟢 Flexible priority"
+  },
+  "supportPriorityMediumLabel": "🟡 Normal priority",
+  "@supportPriorityMediumLabel": {
+    "description": "Learning support: 🟡 Normal priority"
+  },
+  "supportAppointmentSet": "Appointment set",
+  "@supportAppointmentSet": {
+    "description": "Learning support: Appointment set"
+  },
+  "supportConfirm": "Confirm",
+  "@supportConfirm": {
+    "description": "Learning support: Confirm"
+  },
+  "supportGoals": "Goals",
+  "@supportGoals": {
+    "description": "Learning support: Goals"
+  },
+  "supportChildIntro": "Your request will reach the learning support specialist following {name}",
+  "@supportChildIntro": {
+    "description": "Learning support: Your request will reach the learning support specialist following {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportSessionRequestTitle": "Session request — {name}",
+  "@supportSessionRequestTitle": {
+    "description": "Learning support: Session request — {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportChildMeetings": "Meetings for {name}",
+  "@supportChildMeetings": {
+    "description": "Learning support: Meetings for {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportChildLabel": "Child: {name}",
+  "@supportChildLabel": {
+    "description": "Learning support: Child: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportReasonLabel": "Reason: {reason}",
+  "@supportReasonLabel": {
+    "description": "Learning support: Reason: {reason}",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "supportScheduledDate": "Scheduled: {date}",
+  "@supportScheduledDate": {
+    "description": "Learning support: Scheduled: {date}",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "supportAppointmentDate": "Appointment: {date}",
+  "@supportAppointmentDate": {
+    "description": "Learning support: Appointment: {date}",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "supportDurationMinutes": "{count} minutes",
+  "@supportDurationMinutes": {
+    "description": "Learning support: {count} minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "supportReasonProgress": "Decline in academic progress",
+  "@supportReasonProgress": {
+    "description": "Learning support: Decline in academic progress"
+  },
+  "supportReasonFocus": "Difficulty focusing while learning",
+  "@supportReasonFocus": {
+    "description": "Learning support: Difficulty focusing while learning"
+  },
+  "supportReasonPresentation": "Need to adapt how content is presented",
+  "@supportReasonPresentation": {
+    "description": "Learning support: Need to adapt how content is presented"
+  },
+  "supportReasonIndividualPlan": "Need for an individual follow-up plan",
+  "@supportReasonIndividualPlan": {
+    "description": "Learning support: Need for an individual follow-up plan"
+  },
+  "supportReasonHomework": "Difficulty completing homework",
+  "@supportReasonHomework": {
+    "description": "Learning support: Difficulty completing homework"
+  },
+  "supportReasonStudySkills": "Need support with study skills",
+  "@supportReasonStudySkills": {
+    "description": "Learning support: Need support with study skills"
+  },
+  "supportReasonFamilyCoordination": "Coordination between family and the education team",
+  "@supportReasonFamilyCoordination": {
+    "description": "Learning support: Coordination between family and the education team"
   }
 }

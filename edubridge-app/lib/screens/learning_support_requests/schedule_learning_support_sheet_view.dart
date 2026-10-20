@@ -30,7 +30,7 @@ extension _ScheduleLearningSupportSheetStateView on _ScheduleLearningSupportShee
                 const SizedBox(height: 16),
               ],
               Text(
-                isScheduled ? 'تعديل الموعد:' : 'حدّد الموعد:',
+                isScheduled ? context.l10n.supportEditAppointment : context.l10n.supportSetAppointment,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ extension _ScheduleLearningSupportSheetStateView on _ScheduleLearningSupportShee
               _buildNotesField(),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: AppColors.red)),
+                Text(LearningSupportPresentation.error(_error!, context.l10n), style: const TextStyle(color: AppColors.red)),
               ],
               const SizedBox(height: 20),
               _buildActions(isScheduled: isScheduled),
@@ -54,6 +54,6 @@ extension _ScheduleLearningSupportSheetStateView on _ScheduleLearningSupportShee
         ),
       ),
     );
-  
+
   }
 }

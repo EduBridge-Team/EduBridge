@@ -4742,5 +4742,317 @@
         "type": "int"
       }
     }
+  },
+  "supportRequestsTitle": "طلبات الدعم التعليمي",
+  "@supportRequestsTitle": {
+    "description": "Learning support: Learning support requests"
+  },
+  "supportRequestsLoadFailed": "تعذّر تحميل الطلبات",
+  "@supportRequestsLoadFailed": {
+    "description": "Learning support: Could not load requests"
+  },
+  "supportMeetingsLoadFailed": "تعذّر تحميل الجلسات",
+  "@supportMeetingsLoadFailed": {
+    "description": "Learning support: Could not load sessions"
+  },
+  "supportRequestsEmpty": "لا توجد طلبات حالياً",
+  "@supportRequestsEmpty": {
+    "description": "Learning support: No requests right now"
+  },
+  "supportScheduledSessions": "جلسات مجدولة",
+  "@supportScheduledSessions": {
+    "description": "Learning support: Scheduled sessions"
+  },
+  "supportFinished": "منتهية",
+  "@supportFinished": {
+    "description": "Learning support: Finished"
+  },
+  "supportReasonRequired": "اختر السبب الرئيسي",
+  "@supportReasonRequired": {
+    "description": "Learning support: Choose the main reason"
+  },
+  "supportCreateFailed": "تعذّر إرسال طلب الدعم",
+  "@supportCreateFailed": {
+    "description": "Learning support: Could not send your support request"
+  },
+  "supportDateTimeRequired": "اختر التاريخ والوقت",
+  "@supportDateTimeRequired": {
+    "description": "Learning support: Choose a date and time"
+  },
+  "supportLinkRequired": "رابط الاجتماع مطلوب",
+  "@supportLinkRequired": {
+    "description": "Learning support: Enter the meeting link"
+  },
+  "supportScheduleFailed": "فشل حفظ الموعد",
+  "@supportScheduleFailed": {
+    "description": "Learning support: Could not save the appointment"
+  },
+  "supportScheduleSuccess": "تم تحديد الموعد وإرسال الرابط لولي الأمر",
+  "@supportScheduleSuccess": {
+    "description": "Learning support: Appointment scheduled and the link sent to the parent"
+  },
+  "supportChooseDate": "اختر التاريخ",
+  "@supportChooseDate": {
+    "description": "Learning support: Choose date"
+  },
+  "supportChooseTime": "اختر الوقت",
+  "@supportChooseTime": {
+    "description": "Learning support: Choose time"
+  },
+  "supportMeetingLinkField": "رابط الاجتماع (Zoom / Google Meet) *",
+  "@supportMeetingLinkField": {
+    "description": "Learning support: Meeting link (Zoom / Google Meet) *"
+  },
+  "supportParentNotes": "ملاحظات لولي الأمر (اختياري)",
+  "@supportParentNotes": {
+    "description": "Learning support: Notes for the parent (optional)"
+  },
+  "supportEditAppointment": "تعديل الموعد:",
+  "@supportEditAppointment": {
+    "description": "Learning support: Edit appointment:"
+  },
+  "supportSetAppointment": "حدّد الموعد:",
+  "@supportSetAppointment": {
+    "description": "Learning support: Set appointment:"
+  },
+  "supportRequestSent": "تم إرسال الطلب للمختص — سيصلك إشعار بالموعد",
+  "@supportRequestSent": {
+    "description": "Learning support: Request sent to the specialist. You will be notified of the appointment."
+  },
+  "supportReasonField": "السبب الرئيسي *",
+  "@supportReasonField": {
+    "description": "Learning support: Main reason *"
+  },
+  "supportReasonHint": "اختر السبب...",
+  "@supportReasonHint": {
+    "description": "Learning support: Choose a reason..."
+  },
+  "supportDescriptionHeading": "اشرح نوع الدعم التعليمي المطلوب",
+  "@supportDescriptionHeading": {
+    "description": "Learning support: Describe the learning support needed"
+  },
+  "supportDescriptionHint": "اشرح الصعوبة التعليمية، متى تظهر، وما الذي يساعد الطفل أثناء التعلم...",
+  "@supportDescriptionHint": {
+    "description": "Learning support: Describe the learning difficulty, when it occurs and what helps your child learn..."
+  },
+  "supportDescriptionRequired": "الرجاء كتابة شرح موجز",
+  "@supportDescriptionRequired": {
+    "description": "Learning support: Enter a brief description"
+  },
+  "supportDescriptionMinimum": "الشرح قصير — اكتب 20 حرفاً على الأقل",
+  "@supportDescriptionMinimum": {
+    "description": "Learning support: Enter at least 20 characters"
+  },
+  "supportPriorityHeading": "أولوية المتابعة",
+  "@supportPriorityHeading": {
+    "description": "Learning support: Follow-up priority"
+  },
+  "supportPriorityLow": "مرنة",
+  "@supportPriorityLow": {
+    "description": "Learning support: Flexible"
+  },
+  "supportPriorityHigh": "مرتفعة",
+  "@supportPriorityHigh": {
+    "description": "Learning support: High"
+  },
+  "supportSchedulingHint": "سيقوم المختص بمراجعة الطلب وتحديد الموعد المناسب، ثم سيصلك إشعار برابط الاجتماع.",
+  "@supportSchedulingHint": {
+    "description": "Learning support: The specialist will review your request and choose an appointment. You will receive a notification with the meeting link."
+  },
+  "supportSendRequest": "إرسال طلب الدعم",
+  "@supportSendRequest": {
+    "description": "Learning support: Send support request"
+  },
+  "supportMeetingsTitle": "اجتماعات الدعم التعليمي",
+  "@supportMeetingsTitle": {
+    "description": "Learning support: Learning support meetings"
+  },
+  "supportScheduled": "مجدولة",
+  "@supportScheduled": {
+    "description": "Learning support: Scheduled"
+  },
+  "supportCompleted": "مكتملة",
+  "@supportCompleted": {
+    "description": "Learning support: Completed"
+  },
+  "supportCancelled": "ملغية",
+  "@supportCancelled": {
+    "description": "Learning support: Cancelled"
+  },
+  "supportNoShow": "لم يحضر",
+  "@supportNoShow": {
+    "description": "Learning support: Did not attend"
+  },
+  "supportNoScheduled": "لا توجد جلسات مجدولة",
+  "@supportNoScheduled": {
+    "description": "Learning support: No scheduled sessions"
+  },
+  "supportNoCompleted": "لا توجد جلسات منتهية",
+  "@supportNoCompleted": {
+    "description": "Learning support: No finished sessions"
+  },
+  "supportNoSessions": "لا توجد جلسات بعد",
+  "@supportNoSessions": {
+    "description": "Learning support: No sessions yet"
+  },
+  "supportSessionsHint": "ستظهر الجلسات هنا عند موافقة المختص على طلبات الدعم التعليمي",
+  "@supportSessionsHint": {
+    "description": "Learning support: Sessions will appear here when the specialist approves learning support requests"
+  },
+  "supportPlanning": "اجتماع تخطيط تعليمي",
+  "@supportPlanning": {
+    "description": "Learning support: Learning planning meeting"
+  },
+  "supportTeamReview": "مراجعة فريق الدعم",
+  "@supportTeamReview": {
+    "description": "Learning support: Support team review"
+  },
+  "supportParentReview": "متابعة مع ولي الأمر",
+  "@supportParentReview": {
+    "description": "Learning support: Parent follow-up"
+  },
+  "supportGroup": "دعم تعليمي جماعي",
+  "@supportGroup": {
+    "description": "Learning support: Group learning support"
+  },
+  "supportAppointment": "الموعد",
+  "@supportAppointment": {
+    "description": "Learning support: Appointment"
+  },
+  "supportDuration": "المدة",
+  "@supportDuration": {
+    "description": "Learning support: Duration"
+  },
+  "supportCompletedAt": "اكتملت",
+  "@supportCompletedAt": {
+    "description": "Learning support: Completed"
+  },
+  "supportParticipation": "المشاركة التعليمية: ",
+  "@supportParticipation": {
+    "description": "Learning support: Learning participation: "
+  },
+  "supportPriorityHighLabel": "🟠 أولوية مرتفعة",
+  "@supportPriorityHighLabel": {
+    "description": "Learning support: 🟠 High priority"
+  },
+  "supportPriorityLowLabel": "🟢 أولوية مرنة",
+  "@supportPriorityLowLabel": {
+    "description": "Learning support: 🟢 Flexible priority"
+  },
+  "supportPriorityMediumLabel": "🟡 أولوية عادية",
+  "@supportPriorityMediumLabel": {
+    "description": "Learning support: 🟡 Normal priority"
+  },
+  "supportAppointmentSet": "تم تحديد موعد",
+  "@supportAppointmentSet": {
+    "description": "Learning support: Appointment set"
+  },
+  "supportConfirm": "تأكيد",
+  "@supportConfirm": {
+    "description": "Learning support: Confirm"
+  },
+  "supportGoals": "الأهداف",
+  "@supportGoals": {
+    "description": "Learning support: Goals"
+  },
+  "supportChildIntro": "سيصل طلبك لمختص الدعم التعليمي المتابع لـ {name}",
+  "@supportChildIntro": {
+    "description": "Learning support: Your request will reach the learning support specialist following {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportSessionRequestTitle": "طلب جلسة — {name}",
+  "@supportSessionRequestTitle": {
+    "description": "Learning support: Session request — {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportChildMeetings": "اجتماعات {name}",
+  "@supportChildMeetings": {
+    "description": "Learning support: Meetings for {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportChildLabel": "الطفل: {name}",
+  "@supportChildLabel": {
+    "description": "Learning support: Child: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supportReasonLabel": "السبب: {reason}",
+  "@supportReasonLabel": {
+    "description": "Learning support: Reason: {reason}",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "supportScheduledDate": "مجدولة: {date}",
+  "@supportScheduledDate": {
+    "description": "Learning support: Scheduled: {date}",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "supportAppointmentDate": "الموعد: {date}",
+  "@supportAppointmentDate": {
+    "description": "Learning support: Appointment: {date}",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "supportDurationMinutes": "{count} دقيقة",
+  "@supportDurationMinutes": {
+    "description": "Learning support: {count} minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "supportReasonProgress": "تراجع في التقدم الدراسي",
+  "@supportReasonProgress": {
+    "description": "Learning support: Decline in academic progress"
+  },
+  "supportReasonFocus": "صعوبة في التركيز أثناء التعلم",
+  "@supportReasonFocus": {
+    "description": "Learning support: Difficulty focusing while learning"
+  },
+  "supportReasonPresentation": "الحاجة إلى تكييف طريقة عرض المحتوى",
+  "@supportReasonPresentation": {
+    "description": "Learning support: Need to adapt how content is presented"
+  },
+  "supportReasonIndividualPlan": "الحاجة إلى خطة متابعة فردية",
+  "@supportReasonIndividualPlan": {
+    "description": "Learning support: Need for an individual follow-up plan"
+  },
+  "supportReasonHomework": "صعوبة في إنجاز الواجبات",
+  "@supportReasonHomework": {
+    "description": "Learning support: Difficulty completing homework"
+  },
+  "supportReasonStudySkills": "الحاجة إلى دعم في مهارات الدراسة",
+  "@supportReasonStudySkills": {
+    "description": "Learning support: Need support with study skills"
+  },
+  "supportReasonFamilyCoordination": "التنسيق بين الأسرة والفريق التعليمي",
+  "@supportReasonFamilyCoordination": {
+    "description": "Learning support: Coordination between family and the education team"
   }
 }

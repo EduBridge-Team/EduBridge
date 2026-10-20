@@ -5,7 +5,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'طلب دعم تعليمي'),
+      appBar: JisrAppBar(title: context.l10n.requestLearningSupport),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -27,7 +27,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'طلب دعم تعليمي',
+                          context.l10n.requestLearningSupport,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -35,7 +35,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                           ),
                         ),
                         Text(
-                          'سيصل طلبك لمختص الدعم التعليمي المتابع لـ ${widget.childName}',
+                          context.l10n.supportChildIntro(widget.childName),
                           style: TextStyle(fontSize: 13, color: c.muted),
                         ),
                       ],
@@ -47,7 +47,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
             const SizedBox(height: 20),
 
             Text(
-              'السبب الرئيسي *',
+              context.l10n.supportReasonField,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -66,10 +66,11 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                 child: DropdownButton<String>(
                   value: _selectedReason,
                   isExpanded: true,
-                  hint: const Text('اختر السبب...'),
+                  itemHeight: null,
+                  hint: Text(context.l10n.supportReasonHint),
                   items: _CreateLearningSupportRequestScreenState._reasons
                       .map((r) =>
-                          DropdownMenuItem(value: r, child: Text(r)))
+                          DropdownMenuItem(value: r, child: Text(LearningSupportPresentation.reason(r, context.l10n))))
                       .toList(),
                   onChanged: (v) => _refreshState(() => _selectedReason = v),
                 ),
@@ -78,7 +79,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
             const SizedBox(height: 20),
 
             Text(
-              'اشرح نوع الدعم التعليمي المطلوب',
+              context.l10n.supportDescriptionHeading,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -90,18 +91,18 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
               controller: _descriptionCtrl,
               maxLines: 5,
               maxLength: 500,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText:
-                    'اشرح الصعوبة التعليمية، متى تظهر، وما الذي يساعد الطفل أثناء التعلم...',
+                    context.l10n.supportDescriptionHint,
                 alignLabelWithHint: true,
                 prefixIcon: Icon(AppIcons.edit),
               ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
-                  return 'الرجاء كتابة شرح موجز';
+                  return context.l10n.supportDescriptionRequired;
                 }
                 if (v.trim().length < 20) {
-                  return 'الشرح قصير — اكتب 20 حرفاً على الأقل';
+                  return context.l10n.supportDescriptionMinimum;
                 }
                 return null;
               },
@@ -109,7 +110,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
             const SizedBox(height: 12),
 
             Text(
-              'أولوية المتابعة',
+              context.l10n.supportPriorityHeading,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -121,7 +122,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
               children: [
                 Expanded(
                   child: _UrgencyChip(
-                    label: 'مرنة',
+                    label: context.l10n.supportPriorityLow,
                     selected: _urgency == 'low',
                     color: AppColors.green,
                     onTap: () => _refreshState(() => _urgency = 'low'),
@@ -130,7 +131,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: 'عادية',
+                    label: context.l10n.normalUrgency,
                     selected: _urgency == 'medium',
                     color: AppColors.orange,
                     onTap: () => _refreshState(() => _urgency = 'medium'),
@@ -139,7 +140,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                 const SizedBox(width: 8),
                 Expanded(
                   child: _UrgencyChip(
-                    label: 'مرتفعة',
+                    label: context.l10n.supportPriorityHigh,
                     selected: _urgency == 'high',
                     color: AppColors.red,
                     onTap: () => _refreshState(() => _urgency = 'high'),
@@ -162,7 +163,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'سيقوم المختص بمراجعة الطلب وتحديد الموعد المناسب، ثم سيصلك إشعار برابط الاجتماع.',
+                      context.l10n.supportSchedulingHint,
                       style: TextStyle(fontSize: 13, color: c.onTint),
                     ),
                   ),
@@ -184,7 +185,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                         color: AppColors.red, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(_error!,
+                      child: Text(LearningSupportPresentation.error(_error!, context.l10n),
                           style: const TextStyle(color: AppColors.red)),
                     ),
                   ],
@@ -194,7 +195,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
 
             const SizedBox(height: 24),
             SizedBox(
-              height: 56,
+
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.brandBlue,
@@ -212,7 +213,7 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
                       )
                     : const Icon(AppIcons.send),
                 label: Text(
-                  _saving ? 'جارِ الإرسال...' : 'إرسال طلب الدعم',
+                  _saving ? context.l10n.sending : context.l10n.supportSendRequest,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -223,6 +224,6 @@ extension _CreateLearningSupportRequestScreenStateView on _CreateLearningSupport
         ),
       ),
     );
-  
+
   }
 }
