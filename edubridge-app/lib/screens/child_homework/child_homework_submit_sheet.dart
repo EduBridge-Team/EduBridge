@@ -1,6 +1,8 @@
 // lib/screens/child_homework/child_homework_submit_sheet.dart
 part of 'child_homework_screen.dart';
 
+enum _SubmissionError { gallery, camera, file, answer, submit }
+
 class _SubmitHomeworkSheet extends StatefulWidget {
   final Homework homework;
   final int childId;
@@ -43,7 +45,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
 
   final List<File> _files = [];
   bool _saving = false;
-  String? _error;
+  _SubmissionError? _error;
   final _picker = ImagePicker();
 
   @override
@@ -62,7 +64,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = 'تعذّر فتح المعرض');
+      setState(() => _error = _SubmissionError.gallery);
     }
   }
 
@@ -79,7 +81,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = 'تعذّر فتح الكاميرا');
+      setState(() => _error = _SubmissionError.camera);
     }
   }
 
@@ -93,7 +95,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = 'تعذّر اختيار الملف');
+      setState(() => _error = _SubmissionError.file);
     }
   }
 
@@ -118,7 +120,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
     final answerText = _answerCtrl.text.trim();
 
     if (answerText.isEmpty && _files.isEmpty) {
-      setState(() => _error = 'أضف إجابة نصية أو ملفاً واحداً على الأقل');
+      setState(() => _error = _SubmissionError.answer);
       return;
     }
 
@@ -140,9 +142,9 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       final profile = _childProfile;
       if (profile != null && !profile.sensoryCalmMode && profile.autoReadOnTap) {
         if (profile.slowSpeech) {
-          TtsService.instance.speakLineSlow('أحسنت! تم تسليم الواجب');
+          TtsService.instance.speakLineSlow(context.l10n.childHomeworkSuccess);
         } else {
-          TtsService.instance.speakLine('أحسنت! تم تسليم الواجب');
+          TtsService.instance.speakLine(context.l10n.childHomeworkSuccess);
         }
       }
 
@@ -151,7 +153,7 @@ class _SubmitHomeworkSheetState extends State<_SubmitHomeworkSheet> {
       if (!mounted) return;
       setState(() {
         _saving = false;
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = _SubmissionError.submit;
       });
     }
   }

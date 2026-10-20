@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/screens/child_homework/child_homework_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class ChildHomeworkScreen extends StatefulWidget {
 class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
   List<Homework> _homeworks = [];
   bool _loading = true;
-  String? _error;
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -48,10 +49,10 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     if (showLoader) {
       setState(() {
         _loading = true;
-        _error = null;
+        _loadFailed = false;
       });
-    } else if (_error != null) {
-      setState(() => _error = null);
+    } else if (_loadFailed) {
+      setState(() => _loadFailed = false);
     }
     try {
       final list = await ApiService.getHomeworks(childId: widget.childId);
@@ -65,7 +66,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الواجبات';
+        _loadFailed = true;
         _loading = false;
       });
     }
@@ -90,7 +91,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
 
   Widget _buildScreen(BuildContext context) {
     return ChildColorFilter(child: Scaffold(
-      appBar: JisrAppBar(title: 'واجبات ${widget.childName}'),
+      appBar: JisrAppBar(title: context.l10n.childHomeworkFor(widget.childName)),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _buildBody(),
@@ -102,7 +103,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_loadFailed) {
       return ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -110,7 +111,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
           const Icon(AppIcons.error, size: 56, color: AppColors.red),
           const SizedBox(height: 14),
           Text(
-            _error!,
+            context.l10n.homeworksLoadFailed,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
@@ -122,7 +123,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
           Center(
             child: FilledButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ),
@@ -152,7 +153,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            'لا توجد واجبات',
+            context.l10n.childHomeworkEmpty,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
@@ -162,7 +163,7 @@ class _ChildHomeworkScreenState extends State<ChildHomeworkScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'سيظهر هنا أي واجب يضيفه المعلم.',
+            context.l10n.childHomeworkEmptyHint,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13.5, color: c.muted),
           ),

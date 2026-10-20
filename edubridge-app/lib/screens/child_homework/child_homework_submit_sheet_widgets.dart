@@ -8,7 +8,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            'تسليم: ${widget.homework.title}',
+            context.l10n.childHomeworkSheetTitle(widget.homework.title),
             style: TextStyle(
               fontSize: large ? 20 : 18,
               fontWeight: FontWeight.w800,
@@ -17,7 +17,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           ),
         ),
         IconButton(
-          tooltip: 'إغلاق',
+          tooltip: context.l10n.close,
           icon: const Icon(AppIcons.close, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
@@ -33,7 +33,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
       enabled: !_saving,
       style: TextStyle(fontSize: large ? 18 : 16),
       decoration: InputDecoration(
-        labelText: 'الإجابة النصية (اختياري)',
+        labelText: context.l10n.childHomeworkAnswer,
         labelStyle: TextStyle(fontSize: large ? 17 : 15),
         alignLabelWithHint: true,
         prefixIcon: const Icon(AppIcons.edit),
@@ -55,22 +55,21 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
       children: [
         const Icon(AppIcons.attach, color: AppColors.brandBlue, size: 22),
         const SizedBox(width: 6),
-        Text(
-          'أضف صوراً أو ملفات للحل:',
+        Flexible(child: Text(
+          context.l10n.childHomeworkAttachments,
           style: TextStyle(
             fontSize: large ? 18 : 16,
             fontWeight: FontWeight.w800,
             color: c.heading,
           ),
-        ),
+        )),
       ],
     );
   }
 
   Widget _buildMainAttachButton(bool large) {
-    return SizedBox(
-      width: double.infinity,
-      height: large ? 70 : 56,
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: large ? 70 : 56, minWidth: double.infinity),
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.brandTeal,
@@ -81,7 +80,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         ),
         icon: Icon(AppIcons.image, size: large ? 32 : 28),
         label: Text(
-          'اختر صوراً من المعرض',
+          context.l10n.childHomeworkGallery,
           style: TextStyle(
             fontSize: large ? 18 : 16,
             fontWeight: FontWeight.w800,
@@ -96,9 +95,9 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
     return Row(
       children: [
         Expanded(
-          child: SizedBox(
-            height: large ? 60 : 52,
-            child: FilledButton.icon(
+          child: ConstrainedBox(
+      constraints: BoxConstraints(minHeight: large ? 60 : 52),
+      child: FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.orange,
                 foregroundColor: Colors.white,
@@ -108,7 +107,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
               ),
               icon: Icon(AppIcons.camera, size: large ? 26 : 22),
               label: Text(
-                'التقط صورة',
+                context.l10n.childHomeworkCamera,
                 style: TextStyle(fontSize: large ? 16 : 14),
               ),
               onPressed: _pickFromCamera,
@@ -117,9 +116,9 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: SizedBox(
-            height: large ? 60 : 52,
-            child: OutlinedButton.icon(
+          child: ConstrainedBox(
+      constraints: BoxConstraints(minHeight: large ? 60 : 52),
+      child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.brandBlue,
                 side: const BorderSide(color: AppColors.brandBlue, width: 2),
@@ -129,7 +128,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
               ),
               icon: Icon(AppIcons.attach, size: large ? 26 : 22),
               label: Text(
-                'ملف آخر',
+                context.l10n.childHomeworkFile,
                 style: TextStyle(fontSize: large ? 16 : 14),
               ),
               onPressed: _pickAnyFile,
@@ -148,14 +147,14 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           children: [
             const Icon(AppIcons.check, color: AppColors.green, size: 22),
             const SizedBox(width: 6),
-            Text(
-              'الملفات المرفوعة (${_files.length}):',
+            Flexible(child: Text(
+              context.l10n.childHomeworkFiles(_files.length.toString()),
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: large ? 17 : 15,
                 color: c.heading,
               ),
-            ),
+            )),
           ],
         ),
         const SizedBox(height: 10),
@@ -193,7 +192,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              _error!,
+              switch (_error!) { _SubmissionError.gallery => context.l10n.galleryOpenFailed, _SubmissionError.camera => context.l10n.childHomeworkCameraError, _SubmissionError.file => context.l10n.childHomeworkFileError, _SubmissionError.answer => context.l10n.childHomeworkAnswerRequired, _SubmissionError.submit => context.l10n.childHomeworkSubmitError },
               style: const TextStyle(color: AppColors.red, fontSize: 14),
             ),
           ),
@@ -203,8 +202,8 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
   }
 
   Widget _buildSubmitButton(bool large) {
-    return SizedBox(
-      height: large ? 70 : 56,
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: large ? 70 : 56),
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.green,
@@ -224,7 +223,7 @@ extension _SubmitHomeworkSheetWidgets on _SubmitHomeworkSheetState {
               )
             : Icon(AppIcons.send, size: large ? 28 : 24),
         label: Text(
-          _saving ? 'جارِ الإرسال...' : 'إرسال التسليم',
+          _saving ? context.l10n.sending : context.l10n.childHomeworkSend,
           style: TextStyle(
             fontSize: large ? 20 : 17,
             fontWeight: FontWeight.w800,
