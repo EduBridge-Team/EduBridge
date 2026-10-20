@@ -501,6 +501,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       await _tts.stop();
       if (mounted) setState(() => _speakingIndex = null);
     }
+    if (!mounted) return;
     final text = (suggestedText ?? _inputController.text).trim();
     final image = suggestedText == null ? _selectedImage : null;
     if ((text.isEmpty && image == null) || _sending) return;
@@ -509,6 +510,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (mounted) setState(() => _listening = false);
     }
 
+    if (!mounted) return;
     _inputController.clear();
     final question = text.isEmpty ? context.l10n.noorExplainImage : text;
     final updated = [

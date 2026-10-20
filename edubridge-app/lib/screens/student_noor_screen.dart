@@ -420,7 +420,7 @@ class _ActionCard extends StatelessWidget {
               Flexible(child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10, vertical: 6,
-                )),
+                ),
                 decoration: BoxDecoration(
                   color: priorityColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(14),
@@ -433,7 +433,7 @@ class _ActionCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
+              )),
             ],
           ),
           if (action.reason.isNotEmpty) ...[
