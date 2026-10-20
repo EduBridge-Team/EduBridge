@@ -5054,5 +5054,125 @@
   "supportReasonFamilyCoordination": "Coordination between family and the education team",
   "@supportReasonFamilyCoordination": {
     "description": "Learning support: Coordination between family and the education team"
+  },
+  "specialtyChooseRequired": "Choose your specialty",
+  "@specialtyChooseRequired": {
+    "description": "Specialty selection and educational plan: Choose your specialty"
+  },
+  "specialtySaved": "Your specialty was saved",
+  "@specialtySaved": {
+    "description": "Specialty selection and educational plan: Your specialty was saved"
+  },
+  "specialtySaveFailed": "Could not save",
+  "@specialtySaveFailed": {
+    "description": "Specialty selection and educational plan: Could not save"
+  },
+  "specialtyTitle": "Choose specialty",
+  "@specialtyTitle": {
+    "description": "Specialty selection and educational plan: Choose specialty"
+  },
+  "specialtyMissing": "Your specialty is not set",
+  "@specialtyMissing": {
+    "description": "Specialty selection and educational plan: Your specialty is not set"
+  },
+  "specialtyRequiredHint": "Choose your specialty to follow children. Changes after saving require support.",
+  "@specialtyRequiredHint": {
+    "description": "Specialty selection and educational plan: Choose your specialty to follow children. Changes after saving require support."
+  },
+  "specialtyChooseHeading": "Choose your specialty:",
+  "@specialtyChooseHeading": {
+    "description": "Specialty selection and educational plan: Choose your specialty:"
+  },
+  "specialtyLearningSupportHint": "Follow learning needs and accommodations, and support participation and academic progress",
+  "@specialtyLearningSupportHint": {
+    "description": "Specialty selection and educational plan: Follow learning needs and accommodations, and support participation and academic progress"
+  },
+  "specialtyEducationalHint": "Assess learning, design educational plans and follow children’s progress",
+  "@specialtyEducationalHint": {
+    "description": "Specialty selection and educational plan: Assess learning, design educational plans and follow children’s progress"
+  },
+  "specialtyConfirm": "Confirm specialty",
+  "@specialtyConfirm": {
+    "description": "Specialty selection and educational plan: Confirm specialty"
+  },
+  "specialtyChangeHint": "After saving, contact technical support to change your specialty",
+  "@specialtyChangeHint": {
+    "description": "Specialty selection and educational plan: After saving, contact technical support to change your specialty"
+  },
+  "specialistPickerTitle": "Contact a specialist",
+  "@specialistPickerTitle": {
+    "description": "Specialty selection and educational plan: Contact a specialist"
+  },
+  "specialistPickerEmpty": "No specialists are available right now",
+  "@specialistPickerEmpty": {
+    "description": "Specialty selection and educational plan: No specialists are available right now"
+  },
+  "planEvaluationMissing": "No evaluation is recorded for this child",
+  "@planEvaluationMissing": {
+    "description": "Specialty selection and educational plan: No evaluation is recorded for this child"
+  },
+  "planEvaluationFailed": "Could not load the evaluation",
+  "@planEvaluationFailed": {
+    "description": "Specialty selection and educational plan: Could not load the evaluation"
+  },
+  "planEvaluationSummary": "Evaluation summary",
+  "@planEvaluationSummary": {
+    "description": "Specialty selection and educational plan: Evaluation summary"
+  },
+  "planDetailedEvaluations": "Detailed assessments",
+  "@planDetailedEvaluations": {
+    "description": "Specialty selection and educational plan: Detailed assessments"
+  },
+  "planCognitive": "Cognitive",
+  "@planCognitive": {
+    "description": "Specialty selection and educational plan: Cognitive"
+  },
+  "planMotor": "Motor",
+  "@planMotor": {
+    "description": "Specialty selection and educational plan: Motor"
+  },
+  "planEmotional": "Emotional",
+  "@planEmotional": {
+    "description": "Specialty selection and educational plan: Emotional"
+  },
+  "planSocial": "Social",
+  "@planSocial": {
+    "description": "Specialty selection and educational plan: Social"
+  },
+  "specialistPickerIntro": "Choose a specialist to contact about {name}",
+  "@specialistPickerIntro": {
+    "description": "Specialty selection and educational plan: Choose a specialist to contact about {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planChildTitle": "Educational plan - {name}",
+  "@planChildTitle": {
+    "description": "Specialty selection and educational plan: Educational plan - {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "planRecommendationsValue": "Recommendations: {value}",
+  "@planRecommendationsValue": {
+    "description": "Specialty selection and educational plan: Recommendations: {value}",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "planContentValue": "Plan: {value}",
+  "@planContentValue": {
+    "description": "Specialty selection and educational plan: Plan: {value}",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
   }
 }

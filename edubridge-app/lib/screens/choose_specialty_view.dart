@@ -6,11 +6,10 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'تحديد التخصص'),
+      appBar: JisrAppBar(title: context.l10n.specialtyTitle),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
@@ -35,7 +34,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'تخصصك غير محدد',
+                          context.l10n.specialtyMissing,
                           style: textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.orangeDeep,
@@ -43,7 +42,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'لتتمكن من متابعة الأطفال، يجب تحديد تخصصك. لا يمكن تغييره لاحقاً إلا عبر الدعم.',
+                          context.l10n.specialtyRequiredHint,
                           style: textTheme.bodySmall?.copyWith(
                             color: c.onTint,
                             height: 1.5,
@@ -57,7 +56,7 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
             ),
             const SizedBox(height: 24),
             Text(
-              'اختر تخصصك:',
+              context.l10n.specialtyChooseHeading,
               style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: c.heading,
@@ -66,9 +65,9 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
             const SizedBox(height: 16),
             _SpecialtyCard(
               icon: AppIcons.specialist,
-              title: 'مختص دعم تعليمي',
+              title: context.l10n.learningSupportSpecialist,
               description:
-                  'متابعة احتياجات التعلم والتكييفات التعليمية ودعم المشاركة والتقدم الأكاديمي',
+                  context.l10n.specialtyLearningSupportHint,
               color: AppColors.purple,
               selected: _selected == 'learning_support',
               onTap: () => _refreshState(() => _selected = 'learning_support'),
@@ -76,14 +75,14 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
             const SizedBox(height: 12),
             _SpecialtyCard(
               icon: AppIcons.lesson,
-              title: 'مختص تعليمي',
+              title: context.l10n.educationalSpecialist,
               description:
-                  'تقييم الجانب التعليمي، تصميم الخطط التعليمية، ومتابعة تقدّم الأطفال',
+                  context.l10n.specialtyEducationalHint,
               color: AppColors.brandBlue,
               selected: _selected == 'educational',
               onTap: () => _refreshState(() => _selected = 'educational'),
             ),
-            const Spacer(),
+            const SizedBox(height: 24),
             if (_error != null) ...[
               Container(
                 padding: const EdgeInsets.all(12),
@@ -97,7 +96,11 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        _error!,
+                        switch (_error!) {
+                          _SpecialtyError.selection => context.l10n.specialtyChooseRequired,
+                          _SpecialtyError.save => context.l10n.specialtySaveFailed,
+                          _SpecialtyError.connection => context.l10n.connectionFailed,
+                        },
                         style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.red,
                         ),
@@ -110,7 +113,6 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
               const SizedBox(height: 12),
             ],
             SizedBox(
-              height: 56,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _selected == null
@@ -129,13 +131,13 @@ extension _ChooseSpecialtyScreenStateView on _ChooseSpecialtyScreenState {
                         ),
                       )
                     : const Icon(AppIcons.check),
-                label: Text(_saving ? 'جارٍ الحفظ...' : 'تأكيد التخصص'),
+                label: Text(_saving ? context.l10n.savingGrade : context.l10n.specialtyConfirm),
                 onPressed: _selected == null || _saving ? null : _save,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'بعد الحفظ، لا يمكن التغيير إلا بالتواصل مع الدعم الفني',
+              context.l10n.specialtyChangeHint,
               textAlign: TextAlign.center,
               style: textTheme.labelSmall?.copyWith(
                 color: c.muted,
