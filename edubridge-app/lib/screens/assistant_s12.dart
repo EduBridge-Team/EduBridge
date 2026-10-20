@@ -20,22 +20,17 @@ extension _AssistantS12 on _AssistantScreenState {
         centerTitle: false,
         titleSpacing: 5,
         leading: IconButton(
-          tooltip: 'رجوع',
+          tooltip: context.l10n.back,
           onPressed: () => Navigator.maybePop(context),
           icon: const CircleAvatar(
             radius: 21,
             backgroundColor: Color(0x33FFFFFF),
-            // Keep the visual arrow pointing right, as in the S12 reference,
-            // without changing the surrounding Arabic RTL layout.
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Icon(Icons.arrow_forward_rounded,
-                  color: Colors.white, size: 23),
-            ),
+            foregroundColor: Colors.white,
+            child: BackButtonIcon(),
           ),
         ),
-        title: const Text(
-          'نور — المساعد الذكي',
+        title: Text(
+          context.l10n.noorTitle,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
@@ -46,7 +41,7 @@ extension _AssistantS12 on _AssistantScreenState {
         ),
         actions: [
           IconButton(
-            tooltip: 'مسح المحادثة',
+            tooltip: context.l10n.noorClearConversation,
             onPressed: _sending ? null : _clearHistory,
             icon: const Icon(Icons.delete_outline_rounded,
                 size: 23, color: Colors.white),
@@ -58,7 +53,6 @@ extension _AssistantS12 on _AssistantScreenState {
         top: false,
         child: Column(
           children: [
-            _s12ContextBanner(),
             if (_loadingHistory)
               const Expanded(
                 child: Center(child: CircularProgressIndicator()),
@@ -69,35 +63,37 @@ extension _AssistantS12 on _AssistantScreenState {
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
-                  itemCount: _messages.length + (_sending ? 1 : 0),
+                  itemCount: _messages.length + 1 + (_sending ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == _messages.length) {
+                    if (index == 0) return _s12ContextBanner();
+                    final messageIndex = index - 1;
+                    if (messageIndex == _messages.length) {
                       return Semantics(
                         liveRegion: true,
-                        label: 'نور يكتب الرد',
+                        label: context.l10n.noorTyping,
                         child: _TypingBubble(),
                       );
                     }
-                    final message = _messages[index];
+                    final message = _messages[messageIndex];
                     final showActions = message.role == 'assistant' &&
                         message != _AssistantScreenState._welcome;
                     final lastReply = showActions &&
-                        index == _messages.length - 1 && !_sending;
+                        messageIndex == _messages.length - 1 && !_sending;
                     return Semantics(
                       container: true,
-                      label: message.isUser ? 'رسالة المستخدم' : 'رد نور',
+                      label: message.isUser ? context.l10n.noorUserMessage : context.l10n.noorReply,
                       child: _MessageBubble(
                         message: message,
                         showActions: showActions,
                         isLastAssistant: lastReply,
-                        feedback: _responseFeedback[index],
-                        onCopy: showActions ? () => _copyResponse(index) : null,
+                        feedback: _responseFeedback[messageIndex],
+                        onCopy: showActions ? () => _copyResponse(messageIndex) : null,
                         onReadAloud: showActions
-                            ? () => _toggleReadAloud(index) : null,
-                        isSpeaking: _speakingIndex == index,
+                            ? () => _toggleReadAloud(messageIndex) : null,
+                        isSpeaking: _speakingIndex == messageIndex,
                         onRegenerate: lastReply ? _regenerateLastResponse : null,
                         onFeedback: showActions
-                            ? (helpful) => _rateResponse(index, helpful)
+                            ? (helpful) => _rateResponse(messageIndex, helpful)
                             : null,
                       ),
                     );
@@ -125,11 +121,11 @@ extension _AssistantS12 on _AssistantScreenState {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text('صورة محددة: ${_selectedImage!.name}',
+                      child: Text(context.l10n.noorSelectedImage(_selectedImage!.name),
                         overflow: TextOverflow.ellipsis),
                     ),
                     IconButton(
-                      tooltip: 'إزالة الصورة',
+                      tooltip: context.l10n.lessonRemoveImage,
                       onPressed: _sending ? null : _removeSelectedImage,
                       icon: const Icon(Icons.close_rounded),
                     ),
@@ -157,17 +153,20 @@ extension _AssistantS12 on _AssistantScreenState {
         children: [
           // Reuse the approved Noor character, shared with the assistant
           // launcher, instead of a generic smile emoji/icon.
-          const SizedBox(
+          SizedBox(
             width: 52,
             height: 52,
-            child: PetAvatar(size: 52),
+            child: TickerMode(
+              enabled: !MediaQuery.disableAnimationsOf(context),
+              child: const PetAvatar(size: 52),
+            ),
           ),
           const SizedBox(width: 11),
           Expanded(
             child: Text(
               hasLessonContext
-                  ? 'نور يعرف الدرس المفتوح ودورك داخل EduBridge ويمكنه شرحه بطريقة أبسط.'
-                  : 'نور يراعي دورك داخل EduBridge ويمكنه مساعدتك في تبسيط الدروس والمتابعة.',
+                  ? context.l10n.noorLessonBanner
+                  : context.l10n.noorRoleBanner,
               textAlign: TextAlign.start,
               style: const TextStyle(
                 fontSize: 12.5,
@@ -185,7 +184,7 @@ extension _AssistantS12 on _AssistantScreenState {
     return SizedBox(
       width: double.infinity,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 218),
+        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .24),
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
           child: Column(
@@ -195,13 +194,12 @@ extension _AssistantS12 on _AssistantScreenState {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 7),
                   child: Align(
-                    alignment: Alignment.centerRight,
+                    alignment: AlignmentDirectional.centerStart,
                     child: OutlinedButton.icon(
                       onPressed: () => _send(suggestion),
                       icon: const Icon(Icons.auto_awesome_rounded, size: 14),
                       label: Text(
                         suggestion,
-                        maxLines: 2,
                         style: const TextStyle(
                           fontSize: 12.8,
                           fontWeight: FontWeight.w700,
@@ -254,10 +252,10 @@ extension _AssistantS12 on _AssistantScreenState {
               minLines: 1,
               maxLines: 3,
               maxLength: 2000,
-              textDirection: TextDirection.rtl,
+              textDirection: Directionality.of(context),
               textInputAction: TextInputAction.newline,
-              decoration: const InputDecoration(
-                hintText: 'اكتب سؤالك لنور...',
+              decoration: InputDecoration(
+                hintText: context.l10n.noorInputHint,
                 hintStyle: TextStyle(color: Color(0xFF7893AA), fontSize: 14),
                 isDense: true,
                 border: InputBorder.none,
@@ -270,7 +268,7 @@ extension _AssistantS12 on _AssistantScreenState {
             ),
           ),
           PopupMenuButton<String>(
-            tooltip: 'خيارات السؤال',
+            tooltip: context.l10n.noorQuestionOptions,
             enabled: !_sending,
             icon: Icon(
               _listening ? Icons.mic_rounded : Icons.more_horiz_rounded,
@@ -282,19 +280,19 @@ extension _AssistantS12 on _AssistantScreenState {
               if (value == 'speech') _toggleDictation();
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'picture',
-                child: Text('إرفاق صورة تعليمية'),
+                child: Text(context.l10n.noorAttachImage),
               ),
               PopupMenuItem(
                 value: 'speech',
                 child: Text(_listening
-                    ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال صوتيًا'),
+                    ? context.l10n.noorStopDictation : context.l10n.noorDictate),
               ),
             ],
           ),
           IconButton.filled(
-            tooltip: 'إرسال',
+            tooltip: context.l10n.send,
             onPressed: _sending ? null : () => _send(),
             icon: const Icon(Icons.mark_email_read_outlined, size: 21),
             style: IconButton.styleFrom(

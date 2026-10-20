@@ -1,5 +1,6 @@
 // lib/screens/assistant_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -17,6 +18,8 @@ part 'assistant_screen_view.dart';
 part 'assistant_s12.dart';
 
 const _structuredAssistantHeadings = <String>{
+  'Goal', 'Materials', 'Steps', 'Duration', 'Notes', 'Task', 'Hint',
+  'Next step', 'Summary', 'Observed strengths', 'Needs follow-up',
   'الهدف',
   'المواد',
   'الخطوات',
@@ -111,6 +114,14 @@ List<_AssistantResponseSection> _parseAssistantSections(String value) {
   return sections;
 }
 
+// Preserve each stored message's reading direction when the app locale changes.
+TextDirection _assistantTextDirection(String text, TextDirection fallback) {
+  final firstLetter = RegExp(r'[A-Za-z\u0600-\u06FF]').firstMatch(text)?.group(0);
+  if (firstLetter == null) return fallback;
+  return RegExp(r'[\u0600-\u06FF]').hasMatch(firstLetter)
+      ? TextDirection.rtl : TextDirection.ltr;
+}
+
 class AssistantScreen extends StatefulWidget {
   final String? lessonContext;
 
@@ -123,8 +134,7 @@ class AssistantScreen extends StatefulWidget {
 class _AssistantScreenState extends State<AssistantScreen> {
   static const _welcome = AssistantMessage(
     role: 'assistant',
-    content:
-        'مرحباً! أنا نور\nأستطيع تبسيط الدروس والإجابة عن أسئلتك. كيف أساعدك؟',
+    content: '',
   );
 
   final _inputController = TextEditingController();
@@ -179,27 +189,27 @@ class _AssistantScreenState extends State<AssistantScreen> {
   List<String> get _suggestions {
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
     final items = <String>[
-      if (hasLessonContext) 'اشرح هذا الدرس ببساطة',
-      if (!hasLessonContext && _role == 'specialist') 'اشرح الدرس ببساطة',
+      if (hasLessonContext) context.l10n.noorExplainCurrentLesson,
+      if (!hasLessonContext && _role == 'specialist') context.l10n.noorExplainLesson,
       ...switch (_role) {
-        'parent' => const [
-            'لخّص لي ما يمكنني متابعته اليوم',
-            'كيف أساعد طفلي في هذا الدرس؟',
-            'اقترح نشاطاً منزلياً قصيراً',
+        'parent' => [
+            context.l10n.noorParentToday,
+            context.l10n.noorParentHelp,
+            context.l10n.noorHomeActivity,
           ],
-        'teacher' => const [
-            'اقترح طريقة أبسط لشرح الدرس',
-            'أنشئ أسئلة قصيرة على هذا الموضوع',
-            'ساعدني في صياغة تغذية راجعة تعليمية',
+        'teacher' => [
+            context.l10n.noorSimplerTeaching,
+            context.l10n.noorShortQuestions,
+            context.l10n.noorFeedbackHelp,
           ],
-        'specialist' => const [
-            'ساعدني في تجهيز أهداف الجلسة القادمة',
-            'لخّص التقدم الموجود في السياق',
-            'اقترح نشاطاً تعليمياً مناسباً للمتابعة',
+        'specialist' => [
+            context.l10n.noorSessionGoals,
+            context.l10n.noorSummarizeProgress,
+            context.l10n.noorFollowupActivity,
           ],
-        _ => const [
-            'بسّط لي هذا الموضوع',
-            'اقترح نشاطاً تعليمياً',
+        _ => [
+            context.l10n.noorSimplifyTopic,
+            context.l10n.noorLearningActivity,
           ],
       },
     ];
@@ -213,14 +223,14 @@ class _AssistantScreenState extends State<AssistantScreen> {
   List<String> get _followUpSuggestions {
     final hasLessonContext = widget.lessonContext?.trim().isNotEmpty ?? false;
     final items = <String>[
-      'بسّط أكثر',
-      'اعطني مثالاً عملياً',
-      if (hasLessonContext) 'اعمل 3 أسئلة قصيرة',
+      context.l10n.noorSimplifyMore,
+      context.l10n.noorPracticalExample,
+      if (hasLessonContext) context.l10n.noorThreeQuestions,
       ...switch (_role) {
-        'parent' => const ['اقترح نشاط متابعة قصيراً'],
-        'teacher' => const ['حوّل الفكرة إلى نشاط صفي'],
-        'specialist' => const ['اقترح خطوة متابعة تعليمية'],
-        _ => const ['اعطني تمريناً قصيراً'],
+        'parent' => [context.l10n.noorShortFollowup],
+        'teacher' => [context.l10n.noorClassActivity],
+        'specialist' => [context.l10n.noorNextLearningStep],
+        _ => [context.l10n.noorShortExercise],
       },
     ];
 
@@ -235,32 +245,32 @@ class _AssistantScreenState extends State<AssistantScreen> {
 
   List<_NoorNavigationAction> get _navigationActions {
     final lessons = _NoorNavigationAction(
-      label: 'الدروس',
+      label: context.l10n.lessons,
       icon: Icons.menu_book_rounded,
       builder: () => const LessonsScreen(),
     );
     final homeworks = _NoorNavigationAction(
-      label: 'الواجبات',
+      label: context.l10n.homework,
       icon: Icons.assignment_rounded,
       builder: () => const ChildrenScreen(destination: 'homeworks'),
     );
     final progress = _NoorNavigationAction(
-      label: 'التقدم',
+      label: context.l10n.noorProgress,
       icon: Icons.trending_up_rounded,
       builder: () => const ChildrenScreen(forProgress: true),
     );
     final weekly = _NoorNavigationAction(
-      label: 'التقدم الأسبوعي',
+      label: context.l10n.weeklyProgress,
       icon: Icons.calendar_view_week_rounded,
       builder: () => const ChildrenScreen(destination: 'weekly-reports'),
     );
     final chats = _NoorNavigationAction(
-      label: 'المحادثات',
+      label: context.l10n.conversations,
       icon: Icons.chat_bubble_outline_rounded,
       builder: () => const ChatsScreen(),
     );
     final notifications = _NoorNavigationAction(
-      label: 'الإشعارات',
+      label: context.l10n.notifications,
       icon: Icons.notifications_none_rounded,
       builder: () => const NotificationsScreen(),
     );
@@ -317,7 +327,9 @@ class _AssistantScreenState extends State<AssistantScreen> {
     setState(() => _speakingIndex = null);
     if (wasSpeaking) return;
     try {
-      await _tts.setLanguage('ar-SA');
+      await _tts.setLanguage(_assistantTextDirection(
+        _messages[index].content, Directionality.of(context)) == TextDirection.rtl
+          ? 'ar-SA' : 'en-US');
       await _tts.setSpeechRate(0.45);
       if (!mounted) return;
       setState(() => _speakingIndex = index);
@@ -326,7 +338,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (!mounted) return;
       setState(() => _speakingIndex = null);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر تشغيل القراءة الصوتية على هذا الجهاز.')),
+        SnackBar(content: Text(context.l10n.noorReadFailed)),
       );
     }
   }
@@ -336,8 +348,8 @@ class _AssistantScreenState extends State<AssistantScreen> {
     await Clipboard.setData(ClipboardData(text: _messages[index].content));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم نسخ رد نور'),
+      SnackBar(
+        content: Text(context.l10n.noorCopied),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -395,7 +407,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       setState(() => _messages = original);
       await AssistantService.saveHistory(original);
       if (!mounted) return;
-      final message = error.toString().replaceFirst('Exception: ', '');
+      final message = context.sharedMessage(error.toString().replaceFirst('Exception: ', ''));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
       );
@@ -433,13 +445,14 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (!mounted) return;
       if (!available) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('التعرف الصوتي غير متاح على هذا الجهاز.')),
+          SnackBar(content: Text(context.l10n.noorSpeechUnavailable)),
         );
         return;
       }
       setState(() => _listening = true);
       await _speech.listen(
-        listenOptions: stt.SpeechListenOptions(localeId: 'ar_SA'),
+        listenOptions: stt.SpeechListenOptions(localeId:
+          Localizations.localeOf(context).languageCode == 'en' ? 'en_US' : 'ar_SA'),
         onResult: (result) {
           if (!mounted || !result.finalResult) return;
           final spoken = result.recognizedWords.trim();
@@ -456,7 +469,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (!mounted) return;
       setState(() => _listening = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر بدء الإملاء الصوتي. تحقق من إذن الميكروفون.')),
+        SnackBar(content: Text(context.l10n.noorDictationFailed)),
       );
     }
   }
@@ -469,7 +482,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (await image.length() > 3 * 1024 * 1024) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('الصورة يجب ألا تتجاوز 3 ميجابايت.')),
+          SnackBar(content: Text(context.l10n.noorImageTooLarge)),
         );
         return;
       }
@@ -478,7 +491,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر اختيار الصورة.')),
+        SnackBar(content: Text(context.l10n.noorImagePickFailed)),
       );
     }
   }
@@ -488,6 +501,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       await _tts.stop();
       if (mounted) setState(() => _speakingIndex = null);
     }
+    if (!mounted) return;
     final text = (suggestedText ?? _inputController.text).trim();
     final image = suggestedText == null ? _selectedImage : null;
     if ((text.isEmpty && image == null) || _sending) return;
@@ -496,11 +510,12 @@ class _AssistantScreenState extends State<AssistantScreen> {
       if (mounted) setState(() => _listening = false);
     }
 
+    if (!mounted) return;
     _inputController.clear();
-    final question = text.isEmpty ? 'اشرح محتوى هذه الصورة التعليمية.' : text;
+    final question = text.isEmpty ? context.l10n.noorExplainImage : text;
     final updated = [
       ..._messages.where((message) => message != _welcome),
-      AssistantMessage(role: 'user', content: image == null ? question : '[سؤال عن صورة] $question'),
+      AssistantMessage(role: 'user', content: image == null ? question : context.l10n.noorImageQuestion(question)),
     ];
     setState(() {
       _messages = updated;
@@ -524,7 +539,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
       await AssistantService.saveHistory(_messages);
     } catch (error) {
       if (!mounted) return;
-      final message = error.toString().replaceFirst('Exception: ', '');
+      final message = context.sharedMessage(error.toString().replaceFirst('Exception: ', ''));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
       );
@@ -604,14 +619,16 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
     final isUser = message.isUser;
+    final displayContent = message == _AssistantScreenState._welcome
+        ? context.l10n.noorWelcome : message.content;
     final sections = isUser
         ? const <_AssistantResponseSection>[]
-        : _parseAssistantSections(message.content);
+        : _parseAssistantSections(displayContent);
     final hasStructured = sections.any((section) => section.isStructured);
 
     final contentWidget = isUser || !hasStructured
         ? Text(
-            isUser ? message.content : _cleanAssistantText(message.content),
+            isUser ? displayContent : _cleanAssistantText(displayContent),
             textAlign: TextAlign.start,
             style: TextStyle(
               color: isUser ? Colors.white : c.body,
@@ -688,7 +705,7 @@ class _MessageBubble extends StatelessWidget {
         border: isUser ? null : Border.all(color: c.line),
       ),
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: _assistantTextDirection(displayContent, Directionality.of(context)),
         child: contentWidget,
       ),
     );
@@ -709,32 +726,32 @@ class _MessageBubble extends StatelessWidget {
                 runSpacing: 3,
                 children: [
                   _ResponseToolButton(
-                    tooltip: 'نسخ الرد',
+                    tooltip: context.l10n.noorCopyTooltip,
                     icon: Icons.copy_rounded,
-                    label: 'نسخ',
+                    label: context.l10n.noorCopy,
                     onPressed: onCopy,
                   ),
                   _ResponseToolButton(
-                    tooltip: isSpeaking ? 'إيقاف قراءة الرد' : 'قراءة الرد صوتيًا',
+                    tooltip: isSpeaking ? context.l10n.noorStopReading : context.l10n.noorReadReply,
                     icon: isSpeaking ? Icons.stop_circle_outlined : Icons.volume_up_outlined,
-                    label: isSpeaking ? 'إيقاف' : 'استمع',
+                    label: isSpeaking ? context.l10n.lessonStopPlayback : context.l10n.listen,
                     onPressed: onReadAloud,
                   ),
                   if (isLastAssistant)
                     _ResponseToolButton(
-                      tooltip: 'إعادة توليد الرد',
+                      tooltip: context.l10n.noorRegenerateTooltip,
                       icon: Icons.refresh_rounded,
-                      label: 'إعادة',
+                      label: context.l10n.noorRegenerate,
                       onPressed: onRegenerate,
                     ),
                   _ResponseToolButton(
-                    tooltip: 'الرد مفيد',
+                    tooltip: context.l10n.noorHelpful,
                     icon: Icons.thumb_up_alt_outlined,
                     active: feedback == true,
                     onPressed: onFeedback == null ? null : () => onFeedback!(true),
                   ),
                   _ResponseToolButton(
-                    tooltip: 'الرد غير مفيد',
+                    tooltip: context.l10n.noorNotHelpful,
                     icon: Icons.thumb_down_alt_outlined,
                     active: feedback == false,
                     onPressed: onFeedback == null ? null : () => onFeedback!(false),
@@ -767,7 +784,7 @@ class _ResponseToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    return Padding(
+    return Tooltip(message: tooltip, child: Padding(
       padding: const EdgeInsetsDirectional.only(end: 3),
       child: TextButton.icon(
         onPressed: onPressed,
@@ -783,7 +800,7 @@ class _ResponseToolButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -825,7 +842,7 @@ class _NavigationActionChip extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 44),
         child: ActionChip(
         avatar: Icon(action.icon, size: 18),
-        label: Text('فتح ${action.label}'),
+        label: Text(context.l10n.noorOpenPage(action.label)),
         onPressed: () => onTap(action),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -37,7 +38,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
     );
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode != 200) {
-      throw Exception(data['error'] ?? data['message'] ?? 'تعذّر تحميل سياق الطالب.');
+      throw const FormatException();
     }
 
     final promptContext = (data['prompt_context'] ?? '').toString().trim();
@@ -90,10 +91,11 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         '/assistant/students/${widget.childId}/draft-homework',
         const {},
       );
+      if (!mounted) return;
       final data = ApiService.decodeMap(response.body);
       if (response.statusCode != 200 || data['draft'] is! Map) {
         throw Exception(
-          data['error'] ?? data['message'] ?? 'تعذّر إنشاء مسودة الواجب.',
+          data['error'] ?? data['message'] ?? context.l10n.noorDraftFailed,
         );
       }
 
@@ -129,7 +131,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            error.toString().replaceFirst('Exception: ', ''),
+            context.l10n.noorDraftFailed,
           ),
         ),
       );
@@ -144,23 +146,17 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
       centerTitle: false,
       titleSpacing: 4,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: () => Navigator.maybePop(context),
         icon: const CircleAvatar(
           radius: 21,
           backgroundColor: Color(0x33FFFFFF),
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Icon(
-              Icons.arrow_forward_rounded,
-              color: Colors.white,
-              size: 23,
-            ),
-          ),
+          foregroundColor: Colors.white,
+          child: BackButtonIcon(),
         ),
       ),
       title: Text(
-        'نور • ${widget.childName}',
+        context.l10n.noorStudentTitle(widget.childName),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
@@ -186,18 +182,18 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'ملخص نور الذكي',
+              Expanded(child: Text(
+                context.l10n.noorStudentSummary,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                 ),
-              ),
+              )),
               SizedBox(width: 12),
               Icon(Icons.auto_awesome_rounded,
                   color: Colors.white, size: 17),
@@ -205,7 +201,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
           ),
           SizedBox(height: 12),
           Text(
-            'هذه اقتراحات تعليمية مبنية على بيانات EduBridge المتاحة للطالب. لا تمثل تشخيصاً طبياً أو نفسياً، ولا يتم تنفيذ أي إجراء تلقائياً.',
+            context.l10n.noorStudentSummaryHint,
             textAlign: TextAlign.start,
             style: TextStyle(
               color: Colors.white,
@@ -225,7 +221,6 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
         child: SizedBox(
           width: double.infinity,
-          height: 58,
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
               foregroundColor: Colors.white,
@@ -236,8 +231,8 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
             ),
             onPressed: () => _openChat(data),
             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
-            label: const Text(
-              'اسأل نور عن هذا الطفل',
+            label: Text(
+              context.l10n.noorAskStudent,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
@@ -262,7 +257,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
           );
         }
         if (snapshot.hasError) {
-          final message = snapshot.error.toString().replaceFirst('Exception: ', '');
+          final message = context.l10n.noorStudentLoadFailed;
           return Scaffold(
             backgroundColor: const Color(0xFFF5F9FC),
             appBar: _s13AppBar(),
@@ -278,7 +273,7 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                       onPressed: () =>
                           setState(() => _contextFuture = _loadContext()),
                       icon: const Icon(Icons.refresh),
-                      label: const Text('إعادة المحاولة'),
+                      label: Text(context.l10n.retryAction),
                     ),
                   ],
                 ),
@@ -297,8 +292,8 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
             children: [
               _s13SummaryCard(),
               const SizedBox(height: 18),
-              const Text(
-                'الخطوات التالية المقترحة',
+              Text(
+                context.l10n.noorSuggestedNextSteps,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Color(0xFF112F4A),
@@ -315,8 +310,8 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                     borderRadius: BorderRadius.circular(17),
                     border: Border.all(color: const Color(0xFFD8E6F2)),
                   ),
-                  child: const Text(
-                    'لا توجد خطوات متابعة مقترحة حاليًا.',
+                  child: Text(
+                    context.l10n.noorNoFollowup,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Color(0xFF637F98)),
                   ),
@@ -331,7 +326,6 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
               if (data.role == 'teacher') ...[
                 const SizedBox(height: 4),
                 SizedBox(
-                  height: 52,
                   child: OutlinedButton.icon(
                     onPressed: _generatingHomeworkDraft
                         ? null
@@ -345,15 +339,15 @@ class _StudentNoorScreenState extends State<StudentNoorScreen> {
                         : const Icon(Icons.assignment_outlined),
                     label: Text(
                       _generatingHomeworkDraft
-                          ? 'نور تجهّز المسودة...'
-                          : 'إنشاء مسودة واجب بنور',
+                          ? context.l10n.noorDraftLoading
+                          : context.l10n.noorCreateHomework,
                       style: const TextStyle(fontWeight: FontWeight.w800),
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'ستفتح المسودة في نموذج الواجب لتراجعها وتعدّلها قبل النشر.',
+                  context.l10n.noorDraftReviewHint,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Color(0xFF637F98), fontSize: 11.5),
                 ),
@@ -384,9 +378,9 @@ class _ActionCard extends StatelessWidget {
       _ => const Color(0xFF038D98),
     };
     final priorityLabel = switch (action.priority) {
-      'high' => 'أولوية عالية',
-      'medium' => 'أولوية متوسطة',
-      _ => 'اقتراح متابعة',
+      'high' => context.l10n.noorHighPriority,
+      'medium' => context.l10n.noorMediumPriority,
+      _ => context.l10n.noorFollowupSuggestion,
     };
 
     return Container(
@@ -423,7 +417,7 @@ class _ActionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 9),
-              Container(
+              Flexible(child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10, vertical: 6,
                 ),
@@ -439,7 +433,7 @@ class _ActionCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
+              )),
             ],
           ),
           if (action.reason.isNotEmpty) ...[
@@ -456,12 +450,12 @@ class _ActionCard extends StatelessWidget {
           ],
           const SizedBox(height: 10),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerEnd,
             child: TextButton.icon(
               onPressed: onAsk,
               icon: const Icon(Icons.auto_awesome_rounded, size: 15),
-              label: const Text(
-                'ناقشها مع نور',
+              label: Text(
+                context.l10n.noorDiscuss,
                 style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
               ),
               style: TextButton.styleFrom(

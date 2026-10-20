@@ -5,7 +5,7 @@ extension _PetAvatarStateView on _PetAvatarState {
     final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
     return Semantics(
-      label: 'نور، المساعد الذكي',
+      label: context.l10n.noorTitle,
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {

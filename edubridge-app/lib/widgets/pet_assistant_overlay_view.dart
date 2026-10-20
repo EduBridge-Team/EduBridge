@@ -49,7 +49,7 @@ extension _PetAssistantOverlayStateView on _PetAssistantOverlayState {
                               top: _y,
                               child: Semantics(
                                 label:
-                                    'نور، المساعد الذكي. اضغط لفتحه أو اسحبه لتحريكه',
+                                    context.l10n.noorLauncherLabel,
                                 button: true,
                                 child: GestureDetector(
                                   behavior: HitTestBehavior.opaque,
