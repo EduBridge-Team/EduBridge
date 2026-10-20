@@ -53,7 +53,6 @@ extension _AssistantS12 on _AssistantScreenState {
         top: false,
         child: Column(
           children: [
-            _s12ContextBanner(),
             if (_loadingHistory)
               const Expanded(
                 child: Center(child: CircularProgressIndicator()),
@@ -64,20 +63,22 @@ extension _AssistantS12 on _AssistantScreenState {
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
-                  itemCount: _messages.length + (_sending ? 1 : 0),
+                  itemCount: _messages.length + 1 + (_sending ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == _messages.length) {
+                    if (index == 0) return _s12ContextBanner();
+                    final messageIndex = index - 1;
+                    if (messageIndex == _messages.length) {
                       return Semantics(
                         liveRegion: true,
                         label: context.l10n.noorTyping,
                         child: _TypingBubble(),
                       );
                     }
-                    final message = _messages[index];
+                    final message = _messages[messageIndex];
                     final showActions = message.role == 'assistant' &&
                         message != _AssistantScreenState._welcome;
                     final lastReply = showActions &&
-                        index == _messages.length - 1 && !_sending;
+                        messageIndex == _messages.length - 1 && !_sending;
                     return Semantics(
                       container: true,
                       label: message.isUser ? context.l10n.noorUserMessage : context.l10n.noorReply,
@@ -85,14 +86,14 @@ extension _AssistantS12 on _AssistantScreenState {
                         message: message,
                         showActions: showActions,
                         isLastAssistant: lastReply,
-                        feedback: _responseFeedback[index],
-                        onCopy: showActions ? () => _copyResponse(index) : null,
+                        feedback: _responseFeedback[messageIndex],
+                        onCopy: showActions ? () => _copyResponse(messageIndex) : null,
                         onReadAloud: showActions
-                            ? () => _toggleReadAloud(index) : null,
-                        isSpeaking: _speakingIndex == index,
+                            ? () => _toggleReadAloud(messageIndex) : null,
+                        isSpeaking: _speakingIndex == messageIndex,
                         onRegenerate: lastReply ? _regenerateLastResponse : null,
                         onFeedback: showActions
-                            ? (helpful) => _rateResponse(index, helpful)
+                            ? (helpful) => _rateResponse(messageIndex, helpful)
                             : null,
                       ),
                     );
@@ -152,10 +153,13 @@ extension _AssistantS12 on _AssistantScreenState {
         children: [
           // Reuse the approved Noor character, shared with the assistant
           // launcher, instead of a generic smile emoji/icon.
-          const SizedBox(
+          SizedBox(
             width: 52,
             height: 52,
-            child: PetAvatar(size: 52),
+            child: TickerMode(
+              enabled: !MediaQuery.disableAnimationsOf(context),
+              child: const PetAvatar(size: 52),
+            ),
           ),
           const SizedBox(width: 11),
           Expanded(

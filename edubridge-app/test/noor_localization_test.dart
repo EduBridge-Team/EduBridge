@@ -34,7 +34,7 @@ Future<void> _mount(WidgetTester tester, Widget screen, String language, {double
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(scale)), child: child!), home: screen));
+        textScaler: TextScaler.linear(scale), disableAnimations: true), child: child!), home: screen));
     for (var frame = 0; frame < 3; frame++) {
       await Future<void>.delayed(Duration.zero);
       await tester.pump();
@@ -88,6 +88,7 @@ void main() {
         await http.runWithClient(() async {
           await _mount(tester, const StudentNoorScreen(childId: 7, childName: 'محمود'), language, scale: scale);
           expect(find.text(strings.noorStudentTitle('محمود')), findsOneWidget);
+          await tester.scrollUntilVisible(find.text('اقتراح أصلي من الخادم'), 180, scrollable: find.byType(Scrollable).first);
           expect(find.text('اقتراح أصلي من الخادم'), findsOneWidget);
           expect(find.text('سبب أصلي'), findsOneWidget);
           expect(find.text(strings.noorCreateHomework), findsNothing);
@@ -135,7 +136,9 @@ void main() {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       await http.runWithClient(() async {
         await _mount(tester, const StudentNoorScreen(childId: 7, childName: 'محمود'), language, scale: 2);
+        await tester.scrollUntilVisible(find.text(strings.noorNoFollowup), 180, scrollable: find.byType(Scrollable).first);
         expect(find.text(strings.noorNoFollowup), findsOneWidget);
+        await tester.scrollUntilVisible(find.text(strings.noorCreateHomework), 180, scrollable: find.byType(Scrollable).first);
         expect(find.text(strings.noorCreateHomework), findsOneWidget);
       }, () => _client(empty: true));
     });
