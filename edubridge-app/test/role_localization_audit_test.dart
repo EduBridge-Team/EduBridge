@@ -88,10 +88,13 @@ void main() {
           final down = DisabilityDisplay.label('متلازمة داون', strings);
           await tester.scrollUntilVisible(find.text(down), 160, scrollable: find.byType(Scrollable).first);
           expect(find.text(down), findsOneWidget);
-          expect(find.text(DisabilityDisplay.label('غير محدد', strings)), findsOneWidget);
-          expect(find.text('وصف مخصص من المؤسسة'), findsOneWidget);
           expect(tester.widgetList<LinearProgressIndicator>(find.byType(LinearProgressIndicator))
             .map((widget) => widget.value), contains(.6));
+          final unspecified = DisabilityDisplay.label('غير محدد', strings);
+          await tester.scrollUntilVisible(find.text(unspecified), 100, scrollable: find.byType(Scrollable).first);
+          expect(find.text(unspecified), findsOneWidget);
+          await tester.scrollUntilVisible(find.text('وصف مخصص من المؤسسة'), 100, scrollable: find.byType(Scrollable).first);
+          expect(find.text('وصف مخصص من المؤسسة'), findsOneWidget);
           await tester.scrollUntilVisible(find.text('0-5'), 160, scrollable: find.byType(Scrollable).first);
           final range = tester.widget<Text>(find.text('0-5'));
           expect(range.textDirection, TextDirection.ltr);

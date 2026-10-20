@@ -280,14 +280,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 children: [
                   Icon(Icons.schedule_rounded, size: 17, color: c.muted),
                   const SizedBox(width: 6),
-                  Text(
+                  Flexible(child: Text(
                     _formatDate(date),
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                       color: c.muted,
                     ),
-                  ),
+                  )),
                 ],
               ),
               if (canOpenSuggestion) ...[

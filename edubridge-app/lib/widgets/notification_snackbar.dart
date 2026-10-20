@@ -47,6 +47,8 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _show(notif);
     });
+    // A notification can arrive while the UI is idle with no frame scheduled.
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   void _show(Map<String, dynamic> notif) {
