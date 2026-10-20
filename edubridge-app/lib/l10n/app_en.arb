@@ -5715,5 +5715,131 @@
   "notificationTitleLessonRecommendation": "Suggested lesson for your child",
   "@notificationTitleLessonRecommendation": {
     "description": "System notification title for display only; preserve message content."
+  },
+  "childHomeworkEmpty": "No homework yet",
+  "@childHomeworkEmpty": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkEmptyHint": "Homework from your teacher will appear here.",
+  "@childHomeworkEmptyHint": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmittedLate": "Submitted late",
+  "@childHomeworkSubmittedLate": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmitted": "Submitted",
+  "@childHomeworkSubmitted": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkOverdue": "Overdue",
+  "@childHomeworkOverdue": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmit": "Submit homework",
+  "@childHomeworkSubmit": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkDone": "You submitted this homework",
+  "@childHomeworkDone": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAnswer": "Your answer (optional)",
+  "@childHomeworkAnswer": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAttachments": "Add photos or files for your answer:",
+  "@childHomeworkAttachments": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkGallery": "Choose photos",
+  "@childHomeworkGallery": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkCamera": "Take a photo",
+  "@childHomeworkCamera": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFile": "Another file",
+  "@childHomeworkFile": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSend": "Send answer",
+  "@childHomeworkSend": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkCameraError": "Could not open the camera",
+  "@childHomeworkCameraError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFileError": "Could not choose the file",
+  "@childHomeworkFileError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAnswerRequired": "Write an answer or add at least one file",
+  "@childHomeworkAnswerRequired": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSuccess": "Well done! Your homework was submitted",
+  "@childHomeworkSuccess": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmitError": "Could not submit your homework. Try again.",
+  "@childHomeworkSubmitError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFor": "{name}’s homework",
+  "@childHomeworkFor": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkSheetTitle": "Submit: {title}",
+  "@childHomeworkSheetTitle": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkYourAnswer": "Your answer: {answer}",
+  "@childHomeworkYourAnswer": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkGrade": "Grade: {grade}",
+  "@childHomeworkGrade": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkFeedback": "Teacher’s feedback: {feedback}",
+  "@childHomeworkFeedback": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "feedback": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkFiles": "Attached files ({count}):",
+  "@childHomeworkFiles": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   }
 }

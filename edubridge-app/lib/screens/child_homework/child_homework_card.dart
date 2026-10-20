@@ -29,13 +29,13 @@ class _HomeworkCard extends StatelessWidget {
     String statusText;
     if (isSubmitted) {
       statusColor = AppColors.brandBlueLight;
-      statusText = submission.isLate ? 'تم التسليم (متأخر)' : 'تم التسليم';
+      statusText = submission.isLate ? context.l10n.childHomeworkSubmittedLate : context.l10n.childHomeworkSubmitted;
     } else if (isOverdue) {
       statusColor = AppColors.brandTealDeep;
-      statusText = 'متأخر';
+      statusText = context.l10n.childHomeworkOverdue;
     } else {
       statusColor = AppColors.brandGreen;
-      statusText = 'لم يُسلَّم';
+      statusText = context.l10n.homeworkPendingFilter;
     }
 
     return Container(
@@ -96,7 +96,7 @@ class _HomeworkCard extends StatelessWidget {
               children: [
                 _infoChip(
                   AppIcons.calendar,
-                  'التسليم: ${homework.dueDate.day}/${homework.dueDate.month}/${homework.dueDate.year}',
+                  context.l10n.homeworkDueDate('${homework.dueDate.day}/${homework.dueDate.month}/${homework.dueDate.year}'),
                   isOverdue ? AppColors.brandTealDeep : c.muted,
                 ),
                 if (homework.subject != null)
@@ -114,18 +114,17 @@ class _HomeworkCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (isSubmitted)
-              _buildSubmittedBox(submission, c, large)
+              _buildSubmittedBox(context, submission, c, large)
             else
-              SizedBox(
-                width: double.infinity,
-                height: large ? 64 : 52,
-                child: FilledButton.icon(
+              ConstrainedBox(
+      constraints: BoxConstraints(minHeight: large ? 64 : 52, minWidth: double.infinity),
+      child: FilledButton.icon(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.brandTealDeep,
                   ),
                   icon: Icon(AppIcons.upload, size: large ? 28 : 24),
                   label: Text(
-                    'تسليم الواجب',
+                    context.l10n.childHomeworkSubmit,
                     style: TextStyle(
                       fontSize: large ? 18 : 16,
                       fontWeight: FontWeight.w800,
@@ -140,7 +139,7 @@ class _HomeworkCard extends StatelessWidget {
   }
 
   Widget _buildSubmittedBox(
-      HomeworkSubmission submission, JisrColors c, bool large) {
+      BuildContext context, HomeworkSubmission submission, JisrColors c, bool large) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -158,21 +157,21 @@ class _HomeworkCard extends StatelessWidget {
             children: [
               Icon(AppIcons.check, color: c.success, size: 24),
               const SizedBox(width: 8),
-              Text(
-                'سلّمت هذا الواجب',
+              Flexible(child: Text(
+                context.l10n.childHomeworkDone,
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: large ? 17 : 15,
                   color: c.onTint,
                 ),
-              ),
+              )),
             ],
           ),
           if (submission.textAnswer != null &&
               submission.textAnswer!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
-              'إجابتك: ${submission.textAnswer}',
+              context.l10n.childHomeworkYourAnswer(submission.textAnswer!),
               style: TextStyle(
                 fontSize: large ? 15 : 13,
                 color: c.onTint,
@@ -186,14 +185,14 @@ class _HomeworkCard extends StatelessWidget {
                 const Icon(AppIcons.starFilled,
                     color: AppColors.brandBlue, size: 22),
                 const SizedBox(width: 6),
-                Text(
-                  'الدرجة: ${submission.grade}',
+                Flexible(child: Text(
+                  context.l10n.childHomeworkGrade(submission.grade.toString()),
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: large ? 17 : 15,
                     color: AppColors.brandTealDeep,
                   ),
-                ),
+                )),
               ],
             ),
           ],
@@ -201,7 +200,7 @@ class _HomeworkCard extends StatelessWidget {
               submission.feedback!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
-              'ملاحظة المعلم: ${submission.feedback}',
+              context.l10n.childHomeworkFeedback(submission.feedback!),
               style: TextStyle(
                 fontSize: large ? 15 : 13,
                 color: c.onTint,
@@ -220,10 +219,10 @@ class _HomeworkCard extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: color),
         const SizedBox(width: 4),
-        Text(
+        Flexible(child: Text(
           text,
           style: TextStyle(fontSize: 13, color: color),
-        ),
+        )),
       ],
     );
   }

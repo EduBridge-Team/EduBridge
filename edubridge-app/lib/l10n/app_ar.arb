@@ -5715,5 +5715,131 @@
   "notificationTitleLessonRecommendation": "درس مقترح لطفلك",
   "@notificationTitleLessonRecommendation": {
     "description": "System notification title for display only; preserve message content."
+  },
+  "childHomeworkEmpty": "لا توجد واجبات",
+  "@childHomeworkEmpty": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkEmptyHint": "سيظهر هنا أي واجب يضيفه المعلم.",
+  "@childHomeworkEmptyHint": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmittedLate": "تم التسليم (متأخر)",
+  "@childHomeworkSubmittedLate": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmitted": "تم التسليم",
+  "@childHomeworkSubmitted": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkOverdue": "متأخر",
+  "@childHomeworkOverdue": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmit": "تسليم الواجب",
+  "@childHomeworkSubmit": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkDone": "سلّمت هذا الواجب",
+  "@childHomeworkDone": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAnswer": "الإجابة النصية (اختياري)",
+  "@childHomeworkAnswer": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAttachments": "أضف صوراً أو ملفات للحل:",
+  "@childHomeworkAttachments": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkGallery": "اختر صوراً من المعرض",
+  "@childHomeworkGallery": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkCamera": "التقط صورة",
+  "@childHomeworkCamera": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFile": "ملف آخر",
+  "@childHomeworkFile": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSend": "إرسال التسليم",
+  "@childHomeworkSend": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkCameraError": "تعذّر فتح الكاميرا",
+  "@childHomeworkCameraError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFileError": "تعذّر اختيار الملف",
+  "@childHomeworkFileError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkAnswerRequired": "أضف إجابة نصية أو ملفاً واحداً على الأقل",
+  "@childHomeworkAnswerRequired": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSuccess": "أحسنت! تم تسليم الواجب",
+  "@childHomeworkSuccess": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkSubmitError": "تعذّر تسليم الواجب. حاول مرة أخرى.",
+  "@childHomeworkSubmitError": {
+    "description": "Child homework interface; preserve teacher and child authored content."
+  },
+  "childHomeworkFor": "واجبات {name}",
+  "@childHomeworkFor": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkSheetTitle": "تسليم: {title}",
+  "@childHomeworkSheetTitle": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkYourAnswer": "إجابتك: {answer}",
+  "@childHomeworkYourAnswer": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkGrade": "الدرجة: {grade}",
+  "@childHomeworkGrade": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkFeedback": "ملاحظة المعلم: {feedback}",
+  "@childHomeworkFeedback": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "feedback": {
+        "type": "String"
+      }
+    }
+  },
+  "childHomeworkFiles": "الملفات المرفوعة ({count}):",
+  "@childHomeworkFiles": {
+    "description": "Child homework interface; preserve teacher and child authored content.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   }
 }
