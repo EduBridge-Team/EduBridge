@@ -89,14 +89,14 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
         if (profile.rewardSystem) {
           await RewardService.showReward(
             context,
-            message: 'أحسنت! +نجمة',
+            message: context.l10n.childLessonsStar,
             emoji: '🏆',
             stars: 1,
           );
         } else {
           await VisualCelebration.show(
             context,
-            message: 'أكملت الدرس!',
+            message: context.l10n.childLessonsCelebration,
             emoji: '🏆',
             childName: widget.childName,
             duration: const Duration(seconds: 3),
@@ -125,11 +125,11 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
           children: [
             Icon(AppIcons.game, color: AppColors.orange, size: 26),
             const SizedBox(width: 8),
-            const AdaptiveText('وقت اللعب!', type: AdaptiveTextType.title),
+            Flexible(child: AdaptiveText(context.l10n.childLessonsPlayTime, type: AdaptiveTextType.title)),
           ],
         ),
-        content: const AdaptiveText(
-          'أكملت 3 دروس! هل تريد اللعب قليلاً؟',
+        content: AdaptiveText(
+          context.l10n.childLessonsPlayPrompt,
           textAlign: TextAlign.center,
         ),
         actions: [
@@ -137,7 +137,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
             children: [
               Expanded(
                 child: AdaptiveButton(
-                  label: 'لاحقاً',
+                  label: context.l10n.childLessonsLater,
                   style: AdaptiveButtonStyle.outlined,
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -145,7 +145,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
               SizedBox(width: AdaptiveHelper.spacing / 2),
               Expanded(
                 child: AdaptiveButton(
-                  label: 'هيا!',
+                  label: context.l10n.childLessonsGo,
                   backgroundColor: AppColors.orange,
                   onPressed: () {
                     Navigator.pop(context);
@@ -270,8 +270,8 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _buildLessonDetailModal(
-        context: context,
+      builder: (sheetContext) => _buildLessonDetailModal(
+        context: sheetContext,
         title: title,
         content: content,
         lesson: lesson,
@@ -286,7 +286,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
                   childId: widget.childId,
                   lessonId: int.tryParse('${lesson['id']}'),
                   steps: [for (var i = 0; i < chunks.length; i++)
-                    LessonStep(title: 'الخطوة ${i + 1}', content: chunks[i])],
+                    LessonStep(title: context.l10n.childLessonsStep((i + 1).toString()), content: chunks[i])],
                 )));
               }
             : null,
@@ -300,13 +300,13 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
 
   Future<void> _toggleLessonAudio(String url) async {
     if (_activeAudioUrl == url) {
-      await _lessonAudioPlayer.stop();
+      await _audioPlayer.stop();
       if (mounted) _updateChildLessonsState(() => _activeAudioUrl = null);
       return;
     }
 
-    await _lessonAudioPlayer.stop();
-    await _lessonAudioPlayer.play(UrlSource(url));
+    await _audioPlayer.stop();
+    await _audioPlayer.play(UrlSource(url));
     if (mounted) _updateChildLessonsState(() => _activeAudioUrl = url);
   }
 

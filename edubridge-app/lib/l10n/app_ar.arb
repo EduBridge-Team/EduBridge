@@ -5841,5 +5841,209 @@
         "type": "String"
       }
     }
+  },
+  "childLessonsEmpty": "لا توجد دروس مخصصة لهذا الطفل بعد",
+  "@childLessonsEmpty": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSettings": "إعدادات التكييف",
+  "@childLessonsSettings": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsAudioGames": "ألعاب سمعية",
+  "@childLessonsAudioGames": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsGames": "الألعاب التعليمية",
+  "@childLessonsGames": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayLearn": "العب وتعلّم",
+  "@childLessonsPlayLearn": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsBreakTime": "انتهى الوقت! وقت الراحة",
+  "@childLessonsBreakTime": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTimeRemaining": "وقت القراءة المتبقي",
+  "@childLessonsTimeRemaining": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTimeline": "خطوات الدرس",
+  "@childLessonsTimeline": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsChoose": "اختر الدرس واقرأ العنوان",
+  "@childLessonsChoose": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsListenHelp": "استمع للشرح إذا احتجت",
+  "@childLessonsListenHelp": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTry": "جرّب النشاط",
+  "@childLessonsTry": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReview": "راجع أو خذ استراحة",
+  "@childLessonsReview": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSample": "دروس تجريبية",
+  "@childLessonsSample": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSampleHint": "عندما تُضاف دروس حقيقية، ستظهر هنا",
+  "@childLessonsSampleHint": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReadEasy": "أقرأ بسهولة",
+  "@childLessonsReadEasy": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayVideo": "تشغيل فيديو الدرس",
+  "@childLessonsPlayVideo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsStopAudio": "إيقاف التسجيل الصوتي",
+  "@childLessonsStopAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayAudio": "تشغيل التسجيل الصوتي",
+  "@childLessonsPlayAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSaving": "جارٍ الحفظ",
+  "@childLessonsSaving": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsDone": "تمّ",
+  "@childLessonsDone": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCompleteStatus": "تم إكمال هذا الدرس",
+  "@childLessonsCompleteStatus": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReady": "جاهز للبدء",
+  "@childLessonsReady": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsVideo": "فيديو",
+  "@childLessonsVideo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsAudio": "صوت",
+  "@childLessonsAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsStar": "أحسنت! +نجمة",
+  "@childLessonsStar": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCelebration": "أكملت الدرس!",
+  "@childLessonsCelebration": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayTime": "وقت اللعب!",
+  "@childLessonsPlayTime": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayPrompt": "أكملت 3 دروس! هل تريد اللعب قليلاً؟",
+  "@childLessonsPlayPrompt": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsLater": "لاحقاً",
+  "@childLessonsLater": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsGo": "هيا!",
+  "@childLessonsGo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsNoDescription": "لا يوجد وصف لهذا الدرس",
+  "@childLessonsNoDescription": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsIncomplete": "لم يكتمل الدرس بعد",
+  "@childLessonsIncomplete": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendation": "توصية / ملاحظة",
+  "@childLessonsRecommendation": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendFailed": "تعذّر إرسال التوصية",
+  "@childLessonsRecommendFailed": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsChooseAction": "اختر الإجراء المناسب للدرس:",
+  "@childLessonsChooseAction": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendParent": "إرسال توصية إلى ولي الأمر",
+  "@childLessonsRecommendParent": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCaseNote": "كتابة ملاحظة في مناقشة الحالة",
+  "@childLessonsCaseNote": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsLoadFailed": "تعذّر جلب الدروس",
+  "@childLessonsLoadFailed": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsFor": "دروس {name}",
+  "@childLessonsFor": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsTimerFinished": "أحسنت! انتهت {minutes} دقائق",
+  "@childLessonsTimerFinished": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsImageFallback": "صورة {number} في درس {title}. لا يوجد وصف لمحتوى الصورة.",
+  "@childLessonsImageFallback": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsAudioDescription": "الوصف الصوتي: {description}",
+  "@childLessonsAudioDescription": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsStep": "الخطوة {number}",
+  "@childLessonsStep": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsWorking": "جارٍ التنفيذ",
+  "@childLessonsWorking": {
+    "description": "Accessible busy state for an adaptive action."
   }
 }

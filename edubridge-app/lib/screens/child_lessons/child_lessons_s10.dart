@@ -14,16 +14,16 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
       centerTitle: true,
       titleSpacing: 4,
       leading: IconButton(
-        tooltip: 'رجوع',
+        tooltip: context.l10n.back,
         onPressed: () => Navigator.maybePop(context),
         icon: const CircleAvatar(
           radius: 21,
           backgroundColor: Color(0x33FFFFFF),
-          child: Icon(Icons.arrow_forward_rounded, size: 22, color: Colors.white),
+          child: Icon(Icons.arrow_back_rounded, size: 22, color: Colors.white),
         ),
       ),
       title: Text(
-        'دروس ${widget.childName}',
+        context.l10n.childLessonsFor(widget.childName),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
@@ -47,12 +47,12 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
         padding: const EdgeInsets.all(24),
         children: [
           const SizedBox(height: 90),
-          Text(_error!, textAlign: TextAlign.center,
+          Text(context.l10n.childLessonsLoadFailed, textAlign: TextAlign.center,
             style: const TextStyle(color: AppColors.red)),
           const SizedBox(height: 12),
           Center(child: FilledButton(
             onPressed: _loadLessons,
-            child: const Text('إعادة المحاولة'),
+            child: Text(context.l10n.retryAction),
           )),
         ],
       );
@@ -65,9 +65,9 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
       children: [
         if (lessons.isEmpty)
           _s10Card(
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 22),
-              child: Text('لا توجد دروس مخصصة لهذا الطفل بعد',
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 22),
+              child: Text(context.l10n.childLessonsEmpty,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Color(0xFF637F98), fontSize: 14)),
             ),
@@ -136,18 +136,18 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
         ),
         const SizedBox(height: 17),
         Text(
-          content.isEmpty ? 'لا يوجد وصف لهذا الدرس' : content,
+          content.isEmpty ? context.l10n.childLessonsNoDescription : content,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.right,
+          textAlign: TextAlign.start,
           style: const TextStyle(
             color: Color(0xFF57738C), fontSize: 14.5, height: 1.35,
           ),
         ),
         const SizedBox(height: 14),
         Container(
-          height: 42,
-          padding: const EdgeInsets.symmetric(horizontal: 13),
+          constraints: const BoxConstraints(minHeight: 42),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
           decoration: BoxDecoration(
             color: isDone ? const Color(0xFFE6F5E8)
               : const Color(0xFFE9F3FD),
@@ -162,7 +162,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
             ),
             const SizedBox(width: 7),
             Expanded(child: Text(
-              isDone ? 'تم إكمال هذا الدرس' : 'لم يكتمل الدرس بعد',
+              isDone ? context.l10n.childLessonsCompleteStatus : context.l10n.childLessonsIncomplete,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w800,
@@ -172,8 +172,8 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
           ]),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 52,
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 52),
           child: OutlinedButton.icon(
             onPressed: lessonId == null ? null
               : () => _s10ActionSheet(lessonId, title),
@@ -184,8 +184,8 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
                 borderRadius: BorderRadius.circular(15)),
             ),
             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 21),
-            label: const Text(
-              'توصية / ملاحظة',
+            label: Text(
+              context.l10n.childLessonsRecommendation,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
           ),
@@ -196,7 +196,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
 
   Future<void> _s10ActionSheet(int lessonId, String title) async {
     var sending = false;
-    String? error;
+    bool failed = false;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -205,18 +205,18 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
         builder: (sheetContext, update) {
           Future<void> recommend() async {
             if (sending) return;
-            update(() { sending = true; error = null; });
+            update(() { sending = true; failed = false; });
             try {
               final response = await ApiService.authPost(
                 '/lessons/$lessonId/recommend',
                 {'child_id': widget.childId},
               );
-              final body = ApiService.decodeMap(response.body);
+
               if (response.statusCode != 200 && response.statusCode != 201) {
                 if (!sheetContext.mounted) return;
                 update(() {
                   sending = false;
-                  error = (body['error'] ?? 'تعذّر إرسال التوصية').toString();
+                  failed = true;
                 });
                 return;
               }
@@ -224,15 +224,15 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
               Navigator.pop(sheetContext);
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text((body['message'] ?? 'تم إرسال التوصية لولي الأمر').toString()),
+                content: Text(context.l10n.recommendationSentToParent),
               ));
             } catch (_) {
               if (!sheetContext.mounted) return;
-              update(() { sending = false; error = 'تعذّر الاتصال بالسيرفر'; });
+              update(() { sending = false; failed = true; });
             }
           }
 
-          return SafeArea(child: Padding(
+          return SafeArea(child: SingleChildScrollView(child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 9, 20, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -242,7 +242,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
                   style: const TextStyle(fontSize: 18,
                     fontWeight: FontWeight.w800, color: _s10Ink)),
                 const SizedBox(height: 9),
-                const Text('اختر الإجراء المناسب للدرس:',
+                Text(sheetContext.l10n.childLessonsChooseAction,
                   style: TextStyle(color: Color(0xFF637F98))),
                 const SizedBox(height: 14),
                 FilledButton.icon(
@@ -251,7 +251,7 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
                     ? const SizedBox(width: 18, height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.send_outlined),
-                  label: Text(sending ? 'جارٍ الإرسال...' : 'إرسال توصية إلى ولي الأمر'),
+                  label: Text(sending ? sheetContext.l10n.sendingAlt : sheetContext.l10n.childLessonsRecommendParent),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton.icon(
@@ -263,15 +263,15 @@ extension _ChildLessonsS10 on _ChildLessonsScreenState {
                     ));
                   },
                   icon: const Icon(Icons.chat_bubble_outline),
-                  label: const Text('كتابة ملاحظة في مناقشة الحالة'),
+                  label: Text(sheetContext.l10n.childLessonsCaseNote),
                 ),
-                if (error != null) ...[
+                if (failed) ...[
                   const SizedBox(height: 10),
-                  Text(error!, style: const TextStyle(color: AppColors.red)),
+                  Text(sheetContext.l10n.childLessonsRecommendFailed, style: const TextStyle(color: AppColors.red)),
                 ],
               ],
             ),
-          ));
+          )));
         },
       ),
     );

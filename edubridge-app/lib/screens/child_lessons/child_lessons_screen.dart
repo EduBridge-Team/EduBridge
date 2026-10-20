@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import '../../widgets/accessibility/child_adaptation_scope.dart';
 // lib/screens/child_lessons/child_lessons_screen.dart
 import 'package:audioplayers/audioplayers.dart';
@@ -79,7 +80,8 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   String? _specialistPhone;
 
   int? _speakingLessonId;
-  final AudioPlayer _lessonAudioPlayer = AudioPlayer();
+  AudioPlayer? _lessonAudioPlayer;
+  AudioPlayer get _audioPlayer => _lessonAudioPlayer ??= AudioPlayer();
   String? _activeAudioUrl;
 
   void _updateChildLessonsState(VoidCallback callback) => setState(callback);
@@ -98,7 +100,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
   @override
   void dispose() {
     TtsService.instance.stop();
-    _lessonAudioPlayer.dispose();
+    _lessonAudioPlayer?.dispose();
     super.dispose();
   }
 
@@ -107,7 +109,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
     return ChildAdaptationScope(
       childId: widget.childId,
       builder: (context) => AdaptiveWrapper(
-        screenTitle: 'دروس ${widget.childName}',
+        screenTitle: context.l10n.childLessonsFor(widget.childName),
         child: ChildColorFilter(enabled: !widget.specialistS10, child: Scaffold(
           backgroundColor: widget.specialistS10
               ? const Color(0xFFF5F9FC) : null,
@@ -144,13 +146,13 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
               const Icon(AppIcons.error, size: 60, color: AppColors.red),
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveText(
-                _error!,
+                context.l10n.childLessonsLoadFailed,
                 textAlign: TextAlign.center,
                 color: AppColors.red,
               ),
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveButton(
-                label: 'إعادة المحاولة',
+                label: context.l10n.retryAction,
                 icon: AppIcons.refresh,
                 onPressed: _loadLessons,
               ),
@@ -199,7 +201,7 @@ class _ChildLessonsScreenState extends State<ChildLessonsScreen> {
                       size: 64, color: JisrColors.of(context).muted),
                   SizedBox(height: AdaptiveHelper.spacing),
                   AdaptiveText(
-                    'لا توجد دروس مخصصة لهذا الطفل بعد',
+                    context.l10n.childLessonsEmpty,
                     textAlign: TextAlign.center,
                     color: JisrColors.of(context).muted,
                   ),

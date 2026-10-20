@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/widgets/adaptive/adaptive_button.dart
 // زر يتكيّف تلقائياً: حجم، نطق، اهتزاز
 import 'dart:async';
@@ -155,7 +156,7 @@ class _AdaptiveButtonState extends State<AdaptiveButton> {
       ));
     }
     if (widget.isBusy) {
-      return Semantics(label: 'جارٍ التنفيذ', liveRegion: true,
+      return Semantics(label: context.l10n.childLessonsWorking, liveRegion: true,
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           const SizedBox(width: 20, height: 20,
             child: CircularProgressIndicator(strokeWidth: 2)),

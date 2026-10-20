@@ -10,7 +10,7 @@ PreferredSizeWidget buildChildLessonsAppBar({
 }) {
   return BrandAppBar(
     title: Text(
-      'دروس $childName',
+      context.l10n.childLessonsFor(childName),
       style: const TextStyle(
         fontSize: 19,
         fontWeight: FontWeight.w800,
@@ -46,14 +46,14 @@ PreferredSizeWidget buildChildLessonsAppBar({
       ),
       if (onOpenSettings != null) IconButton(
         icon: const Icon(Icons.accessibility_new, color: Colors.white),
-        tooltip: 'إعدادات التكييف',
+        tooltip: context.l10n.childLessonsSettings,
         onPressed: onOpenSettings,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
       ),
       IconButton(
         icon: const Icon(AppIcons.progress, color: Colors.white),
-        tooltip: 'التقدّم',
+        tooltip: context.l10n.progress,
         onPressed: onOpenProgress,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
@@ -99,21 +99,21 @@ Widget buildAdaptiveHeader({
                 children: [
                   AdaptiveText(
                     profile.screenReaderOptimized
-                        ? 'ألعاب سمعية'
-                        : 'الألعاب التعليمية',
+                        ? context.l10n.childLessonsAudioGames
+                        : context.l10n.childLessonsGames,
                     type: AdaptiveTextType.subtitle,
                     color: Colors.white,
                   ),
                   SizedBox(height: AdaptiveHelper.spacing / 4),
-                  const AdaptiveText(
-                    'العب وتعلّم',
+                  AdaptiveText(
+                    context.l10n.childLessonsPlayLearn,
                     type: AdaptiveTextType.caption,
                     color: Colors.white70,
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_left, color: Colors.white, size: 32),
+            Icon(Directionality.of(context) == TextDirection.rtl ? Icons.chevron_left : Icons.chevron_right, color: Colors.white, size: 32),
           ],
         ),
       ),
@@ -133,7 +133,7 @@ Widget buildAdaptiveHeader({
                 childName: childName,
                 onFinished: () async {
                   if (AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech) {
-                    AdaptiveHelper.speak('انتهى الوقت! وقت الراحة');
+                    AdaptiveHelper.speak(context.l10n.childLessonsBreakTime);
                   }
                   await BrainBreakDialog.show(context);
                   onTimerFinished();
@@ -143,12 +143,12 @@ Widget buildAdaptiveHeader({
                 child: VisualTimer(
                   key: ValueKey('timer_cycle_$timerCycle'),
                   total: Duration(minutes: timerMinutes),
-                  label: 'وقت القراءة المتبقي',
+                  label: context.l10n.childLessonsTimeRemaining,
                   showControls: true,
                   onFinished: () async {
                     await VisualCelebration.show(
                       context,
-                      message: 'أحسنت! انتهت $timerMinutes دقائق',
+                      message: context.l10n.childLessonsTimerFinished(timerMinutes.toString()),
                       emoji: '⏰',
                       childName: childName,
                       duration: const Duration(seconds: 2),
@@ -168,12 +168,12 @@ Widget buildAdaptiveHeader({
       Padding(
         padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
         child: VisualTimeline(
-          title: 'خطوات الدرس',
+          title: context.l10n.childLessonsTimeline,
           steps: [
-            const TimelineStep(emoji: '📖', label: 'اختر الدرس واقرأ العنوان'),
-            const TimelineStep(emoji: '🎧', label: 'استمع للشرح إذا احتجت'),
-            const TimelineStep(emoji: '✍️', label: 'جرّب النشاط'),
-            const TimelineStep(emoji: '🌿', label: 'راجع أو خذ استراحة'),
+            TimelineStep(emoji: '📖', label: context.l10n.childLessonsChoose),
+            TimelineStep(emoji: '🎧', label: context.l10n.childLessonsListenHelp),
+            TimelineStep(emoji: '✍️', label: context.l10n.childLessonsTry),
+            TimelineStep(emoji: '🌿', label: context.l10n.childLessonsReview),
           ],
         ),
       ),
@@ -197,7 +197,7 @@ Widget buildAdaptiveHeader({
   );
 }
 
-Widget buildSampleBanner() {
+Widget buildSampleBanner() => Builder(builder: (context) {
   return Padding(
     padding: EdgeInsets.only(bottom: AdaptiveHelper.spacing),
     child: AdaptiveCard(
@@ -208,14 +208,14 @@ Widget buildSampleBanner() {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 AdaptiveText(
-                  'دروس تجريبية',
+                  context.l10n.childLessonsSample,
                   type: AdaptiveTextType.body,
                   fontWeight: FontWeight.bold,
                 ),
                 AdaptiveText(
-                  'عندما تُضاف دروس حقيقية، ستظهر هنا',
+                  context.l10n.childLessonsSampleHint,
                   type: AdaptiveTextType.caption,
                 ),
               ],
@@ -225,4 +225,4 @@ Widget buildSampleBanner() {
       ),
     ),
   );
-}
+});
