@@ -70,6 +70,7 @@ extension _SpecialistSupportS17 on _LearningSupportRequestsScreenState {
         icon: const CircleAvatar(
           radius: 22,
           backgroundColor: Color(0x33FFFFFF),
+          foregroundColor: Colors.white,
           child: BackButtonIcon(),
         ),
       ),

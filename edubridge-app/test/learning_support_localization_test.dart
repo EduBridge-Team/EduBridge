@@ -121,7 +121,7 @@ void main() {
       final writes = <http.Request>[];
       await http.runWithClient(() async {
         await _mount(tester, const CreateLearningSupportRequestScreen(childId: 7, childName: 'محمود'), language, scale: 2);
-        await _tap(tester, find.text(strings.supportReasonHint));
+        await _tap(tester, find.byType(DropdownButton<String>));
         await _tap(tester, find.text(LearningSupportPresentation.reason('صعوبة في فهم الدروس', strings)).last);
         await tester.scrollUntilVisible(find.byType(TextFormField), 160, scrollable: find.byType(Scrollable).first);
         await tester.enterText(find.byType(TextFormField), 'شرح أصلي من ولي الأمر عن صعوبة التعلم');
@@ -136,13 +136,14 @@ void main() {
       final strings = await AppLocalizations.delegate.load(Locale(language));
       await http.runWithClient(() async {
         await _mount(tester, const CreateLearningSupportRequestScreen(childId: 7, childName: 'محمود'), language, scale: 2);
-        await _tap(tester, find.text(strings.supportReasonHint));
+        await _tap(tester, find.byType(DropdownButton<String>));
         await _tap(tester, find.text(LearningSupportPresentation.reason('صعوبة في فهم الدروس', strings)).last);
         await tester.scrollUntilVisible(find.byType(TextFormField), 160, scrollable: find.byType(Scrollable).first);
         await tester.enterText(find.byType(TextFormField), 'وصف أصلي طويل بما يكفي لحفظ الطلب');
         await _tap(tester, find.text(strings.supportSendRequest));
         expect(find.text(strings.supportCreateFailed), findsOneWidget);
         expect(tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, strings.supportSendRequest)).onPressed, isNotNull);
+        await tester.scrollUntilVisible(find.byType(TextFormField), -160, scrollable: find.byType(Scrollable).first);
         expect(find.text('وصف أصلي طويل بما يكفي لحفظ الطلب'), findsOneWidget);
       }, () => _client(failWrite: true));
     });
