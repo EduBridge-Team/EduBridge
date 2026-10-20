@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import 'package:flutter/services.dart';
 
 part 'splash_assets.dart';
@@ -191,7 +192,7 @@ class _LogoIntroState extends State<LogoIntro>
 
           // ═══ 3. Fallback — لو فشل التحميل ═══
           if (_error != null)
-            const Center(
+            Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -215,7 +216,7 @@ class _LogoIntroState extends State<LogoIntro>
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'قدرات مختلفة وإمكانات متساوية',
+                    context.l10n.brandEqualPotential,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

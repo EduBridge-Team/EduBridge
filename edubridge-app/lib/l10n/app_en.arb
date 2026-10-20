@@ -5466,5 +5466,254 @@
         "type": "String"
       }
     }
+  },
+  "ministryStatsPageTitle": "📊 Ministry statistics",
+  "@ministryStatsPageTitle": {
+    "description": "Role interface localization audit: 📊 Ministry statistics"
+  },
+  "ministryStatsTotalChildren": "Total children",
+  "@ministryStatsTotalChildren": {
+    "description": "Role interface localization audit: Total children"
+  },
+  "ministryStatsActive": "Active",
+  "@ministryStatsActive": {
+    "description": "Role interface localization audit: Active"
+  },
+  "ministryStatsHomework": "Homework completion",
+  "@ministryStatsHomework": {
+    "description": "Role interface localization audit: Homework completion"
+  },
+  "ministryStatsAge": "By age group",
+  "@ministryStatsAge": {
+    "description": "Role interface localization audit: By age group"
+  },
+  "brandEqualPotential": "Different abilities, equal potential",
+  "@brandEqualPotential": {
+    "description": "Role interface localization audit: Different abilities, equal potential"
+  },
+  "tapReadStopTooltip": "Turn off tap-to-read",
+  "@tapReadStopTooltip": {
+    "description": "Role interface localization audit: Turn off tap-to-read"
+  },
+  "tapReadStartTooltip": "Tap-to-read: enable, then tap any line",
+  "@tapReadStartTooltip": {
+    "description": "Role interface localization audit: Tap-to-read: enable, then tap any line"
+  },
+  "tapReadEnabledNotice": "Tap-to-read is on — tap a line to hear it 🔊",
+  "@tapReadEnabledNotice": {
+    "description": "Role interface localization audit: Tap-to-read is on — tap a line to hear it 🔊"
+  },
+  "tapReadDisabledNotice": "Tap-to-read is off",
+  "@tapReadDisabledNotice": {
+    "description": "Role interface localization audit: Tap-to-read is off"
+  },
+  "readingStopTooltip": "Turn off reading",
+  "@readingStopTooltip": {
+    "description": "Role interface localization audit: Turn off reading"
+  },
+  "readingStartTooltip": "Turn on reading",
+  "@readingStartTooltip": {
+    "description": "Role interface localization audit: Turn on reading"
+  },
+  "readingModeEnabled": "Reading mode is on",
+  "@readingModeEnabled": {
+    "description": "Role interface localization audit: Reading mode is on"
+  },
+  "notificationTitleChildAdded": "Child added",
+  "@notificationTitleChildAdded": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildEvaluation": "New child evaluation",
+  "@notificationTitleChildEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleEvaluation": "New evaluation",
+  "@notificationTitleEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleTeacherAssigned": "Teacher assigned",
+  "@notificationTitleTeacherAssigned": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCareTeam": "Added to a learning support team",
+  "@notificationTitleCareTeam": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLesson": "New lesson",
+  "@notificationTitleLesson": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomework": "New homework",
+  "@notificationTitleHomework": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkSubmitted": "Homework submitted",
+  "@notificationTitleHomeworkSubmitted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkLate": "Homework submitted late",
+  "@notificationTitleHomeworkLate": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkGraded": "Homework graded",
+  "@notificationTitleHomeworkGraded": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleWeeklyReport": "New weekly report",
+  "@notificationTitleWeeklyReport": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleProgress": "New specialist progress update",
+  "@notificationTitleProgress": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanEvaluation": "New plan evaluation",
+  "@notificationTitlePlanEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleMeeting": "Learning support meeting scheduled",
+  "@notificationTitleMeeting": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSession": "Learning support session scheduled",
+  "@notificationTitleSession": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSessionCompleted": "Learning support session completed",
+  "@notificationTitleSessionCompleted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportRequest": "New learning support request",
+  "@notificationTitleSupportRequest": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportCancelled": "Learning support request cancelled",
+  "@notificationTitleSupportCancelled": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportRecommendation": "Learning support recommendation",
+  "@notificationTitleSupportRecommendation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestion": "New follow-up suggestion",
+  "@notificationTitleSuggestion": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestionAccepted": "Follow-up suggestion accepted",
+  "@notificationTitleSuggestionAccepted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestionRejected": "Follow-up suggestion rejected",
+  "@notificationTitleSuggestionRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSpecialistConfirmed": "Specialist confirmed",
+  "@notificationTitleSpecialistConfirmed": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSpecialistUpdated": "Specialist suggestion updated",
+  "@notificationTitleSpecialistUpdated": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCase": "New case study",
+  "@notificationTitleCase": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseRequest": "New case study request",
+  "@notificationTitleCaseRequest": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseRecommendation": "New case study recommendation",
+  "@notificationTitleCaseRecommendation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseMessage": "New case study message",
+  "@notificationTitleCaseMessage": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleMessage": "New message",
+  "@notificationTitleMessage": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportUpdate": "Support request updated",
+  "@notificationTitleSupportUpdate": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleAccountVerified": "Your account has been verified",
+  "@notificationTitleAccountVerified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleIdentityApproved": "Your identity has been approved",
+  "@notificationTitleIdentityApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleIdentityRejected": "Your identity has been rejected",
+  "@notificationTitleIdentityRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildVerified": "Child details verified",
+  "@notificationTitleChildVerified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildRejected": "Child verification rejected",
+  "@notificationTitleChildRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildUnverified": "Child details not verified",
+  "@notificationTitleChildUnverified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleVerificationCompleted": "Your account verification is complete",
+  "@notificationTitleVerificationCompleted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCertificateApproved": "Your certificate has been approved",
+  "@notificationTitleCertificateApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCertificateRejected": "Your certificate has been rejected",
+  "@notificationTitleCertificateRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanReview": "Educational plan awaiting review",
+  "@notificationTitlePlanReview": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLessonApproved": "Lesson approved",
+  "@notificationTitleLessonApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLessonRejected": "Lesson rejected",
+  "@notificationTitleLessonRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanApproved": "Plan approved",
+  "@notificationTitlePlanApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanRejected": "Plan rejected",
+  "@notificationTitlePlanRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleEmergencyFor": "🚨 Emergency alert: {name}",
+  "@notificationTitleEmergencyFor": {
+    "description": "Emergency notification title, preserving the original child name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationTitleAbsence": "Absence alert",
+  "@notificationTitleAbsence": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLateness": "Lateness alert",
+  "@notificationTitleLateness": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLessonRecommendation": "Suggested lesson for your child",
+  "@notificationTitleLessonRecommendation": {
+    "description": "System notification title for display only; preserve message content."
   }
 }

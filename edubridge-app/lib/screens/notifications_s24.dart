@@ -16,7 +16,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
         backgroundColor: const Color(0x33FFFFFF)),
       icon: Directionality(textDirection: Directionality.of(context),
         child: Icon(Icons.arrow_back_rounded, size: 23))),
-    title: Text(context.l10n.notifications, style: TextStyle(
+    title: Text(context.l10n.notifications, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(
       fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
     actions: [
       IconButton(
@@ -26,7 +26,13 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
         icon: const Icon(Icons.refresh_rounded, size: 23)),
       ValueListenableBuilder<int>(
         valueListenable: NotificationListenerService.instance.unreadCount,
-        builder: (context, count, _) => TextButton(
+        builder: (context, count, _) => MediaQuery.textScalerOf(context).scale(13) > 18
+            ? IconButton(
+                tooltip: context.l10n.markAllRead,
+                onPressed: count == 0 || _markingAll || _loadingMore ? null : _markAllRead,
+                icon: const Icon(Icons.done_all_rounded),
+              )
+            : TextButton(
           onPressed: count == 0 || _markingAll || _loadingMore
               ? null : _markAllRead,
           child: Text(context.l10n.markAllRead, style: TextStyle(
@@ -41,7 +47,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
   Widget _s24Tile(Map notification, JisrColors colors) {
     final unread = notification['is_read'] != true;
     final type = (notification['type'] ?? '').toString();
-    final title = (notification['title'] ?? '').toString();
+    final title = NotificationPresentation.title(notification, context.l10n);
     final message = (notification['body'] ?? notification['message'] ?? '').toString();
     final date = notification['created_at'] == null
         ? null : DateTime.tryParse(notification['created_at'].toString());

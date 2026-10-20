@@ -1,3 +1,4 @@
+import '../utils/notification_presentation.dart';
 import '../l10n/l10n.dart';
 // lib/screens/notifications_screen.dart
 import 'package:flutter/material.dart';
@@ -184,7 +185,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
     if (!mounted) return;
 
-    final title = (n['title'] ?? context.l10n.notificationDetails).toString();
     final body = (n['body'] ?? n['message'] ?? '').toString();
     final type = n['type']?.toString() ?? '';
     final date = n['created_at'] != null
@@ -241,7 +241,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      title,
+                      NotificationPresentation.title(n, sheetContext.l10n),
                       style: TextStyle(
                         fontSize: 19,
                         height: 1.35,
@@ -280,14 +280,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 children: [
                   Icon(Icons.schedule_rounded, size: 17, color: c.muted),
                   const SizedBox(width: 6),
-                  Text(
+                  Flexible(child: Text(
                     _formatDate(date),
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                       color: c.muted,
                     ),
-                  ),
+                  )),
                 ],
               ),
               if (canOpenSuggestion) ...[

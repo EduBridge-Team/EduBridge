@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../services/tts_service.dart';
 import '../theme.dart';
 
@@ -19,8 +20,8 @@ class ListenButton extends StatelessWidget {
             color: on ? (color ?? AppColors.green) : color,
           ),
           tooltip: on
-              ? 'إيقاف القراءة باللمس'
-              : 'القراءة باللمس: اضغط ثم المس أي سطر',
+              ? context.l10n.tapReadStopTooltip
+              : context.l10n.tapReadStartTooltip,
           onPressed: () async {
             await TtsService.instance.toggleTapToRead();
             if (!context.mounted) return;
@@ -30,8 +31,8 @@ class ListenButton extends StatelessWidget {
                 duration: const Duration(seconds: 2),
                 content: Text(
                   isOn
-                      ? 'وضع القراءة باللمس مُفعّل — المس أي سطر لقراءته 🔊'
-                      : 'أُوقف وضع القراءة باللمس',
+                      ? context.l10n.tapReadEnabledNotice
+                      : context.l10n.tapReadDisabledNotice,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

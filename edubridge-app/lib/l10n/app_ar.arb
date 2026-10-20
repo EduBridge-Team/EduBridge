@@ -5466,5 +5466,254 @@
         "type": "String"
       }
     }
+  },
+  "ministryStatsPageTitle": "📊 إحصائيات الوزارة",
+  "@ministryStatsPageTitle": {
+    "description": "Role interface localization audit: 📊 Ministry statistics"
+  },
+  "ministryStatsTotalChildren": "إجمالي الأطفال",
+  "@ministryStatsTotalChildren": {
+    "description": "Role interface localization audit: Total children"
+  },
+  "ministryStatsActive": "نشطون",
+  "@ministryStatsActive": {
+    "description": "Role interface localization audit: Active"
+  },
+  "ministryStatsHomework": "إكمال الواجبات",
+  "@ministryStatsHomework": {
+    "description": "Role interface localization audit: Homework completion"
+  },
+  "ministryStatsAge": "حسب الفئة العمرية",
+  "@ministryStatsAge": {
+    "description": "Role interface localization audit: By age group"
+  },
+  "brandEqualPotential": "قدرات مختلفة وإمكانات متساوية",
+  "@brandEqualPotential": {
+    "description": "Role interface localization audit: Different abilities, equal potential"
+  },
+  "tapReadStopTooltip": "إيقاف القراءة باللمس",
+  "@tapReadStopTooltip": {
+    "description": "Role interface localization audit: Turn off tap-to-read"
+  },
+  "tapReadStartTooltip": "القراءة باللمس: اضغط ثم المس أي سطر",
+  "@tapReadStartTooltip": {
+    "description": "Role interface localization audit: Tap-to-read: enable, then tap any line"
+  },
+  "tapReadEnabledNotice": "وضع القراءة باللمس مُفعّل — المس أي سطر لقراءته 🔊",
+  "@tapReadEnabledNotice": {
+    "description": "Role interface localization audit: Tap-to-read is on — tap a line to hear it 🔊"
+  },
+  "tapReadDisabledNotice": "أُوقف وضع القراءة باللمس",
+  "@tapReadDisabledNotice": {
+    "description": "Role interface localization audit: Tap-to-read is off"
+  },
+  "readingStopTooltip": "إيقاف القراءة",
+  "@readingStopTooltip": {
+    "description": "Role interface localization audit: Turn off reading"
+  },
+  "readingStartTooltip": "تفعيل القراءة",
+  "@readingStartTooltip": {
+    "description": "Role interface localization audit: Turn on reading"
+  },
+  "readingModeEnabled": "وضع القراءة مُفعّل",
+  "@readingModeEnabled": {
+    "description": "Role interface localization audit: Reading mode is on"
+  },
+  "notificationTitleChildAdded": "تمت إضافة طفل",
+  "@notificationTitleChildAdded": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildEvaluation": "تقييم جديد للطفل",
+  "@notificationTitleChildEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleEvaluation": "تقييم جديد",
+  "@notificationTitleEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleTeacherAssigned": "تم تعيين معلّم",
+  "@notificationTitleTeacherAssigned": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCareTeam": "تمت إضافتك لفريق دعم تعليمي",
+  "@notificationTitleCareTeam": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLesson": "درس جديد",
+  "@notificationTitleLesson": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomework": "واجب جديد",
+  "@notificationTitleHomework": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkSubmitted": "تم تسليم واجب",
+  "@notificationTitleHomeworkSubmitted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkLate": "تم تسليم واجب متأخر",
+  "@notificationTitleHomeworkLate": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleHomeworkGraded": "تم تقييم الواجب",
+  "@notificationTitleHomeworkGraded": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleWeeklyReport": "تقرير أسبوعي جديد",
+  "@notificationTitleWeeklyReport": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleProgress": "متابعة جديدة من المختص",
+  "@notificationTitleProgress": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanEvaluation": "تقييم جديد للخطة",
+  "@notificationTitlePlanEvaluation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleMeeting": "تم تحديد اجتماع دعم تعليمي",
+  "@notificationTitleMeeting": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSession": "تم تحديد موعد جلسة الدعم التعليمي",
+  "@notificationTitleSession": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSessionCompleted": "اكتملت جلسة الدعم التعليمي",
+  "@notificationTitleSessionCompleted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportRequest": "طلب دعم تعليمي جديد",
+  "@notificationTitleSupportRequest": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportCancelled": "تم إلغاء طلب الدعم التعليمي",
+  "@notificationTitleSupportCancelled": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportRecommendation": "توصية بدعم تعليمي",
+  "@notificationTitleSupportRecommendation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestion": "اقتراح متابعة جديد",
+  "@notificationTitleSuggestion": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestionAccepted": "تم قبول اقتراح المتابعة",
+  "@notificationTitleSuggestionAccepted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSuggestionRejected": "تم رفض اقتراح المتابعة",
+  "@notificationTitleSuggestionRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSpecialistConfirmed": "تم تأكيد المختص",
+  "@notificationTitleSpecialistConfirmed": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSpecialistUpdated": "تحديث اقتراح المختص",
+  "@notificationTitleSpecialistUpdated": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCase": "دراسة حالة جديدة",
+  "@notificationTitleCase": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseRequest": "طلب دراسة حالة جديد",
+  "@notificationTitleCaseRequest": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseRecommendation": "توصية جديدة على دراسة الحالة",
+  "@notificationTitleCaseRecommendation": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCaseMessage": "رسالة جديدة في دراسة حالة",
+  "@notificationTitleCaseMessage": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleMessage": "رسالة جديدة",
+  "@notificationTitleMessage": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleSupportUpdate": "تحديث على طلب الدعم",
+  "@notificationTitleSupportUpdate": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleAccountVerified": "تم توثيق حسابك",
+  "@notificationTitleAccountVerified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleIdentityApproved": "تم اعتماد هويتك",
+  "@notificationTitleIdentityApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleIdentityRejected": "تم رفض هويتك",
+  "@notificationTitleIdentityRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildVerified": "تم توثيق بيانات الطفل",
+  "@notificationTitleChildVerified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildRejected": "تم رفض توثيق بيانات الطفل",
+  "@notificationTitleChildRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleChildUnverified": "لم يتم توثيق بيانات الطفل",
+  "@notificationTitleChildUnverified": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleVerificationCompleted": "اكتمل توثيق حسابك",
+  "@notificationTitleVerificationCompleted": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCertificateApproved": "تم اعتماد شهادتك",
+  "@notificationTitleCertificateApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleCertificateRejected": "تم رفض شهادتك",
+  "@notificationTitleCertificateRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanReview": "خطة تعليمية بانتظار المراجعة",
+  "@notificationTitlePlanReview": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLessonApproved": "تم اعتماد الدرس",
+  "@notificationTitleLessonApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleLessonRejected": "تم رفض الدرس",
+  "@notificationTitleLessonRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanApproved": "تم اعتماد الخطة",
+  "@notificationTitlePlanApproved": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitlePlanRejected": "تم رفض الخطة",
+  "@notificationTitlePlanRejected": {
+    "description": "System notification title for display only; never replaces stored message content."
+  },
+  "notificationTitleEmergencyFor": "🚨 تنبيه طوارئ: {name}",
+  "@notificationTitleEmergencyFor": {
+    "description": "Emergency notification title, preserving the original child name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationTitleAbsence": "تنبيه غياب",
+  "@notificationTitleAbsence": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLateness": "تنبيه تأخر",
+  "@notificationTitleLateness": {
+    "description": "System notification title for display only; preserve message content."
+  },
+  "notificationTitleLessonRecommendation": "درس مقترح لطفلك",
+  "@notificationTitleLessonRecommendation": {
+    "description": "System notification title for display only; preserve message content."
   }
 }

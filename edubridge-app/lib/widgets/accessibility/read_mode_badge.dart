@@ -1,6 +1,7 @@
 // شارة عائمة تُظهر "وضع القراءة مُفعّل"
 // تظهر فوق زر المايك مباشرة حين يكون tapToRead مفعّلاً
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 
@@ -33,19 +34,19 @@ class ReadModeBadge extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.volume_up, color: Colors.white, size: 16),
                 SizedBox(width: 6),
-                Text(
-                  'وضع القراءة مُفعّل',
+                Flexible(child: Text(
+                  context.l10n.readingModeEnabled,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                )),
               ],
             ),
           ),

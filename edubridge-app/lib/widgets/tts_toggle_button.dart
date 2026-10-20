@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../services/tts_service.dart';
 
 class TtsToggleButton extends StatelessWidget {
@@ -13,7 +14,7 @@ class TtsToggleButton extends StatelessWidget {
           on ? Icons.record_voice_over : Icons.volume_off_outlined,
           color: on ? const Color(0xFFFFC23C) : Colors.white,
         ),
-        tooltip: on ? 'إيقاف القراءة' : 'تفعيل القراءة',
+        tooltip: on ? context.l10n.readingStopTooltip : context.l10n.readingStartTooltip,
         onPressed: () => TtsService.instance.toggleTapToRead(),
       ),
     );

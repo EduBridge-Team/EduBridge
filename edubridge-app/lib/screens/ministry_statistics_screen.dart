@@ -1,7 +1,9 @@
 // screens/ministry/ministry_statistics_screen.dart
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../theme.dart';
+import '../l10n/l10n.dart';
+import '../services/api_service.dart';
+import '../widgets/disability/disability_display.dart';
+import '../theme.dart';
 
 class MinistryStatisticsScreen extends StatefulWidget {
   const MinistryStatisticsScreen({super.key});
@@ -41,7 +43,7 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: '📊 إحصائيات الوزارة'),
+      appBar: JisrAppBar(title: context.l10n.ministryStatsPageTitle),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _loading
@@ -65,14 +67,14 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
           children: [
             _bigStat(
               '${s['total_children'] ?? 0}',
-              'إجمالي الأطفال',
+              context.l10n.ministryStatsTotalChildren,
               Icons.child_care,
               AppColors.teal,
             ),
             const SizedBox(width: 8),
             _bigStat(
               '${s['active_children'] ?? 0}',
-              'نشطون',
+              context.l10n.ministryStatsActive,
               Icons.trending_up,
               AppColors.green,
             ),
@@ -83,34 +85,34 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
           children: [
             _bigStat(
               '${s['homework_completion_rate'] ?? 0}%',
-              'إكمال الواجبات',
+              context.l10n.ministryStatsHomework,
               Icons.assignment_turned_in,
               AppColors.orange,
             ),
             const SizedBox(width: 8),
             _bigStat(
               '${s['learning_support_meetings_count'] ?? 0}',
-              'اجتماعات الدعم التعليمي',
+              context.l10n.supportMeetingsTitle,
               Icons.school_outlined,
               AppColors.pink,
             ),
           ],
         ),
         const SizedBox(height: 24),
-        const Text(
-          'حسب نوع الإعاقة',
+        Text(
+          context.l10n.lessonByDisability,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ...byDisability.entries
-            .map((e) => _barRow(e.key, e.value, byDisability)),
+            .map((e) => _barRow(DisabilityDisplay.label(e.key, context.l10n), e.value, byDisability)),
         const SizedBox(height: 24),
-        const Text(
-          'حسب الفئة العمرية',
+        Text(
+          context.l10n.ministryStatsAge,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ...byAge.entries.map((e) => _barRow(e.key, e.value, byAge)),
+        ...byAge.entries.map((e) => _barRow(e.key, e.value, byAge, numericLabel: true)),
       ],
     );
   }
@@ -128,14 +130,14 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
           children: [
             Icon(icon, color: color, size: 36),
             const SizedBox(height: 8),
-            Text(
+            FittedBox(fit: BoxFit.scaleDown, child: Text(
               value,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
-            ),
+            )),
             Text(
               label,
               style: const TextStyle(fontSize: 12),
@@ -147,7 +149,7 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
     );
   }
 
-  Widget _barRow(String label, dynamic value, Map<String, dynamic> source) {
+  Widget _barRow(String label, dynamic value, Map<String, dynamic> source, {bool numericLabel = false}) {
     final total = source.values
         .fold<int>(0, (sum, v) => sum + (int.tryParse('$v') ?? 0));
     final count = int.tryParse('$value') ?? 0;
@@ -161,7 +163,7 @@ class _MinistryStatisticsScreenState extends State<MinistryStatisticsScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: Text(label)),
+              Expanded(child: Text(label, textDirection: numericLabel ? TextDirection.ltr : null)),
               Text(
                 '$count (${(pct * 100).toStringAsFixed(0)}%)',
                 style: const TextStyle(fontWeight: FontWeight.bold),
