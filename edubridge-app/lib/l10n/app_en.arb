@@ -4421,5 +4421,326 @@
   "caseRefreshAction": "Refresh",
   "@caseRefreshAction": {
     "description": "Case discussion action."
+  },
+  "lessonCreateTitle": "Add a new lesson",
+  "@lessonCreateTitle": {
+    "description": "Lesson interface: Add a new lesson"
+  },
+  "lessonCreateIntro": "Add content, choose the audience and attach supporting media",
+  "@lessonCreateIntro": {
+    "description": "Lesson interface: Add content, choose the audience and attach supporting media"
+  },
+  "lessonVerificationHint": "The teacher account must be verified before adding a lesson.",
+  "@lessonVerificationHint": {
+    "description": "Lesson interface: The teacher account must be verified before adding a lesson."
+  },
+  "lessonTitleRequired": "Enter a lesson title",
+  "@lessonTitleRequired": {
+    "description": "Lesson interface: Enter a lesson title"
+  },
+  "lessonSaveFailed": "Could not save the lesson",
+  "@lessonSaveFailed": {
+    "description": "Lesson interface: Could not save the lesson"
+  },
+  "lessonTitleField": "Lesson title *",
+  "@lessonTitleField": {
+    "description": "Lesson interface: Lesson title *"
+  },
+  "lessonTextContent": "Text content",
+  "@lessonTextContent": {
+    "description": "Lesson interface: Text content"
+  },
+  "lessonContentHint": "Enter lesson content (optional)...",
+  "@lessonContentHint": {
+    "description": "Lesson interface: Enter lesson content (optional)..."
+  },
+  "lessonVideoOptional": "Lesson video (optional)",
+  "@lessonVideoOptional": {
+    "description": "Lesson interface: Lesson video (optional)"
+  },
+  "lessonVideoHint": "Attach a video explaining the lesson",
+  "@lessonVideoHint": {
+    "description": "Lesson interface: Attach a video explaining the lesson"
+  },
+  "lessonUploadVideo": "Upload video",
+  "@lessonUploadVideo": {
+    "description": "Lesson interface: Upload video"
+  },
+  "lessonCaptionsOptional": "Caption file (optional)",
+  "@lessonCaptionsOptional": {
+    "description": "Lesson interface: Caption file (optional)"
+  },
+  "lessonCaptionsHint": "A VTT or SRT file for deaf and hard of hearing learners",
+  "@lessonCaptionsHint": {
+    "description": "Lesson interface: A VTT or SRT file for deaf and hard of hearing learners"
+  },
+  "lessonUploadCaptions": "Upload captions",
+  "@lessonUploadCaptions": {
+    "description": "Lesson interface: Upload captions"
+  },
+  "lessonSignOptional": "Sign language video (optional)",
+  "@lessonSignOptional": {
+    "description": "Lesson interface: Sign language video (optional)"
+  },
+  "lessonSignHint": "Attach a video with sign language interpretation",
+  "@lessonSignHint": {
+    "description": "Lesson interface: Attach a video with sign language interpretation"
+  },
+  "lessonUploadSign": "Upload sign language video",
+  "@lessonUploadSign": {
+    "description": "Lesson interface: Upload sign language video"
+  },
+  "lessonDescriptionOptional": "Audio description (optional)",
+  "@lessonDescriptionOptional": {
+    "description": "Lesson interface: Audio description (optional)"
+  },
+  "lessonDescriptionHint": "Describe the video for blind and low vision learners",
+  "@lessonDescriptionHint": {
+    "description": "Lesson interface: Describe the video for blind and low vision learners"
+  },
+  "lessonAudioOptional": "Audio recording (optional)",
+  "@lessonAudioOptional": {
+    "description": "Lesson interface: Audio recording (optional)"
+  },
+  "lessonAudioHint": "Attach an audio recording as an alternative to video",
+  "@lessonAudioHint": {
+    "description": "Lesson interface: Attach an audio recording as an alternative to video"
+  },
+  "lessonUploadAudio": "Upload audio recording",
+  "@lessonUploadAudio": {
+    "description": "Lesson interface: Upload audio recording"
+  },
+  "lessonAudience": "Who is this lesson for?",
+  "@lessonAudience": {
+    "description": "Lesson interface: Who is this lesson for?"
+  },
+  "lessonAllStudents": "All students",
+  "@lessonAllStudents": {
+    "description": "Lesson interface: All students"
+  },
+  "lessonByDisability": "By disability type",
+  "@lessonByDisability": {
+    "description": "Lesson interface: By disability type"
+  },
+  "lessonSpecificStudents": "Specific students",
+  "@lessonSpecificStudents": {
+    "description": "Lesson interface: Specific students"
+  },
+  "lessonGeneral": "— General —",
+  "@lessonGeneral": {
+    "description": "Lesson interface: — General —"
+  },
+  "lessonNoStudents": "No students registered",
+  "@lessonNoStudents": {
+    "description": "Lesson interface: No students registered"
+  },
+  "lessonImagesOptional": "Lesson images (optional)",
+  "@lessonImagesOptional": {
+    "description": "Lesson interface: Lesson images (optional)"
+  },
+  "lessonImagesHint": "Select multiple images to use alongside video or audio",
+  "@lessonImagesHint": {
+    "description": "Lesson interface: Select multiple images to use alongside video or audio"
+  },
+  "lessonUploadImages": "Upload images",
+  "@lessonUploadImages": {
+    "description": "Lesson interface: Upload images"
+  },
+  "lessonChangeImages": "Change images",
+  "@lessonChangeImages": {
+    "description": "Lesson interface: Change images"
+  },
+  "lessonUploadFile": "Upload file",
+  "@lessonUploadFile": {
+    "description": "Lesson interface: Upload file"
+  },
+  "lessonReplaceFile": "Replace file",
+  "@lessonReplaceFile": {
+    "description": "Lesson interface: Replace file"
+  },
+  "lessonRemoveFile": "Remove file",
+  "@lessonRemoveFile": {
+    "description": "Lesson interface: Remove file"
+  },
+  "lessonRemoveImage": "Remove image",
+  "@lessonRemoveImage": {
+    "description": "Lesson interface: Remove image"
+  },
+  "lessonForParents": "Lesson for parents",
+  "@lessonForParents": {
+    "description": "Lesson interface: Lesson for parents"
+  },
+  "lessonParentsOnlyHint": "Shown only on the parent lessons screen",
+  "@lessonParentsOnlyHint": {
+    "description": "Lesson interface: Shown only on the parent lessons screen"
+  },
+  "lessonParentsToggleHint": "Enable this for a lesson intended for the family",
+  "@lessonParentsToggleHint": {
+    "description": "Lesson interface: Enable this for a lesson intended for the family"
+  },
+  "lessonSave": "Save lesson",
+  "@lessonSave": {
+    "description": "Lesson interface: Save lesson"
+  },
+  "lessonBrowse": "Browse lessons",
+  "@lessonBrowse": {
+    "description": "Lesson interface: Browse lessons"
+  },
+  "lessonExplore": "Explore content",
+  "@lessonExplore": {
+    "description": "Lesson interface: Explore content"
+  },
+  "lessonExploreHint": "Find a lesson, listen to it or ask Noor for help.",
+  "@lessonExploreHint": {
+    "description": "Lesson interface: Find a lesson, listen to it or ask Noor for help."
+  },
+  "lessonListen": "Listen to lesson",
+  "@lessonListen": {
+    "description": "Lesson interface: Listen to lesson"
+  },
+  "lessonStopListening": "Stop listening",
+  "@lessonStopListening": {
+    "description": "Lesson interface: Stop listening"
+  },
+  "lessonListenHint": "Tap to listen to the lesson",
+  "@lessonListenHint": {
+    "description": "Lesson interface: Tap to listen to the lesson"
+  },
+  "lessonAskNoor": "Ask Noor",
+  "@lessonAskNoor": {
+    "description": "Lesson interface: Ask Noor"
+  },
+  "lessonParentTitle": "Parent lessons",
+  "@lessonParentTitle": {
+    "description": "Lesson interface: Parent lessons"
+  },
+  "lessonParentAdd": "Add a parent lesson",
+  "@lessonParentAdd": {
+    "description": "Lesson interface: Add a parent lesson"
+  },
+  "lessonParentHeading": "Lessons for you",
+  "@lessonParentHeading": {
+    "description": "Lesson interface: Lessons for you"
+  },
+  "lessonParentIntro": "Tips and guidance from specialists to help you support your child",
+  "@lessonParentIntro": {
+    "description": "Lesson interface: Tips and guidance from specialists to help you support your child"
+  },
+  "lessonParentSearch": "Search lessons...",
+  "@lessonParentSearch": {
+    "description": "Lesson interface: Search lessons..."
+  },
+  "lessonParentEmpty": "No parent lessons yet",
+  "@lessonParentEmpty": {
+    "description": "Lesson interface: No parent lessons yet"
+  },
+  "lessonParentEmptyHint": "Lessons added by specialists for parents will appear here",
+  "@lessonParentEmptyHint": {
+    "description": "Lesson interface: Lessons added by specialists for parents will appear here"
+  },
+  "lessonWatchVideo": "Watch video",
+  "@lessonWatchVideo": {
+    "description": "Lesson interface: Watch video"
+  },
+  "lessonStopRecording": "Stop recording playback",
+  "@lessonStopRecording": {
+    "description": "Lesson interface: Stop recording playback"
+  },
+  "lessonPlayRecording": "Play audio recording",
+  "@lessonPlayRecording": {
+    "description": "Lesson interface: Play audio recording"
+  },
+  "lessonListenText": "Listen to text",
+  "@lessonListenText": {
+    "description": "Lesson interface: Listen to text"
+  },
+  "lessonStopPlayback": "Stop",
+  "@lessonStopPlayback": {
+    "description": "Lesson interface: Stop"
+  },
+  "lessonForStudentSubtitle": "This lesson will be added for {name}",
+  "@lessonForStudentSubtitle": {
+    "description": "Lesson interface: This lesson will be added for {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonOnlyStudent": "This lesson will only be shown to {name}.",
+  "@lessonOnlyStudent": {
+    "description": "Lesson interface: This lesson will only be shown to {name}.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonStudentLabel": "Student: {name}",
+  "@lessonStudentLabel": {
+    "description": "Lesson interface: Student: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonSpeechTitle": "Lesson: {name}",
+  "@lessonSpeechTitle": {
+    "description": "Lesson interface: Lesson: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonRatingTitle": "Rate lesson",
+  "@lessonRatingTitle": {
+    "description": "Lesson ratings: Rate lesson"
+  },
+  "lessonRatingsLoadFailed": "Could not load ratings",
+  "@lessonRatingsLoadFailed": {
+    "description": "Lesson ratings: Could not load ratings"
+  },
+  "lessonRatingSaveFailed": "Could not save your rating",
+  "@lessonRatingSaveFailed": {
+    "description": "Lesson ratings: Could not save your rating"
+  },
+  "lessonRatingStarsRequired": "Choose a star rating first",
+  "@lessonRatingStarsRequired": {
+    "description": "Lesson ratings: Choose a star rating first"
+  },
+  "lessonRatingComment": "Optional comment",
+  "@lessonRatingComment": {
+    "description": "Lesson ratings: Optional comment"
+  },
+  "lessonRatingChoose": "Choose your rating",
+  "@lessonRatingChoose": {
+    "description": "Lesson ratings: Choose your rating"
+  },
+  "lessonRatingReviews": "User reviews",
+  "@lessonRatingReviews": {
+    "description": "Lesson ratings: User reviews"
+  },
+  "lessonRatingSummary": "Average: {average} out of 5 · {count} ratings",
+  "@lessonRatingSummary": {
+    "description": "Lesson ratings: Average: {average} out of 5 · {count} ratings",
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonRatingStars": "{count} stars",
+  "@lessonRatingStars": {
+    "description": "Lesson ratings: {count} stars",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

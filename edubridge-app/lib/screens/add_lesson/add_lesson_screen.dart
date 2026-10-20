@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
@@ -51,20 +52,20 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
 
     return Scaffold(
       appBar: BrandAppBar(
-        toolbarHeight: 88,
+        toolbarHeight: 88 * MediaQuery.textScalerOf(context).scale(1),
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
-          tooltip: 'رجوع',
+          tooltip: context.l10n.back,
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+          icon: const BackButtonIcon(),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'إضافة درس جديد',
+            Text(
+              context.l10n.lessonCreateTitle,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
@@ -74,8 +75,8 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
             const SizedBox(height: 4),
             Text(
               widget.initialChildName == null
-                  ? 'أضف المحتوى وحدد الجمهور والوسائط المساندة'
-                  : 'سيتم إضافة الدرس للطالب ${widget.initialChildName}',
+                  ? context.l10n.lessonCreateIntro
+                  : context.l10n.lessonForStudentSubtitle(widget.initialChildName!),
               style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w500,
@@ -109,7 +110,7 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                           ),
                           const SizedBox(height: 14),
                           Text(
-                            'توثيق الهوية مطلوب',
+                            context.l10n.verificationRequired,
                             style: TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
@@ -118,7 +119,7 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'يجب توثيق حساب المعلم قبل إضافة درس جديد.',
+                            context.l10n.lessonVerificationHint,
                             textAlign: TextAlign.center,
                             style: TextStyle(color: c.muted, height: 1.5),
                           ),
@@ -127,7 +128,7 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                             width: double.infinity,
                             child: FilledButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('رجوع'),
+                              child: Text(context.l10n.back),
                             ),
                           ),
                         ],

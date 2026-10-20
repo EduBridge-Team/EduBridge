@@ -1,9 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+
+enum _RatingError { load, save, starsRequired }
 
 Future<void> showLessonRatingSheet(
   BuildContext context, {
@@ -30,7 +31,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
   final _commentCtrl = TextEditingController();
   bool _loading = true;
   bool _saving = false;
-  String? _error;
+  _RatingError? _error;
   int _stars = 0;
   double _average = 0;
   int _count = 0;
@@ -60,7 +61,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
       );
       final data = ApiService.decodeMap(res.body);
       if (res.statusCode != 200) {
-        throw Exception(data['error'] ?? 'تعذّر تحميل التقييمات');
+        throw const FormatException();
       }
 
       final mine = data['my_rating'];
@@ -75,18 +76,18 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
         }
         _loading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = _RatingError.load;
       });
     }
   }
 
   Future<void> _save() async {
     if (_stars < 1) {
-      setState(() => _error = 'اختر عدد النجوم أولاً');
+      setState(() => _error = _RatingError.starsRequired);
       return;
     }
 
@@ -105,17 +106,14 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
               : _commentCtrl.text.trim(),
         },
       );
-      final data = res.body.isEmpty
-          ? <String, dynamic>{}
-          : Map<String, dynamic>.from(jsonDecode(res.body) as Map);
       if (res.statusCode < 200 || res.statusCode >= 300) {
-        throw Exception(data['error'] ?? 'تعذّر حفظ التقييم');
+        throw const FormatException();
       }
       await _load();
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         setState(() =>
-            _error = e.toString().replaceFirst('Exception: ', ''));
+            _error = _RatingError.save);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -145,7 +143,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                     children: [
                       Expanded(
                         child: Text(
-                          'تقييم الدرس',
+                          context.l10n.lessonRatingTitle,
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -154,13 +152,14 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                         ),
                       ),
                       IconButton(
+                        tooltip: context.l10n.close,
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(Icons.close),
                       ),
                     ],
                   ),
                   Text(
-                    'المتوسط: ${_average.toStringAsFixed(1)} من 5 · $_count تقييم',
+                    context.l10n.lessonRatingSummary(_average.toStringAsFixed(1), _count),
                     style: TextStyle(color: c.muted),
                   ),
                   const SizedBox(height: 14),
@@ -169,7 +168,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                     children: List.generate(5, (index) {
                       final value = index + 1;
                       return IconButton(
-                        tooltip: '$value نجوم',
+                        tooltip: context.l10n.lessonRatingStars(value),
                         onPressed: () => setState(() => _stars = value),
                         icon: Icon(
                           value <= _stars ? Icons.star : Icons.star_border,
@@ -184,14 +183,18 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                     controller: _commentCtrl,
                     maxLength: 1000,
                     maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'تعليق اختياري',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.lessonRatingComment,
                       alignLabelWithHint: true,
                     ),
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 8),
-                    Text(_error!,
+                    Text(switch (_error!) {
+                      _RatingError.load => context.l10n.lessonRatingsLoadFailed,
+                      _RatingError.save => context.l10n.lessonRatingSaveFailed,
+                      _RatingError.starsRequired => context.l10n.lessonRatingStarsRequired,
+                    },
                         style: const TextStyle(color: AppColors.red)),
                   ],
                   const SizedBox(height: 12),
@@ -208,15 +211,15 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                           )
                         : const Icon(Icons.star),
                     label: Text(_saving
-                        ? 'جارِ الحفظ...'
+                        ? context.l10n.saving
                         : _stars > 0
-                            ? 'حفظ التقييم'
-                            : 'اختر تقييمك'),
+                            ? context.l10n.saveEvaluation
+                            : context.l10n.lessonRatingChoose),
                   ),
                   if (_ratings.isNotEmpty) ...[
                     const SizedBox(height: 20),
                     Text(
-                      'آراء المستخدمين',
+                      context.l10n.lessonRatingReviews,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: c.heading,
@@ -230,7 +233,7 @@ class _LessonRatingSheetState extends State<_LessonRatingSheet> {
                       final stars = (row['stars'] as num?)?.toInt() ?? 0;
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text((row['user_name'] ?? 'مستخدم').toString()),
+                        title: Text((row['user_name'] ?? context.l10n.user).toString()),
                         subtitle: (row['comment'] ?? '').toString().isEmpty
                             ? null
                             : Text(row['comment'].toString()),

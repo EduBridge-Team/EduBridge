@@ -28,58 +28,59 @@ Widget buildTargetSelector({
           children: [
             const Icon(AppIcons.users, color: AppColors.brandBlue, size: 24),
             const SizedBox(width: 8),
-            Text(
-              'من سيستفيد من الدرس؟',
+            Expanded(child: Text(
+              context.l10n.lessonAudience,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: c.onTint,
               ),
-            ),
+            )),
           ],
         ),
         const SizedBox(height: 10),
-        RadioGroup<LessonTarget>(
+        Material(type: MaterialType.transparency, child: RadioGroup<LessonTarget>(
           groupValue: target,
           onChanged: (v) {
             if (v != null) onTargetChanged(v);
           },
-          child: const Column(
+          child: Column(
             children: [
               RadioListTile<LessonTarget>(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                title: Text('كل الطلاب'),
+                title: Text(context.l10n.lessonAllStudents),
                 value: LessonTarget.everyone,
               ),
               RadioListTile<LessonTarget>(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                title: Text('حسب نوع الإعاقة'),
+                title: Text(context.l10n.lessonByDisability),
                 value: LessonTarget.byDisability,
               ),
               RadioListTile<LessonTarget>(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                title: Text('طلاب محدّدون'),
+                title: Text(context.l10n.lessonSpecificStudents),
                 value: LessonTarget.specificChildren,
               ),
             ],
           ),
-        ),
+        )),
         if (target == LessonTarget.byDisability) ...[
           const SizedBox(height: 8),
           DropdownButtonFormField<String?>(
             initialValue: typeId,
-            decoration: const InputDecoration(
-              labelText: 'نوع الإعاقة',
+            isExpanded: true,
+            decoration: InputDecoration(
+              labelText: context.l10n.disabilityType,
               filled: true,
             ),
             items: [
-              const DropdownMenuItem(value: null, child: Text('— عام —')),
+              DropdownMenuItem(value: null, child: Text(context.l10n.lessonGeneral)),
               ...types.map((t) => DropdownMenuItem(
                     value: t['id'].toString(),
-                    child: Text((t['name'] ?? '').toString()),
+                    child: Text(DisabilityDisplay.label((t['name'] ?? '').toString(), context.l10n)),
                   )),
             ],
             onChanged: onTypeChanged,
@@ -90,7 +91,7 @@ Widget buildTargetSelector({
           if (loadingChildren)
             const Center(child: CircularProgressIndicator())
           else if (allChildren.isEmpty)
-            const Text('لا يوجد طلاب مسجّلون')
+            Text(context.l10n.lessonNoStudents)
           else
             Container(
               constraints: const BoxConstraints(maxHeight: 200),
@@ -105,16 +106,16 @@ Widget buildTargetSelector({
                   final child = allChildren[i];
                   final id = child['id'] as int;
                   final selected = selectedChildIds.contains(id);
-                  return CheckboxListTile(
+                  return Material(type: MaterialType.transparency, child: CheckboxListTile(
                     dense: true,
                     title: Text(child['name']?.toString() ?? ''),
                     subtitle: Text(
-                      child['disability_type']?.toString() ?? 'غير محدد',
+                      DisabilityDisplay.label(child['disability_type']?.toString() ?? context.l10n.notSpecified, context.l10n),
                       style: const TextStyle(fontSize: 11),
                     ),
                     value: selected,
                     onChanged: (v) => onChildToggle(id, v == true),
-                  );
+                  ));
                 },
               ),
             ),

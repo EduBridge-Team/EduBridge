@@ -2,15 +2,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../../widgets/disability/disability_display.dart';
 
 part 'add_lesson_target_selector.dart';
 part 'add_lesson_media_pickers.dart';
 part 'add_lesson_widgets.dart';
+
+enum _LessonError { titleRequired, studentsRequired, saveFailed, connectionFailed }
 
 enum LessonTarget { everyone, byDisability, specificChildren }
 
@@ -51,7 +55,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
   File? _signLanguageFile;
 
   bool _saving = false;
-  String? _error;
+  _LessonError? _error;
 
   LessonTarget _target = LessonTarget.everyone;
   final Set<int> _selectedChildIds = {};
@@ -144,11 +148,13 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
 
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'عنوان الدرس مطلوب');
+      setState(() => _error = _LessonError.titleRequired);
       return;
     }
-    if (_target == LessonTarget.specificChildren && _selectedChildIds.isEmpty) {
-      setState(() => _error = 'اختر طالباً واحداً على الأقل');
+    if (!_forParents &&
+        _target == LessonTarget.specificChildren &&
+        _selectedChildIds.isEmpty) {
+      setState(() => _error = _LessonError.studentsRequired);
       return;
     }
 
@@ -175,24 +181,25 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? null
             : _audioDescriptionCtrl.text.trim(),
         targetType: targetType,
-        targetChildIds: _target == LessonTarget.specificChildren
+        targetChildIds: !_forParents && _target == LessonTarget.specificChildren
             ? _selectedChildIds.toList()
             : null,
       );
 
       if (!mounted) return;
       if (result != null) {
+        setState(() => _saving = false);
         widget.onCreated(result);
       } else {
         setState(() {
-          _error = 'فشل حفظ الدرس';
+          _error = _LessonError.saveFailed;
           _saving = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر: $e';
+        _error = _LessonError.connectionFailed;
         _saving = false;
       });
     }
@@ -230,15 +237,15 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             if (!widget.fullScreen) const SizedBox(height: 6),
             Text(
               _isChildLocked
-                  ? 'هذا الدرس سيظهر للطالب ${widget.initialChildName ?? ''} فقط.'
-                  : 'أضف المحتوى وحدد الجمهور والوسائط المساندة.',
+                  ? context.l10n.lessonOnlyStudent(widget.initialChildName ?? '')
+                  : context.l10n.lessonCreateIntro,
               style: TextStyle(fontSize: 13.5, color: c.muted),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _titleCtrl,
-              decoration: const InputDecoration(
-                labelText: 'عنوان الدرس *',
+              decoration: InputDecoration(
+                labelText: context.l10n.lessonTitleField,
                 prefixIcon: Icon(AppIcons.edit),
               ),
             ),
@@ -246,9 +253,9 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             TextField(
               controller: _contentCtrl,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'المحتوى النصي',
-                hintText: 'اكتب محتوى الدرس (اختياري)...',
+              decoration: InputDecoration(
+                labelText: context.l10n.lessonTextContent,
+                hintText: context.l10n.lessonContentHint,
                 prefixIcon: Icon(AppIcons.info),
               ),
             ),
@@ -268,7 +275,7 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'الطالب: ${widget.initialChildName ?? widget.initialChildId}',
+                        context.l10n.lessonStudentLabel((widget.initialChildName ?? widget.initialChildId).toString()),
                         style: TextStyle(color: c.heading, fontWeight: FontWeight.w800),
                       ),
                     ),
@@ -311,62 +318,66 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ),
             const SizedBox(height: 12),
             buildFilePicker(
+              context: context,
               c: c,
               icon: AppIcons.video,
-              label: 'فيديو الدرس (اختياري)',
-              sublabel: 'أرفق فيديو يشرح محتوى الدرس',
+              label: context.l10n.lessonVideoOptional,
+              sublabel: context.l10n.lessonVideoHint,
               color: AppColors.brandTeal,
               file: _videoFile,
               onPick: _pickVideo,
               onClear: () => setState(() => _videoFile = null),
-              uploadLabel: 'رفع الفيديو',
+              uploadLabel: context.l10n.lessonUploadVideo,
             ),
             const SizedBox(height: 12),
             buildFilePicker(
+              context: context,
               c: c,
               icon: AppIcons.captions,
-              label: 'ملف الترجمة (اختياري)',
-              sublabel: 'ملف VTT أو SRT للصم وضعاف السمع',
+              label: context.l10n.lessonCaptionsOptional,
+              sublabel: context.l10n.lessonCaptionsHint,
               color: AppColors.brandTeal,
               file: _captionFile,
               onPick: _pickCaption,
               onClear: () => setState(() => _captionFile = null),
-              uploadLabel: 'رفع ملف الترجمة',
+              uploadLabel: context.l10n.lessonUploadCaptions,
             ),
             const SizedBox(height: 12),
             buildFilePicker(
+              context: context,
               c: c,
               icon: AppIcons.signLanguage,
-              label: 'فيديو لغة الإشارة (اختياري)',
-              sublabel: 'أرفق فيديو مترجماً بلغة الإشارة',
+              label: context.l10n.lessonSignOptional,
+              sublabel: context.l10n.lessonSignHint,
               color: AppColors.brandTeal,
               file: _signLanguageFile,
               onPick: _pickSignLanguage,
               onClear: () => setState(() => _signLanguageFile = null),
-              uploadLabel: 'رفع فيديو الإشارة',
+              uploadLabel: context.l10n.lessonUploadSign,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _audioDescriptionCtrl,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'الوصف الصوتي (اختياري)',
-                hintText: 'صف ما يحدث في الفيديو للمكفوفين وضعاف البصر',
+              decoration: InputDecoration(
+                labelText: context.l10n.lessonDescriptionOptional,
+                hintText: context.l10n.lessonDescriptionHint,
                 alignLabelWithHint: true,
                 prefixIcon: Icon(AppIcons.speech),
               ),
             ),
             const SizedBox(height: 12),
             buildFilePicker(
+              context: context,
               c: c,
               icon: AppIcons.audio,
-              label: 'تسجيل صوتي (اختياري)',
-              sublabel: 'أرفق تسجيلاً صوتياً بديلاً عن الفيديو',
+              label: context.l10n.lessonAudioOptional,
+              sublabel: context.l10n.lessonAudioHint,
               color: AppColors.brandTeal,
               file: _audioFile,
               onPick: _pickAudio,
               onClear: () => setState(() => _audioFile = null),
-              uploadLabel: 'رفع التسجيل الصوتي',
+              uploadLabel: context.l10n.lessonUploadAudio,
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
@@ -399,10 +410,10 @@ class _AddLessonSheetState extends State<AddLessonSheet> {
             ? Stack(
                 children: [
                   Positioned.fill(child: content),
-                  Positioned(
-                    left: 16,
+                  PositionedDirectional(
+                    start: 16,
                     bottom: 24 + bottomInset,
-                    width: 220,
+                    width: MediaQuery.sizeOf(context).width - 32,
                     child: _buildSaveButton(),
                   ),
                 ],
