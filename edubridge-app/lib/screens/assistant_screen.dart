@@ -711,7 +711,7 @@ class _MessageBubble extends StatelessWidget {
     );
 
     return Align(
-      alignment: isUser ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Column(
@@ -784,7 +784,7 @@ class _ResponseToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
-    return Padding(
+    return Tooltip(message: tooltip, child: Padding(
       padding: const EdgeInsetsDirectional.only(end: 3),
       child: TextButton.icon(
         onPressed: onPressed,
@@ -800,7 +800,7 @@ class _ResponseToolButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -810,7 +810,7 @@ class _TypingBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: AlignmentDirectional.centerStart,
+      alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),

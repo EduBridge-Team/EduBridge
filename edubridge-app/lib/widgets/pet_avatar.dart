@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 part 'pet_avatar_view.dart';
 
 /// Noor is drawn with Flutter primitives so the assistant stays crisp,
