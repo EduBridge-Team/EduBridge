@@ -134,6 +134,7 @@ void main() {
     });
     testWidgets('$language failed create retains draft and allows retry', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
+      final writes = <http.Request>[];
       await http.runWithClient(() async {
         await _mount(tester, const CreateLearningSupportRequestScreen(childId: 7, childName: 'محمود'), language, scale: 2);
         await _tap(tester, find.byType(DropdownButton<String>));
@@ -142,10 +143,11 @@ void main() {
         await tester.enterText(find.byType(TextFormField), 'وصف أصلي طويل بما يكفي لحفظ الطلب');
         await _tap(tester, find.text(strings.supportSendRequest));
         expect(find.text(strings.supportCreateFailed), findsOneWidget);
-        expect(tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, strings.supportSendRequest)).onPressed, isNotNull);
+        await _tap(tester, find.text(strings.supportSendRequest));
+        expect(writes, hasLength(2));
         await tester.scrollUntilVisible(find.byType(TextFormField), -160, scrollable: find.byType(Scrollable).first);
         expect(find.text('وصف أصلي طويل بما يكفي لحفظ الطلب'), findsOneWidget);
-      }, () => _client(failWrite: true));
+      }, () => _client(failWrite: true, writes: writes));
     });
     testWidgets('$language schedule validates and preserves URL notes and date payload', (tester) async {
       final strings = await AppLocalizations.delegate.load(Locale(language));
