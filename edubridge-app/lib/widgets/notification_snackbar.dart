@@ -1,3 +1,4 @@
+import '../utils/notification_presentation.dart';
 import '../l10n/l10n.dart';
 // lib/widgets/notification_snackbar.dart
 import 'package:flutter/material.dart';
@@ -53,8 +54,8 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
     if (messenger == null) return;
 
     final icon = _iconFor(notif['type']);
-    final title = (notif['title'] ?? '').toString();
-    final body = (notif['body'] ?? '').toString();
+    final title = NotificationPresentation.title(notif, context.l10n);
+    final body = (notif['body'] ?? notif['message'] ?? '').toString();
     final c = JisrColors.of(context);
     final textTheme = Theme.of(context).textTheme;
 
@@ -69,7 +70,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
           borderRadius: BorderRadius.circular(16),
         ),
         backgroundColor: c.card,
-        content: Row(
+        content: Builder(builder: (snackbarContext) => Row(
           children: [
             Text(icon, style: const TextStyle(fontSize: 30)),
             const SizedBox(width: 12),
@@ -79,7 +80,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    title,
+                    NotificationPresentation.title(notif, snackbarContext.l10n),
                     style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: c.heading,
@@ -98,7 +99,7 @@ class _NotificationSnackbarHostState extends State<NotificationSnackbarHost> {
               ),
             ),
           ],
-        ),
+        )),
         action: SnackBarAction(
           label: context.l10n.view,
           textColor: AppColors.tealDeep,

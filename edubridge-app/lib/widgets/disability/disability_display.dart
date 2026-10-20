@@ -55,6 +55,7 @@ class DisabilityDisplay {
     'متلازمة داون' => strings.disabilityDownSyndrome,
     'أخرى' => strings.otherDisability,
     'بدون تكييف' => strings.noAdaptation,
+    'غير محدد' => strings.notSpecified,
     _ => value,
   };
 

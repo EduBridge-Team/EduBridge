@@ -41,7 +41,7 @@ extension _SpecialistNotificationsS24 on _NotificationsScreenState {
   Widget _s24Tile(Map notification, JisrColors colors) {
     final unread = notification['is_read'] != true;
     final type = (notification['type'] ?? '').toString();
-    final title = (notification['title'] ?? '').toString();
+    final title = NotificationPresentation.title(notification, context.l10n);
     final message = (notification['body'] ?? notification['message'] ?? '').toString();
     final date = notification['created_at'] == null
         ? null : DateTime.tryParse(notification['created_at'].toString());
