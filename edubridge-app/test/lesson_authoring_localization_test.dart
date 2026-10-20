@@ -13,6 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 http.Response _response(Object data, [int status = 200]) => http.Response(
   jsonEncode(data), status, headers: {'content-type': 'application/json; charset=utf-8'});
 MockClient _client({bool empty = false, bool fail = false, List<http.Request>? writes}) => MockClient((request) async {
+  if (request.method == 'GET' && request.url.path.endsWith('/ratings')) {
+    return _response({'average': 4.5, 'count': 2, 'ratings': [{'user_name': 'معلم أصلي', 'stars': 4, 'comment': 'تعليق أصلي'}]});
+  }
   if (request.method == 'POST') {
     writes?.add(request);
     return _response({'lesson': {'id': 12}}, fail ? 500 : 201);
@@ -127,6 +130,22 @@ void main() {
         expect(body, contains('درس للأسرة'));
         expect(body, isNot(contains('target_child_ids')));
         expect(find.byType(CircularProgressIndicator), findsNothing);
+      }, () => _client(writes: writes));
+    });
+    testWidgets('$language rating sheet preserves comments and numeric stars at large text', (tester) async {
+      final strings = await AppLocalizations.delegate.load(Locale(language));
+      final writes = <http.Request>[];
+      await http.runWithClient(() async {
+        await _mount(tester, const LessonsScreen(), language, 2);
+        await _tap(tester, find.text(strings.evaluate));
+        expect(find.text(strings.lessonRatingSummary('4.5', 2)), findsOneWidget);
+        expect(find.text('تعليق أصلي'), findsOneWidget);
+        await _tap(tester, find.byTooltip(strings.lessonRatingStars(4)));
+        await tester.enterText(find.byType(TextField).last, 'تقييم من المستخدم');
+        await _tap(tester, find.text(strings.saveEvaluation));
+        final data = jsonDecode(writes.single.body) as Map<String, dynamic>;
+        expect(data['stars'], 4);
+        expect(data['comment'], 'تقييم من المستخدم');
       }, () => _client(writes: writes));
     });
     testWidgets('$language browsing empty and error states', (tester) async {

@@ -4693,5 +4693,54 @@
         "type": "String"
       }
     }
+  },
+  "lessonRatingTitle": "تقييم الدرس",
+  "@lessonRatingTitle": {
+    "description": "Lesson ratings: Rate lesson"
+  },
+  "lessonRatingsLoadFailed": "تعذّر تحميل التقييمات",
+  "@lessonRatingsLoadFailed": {
+    "description": "Lesson ratings: Could not load ratings"
+  },
+  "lessonRatingSaveFailed": "تعذّر حفظ التقييم",
+  "@lessonRatingSaveFailed": {
+    "description": "Lesson ratings: Could not save your rating"
+  },
+  "lessonRatingStarsRequired": "اختر عدد النجوم أولاً",
+  "@lessonRatingStarsRequired": {
+    "description": "Lesson ratings: Choose a star rating first"
+  },
+  "lessonRatingComment": "تعليق اختياري",
+  "@lessonRatingComment": {
+    "description": "Lesson ratings: Optional comment"
+  },
+  "lessonRatingChoose": "اختر تقييمك",
+  "@lessonRatingChoose": {
+    "description": "Lesson ratings: Choose your rating"
+  },
+  "lessonRatingReviews": "آراء المستخدمين",
+  "@lessonRatingReviews": {
+    "description": "Lesson ratings: User reviews"
+  },
+  "lessonRatingSummary": "المتوسط: {average} من 5 · {count} تقييم",
+  "@lessonRatingSummary": {
+    "description": "Lesson ratings: Average: {average} out of 5 · {count} ratings",
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonRatingStars": "{count} نجوم",
+  "@lessonRatingStars": {
+    "description": "Lesson ratings: {count} stars",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

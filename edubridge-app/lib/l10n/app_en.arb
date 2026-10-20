@@ -4693,5 +4693,54 @@
         "type": "String"
       }
     }
+  },
+  "lessonRatingTitle": "Rate lesson",
+  "@lessonRatingTitle": {
+    "description": "Lesson ratings: Rate lesson"
+  },
+  "lessonRatingsLoadFailed": "Could not load ratings",
+  "@lessonRatingsLoadFailed": {
+    "description": "Lesson ratings: Could not load ratings"
+  },
+  "lessonRatingSaveFailed": "Could not save your rating",
+  "@lessonRatingSaveFailed": {
+    "description": "Lesson ratings: Could not save your rating"
+  },
+  "lessonRatingStarsRequired": "Choose a star rating first",
+  "@lessonRatingStarsRequired": {
+    "description": "Lesson ratings: Choose a star rating first"
+  },
+  "lessonRatingComment": "Optional comment",
+  "@lessonRatingComment": {
+    "description": "Lesson ratings: Optional comment"
+  },
+  "lessonRatingChoose": "Choose your rating",
+  "@lessonRatingChoose": {
+    "description": "Lesson ratings: Choose your rating"
+  },
+  "lessonRatingReviews": "User reviews",
+  "@lessonRatingReviews": {
+    "description": "Lesson ratings: User reviews"
+  },
+  "lessonRatingSummary": "Average: {average} out of 5 · {count} ratings",
+  "@lessonRatingSummary": {
+    "description": "Lesson ratings: Average: {average} out of 5 · {count} ratings",
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonRatingStars": "{count} stars",
+  "@lessonRatingStars": {
+    "description": "Lesson ratings: {count} stars",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
