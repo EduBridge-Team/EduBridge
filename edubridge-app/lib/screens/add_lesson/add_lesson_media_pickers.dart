@@ -24,14 +24,14 @@ Widget buildImagesPicker({
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                'صور الدرس (اختياري)',
+                context.l10n.lessonImagesOptional,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.onTint),
               ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Text('يمكن اختيار عدة صور ودمجها مع الفيديو أو الصوت', style: TextStyle(fontSize: 11, color: c.muted)),
+        Text(context.l10n.lessonImagesHint, style: TextStyle(fontSize: 11, color: c.muted)),
         const SizedBox(height: 8),
         if (imageFiles.isNotEmpty) ...[
           SizedBox(
@@ -51,14 +51,14 @@ Widget buildImagesPicker({
                     Positioned(
                       top: 3,
                       right: 3,
-                      child: InkWell(
+                      child: Tooltip(message: context.l10n.lessonRemoveImage, child: InkWell(
                         onTap: () => onRemove(index),
                         child: Container(
                           padding: const EdgeInsets.all(3),
                           decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
                           child: const Icon(AppIcons.close, color: Colors.white, size: 15),
                         ),
-                      ),
+                      )),
                     ),
                   ],
                 );
@@ -69,7 +69,6 @@ Widget buildImagesPicker({
         ],
         SizedBox(
           width: double.infinity,
-          height: 50,
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.brandBlue,
@@ -78,7 +77,7 @@ Widget buildImagesPicker({
             ),
             icon: const Icon(AppIcons.upload, size: 18),
             label: Text(
-              imageFiles.isEmpty ? 'رفع الصور' : 'تغيير الصور',
+              imageFiles.isEmpty ? context.l10n.lessonUploadImages : context.l10n.lessonChangeImages,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, height: 1.2),
             ),
             onPressed: onPick,
@@ -90,6 +89,7 @@ Widget buildImagesPicker({
 }
 
 Widget buildFilePicker({
+  required BuildContext context,
   required JisrColors c,
   required IconData icon,
   required String label,
@@ -98,7 +98,7 @@ Widget buildFilePicker({
   required File? file,
   required VoidCallback onPick,
   required VoidCallback onClear,
-  String uploadLabel = 'رفع الملف',
+  required String uploadLabel,
 }) {
   return Container(
     padding: const EdgeInsets.all(12),
@@ -123,7 +123,6 @@ Widget buildFilePicker({
         if (file == null)
           SizedBox(
             width: double.infinity,
-            height: 50,
             child: FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: color,
@@ -151,6 +150,7 @@ Widget buildFilePicker({
                   ),
                   IconButton(
                     icon: Icon(AppIcons.close, color: c.onTint, size: 18),
+                    tooltip: context.l10n.lessonRemoveFile,
                     onPressed: onClear,
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
@@ -160,7 +160,6 @@ Widget buildFilePicker({
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
-                height: 50,
                 child: FilledButton.icon(
                   style: FilledButton.styleFrom(
                     backgroundColor: color,
@@ -169,7 +168,7 @@ Widget buildFilePicker({
                   ),
                   icon: const Icon(AppIcons.upload, size: 18),
                   label: Text(
-                    'تغيير $uploadLabel',
+                    context.l10n.lessonReplaceFile,
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, height: 1.2),
                   ),
                   onPressed: onPick,

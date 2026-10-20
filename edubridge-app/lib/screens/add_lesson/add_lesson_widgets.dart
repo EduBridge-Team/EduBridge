@@ -8,9 +8,9 @@ extension _AddLessonWidgets on _AddLessonSheetState {
       children: [
         const Icon(AppIcons.lesson, color: AppColors.brandBlue, size: 26),
         const SizedBox(width: 8),
-        const Expanded(
+        Expanded(
           child: Text(
-            'إضافة درس جديد',
+            context.l10n.lessonCreateTitle,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -34,7 +34,7 @@ extension _AddLessonWidgets on _AddLessonSheetState {
           width: _forParents ? 2 : 1.5,
         ),
       ),
-      child: SwitchListTile(
+      child: Material(type: MaterialType.transparency, child: SwitchListTile(
         value: _forParents,
         activeThumbColor: AppColors.brandTealDeep,
         onChanged: (v) => _updateLessonSheetState(() => _forParents = v),
@@ -46,26 +46,26 @@ extension _AddLessonWidgets on _AddLessonSheetState {
               size: 22,
             ),
             const SizedBox(width: 8),
-            Text(
-              'درس مخصص لأولياء الأمور',
+            Expanded(child: Text(
+              context.l10n.lessonForParents,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: c.heading,
               ),
-            ),
+            )),
           ],
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4, right: 30),
+          padding: const EdgeInsetsDirectional.only(top: 4, start: 30),
           child: Text(
             _forParents
-                ? 'سيظهر في شاشة "دروس لولي الأمر" فقط'
-                : 'فعّل هذا إذا كان الدرس موجّهاً للأسرة',
+                ? context.l10n.lessonParentsOnlyHint
+                : context.l10n.lessonParentsToggleHint,
             style: TextStyle(fontSize: 12, color: c.muted, height: 1.4),
           ),
         ),
-      ),
+      )),
     );
   }
 
@@ -81,7 +81,12 @@ extension _AddLessonWidgets on _AddLessonSheetState {
           const Icon(AppIcons.error, color: AppColors.red, size: 20),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(_error!, style: const TextStyle(color: AppColors.red)),
+            child: Text(switch (_error!) {
+              _LessonError.titleRequired => context.l10n.lessonTitleRequired,
+              _LessonError.studentsRequired => context.l10n.homeworkChooseStudent,
+              _LessonError.saveFailed => context.l10n.lessonSaveFailed,
+              _LessonError.connectionFailed => context.l10n.connectionFailed,
+            }, style: const TextStyle(color: AppColors.red)),
           ),
         ],
       ),
@@ -108,7 +113,7 @@ extension _AddLessonWidgets on _AddLessonSheetState {
           : const Icon(AppIcons.save),
       onPressed: _saving ? null : _save,
       label: Text(
-        _saving ? 'جارِ الحفظ...' : 'حفظ الدرس',
+        _saving ? context.l10n.saving : context.l10n.lessonSave,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
       ),
     );
@@ -127,7 +132,7 @@ extension _AddLessonWidgets on _AddLessonSheetState {
         Expanded(
           child: OutlinedButton(
             onPressed: widget.onClose,
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
         ),
         const SizedBox(width: 12),

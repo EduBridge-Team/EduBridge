@@ -4421,5 +4421,277 @@
   "caseRefreshAction": "تحديث",
   "@caseRefreshAction": {
     "description": "Case discussion action."
+  },
+  "lessonCreateTitle": "إضافة درس جديد",
+  "@lessonCreateTitle": {
+    "description": "Lesson interface: Add a new lesson"
+  },
+  "lessonCreateIntro": "أضف المحتوى وحدد الجمهور والوسائط المساندة",
+  "@lessonCreateIntro": {
+    "description": "Lesson interface: Add content, choose the audience and attach supporting media"
+  },
+  "lessonVerificationHint": "يجب توثيق حساب المعلم قبل إضافة درس جديد.",
+  "@lessonVerificationHint": {
+    "description": "Lesson interface: The teacher account must be verified before adding a lesson."
+  },
+  "lessonTitleRequired": "عنوان الدرس مطلوب",
+  "@lessonTitleRequired": {
+    "description": "Lesson interface: Enter a lesson title"
+  },
+  "lessonSaveFailed": "فشل حفظ الدرس",
+  "@lessonSaveFailed": {
+    "description": "Lesson interface: Could not save the lesson"
+  },
+  "lessonTitleField": "عنوان الدرس *",
+  "@lessonTitleField": {
+    "description": "Lesson interface: Lesson title *"
+  },
+  "lessonTextContent": "المحتوى النصي",
+  "@lessonTextContent": {
+    "description": "Lesson interface: Text content"
+  },
+  "lessonContentHint": "اكتب محتوى الدرس (اختياري)...",
+  "@lessonContentHint": {
+    "description": "Lesson interface: Enter lesson content (optional)..."
+  },
+  "lessonVideoOptional": "فيديو الدرس (اختياري)",
+  "@lessonVideoOptional": {
+    "description": "Lesson interface: Lesson video (optional)"
+  },
+  "lessonVideoHint": "أرفق فيديو يشرح محتوى الدرس",
+  "@lessonVideoHint": {
+    "description": "Lesson interface: Attach a video explaining the lesson"
+  },
+  "lessonUploadVideo": "رفع الفيديو",
+  "@lessonUploadVideo": {
+    "description": "Lesson interface: Upload video"
+  },
+  "lessonCaptionsOptional": "ملف الترجمة (اختياري)",
+  "@lessonCaptionsOptional": {
+    "description": "Lesson interface: Caption file (optional)"
+  },
+  "lessonCaptionsHint": "ملف VTT أو SRT للصم وضعاف السمع",
+  "@lessonCaptionsHint": {
+    "description": "Lesson interface: A VTT or SRT file for deaf and hard of hearing learners"
+  },
+  "lessonUploadCaptions": "رفع ملف الترجمة",
+  "@lessonUploadCaptions": {
+    "description": "Lesson interface: Upload captions"
+  },
+  "lessonSignOptional": "فيديو لغة الإشارة (اختياري)",
+  "@lessonSignOptional": {
+    "description": "Lesson interface: Sign language video (optional)"
+  },
+  "lessonSignHint": "أرفق فيديو مترجماً بلغة الإشارة",
+  "@lessonSignHint": {
+    "description": "Lesson interface: Attach a video with sign language interpretation"
+  },
+  "lessonUploadSign": "رفع فيديو الإشارة",
+  "@lessonUploadSign": {
+    "description": "Lesson interface: Upload sign language video"
+  },
+  "lessonDescriptionOptional": "الوصف الصوتي (اختياري)",
+  "@lessonDescriptionOptional": {
+    "description": "Lesson interface: Audio description (optional)"
+  },
+  "lessonDescriptionHint": "صف ما يحدث في الفيديو للمكفوفين وضعاف البصر",
+  "@lessonDescriptionHint": {
+    "description": "Lesson interface: Describe the video for blind and low vision learners"
+  },
+  "lessonAudioOptional": "تسجيل صوتي (اختياري)",
+  "@lessonAudioOptional": {
+    "description": "Lesson interface: Audio recording (optional)"
+  },
+  "lessonAudioHint": "أرفق تسجيلاً صوتياً بديلاً عن الفيديو",
+  "@lessonAudioHint": {
+    "description": "Lesson interface: Attach an audio recording as an alternative to video"
+  },
+  "lessonUploadAudio": "رفع التسجيل الصوتي",
+  "@lessonUploadAudio": {
+    "description": "Lesson interface: Upload audio recording"
+  },
+  "lessonAudience": "من سيستفيد من الدرس؟",
+  "@lessonAudience": {
+    "description": "Lesson interface: Who is this lesson for?"
+  },
+  "lessonAllStudents": "كل الطلاب",
+  "@lessonAllStudents": {
+    "description": "Lesson interface: All students"
+  },
+  "lessonByDisability": "حسب نوع الإعاقة",
+  "@lessonByDisability": {
+    "description": "Lesson interface: By disability type"
+  },
+  "lessonSpecificStudents": "طلاب محدّدون",
+  "@lessonSpecificStudents": {
+    "description": "Lesson interface: Specific students"
+  },
+  "lessonGeneral": "— عام —",
+  "@lessonGeneral": {
+    "description": "Lesson interface: — General —"
+  },
+  "lessonNoStudents": "لا يوجد طلاب مسجّلون",
+  "@lessonNoStudents": {
+    "description": "Lesson interface: No students registered"
+  },
+  "lessonImagesOptional": "صور الدرس (اختياري)",
+  "@lessonImagesOptional": {
+    "description": "Lesson interface: Lesson images (optional)"
+  },
+  "lessonImagesHint": "يمكن اختيار عدة صور ودمجها مع الفيديو أو الصوت",
+  "@lessonImagesHint": {
+    "description": "Lesson interface: Select multiple images to use alongside video or audio"
+  },
+  "lessonUploadImages": "رفع الصور",
+  "@lessonUploadImages": {
+    "description": "Lesson interface: Upload images"
+  },
+  "lessonChangeImages": "تغيير الصور",
+  "@lessonChangeImages": {
+    "description": "Lesson interface: Change images"
+  },
+  "lessonUploadFile": "رفع الملف",
+  "@lessonUploadFile": {
+    "description": "Lesson interface: Upload file"
+  },
+  "lessonReplaceFile": "استبدال الملف",
+  "@lessonReplaceFile": {
+    "description": "Lesson interface: Replace file"
+  },
+  "lessonRemoveFile": "إزالة الملف",
+  "@lessonRemoveFile": {
+    "description": "Lesson interface: Remove file"
+  },
+  "lessonRemoveImage": "إزالة الصورة",
+  "@lessonRemoveImage": {
+    "description": "Lesson interface: Remove image"
+  },
+  "lessonForParents": "درس مخصص لأولياء الأمور",
+  "@lessonForParents": {
+    "description": "Lesson interface: Lesson for parents"
+  },
+  "lessonParentsOnlyHint": "سيظهر في شاشة \"دروس لولي الأمر\" فقط",
+  "@lessonParentsOnlyHint": {
+    "description": "Lesson interface: Shown only on the parent lessons screen"
+  },
+  "lessonParentsToggleHint": "فعّل هذا إذا كان الدرس موجّهاً للأسرة",
+  "@lessonParentsToggleHint": {
+    "description": "Lesson interface: Enable this for a lesson intended for the family"
+  },
+  "lessonSave": "حفظ الدرس",
+  "@lessonSave": {
+    "description": "Lesson interface: Save lesson"
+  },
+  "lessonBrowse": "تصفح الدروس",
+  "@lessonBrowse": {
+    "description": "Lesson interface: Browse lessons"
+  },
+  "lessonExplore": "استكشف المحتوى",
+  "@lessonExplore": {
+    "description": "Lesson interface: Explore content"
+  },
+  "lessonExploreHint": "ابحث عن درس واستمع إليه أو اطلب مساعدة نور.",
+  "@lessonExploreHint": {
+    "description": "Lesson interface: Find a lesson, listen to it or ask Noor for help."
+  },
+  "lessonListen": "استمع للدرس",
+  "@lessonListen": {
+    "description": "Lesson interface: Listen to lesson"
+  },
+  "lessonStopListening": "إيقاف الاستماع",
+  "@lessonStopListening": {
+    "description": "Lesson interface: Stop listening"
+  },
+  "lessonListenHint": "اضغط لسماع الدرس",
+  "@lessonListenHint": {
+    "description": "Lesson interface: Tap to listen to the lesson"
+  },
+  "lessonAskNoor": "اسأل نور",
+  "@lessonAskNoor": {
+    "description": "Lesson interface: Ask Noor"
+  },
+  "lessonParentTitle": "دروس لولي الأمر",
+  "@lessonParentTitle": {
+    "description": "Lesson interface: Parent lessons"
+  },
+  "lessonParentAdd": "إضافة درس لولي الأمر",
+  "@lessonParentAdd": {
+    "description": "Lesson interface: Add a parent lesson"
+  },
+  "lessonParentHeading": "دروس مخصصة لك",
+  "@lessonParentHeading": {
+    "description": "Lesson interface: Lessons for you"
+  },
+  "lessonParentIntro": "نصائح وإرشادات من المختصين لمساعدتك في التعامل مع ابنك",
+  "@lessonParentIntro": {
+    "description": "Lesson interface: Tips and guidance from specialists to help you support your child"
+  },
+  "lessonParentSearch": "ابحث في الدروس...",
+  "@lessonParentSearch": {
+    "description": "Lesson interface: Search lessons..."
+  },
+  "lessonParentEmpty": "لا توجد دروس مخصصة لأولياء الأمور بعد",
+  "@lessonParentEmpty": {
+    "description": "Lesson interface: No parent lessons yet"
+  },
+  "lessonParentEmptyHint": "سيظهر هنا أي درس يضيفه المختص لأولياء الأمور",
+  "@lessonParentEmptyHint": {
+    "description": "Lesson interface: Lessons added by specialists for parents will appear here"
+  },
+  "lessonWatchVideo": "شاهد الفيديو",
+  "@lessonWatchVideo": {
+    "description": "Lesson interface: Watch video"
+  },
+  "lessonStopRecording": "إيقاف التسجيل",
+  "@lessonStopRecording": {
+    "description": "Lesson interface: Stop recording playback"
+  },
+  "lessonPlayRecording": "شغّل التسجيل الصوتي",
+  "@lessonPlayRecording": {
+    "description": "Lesson interface: Play audio recording"
+  },
+  "lessonListenText": "اسمع النص",
+  "@lessonListenText": {
+    "description": "Lesson interface: Listen to text"
+  },
+  "lessonStopPlayback": "إيقاف",
+  "@lessonStopPlayback": {
+    "description": "Lesson interface: Stop"
+  },
+  "lessonForStudentSubtitle": "سيتم إضافة الدرس للطالب {name}",
+  "@lessonForStudentSubtitle": {
+    "description": "Lesson interface: This lesson will be added for {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonOnlyStudent": "هذا الدرس سيظهر للطالب {name} فقط.",
+  "@lessonOnlyStudent": {
+    "description": "Lesson interface: This lesson will only be shown to {name}.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonStudentLabel": "الطالب: {name}",
+  "@lessonStudentLabel": {
+    "description": "Lesson interface: Student: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonSpeechTitle": "درس: {name}",
+  "@lessonSpeechTitle": {
+    "description": "Lesson interface: Lesson: {name}",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@
 // دروس مخصصة لأولياء الأمور
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../app_icons.dart';
 import 'add_lesson/add_lesson_screen.dart';
 import '../widgets/teacher_navigation_bar.dart';
@@ -106,10 +107,10 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
     final c = JisrColors.of(context);
     return Scaffold(
       appBar: JisrAppBar(
-        title: 'دروس لولي الأمر',
+        title: context.l10n.lessonParentTitle,
         actions: [
           if (['teacher', 'specialist'].contains(_role)) IconButton(
-            tooltip: 'إضافة درس لولي الأمر', icon: const Icon(Icons.add),
+            tooltip: context.l10n.lessonParentAdd, icon: const Icon(Icons.add),
             onPressed: () async {
               final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddLessonScreen(types: [], forParents: true)));
               if (result != null && mounted) await _load();
@@ -117,7 +118,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
           ),
           IconButton(
             icon: const Icon(AppIcons.refresh),
-            tooltip: 'تحديث',
+            tooltip: context.l10n.caseRefreshAction,
             onPressed: _load,
           ),
         ],
@@ -138,7 +139,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'دروس مخصصة لك',
+                        context.l10n.lessonParentHeading,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -147,7 +148,7 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'نصائح وإرشادات من المختصين لمساعدتك في التعامل مع ابنك',
+                        context.l10n.lessonParentIntro,
                         style: TextStyle(
                           fontSize: 13,
                           color: c.muted,
@@ -164,8 +165,8 @@ class _ParentLessonsScreenState extends State<ParentLessonsScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
               style: const TextStyle(fontSize: 17),
-              decoration: const InputDecoration(
-                hintText: 'ابحث في الدروس...',
+              decoration: InputDecoration(
+                hintText: context.l10n.lessonParentSearch,
                 prefixIcon: Icon(AppIcons.search),
               ),
               onChanged: (v) { setState(() => _query = v); _pages.search(v); },

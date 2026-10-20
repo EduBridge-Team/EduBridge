@@ -1,5 +1,6 @@
 // lib/screens/lessons_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../services/paged_list_controller.dart';
@@ -86,9 +87,9 @@ class _LessonsScreenState extends State<LessonsScreen> {
     final content = (lesson['content'] ?? '').toString();
 
     final parts = <String>[
-      'درس: $title',
+      context.l10n.lessonSpeechTitle(title),
       if (content.isNotEmpty) content,
-      'اضغط لسماع الدرس',
+      context.l10n.lessonListenHint,
     ];
 
     return parts.join('، ');
@@ -99,7 +100,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const JisrAppBar(title: 'تصفح الدروس'),
+      appBar: JisrAppBar(title: context.l10n.lessonBrowse),
       body: Column(
         children: [
           Padding(
@@ -108,7 +109,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'استكشف المحتوى',
+                  context.l10n.lessonExplore,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -117,7 +118,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'ابحث عن درس واستمع إليه أو اطلب مساعدة نور.',
+                  context.l10n.lessonExploreHint,
                   style: TextStyle(
                     fontSize: 13.5,
                     color: JisrColors.of(context).muted,
@@ -128,11 +129,11 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   controller: _searchInput,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    hintText: 'ابحث عن درس...',
+                    hintText: context.l10n.searchLessonsHint,
                     prefixIcon: const Icon(AppIcons.search),
                     suffixIcon: _query.isNotEmpty
                         ? IconButton(
-                            tooltip: 'مسح البحث',
+                            tooltip: context.l10n.clearSearch,
                             onPressed: () { _searchInput.clear(); setState(() => _query = ''); _pages.search(''); },
                             icon: const Icon(Icons.close_rounded),
                           )
@@ -165,7 +166,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _error!,
+              context.l10n.lessonsLoadFailed,
               style: TextStyle(
                 fontSize: 16,
                 color: JisrColors.of(context).dangerText,
@@ -173,10 +174,9 @@ class _LessonsScreenState extends State<LessonsScreen> {
             ),
             const SizedBox(height: 16),
             SizedBox(
-              height: 56,
               child: ElevatedButton.icon(
                 icon: const Icon(AppIcons.refresh, size: 28),
-                label: const Text('إعادة المحاولة',
+                label: Text(context.l10n.retryAction,
                     style: TextStyle(fontSize: 18)),
                 onPressed: _loadLessons,
               ),
@@ -196,7 +196,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              _query.trim().isEmpty ? 'لا توجد دروس بعد' : 'لا نتائج مطابقة لبحثك',
+              _query.trim().isEmpty ? context.l10n.noLessonsYet : context.l10n.noSearchResults,
               style: TextStyle(
                   fontSize: 18, color: JisrColors.of(context).muted),
             ),
@@ -267,7 +267,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                       ? Icons.stop_circle_outlined
                       : AppIcons.volumeUp,
                 ),
-                label: Text(isSpeaking ? 'إيقاف الاستماع' : 'استمع للدرس'),
+                label: Text(isSpeaking ? context.l10n.lessonStopListening : context.l10n.lessonListen),
                 onPressed: () => _toggleSpeak(lesson),
               ),
               const SizedBox(height: 10),
@@ -276,7 +276,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.star_outline_rounded),
-                      label: const Text('تقييم'),
+                      label: Text(context.l10n.evaluate),
                       onPressed: () {
                         final lessonId = lesson['id'];
                         if (lessonId is int) {
@@ -292,7 +292,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(AppIcons.speech),
-                      label: const Text('اسأل نور'),
+                      label: Text(context.l10n.lessonAskNoor),
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -10,12 +10,12 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_error!,
+            Text(context.l10n.lessonsLoadFailed,
                 style: const TextStyle(fontSize: 16, color: AppColors.red)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(AppIcons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(context.l10n.retryAction),
               onPressed: _load,
             ),
           ],
@@ -33,8 +33,8 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
           Center(
             child: Text(
               _query.trim().isEmpty
-                  ? 'لا توجد دروس مخصصة لأولياء الأمور بعد'
-                  : 'لا نتائج مطابقة لبحثك',
+                  ? context.l10n.lessonParentEmpty
+                  : context.l10n.noSearchResults,
               style: TextStyle(
                 fontSize: 17,
                 color: JisrColors.of(context).muted,
@@ -46,7 +46,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
             const SizedBox(height: 8),
             Center(
               child: Text(
-                'سيظهر هنا أي درس يضيفه المختص لأولياء الأمور',
+                context.l10n.lessonParentEmptyHint,
                 style: TextStyle(
                   fontSize: 13,
                   color: JisrColors.of(context).muted,
@@ -158,7 +158,6 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
             if (hasVideo) ...[
               SizedBox(
                 width: double.infinity,
-                height: 52,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandBlue,
@@ -168,8 +167,8 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                     ),
                   ),
                   icon: const Icon(AppIcons.play, size: 26),
-                  label: const Text(
-                    'شاهد الفيديو',
+                  label: Text(
+                    context.l10n.lessonWatchVideo,
                     style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -197,7 +196,6 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
             if (hasAudio) ...[
               SizedBox(
                 width: double.infinity,
-                height: 48,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.brandTealDeep,
@@ -215,8 +213,8 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                   ),
                   label: Text(
                     _activeAudioUrl == audioUrl
-                        ? 'إيقاف التسجيل'
-                        : 'شغّل التسجيل الصوتي',
+                        ? context.l10n.lessonStopRecording
+                        : context.l10n.lessonPlayRecording,
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
@@ -228,7 +226,6 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
 
             SizedBox(
               width: double.infinity,
-              height: 48,
               child: OutlinedButton.icon(
                 icon: Icon(
                   isSpeaking
@@ -237,7 +234,7 @@ extension _ParentLessonsWidgets on _ParentLessonsScreenState {
                   size: 24,
                 ),
                 label: Text(
-                  isSpeaking ? 'إيقاف' : 'اسمع النص',
+                  isSpeaking ? context.l10n.lessonStopPlayback : context.l10n.lessonListenText,
                   style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold),
                 ),
