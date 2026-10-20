@@ -6045,5 +6045,166 @@
   "childLessonsWorking": "Working",
   "@childLessonsWorking": {
     "description": "Accessible busy state for an adaptive action."
+  },
+  "childProgressFetchError": "Could not load progress",
+  "@childProgressFetchError": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressEmpty": "No lessons started yet. Lesson details will appear here when learning begins.",
+  "@childProgressEmpty": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressSuggest": "Suggest the next lesson",
+  "@childProgressSuggest": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekly": "Weekly activity",
+  "@childProgressWeekly": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressThisWeek": "This week",
+  "@childProgressThisWeek": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressNoWeekly": "No lessons completed this week",
+  "@childProgressNoWeekly": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressCompletion": "Completion",
+  "@childProgressCompletion": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressAverage": "Average",
+  "@childProgressAverage": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressRewards": "Rewards",
+  "@childProgressRewards": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressFirstBadge": "Bright start",
+  "@childProgressFirstBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressPersistenceBadge": "Persistence star",
+  "@childProgressPersistenceBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressChampionBadge": "Lesson champion",
+  "@childProgressChampionBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressEarned": "Earned",
+  "@childProgressEarned": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressFor": "{name}’s progress",
+  "@childProgressFor": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressNotBegun": "{name} has not started lessons yet",
+  "@childProgressNotBegun": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressAllDone": "{name} has completed all lessons",
+  "@childProgressAllDone": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressPercent": "{name} has completed {percent}% of lessons",
+  "@childProgressPercent": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressCompletedCount": "{done} of {total} lessons completed",
+  "@childProgressCompletedCount": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressLevel": "Level: {score}%",
+  "@childProgressLevel": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressStatusScore": "{status} • Score {score}%",
+  "@childProgressStatusScore": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressStars": "{count, plural, =1{1 star} other{{count} stars}}",
+  "@childProgressStars": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "childProgressWeekday0": "Sat",
+  "@childProgressWeekday0": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday1": "Sun",
+  "@childProgressWeekday1": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday2": "Mon",
+  "@childProgressWeekday2": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday3": "Tue",
+  "@childProgressWeekday3": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday4": "Wed",
+  "@childProgressWeekday4": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday5": "Thu",
+  "@childProgressWeekday5": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday6": "Fri",
+  "@childProgressWeekday6": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
   }
 }

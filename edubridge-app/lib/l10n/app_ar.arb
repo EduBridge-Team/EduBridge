@@ -6045,5 +6045,166 @@
   "childLessonsWorking": "جارٍ التنفيذ",
   "@childLessonsWorking": {
     "description": "Accessible busy state for an adaptive action."
+  },
+  "childProgressFetchError": "تعذّر جلب التقدّم",
+  "@childProgressFetchError": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressEmpty": "لم يبدأ الطفل أي درس بعد. ستظهر تفاصيل الدروس هنا عند البدء.",
+  "@childProgressEmpty": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressSuggest": "اقترح درسًا تاليًا",
+  "@childProgressSuggest": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekly": "نشاط الأسبوع",
+  "@childProgressWeekly": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressThisWeek": "هذا الأسبوع",
+  "@childProgressThisWeek": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressNoWeekly": "لا توجد دروس مكتملة هذا الأسبوع",
+  "@childProgressNoWeekly": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressCompletion": "نسبة الإنجاز",
+  "@childProgressCompletion": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressAverage": "متوسط",
+  "@childProgressAverage": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressRewards": "المكافآت",
+  "@childProgressRewards": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressFirstBadge": "البداية المشرقة",
+  "@childProgressFirstBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressPersistenceBadge": "نجمة المثابرة",
+  "@childProgressPersistenceBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressChampionBadge": "بطل الدروس",
+  "@childProgressChampionBadge": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressEarned": "تم الإنجاز",
+  "@childProgressEarned": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressFor": "تقدّم {name}",
+  "@childProgressFor": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressNotBegun": "لم يبدأ {name} دروسه بعد",
+  "@childProgressNotBegun": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressAllDone": "أنهى {name} جميع دروسه",
+  "@childProgressAllDone": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressPercent": "أكمل {name} {percent}% من دروسه",
+  "@childProgressPercent": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressCompletedCount": "{done} من {total} درس مكتمل",
+  "@childProgressCompletedCount": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressLevel": "المستوى: {score}%",
+  "@childProgressLevel": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressStatusScore": "{status} • النتيجة {score}%",
+  "@childProgressStatusScore": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "childProgressStars": "{count, plural, =0{0 نجمة} =1{نجمة واحدة} =2{نجمتان} few{{count} نجوم} many{{count} نجمة} other{{count} نجمة}}",
+  "@childProgressStars": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "childProgressWeekday0": "سبت",
+  "@childProgressWeekday0": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday1": "أحد",
+  "@childProgressWeekday1": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday2": "اثنين",
+  "@childProgressWeekday2": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday3": "ثلاثاء",
+  "@childProgressWeekday3": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday4": "أربعاء",
+  "@childProgressWeekday4": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday5": "خميس",
+  "@childProgressWeekday5": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "childProgressWeekday6": "جمعة",
+  "@childProgressWeekday6": {
+    "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
   }
 }

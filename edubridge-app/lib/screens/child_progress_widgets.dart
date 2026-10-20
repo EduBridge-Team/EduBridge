@@ -9,11 +9,11 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           const SizedBox(height: 100),
           const Icon(Icons.error_outline, color: AppColors.red, size: 52),
           const SizedBox(height: 12),
-          Text(_error!, textAlign: TextAlign.center,
+          Text(_error == _ProgressLoadError.fetch ? context.l10n.childProgressFetchError : context.l10n.connectionFailed, textAlign: TextAlign.center,
             style: const TextStyle(color: AppColors.red)),
           const SizedBox(height: 14),
           Center(child: FilledButton(
-            onPressed: _loadProgress, child: const Text('إعادة المحاولة'))),
+            onPressed: _loadProgress, child: Text(context.l10n.retryAction))),
         ],
       );
     }
@@ -27,11 +27,11 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
         const SizedBox(height: 18),
         _buildRewardsSection(),
         const SizedBox(height: 24),
-        _s09Title('تفاصيل الدروس'),
+        _s09Title(context.l10n.studentLessonDetails),
         const SizedBox(height: 12),
         if (_progress.isEmpty)
           _s09Card(
-            child: const Text('لم يبدأ الطفل أي درس بعد. ستظهر تفاصيل الدروس هنا عند البدء.',
+            child: Text(context.l10n.childProgressEmpty,
               textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF637E98))),
           )
         else
@@ -48,7 +48,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
               MaterialPageRoute(builder: (_) =>
                 const SpecialistDashboardScreen(initialTab: 1))),
             icon: const Icon(Icons.auto_awesome, color: Colors.white),
-            label: const Text('اقترح درسًا تاليًا',
+            label: Text(context.l10n.childProgressSuggest,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
           ),
         ),
@@ -92,19 +92,19 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
   }
 
   Widget _buildWeeklyActivity() {
-    const names = ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'];
+    final names = [context.l10n.childProgressWeekday0, context.l10n.childProgressWeekday1, context.l10n.childProgressWeekday2, context.l10n.childProgressWeekday3, context.l10n.childProgressWeekday4, context.l10n.childProgressWeekday5, context.l10n.childProgressWeekday6];
     final counts = _s09WeeklyCounts();
     final maximum = counts.fold<int>(0, (v, n) => n > v ? n : v);
     return _s09Card(
       padding: const EdgeInsets.fromLTRB(12, 14, 12, 13),
       child: Column(
         children: [
-          _s09Title('نشاط الأسبوع', trailing: Container(
+          _s09Title(context.l10n.childProgressWeekly, trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: const Color(0xFFEAF3FC),
               borderRadius: BorderRadius.circular(18)),
-            child: const Text('هذا الأسبوع',
+            child: Text(context.l10n.childProgressThisWeek,
               style: TextStyle(fontSize: 11, color: Color(0xFF1969C5))),
           )),
           const SizedBox(height: 13),
@@ -133,7 +133,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           })),
           if (maximum == 0) ...[
             const SizedBox(height: 7),
-            const Text('لا توجد دروس مكتملة هذا الأسبوع',
+            Text(context.l10n.childProgressNoWeekly,
               style: TextStyle(fontSize: 10, color: Color(0xFF637E98))),
           ],
         ],
@@ -156,18 +156,18 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('نسبة الإنجاز', style: TextStyle(fontSize: 12,
+              Text(context.l10n.childProgressCompletion, style: TextStyle(fontSize: 12,
                 fontWeight: FontWeight.w700, color: Color(0xFF637E98))),
               const SizedBox(height: 10),
               Text(
-                total == 0 ? 'لم يبدأ ${widget.childName} دروسه بعد'
+                total == 0 ? context.l10n.childProgressNotBegun(widget.childName)
                     : done == total
-                        ? 'أنهى ${widget.childName} جميع دروسه'
-                        : 'أكمل ${widget.childName} ${(100 * percent).round()}% من دروسه',
+                        ? context.l10n.childProgressAllDone(widget.childName)
+                        : context.l10n.childProgressPercent(widget.childName, (100 * percent).round().toString()),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800,
                   height: 1.4, color: Color(0xFF102D49))),
               const SizedBox(height: 8),
-              Text('$done من $total درس مكتمل', style: const TextStyle(
+              Text(context.l10n.childProgressCompletedCount(done.toString(), total.toString()), style: const TextStyle(
                 fontSize: 12, color: Color(0xFF637E98))),
               if (average != null) ...[
                 const SizedBox(height: 8),
@@ -176,7 +176,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0F6FA),
                     borderRadius: BorderRadius.circular(18)),
-                  child: Text('المستوى: $average%', style: const TextStyle(
+                  child: Text(context.l10n.childProgressLevel(average.toString()), style: const TextStyle(
                     color: Color(0xFF637E98), fontSize: 11)),
                 ),
               ],
@@ -197,16 +197,16 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
       ),
       const SizedBox(height: 14),
       Row(children: [
-        _summaryCard('مكتمل', '$done', Icons.check_circle_outline,
+        _summaryCard(context.l10n.completedStatus, '$done', Icons.check_circle_outline,
           const Color(0xFF53B357)),
         const SizedBox(width: 8),
-        _summaryCard('قيد التنفيذ', '$inProgress', Icons.autorenew_rounded,
+        _summaryCard(context.l10n.inProgress, '$inProgress', Icons.autorenew_rounded,
           const Color(0xFF1CB6C4)),
         const SizedBox(width: 8),
-        _summaryCard('لم يبدأ', '$notStarted', Icons.access_time_rounded,
+        _summaryCard(context.l10n.studentLessonNotStarted, '$notStarted', Icons.access_time_rounded,
           const Color(0xFF6C88A4)),
         const SizedBox(width: 8),
-        _summaryCard('متوسط', average == null ? '—' : '$average%',
+        _summaryCard(context.l10n.childProgressAverage, average == null ? '—' : '$average%',
           Icons.star_rounded, const Color(0xFFFFB72E)),
       ]),
     ]);
@@ -235,7 +235,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
   Widget _buildRewardsSection() {
     final done = int.tryParse('${_summary?['done'] ?? 0}') ?? 0;
     return Column(children: [
-      _s09Title('المكافآت', trailing: Container(
+      _s09Title(context.l10n.childProgressRewards, trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(color: Colors.white,
           border: Border.all(color: const Color(0xFFD8E6F2)),
@@ -244,17 +244,17 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
           const Icon(Icons.star_rounded, size: 18,
             color: Color(0xFFFFB72E)),
           const SizedBox(width: 4),
-          Text('$_stars نجمة', style: const TextStyle(
+          Text(context.l10n.childProgressStars(_stars), style: const TextStyle(
             fontSize: 11, color: Color(0xFF102D49))),
         ]),
       )),
       const SizedBox(height: 12),
       Row(children: [
-        _s09BadgeCard('البداية المشرقة', done, 1),
+        _s09BadgeCard(context.l10n.childProgressFirstBadge, done, 1),
         const SizedBox(width: 9),
-        _s09BadgeCard('نجمة المثابرة', done, 4),
+        _s09BadgeCard(context.l10n.childProgressPersistenceBadge, done, 4),
         const SizedBox(width: 9),
-        _s09BadgeCard('بطل الدروس', done, 9),
+        _s09BadgeCard(context.l10n.childProgressChampionBadge, done, 9),
       ]),
     ]);
   }
@@ -289,7 +289,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
             color: const Color(0xFF53B357),
             backgroundColor: const Color(0xFFE1EDF6))),
         const SizedBox(height: 8),
-        Text(earned ? 'تم الإنجاز' : '$achieved/$goal',
+        Text(earned ? context.l10n.childProgressEarned : '$achieved/$goal',
           style: TextStyle(fontSize: 10,
             color: earned ? const Color(0xFF53B357)
               : const Color(0xFF637E98))),
@@ -332,7 +332,7 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                       color: info.color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(18)),
                     child: Text(score == null ? info.label
-                      : '${info.label} • النتيجة $score%',
+                      : context.l10n.childProgressStatusScore(info.label, score.toString()),
                       style: TextStyle(color: info.color, fontSize: 11)),
                   ),
                 ],
@@ -351,19 +351,19 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
     switch (status) {
       case 'done':
         return (
-          label: 'مكتمل',
+          label: context.l10n.completedStatus,
           icon: AppIcons.check,
           color: AppColors.green,
         );
       case 'in_progress':
         return (
-          label: 'قيد التنفيذ',
+          label: context.l10n.inProgress,
           icon: AppIcons.refresh,
           color: AppColors.orangeDeep,
         );
       default:
         return (
-          label: 'لم يبدأ',
+          label: context.l10n.studentLessonNotStarted,
           icon: AppIcons.clock,
           color: AppColors.muted,
         );
