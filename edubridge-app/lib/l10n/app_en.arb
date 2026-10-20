@@ -5841,5 +5841,209 @@
         "type": "String"
       }
     }
+  },
+  "childLessonsEmpty": "No lessons assigned to this child yet",
+  "@childLessonsEmpty": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSettings": "Learning adaptations",
+  "@childLessonsSettings": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsAudioGames": "Audio games",
+  "@childLessonsAudioGames": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsGames": "Educational games",
+  "@childLessonsGames": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayLearn": "Play and learn",
+  "@childLessonsPlayLearn": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsBreakTime": "Time is up! Take a break",
+  "@childLessonsBreakTime": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTimeRemaining": "Reading time left",
+  "@childLessonsTimeRemaining": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTimeline": "Lesson steps",
+  "@childLessonsTimeline": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsChoose": "Choose a lesson and read its title",
+  "@childLessonsChoose": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsListenHelp": "Listen to the explanation if you need help",
+  "@childLessonsListenHelp": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsTry": "Try the activity",
+  "@childLessonsTry": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReview": "Review or take a break",
+  "@childLessonsReview": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSample": "Sample lessons",
+  "@childLessonsSample": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSampleHint": "Assigned lessons will appear here",
+  "@childLessonsSampleHint": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReadEasy": "Read easily",
+  "@childLessonsReadEasy": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayVideo": "Play lesson video",
+  "@childLessonsPlayVideo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsStopAudio": "Stop audio",
+  "@childLessonsStopAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayAudio": "Play audio",
+  "@childLessonsPlayAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsSaving": "Saving",
+  "@childLessonsSaving": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsDone": "Done",
+  "@childLessonsDone": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCompleteStatus": "This lesson is complete",
+  "@childLessonsCompleteStatus": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsReady": "Ready to start",
+  "@childLessonsReady": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsVideo": "Video",
+  "@childLessonsVideo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsAudio": "Audio",
+  "@childLessonsAudio": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsStar": "Well done! +1 star",
+  "@childLessonsStar": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCelebration": "You completed the lesson!",
+  "@childLessonsCelebration": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayTime": "Time to play!",
+  "@childLessonsPlayTime": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsPlayPrompt": "You completed 3 lessons! Would you like to play?",
+  "@childLessonsPlayPrompt": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsLater": "Later",
+  "@childLessonsLater": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsGo": "Let’s go!",
+  "@childLessonsGo": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsNoDescription": "No description for this lesson",
+  "@childLessonsNoDescription": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsIncomplete": "This lesson is not complete yet",
+  "@childLessonsIncomplete": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendation": "Recommendation / note",
+  "@childLessonsRecommendation": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendFailed": "Could not send the recommendation",
+  "@childLessonsRecommendFailed": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsChooseAction": "Choose an action for this lesson:",
+  "@childLessonsChooseAction": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsRecommendParent": "Send recommendation to parent",
+  "@childLessonsRecommendParent": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsCaseNote": "Write a note in the case discussion",
+  "@childLessonsCaseNote": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsLoadFailed": "Could not load lessons",
+  "@childLessonsLoadFailed": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged."
+  },
+  "childLessonsFor": "{name}’s lessons",
+  "@childLessonsFor": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsTimerFinished": "Well done! {minutes} minutes have passed",
+  "@childLessonsTimerFinished": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsImageFallback": "Image {number} in {title}. No description is available for this image.",
+  "@childLessonsImageFallback": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsAudioDescription": "Audio description: {description}",
+  "@childLessonsAudioDescription": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsStep": "Step {number}",
+  "@childLessonsStep": {
+    "description": "Child lesson interface; teacher-authored lesson content stays unchanged.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "childLessonsWorking": "Working",
+  "@childLessonsWorking": {
+    "description": "Accessible busy state for an adaptive action."
   }
 }

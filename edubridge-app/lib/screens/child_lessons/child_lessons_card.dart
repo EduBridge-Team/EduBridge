@@ -37,14 +37,14 @@ Widget buildLessonCard({
   }
 
   final listenButton = AdaptiveButton(
-    label: isSpeaking ? 'إيقاف' : 'استمع',
+    label: isSpeaking ? context.l10n.lessonStopPlayback : context.l10n.listen,
     enableReadOnTap: false,
     icon: isSpeaking ? Icons.stop_circle : AppIcons.volumeUp,
     style: AdaptiveButtonStyle.outlined,
     onPressed: () => onToggleSpeak(lesson),
   );
   final doneButton = canMarkDone && !isSample ? AdaptiveButton(
-    label: isSaving ? 'جارٍ الحفظ' : isDone ? 'مكتمل' : 'تمّ',
+    label: isSaving ? context.l10n.childLessonsSaving : isDone ? context.l10n.completedStatus : context.l10n.childLessonsDone,
     isBusy: isSaving,
     icon: isDone ? AppIcons.check : Icons.check,
     backgroundColor: isDone ? AppColors.brandTealDeep : AppColors.brandTeal,
@@ -65,7 +65,7 @@ Widget buildLessonCard({
       title: title,
       icon: isDone ? AppIcons.check : hasVideo ? AppIcons.play
           : hasAudio ? AppIcons.volumeUp : AppIcons.lesson,
-      status: isSample ? null : isDone ? 'تم إكمال هذا الدرس' : 'جاهز للبدء',
+      status: isSample ? null : isDone ? context.l10n.childLessonsCompleteStatus : context.l10n.childLessonsReady,
       onTap: isSample ? null : () => onOpenLesson(lesson),
       actions: actions,
     );
@@ -117,13 +117,13 @@ Widget buildLessonCard({
               if (hasVideo)
                 _mediaBadge(
                   icon: AppIcons.video,
-                  label: 'فيديو',
+                  label: context.l10n.childLessonsVideo,
                   color: AppColors.brandTealLight,
                 )
               else if (hasAudio)
                 _mediaBadge(
                   icon: AppIcons.audio,
-                  label: 'صوت',
+                  label: context.l10n.childLessonsAudio,
                   color: AppColors.brandTeal,
                 ),
               if (isDone)
@@ -168,7 +168,7 @@ Widget buildLessonCard({
                   const SizedBox(width: 6),
                   Expanded(
                     child: AdaptiveText(
-                      isDone ? 'تم إكمال هذا الدرس' : 'جاهز للبدء',
+                      isDone ? context.l10n.childLessonsCompleteStatus : context.l10n.childLessonsReady,
                       type: AdaptiveTextType.caption,
                       fontWeight: FontWeight.w700,
                     ),

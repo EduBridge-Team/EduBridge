@@ -54,6 +54,7 @@ Widget _buildLessonDetailModal({
                   child: AdaptiveText(title, type: AdaptiveTextType.title),
                 ),
                 IconButton(
+                  tooltip: context.l10n.close,
                   icon: const Icon(AppIcons.close),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -71,7 +72,7 @@ Widget _buildLessonDetailModal({
                       final description = rawDescriptions[index]?.toString().trim();
                       if (description != null && description.isNotEmpty) return description;
                     }
-                    return 'صورة ${index + 1} في درس $title. لا يوجد وصف لمحتوى الصورة.';
+                    return context.l10n.childLessonsImageFallback((index + 1).toString(), title);
                   }
                   if (profile.textOnlyMode) {
                     return Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +97,7 @@ Widget _buildLessonDetailModal({
 
             if (onReadSteps != null) ...[
               SizedBox(height: AdaptiveHelper.spacing),
-              AdaptiveButton(label: 'أقرأ بسهولة', onPressed: onReadSteps),
+              AdaptiveButton(label: context.l10n.childLessonsReadEasy, onPressed: onReadSteps),
             ],
             if (content.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),
@@ -111,7 +112,7 @@ Widget _buildLessonDetailModal({
             if (hasVideo) ...[
               SizedBox(height: AdaptiveHelper.spacing),
               AdaptiveButton(
-                label: 'تشغيل فيديو الدرس',
+                label: context.l10n.childLessonsPlayVideo,
                 icon: AppIcons.play,
                 fullWidth: true,
                 onPressed: () {
@@ -140,8 +141,8 @@ Widget _buildLessonDetailModal({
               SizedBox(height: AdaptiveHelper.spacing / 2),
               AdaptiveButton(
                 label: activeAudioUrl == audioUrl
-                    ? 'إيقاف التسجيل الصوتي'
-                    : 'تشغيل التسجيل الصوتي',
+                    ? context.l10n.childLessonsStopAudio
+                    : context.l10n.childLessonsPlayAudio,
                 icon: activeAudioUrl == audioUrl
                     ? Icons.stop
                     : AppIcons.volumeUp,
@@ -153,7 +154,7 @@ Widget _buildLessonDetailModal({
 
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveButton(
-              label: 'تقييم الدرس',
+              label: context.l10n.lessonRatingTitle,
               icon: Icons.star_outline,
               style: AdaptiveButtonStyle.outlined,
               onPressed: () {
@@ -165,7 +166,7 @@ Widget _buildLessonDetailModal({
             ),
             SizedBox(height: AdaptiveHelper.spacing / 2),
             AdaptiveButton(
-              label: 'اسأل نور',
+              label: context.l10n.lessonAskNoor,
               icon: AppIcons.speech,
               style: AdaptiveButtonStyle.outlined,
               onPressed: () {
@@ -195,7 +196,7 @@ Widget _buildAudioDescBox(String audioDescription) {
           const SizedBox(width: 8),
           Expanded(
             child: AdaptiveText(
-              'الوصف الصوتي: $audioDescription',
+              context.l10n.childLessonsAudioDescription(audioDescription),
               type: AdaptiveTextType.caption,
             ),
           ),
