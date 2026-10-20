@@ -1,6 +1,7 @@
-import '../../utils/presentation_text.dart';
 // lib/screens/learning_support_requests/learning_support_requests_screen.dart
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
+import '../../utils/learning_support_presentation.dart';
 import '../../app_icons.dart';
 import '../../model/learning_support_request_model.dart';
 import '../../services/api_service.dart';
@@ -27,7 +28,7 @@ class _LearningSupportRequestsScreenState
   List<LearningSupportRequest> _requests = [];
   bool _loading = true;
   late final Future<String?> _viewerRole = ApiService.getRole();
-  String? _error;
+  LearningSupportError? _error;
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _LearningSupportRequestsScreenState
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الطلبات';
+        _error = LearningSupportError.requestsLoad;
         _loading = false;
       });
     }
@@ -85,7 +86,7 @@ class _LearningSupportRequestsScreenState
 
   Widget _buildDefaultScreen() {
     return Scaffold(
-      appBar: JisrAppBar(title: 'طلبات الدعم التعليمي'),
+      appBar: JisrAppBar(title: context.l10n.supportRequestsTitle),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: _loading
@@ -106,12 +107,12 @@ class _LearningSupportRequestsScreenState
         children: [
           const Icon(AppIcons.error, size: 64, color: AppColors.red),
           const SizedBox(height: 16),
-          Text(_error!,
+          Text(LearningSupportPresentation.error(_error!, context.l10n),
               style: const TextStyle(color: AppColors.red, fontSize: 16)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             icon: const Icon(AppIcons.refresh),
-            label: const Text('إعادة المحاولة'),
+            label: Text(context.l10n.retryAction),
             onPressed: _load,
           ),
         ],
@@ -128,7 +129,7 @@ class _LearningSupportRequestsScreenState
         const SizedBox(height: 16),
         Center(
           child: Text(
-            'لا توجد طلبات حالياً',
+            context.l10n.supportRequestsEmpty,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -153,7 +154,7 @@ class _LearningSupportRequestsScreenState
       padding: const EdgeInsets.all(12),
       children: [
         if (pending.isNotEmpty) ...[
-          _sectionHeader('قيد المراجعة', pending.length, AppColors.brandBlueLight),
+          _sectionHeader(context.l10n.underReview, pending.length, AppColors.brandBlueLight),
           ...pending.map((r) => LearningSupportRequestCard(
                 request: r,
                 onTap: () => _openScheduleSheet(r),
@@ -161,7 +162,7 @@ class _LearningSupportRequestsScreenState
           const SizedBox(height: 16),
         ],
         if (scheduled.isNotEmpty) ...[
-          _sectionHeader('جلسات مجدولة', scheduled.length, AppColors.brandTeal),
+          _sectionHeader(context.l10n.supportScheduledSessions, scheduled.length, AppColors.brandTeal),
           ...scheduled.map((r) => LearningSupportRequestCard(
                 request: r,
                 onTap: () => _openScheduleSheet(r),
@@ -169,7 +170,7 @@ class _LearningSupportRequestsScreenState
           const SizedBox(height: 16),
         ],
         if (done.isNotEmpty) ...[
-          _sectionHeader('منتهية', done.length, AppColors.brandGreen),
+          _sectionHeader(context.l10n.supportFinished, done.length, AppColors.brandGreen),
           ...done.map((r) =>
               LearningSupportRequestCard(request: r, onTap: null)),
         ],
@@ -182,13 +183,13 @@ class _LearningSupportRequestsScreenState
       padding: const EdgeInsets.fromLTRB(4, 8, 4, 12),
       child: Row(
         children: [
-          Text(
+          Expanded(child: Text(
             title,
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          )),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -217,6 +218,6 @@ class _LearningSupportRequestsScreenState
       backgroundColor: Colors.transparent,
       builder: (_) => ScheduleLearningSupportSheet(request: request),
     );
-    if (result == true) _load();
+    if (result == true && mounted) _load();
   }
 }

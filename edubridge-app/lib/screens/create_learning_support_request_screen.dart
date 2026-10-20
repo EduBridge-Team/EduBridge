@@ -1,8 +1,11 @@
 // lib/screens/create_learning_support_request_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
+import '../utils/learning_support_presentation.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/locale_form_validation.dart';
 part 'create_learning_support_request_view.dart';
 
 class CreateLearningSupportRequestScreen extends StatefulWidget {
@@ -21,7 +24,10 @@ class CreateLearningSupportRequestScreen extends StatefulWidget {
 }
 
 class _CreateLearningSupportRequestScreenState
-    extends State<CreateLearningSupportRequestScreen> {
+    extends State<CreateLearningSupportRequestScreen>
+    with LocaleFormValidation<CreateLearningSupportRequestScreen> {
+  @override
+  GlobalKey<FormState> get validationFormKey => _formKey;
   void _refreshState(VoidCallback callback) => setState(callback);
 
   final _formKey = GlobalKey<FormState>();
@@ -30,20 +36,9 @@ class _CreateLearningSupportRequestScreenState
   String? _selectedReason;
   String _urgency = 'medium';
   bool _saving = false;
-  String? _error;
+  LearningSupportError? _error;
 
-  static const _reasons = [
-    'صعوبة في فهم الدروس',
-    'تراجع في التقدم الدراسي',
-    'صعوبة في التركيز أثناء التعلم',
-    'الحاجة إلى تكييف طريقة عرض المحتوى',
-    'صعوبة في التواصل داخل البيئة التعليمية',
-    'الحاجة إلى خطة متابعة فردية',
-    'صعوبة في إنجاز الواجبات',
-    'الحاجة إلى دعم في مهارات الدراسة',
-    'التنسيق بين الأسرة والفريق التعليمي',
-    'أخرى',
-  ];
+  static const _reasons = LearningSupportPresentation.reasons;
 
   @override
   void dispose() {
@@ -52,9 +47,9 @@ class _CreateLearningSupportRequestScreenState
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!validateLocalizedForm()) return;
     if (_selectedReason == null) {
-      setState(() => _error = 'اختر السبب الرئيسي');
+      setState(() => _error = LearningSupportError.reasonRequired);
       return;
     }
 
@@ -75,21 +70,26 @@ class _CreateLearningSupportRequestScreenState
 
       if (!mounted) return;
       if (result != null) {
+        final messenger = ScaffoldMessenger.of(context);
+        final message = context.l10n.supportRequestSent;
         Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم إرسال الطلب للمختص — سيصلك إشعار بالموعد'),
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(message),
             backgroundColor: AppColors.green,
             duration: Duration(seconds: 4),
           ),
         );
+      } else {
+        setState(() => _error = LearningSupportError.createFailed);
       }
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
-        _saving = false;
+        _error = LearningSupportError.createFailed;
       });
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 

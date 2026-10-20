@@ -1,5 +1,7 @@
 // lib/screens/learning_support_meetings_screen.dart
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
+import '../utils/learning_support_presentation.dart';
 import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
@@ -27,7 +29,7 @@ class _LearningSupportMeetingsScreenState
     extends State<LearningSupportMeetingsScreen> {
   List<LearningSupportMeeting> _sessions = [];
   bool _loading = true;
-  String? _error;
+  LearningSupportError? _error;
   String _filter = 'all';
 
   @override
@@ -61,7 +63,7 @@ class _LearningSupportMeetingsScreenState
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر تحميل الجلسات';
+        _error = LearningSupportError.meetingsLoad;
         _loading = false;
       });
     }
@@ -87,12 +89,12 @@ class _LearningSupportMeetingsScreenState
     return Scaffold(
       appBar: JisrAppBar(
         title: widget.childName != null
-            ? 'اجتماعات ${widget.childName}'
-            : 'اجتماعات الدعم التعليمي',
+            ? context.l10n.supportChildMeetings(widget.childName!)
+            : context.l10n.supportMeetingsTitle,
         actions: [
           IconButton(
             icon: const Icon(AppIcons.refresh),
-            tooltip: 'تحديث',
+            tooltip: context.l10n.caseRefreshAction,
             onPressed: _load,
           ),
         ],
@@ -105,7 +107,7 @@ class _LearningSupportMeetingsScreenState
             child: Row(
               children: [
                 _FilterChip(
-                  label: 'الكل',
+                  label: context.l10n.all,
                   count: _sessions.length,
                   selected: _filter == 'all',
                   color: AppColors.brandBlue,
@@ -113,7 +115,7 @@ class _LearningSupportMeetingsScreenState
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'مجدولة',
+                  label: context.l10n.supportScheduled,
                   count: _sessions
                       .where((s) =>
                           s.status == LearningSupportMeetingStatus.scheduled)
@@ -124,7 +126,7 @@ class _LearningSupportMeetingsScreenState
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'منتهية',
+                  label: context.l10n.supportFinished,
                   count: _sessions
                       .where((s) =>
                           s.status == LearningSupportMeetingStatus.completed)

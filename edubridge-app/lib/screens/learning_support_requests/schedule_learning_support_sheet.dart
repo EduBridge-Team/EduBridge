@@ -17,7 +17,7 @@ class _ScheduleLearningSupportSheetState
   final _meetingLinkCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   bool _saving = false;
-  String? _error;
+  LearningSupportError? _error;
 
   @override
   void dispose() {
@@ -33,7 +33,7 @@ class _ScheduleLearningSupportSheetState
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 90)),
     );
-    if (picked != null) setState(() => _scheduledAt = picked);
+    if (picked != null && mounted) setState(() => _scheduledAt = picked);
   }
 
   Future<void> _pickTime() async {
@@ -41,16 +41,16 @@ class _ScheduleLearningSupportSheetState
       context: context,
       initialTime: const TimeOfDay(hour: 16, minute: 0),
     );
-    if (picked != null) setState(() => _time = picked);
+    if (picked != null && mounted) setState(() => _time = picked);
   }
 
   Future<void> _save() async {
     if (_scheduledAt == null || _time == null) {
-      setState(() => _error = 'اختر التاريخ والوقت');
+      setState(() => _error = LearningSupportError.dateTimeRequired);
       return;
     }
     if (_meetingLinkCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'رابط الاجتماع مطلوب');
+      setState(() => _error = LearningSupportError.linkRequired);
       return;
     }
 
@@ -79,22 +79,25 @@ class _ScheduleLearningSupportSheetState
 
       if (!mounted) return;
       if (ok) {
+        final messenger = ScaffoldMessenger.of(context);
+        final message = context.l10n.supportScheduleSuccess;
         Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم تحديد الموعد وإرسال الرابط لولي الأمر'),
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(message),
             backgroundColor: AppColors.brandTealDeep,
           ),
         );
       } else {
         setState(() {
-          _error = 'فشل حفظ الموعد';
+          _error = LearningSupportError.scheduleFailed;
           _saving = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = LearningSupportError.scheduleFailed;
         _saving = false;
       });
     }
@@ -110,7 +113,7 @@ class _ScheduleLearningSupportSheetState
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            'طلب جلسة — ${widget.request.childName}',
+            context.l10n.supportSessionRequestTitle(widget.request.childName),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -136,14 +139,15 @@ class _ScheduleLearningSupportSheetState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
             children: [
-              Text(widget.request.urgencyLabel,
+              Text(LearningSupportPresentation.urgency(widget.request.urgency, context.l10n),
                   style: const TextStyle(
                       fontSize: 14, fontWeight: FontWeight.bold)),
-              const Spacer(),
               Text(
-                widget.request.reason,
+                LearningSupportPresentation.reason(widget.request.reason, context.l10n),
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -182,8 +186,7 @@ class _ScheduleLearningSupportSheetState
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'مجدولة: ${s.day}/${s.month} '
-              '${PresentationText.clock(s)}',
+              context.l10n.supportScheduledDate(LearningSupportPresentation.date(s, context.l10n)),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -202,7 +205,7 @@ class _ScheduleLearningSupportSheetState
           child: _pickerTile(
             icon: AppIcons.calendar,
             label: _scheduledAt == null
-                ? 'اختر التاريخ'
+                ? context.l10n.supportChooseDate
                 : '${_scheduledAt!.day}/${_scheduledAt!.month}/${_scheduledAt!.year}',
             onTap: _pickDate,
             color: AppColors.brandBlue,
@@ -213,7 +216,7 @@ class _ScheduleLearningSupportSheetState
         Expanded(
           child: _pickerTile(
             icon: AppIcons.clock,
-            label: _time == null ? 'اختر الوقت' : _time!.format(context),
+            label: _time == null ? context.l10n.supportChooseTime : _time!.format(context),
             onTap: _pickTime,
             color: AppColors.brandTealDeep,
             c: c,
@@ -226,8 +229,8 @@ class _ScheduleLearningSupportSheetState
   Widget _buildMeetingLinkField() {
     return TextField(
       controller: _meetingLinkCtrl,
-      decoration: const InputDecoration(
-        labelText: 'رابط الاجتماع (Zoom / Google Meet) *',
+      decoration: InputDecoration(
+        labelText: context.l10n.supportMeetingLinkField,
         prefixIcon: Icon(Icons.link),
         hintText: 'https://meet.google.com/...',
       ),
@@ -238,8 +241,8 @@ class _ScheduleLearningSupportSheetState
     return TextField(
       controller: _notesCtrl,
       maxLines: 3,
-      decoration: const InputDecoration(
-        labelText: 'ملاحظات لولي الأمر (اختياري)',
+      decoration: InputDecoration(
+        labelText: context.l10n.supportParentNotes,
         prefixIcon: Icon(AppIcons.edit),
         alignLabelWithHint: true,
       ),
@@ -252,7 +255,7 @@ class _ScheduleLearningSupportSheetState
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(context.l10n.cancel),
           ),
         ),
         const SizedBox(width: 12),
@@ -272,7 +275,7 @@ class _ScheduleLearningSupportSheetState
                   )
                 : const Icon(AppIcons.check),
             label: Text(
-              _saving ? '...' : isScheduled ? 'تعديل' : 'تأكيد',
+              _saving ? '...' : isScheduled ? context.l10n.edit : context.l10n.supportConfirm,
             ),
             onPressed: _saving ? null : _save,
           ),

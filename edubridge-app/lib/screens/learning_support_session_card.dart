@@ -6,21 +6,6 @@ class _SessionCard extends StatelessWidget {
 
   const _SessionCard({required this.session});
 
-  String get _typeLabel {
-    switch (session.type) {
-      case LearningSupportMeetingType.learningPlanning:
-        return 'اجتماع تخطيط تعليمي';
-      case LearningSupportMeetingType.followUp:
-        return 'متابعة';
-      case LearningSupportMeetingType.teamReview:
-        return 'مراجعة فريق الدعم';
-      case LearningSupportMeetingType.parentReview:
-        return 'متابعة مع ولي الأمر';
-      case LearningSupportMeetingType.groupSupport:
-        return 'دعم تعليمي جماعي';
-    }
-  }
-
   IconData get _typeIcon {
     switch (session.type) {
       case LearningSupportMeetingType.learningPlanning:
@@ -36,19 +21,6 @@ class _SessionCard extends StatelessWidget {
     }
   }
 
-  String get _statusLabel {
-    switch (session.status) {
-      case LearningSupportMeetingStatus.scheduled:
-        return 'مجدولة';
-      case LearningSupportMeetingStatus.completed:
-        return 'مكتملة';
-      case LearningSupportMeetingStatus.cancelled:
-        return 'ملغية';
-      case LearningSupportMeetingStatus.noShow:
-        return 'لم يحضر';
-    }
-  }
-
   Color get _statusColor {
     switch (session.status) {
       case LearningSupportMeetingStatus.scheduled:
@@ -59,16 +31,6 @@ class _SessionCard extends StatelessWidget {
       case LearningSupportMeetingStatus.noShow:
         return AppColors.red;
     }
-  }
-
-  String _formatDate(DateTime d) {
-    const months = [
-      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-    ];
-    final hour = d.hour.toString().padLeft(2, '0');
-    final minute = d.minute.toString().padLeft(2, '0');
-    return '${d.day} ${months[d.month - 1]} ${d.year} — $hour:$minute';
   }
 
   @override
@@ -100,7 +62,7 @@ class _SessionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _typeLabel,
+                        LearningSupportPresentation.meetingType(session.type, context.l10n),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -109,13 +71,13 @@ class _SessionCard extends StatelessWidget {
                       ),
                       if (session.childName.isNotEmpty)
                         Text(
-                          'الطفل: ${session.childName}',
+                          context.l10n.supportChildLabel(session.childName),
                           style: TextStyle(fontSize: 12, color: c.muted),
                         ),
                     ],
                   ),
                 ),
-                Container(
+                Flexible(child: Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -123,14 +85,14 @@ class _SessionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    _statusLabel,
+                    LearningSupportPresentation.meetingStatus(session.status, context.l10n),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: _statusColor,
                     ),
                   ),
-                ),
+                )),
               ],
             ),
 
@@ -138,49 +100,52 @@ class _SessionCard extends StatelessWidget {
             Divider(color: c.line, height: 1),
             const SizedBox(height: 12),
 
-            _infoRow(AppIcons.calendar, 'الموعد',
-                _formatDate(session.scheduledAt), c),
+            _infoRow(AppIcons.calendar, context.l10n.supportAppointment,
+                LearningSupportPresentation.date(session.scheduledAt, context.l10n), c),
             const SizedBox(height: 6),
-            _infoRow(AppIcons.clock, 'المدة',
-                '${session.durationMinutes} دقيقة', c),
+            _infoRow(AppIcons.clock, context.l10n.supportDuration,
+                context.l10n.supportDurationMinutes(session.durationMinutes), c),
 
             if (session.specialistName.isNotEmpty) ...[
               const SizedBox(height: 6),
-              _infoRow(AppIcons.specialist, 'المختص',
+              _infoRow(AppIcons.specialist, context.l10n.specialistLabel,
                   session.specialistName, c),
             ],
 
             if (session.completedAt != null) ...[
               const SizedBox(height: 6),
-              _infoRow(AppIcons.check, 'اكتملت',
-                  _formatDate(session.completedAt!), c),
+              _infoRow(AppIcons.check, context.l10n.supportCompletedAt,
+                  LearningSupportPresentation.date(session.completedAt!, context.l10n), c),
             ],
 
             if (session.goals != null && session.goals!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _section('الأهداف', session.goals!, c),
+              _section(context.l10n.supportGoals, session.goals!, c),
             ],
 
             if (session.notes != null && session.notes!.isNotEmpty) ...[
               const SizedBox(height: 10),
-              _section('ملاحظات', session.notes!, c),
+              _section(context.l10n.notes, session.notes!, c),
             ],
 
             if (session.recommendations != null &&
                 session.recommendations!.isNotEmpty) ...[
               const SizedBox(height: 10),
-              _section('التوصيات', session.recommendations!, c),
+              _section(context.l10n.recommendations, session.recommendations!, c),
             ],
 
             if (session.moodRating != null) ...[
               const SizedBox(height: 10),
-              Row(
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Icon(Icons.sentiment_satisfied,
                       size: 18, color: c.muted),
                   const SizedBox(width: 6),
                   Text(
-                    'المشاركة التعليمية: ',
+                    context.l10n.supportParticipation,
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.bold,
@@ -233,26 +198,15 @@ class _SessionCard extends StatelessWidget {
 
   Widget _infoRow(IconData icon, String label, String value, JisrColors c) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 16, color: c.muted),
         const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 13,
-            color: c.muted,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
         Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 13,
-              color: c.body,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          child: Text.rich(TextSpan(children: [
+            TextSpan(text: '$label: ', style: TextStyle(color: c.muted)),
+            TextSpan(text: value, style: TextStyle(color: c.body)),
+          ]), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
         ),
       ],
     );
