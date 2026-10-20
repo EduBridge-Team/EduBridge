@@ -110,7 +110,7 @@ Widget buildTargetSelector({
                     dense: true,
                     title: Text(child['name']?.toString() ?? ''),
                     subtitle: Text(
-                      DisabilityDisplay.label(child['disability_type']?.toString() ?? '', context.l10n),
+                      DisabilityDisplay.label(child['disability_type']?.toString() ?? context.l10n.notSpecified, context.l10n),
                       style: const TextStyle(fontSize: 11),
                     ),
                     value: selected,
