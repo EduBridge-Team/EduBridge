@@ -381,3 +381,25 @@ and replay, original card text, score boundaries, names, live saved-locale chang
 speech policy and the selected native voice. Remaining game prompts/content banks,
 game-catalog labels and other child voice/semantic strings still require migration;
 this batch does not claim all games are fully translated.
+
+### Phase 5 — sound matching and quick actions
+
+Sound matching labels, welcome/retry/win instructions, replay controls and card
+semantics now follow the active locale. Built-in card names use a presentation
+adapter while canonical matching keys and shuffle history remain original.
+Explicit listening uses the selected language even when automatic speech is off;
+automatic instructions still respect calm/auto-read preferences. The initial
+welcome waits until localizations are available and ignores superseded rounds.
+Card contents can fit within their existing cells at large text sizes.
+
+Quick-action labels, built-in action instructions, countdown warnings, pause/resume
+speech, score messages and finish errors are localized. Canonical action IDs,
+selection history, scoring, deadlines and untimed preferences remain unchanged.
+The existing completion button keeps its minimum height and can grow for text;
+action artwork fits inside its existing circle.
+
+Ten regression cases cover Arabic/English at 320px and 1x/2x text, explicit native
+speech and language, repeated-card handling, suppression of automatic speech,
+untimed scoring and pause/resume, and preservation of the timed countdown.
+Next: remaining game interfaces and catalog labels, followed by remaining child
+voice/semantic strings and the final completeness/manual accessibility audit.

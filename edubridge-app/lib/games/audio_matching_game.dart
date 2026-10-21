@@ -1,3 +1,5 @@
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
 // لعبة مطابقة الأصوات — للأطفال المكفوفين
 import 'dart:async';
 import 'game_content.dart';
@@ -39,9 +41,29 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     _startGame();
   }
 
+  Future<void> _speak(String text) => AdaptiveHelper.useSlowSpeech
+      ? TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName)
+      : TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+
   Future<void> _announce(String text) async {
-    if (AdaptiveHelper.shouldReadOnTap) await AdaptiveHelper.speak(text);
+    if (AdaptiveHelper.shouldReadOnTap) await _speak(text);
   }
+
+  String _cardName(String name) => switch (name) {
+    'كلب' => context.l10n.audioWordDog,
+    'قطة' => context.l10n.audioWordCat,
+    'طائر' => context.l10n.audioWordBird,
+    'بقرة' => context.l10n.audioWordCow,
+    'ضفدع' => context.l10n.audioWordFrog,
+    'أسد' => context.l10n.audioWordLion,
+    'فيل' => context.l10n.audioWordElephant,
+    'حصان' => context.l10n.audioWordHorse,
+    'سيارة' => context.l10n.audioWordCar,
+    'دراجة' => context.l10n.audioWordBicycle,
+    'تفاحة' => context.l10n.audioWordApple,
+    'موز' => context.l10n.audioWordBanana,
+    _ => name,
+  };
 
   void _startGame() {
     _generation++;
@@ -55,9 +77,12 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     _matches = 0;
     _locked = false;
 
-    _announce(
-      'مرحباً ${widget.childName}! المس أي بطاقة لتسمع اسمها، ثم ابحث عن زوجها',
-    );
+    final generation = _generation;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && generation == _generation && ModalRoute.of(context)?.isCurrent != false) {
+        _announce(context.l10n.audioGameWelcome(widget.childName));
+      }
+    });
 
     setState(() {});
   }
@@ -67,7 +92,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
     final generation = _generation;
     _locked = true;
 
-    await AdaptiveHelper.speak(_cards[index].name);
+    await _speak(_cardName(_cards[index].name));
     if (!mounted || generation != _generation) return;
     AdaptiveHelper.hapticFeedback();
 
@@ -105,7 +130,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
       }
     } else {
       AdaptiveHelper.hapticFeedback();
-      await _announce('حاول مرة أخرى');
+      await _announce(context.l10n.audioGameRetry);
     }
 
     if (!mounted || generation != _generation) return;
@@ -124,17 +149,18 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
 
     if (!mounted) return;
     await _announce(
-      'مذهل يا ${widget.childName}! أكملت اللعبة بنجاح',
+      context.l10n.audioGameWinSpeech(widget.childName),
     );
 
     if (mounted) {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('🏆 أكملت اللعبة!',
+          scrollable: true,
+          title: Text(context.l10n.audioGameWinTitle,
               textAlign: TextAlign.center),
-          content: const Text(
-            'اضغط على "العب مرة أخرى" لتسمع اللعبة من جديد',
+          content: Text(
+            context.l10n.audioGameReplayHint,
             textAlign: TextAlign.center,
           ),
           actions: [
@@ -145,7 +171,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
                   Navigator.pop(context);
                   _startGame();
                 },
-                child: const Text('العب مرة أخرى'),
+                child: Text(context.l10n.matchingPlayAgain),
               ),
             ),
           ],
@@ -157,19 +183,19 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: JisrAppBar(title: 'لعبة الأصوات 🔊'),
+      appBar: JisrAppBar(title: context.l10n.audioGameTitle),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(20),
             color: JisrColors.of(context).tintTeal,
-            child: const Row(
+            child: Row(
               children: [
                 Icon(Icons.volume_up, size: 32),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'المس أي بطاقة لتسمع اسمها، ثم اختر زوجها',
+                    context.l10n.audioGameInstructions,
                     style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -204,7 +230,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
 
     return Semantics(
       button: true,
-      label: card.matched ? 'بطاقة مكتملة' : 'بطاقة ${card.name}',
+      label: card.matched ? context.l10n.audioGameMatchedCard : context.l10n.audioGameCard(_cardName(card.name)),
       child: GestureDetector(
         onTap: () => _selectCard(index),
         child: Container(
@@ -225,8 +251,10 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
             ),
           ),
           alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: FittedBox(fit: BoxFit.scaleDown, child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 card.matched ? Icons.check_circle : Icons.volume_up,
@@ -235,7 +263,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
               ),
               const SizedBox(height: 8),
               Text(
-                card.matched ? 'مكتملة' : 'المس للاستماع',
+                card.matched ? context.l10n.audioGameComplete : context.l10n.audioGameListen,
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,
@@ -243,6 +271,7 @@ class _AudioMatchingGameState extends State<AudioMatchingGame> {
                 ),
               ),
             ],
+          )),
           ),
         ),
       ),

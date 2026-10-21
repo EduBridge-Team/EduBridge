@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // لعبة الحركة السريعة — للأطفال ذوي فرط الحركة (ADHD)
 // الطفل ينفّذ حركات سريعة بسيطة مع نقر زر
 import 'dart:async';
@@ -65,8 +66,29 @@ class _QuickActionGameState extends State<QuickActionGame> {
   }
 
   void _announce(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+    }
   }
+
+  String _actionLabel(String value) => switch (value) {
+    'صفّق' => context.l10n.actionMoveClap,
+    'اقفز' => context.l10n.actionMoveJump,
+    'دُر حول نفسك' => context.l10n.actionMoveTurn,
+    'ارفع يديك' => context.l10n.actionMoveRaiseHands,
+    'شدّ عضلاتك' => context.l10n.actionMoveFlex,
+    'لوّح' => context.l10n.actionMoveWave,
+    'ارمِ' => context.l10n.actionMoveThrow,
+    'اركض في مكانك' => context.l10n.actionMoveRun,
+    'حرّك أصابعك' => context.l10n.actionMoveFingers,
+    'خذ نفساً عميقاً' => context.l10n.actionMoveBreathe,
+    'توقّف ثانيتين' => context.l10n.actionMoveStop,
+    'المس رأسك' => context.l10n.actionMoveHead,
+    _ => value,
+  };
 
   Future<void> _stopSpeech() async {
     try { await TtsService.instance.stop(); } catch (_) {}
@@ -104,10 +126,10 @@ class _QuickActionGameState extends State<QuickActionGame> {
         setState(() => _secondsLeft--);
 
         if (_secondsLeft == 10) {
-          _announce('عشر ثوانٍ متبقية!');
+          _announce(context.l10n.actionTenLeft);
         }
         if (_secondsLeft == 5) {
-          _announce('خمس ثوانٍ!');
+          _announce(context.l10n.actionFiveLeft);
         }
       }
     });
@@ -138,12 +160,12 @@ class _QuickActionGameState extends State<QuickActionGame> {
 
   void _pause() {
     setState(() => _isPaused = true);
-    _announce('توقفنا مؤقتاً');
+    _announce(context.l10n.actionPauseSpeech);
   }
 
   void _resume() {
     setState(() => _isPaused = false);
-    _announce('نكمل');
+    _announce(context.l10n.actionResumeSpeech);
   }
 
   Future<void> _onFinish() async {
@@ -155,16 +177,16 @@ class _QuickActionGameState extends State<QuickActionGame> {
     String message;
     String emoji;
     if (_score >= 20) {
-      message = 'مذهل! $_score حركة!';
+      message = context.l10n.actionResultAmazing(_score);
       emoji = '🏆';
     } else if (_score >= 15) {
-      message = 'رائع! $_score حركة!';
+      message = context.l10n.actionResultGreat(_score);
       emoji = '🌟';
     } else if (_score >= 10) {
-      message = 'أحسنت! $_score حركة';
+      message = context.l10n.actionResultGood(_score);
       emoji = '⚡';
     } else {
-      message = 'بداية جميلة! $_score حركة';
+      message = context.l10n.actionResultStart(_score);
       emoji = '💪';
     }
 
@@ -181,7 +203,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
       if (!mounted) return;
       setState(() => _isFinished = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر حفظ النتيجة، حاول إنهاء اللعب مرة أخرى')));
+        SnackBar(content: Text(context.l10n.actionSaveFailed)));
     }
   }
 
@@ -192,11 +214,11 @@ class _QuickActionGameState extends State<QuickActionGame> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8EE),
       appBar: BrandAppBar(
-        title: const Text('⚡ الحركة السريعة'),
+        title: Text(context.l10n.actionTitle),
         actions: [
           IconButton(
             icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-            tooltip: _isPaused ? 'متابعة' : 'إيقاف مؤقت',
+            tooltip: _isPaused ? context.l10n.timerResume : context.l10n.actionPause,
             onPressed: _isFinished ? null : (_isPaused ? _resume : _pause),
           ),
         ],
@@ -232,7 +254,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'ثانية',
+                      context.l10n.actionSecond,
                       style: TextStyle(
                         fontSize: large ? 18 : 16,
                         color: Colors.grey.shade600,
@@ -254,7 +276,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                   ),
                 ),
                 ],
-                if (!_timed) const Text('بدون وقت — خذ راحتك'),
+                if (!_timed) Text(context.l10n.actionUntimed),
                 const SizedBox(height: 12),
                 Wrap(
                   alignment: WrapAlignment.spaceAround,
@@ -263,20 +285,20 @@ class _QuickActionGameState extends State<QuickActionGame> {
                   children: [
                     _statChip(
                       icon: '⭐',
-                      label: 'النقاط',
+                      label: context.l10n.actionPoints,
                       value: '$_score',
                       color: const Color(0xFFF2842B),
                     ),
                     if (_streak >= 3)
                       _statChip(
                         icon: '🔥',
-                        label: 'متتالية',
+                        label: context.l10n.actionStreak,
                         value: '$_streak',
                         color: const Color(0xFFE53935),
                       ),
                     _statChip(
                       icon: '🎯',
-                      label: 'الحركات',
+                      label: context.l10n.actionMoves,
                       value: '$_round',
                       color: const Color(0xFF57B25A),
                     ),
@@ -295,9 +317,9 @@ class _QuickActionGameState extends State<QuickActionGame> {
           if (!_isFinished)
             Padding(
               padding: const EdgeInsets.all(20),
-              child: SizedBox(
+              child: Container(
                 width: double.infinity,
-                height: large ? 110 : 90,
+                constraints: BoxConstraints(minHeight: large ? 110 : 90),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF57B25A),
@@ -312,7 +334,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                     size: large ? 52 : 44,
                   ),
                   label: Text(
-                    'فعلتها!',
+                    context.l10n.actionDone,
                     style: TextStyle(
                       fontSize: large ? 32 : 28,
                       fontWeight: FontWeight.bold,
@@ -329,7 +351,7 @@ class _QuickActionGameState extends State<QuickActionGame> {
                 style: OutlinedButton.styleFrom(
                   minimumSize: Size(48, AdaptiveHelper.buttonHeight)),
                 onPressed: _onFinish,
-                child: const Text('إنهاء اللعب'),
+                child: Text(context.l10n.actionFinish),
               )),
             ),
         ],

@@ -7114,5 +7114,277 @@
         "type": "int"
       }
     }
+  },
+  "audioGameTitle": "لعبة الأصوات 🔊",
+  "@audioGameTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameInstructions": "المس أي بطاقة لتسمع اسمها، ثم اختر زوجها",
+  "@audioGameInstructions": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameWelcome": "مرحباً {name}! المس أي بطاقة لتسمع اسمها، ثم ابحث عن زوجها",
+  "@audioGameWelcome": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameRetry": "حاول مرة أخرى",
+  "@audioGameRetry": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameWinSpeech": "مذهل يا {name}! أكملت اللعبة بنجاح",
+  "@audioGameWinSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameWinTitle": "🏆 أكملت اللعبة!",
+  "@audioGameWinTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameReplayHint": "اضغط على \"العب مرة أخرى\" لتسمع اللعبة من جديد",
+  "@audioGameReplayHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameMatchedCard": "بطاقة مكتملة",
+  "@audioGameMatchedCard": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameCard": "بطاقة {name}",
+  "@audioGameCard": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameComplete": "مكتملة",
+  "@audioGameComplete": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameListen": "المس للاستماع",
+  "@audioGameListen": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTitle": "⚡ الحركة السريعة",
+  "@actionTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionDoThis": "افعل هذا:",
+  "@actionDoThis": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPaused": "⏸️ متوقف مؤقتاً",
+  "@actionPaused": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTimedHint": "افعلها ثم اضغط \"فعلتها\"",
+  "@actionTimedHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionUntimedHint": "خذ راحتك ثم اضغط \"فعلتها\"",
+  "@actionUntimedHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionDone": "فعلتها!",
+  "@actionDone": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionUntimed": "بدون وقت — خذ راحتك",
+  "@actionUntimed": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionFinish": "إنهاء اللعب",
+  "@actionFinish": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPause": "إيقاف مؤقت",
+  "@actionPause": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPoints": "النقاط",
+  "@actionPoints": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionStreak": "متتالية",
+  "@actionStreak": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoves": "الحركات",
+  "@actionMoves": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionSecond": "ثانية",
+  "@actionSecond": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTenLeft": "عشر ثوانٍ متبقية!",
+  "@actionTenLeft": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionFiveLeft": "خمس ثوانٍ!",
+  "@actionFiveLeft": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPauseSpeech": "توقفنا مؤقتاً",
+  "@actionPauseSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionResumeSpeech": "نكمل",
+  "@actionResumeSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionResultAmazing": "مذهل! {count} حركة!",
+  "@actionResultAmazing": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultGreat": "رائع! {count} حركة!",
+  "@actionResultGreat": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultGood": "أحسنت! {count} حركة",
+  "@actionResultGood": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultStart": "بداية جميلة! {count} حركة",
+  "@actionResultStart": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionCount": "{count} حركة",
+  "@actionCount": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionSaveFailed": "تعذّر حفظ النتيجة، حاول إنهاء اللعب مرة أخرى",
+  "@actionSaveFailed": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordDog": "كلب",
+  "@audioWordDog": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCat": "قطة",
+  "@audioWordCat": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBird": "طائر",
+  "@audioWordBird": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCow": "بقرة",
+  "@audioWordCow": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordFrog": "ضفدع",
+  "@audioWordFrog": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordLion": "أسد",
+  "@audioWordLion": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordElephant": "فيل",
+  "@audioWordElephant": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordHorse": "حصان",
+  "@audioWordHorse": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCar": "سيارة",
+  "@audioWordCar": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBicycle": "دراجة",
+  "@audioWordBicycle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordApple": "تفاحة",
+  "@audioWordApple": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBanana": "موز",
+  "@audioWordBanana": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveClap": "صفّق",
+  "@actionMoveClap": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveJump": "اقفز",
+  "@actionMoveJump": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveTurn": "دُر حول نفسك",
+  "@actionMoveTurn": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveRaiseHands": "ارفع يديك",
+  "@actionMoveRaiseHands": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveFlex": "شدّ عضلاتك",
+  "@actionMoveFlex": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveWave": "لوّح",
+  "@actionMoveWave": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveThrow": "ارمِ",
+  "@actionMoveThrow": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveRun": "اركض في مكانك",
+  "@actionMoveRun": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveFingers": "حرّك أصابعك",
+  "@actionMoveFingers": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveBreathe": "خذ نفساً عميقاً",
+  "@actionMoveBreathe": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveStop": "توقّف ثانيتين",
+  "@actionMoveStop": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveHead": "المس رأسك",
+  "@actionMoveHead": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
   }
 }

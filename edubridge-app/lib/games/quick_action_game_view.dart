@@ -10,7 +10,7 @@ extension _QuickActionGameView on _QuickActionGameState {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'افعل هذا:',
+            context.l10n.actionDoThis,
             style: TextStyle(
               fontSize: large ? 22 : 18,
               color: Colors.grey.shade700,
@@ -47,15 +47,16 @@ extension _QuickActionGameView on _QuickActionGameState {
                 ],
               ),
               alignment: Alignment.center,
-              child: Text(
+              child: Padding(padding: const EdgeInsets.all(12),
+                child: FittedBox(fit: BoxFit.scaleDown, child: Text(
                 _currentAction.$1,
                 style: TextStyle(fontSize: large ? 130 : 110),
-              ),
+              ))),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            _currentAction.$2,
+            _actionLabel(_currentAction.$2),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: large ? 36 : 30,
@@ -66,8 +67,8 @@ extension _QuickActionGameView on _QuickActionGameState {
           const SizedBox(height: 12),
           Text(
             _isPaused
-                ? '⏸️ متوقف مؤقتاً'
-                : (_timed ? 'افعلها ثم اضغط "فعلتها"' : 'خذ راحتك ثم اضغط "فعلتها"'),
+                ? context.l10n.actionPaused
+                : (_timed ? context.l10n.actionTimedHint : context.l10n.actionUntimedHint),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
@@ -87,7 +88,7 @@ extension _QuickActionGameView on _QuickActionGameState {
           const Text('🎉', style: TextStyle(fontSize: 100)),
           const SizedBox(height: 20),
           Text(
-            'أحسنت!',
+            context.l10n.celebrationDefault,
             style: TextStyle(
               fontSize: large ? 42 : 36,
               fontWeight: FontWeight.bold,
@@ -96,7 +97,7 @@ extension _QuickActionGameView on _QuickActionGameState {
           ),
           const SizedBox(height: 12),
           Text(
-            '$_score حركة',
+            context.l10n.actionCount(_score),
             style: TextStyle(
               fontSize: large ? 24 : 20,
               color: const Color(0xFF12283A),
