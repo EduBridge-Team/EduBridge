@@ -59,9 +59,9 @@ void main() {
     service.begin(childId: 20, gameKey: 'colors');
     await service.record(90);
     expect(calls.last, '/children/20/game-attempts');
-    final queue = jsonDecode((await SharedPreferences.getInstance()).getString('pending_game_attempts_v2_1')!) as List;
-    expect(queue.length, 1);
-    expect(queue.first['child_id'], 10);
+    final prefs = await SharedPreferences.getInstance();
+    // Permanently rejected attempts are discarded after recording the response.
+    expect(prefs.containsKey('pending_game_attempts_v2_1'), isFalse);
   });
 
 }
