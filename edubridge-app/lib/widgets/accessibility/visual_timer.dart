@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // مؤقّت بصري دائري — مع أزرار تحكم + اهتزاز للأصمّ
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -149,7 +150,9 @@ class _VisualTimerState extends State<VisualTimer>
                       backgroundColor: c.line,
                     ),
                   ),
-                  Column(
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: FittedBox(fit: BoxFit.scaleDown, child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (_isFinished)
@@ -157,6 +160,7 @@ class _VisualTimerState extends State<VisualTimer>
                       else
                         Text(
                           '$mm:$ss',
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                             fontSize: widget.size * 0.22,
                             fontWeight: FontWeight.bold,
@@ -166,7 +170,7 @@ class _VisualTimerState extends State<VisualTimer>
                       if (_isFinished) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'انتهى!',
+                          context.l10n.timerFinished,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -175,6 +179,7 @@ class _VisualTimerState extends State<VisualTimer>
                         ),
                       ],
                     ],
+                    )),
                   ),
                 ],
               );
@@ -194,27 +199,26 @@ class _VisualTimerState extends State<VisualTimer>
         ],
         if (widget.showControls) ...[
           const SizedBox(height: 14),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          Wrap(
+            spacing: 12, runSpacing: 8, alignment: WrapAlignment.center,
             children: [
               if (_isFinished)
                 _ControlButton(
                   icon: Icons.replay,
-                  label: 'من جديد',
+                  label: context.l10n.timerRestart,
                   color: AppColors.green,
                   onTap: _restart,
                 )
               else ...[
                 _ControlButton(
                   icon: _isPaused ? Icons.play_arrow : Icons.pause,
-                  label: _isPaused ? 'متابعة' : 'إيقاف',
+                  label: _isPaused ? context.l10n.timerResume : context.l10n.timerPause,
                   color: AppColors.orange,
                   onTap: _isPaused ? _resume : _pause,
                 ),
-                const SizedBox(width: 12),
                 _ControlButton(
                   icon: Icons.refresh,
-                  label: 'إعادة',
+                  label: context.l10n.timerReset,
                   color: AppColors.teal,
                   onTap: _reset,
                 ),

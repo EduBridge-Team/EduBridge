@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/services/reward_service.dart
 // نظام المكافآت — نجوم متزامنة مع السيرفر مع fallback محلي للعمل دون اتصال.
 import 'dart:convert';
@@ -230,7 +231,7 @@ class _RewardOverlayState extends State<_RewardOverlay>
                     ),
                   ),
                   if (widget.onDismiss != null) TextButton(
-                    onPressed: widget.onDismiss, child: const Text('متابعة')),
+                    onPressed: widget.onDismiss, child: Text(context.l10n.feedbackContinue)),
                 ],
               ),
             ),

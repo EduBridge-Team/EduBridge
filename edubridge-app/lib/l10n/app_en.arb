@@ -6771,5 +6771,109 @@
         "type": "int"
       }
     }
+  },
+  "timerAudioTitle": "Audio timer",
+  "@timerAudioTitle": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerStart": "Start",
+  "@timerStart": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerPause": "Pause",
+  "@timerPause": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerResume": "Continue",
+  "@timerResume": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerReset": "Reset",
+  "@timerReset": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerRestart": "Restart",
+  "@timerRestart": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerFinished": "Finished!",
+  "@timerFinished": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerStartSpeech": "I will tell you the remaining time every minute",
+  "@timerStartSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerPausedSpeech": "Timer paused",
+  "@timerPausedSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerResetSpeech": "Timer reset",
+  "@timerResetSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerFinishedSpeech": "Time is up, {name}! Well done",
+  "@timerFinishedSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timerClockSemantics": "Timer: {minutes} and {seconds}",
+  "@timerClockSemantics": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "timerMinutesRemaining": "{count, plural, =1{1 minute remaining} other{{count} minutes remaining}}",
+  "@timerMinutesRemaining": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timerSecondsRemaining": "{count, plural, =1{1 second remaining} other{{count} seconds remaining}}",
+  "@timerSecondsRemaining": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "celebrationDefault": "Well done!",
+  "@celebrationDefault": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "celebrationEffort": "Well done for your effort",
+  "@celebrationEffort": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "celebrationNamed": "Well done, {name}! You are wonderful 🌟",
+  "@celebrationNamed": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackContinue": "Continue",
+  "@feedbackContinue": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "feedbackCloseAlert": "Close notification",
+  "@feedbackCloseAlert": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
   }
 }

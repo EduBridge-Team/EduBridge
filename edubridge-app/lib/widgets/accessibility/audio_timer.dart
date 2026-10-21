@@ -1,9 +1,10 @@
+import '../../l10n/l10n.dart';
 // مؤقّت سمعي يحترم إعدادات الطفل ووقت الاستخدام الفعلي.
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_feedback_policy.dart';
-import '../../utils/adaptive_helper.dart';
+import '../../services/tts_service.dart';
 import '../../theme.dart';
 
 class AudioTimer extends StatefulWidget {
@@ -32,7 +33,11 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
       AdaptiveFeedbackPolicy(AccessibilityService.instance.profile.value);
 
   void _announce(String text) {
-    if (_feedback.allowAutomaticSpeech) unawaited(AdaptiveHelper.speak(text));
+    if (!_feedback.allowAutomaticSpeech) return;
+    final p = AccessibilityService.instance.profile.value;
+    unawaited(p.slowSpeech
+      ? TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName)
+      : TtsService.instance.speakLine(text, languageCode: context.l10n.localeName));
   }
 
   void _profileChanged() {
@@ -68,7 +73,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
   void _start() {
     if (_isRunning || _remaining <= Duration.zero || !_feedback.allowTaskDeadline) return;
     setState(() => _isRunning = true);
-    _announce('سأخبرك بالوقت المتبقي كل دقيقة');
+    _announce(context.l10n.timerStartSpeech);
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _lifecycle != AppLifecycleState.resumed ||
           ModalRoute.of(context)?.isCurrent == false || !_feedback.allowTaskDeadline) {
@@ -89,7 +94,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
   void _pause() {
     _ticker?.cancel();
     setState(() => _isRunning = false);
-    _announce('تم الإيقاف مؤقتاً');
+    _announce(context.l10n.timerPausedSpeech);
   }
 
   void _reset() {
@@ -98,16 +103,16 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
       _remaining = widget.total;
       _isRunning = false;
     });
-    _announce('تم إعادة المؤقّت');
+    _announce(context.l10n.timerResetSpeech);
   }
 
   void _speakRemaining() {
     final mins = _remaining.inMinutes;
     if (mins > 0) {
-      _announce('تبقى $mins دقيقة');
+      _announce(context.l10n.timerMinutesRemaining(mins));
     } else {
       _announce(
-        'تبقى ${_remaining.inSeconds} ثانية',
+        context.l10n.timerSecondsRemaining(_remaining.inSeconds),
       );
     }
   }
@@ -116,7 +121,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
     _ticker?.cancel();
     setState(() => _isRunning = false);
     _announce(
-      'انتهى الوقت يا ${widget.childName}! أحسنت',
+      context.l10n.timerFinishedSpeech(widget.childName),
     );
     widget.onFinished?.call();
   }
@@ -129,7 +134,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
     final secs = _remaining.inSeconds % 60;
 
     return Semantics(
-      label: 'المؤقّت: $mins دقيقة و $secs ثانية',
+      label: context.l10n.timerClockSemantics(context.l10n.adaptationMinutes(mins), context.l10n.adaptationSeconds(secs)),
       child: Container(
         padding: const EdgeInsets.all(20),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -147,7 +152,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'المؤقّت السمعي',
+                    context.l10n.timerAudioTitle,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -160,6 +165,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
             const SizedBox(height: 16),
             Text(
               '$mins:${secs.toString().padLeft(2, '0')}',
+              textDirection: TextDirection.ltr,
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
@@ -172,7 +178,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
-                    label: Text(_isRunning ? 'إيقاف' : 'ابدأ'),
+                    label: Text(_isRunning ? context.l10n.timerPause : context.l10n.timerStart),
                     onPressed: _remaining <= Duration.zero ? null : (_isRunning ? _pause : _start),
                   ),
                 ),
@@ -180,7 +186,7 @@ class _AudioTimerState extends State<AudioTimer> with WidgetsBindingObserver {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.refresh),
-                    label: const Text('إعادة'),
+                    label: Text(context.l10n.timerReset),
                     onPressed: _reset,
                   ),
                 ),

@@ -342,3 +342,23 @@ live language switching and speech language/text preservation.
 
 Next: remaining child feedback/voice/semantic messages and game interfaces, then
 the final screen-by-screen completeness and manual accessibility audit.
+
+### Phase 5 — timer controls and feedback surfaces
+
+Visual/audio timer controls, completion notices, spoken countdowns and timer
+semantics now use Arabic/English resources. Audio announcements select the active
+interface language while honoring slow-speech/automatic-speech preferences.
+Visual controls can wrap at large text scales; clock digits retain their order.
+Pause/resume/reset/restart, deadlines, lifecycle behavior and callbacks are retained.
+
+The default visual celebration and its praise speech are localized, including
+named praise without rewriting child names. Explicit celebration/reward messages
+remain original. Untimed celebration/reward Continue actions and alert dismissal
+labels are localized. Shared randomized encouragement used by remaining games
+still needs a separate migration; this batch does not claim all game speech is done.
+
+Thirteen bilingual regression cases cover 320px/1x/2x timer controls and actual
+completion, original custom messages, untimed reward dismissal, live audio-timer
+language changes and selected speech language. Existing lifecycle, haptic and
+feedback-policy tests remain required. Next: remaining game prompts/encouragement,
+voice/semantic strings and the final completeness/manual accessibility audit.
