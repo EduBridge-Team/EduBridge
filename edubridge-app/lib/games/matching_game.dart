@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // لعبة مطابقة الأزواج
 import 'dart:async';
 import 'game_content.dart';
@@ -132,7 +133,7 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
     if (!mounted || generation != _generation) return;
     await VisualCelebration.show(
       context,
-      message: 'أكملت اللعبة! $score%',
+      message: context.l10n.matchingCompleted(score),
       emoji: '🏆',
       childName: widget.childName,
       duration: const Duration(seconds: 3),
@@ -145,20 +146,20 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text(
-            '🎉 أحسنت!',
+          title: Text(
+            context.l10n.matchingWellDone,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          content: Column(
+          content: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _statRow('الوقت', '$_secondsElapsed ثانية'),
-              _statRow('المحاولات', '$_attempts'),
-              _statRow('الأخطاء', '$_mistakes'),
-              _statRow('النتيجة', '$score%'),
+              _statRow(context.l10n.matchingTime, context.l10n.matchingSeconds(_secondsElapsed)),
+              _statRow(context.l10n.matchingAttempts, '$_attempts'),
+              _statRow(context.l10n.matchingMistakes, '$_mistakes'),
+              _statRow(context.l10n.matchingScore, '$score%'),
             ],
-          ),
+          )),
           actions: [
             SizedBox(
               width: double.infinity,
@@ -167,7 +168,7 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
                   backgroundColor: AppColors.green,
                 ),
                 icon: const Icon(Icons.replay),
-                label: const Text('العب مرة أخرى'),
+                label: Text(context.l10n.matchingPlayAgain),
                 onPressed: () {
                   Navigator.pop(context);
                   _startGame();
@@ -186,8 +187,8 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600))),
+          Flexible(child: Text(value, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.bold))),
         ],
       ),
     );
@@ -202,11 +203,11 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
 
     return Scaffold(
       appBar: JisrAppBar(
-        title: 'لعبة المطابقة 🎴',
+        title: context.l10n.matchingTitle,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'لعبة جديدة',
+            tooltip: context.l10n.matchingNewGame,
             onPressed: _startGame,
           ),
         ],
@@ -219,9 +220,9 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _infoChip('⏱️', '$_secondsElapsed ث'),
-                _infoChip('🎯', '$_matches/${_cards.length ~/ 2}'),
-                _infoChip('❌', '$_mistakes'),
+                Expanded(child: _infoChip('⏱️', context.l10n.matchingSecondsShort(_secondsElapsed))),
+                Expanded(child: _infoChip('🎯', '$_matches/${_cards.length ~/ 2}')),
+                Expanded(child: _infoChip('❌', '$_mistakes')),
               ],
             ),
           ),
@@ -252,13 +253,15 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
 
   Widget _infoChip(String emoji, String value) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(emoji, style: const TextStyle(fontSize: 20)),
         const SizedBox(width: 4),
-        Text(
+        Flexible(child: Text(
           value,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        )),
       ],
     );
   }

@@ -6875,5 +6875,244 @@
   "feedbackCloseAlert": "Close notification",
   "@feedbackCloseAlert": {
     "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "encourageSuccess1": "Well done! You are wonderful 🌟",
+  "@encourageSuccess1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess2": "Excellent! Keep going 💪",
+  "@encourageSuccess2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess3": "Great work! Proud of you 🎉",
+  "@encourageSuccess3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess4": "Champion! You completed the task 🏆",
+  "@encourageSuccess4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess5": "Wonderful work! Excellent ✨",
+  "@encourageSuccess5": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess6": "Well done for your effort! Take your time 🌱",
+  "@encourageSuccess6": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess7": "A lovely achievement! Keep making progress 🌈",
+  "@encourageSuccess7": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart1": "Let’s start! I am with you 🎯",
+  "@encourageStart1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart2": "Get ready! We will learn something new 📚",
+  "@encourageStart2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart3": "Let’s begin the journey! You can succeed 🌟",
+  "@encourageStart3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame1": "Time for fun! Let’s play 🎮",
+  "@encourageGame1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame2": "A new game! Enjoy 🌈",
+  "@encourageGame2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame3": "Let’s play and learn together 🎉",
+  "@encourageGame3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle1": "That’s okay, try again 💙",
+  "@encourageGentle1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle2": "Take your time, you can try again 🌱",
+  "@encourageGentle2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle3": "You are learning! Try again ✨",
+  "@encourageGentle3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak1": "Wow! Three in a row! You are a star 🌟🌟",
+  "@encourageStreak1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak2": "Amazing! You keep shining 🔥",
+  "@encourageStreak2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak3": "Well done for keeping on trying 🌟",
+  "@encourageStreak3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort1": "You are a champion! 🏆",
+  "@encourageShort1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort2": "Excellent! ⭐",
+  "@encourageShort2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort3": "Well done! 🎉",
+  "@encourageShort3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort4": "Great! 💪",
+  "@encourageShort4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort5": "Brilliant! 🌟",
+  "@encourageShort5": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageNamed1": "Well done, {name}! You are wonderful 🌟",
+  "@encourageNamed1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed2": "Excellent, {name}! Keep going 💪",
+  "@encourageNamed2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed3": "Champion {name}! Great work 🏆",
+  "@encourageNamed3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed4": "Wonderful work, {name}! ✨",
+  "@encourageNamed4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageScore1": "Amazing! {score} points! Well done for your effort 🏆",
+  "@encourageScore1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore2": "Great! {score} points! Well done 🌟",
+  "@encourageScore2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore3": "Good! {score} points! Keep going 💪",
+  "@encourageScore3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore4": "{score} points! A good start, keep going 🌱",
+  "@encourageScore4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageNamedShort": "{name}, {praise}",
+  "@encourageNamedShort": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "praise": {
+        "type": "String"
+      }
+    }
+  },
+  "matchingTitle": "Matching game 🎴",
+  "@matchingTitle": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingNewGame": "New game",
+  "@matchingNewGame": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingCompleted": "Game completed! {score}%",
+  "@matchingCompleted": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "matchingWellDone": "🎉 Well done!",
+  "@matchingWellDone": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingTime": "Time",
+  "@matchingTime": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingAttempts": "Attempts",
+  "@matchingAttempts": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingMistakes": "Mistakes",
+  "@matchingMistakes": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingScore": "Score",
+  "@matchingScore": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingPlayAgain": "Play again",
+  "@matchingPlayAgain": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingSeconds": "{count, plural, =1{1 second} other{{count} seconds}}",
+  "@matchingSeconds": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "matchingSecondsShort": "{count} s",
+  "@matchingSecondsShort": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
