@@ -38,7 +38,7 @@ extension _RhythmGameView on _RhythmGameState {
 
           // العنوان
           Text(
-            'لعبة الإيقاع',
+            context.l10n.rhythmHeading,
             style: TextStyle(
               fontSize: large ? 32 : 28,
               fontWeight: FontWeight.bold,
@@ -53,8 +53,7 @@ extension _RhythmGameView on _RhythmGameState {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'انقر مع كل كلمة تسمعها\n'
-              'يمكنك الاستماع لكل كلمة والتدرّب على النقر',
+              context.l10n.rhythmDescription,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: large ? 18 : 16,
@@ -87,7 +86,7 @@ extension _RhythmGameView on _RhythmGameState {
                         color: Color(0xFF8B6DD4), size: 24),
                     const SizedBox(width: 8),
                     Expanded(child: Text(
-                      'كيف تلعب:',
+                      context.l10n.rhythmHowTo,
                       style: TextStyle(
                         fontSize: large ? 18 : 16,
                         fontWeight: FontWeight.bold,
@@ -97,11 +96,11 @@ extension _RhythmGameView on _RhythmGameState {
                   ],
                 ),
                 const SizedBox(height: 12),
-                _step('1', 'تظهر كلمة واحدة ويمكنك الاستماع إليها'),
-                _step('2', 'انقر على الزر الكبير مرة واحدة'),
+                _step('1', context.l10n.rhythmStepListen),
+                _step('2', context.l10n.rhythmStepTap),
                 _step('3', _profile.noTimedInteractions
-                    ? 'اضغط متابعة عندما تكون جاهزاً' : 'ننتقل للكلمة التالية كل 3 ثوانٍ'),
-                _step('4', 'سنكمل معاً $_totalWords كلمات'),
+                    ? context.l10n.rhythmStepContinue : context.l10n.rhythmStepTimed),
+                _step('4', context.l10n.rhythmStepTotal(_totalWords)),
               ],
             ),
           ),
@@ -109,8 +108,8 @@ extension _RhythmGameView on _RhythmGameState {
           const SizedBox(height: 40),
 
           if (_saveError) ...[
-            const Text('تعذّر حفظ النتيجة، حاول مرة أخرى'),
-            TextButton(onPressed: _finish, child: const Text('إعادة حفظ النتيجة')),
+            Text(context.l10n.rhythmSaveFailed),
+            TextButton(onPressed: _finish, child: Text(context.l10n.choiceSaveRetry)),
           ],
           // زر البدء
           SizedBox(
@@ -127,7 +126,7 @@ extension _RhythmGameView on _RhythmGameState {
               ),
               icon: Icon(Icons.play_arrow, size: large ? 40 : 32),
               label: Text(
-                'ابدأ',
+                context.l10n.rhythmStart,
                 style: TextStyle(
                   fontSize: large ? 26 : 22,
                   fontWeight: FontWeight.bold,
@@ -155,14 +154,14 @@ extension _RhythmGameView on _RhythmGameState {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Text(
+            child: FittedBox(fit: BoxFit.scaleDown, child: Text(
               number,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
-            ),
+            )),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -185,7 +184,7 @@ extension _RhythmGameView on _RhythmGameState {
   // ═══════════════════════════════════════════════════════
   Widget _buildPlaying(bool large) {
     final word = _currentIndex < _totalWords
-        ? _sessionWords[_currentIndex % _sessionWords.length]
+        ? RhythmWordDisplay.word(_sessionWords[_currentIndex % _sessionWords.length], context.l10n)
         : '🎉';
 
     final progress = _currentIndex / _totalWords;
@@ -210,7 +209,7 @@ extension _RhythmGameView on _RhythmGameState {
                 spacing: 12, runSpacing: 8,
                 children: [
                   Text(
-                    'الكلمة ${_currentIndex + 1} من $_totalWords',
+                    context.l10n.rhythmPosition(_currentIndex + 1, _totalWords),
                     style: TextStyle(
                       fontSize: large ? 16 : 14,
                       fontWeight: FontWeight.bold,
@@ -282,14 +281,14 @@ extension _RhythmGameView on _RhythmGameState {
                   ],
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  word,
+                child: FittedBox(fit: BoxFit.scaleDown, child: Text(
+                  word, key: const ValueKey('rhythm_word'),
                   style: TextStyle(
                     fontSize: large ? 72 : 60,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF8B6DD4),
                   ),
-                ),
+                )),
               ),
             ),
         ),
@@ -316,7 +315,7 @@ extension _RhythmGameView on _RhythmGameState {
               size: large ? 52 : 44,
             ),
             label: Text(
-              'انقر',
+              context.l10n.rhythmTap,
               style: TextStyle(
                 fontSize: large ? 32 : 28,
                 fontWeight: FontWeight.bold,
@@ -327,7 +326,7 @@ extension _RhythmGameView on _RhythmGameState {
         ),
 
         TextButton.icon(onPressed: _isPaused ? null : () => _speakCurrentWord(explicit: true),
-          icon: const Icon(Icons.volume_up_outlined), label: const Text('استمع للكلمة')),
+          icon: const Icon(Icons.volume_up_outlined), label: Text(context.l10n.wordBuilderListen)),
         GameRoundContinuation(
           key: ValueKey('rhythm_${_sessionGeneration}_$_currentIndex'),
           answered: _isPlaying && !_isPaused && !_finishing,
@@ -341,10 +340,10 @@ extension _RhythmGameView on _RhythmGameState {
         // ═══════════════════════════════════════════════
         Text(
           _isPaused
-              ? '⏸️ متوقف مؤقتاً'
+              ? context.l10n.rhythmPaused
               : _profile.noTimedInteractions
-                  ? 'خذ راحتك ثم اضغط متابعة 💜'
-                  : 'يمكنك إيقاف الإيقاع مؤقتاً',
+                  ? context.l10n.rhythmTakeTime
+                  : context.l10n.rhythmPauseNotice,
           style: TextStyle(
             fontSize: 14,
             color: Colors.grey.shade600,
