@@ -97,12 +97,15 @@ void main() {
       await host(tester, 'en', sign);
       await tap(tester, find.text(en.feedbackContinue));
     }
+    expect(tester.takeException(), isNull, reason: 'eight sign rounds and celebration');
     final overlay = find.byType(VisualCelebration);
     expect(overlay, findsOneWidget);
     await tap(tester, find.descendant(of: overlay, matching: find.text(en.feedbackContinue)));
+    expect(tester.takeException(), isNull, reason: 'English result dialog');
     expect(find.text(en.signChampion), findsOneWidget);
     expect(find.text(en.signResult(8, 8)), findsOneWidget);
     await host(tester, 'ar', sign);
+    expect(tester.takeException(), isNull, reason: 'Arabic result dialog');
     expect(find.text(ar.signChampion), findsOneWidget);
     expect(find.text(ar.signPercentage(100)), findsOneWidget);
     await tap(tester, find.text(ar.choiceReplay));

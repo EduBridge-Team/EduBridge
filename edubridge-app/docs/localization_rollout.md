@@ -462,6 +462,6 @@ final source/direction inventory and deferred manual accessibility checks.
 ### Symbols and sign matching
 - Localized symbol names, instructions, automatic speech, feedback and completion. Symbols, colors, canonical history IDs and answer checks remain unchanged.
 - Localized sign-game instructions, eight gesture descriptions, score/percentage, celebration, result dialog and replay. Existing Arabic letters and gesture mappings remain the educational content; the English instruction explicitly identifies the Arabic letters.
-- Sign matching remains silent and preserves haptic preferences. Result-dialog text resolves in the dialog locale during language changes.
+- Sign matching remains silent and preserves haptic preferences. Result-dialog text resolves in the dialog locale during language changes; its title/content scroll at large text scale to keep replay reachable.
 - Added Arabic/English mapping coverage and narrow-screen double-text-scale interactions for wrong/duplicate answers, retained targets/options/points, selected-language slow speech and calm suppression, eight-round sign completion, result locale changes and replay.
 - Local ARB parity/metadata and diff checks precede Flutter analysis/tests and platform builds in PR CI. Backend and teacher-authored lesson content remain unchanged.

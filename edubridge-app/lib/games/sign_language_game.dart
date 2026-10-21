@@ -111,6 +111,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
+          scrollable: true,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20)),
           title: Text(
