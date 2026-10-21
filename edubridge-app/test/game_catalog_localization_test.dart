@@ -90,7 +90,12 @@ void main() {
           }
         });
       }
-      testWidgets('$language simple=$simple opens the canonical matching game and preserves the player', (tester) async {
+
+    }
+  }
+  testWidgets('catalog launches repeatedly across both locales and layouts with the original player', (tester) async {
+    for (final language in ['ar', 'en']) {
+      for (final simple in [false, true]) {
         AccessibilityService.instance.profile.value = AccessibilityProfile(type: DisabilityType.none, simpleIconsGrid: simple);
         final s = await AppLocalizations.delegate.load(Locale(language));
         final observer = _Observer();
@@ -114,9 +119,9 @@ void main() {
         });
         await tester.pumpWidget(const SizedBox.shrink());
         expect(tester.takeException(), isNull);
-      });
+      }
     }
-  }
+  });
   testWidgets('language changes update the catalog without replaying its welcome', (tester) async {
     var welcomes = 0;
     final service = EncouragementService(profile: () => const AccessibilityProfile(type: DisabilityType.none, autoReadOnTap: true),

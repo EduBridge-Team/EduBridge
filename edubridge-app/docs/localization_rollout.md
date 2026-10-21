@@ -414,7 +414,7 @@ Regular and simple layouts share the same translations; navigation chevrons foll
 the selected direction. Simple tiles can select a speech language for catalog
 labels without changing the legacy behavior of lesson/other tile consumers.
 
-Fifteen regression cases cover complete title/description coverage, original
+Thirteen regression tests cover fifteen scenarios: complete title/description coverage, original
 custom labels, all age/disability filters, Arabic/English at 320px and 1x/2x in
 both catalog layouts, canonical MatchingGame launch/player preservation, live
 language changes without replaying the welcome, and native tile speech language.
