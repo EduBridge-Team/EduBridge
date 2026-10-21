@@ -7386,5 +7386,189 @@
   "actionMoveHead": "Touch your head",
   "@actionMoveHead": {
     "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "gameCatalogTitle": "Educational games",
+  "@gameCatalogTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioWelcome": "Audio games!",
+  "@gameCatalogAudioWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogHeroWelcome": "Hello, champion!",
+  "@gameCatalogHeroWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogFunWelcome": "Time for fun!",
+  "@gameCatalogFunWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogEmpty": "No suitable games yet",
+  "@gameCatalogEmpty": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPreschool": "Preschool (4–6)",
+  "@gameCatalogPreschool": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPrimary": "Primary (7–10)",
+  "@gameCatalogPrimary": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPreparatory": "Preparatory (11–15)",
+  "@gameCatalogPreparatory": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogCount": "{count, plural, =1{1 game for your age ({ageGroup})} other{{count} games for your age ({ageGroup})}}",
+  "@gameCatalogCount": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "ageGroup": {
+        "type": "String"
+      }
+    }
+  },
+  "gameCatalogLaunchFailed": "Could not open the game. Try again",
+  "@gameCatalogLaunchFailed": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAnimalSoundsTitle": "Animal sounds",
+  "@gameCatalogAnimalSoundsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAnimalSoundsDescription": "Listen and identify the animal",
+  "@gameCatalogAnimalSoundsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogMatchingTitle": "Matching",
+  "@gameCatalogMatchingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogMatchingDescription": "Find matching cards",
+  "@gameCatalogMatchingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogShapesTitle": "Shapes",
+  "@gameCatalogShapesTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogShapesDescription": "Recognize geometric shapes",
+  "@gameCatalogShapesDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSimpleTitle": "Colors",
+  "@gameCatalogColorsSimpleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSimpleDescription": "Choose the correct color",
+  "@gameCatalogColorsSimpleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSymbolsTitle": "Colors with symbols",
+  "@gameCatalogColorsSymbolsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSymbolsDescription": "Learn colors without relying on sight",
+  "@gameCatalogColorsSymbolsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersCountTitle": "Simple counting",
+  "@gameCatalogNumbersCountTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersCountDescription": "Count from 1 to 10",
+  "@gameCatalogNumbersCountDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersMathTitle": "Math race",
+  "@gameCatalogNumbersMathTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersMathDescription": "Solve arithmetic questions quickly",
+  "@gameCatalogNumbersMathDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogVisualWordsTitle": "Visual words",
+  "@gameCatalogVisualWordsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogVisualWordsDescription": "Match the picture to the word",
+  "@gameCatalogVisualWordsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogWordBuilderTitle": "Word builder",
+  "@gameCatalogWordBuilderTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogWordBuilderDescription": "Arrange letters to form a word",
+  "@gameCatalogWordBuilderDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSequenceSimpleTitle": "Simple sequencing",
+  "@gameCatalogSequenceSimpleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSequenceSimpleDescription": "Put the pictures in order",
+  "@gameCatalogSequenceSimpleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogStorySequencerTitle": "Story sequencer",
+  "@gameCatalogStorySequencerTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogStorySequencerDescription": "Arrange the story events",
+  "@gameCatalogStorySequencerDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogLogicPuzzleTitle": "Logic puzzle",
+  "@gameCatalogLogicPuzzleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogLogicPuzzleDescription": "Think and solve the puzzle",
+  "@gameCatalogLogicPuzzleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioMatchingTitle": "Sound matching",
+  "@gameCatalogAudioMatchingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioMatchingDescription": "Listen and match the sounds",
+  "@gameCatalogAudioMatchingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSignLanguageTitle": "Sign language",
+  "@gameCatalogSignLanguageTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSignLanguageDescription": "Learn letters with signs",
+  "@gameCatalogSignLanguageDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogQuickActionTitle": "Quick actions",
+  "@gameCatalogQuickActionTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogQuickActionDescription": "Move quickly! 30 seconds",
+  "@gameCatalogQuickActionDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogRhythmTitle": "Rhythm",
+  "@gameCatalogRhythmTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogRhythmDescription": "Tap along with the words",
+  "@gameCatalogRhythmDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAdvancedReadingTitle": "Advanced reading",
+  "@gameCatalogAdvancedReadingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAdvancedReadingDescription": "Texts and reading comprehension",
+  "@gameCatalogAdvancedReadingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
   }
 }

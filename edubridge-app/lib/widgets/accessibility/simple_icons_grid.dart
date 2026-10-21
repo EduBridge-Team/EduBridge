@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../theme.dart';
+import '../../services/tts_service.dart';
 import '../../utils/adaptive_helper.dart';
 import 'adaptive_card.dart';
 import 'adaptive_text.dart';
@@ -38,6 +39,7 @@ class SimpleIconTile extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.status,
+    this.speechLanguageCode,
     this.actions,
   });
 
@@ -45,12 +47,22 @@ class SimpleIconTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final String? status;
+  final String? speechLanguageCode;
   final Widget? actions;
 
   @override
   Widget build(BuildContext context) => AdaptiveCard(
     onTap: onTap == null ? null : () {
-      if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(title);
+      if (AdaptiveHelper.shouldReadOnTap) {
+        final language = speechLanguageCode;
+        if (language == null) {
+          AdaptiveHelper.speak(title);
+        } else if (AdaptiveHelper.useSlowSpeech) {
+          TtsService.instance.speakLineSlow(title, languageCode: language);
+        } else {
+          TtsService.instance.speakLine(title, languageCode: language);
+        }
+      }
       onTap!();
     },
     child: Column(mainAxisSize: MainAxisSize.min, children: [

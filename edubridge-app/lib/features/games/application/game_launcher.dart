@@ -1,3 +1,4 @@
+import '../../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../../games/game_content.dart';
 import '../../../services/api_service.dart';
@@ -41,7 +42,7 @@ class GameLauncher {
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-          const SnackBar(content: Text('تعذّر فتح اللعبة، حاول مرة أخرى')));
+          SnackBar(content: Text(context.l10n.gameCatalogLaunchFailed)));
       }
       return false;
     }
