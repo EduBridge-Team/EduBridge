@@ -37,11 +37,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
     if (mounted) setState(() {});
   }
 
-  String _text(Object? value, {String fallback = ''}) {
-    final text = value?.toString() ?? '';
-    return text.isEmpty ? fallback : text;
-  }
-
   String _initial(Object? value) =>
       PresentationText.initial(value, trim: true);
 
