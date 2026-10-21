@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
 import '../../utils/adaptive_feedback_policy.dart';
@@ -108,7 +109,7 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
           if (_failed)
             Semantics(
               liveRegion: true,
-              child: const Text('تعذّر متابعة اللعبة، حاول مرة أخرى',
+              child: Text(context.l10n.gameRoundContinueFailed,
                 textAlign: TextAlign.center),
             ),
           FilledButton(
@@ -117,7 +118,7 @@ class _GameRoundContinuationState extends State<GameRoundContinuation>
             onPressed: _busy || _continued ? null : _continue,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(_busy ? 'جارٍ المتابعة' : 'متابعة'),
+              child: Text(_busy ? context.l10n.gameRoundContinuing : context.l10n.feedbackContinue),
             ),
           ),
         ],

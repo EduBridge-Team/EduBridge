@@ -7,7 +7,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
     return Scaffold(
       backgroundColor: const Color(0xFFF1FAF1),
       appBar: BrandAppBar(
-        title: const Text('💙 الكلمات البصرية'),
+        title: Text(context.l10n.visualWordsTitle),
       ),
       body: SingleChildScrollView(child: Column(
         children: [
@@ -24,20 +24,20 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
               children: [
                 GameStatChip(
                   icon: '🎯',
-                  label: 'الجولة',
+                  label: context.l10n.sequenceRound,
                   value: '$_roundNumber/$_totalRounds',
                   color: const Color(0xFF57B25A),
                 ),
                 GameStatChip(
                   icon: '⭐',
-                  label: 'النقاط',
+                  label: context.l10n.sequenceScore,
                   value: '$_score',
                   color: const Color(0xFFF2842B),
                 ),
                 if (_streak >= 2)
                   GameStatChip(
                     icon: '🔥',
-                    label: 'متتالية',
+                    label: context.l10n.sequenceStreak,
                     value: '$_streak',
                     color: const Color(0xFFE53935),
                   ),
@@ -55,7 +55,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
             child: Column(
               children: [
                 Text(
-                  'ما هذه الصورة؟',
+                  context.l10n.visualWordsQuestion,
                   style: TextStyle(
                     fontSize: large ? 24 : 20,
                     color: Colors.grey.shade700,
@@ -86,7 +86,7 @@ extension _VisualWordsGameStateView on _VisualWordsGameState {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    _target.$1,
+                    _target.$1, key: const ValueKey('visual_target'),
                     textScaler: TextScaler.noScaling,
                     style: TextStyle(fontSize: large ? 130 : 115),
                   ),
