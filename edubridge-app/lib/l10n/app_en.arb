@@ -7114,5 +7114,277 @@
         "type": "int"
       }
     }
+  },
+  "audioGameTitle": "Sound matching 🔊",
+  "@audioGameTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameInstructions": "Tap a card to hear its name, then choose its match",
+  "@audioGameInstructions": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameWelcome": "Hello, {name}! Tap a card to hear its name, then find its match",
+  "@audioGameWelcome": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameRetry": "Try again",
+  "@audioGameRetry": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameWinSpeech": "Amazing, {name}! You completed the game",
+  "@audioGameWinSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameWinTitle": "🏆 Game completed!",
+  "@audioGameWinTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameReplayHint": "Select “Play again” to hear the game again",
+  "@audioGameReplayHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameMatchedCard": "Matched card",
+  "@audioGameMatchedCard": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameCard": "Card: {name}",
+  "@audioGameCard": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "audioGameComplete": "Matched",
+  "@audioGameComplete": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioGameListen": "Tap to listen",
+  "@audioGameListen": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTitle": "⚡ Quick actions",
+  "@actionTitle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionDoThis": "Do this:",
+  "@actionDoThis": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPaused": "⏸️ Paused",
+  "@actionPaused": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTimedHint": "Do the action, then select “I did it!”",
+  "@actionTimedHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionUntimedHint": "Take your time, then select “I did it!”",
+  "@actionUntimedHint": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionDone": "I did it!",
+  "@actionDone": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionUntimed": "No time limit — take your time",
+  "@actionUntimed": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionFinish": "Finish game",
+  "@actionFinish": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPause": "Pause",
+  "@actionPause": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPoints": "Points",
+  "@actionPoints": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionStreak": "Streak",
+  "@actionStreak": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoves": "Moves",
+  "@actionMoves": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionSecond": "seconds",
+  "@actionSecond": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionTenLeft": "Ten seconds remaining!",
+  "@actionTenLeft": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionFiveLeft": "Five seconds!",
+  "@actionFiveLeft": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionPauseSpeech": "We paused",
+  "@actionPauseSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionResumeSpeech": "Let’s continue",
+  "@actionResumeSpeech": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionResultAmazing": "{count, plural, =1{Amazing! 1 action!} other{Amazing! {count} actions!}}",
+  "@actionResultAmazing": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultGreat": "{count, plural, =1{Great! 1 action!} other{Great! {count} actions!}}",
+  "@actionResultGreat": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultGood": "{count, plural, =1{Well done! 1 action} other{Well done! {count} actions}}",
+  "@actionResultGood": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionResultStart": "{count, plural, =1{A lovely start! 1 action} other{A lovely start! {count} actions}}",
+  "@actionResultStart": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionCount": "{count, plural, =1{1 action} other{{count} actions}}",
+  "@actionCount": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionSaveFailed": "Could not save the result. Try finishing the game again",
+  "@actionSaveFailed": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordDog": "Dog",
+  "@audioWordDog": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCat": "Cat",
+  "@audioWordCat": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBird": "Bird",
+  "@audioWordBird": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCow": "Cow",
+  "@audioWordCow": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordFrog": "Frog",
+  "@audioWordFrog": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordLion": "Lion",
+  "@audioWordLion": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordElephant": "Elephant",
+  "@audioWordElephant": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordHorse": "Horse",
+  "@audioWordHorse": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordCar": "Car",
+  "@audioWordCar": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBicycle": "Bicycle",
+  "@audioWordBicycle": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordApple": "Apple",
+  "@audioWordApple": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "audioWordBanana": "Banana",
+  "@audioWordBanana": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveClap": "Clap",
+  "@actionMoveClap": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveJump": "Jump",
+  "@actionMoveJump": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveTurn": "Turn around",
+  "@actionMoveTurn": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveRaiseHands": "Raise your hands",
+  "@actionMoveRaiseHands": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveFlex": "Flex your muscles",
+  "@actionMoveFlex": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveWave": "Wave",
+  "@actionMoveWave": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveThrow": "Throw",
+  "@actionMoveThrow": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveRun": "Run in place",
+  "@actionMoveRun": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveFingers": "Move your fingers",
+  "@actionMoveFingers": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveBreathe": "Take a deep breath",
+  "@actionMoveBreathe": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveStop": "Stop for two seconds",
+  "@actionMoveStop": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "actionMoveHead": "Touch your head",
+  "@actionMoveHead": {
+    "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
   }
 }
