@@ -1,16 +1,16 @@
+import '../../l10n/l10n.dart';
 // احتفال بصري — يتكيّف تلقائياً مع كل إعاقة
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/accessibility_service.dart';
-import '../../services/encouragement_service.dart';
 import '../../services/tts_service.dart';
 import '../../theme.dart';
 import '../../utils/adaptive_feedback_policy.dart';
 
 class VisualCelebration extends StatefulWidget {
-  final String message;
+  final String? message;
   final String? emoji;
   final Duration duration;
   final bool calmMode;
@@ -21,7 +21,7 @@ class VisualCelebration extends StatefulWidget {
 
   const VisualCelebration({
     super.key,
-    this.message = 'أحسنت!',
+    this.message,
     this.emoji,
     this.duration = const Duration(seconds: 3),
     this.calmMode = false,
@@ -33,7 +33,7 @@ class VisualCelebration extends StatefulWidget {
 
   static Future<void> show(
     BuildContext context, {
-    String message = 'أحسنت!',
+    String? message,
     String? emoji,
     Duration duration = const Duration(seconds: 3),
     bool playSound = true,
@@ -51,11 +51,11 @@ class VisualCelebration extends StatefulWidget {
     final untimed = !feedback.allowAutoDismiss;
     if (playSound && feedback.allowAutomaticSpeech) {
       if (profile.slowSpeech) {
-        TtsService.instance.speakLineSlow('أحسنت على جهودك');
+        TtsService.instance.speakLineSlow(context.l10n.celebrationEffort, languageCode: context.l10n.localeName);
       } else if (childName != null && childName.isNotEmpty) {
-        EncouragementService.instance.praiseByName(childName);
+        TtsService.instance.speakLine(context.l10n.celebrationNamed(childName), languageCode: context.l10n.localeName);
       } else {
-        EncouragementService.instance.praiseSuccess();
+        TtsService.instance.speakLine(context.l10n.celebrationDefault, languageCode: context.l10n.localeName);
       }
     }
     if (feedback.allowHaptics) HapticFeedback.mediumImpact();
@@ -161,10 +161,10 @@ class _VisualCelebrationState extends State<VisualCelebration>
         padding: const EdgeInsets.all(24),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(widget.emoji ?? '⭐', style: const TextStyle(fontSize: 64)),
-          Text(widget.message, textAlign: TextAlign.center,
+          Text(widget.message ?? context.l10n.celebrationDefault, textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
           if (widget.onDismiss != null) TextButton(onPressed: widget.onDismiss,
-            child: const Text('متابعة')),
+            child: Text(context.l10n.feedbackContinue)),
         ]),
       ))));
     }
@@ -240,7 +240,7 @@ class _VisualCelebrationState extends State<VisualCelebration>
                               ],
                             ),
                             child: Text(
-                              widget.message,
+                              widget.message ?? context.l10n.celebrationDefault,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: messageFontSize,

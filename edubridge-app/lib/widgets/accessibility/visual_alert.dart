@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // تنبيه بصري بديل لكل صوت/إشعار — يظهر كشريط ملوّن مع وميض خفيف
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -146,7 +147,7 @@ class _VisualAlertState extends State<VisualAlert>
                 ),
               ),
             ),
-            IconButton(tooltip: 'إغلاق التنبيه', onPressed: _dismiss,
+            IconButton(tooltip: context.l10n.feedbackCloseAlert, onPressed: _dismiss,
               icon: const Icon(Icons.close, color: Colors.white)),
           ],
         ),

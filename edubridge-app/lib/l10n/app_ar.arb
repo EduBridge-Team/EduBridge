@@ -6771,5 +6771,109 @@
         "type": "int"
       }
     }
+  },
+  "timerAudioTitle": "المؤقّت السمعي",
+  "@timerAudioTitle": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerStart": "ابدأ",
+  "@timerStart": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerPause": "إيقاف",
+  "@timerPause": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerResume": "متابعة",
+  "@timerResume": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerReset": "إعادة",
+  "@timerReset": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerRestart": "من جديد",
+  "@timerRestart": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerFinished": "انتهى!",
+  "@timerFinished": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerStartSpeech": "سأخبرك بالوقت المتبقي كل دقيقة",
+  "@timerStartSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerPausedSpeech": "تم الإيقاف مؤقتاً",
+  "@timerPausedSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerResetSpeech": "تم إعادة المؤقّت",
+  "@timerResetSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "timerFinishedSpeech": "انتهى الوقت يا {name}! أحسنت",
+  "@timerFinishedSpeech": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timerClockSemantics": "المؤقّت: {minutes} و {seconds}",
+  "@timerClockSemantics": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "timerMinutesRemaining": "{count, plural, =0{لم يتبق وقت} =1{تبقى دقيقة واحدة} =2{تبقى دقيقتان} few{تبقى {count} دقائق} many{تبقى {count} دقيقة} other{تبقى {count} دقيقة}}",
+  "@timerMinutesRemaining": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timerSecondsRemaining": "{count, plural, =0{لم يتبق وقت} =1{تبقى ثانية واحدة} =2{تبقى ثانيتان} few{تبقى {count} ثوانٍ} many{تبقى {count} ثانية} other{تبقى {count} ثانية}}",
+  "@timerSecondsRemaining": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "celebrationDefault": "أحسنت!",
+  "@celebrationDefault": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "celebrationEffort": "أحسنت على جهودك",
+  "@celebrationEffort": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "celebrationNamed": "أحسنت يا {name}! أنت رائع 🌟",
+  "@celebrationNamed": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackContinue": "متابعة",
+  "@feedbackContinue": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "feedbackCloseAlert": "إغلاق التنبيه",
+  "@feedbackCloseAlert": {
+    "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
   }
 }
