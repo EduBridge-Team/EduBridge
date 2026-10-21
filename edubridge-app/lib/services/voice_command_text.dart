@@ -29,7 +29,7 @@ const voiceCommandEnglishAliases = <String, List<String>> {
   "اوقف القراءه": ["stop reading", "turn off reading", "disable reading"],
   "اقرا": ["read", "start reading", "turn on reading", "reading mode"],
   "اوقف": ["stop", "silence", "quiet"],
-  "رئيسيه": ["home", "main page"],
+  "رييسيه": ["home", "main page"],
   "ارجع": ["go back", "back"],
   "ليلي": ["dark mode", "dark theme"],
   "فاتح": ["light mode", "light theme"],
