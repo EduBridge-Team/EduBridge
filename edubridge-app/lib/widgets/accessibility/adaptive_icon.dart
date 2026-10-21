@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/widgets/adaptive/adaptive_icon.dart
 // أيقونة تتكيّف مع الحجم + نطق
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class AdaptiveIcon extends StatelessWidget {
   final Color? color;
   final double? size;
   final bool enableReadOnTap;
+  final String? speechLanguageCode;
 
   const AdaptiveIcon(
     this.icon, {
@@ -18,6 +20,7 @@ class AdaptiveIcon extends StatelessWidget {
     this.color,
     this.size,
     this.enableReadOnTap = true,
+    this.speechLanguageCode,
   });
 
   @override
@@ -43,7 +46,8 @@ class AdaptiveIcon extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             if (semanticLabel != null) {
-              AdaptiveHelper.speak(semanticLabel!);
+              AdaptiveHelper.speak(semanticLabel!,
+                languageCode: speechLanguageCode ?? context.l10n.localeName);
             }
           },
           child: Semantics(
