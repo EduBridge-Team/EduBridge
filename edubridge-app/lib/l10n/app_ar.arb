@@ -6708,5 +6708,68 @@
       }
     },
     "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "breakTitle": "وقت الراحة",
+  "@breakTitle": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakIntro": "استراحة قصيرة، ثم نكمل من نفس المكان. يمكنك الرجوع بزر جاهز.",
+  "@breakIntro": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakComfort": "استرح بالطريقة المريحة لك",
+  "@breakComfort": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAskHelp": "يمكنك طلب مساعدة شخص معك",
+  "@breakAskHelp": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAway": "يمكنك أخذ استراحة قصيرة بعيداً عن الشاشة",
+  "@breakAway": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAnother": "اقتراح آخر",
+  "@breakAnother": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakExtensionLimit": "اكتملت التمديدات",
+  "@breakExtensionLimit": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakExtend": "أحتاج وقتاً أكثر (+30 ثانية)",
+  "@breakExtend": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakReady": "جاهز",
+  "@breakReady": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakSpokenSuggestion": "وقت الراحة. {suggestion}",
+  "@breakSpokenSuggestion": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "suggestion": {
+        "type": "String"
+      }
+    }
+  },
+  "breakRemaining": "{count, plural, =0{انتهت الاستراحة} =1{باقي ثانية واحدة} =2{باقي ثانيتان} few{باقي {count} ثوانٍ} many{باقي {count} ثانية} other{باقي {count} ثانية}}",
+  "@breakRemaining": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "breakResumeSoon": "{count, plural, =0{سنكمل الآن} =1{سنكمل بعد ثانية واحدة} =2{سنكمل بعد ثانيتين} few{سنكمل بعد {count} ثوانٍ} many{سنكمل بعد {count} ثانية} other{سنكمل بعد {count} ثانية}}",
+  "@breakResumeSoon": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

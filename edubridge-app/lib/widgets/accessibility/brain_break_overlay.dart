@@ -2,6 +2,7 @@
 // - تعمل تلقائياً حسب brainBreakIntervalMinutes
 // - يمكن استدعاؤها يدوياً عبر BrainBreakDialog.show(context)
 import 'dart:async';
+import '../../l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
@@ -134,11 +135,12 @@ class BrainBreakDialog extends StatefulWidget {
 
 class _BrainBreakDialogState extends State<BrainBreakDialog>
     with WidgetsBindingObserver {
-  static const _moves = [
-    ('🌿', 'استرح بالطريقة المريحة لك'),
-    ('🤲', 'يمكنك طلب مساعدة شخص معك'),
-    ('💧', 'يمكنك أخذ استراحة قصيرة بعيداً عن الشاشة'),
+  List<(String, String)> get _moves => [
+    ('🌿', context.l10n.breakComfort),
+    ('🤲', context.l10n.breakAskHelp),
+    ('💧', context.l10n.breakAway),
   ];
+  String? _spokenLocale;
 
   late final AccessibilityProfile _profile;
   bool get _hideCountdown => !AdaptiveFeedbackPolicy(_profile).showCountdown;
@@ -157,10 +159,17 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
     _secondsLeft = _baseDuration;
     _moveIndex = 0;
 
-    // ✅ نطق الحركة بصوت هادئ
-    _readSuggestion();
-
     _startTimer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_spokenLocale != locale) {
+      _spokenLocale = locale;
+      _readSuggestion();
+    }
   }
 
   void _startTimer() {
@@ -213,11 +222,11 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
 
   void _readSuggestion() {
     if (!AdaptiveFeedbackPolicy(_profile).allowAutomaticSpeech) return;
-    final text = 'وقت الراحة. ${_moves[_moveIndex].$2}';
+    final text = context.l10n.breakSpokenSuggestion(_moves[_moveIndex].$2);
     if (_profile.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
+      TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
     } else {
-      TtsService.instance.speakLine(text);
+      TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
     }
   }
 
@@ -239,7 +248,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
           children: [
             // العنوان
             Text(
-              'وقت الراحة',
+              context.l10n.breakTitle,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -248,7 +257,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
             ),
             const SizedBox(height: 8),
             Text(
-              'استراحة قصيرة، ثم نكمل من نفس المكان. يمكنك الرجوع بزر جاهز.',
+              context.l10n.breakIntro,
               style: TextStyle(fontSize: 13, color: c.muted),
             ),
             const SizedBox(height: 20),
@@ -291,7 +300,7 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
 
             // العدّاد
             if (!_hideCountdown) Text(
-              _secondsLeft <= 5 ? 'سنكمل بعد $_secondsLeft ثوانٍ' : 'باقي $_secondsLeft ثانية',
+              _secondsLeft <= 5 ? context.l10n.breakResumeSoon(_secondsLeft) : context.l10n.breakRemaining(_secondsLeft),
               style: TextStyle(
                 fontSize: 15,
                 color: c.muted,
@@ -310,20 +319,20 @@ class _BrainBreakDialogState extends State<BrainBreakDialog>
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56)),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('اقتراح آخر'),
+                    label: Text(context.l10n.breakAnother),
                     onPressed: _shuffle,
                   ),
                 ),
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(minimumSize: const Size(48, 56)),
                   icon: const Icon(Icons.more_time),
-                  label: Text(_extensions >= 2 ? 'اكتملت التمديدات' : 'أحتاج وقتاً أكثر (+30 ثانية)'),
+                  label: Text(_extensions >= 2 ? context.l10n.breakExtensionLimit : context.l10n.breakExtend),
                   onPressed: _extensions >= 2 ? null : _extend,
                 ),
                 SizedBox(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check),
-                    label: const Text('جاهز'),
+                    label: Text(context.l10n.breakReady),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(48, 56),
                       backgroundColor: AppColors.green,

@@ -59,7 +59,7 @@ class TtsService {
   /// ✅ الدالة الموحّدة للنطق — تُدار السرعة والعمر معاً
   ///    - تُبطِل أي طلب أقدم عبر عدّاد الأجيال
   ///    - تضبط السرعة قبل كل speak() — بدون Future.delayed
-  Future<void> _speak(String text, {required double rate}) async {
+  Future<void> _speak(String text, {required double rate, String languageCode = 'ar'}) async {
     await _ensureInit();
     final t = text.trim();
     if (t.isEmpty) return;
@@ -73,21 +73,24 @@ class TtsService {
     // لو وصل استدعاء أحدث أثناء stop() → لا نكمل
     if (generation != _speakGeneration) return;
 
-    // ضبط السرعة قبل النطق مباشرة — لا timers، لا تخمين
+    // Interface speech can select its language without changing legacy callers.
+    await _tts.setLanguage(languageCode);
+    if (generation != _speakGeneration) return;
     await _tts.setSpeechRate(rate);
+    if (generation != _speakGeneration) return;
 
     activeLine.value = text;
     isSpeaking.value = true;
-    await _tts.speak(_normalizeArabic(t));
+    await _tts.speak(languageCode.startsWith('ar') ? _normalizeArabic(t) : t);
   }
 
   /// نطق عادي (سرعة 0.45) — للاستخدام العام
-  Future<void> speakLine(String text) =>
-      _speak(text, rate: _normalRate);
+  Future<void> speakLine(String text, {String languageCode = 'ar'}) =>
+      _speak(text, rate: _normalRate, languageCode: languageCode);
 
   /// نطق بطيء (سرعة 0.30) — لمتلازمة داون واضطرابات النطق
-  Future<void> speakLineSlow(String text) =>
-      _speak(text, rate: _slowRate);
+  Future<void> speakLineSlow(String text, {String languageCode = 'ar'}) =>
+      _speak(text, rate: _slowRate, languageCode: languageCode);
 
   // إيقاف النطق فوراً — يُبطِل أي طلب جارٍ أيضاً
   Future<void> stop() async {
