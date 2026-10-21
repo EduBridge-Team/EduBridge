@@ -1,5 +1,6 @@
 // لعبة سباق الحساب — للأعمار 7-14
 import 'dart:async';
+import '../l10n/l10n.dart';
 import '../features/games/application/game_question_factory.dart';
 import '../features/games/domain/arithmetic_question.dart';
 import 'package:flutter/material.dart';
@@ -91,13 +92,13 @@ class _MathRaceGameState extends State<MathRaceGame> {
       await GameProgressService.instance.record(scorePercent);
       if (!mounted) return;
       await VisualCelebration.show(context,
-        message: '$_score صحيحة!', emoji: '➕', childName: widget.childName);
+        message: context.l10n.mathCorrectCount(_score), emoji: '➕', childName: widget.childName);
       if (mounted) Navigator.pop(context);
     } catch (_) {
       if (!mounted) return;
       setState(() => _finishing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر حفظ النتيجة، حاول مرة أخرى')));
+        SnackBar(content: Text(context.l10n.mathSaveFailed)));
     }
   }
 
@@ -107,18 +108,18 @@ class _MathRaceGameState extends State<MathRaceGame> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8EE),
       appBar: BrandAppBar(
-        title: const Text('➕ سباق الحساب'),
+        title: Text(context.l10n.mathRaceTitle),
         actions: [
           TextButton(
             onPressed: _finishing ? null : _onFinish,
-            child: Text(_finishing ? 'جارٍ الحفظ' : 'إنهاء اللعب',
+            child: Text(_finishing ? context.l10n.saving : context.l10n.mathFinish,
               style: const TextStyle(color: Colors.white)),
           ),
           if (_noPressure)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Center(
-                child: Text('✅ بدون وقت',
+                child: Text(context.l10n.mathUntimed,
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -131,8 +132,8 @@ class _MathRaceGameState extends State<MathRaceGame> {
           Container(
             padding: const EdgeInsets.all(14),
             color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround, spacing: 12, runSpacing: 8,
               children: [
                 Text('⭐ $_score',
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -153,7 +154,7 @@ class _MathRaceGameState extends State<MathRaceGame> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FittedBox(fit: BoxFit.scaleDown, child: Text(_question.expression,
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(_question.expression, textDirection: TextDirection.ltr,
                       style: const TextStyle(
                         fontSize: 64, fontWeight: FontWeight.bold,
                         color: Color(0xFF12283A),
@@ -180,8 +181,8 @@ class _MathRaceGameState extends State<MathRaceGame> {
                     ),
                   ),
                   onPressed: () => _check(opt),
-                  child: Text('$opt',
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  child: FittedBox(fit: BoxFit.scaleDown, child: Text('$opt',
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold))),
                 );
               }).toList(),
             ),

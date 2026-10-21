@@ -7570,5 +7570,187 @@
   "gameCatalogAdvancedReadingDescription": "Texts and reading comprehension",
   "@gameCatalogAdvancedReadingDescription": {
     "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "mathRaceTitle": "➕ Math race",
+  "@mathRaceTitle": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathFinish": "Finish playing",
+  "@mathFinish": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathUntimed": "✅ No time limit",
+  "@mathUntimed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathSaveFailed": "Could not save your score. Try again.",
+  "@mathSaveFailed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathCorrectCount": "{count} correct!",
+  "@mathCorrectCount": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sequenceTitle": "🧩 Sequencing game",
+  "@sequenceTitle": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNewRound": "New round",
+  "@sequenceNewRound": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceRound": "Round",
+  "@sequenceRound": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceScore": "Score",
+  "@sequenceScore": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceStreak": "Streak",
+  "@sequenceStreak": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceInstruction": "Tap the pictures in the correct order",
+  "@sequenceInstruction": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChoose": "Choose in order:",
+  "@sequenceChoose": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceReorder": "Start again",
+  "@sequenceReorder": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceCorrect": "Excellent! Correct order",
+  "@sequenceCorrect": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceIncorrect": "Let’s try again. Think about the order of events.",
+  "@sequenceIncorrect": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceArrange": "Arrange: {hint}",
+  "@sequenceArrange": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "sequenceComplete": "Well done! {score}/{total}",
+  "@sequenceComplete": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sequenceMorning": "Morning",
+  "@sequenceMorning": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNoon": "Noon",
+  "@sequenceNoon": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNight": "Night",
+  "@sequenceNight": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceEgg": "Egg",
+  "@sequenceEgg": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChick": "Chick",
+  "@sequenceChick": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChicken": "Chicken",
+  "@sequenceChicken": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceSeed": "Seed",
+  "@sequenceSeed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlant": "Plant",
+  "@sequencePlant": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceTree": "Tree",
+  "@sequenceTree": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceOne": "One",
+  "@sequenceOne": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceTwo": "Two",
+  "@sequenceTwo": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceThree": "Three",
+  "@sequenceThree": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceApple": "Apple",
+  "@sequenceApple": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlate": "Plate",
+  "@sequencePlate": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceEating": "Eating",
+  "@sequenceEating": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceSoap": "Soap",
+  "@sequenceSoap": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceWater": "Water",
+  "@sequenceWater": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceHand": "Hand",
+  "@sequenceHand": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceDay": "Morning → Noon → Night",
+  "@sequenceDay": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChickenLife": "Egg → Chick → Chicken",
+  "@sequenceChickenLife": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlantLife": "Seed → Plant → Tree",
+  "@sequencePlantLife": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNumbers": "Number order",
+  "@sequenceNumbers": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceMeal": "Apple → Plate → Eating",
+  "@sequenceMeal": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceWash": "Soap → Water → Hand",
+  "@sequenceWash": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
   }
 }

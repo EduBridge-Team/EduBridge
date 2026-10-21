@@ -7570,5 +7570,187 @@
   "gameCatalogAdvancedReadingDescription": "نصوص وفهم قرائي",
   "@gameCatalogAdvancedReadingDescription": {
     "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "mathRaceTitle": "➕ سباق الحساب",
+  "@mathRaceTitle": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathFinish": "إنهاء اللعب",
+  "@mathFinish": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathUntimed": "✅ بدون وقت",
+  "@mathUntimed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathSaveFailed": "تعذّر حفظ النتيجة، حاول مرة أخرى",
+  "@mathSaveFailed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "mathCorrectCount": "{count} صحيحة!",
+  "@mathCorrectCount": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sequenceTitle": "🧩 لعبة الترتيب",
+  "@sequenceTitle": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNewRound": "جولة جديدة",
+  "@sequenceNewRound": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceRound": "الجولة",
+  "@sequenceRound": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceScore": "النقاط",
+  "@sequenceScore": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceStreak": "متتالية",
+  "@sequenceStreak": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceInstruction": "اضغط على الصور بالترتيب الصحيح",
+  "@sequenceInstruction": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChoose": "اختر بالترتيب:",
+  "@sequenceChoose": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceReorder": "أعد الترتيب",
+  "@sequenceReorder": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceCorrect": "ممتاز! ترتيب صحيح",
+  "@sequenceCorrect": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceIncorrect": "خلينا نحاول مرة ثانية، فكّر بترتيب الأحداث",
+  "@sequenceIncorrect": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceArrange": "رتّب: {hint}",
+  "@sequenceArrange": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "sequenceComplete": "أحسنت! {score}/{total}",
+  "@sequenceComplete": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sequenceMorning": "الصباح",
+  "@sequenceMorning": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNoon": "الظهر",
+  "@sequenceNoon": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNight": "الليل",
+  "@sequenceNight": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceEgg": "البيضة",
+  "@sequenceEgg": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChick": "الكتكوت",
+  "@sequenceChick": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChicken": "الدجاجة",
+  "@sequenceChicken": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceSeed": "البذرة",
+  "@sequenceSeed": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlant": "النبتة",
+  "@sequencePlant": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceTree": "الشجرة",
+  "@sequenceTree": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceOne": "واحد",
+  "@sequenceOne": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceTwo": "اثنان",
+  "@sequenceTwo": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceThree": "ثلاثة",
+  "@sequenceThree": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceApple": "التفاحة",
+  "@sequenceApple": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlate": "الطبق",
+  "@sequencePlate": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceEating": "الأكل",
+  "@sequenceEating": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceSoap": "الصابون",
+  "@sequenceSoap": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceWater": "الماء",
+  "@sequenceWater": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceHand": "اليد",
+  "@sequenceHand": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceDay": "الصباح → الظهر → الليل",
+  "@sequenceDay": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceChickenLife": "البيضة → الكتكوت → الدجاجة",
+  "@sequenceChickenLife": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequencePlantLife": "البذرة → النبتة → الشجرة",
+  "@sequencePlantLife": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceNumbers": "الترتيب العددي",
+  "@sequenceNumbers": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceMeal": "التفاحة → الطبق → الأكل",
+  "@sequenceMeal": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "sequenceWash": "الصابون → الماء → اليد",
+  "@sequenceWash": {
+    "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
   }
 }

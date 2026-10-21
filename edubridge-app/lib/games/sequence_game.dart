@@ -1,6 +1,8 @@
 // لعبة التسلسل والترتيب — للتوحّد والإعاقة الذهنية
 // الطفل يرى 3 صور مبعثرة ويجب أن يرتّبها حسب الترتيب الصحيح
 import 'dart:math';
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
 import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +66,52 @@ class _SequenceGameState extends State<SequenceGame> {
   late List<String> _correctOrder;
   late List<String> _correctLabels;
   late String _hint;
-  String? _feedback;
+  bool? _feedback;
+
+  String _display(String canonical) {
+    final strings = context.l10n;
+    return switch (canonical) {
+      'الصباح' => strings.sequenceMorning,
+      'الظهر' => strings.sequenceNoon,
+      'الليل' => strings.sequenceNight,
+      'البيضة' => strings.sequenceEgg,
+      'الكتكوت' => strings.sequenceChick,
+      'الدجاجة' => strings.sequenceChicken,
+      'البذرة' => strings.sequenceSeed,
+      'النبتة' => strings.sequencePlant,
+      'الشجرة' => strings.sequenceTree,
+      'واحد' => strings.sequenceOne,
+      'اثنان' => strings.sequenceTwo,
+      'ثلاثة' => strings.sequenceThree,
+      'التفاحة' => strings.sequenceApple,
+      'الطبق' => strings.sequencePlate,
+      'الأكل' => strings.sequenceEating,
+      'الصابون' => strings.sequenceSoap,
+      'الماء' => strings.sequenceWater,
+      'اليد' => strings.sequenceHand,
+      'الصباح → الظهر → الليل' => strings.sequenceDay,
+      'البيضة → الكتكوت → الدجاجة' => strings.sequenceChickenLife,
+      'البذرة → النبتة → الشجرة' => strings.sequencePlantLife,
+      'الترتيب العددي' => strings.sequenceNumbers,
+      'التفاحة → الطبق → الأكل' => strings.sequenceMeal,
+      'الصابون → الماء → اليد' => strings.sequenceWash,
+      _ => canonical,
+    };
+  }
+
+  String get _feedbackText => _feedback == true
+      ? context.l10n.sequenceCorrect : context.l10n.sequenceIncorrect;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_spokenLocale != locale) {
+      _spokenLocale = locale;
+      _speak(context.l10n.sequenceArrange(_display(_hint)));
+    }
+  }
+  String? _spokenLocale;
   bool _answeredCorrectly = false;
   bool _finishing = false;
   bool _recorded = false;
@@ -105,13 +152,19 @@ class _SequenceGameState extends State<SequenceGame> {
     _answeredCorrectly = false;
 
     // ✅ نطق التعليمات
-    _speak('رتّب: $_hint');
+    if (_spokenLocale != null) _speak(context.l10n.sequenceArrange(_display(_hint)));
 
     setState(() {});
   }
 
   void _speak(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    final language = context.l10n.localeName;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: language);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: language);
+    }
   }
 
   void _retry() {
@@ -120,7 +173,7 @@ class _SequenceGameState extends State<SequenceGame> {
       _ordered.reset();
       _feedback = null;
     });
-    _speak('أعد المحاولة');
+    _speak(context.l10n.retry);
   }
 
   @override
@@ -156,7 +209,7 @@ class _SequenceGameState extends State<SequenceGame> {
     final correct = _ordered.correct;
     setState(() {
       _answeredCorrectly = correct;
-      _feedback = correct ? 'ممتاز! ترتيب صحيح' : 'خلينا نحاول مرة ثانية، فكّر بترتيب الأحداث';
+      _feedback = correct;
       if (correct) {
         _score++;
         _streak++;
@@ -165,7 +218,7 @@ class _SequenceGameState extends State<SequenceGame> {
       }
     });
     AdaptiveHelper.hapticFeedback();
-    _speak(_feedback!);
+    _speak(_feedbackText);
   }
 
   Future<void> _advance() async {
@@ -188,7 +241,7 @@ class _SequenceGameState extends State<SequenceGame> {
         _recorded = true;
       }
       if (!mounted) return;
-      await VisualCelebration.show(context, message: 'أحسنت! $_score/$_totalRounds',
+      await VisualCelebration.show(context, message: context.l10n.sequenceComplete(_score, _totalRounds),
         emoji: '🧩', childName: widget.childName, duration: const Duration(seconds: 3));
       if (mounted) Navigator.pop(context);
     } catch (_) {
