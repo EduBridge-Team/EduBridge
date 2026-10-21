@@ -86,12 +86,16 @@ void main() {
       return 1;
     });
     addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, null));
+    Object? speechText() {
+      final arguments = calls.lastWhere((c) => c.method == 'speak').arguments;
+      return arguments is Map ? arguments['text'] : arguments;
+    }
     await TtsService.instance.speakLine('30 seconds, 50%', languageCode: 'en');
     expect(calls.where((c) => c.method == 'setLanguage').last.arguments, 'en');
-    expect((calls.lastWhere((c) => c.method == 'speak').arguments as Map)['text'], '30 seconds, 50%');
+    expect(speechText(), '30 seconds, 50%');
     await TtsService.instance.speakLine('30%');
     expect(calls.where((c) => c.method == 'setLanguage').last.arguments, 'ar');
-    expect((calls.lastWhere((c) => c.method == 'speak').arguments as Map)['text'], '٣٠ بالمئة');
+    expect(speechText(), '٣٠ بالمئة');
     await TtsService.instance.stop();
   });
 }
