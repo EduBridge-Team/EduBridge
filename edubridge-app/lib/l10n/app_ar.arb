@@ -6875,5 +6875,244 @@
   "feedbackCloseAlert": "إغلاق التنبيه",
   "@feedbackCloseAlert": {
     "description": "Child timer and feedback interface; preserve timing, preferences and authored messages."
+  },
+  "encourageSuccess1": "أحسنت! أنت رائع 🌟",
+  "@encourageSuccess1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess2": "ممتاز! استمر هكذا 💪",
+  "@encourageSuccess2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess3": "عمل رائع! فخور بك 🎉",
+  "@encourageSuccess3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess4": "بطل! أكملت المهمة بنجاح 🏆",
+  "@encourageSuccess4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess5": "ما شاء الله عليك! ممتاز ✨",
+  "@encourageSuccess5": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess6": "أحسنت على جهودك! خذ وقتك 🌱",
+  "@encourageSuccess6": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageSuccess7": "إنجاز جميل! واصل التقدم 🌈",
+  "@encourageSuccess7": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart1": "هيا بنا نبدأ! أنا معك 🎯",
+  "@encourageStart1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart2": "استعد! سنتعلم شيئاً جديداً 📚",
+  "@encourageStart2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStart3": "لنبدأ الرحلة! ستنجح بإذن الله 🌟",
+  "@encourageStart3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame1": "وقت المرح! هيا نلعب 🎮",
+  "@encourageGame1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame2": "لعبة جديدة! استمتع 🌈",
+  "@encourageGame2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGame3": "هيا نلعب ونتعلم معاً 🎉",
+  "@encourageGame3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle1": "لا بأس، جرب مرة أخرى 💙",
+  "@encourageGentle1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle2": "خذ وقتك، يمكنك المحاولة ثانية 🌱",
+  "@encourageGentle2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageGentle3": "أنت تتعلم! جرب من جديد ✨",
+  "@encourageGentle3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak1": "واو! ثلاث مرات متتالية! أنت نجم 🌟🌟",
+  "@encourageStreak1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak2": "مذهل! تستمر في التألق 🔥",
+  "@encourageStreak2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageStreak3": "أحسنت على مواصلة المحاولة 🌟",
+  "@encourageStreak3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort1": "أنت بطل! 🏆",
+  "@encourageShort1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort2": "ممتاز! ⭐",
+  "@encourageShort2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort3": "أحسنت! 🎉",
+  "@encourageShort3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort4": "رائع! 💪",
+  "@encourageShort4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageShort5": "شاطر! 🌟",
+  "@encourageShort5": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "encourageNamed1": "أحسنت يا {name}! أنت رائع 🌟",
+  "@encourageNamed1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed2": "ممتاز يا {name}! استمر 💪",
+  "@encourageNamed2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed3": "يا بطل يا {name}! عمل رائع 🏆",
+  "@encourageNamed3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageNamed4": "ما شاء الله يا {name}! ✨",
+  "@encourageNamed4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "encourageScore1": "مذهل! {score} نقطة! أحسنت على جهودك 🏆",
+  "@encourageScore1": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore2": "رائع! {score} نقطة! أحسنت 🌟",
+  "@encourageScore2": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore3": "جيد! {score} نقطة! واصل 💪",
+  "@encourageScore3": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageScore4": "{score} نقطة! بداية جيدة، استمر 🌱",
+  "@encourageScore4": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "encourageNamedShort": "{name}، {praise}",
+  "@encourageNamedShort": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "praise": {
+        "type": "String"
+      }
+    }
+  },
+  "matchingTitle": "لعبة المطابقة 🎴",
+  "@matchingTitle": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingNewGame": "لعبة جديدة",
+  "@matchingNewGame": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingCompleted": "أكملت اللعبة! {score}%",
+  "@matchingCompleted": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "matchingWellDone": "🎉 أحسنت!",
+  "@matchingWellDone": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingTime": "الوقت",
+  "@matchingTime": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingAttempts": "المحاولات",
+  "@matchingAttempts": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingMistakes": "الأخطاء",
+  "@matchingMistakes": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingScore": "النتيجة",
+  "@matchingScore": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingPlayAgain": "العب مرة أخرى",
+  "@matchingPlayAgain": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content."
+  },
+  "matchingSeconds": "{count} ثانية",
+  "@matchingSeconds": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "matchingSecondsShort": "{count} ث",
+  "@matchingSecondsShort": {
+    "description": "Game interface and encouragement only; preserve game rules, names and authored content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

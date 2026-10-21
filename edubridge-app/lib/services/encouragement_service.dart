@@ -1,5 +1,6 @@
-// خدمة التشجيع الصوتي — عبارات حماسية بالعربية لكل حالة
 import 'dart:math';
+import '../l10n/generated/app_localizations.dart';
+import 'app_locale_controller.dart';
 import 'tts_service.dart';
 import 'accessibility_service.dart';
 import '../utils/adaptive_feedback_policy.dart';
@@ -7,125 +8,118 @@ import '../utils/adaptive_feedback_policy.dart';
 class EncouragementService {
   EncouragementService({
     AccessibilityProfile Function()? profile,
+    AppLocalizations Function()? strings,
     Future<void> Function(String)? speak,
     Future<void> Function(String)? speakSlow,
   }) : _profile = profile ?? (() => AccessibilityService.instance.profile.value),
-       _speak = speak ?? TtsService.instance.speakLine,
-       _speakSlow = speakSlow ?? TtsService.instance.speakLineSlow;
+       _strings = strings ?? (() => lookupAppLocalizations(AppLocaleController.instance.value)),
+       _speak = speak, _speakSlow = speakSlow;
 
   static final EncouragementService instance = EncouragementService();
   final AccessibilityProfile Function() _profile;
-  final Future<void> Function(String) _speak;
-  final Future<void> Function(String) _speakSlow;
-
-  Future<void> _announce(String text) async {
-    final profile = _profile();
-    if (!AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech) return;
-    await (profile.slowSpeech ? _speakSlow(text) : _speak(text));
-  }
-
+  final AppLocalizations Function() _strings;
+  final Future<void> Function(String)? _speak;
+  final Future<void> Function(String)? _speakSlow;
   final _random = Random();
 
-  static const _successPhrases = [
-    'أحسنت! أنت رائع 🌟',
-    'ممتاز! استمر هكذا 💪',
-    'عمل رائع! فخور بك 🎉',
-    'بطل! أكملت المهمة بنجاح 🏆',
-    'ما شاء الله عليك! ممتاز ✨',
-    'أحسنت على جهودك! خذ وقتك 🌱',
-    'إنجاز جميل! واصل التقدم 🌈',
-  ];
-
-  static const _startPhrases = [
-    'هيا بنا نبدأ! أنا معك 🎯',
-    'استعد! سنتعلم شيئاً جديداً 📚',
-    'لنبدأ الرحلة! ستنجح بإذن الله 🌟',
-  ];
-
-  static const _gamePhrases = [
-    'وقت المرح! هيا نلعب 🎮',
-    'لعبة جديدة! استمتع 🌈',
-    'هيا نلعب ونتعلم معاً 🎉',
-  ];
-
-  static const _gentlePhrases = [
-    'لا بأس، جرب مرة أخرى 💙',
-    'خذ وقتك، يمكنك المحاولة ثانية 🌱',
-    'أنت تتعلم! جرب من جديد ✨',
-  ];
-
-  static const _streakPhrases = [
-    'واو! ثلاث مرات متتالية! أنت نجم 🌟🌟',
-    'مذهل! تستمر في التألق 🔥',
-    'أحسنت على مواصلة المحاولة 🌟',
-  ];
-
-  // عبارات قصيرة يمكن استعمالها دون فرض سرعة النطق من التصنيف.
-  static const _downPhrases = [
-    'أنت بطل! 🏆',
-    'ممتاز! ⭐',
-    'أحسنت! 🎉',
-    'رائع! 💪',
-    'شاطر! 🌟',
-  ];
+  Future<void> _announce(String text, AppLocalizations strings) async {
+    final profile = _profile();
+    if (!AdaptiveFeedbackPolicy(profile).allowAutomaticSpeech) return;
+    final customSpeech = profile.slowSpeech ? _speakSlow : _speak;
+    if (customSpeech != null) {
+      await customSpeech(text);
+    } else if (profile.slowSpeech) {
+      await TtsService.instance.speakLineSlow(text, languageCode: strings.localeName);
+    } else {
+      await TtsService.instance.speakLine(text, languageCode: strings.localeName);
+    }
+  }
 
   Future<void> praiseSuccess() async {
-    final phrase = _successPhrases[_random.nextInt(_successPhrases.length)];
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageSuccess1,
+      s.encourageSuccess2,
+      s.encourageSuccess3,
+      s.encourageSuccess4,
+      s.encourageSuccess5,
+      s.encourageSuccess6,
+      s.encourageSuccess7,
+    ];
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
   Future<void> praiseStart() async {
-    final phrase = _startPhrases[_random.nextInt(_startPhrases.length)];
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageStart1,
+      s.encourageStart2,
+      s.encourageStart3,
+    ];
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
   Future<void> praiseGame() async {
-    final phrase = _gamePhrases[_random.nextInt(_gamePhrases.length)];
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageGame1,
+      s.encourageGame2,
+      s.encourageGame3,
+    ];
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
   Future<void> gentleRetry() async {
-    final phrase = _gentlePhrases[_random.nextInt(_gentlePhrases.length)];
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageGentle1,
+      s.encourageGentle2,
+      s.encourageGentle3,
+    ];
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
   Future<void> praiseStreak() async {
-    final phrase = _streakPhrases[_random.nextInt(_streakPhrases.length)];
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageStreak1,
+      s.encourageStreak2,
+      s.encourageStreak3,
+    ];
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
   Future<void> praiseByName(String childName) async {
+    final s = _strings();
     final phrases = [
-      'أحسنت يا $childName! أنت رائع 🌟',
-      'ممتاز يا $childName! استمر 💪',
-      'يا بطل يا $childName! عمل رائع 🏆',
-      'ما شاء الله يا $childName! ✨',
+      s.encourageNamed1(childName),
+      s.encourageNamed2(childName),
+      s.encourageNamed3(childName),
+      s.encourageNamed4(childName),
     ];
-    await _announce(
-      phrases[_random.nextInt(phrases.length)],
-    );
+    await _announce(phrases[_random.nextInt(phrases.length)], s);
   }
 
-  /// Kept for existing callers; saved preferences control speech and speed.
+  /// Saved preferences control speech and speed for legacy callers too.
   Future<void> praiseForDown({String? childName}) async {
-    final base = _downPhrases[_random.nextInt(_downPhrases.length)];
-    final phrase = childName != null && childName.isNotEmpty
-        ? '$childName، $base'
-        : base;
-    await _announce(phrase);
+    final s = _strings();
+    final phrases = [
+      s.encourageShort1,
+      s.encourageShort2,
+      s.encourageShort3,
+      s.encourageShort4,
+      s.encourageShort5,
+    ];
+    final base = phrases[_random.nextInt(phrases.length)];
+    await _announce(childName != null && childName.isNotEmpty
+      ? s.encourageNamedShort(childName, base) : base, s);
   }
 
   Future<void> praiseScore(int score) async {
-    String phrase;
-    if (score >= 90) {
-      phrase = 'مذهل! $score نقطة! أحسنت على جهودك 🏆';
-    } else if (score >= 70) {
-      phrase = 'رائع! $score نقطة! أحسنت 🌟';
-    } else if (score >= 50) {
-      phrase = 'جيد! $score نقطة! واصل 💪';
-    } else {
-      phrase = '$score نقطة! بداية جيدة، استمر 🌱';
-    }
-    await _announce(phrase);
+    final s = _strings();
+    final phrase = score >= 90 ? s.encourageScore1(score)
+      : score >= 70 ? s.encourageScore2(score)
+      : score >= 50 ? s.encourageScore3(score) : s.encourageScore4(score);
+    await _announce(phrase, s);
   }
 }

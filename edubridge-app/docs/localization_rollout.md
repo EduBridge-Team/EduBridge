@@ -362,3 +362,22 @@ completion, original custom messages, untimed reward dismissal, live audio-timer
 language changes and selected speech language. Existing lifecycle, haptic and
 feedback-policy tests remain required. Next: remaining game prompts/encouragement,
 voice/semantic strings and the final completeness/manual accessibility audit.
+
+### Phase 5 — shared encouragement and matching game
+
+Shared success/start/game/retry/streak/short/named/score encouragement now resolves
+from ARB using the saved app locale for each event. It can run during game startup
+without reading inherited widgets. English selects the English TTS language;
+slow/automatic speech, calm-mode suppression, random phrase selection and score
+thresholds are preserved. Injected speech callbacks remain supported for tests.
+
+The matching game title, restart tooltip, elapsed-time labels, win message,
+result summary and replay action use the active locale. Supplied card content,
+board identity, matching/score rules and progress payloads remain unchanged.
+Result content can scroll and stat labels can wrap within the current dialog.
+
+Eight new regression cases cover both languages, 320px/1x/2x matching completion
+and replay, original card text, score boundaries, names, live saved-locale changes,
+speech policy and the selected native voice. Remaining game prompts/content banks,
+game-catalog labels and other child voice/semantic strings still require migration;
+this batch does not claim all games are fully translated.
