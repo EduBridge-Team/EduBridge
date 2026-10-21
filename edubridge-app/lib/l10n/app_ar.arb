@@ -7386,5 +7386,189 @@
   "actionMoveHead": "المس رأسك",
   "@actionMoveHead": {
     "description": "Built-in sound matching and quick-action game interface; preserve canonical content IDs and game rules."
+  },
+  "gameCatalogTitle": "الألعاب التعليمية",
+  "@gameCatalogTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioWelcome": "ألعاب سمعية!",
+  "@gameCatalogAudioWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogHeroWelcome": "مرحباً يا بطل!",
+  "@gameCatalogHeroWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogFunWelcome": "وقت المرح!",
+  "@gameCatalogFunWelcome": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogEmpty": "لا توجد ألعاب مناسبة بعد",
+  "@gameCatalogEmpty": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPreschool": "رياض الأطفال (4-6)",
+  "@gameCatalogPreschool": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPrimary": "الابتدائي (7-10)",
+  "@gameCatalogPrimary": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogPreparatory": "الإعدادي (11-15)",
+  "@gameCatalogPreparatory": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogCount": "{count, plural, =0{لا توجد ألعاب مناسبة لعمرك ({ageGroup})} =1{لعبة واحدة مناسبة لعمرك ({ageGroup})} =2{لعبتان مناسبتان لعمرك ({ageGroup})} few{{count} ألعاب مناسبة لعمرك ({ageGroup})} many{{count} لعبة مناسبة لعمرك ({ageGroup})} other{{count} لعبة مناسبة لعمرك ({ageGroup})}}",
+  "@gameCatalogCount": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "ageGroup": {
+        "type": "String"
+      }
+    }
+  },
+  "gameCatalogLaunchFailed": "تعذّر فتح اللعبة، حاول مرة أخرى",
+  "@gameCatalogLaunchFailed": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAnimalSoundsTitle": "أصوات الحيوانات",
+  "@gameCatalogAnimalSoundsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAnimalSoundsDescription": "استمع وحدّد الحيوان",
+  "@gameCatalogAnimalSoundsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogMatchingTitle": "المطابقة",
+  "@gameCatalogMatchingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogMatchingDescription": "اعثر على البطاقات المتشابهة",
+  "@gameCatalogMatchingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogShapesTitle": "الأشكال",
+  "@gameCatalogShapesTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogShapesDescription": "تعرّف على الأشكال الهندسية",
+  "@gameCatalogShapesDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSimpleTitle": "الألوان",
+  "@gameCatalogColorsSimpleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSimpleDescription": "اختر اللون الصحيح",
+  "@gameCatalogColorsSimpleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSymbolsTitle": "الألوان بالرموز",
+  "@gameCatalogColorsSymbolsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogColorsSymbolsDescription": "تعلّم الألوان بدون الاعتماد على البصر",
+  "@gameCatalogColorsSymbolsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersCountTitle": "العدّ البسيط",
+  "@gameCatalogNumbersCountTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersCountDescription": "اعدّ من 1 إلى 10",
+  "@gameCatalogNumbersCountDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersMathTitle": "سباق الحساب",
+  "@gameCatalogNumbersMathTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogNumbersMathDescription": "حلّ المسائل بسرعة",
+  "@gameCatalogNumbersMathDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogVisualWordsTitle": "الكلمات البصرية",
+  "@gameCatalogVisualWordsTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogVisualWordsDescription": "اربط الصورة بالكلمة",
+  "@gameCatalogVisualWordsDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogWordBuilderTitle": "بناء الكلمة",
+  "@gameCatalogWordBuilderTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogWordBuilderDescription": "رتّب الحروف لتكوين كلمة",
+  "@gameCatalogWordBuilderDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSequenceSimpleTitle": "الترتيب البسيط",
+  "@gameCatalogSequenceSimpleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSequenceSimpleDescription": "رتّب الصور حسب الترتيب",
+  "@gameCatalogSequenceSimpleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogStorySequencerTitle": "رتّب القصة",
+  "@gameCatalogStorySequencerTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogStorySequencerDescription": "رتّب أحداث القصة",
+  "@gameCatalogStorySequencerDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogLogicPuzzleTitle": "لغز المنطق",
+  "@gameCatalogLogicPuzzleTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogLogicPuzzleDescription": "فكّر وحلّ اللغز",
+  "@gameCatalogLogicPuzzleDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioMatchingTitle": "لعبة الأصوات",
+  "@gameCatalogAudioMatchingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAudioMatchingDescription": "استمع وطابق الأصوات",
+  "@gameCatalogAudioMatchingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSignLanguageTitle": "لغة الإشارة",
+  "@gameCatalogSignLanguageTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogSignLanguageDescription": "تعلّم الحروف بالإشارة",
+  "@gameCatalogSignLanguageDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogQuickActionTitle": "الحركة السريعة",
+  "@gameCatalogQuickActionTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogQuickActionDescription": "تحرّك بسرعة! 30 ثانية",
+  "@gameCatalogQuickActionDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogRhythmTitle": "الإيقاع",
+  "@gameCatalogRhythmTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogRhythmDescription": "انقر مع الكلمات",
+  "@gameCatalogRhythmDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAdvancedReadingTitle": "القراءة المتقدمة",
+  "@gameCatalogAdvancedReadingTitle": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
+  },
+  "gameCatalogAdvancedReadingDescription": "نصوص وفهم قرائي",
+  "@gameCatalogAdvancedReadingDescription": {
+    "description": "Game catalog presentation only; preserve IDs, age/disability eligibility and game content."
   }
 }

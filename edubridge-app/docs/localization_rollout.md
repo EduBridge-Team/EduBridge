@@ -403,3 +403,23 @@ speech and language, repeated-card handling, suppression of automatic speech,
 untimed scoring and pause/resume, and preservation of the timed countdown.
 Next: remaining game interfaces and catalog labels, followed by remaining child
 voice/semantic strings and the final completeness/manual accessibility audit.
+
+### Phase 5 — educational game catalog
+
+All 17 built-in game titles/descriptions, age-group labels, role-specific welcome
+headings, eligible-game count plurals, empty state and launch-error notice now use
+the active interface locale. A presentation adapter preserves canonical catalog
+entries, IDs, order, age/disability eligibility and unknown custom labels.
+Regular and simple layouts share the same translations; navigation chevrons follow
+the selected direction. Simple tiles can select a speech language for catalog
+labels without changing the legacy behavior of lesson/other tile consumers.
+
+Twelve regression tests cover fifteen scenarios: complete title/description coverage, original
+custom labels, all age/disability filters, Arabic/English at 320px and 1x/2x in
+both catalog layouts, canonical MatchingGame launch/player preservation, live
+language changes without replaying the welcome, and native tile speech language.
+No game rules, content banks, permissions or backend endpoints change.
+
+Next: remaining game screens (arithmetic, sequencing, words/reading, rhythm,
+shapes/colors/sign language), remaining child voice/semantic strings, then the
+final source/direction inventory and deferred manual accessibility checks.

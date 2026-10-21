@@ -1,3 +1,5 @@
+import '../l10n/l10n.dart';
+import '../utils/game_catalog_display.dart';
 // lib/screens/educational_games_screen.dart
 import 'package:flutter/material.dart';
 import '../widgets/accessibility/child_color_filter.dart';
@@ -50,7 +52,7 @@ class EducationalGamesScreen extends StatelessWidget {
     final games = gamesFor(profile.type, group);
 
     return ChildColorFilter(child: Scaffold(
-      appBar: JisrAppBar(title: 'الألعاب التعليمية'),
+      appBar: JisrAppBar(title: context.l10n.gameCatalogTitle),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -83,10 +85,10 @@ class EducationalGamesScreen extends StatelessWidget {
                       children: [
                         Text(
                           isBlind
-                              ? 'ألعاب سمعية!'
+                              ? context.l10n.gameCatalogAudioWelcome
                               : isDeaf
-                                  ? 'مرحباً يا بطل!'
-                                  : 'وقت المرح!',
+                                  ? context.l10n.gameCatalogHeroWelcome
+                                  : context.l10n.gameCatalogFunWelcome,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -95,7 +97,7 @@ class EducationalGamesScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${games.length} ألعاب مناسبة لعمرك (${ageGroupLabel(group)})',
+                          context.l10n.gameCatalogCount(games.length, GameCatalogDisplay.age(group, context.l10n)),
                           style: const TextStyle(
                               fontSize: 12, color: Colors.white70),
                         ),
@@ -111,7 +113,8 @@ class EducationalGamesScreen extends StatelessWidget {
               SimpleIconsGrid(children: [for (final game in games)
                 SimpleIconTile(
                   key: ValueKey('simple_game_${game.id}'),
-                  title: game.title,
+                  title: GameCatalogDisplay.title(game, context.l10n),
+                  speechLanguageCode: context.l10n.localeName,
                   icon: _gameIcon(game.id),
                   onTap: () => _openGame(context, game),
                 ),
@@ -132,7 +135,7 @@ class EducationalGamesScreen extends StatelessWidget {
                     Icon(AppIcons.game, size: 72, color: c.muted),
                     const SizedBox(height: 16),
                     Text(
-                      'لا توجد ألعاب مناسبة بعد',
+                      context.l10n.gameCatalogEmpty,
                       style: TextStyle(fontSize: 18, color: c.muted),
                     ),
                   ],
@@ -218,7 +221,7 @@ class _GameCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    game.title,
+                    GameCatalogDisplay.title(game, context.l10n),
                     style: TextStyle(
                       fontSize: large ? 20 : 17,
                       fontWeight: FontWeight.bold,
@@ -227,13 +230,13 @@ class _GameCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    game.description,
+                    GameCatalogDisplay.description(game, context.l10n),
                     style: TextStyle(fontSize: large ? 15 : 13, color: c.muted),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_left,
+            Icon(Directionality.of(context) == TextDirection.rtl ? Icons.chevron_left : Icons.chevron_right,
                 color: AppColors.brandBlue, size: 32),
           ],
         ),
