@@ -55,7 +55,7 @@ class SpeechInputService {
     if (!identical(_owner, owner)) return null;
     final engine = _speech;
     final locale = engine is LanguageSpeechRecognizer
-        ? await engine.localeForLanguage(language)
+        ? await (engine as LanguageSpeechRecognizer).localeForLanguage(language)
         : language.startsWith('ar') ? await engine.arabicLocale() : null;
     return identical(_owner, owner) ? locale : null;
   }
