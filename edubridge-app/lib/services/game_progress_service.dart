@@ -47,7 +47,7 @@ class GameProgressService {
       final queue = await _queue(prefs, key);
       queue.add(attempt);
       // Enqueue before sending: crashes/lost HTTP responses retry the same event ID.
-      if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
+      await _persistQueue(prefs, key, queue);
       await _flush(prefs, key, queue);
     });
   }
@@ -60,7 +60,7 @@ class GameProgressService {
     final decoded = jsonDecode(raw) as List;
     final queue = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
     for (final item in queue) { item['event_id'] ??= newSyncEventId(); }
-    if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
+    await _persistQueue(prefs, key, queue);
     await prefs.remove('pending_game_attempts_v1');
     return queue;
   }
@@ -70,6 +70,16 @@ class GameProgressService {
     final key = await _ownerKey();
     await _flush(prefs, key, await _queue(prefs, key));
   });
+
+  Future<void> _persistQueue(
+    SharedPreferences prefs,
+    String key,
+    List<Map<String, dynamic>> queue,
+  ) async {
+    if (!await prefs.setString(key, jsonEncode(queue))) {
+      throw StateError('Unable to persist game events');
+    }
+  }
 
   Future<void> _flush(SharedPreferences prefs, String key, List<Map<String, dynamic>> queue) async {
     var index = 0;
@@ -88,7 +98,7 @@ class GameProgressService {
         }
       } catch (_) { return; }
       queue.removeAt(index);
-      if (!await prefs.setString(key, jsonEncode(queue))) throw StateError('Unable to persist game events');
+      await _persistQueue(prefs, key, queue);
     }
     if (queue.isEmpty) await prefs.remove(key);
   }
