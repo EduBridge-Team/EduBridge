@@ -4,6 +4,7 @@ import 'package:edubridge_app/utils/game_catalog.dart';
 import 'package:edubridge_app/utils/game_catalog_display.dart';
 import 'package:edubridge_app/screens/educational_games_screen.dart';
 import 'package:edubridge_app/games/matching_game.dart';
+import 'package:edubridge_app/games/game_content.dart';
 import 'package:edubridge_app/services/accessibility_service.dart';
 import 'package:edubridge_app/services/encouragement_service.dart';
 import 'package:edubridge_app/widgets/accessibility/simple_icons_grid.dart';
@@ -101,7 +102,16 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(MatchingGame), findsOneWidget);
         expect(tester.widget<MatchingGame>(find.byType(MatchingGame)).childName, 'محمود');
-        Navigator.of(tester.element(find.byType(MatchingGame))).pop(); await tester.pumpAndSettle();
+        await tester.runAsync(() async {
+          Navigator.of(tester.element(find.byType(MatchingGame))).pop();
+          await tester.pump();
+          await Future<void>.delayed(Duration.zero);
+        });
+        await tester.pumpAndSettle();
+        await tester.runAsync(() async {
+          await GameContent.instance.settled;
+          await Future<void>.delayed(Duration.zero);
+        });
         await tester.pumpWidget(const SizedBox.shrink());
         expect(tester.takeException(), isNull);
       });
