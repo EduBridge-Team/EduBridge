@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 // lib/screens/child_progress_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import '../theme.dart';
 import '../widgets/accessibility/adaptive_wrapper.dart';
 
 part 'child_progress_widgets.dart';
+
+enum _ProgressLoadError { fetch, connection }
 
 class ChildProgressScreen extends StatefulWidget {
   final int childId;
@@ -29,7 +32,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   List _progress = [];
   int _stars = 0;
   bool _loading = true;
-  String? _error;
+  _ProgressLoadError? _error;
 
   @override
   void initState() {
@@ -76,14 +79,14 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
         });
       } else {
         setState(() {
-          _error = 'تعذّر جلب التقدّم';
+          _error = _ProgressLoadError.fetch;
           _loading = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = _ProgressLoadError.connection;
         _loading = false;
       });
     }
@@ -92,7 +95,7 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
-      screenTitle: 'تقدّم ${widget.childName}',
+      screenTitle: context.l10n.childProgressFor(widget.childName),
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F9FC),
         appBar: BrandAppBar(
@@ -101,14 +104,14 @@ class _ChildProgressScreenState extends State<ChildProgressScreen> {
           titleSpacing: 0,
           leadingWidth: 48,
           leading: IconButton(
-            tooltip: 'رجوع',
+            tooltip: context.l10n.back,
             onPressed: () => Navigator.maybePop(context),
             icon: const CircleAvatar(
               radius: 21, backgroundColor: Color(0x33FFFFFF),
               child: Icon(Icons.arrow_back_rounded,
                 size: 23, color: Colors.white)),
           ),
-          title: Text('تقدّم ${widget.childName}',
+          title: Text(context.l10n.childProgressFor(widget.childName),
             maxLines: 1, overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white, fontSize: 20,

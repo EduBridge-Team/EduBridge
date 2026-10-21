@@ -266,3 +266,39 @@ Tests cover bilingual/large-text forms, direct-teacher and ministry payloads,
 verification, original user content, failed requests/retries, canonical recommendation
 values and success acknowledgement. Phase 4 still includes detailed reports and
 remaining follow-up workflows. Activities remain phase 5; the final audit is phase 6.
+
+
+## Status audit — 21 October 2026
+
+Main at `a758d3f` includes language selection and shared interfaces (phases
+1–3), followed by role dashboards, child profiles/registration, evaluations,
+reports, follow-ups, teacher homework, cases, lesson authoring, support/meetings
+and educational plans (phase 4 batches through PR #962). Phase 5 has merged
+Noor interface localization (#963), remaining shared labels (#964), child
+homework (#965) and child lesson catalog/details (#966). PR #966's five
+reported workflows completed successfully.
+
+### Current batch — progress and rewards
+
+Child progress summary, lesson statuses, errors/retry, weekly activity labels,
+reward names and star plurals now use the selected locale. Authored child/lesson
+names, score values, status identifiers, badge thresholds and requests remain
+unchanged. Summary/reward cards and the next-lesson button grow with text scale;
+lesson navigation chevrons follow the active direction.
+
+Coverage includes both languages at 360px and 1x/2x text, empty/partial/complete
+progress, weekly aggregation, original lesson names, badge thresholds and failed
+requests followed by retry. Local Flutter execution is unavailable in this
+session; the PR workflows must validate analysis, tests and builds before merge.
+
+### Remaining work
+
+- Phase 4 needs a final screen-by-screen coverage audit before being marked complete.
+- Phase 5: child adaptation/accessibility settings still contain Arabic interface
+  literals and an explicit RTL wrapper; audit child activities, games, breaks
+  and voice/semantic messages, separating authored educational content.
+- Phase 6: regenerate the candidate inventory, review remaining UI direction
+  overrides, run the complete test/build matrix, then perform the deferred
+  manual mobile/desktop and assistive-technology checks.
+
+English support is still in rollout; do not claim full completion.
