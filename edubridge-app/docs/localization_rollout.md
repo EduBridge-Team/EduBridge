@@ -451,3 +451,10 @@ final source/direction inventory and deferred manual accessibility checks.
 - Localized shared game continuation, busy and retry-error messages, completing the same controls in previously migrated games.
 - Added mapping coverage and repeated shuffle checks for every reading question, plus Arabic/English narrow-screen large-text gameplay, both visual-word layouts, duplicate-answer protection, retained answers/feedback, passage speech and continuation failure recovery.
 - Local catalog parity/metadata and diff checks precede Flutter analysis, tests and platform builds in PR CI. Teacher-authored lessons and backend code remain unchanged.
+
+### Logic and rhythm
+- Translated all 105 logic questions: ten fixed questions and 95 generated addition, subtraction and number-sequence questions. Shuffled options and correct-answer indexes remain unchanged.
+- Translated the 12 rhythm words, instructions, pause/restart controls, position, saving/retry and completion messages. Speech follows the interface language and existing calm/slow-speech settings; direct word listening remains available.
+- Retained canonical content/history, score calculations, eight-word sessions, three-second automatic continuation and specialist-selected manual continuation. Language changes retain selected answers, feedback, rhythm position, pause state and taps.
+- Added exhaustive shuffled-answer/Arabic-parity tests and narrow-screen double-text-scale gameplay, including logic scoring, locale changes, direct speech, pause/resume, manual/automatic advancement and restart.
+- Local ARB parity/metadata and diff checks precede Flutter analysis/tests and platform builds in PR CI. Backend and teacher-authored content are unchanged.

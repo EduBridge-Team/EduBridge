@@ -9045,5 +9045,422 @@
   "gameRoundContinueFailed": "تعذّر متابعة اللعبة، حاول مرة أخرى",
   "@gameRoundContinueFailed": {
     "description": "Shared game round continuation status and retry error."
+  },
+  "logicQuestionBird": "كل الطيور لها أجنحة، والعصفور طائر. ماذا نعرف؟",
+  "@logicQuestionBird": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption0": "للعصفور أجنحة",
+  "@logicBirdOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption1": "العصفور سمكة",
+  "@logicBirdOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption2": "لا يملك ريشاً",
+  "@logicBirdOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption3": "لا شيء",
+  "@logicBirdOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionHeight": "إذا كان أحمد أطول من سامر، وسامر أطول من كريم، فمن الأطول؟",
+  "@logicQuestionHeight": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption0": "كريم",
+  "@logicHeightOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption1": "سامر",
+  "@logicHeightOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption2": "أحمد",
+  "@logicHeightOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption3": "متساوون",
+  "@logicHeightOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionBooks": "يوجد 3 كتب على الطاولة وأضفنا كتابين. كم أصبح العدد؟",
+  "@logicQuestionBooks": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption0": "4",
+  "@logicBooksOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption1": "5",
+  "@logicBooksOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption2": "6",
+  "@logicBooksOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption3": "3",
+  "@logicBooksOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionSquare": "إذا كانت كل المربعات أشكالاً، وهذا الشكل مربع، فما الصحيح؟",
+  "@logicQuestionSquare": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption0": "ليس شكلاً",
+  "@logicSquareOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption1": "هو شكل",
+  "@logicSquareOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption2": "هو دائرة",
+  "@logicSquareOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption3": "لا نعرف",
+  "@logicSquareOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionTime": "بدأ الدرس الساعة 9 وانتهى الساعة 10. كم استغرق؟",
+  "@logicQuestionTime": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption0": "ساعة",
+  "@logicTimeOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption1": "ساعتان",
+  "@logicTimeOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption2": "30 دقيقة",
+  "@logicTimeOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption3": "3 ساعات",
+  "@logicTimeOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionLine": "ليلى أمام هدى في الصف، وهدى أمام نور. من تقف أولاً؟",
+  "@logicQuestionLine": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption0": "ليلى",
+  "@logicLineOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption1": "هدى",
+  "@logicLineOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption2": "نور",
+  "@logicLineOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption3": "لا نعرف",
+  "@logicLineOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionGroup": "أي شيء لا ينتمي إلى المجموعة: تفاحة، موزة، برتقالة، قلم؟",
+  "@logicQuestionGroup": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption0": "تفاحة",
+  "@logicGroupOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption1": "موزة",
+  "@logicGroupOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption2": "قلم",
+  "@logicGroupOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption3": "برتقالة",
+  "@logicGroupOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionFish": "كل الأسماك تعيش في الماء. السردين سمكة. أين يعيش؟",
+  "@logicQuestionFish": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption0": "في الماء",
+  "@logicFishOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption1": "فوق الشجرة",
+  "@logicFishOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption2": "في الصحراء",
+  "@logicFishOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption3": "في المكتبة",
+  "@logicFishOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionDay": "إذا كان اليوم الثلاثاء، فما اليوم التالي؟",
+  "@logicQuestionDay": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption0": "الاثنين",
+  "@logicDayOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption1": "الأربعاء",
+  "@logicDayOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption2": "الجمعة",
+  "@logicDayOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption3": "الأحد",
+  "@logicDayOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionCorners": "أي شكل ليس له زوايا؟",
+  "@logicQuestionCorners": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption0": "المثلث",
+  "@logicCornersOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption1": "المربع",
+  "@logicCornersOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption2": "الدائرة",
+  "@logicCornersOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption3": "المستطيل",
+  "@logicCornersOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicAddition": "يوجد {count} أقلام، وأضفنا {added} أقلام. كم أصبح العدد؟",
+  "@logicAddition": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "added": {
+        "type": "int"
+      }
+    }
+  },
+  "logicSubtraction": "مع سارة {count} ملصقات، أعطت صديقتها {given} ملصقات. كم بقي معها؟",
+  "@logicSubtraction": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "given": {
+        "type": "int"
+      }
+    }
+  },
+  "logicSequence": "ما العدد التالي: {first}، {second}، {third}؟",
+  "@logicSequence": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "first": {
+        "type": "int"
+      },
+      "second": {
+        "type": "int"
+      },
+      "third": {
+        "type": "int"
+      }
+    }
+  },
+  "logicTitle": "لغز المنطق 🧠",
+  "@logicTitle": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCorrect": "إجابة صحيحة",
+  "@logicCorrect": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicIncorrect": "حاول أن تفكر في العلاقة بين المعلومات",
+  "@logicIncorrect": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicComplete": "أحسنت! {correct} من {total}",
+  "@logicComplete": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logicScore": "النتيجة: {score}",
+  "@logicScore": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmWordHouse": "بيت",
+  "@rhythmWordHouse": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordSun": "شمس",
+  "@rhythmWordSun": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordMoon": "قمر",
+  "@rhythmWordMoon": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordStar": "نجم",
+  "@rhythmWordStar": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordWater": "ماء",
+  "@rhythmWordWater": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBread": "خبز",
+  "@rhythmWordBread": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBook": "كتاب",
+  "@rhythmWordBook": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordPen": "قلم",
+  "@rhythmWordPen": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordDoor": "باب",
+  "@rhythmWordDoor": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordLight": "نور",
+  "@rhythmWordLight": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBlossom": "زهر",
+  "@rhythmWordBlossom": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordRose": "ورد",
+  "@rhythmWordRose": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmTitle": "🎵 لعبة الإيقاع",
+  "@rhythmTitle": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmHeading": "لعبة الإيقاع",
+  "@rhythmHeading": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPause": "إيقاف مؤقت",
+  "@rhythmPause": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmRestart": "إعادة",
+  "@rhythmRestart": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPausedSpoken": "توقفنا مؤقتاً",
+  "@rhythmPausedSpoken": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmComplete": "أحسنت! أتممت التمرين",
+  "@rhythmComplete": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmSaving": "جارٍ حفظ النتيجة",
+  "@rhythmSaving": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmDescription": "انقر مع كل كلمة تسمعها\nيمكنك الاستماع لكل كلمة والتدرّب على النقر",
+  "@rhythmDescription": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmHowTo": "كيف تلعب:",
+  "@rhythmHowTo": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepListen": "تظهر كلمة واحدة ويمكنك الاستماع إليها",
+  "@rhythmStepListen": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTap": "انقر على الزر الكبير مرة واحدة",
+  "@rhythmStepTap": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepContinue": "اضغط متابعة عندما تكون جاهزاً",
+  "@rhythmStepContinue": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTimed": "ننتقل للكلمة التالية كل 3 ثوانٍ",
+  "@rhythmStepTimed": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTotal": "سنكمل معاً {count} كلمات",
+  "@rhythmStepTotal": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmStart": "ابدأ",
+  "@rhythmStart": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPosition": "الكلمة {current} من {total}",
+  "@rhythmPosition": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmTap": "انقر",
+  "@rhythmTap": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPaused": "⏸️ متوقف مؤقتاً",
+  "@rhythmPaused": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmTakeTime": "خذ راحتك ثم اضغط متابعة 💜",
+  "@rhythmTakeTime": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPauseNotice": "يمكنك إيقاف الإيقاع مؤقتاً",
+  "@rhythmPauseNotice": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmSaveFailed": "تعذّر حفظ النتيجة، حاول مرة أخرى",
+  "@rhythmSaveFailed": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
   }
 }

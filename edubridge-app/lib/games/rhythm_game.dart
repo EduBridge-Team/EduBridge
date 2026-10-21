@@ -1,6 +1,8 @@
 // لعبة الإيقاع — للتأتأة واضطرابات النطق
 // تدريب على الاستماع والنقر مع كلمات بسيطة
 import 'game_content.dart';
+import '../l10n/l10n.dart';
+import '../utils/rhythm_word_display.dart';
 import '../features/games/domain/rhythm_session.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
@@ -73,7 +75,15 @@ class _RhythmGameState extends State<RhythmGame> {
   }
 
   void _announce(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (AdaptiveHelper.shouldReadOnTap) _read(text);
+  }
+
+  void _read(String text) {
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+    }
   }
 
   Future<void> _stopSpeech() async {
@@ -106,9 +116,9 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _speakCurrentWord({bool explicit = false}) {
     if (!_isPlaying || _isPaused || _finishing || !mounted || _session.complete) return;
-    final word = _session.currentWord;
+    final word = RhythmWordDisplay.word(_session.currentWord, context.l10n);
     if (explicit) {
-      AdaptiveHelper.speak(word);
+      _read(word);
     } else {
       _announce(word);
     }
@@ -138,7 +148,7 @@ class _RhythmGameState extends State<RhythmGame> {
   // ═══════════════════════════════════════════════════════
   void _pause() {
     setState(_session.pause);
-    _announce('توقفنا مؤقتاً');
+    _announce(context.l10n.rhythmPausedSpoken);
   }
 
   void _resume() {
@@ -166,7 +176,7 @@ class _RhythmGameState extends State<RhythmGame> {
         _recorded = true;
       }
       if (!mounted) return;
-      await VisualCelebration.show(context, message: 'أحسنت! أتممت التمرين',
+      await VisualCelebration.show(context, message: context.l10n.rhythmComplete,
         emoji: '🎵', childName: widget.childName, duration: const Duration(seconds: 3));
       if (mounted) Navigator.pop(context);
     } catch (_) {
@@ -184,17 +194,17 @@ class _RhythmGameState extends State<RhythmGame> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1FF),
       appBar: BrandAppBar(
-        title: const Text('🎵 لعبة الإيقاع'),
+        title: Text(context.l10n.rhythmTitle),
         actions: [
           if (_isPlaying) ...[
             IconButton(
               icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-              tooltip: _isPaused ? 'متابعة' : 'إيقاف مؤقت',
+              tooltip: _isPaused ? context.l10n.feedbackContinue : context.l10n.rhythmPause,
               onPressed: _finishing ? null : (_isPaused ? _resume : _pause),
             ),
             IconButton(
               icon: const Icon(Icons.refresh),
-              tooltip: 'إعادة',
+              tooltip: context.l10n.rhythmRestart,
               onPressed: _finishing ? null : _restart,
             ),
           ],
@@ -203,8 +213,8 @@ class _RhythmGameState extends State<RhythmGame> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: _finishing
-            ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                CircularProgressIndicator(), Text('جارٍ حفظ النتيجة')]))
+            ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const CircularProgressIndicator(), Text(context.l10n.rhythmSaving)]))
             : _isPlaying ? _buildPlaying(large) : _buildStart(large),
       ),
     );

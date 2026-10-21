@@ -9045,5 +9045,422 @@
   "gameRoundContinueFailed": "Could not continue the game. Try again.",
   "@gameRoundContinueFailed": {
     "description": "Shared game round continuation status and retry error."
+  },
+  "logicQuestionBird": "All birds have wings, and a sparrow is a bird. What do we know?",
+  "@logicQuestionBird": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption0": "A sparrow has wings",
+  "@logicBirdOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption1": "A sparrow is a fish",
+  "@logicBirdOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption2": "It has no feathers",
+  "@logicBirdOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBirdOption3": "Nothing",
+  "@logicBirdOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionHeight": "If Ahmad is taller than Samer, and Samer is taller than Kareem, who is tallest?",
+  "@logicQuestionHeight": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption0": "Kareem",
+  "@logicHeightOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption1": "Samer",
+  "@logicHeightOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption2": "Ahmad",
+  "@logicHeightOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicHeightOption3": "They are equal",
+  "@logicHeightOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionBooks": "There are 3 books on the table, and we add two books. How many are there now?",
+  "@logicQuestionBooks": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption0": "4",
+  "@logicBooksOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption1": "5",
+  "@logicBooksOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption2": "6",
+  "@logicBooksOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicBooksOption3": "3",
+  "@logicBooksOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionSquare": "If all squares are shapes, and this is a square, what is true?",
+  "@logicQuestionSquare": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption0": "It is not a shape",
+  "@logicSquareOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption1": "It is a shape",
+  "@logicSquareOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption2": "It is a circle",
+  "@logicSquareOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicSquareOption3": "We do not know",
+  "@logicSquareOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionTime": "The lesson started at 9 and ended at 10. How long did it last?",
+  "@logicQuestionTime": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption0": "One hour",
+  "@logicTimeOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption1": "Two hours",
+  "@logicTimeOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption2": "30 minutes",
+  "@logicTimeOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicTimeOption3": "3 hours",
+  "@logicTimeOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionLine": "Layla is in front of Huda in the line, and Huda is in front of Noor. Who is first?",
+  "@logicQuestionLine": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption0": "Layla",
+  "@logicLineOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption1": "Huda",
+  "@logicLineOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption2": "Noor",
+  "@logicLineOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicLineOption3": "We do not know",
+  "@logicLineOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionGroup": "Which does not belong: apple, banana, orange, pen?",
+  "@logicQuestionGroup": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption0": "Apple",
+  "@logicGroupOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption1": "Banana",
+  "@logicGroupOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption2": "Pen",
+  "@logicGroupOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicGroupOption3": "Orange",
+  "@logicGroupOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionFish": "All fish live in water. A sardine is a fish. Where does it live?",
+  "@logicQuestionFish": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption0": "In water",
+  "@logicFishOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption1": "In a tree",
+  "@logicFishOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption2": "In the desert",
+  "@logicFishOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicFishOption3": "In the library",
+  "@logicFishOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionDay": "If today is Tuesday, what day is tomorrow?",
+  "@logicQuestionDay": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption0": "Monday",
+  "@logicDayOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption1": "Wednesday",
+  "@logicDayOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption2": "Friday",
+  "@logicDayOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicDayOption3": "Sunday",
+  "@logicDayOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicQuestionCorners": "Which shape has no corners?",
+  "@logicQuestionCorners": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption0": "Triangle",
+  "@logicCornersOption0": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption1": "Square",
+  "@logicCornersOption1": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption2": "Circle",
+  "@logicCornersOption2": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCornersOption3": "Rectangle",
+  "@logicCornersOption3": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicAddition": "There {count, plural, one {is {count} pen} other {are {count} pens}}, and we add {added, plural, one {{added} pen} other {{added} pens}}. How many are there now?",
+  "@logicAddition": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "added": {
+        "type": "int"
+      }
+    }
+  },
+  "logicSubtraction": "Sara has {count} stickers and gives her friend {given, plural, one {{given} sticker} other {{given} stickers}}. How many does she have left?",
+  "@logicSubtraction": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "given": {
+        "type": "int"
+      }
+    }
+  },
+  "logicSequence": "What comes next: {first}, {second}, {third}?",
+  "@logicSequence": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "first": {
+        "type": "int"
+      },
+      "second": {
+        "type": "int"
+      },
+      "third": {
+        "type": "int"
+      }
+    }
+  },
+  "logicTitle": "Logic puzzle 🧠",
+  "@logicTitle": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicCorrect": "Correct answer",
+  "@logicCorrect": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicIncorrect": "Think about how the information is connected",
+  "@logicIncorrect": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "logicComplete": "Well done! {correct} out of {total}",
+  "@logicComplete": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "logicScore": "Score: {score}",
+  "@logicScore": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmWordHouse": "House",
+  "@rhythmWordHouse": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordSun": "Sun",
+  "@rhythmWordSun": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordMoon": "Moon",
+  "@rhythmWordMoon": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordStar": "Star",
+  "@rhythmWordStar": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordWater": "Water",
+  "@rhythmWordWater": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBread": "Bread",
+  "@rhythmWordBread": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBook": "Book",
+  "@rhythmWordBook": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordPen": "Pen",
+  "@rhythmWordPen": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordDoor": "Door",
+  "@rhythmWordDoor": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordLight": "Light",
+  "@rhythmWordLight": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordBlossom": "Blossom",
+  "@rhythmWordBlossom": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmWordRose": "Rose",
+  "@rhythmWordRose": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmTitle": "🎵 Rhythm game",
+  "@rhythmTitle": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmHeading": "Rhythm game",
+  "@rhythmHeading": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPause": "Pause",
+  "@rhythmPause": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmRestart": "Restart",
+  "@rhythmRestart": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPausedSpoken": "We have paused",
+  "@rhythmPausedSpoken": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmComplete": "Well done! You completed the exercise",
+  "@rhythmComplete": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmSaving": "Saving your score",
+  "@rhythmSaving": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmDescription": "Tap along with each word you hear\nYou can listen to every word and practice tapping",
+  "@rhythmDescription": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmHowTo": "How to play:",
+  "@rhythmHowTo": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepListen": "A word appears, and you can listen to it",
+  "@rhythmStepListen": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTap": "Tap the large button once",
+  "@rhythmStepTap": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepContinue": "Press Continue when you are ready",
+  "@rhythmStepContinue": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTimed": "We move to the next word every 3 seconds",
+  "@rhythmStepTimed": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmStepTotal": "We will practice {count} words together",
+  "@rhythmStepTotal": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmStart": "Start",
+  "@rhythmStart": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPosition": "Word {current} of {total}",
+  "@rhythmPosition": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "rhythmTap": "Tap",
+  "@rhythmTap": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPaused": "⏸️ Paused",
+  "@rhythmPaused": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmTakeTime": "Take your time, then press Continue 💜",
+  "@rhythmTakeTime": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmPauseNotice": "You can pause the rhythm",
+  "@rhythmPauseNotice": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "rhythmSaveFailed": "Could not save your score. Try again.",
+  "@rhythmSaveFailed": {
+    "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
   }
 }
