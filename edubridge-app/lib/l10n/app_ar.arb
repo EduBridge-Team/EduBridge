@@ -8151,5 +8151,449 @@
         "type": "int"
       }
     }
+  },
+  "choiceColorRed": "أحمر",
+  "@choiceColorRed": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBlue": "أزرق",
+  "@choiceColorBlue": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorGreen": "أخضر",
+  "@choiceColorGreen": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorYellow": "أصفر",
+  "@choiceColorYellow": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorPurple": "بنفسجي",
+  "@choiceColorPurple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorOrange": "برتقالي",
+  "@choiceColorOrange": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorPink": "وردي",
+  "@choiceColorPink": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBrown": "بني",
+  "@choiceColorBrown": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorGrey": "رمادي",
+  "@choiceColorGrey": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBlack": "أسود",
+  "@choiceColorBlack": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeTriangle": "مثلث",
+  "@choiceShapeTriangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintTriangle": "له ثلاثة أضلاع",
+  "@choiceShapeHintTriangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeSquare": "مربع",
+  "@choiceShapeSquare": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintSquare": "له أربعة أضلاع متساوية",
+  "@choiceShapeHintSquare": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeCircle": "دائرة",
+  "@choiceShapeCircle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintCircle": "شكل مستدير بلا زوايا",
+  "@choiceShapeHintCircle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeStar": "نجمة",
+  "@choiceShapeStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintStar": "لها خمسة رؤوس",
+  "@choiceShapeHintStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHeart": "قلب",
+  "@choiceShapeHeart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintHeart": "شكل نعبّر به عن المحبة",
+  "@choiceShapeHintHeart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHexagon": "سداسي",
+  "@choiceShapeHexagon": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintHexagon": "له ستة أضلاع",
+  "@choiceShapeHintHexagon": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeRhombus": "معين",
+  "@choiceShapeRhombus": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintRhombus": "له أربعة أضلاع متساوية وزاويتان حادتان",
+  "@choiceShapeHintRhombus": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeRectangle": "مستطيل",
+  "@choiceShapeRectangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintRectangle": "له أربعة أضلاع وكل ضلعين متقابلين متساويان",
+  "@choiceShapeHintRectangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeOval": "بيضاوي",
+  "@choiceShapeOval": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintOval": "شكل مستدير ممدود بلا زوايا",
+  "@choiceShapeHintOval": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber1": "١",
+  "@choiceNumber1": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber2": "٢",
+  "@choiceNumber2": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber3": "٣",
+  "@choiceNumber3": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber4": "٤",
+  "@choiceNumber4": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber5": "٥",
+  "@choiceNumber5": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber6": "٦",
+  "@choiceNumber6": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber7": "٧",
+  "@choiceNumber7": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber8": "٨",
+  "@choiceNumber8": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber9": "٩",
+  "@choiceNumber9": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber10": "١٠",
+  "@choiceNumber10": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceQuestionApple": "كم تفاحة ترى؟",
+  "@choiceQuestionApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountApple": "{count} تفاحات",
+  "@choiceCountApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintApple": "عدّ تفاحات واحدة واحدة: {numbers}.",
+  "@choiceHintApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionStar": "كم نجمة ترى؟",
+  "@choiceQuestionStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountStar": "{count} نجمات",
+  "@choiceCountStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintStar": "عدّ نجمات واحدة واحدة: {numbers}.",
+  "@choiceHintStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionBall": "كم كرة ترى؟",
+  "@choiceQuestionBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountBall": "{count} كرات",
+  "@choiceCountBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintBall": "عدّ كرات واحدة واحدة: {numbers}.",
+  "@choiceHintBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionFlower": "كم زهرة ترى؟",
+  "@choiceQuestionFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountFlower": "{count} زهرات",
+  "@choiceCountFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintFlower": "عدّ زهرات واحدة واحدة: {numbers}.",
+  "@choiceHintFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionFish": "كم سمكة ترى؟",
+  "@choiceQuestionFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountFish": "{count} سمكات",
+  "@choiceCountFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintFish": "عدّ سمكات واحدة واحدة: {numbers}.",
+  "@choiceHintFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionButterfly": "كم فراشة ترى؟",
+  "@choiceQuestionButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountButterfly": "{count} فراشات",
+  "@choiceCountButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintButterfly": "عدّ فراشات واحدة واحدة: {numbers}.",
+  "@choiceHintButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceTitleColors": "لعبة الألوان",
+  "@choiceTitleColors": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTitleShapes": "لعبة الأشكال",
+  "@choiceTitleShapes": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTitleNumbers": "لعبة الأرقام",
+  "@choiceTitleNumbers": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceWhere": "أين {label}؟",
+  "@choiceWhere": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceCorrect": "أحسنت! {label}، اختيار صحيح.",
+  "@choiceCorrect": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceRetry": "محاولة جيدة! جرّب اختيارًا آخر، أو استخدم التلميح.",
+  "@choiceRetry": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorHint": "ابحث عن اللون {label}؛ أضفنا إطارًا حوله.",
+  "@choiceColorHint": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceSaveFailed": "تعذّر حفظ النتيجة. حاول مرة أخرى.",
+  "@choiceSaveFailed": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceWelcome": "هيا نتعلم يا {name}!",
+  "@choiceWelcome": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceIntroNumbers": "عدّ العناصر ثم اختر العدد. خذ وقتك، ويمكنك طلب تلميح.",
+  "@choiceIntroNumbers": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceIntroColors": "تعرّف على الألوان واختر الإجابة. خذ وقتك، ويمكنك المحاولة من جديد.",
+  "@choiceIntroColors": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceIntroShapes": "تعرّف على الأشكال واختر الإجابة. خذ وقتك، ويمكنك المحاولة من جديد.",
+  "@choiceIntroShapes": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceEasy": "بداية سهلة",
+  "@choiceEasy": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceChallenge": "تحدٍ جديد",
+  "@choiceChallenge": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceAdaptiveNotice": "الاختيارات تتكيف مع محاولاتك، وكل جولة تحمل محتوى متنوعاً.",
+  "@choiceAdaptiveNotice": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSound": "قراءة صوتية",
+  "@choiceSound": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceStart": "ابدأ اللعب",
+  "@choiceStart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceRound": "الجولة {round} من {total}",
+  "@choiceRound": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceProgress": "تقدم الجولات",
+  "@choiceProgress": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceListen": "استمع للسؤال",
+  "@choiceListen": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTryOther": "جرّب غيره",
+  "@choiceTryOther": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceEncouragement": "كل محاولة تساعدك على التعلّم.",
+  "@choiceEncouragement": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNext": "التالي",
+  "@choiceNext": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceHint": "تلميح",
+  "@choiceHint": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCompleted": "أحسنت، أكملت الرحلة!",
+  "@choiceCompleted": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSummary": "أكملت {total} جولات\n{correct} إجابات صحيحة من أول محاولة بلا تلميح",
+  "@choiceSummary": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "correct": {
+        "type": "int"
+      }
+    }
+  },
+  "choicePractice": "التدريب يساعدك على التقدم. لنجرّب مرة أخرى!",
+  "@choicePractice": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSaveRetry": "إعادة حفظ النتيجة",
+  "@choiceSaveRetry": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceReplay": "العب من جديد",
+  "@choiceReplay": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceBack": "العودة للألعاب",
+  "@choiceBack": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountSeparator": "، ",
+  "@choiceCountSeparator": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
   }
 }

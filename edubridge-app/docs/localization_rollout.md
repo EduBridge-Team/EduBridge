@@ -436,3 +436,10 @@ final source/direction inventory and deferred manual accessibility checks.
 - A word-language change rebuilds the letter bank: unfinished attempts restart within the same round, while completed answers and points remain credited. Story selections stay intact during language changes.
 - Added adapter coverage for every built-in value and narrow-screen, double-text-scale interactions for all three word age groups and both story card counts, wrong/correct answers, retry, locale changes and explicit speech with automatic reading disabled.
 - Flutter analysis, tests and platform builds are verified through PR CI; no backend or teacher-authored lesson content changes.
+
+### Colors, shapes and counting
+- Localized the shared ChoiceLearningGame introduction, difficulty controls, rounds, hints, answer feedback, summary, save/retry states and accessibility labels.
+- Translated ten colors, nine shape names/descriptions, digits 1–10 and six counting-object questions/hints/count labels. English count labels use plurals; Arabic number choices retain their existing digits.
+- Preserved canonical history IDs, object selection, correct answer indexes, adaptive option rules and result calculations. Retained feedback and save errors resolve in the current locale. Layout direction follows the app locale; next arrows follow reading direction.
+- Speech follows the interface locale while retaining slow speech, calm-mode automatic-speech suppression, explicit listening and the local sound switch.
+- Added all-topic gameplay coverage in Arabic/English at narrow width and double text scale, including wrong answers, hints, locale changes, speech, full completion and unchanged first-try scoring. Local ARB parity/metadata and diff checks precede PR CI for Flutter analysis/tests and platform builds.

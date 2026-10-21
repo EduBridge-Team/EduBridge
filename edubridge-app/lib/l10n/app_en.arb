@@ -8151,5 +8151,449 @@
         "type": "int"
       }
     }
+  },
+  "choiceColorRed": "Red",
+  "@choiceColorRed": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBlue": "Blue",
+  "@choiceColorBlue": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorGreen": "Green",
+  "@choiceColorGreen": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorYellow": "Yellow",
+  "@choiceColorYellow": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorPurple": "Purple",
+  "@choiceColorPurple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorOrange": "Orange",
+  "@choiceColorOrange": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorPink": "Pink",
+  "@choiceColorPink": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBrown": "Brown",
+  "@choiceColorBrown": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorGrey": "Grey",
+  "@choiceColorGrey": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorBlack": "Black",
+  "@choiceColorBlack": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeTriangle": "Triangle",
+  "@choiceShapeTriangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintTriangle": "It has three sides",
+  "@choiceShapeHintTriangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeSquare": "Square",
+  "@choiceShapeSquare": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintSquare": "It has four equal sides",
+  "@choiceShapeHintSquare": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeCircle": "Circle",
+  "@choiceShapeCircle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintCircle": "A round shape with no corners",
+  "@choiceShapeHintCircle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeStar": "Star",
+  "@choiceShapeStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintStar": "It has five points",
+  "@choiceShapeHintStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHeart": "Heart",
+  "@choiceShapeHeart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintHeart": "A shape that shows love",
+  "@choiceShapeHintHeart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHexagon": "Hexagon",
+  "@choiceShapeHexagon": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintHexagon": "It has six sides",
+  "@choiceShapeHintHexagon": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeRhombus": "Rhombus",
+  "@choiceShapeRhombus": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintRhombus": "It has four equal sides and two sharp angles",
+  "@choiceShapeHintRhombus": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeRectangle": "Rectangle",
+  "@choiceShapeRectangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintRectangle": "It has four sides, with opposite sides equal",
+  "@choiceShapeHintRectangle": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeOval": "Oval",
+  "@choiceShapeOval": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceShapeHintOval": "A stretched round shape with no corners",
+  "@choiceShapeHintOval": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber1": "1",
+  "@choiceNumber1": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber2": "2",
+  "@choiceNumber2": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber3": "3",
+  "@choiceNumber3": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber4": "4",
+  "@choiceNumber4": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber5": "5",
+  "@choiceNumber5": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber6": "6",
+  "@choiceNumber6": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber7": "7",
+  "@choiceNumber7": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber8": "8",
+  "@choiceNumber8": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber9": "9",
+  "@choiceNumber9": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNumber10": "10",
+  "@choiceNumber10": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceQuestionApple": "How many apples can you see?",
+  "@choiceQuestionApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountApple": "{count, plural, one {{count} apple} other {{count} apples}}",
+  "@choiceCountApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintApple": "Count the apples one by one: {numbers}.",
+  "@choiceHintApple": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionStar": "How many stars can you see?",
+  "@choiceQuestionStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountStar": "{count, plural, one {{count} star} other {{count} stars}}",
+  "@choiceCountStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintStar": "Count the stars one by one: {numbers}.",
+  "@choiceHintStar": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionBall": "How many balls can you see?",
+  "@choiceQuestionBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountBall": "{count, plural, one {{count} ball} other {{count} balls}}",
+  "@choiceCountBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintBall": "Count the balls one by one: {numbers}.",
+  "@choiceHintBall": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionFlower": "How many flowers can you see?",
+  "@choiceQuestionFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountFlower": "{count, plural, one {{count} flower} other {{count} flowers}}",
+  "@choiceCountFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintFlower": "Count the flowers one by one: {numbers}.",
+  "@choiceHintFlower": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionFish": "How many fish can you see?",
+  "@choiceQuestionFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountFish": "{count, plural, one {{count} fish} other {{count} fish}}",
+  "@choiceCountFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintFish": "Count the fish one by one: {numbers}.",
+  "@choiceHintFish": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceQuestionButterfly": "How many butterflies can you see?",
+  "@choiceQuestionButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountButterfly": "{count, plural, one {{count} butterfly} other {{count} butterflies}}",
+  "@choiceCountButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceHintButterfly": "Count the butterflies one by one: {numbers}.",
+  "@choiceHintButterfly": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceTitleColors": "Color game",
+  "@choiceTitleColors": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTitleShapes": "Shape game",
+  "@choiceTitleShapes": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTitleNumbers": "Number game",
+  "@choiceTitleNumbers": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceWhere": "Where is {label}?",
+  "@choiceWhere": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceCorrect": "Well done! {label} is correct.",
+  "@choiceCorrect": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceRetry": "Good try! Choose another answer, or use a hint.",
+  "@choiceRetry": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceColorHint": "Look for {label}; we added a border around it.",
+  "@choiceColorHint": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceSaveFailed": "Could not save your score. Try again.",
+  "@choiceSaveFailed": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceWelcome": "Let’s learn, {name}!",
+  "@choiceWelcome": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "choiceIntroNumbers": "Count the objects and choose the number. Take your time. You can ask for a hint.",
+  "@choiceIntroNumbers": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceIntroColors": "Learn the colors and choose an answer. Take your time. You can try again.",
+  "@choiceIntroColors": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceIntroShapes": "Learn the shapes and choose an answer. Take your time. You can try again.",
+  "@choiceIntroShapes": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceEasy": "Easy start",
+  "@choiceEasy": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceChallenge": "New challenge",
+  "@choiceChallenge": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceAdaptiveNotice": "Choices adapt to your attempts, with varied content in every round.",
+  "@choiceAdaptiveNotice": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSound": "Read aloud",
+  "@choiceSound": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceStart": "Start playing",
+  "@choiceStart": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceRound": "Round {round} of {total}",
+  "@choiceRound": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "choiceProgress": "Round progress",
+  "@choiceProgress": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceListen": "Listen to the question",
+  "@choiceListen": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceTryOther": "Try another",
+  "@choiceTryOther": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceEncouragement": "Every attempt helps you learn.",
+  "@choiceEncouragement": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceNext": "Next",
+  "@choiceNext": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceHint": "Hint",
+  "@choiceHint": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCompleted": "Well done! You completed the journey!",
+  "@choiceCompleted": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSummary": "You completed {total} rounds\n{correct} correct answers on the first try without a hint",
+  "@choiceSummary": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "correct": {
+        "type": "int"
+      }
+    }
+  },
+  "choicePractice": "Practice helps you improve. Let’s try again!",
+  "@choicePractice": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceSaveRetry": "Save score again",
+  "@choiceSaveRetry": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceReplay": "Play again",
+  "@choiceReplay": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceBack": "Back to games",
+  "@choiceBack": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "choiceCountSeparator": ", ",
+  "@choiceCountSeparator": {
+    "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
   }
 }
