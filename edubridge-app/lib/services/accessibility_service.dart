@@ -1,9 +1,11 @@
 // خدمة التكييف الديناميكي — تدعم بروفايل منفصل لكل طفل + ميزات كل الإعاقات
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api_service.dart';
+
 import 'accessibility_profile.dart';
+import 'api_service.dart';
 
 export 'accessibility_profile.dart';
 
