@@ -1,4 +1,6 @@
 import 'dart:async';
+import '../l10n/l10n.dart';
+import '../utils/choice_game_display.dart';
 import 'game_content.dart';
 import 'package:flutter/material.dart';
 import '../services/accessibility_service.dart';
@@ -10,6 +12,8 @@ import '../theme.dart';
 import 'learning_rounds.dart';
 
 enum LearningTopic { colors, shapes, numbers }
+
+enum _ChoiceFeedback { none, correct, retry, hint }
 
 class ChoiceLearningGame extends StatefulWidget {
   const ChoiceLearningGame({super.key, required this.topic,
@@ -55,15 +59,32 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
   bool _sound = true;
   bool _saving = false;
   bool _saved = false;
-  String? _saveError;
-  String _feedback = '';
+  bool _saveError = false;
+  _ChoiceFeedback _feedback = _ChoiceFeedback.none;
 
   bool get _isColors => widget.topic == LearningTopic.colors;
   bool get _isShapes => widget.topic == LearningTopic.shapes;
-  String get _title => _isColors ? 'لعبة الألوان' : _isShapes ? 'لعبة الأشكال' : 'لعبة الأرقام';
-  String _label(int index) => _isColors ? _colors[index].$1 : _isShapes ? _shapes[index].$1 : _digits[index];
+  String get _title => _isColors ? context.l10n.choiceTitleColors
+      : _isShapes ? context.l10n.choiceTitleShapes : context.l10n.choiceTitleNumbers;
+  String _canonicalLabel(int index) => _isColors ? _colors[index].$1
+      : _isShapes ? _shapes[index].$1 : _digits[index];
+  String _label(int index) => _isColors ? ChoiceGameDisplay.color(index, context.l10n)
+      : _isShapes ? ChoiceGameDisplay.shape(index, context.l10n)
+      : ChoiceGameDisplay.number(index, context.l10n);
   String get _question => widget.topic == LearningTopic.numbers
-    ? 'كم ${_countObject.name} ترى؟' : 'أين ${_label(_rounds!.target)}؟';
+      ? ChoiceGameDisplay.question(_countObject.emoji, context.l10n)
+      : context.l10n.choiceWhere(_label(_rounds!.target));
+  String get _feedbackText => switch (_feedback) {
+    _ChoiceFeedback.none => context.l10n.choiceEncouragement,
+    _ChoiceFeedback.correct => context.l10n.choiceCorrect(_label(_rounds!.target)),
+    _ChoiceFeedback.retry => context.l10n.choiceRetry,
+    _ChoiceFeedback.hint => _isShapes
+        ? ChoiceGameDisplay.shapeHint(_rounds!.target, context.l10n)
+        : _isColors ? context.l10n.choiceColorHint(_label(_rounds!.target))
+        : ChoiceGameDisplay.hint(_countObject.emoji, context.l10n,
+            List.generate(_rounds!.target + 1, (index) => _label(index))
+                .join(context.l10n.choiceCountSeparator)),
+  };
 
   @override
   void initState() {
@@ -84,7 +105,13 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
   Future<void> _speak(String text, {bool explicit = false}) async {
     final policy = AdaptiveFeedbackPolicy(AccessibilityService.instance.profile.value);
     if (!_sound || (!explicit && !policy.allowAutomaticSpeech)) return;
-    try { await AdaptiveHelper.speak(text); }
+    try {
+      if (AdaptiveHelper.useSlowSpeech) {
+        await TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
+      } else {
+        await TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+      }
+    }
     catch (_) { /* Visual instructions remain available without a speech engine. */ }
   }
 
@@ -94,11 +121,11 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
       _rounds = LearningRounds(itemCount: _itemCount, totalRounds: _easy ? 6 : 8,
         optionCount: _easy ? 3 : 4, adaptiveOptions: true,
         pickTarget: () => GameContent.instance.pick('choice_${widget.topic.name}',
-          List.generate(_itemCount, (i) => i), (index) => _label(index)));
-      _feedback = '';
+          List.generate(_itemCount, (i) => i), (index) => _canonicalLabel(index)));
+      _feedback = _ChoiceFeedback.none;
       _saving = false;
       _saved = false;
-      _saveError = null;
+      _saveError = false;
     });
     unawaited(_speak(_question));
   }
@@ -112,37 +139,33 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     final result = _rounds!.choose(index);
     if (result == null) return;
     setState(() => _feedback = result
-      ? 'أحسنت! ${_label(index)}، اختيار صحيح.'
-      : 'محاولة جيدة! جرّب اختيارًا آخر، أو استخدم التلميح.');
-    unawaited(_speak(_feedback));
+      ? _ChoiceFeedback.correct : _ChoiceFeedback.retry);
+    unawaited(_speak(_feedbackText));
     if (_rounds!.finished) unawaited(_save());
   }
 
   void _hint() {
     _rounds!.hint();
-    final target = _rounds!.target;
-    setState(() => _feedback = _isShapes ? _shapes[target].$3
-      : _isColors ? 'ابحث عن اللون ${_label(target)}؛ أضفنا إطارًا حوله.'
-      : 'عدّ ${_countObject.plural} واحدة واحدة: ${_digits.take(target + 1).join('، ')}.');
-    unawaited(_speak(_feedback));
+    setState(() => _feedback = _ChoiceFeedback.hint);
+    unawaited(_speak(_feedbackText));
   }
 
   void _next() {
     if (!_rounds!.next()) return;
-    setState(() { _feedback = ''; _varyVisual(); });
+    setState(() { _feedback = _ChoiceFeedback.none; _varyVisual(); });
     unawaited(_speak(_question));
   }
 
   Future<void> _save() async {
     if (_saving || _saved) return;
-    setState(() { _saving = true; _saveError = null; });
+    setState(() { _saving = true; _saveError = false; });
     try {
       await GameProgressService.instance.record(_rounds!.scorePercent);
       if (!mounted) return;
       setState(() => _saved = true);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _saveError = 'تعذّر حفظ النتيجة. حاول مرة أخرى.');
+      setState(() => _saveError = true);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -154,7 +177,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
     builder: (context, profile, _) {
       final reduced = !AdaptiveFeedbackPolicy(profile,
         systemReduceMotion: MediaQuery.disableAnimationsOf(context)).allowMotion;
-      return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
+      return Scaffold(
         appBar: JisrAppBar(title: _title),
         body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(20),
           child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 600),
@@ -162,7 +185,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
               child: _rounds == null ? _intro() : _rounds!.finished ? _summary()
                 : _play(profile, reduced),
             ))))),
-      ));
+      );
     },
   );
 
@@ -172,26 +195,26 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   Widget _intro() => _panel([
     const Icon(Icons.school_outlined, size: 64, color: AppColors.brandBlue),
-    const SizedBox(height: 16), Text('هيا نتعلم يا ${widget.childName}!',
+    const SizedBox(height: 16), Text(context.l10n.choiceWelcome(widget.childName),
       textAlign: TextAlign.center, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
     const SizedBox(height: 12), Text(widget.topic == LearningTopic.numbers
-      ? 'عدّ العناصر ثم اختر العدد. خذ وقتك، ويمكنك طلب تلميح.'
-      : 'تعرّف على ${_isColors ? 'الألوان' : 'الأشكال'} واختر الإجابة. خذ وقتك، ويمكنك المحاولة من جديد.',
+      ? context.l10n.choiceIntroNumbers
+      : _isColors ? context.l10n.choiceIntroColors : context.l10n.choiceIntroShapes,
       textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, height: 1.6)),
     const SizedBox(height: 24),
     Wrap(alignment: WrapAlignment.center, spacing: 12, children: [
-      ChoiceChip(label: const Text('بداية سهلة'), selected: _easy,
+      ChoiceChip(label: Text(context.l10n.choiceEasy), selected: _easy,
         onSelected: (_) => setState(() => _easy = true)),
-      ChoiceChip(label: const Text('تحدٍ جديد'), selected: !_easy,
+      ChoiceChip(label: Text(context.l10n.choiceChallenge), selected: !_easy,
         onSelected: (_) => setState(() => _easy = false)),
     ]),
-    const SizedBox(height: 12), const Text('الاختيارات تتكيف مع محاولاتك، وكل جولة تحمل محتوى متنوعاً.', textAlign: TextAlign.center),
+    const SizedBox(height: 12), Text(context.l10n.choiceAdaptiveNotice, textAlign: TextAlign.center),
     const SizedBox(height: 20), _soundToggle(),
-    const SizedBox(height: 12), _action('ابدأ اللعب', Icons.play_arrow, _start),
+    const SizedBox(height: 12), _action(context.l10n.choiceStart, Icons.play_arrow, _start),
   ], id: 'intro');
 
   Widget _soundToggle() => SwitchListTile.adaptive(
-    title: const Text('قراءة صوتية'), value: _sound,
+    title: Text(context.l10n.choiceSound), value: _sound,
     onChanged: (value) {
       setState(() => _sound = value);
       if (!value) unawaited(_stopSpeech());
@@ -200,21 +223,21 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
   Widget _play(AccessibilityProfile profile, bool reduced) {
     final game = _rounds!;
     return Column(key: const ValueKey('play'), crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text('الجولة ${game.answered ? game.completed : game.completed + 1} من ${game.totalRounds}',
+      Text(context.l10n.choiceRound(game.answered ? game.completed : game.completed + 1, game.totalRounds),
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 10), LinearProgressIndicator(value: game.completed / game.totalRounds,
-        minHeight: 8, semanticsLabel: 'تقدم الجولات'),
+        minHeight: 8, semanticsLabel: context.l10n.choiceProgress),
       const SizedBox(height: 20),
       Card(child: Padding(padding: const EdgeInsets.all(22), child: Column(children: [
         if (widget.topic == LearningTopic.numbers)
-          Semantics(label: '${game.target + 1} ${_countObject.plural}', child: ExcludeSemantics(child: Wrap(
+          Semantics(key: const ValueKey('choice_count'), label: ChoiceGameDisplay.count(_countObject.emoji, context.l10n, game.target + 1), child: ExcludeSemantics(child: Wrap(
             alignment: WrapAlignment.center, spacing: 10, runSpacing: 10,
             children: List.generate(game.target + 1, (_) => Text(_countObject.emoji, style: TextStyle(fontSize: 46))))))
         else _symbol(game.target, size: 76),
-        const SizedBox(height: 16), Text(_question, textAlign: TextAlign.center,
+        const SizedBox(height: 16), Text(_question, key: const ValueKey('choice_question'), textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
         TextButton.icon(onPressed: () => unawaited(_speak(_question, explicit: true)),
-          icon: const Icon(Icons.volume_up_outlined), label: const Text('استمع للسؤال')),
+          icon: const Icon(Icons.volume_up_outlined), label: Text(context.l10n.choiceListen)),
       ]))),
       const SizedBox(height: 16),
       LayoutBuilder(builder: (context, constraints) {
@@ -229,7 +252,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(22),
               border: Border.all(color: correct ? Colors.green.shade700 : hint ? AppColors.brandBlue
                 : Theme.of(context).dividerColor, width: correct || hint ? 3 : 1)),
-            child: OutlinedButton(onPressed: game.answered || tried ? null : () => _choose(index),
+            child: OutlinedButton(key: ValueKey('choice_option_$index'), onPressed: game.answered || tried ? null : () => _choose(index),
               style: OutlinedButton.styleFrom(minimumSize: Size(0, profile.extraLargeTouchTargets ? 132 : 108),
                 padding: const EdgeInsets.all(16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
               child: Column(children: [
@@ -238,17 +261,17 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
                 _symbol(index, size: 44), const SizedBox(height: 8),
                 if (widget.topic != LearningTopic.numbers) Text(_label(index),
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                if (tried) const Text('جرّب غيره'),
+                if (tried) Text(context.l10n.choiceTryOther),
               ])),
           ));
         }).toList());
       }),
       const SizedBox(height: 18),
-      Semantics(liveRegion: true, child: Text(_feedback.isEmpty ? 'كل محاولة تساعدك على التعلّم.' : _feedback,
+      Semantics(liveRegion: true, child: Text(_feedbackText,
         textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, height: 1.6))),
       const SizedBox(height: 12),
-      if (game.answered) _action('التالي', Icons.arrow_back, _next)
-      else OutlinedButton.icon(onPressed: _hint, icon: const Icon(Icons.lightbulb_outline), label: const Text('تلميح')),
+      if (game.answered) _action(context.l10n.choiceNext, Directionality.of(context) == TextDirection.rtl ? Icons.arrow_back : Icons.arrow_forward, _next)
+      else OutlinedButton.icon(onPressed: _hint, icon: const Icon(Icons.lightbulb_outline), label: Text(context.l10n.choiceHint)),
       _soundToggle(),
     ]);
   }
@@ -259,7 +282,7 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
         decoration: BoxDecoration(color: _colors[index].$2, borderRadius: BorderRadius.circular(_visualStyle.isEven ? 16 : size / 2),
           border: Border.all(color: Colors.black26))));
     }
-    final symbol = Text(_isShapes ? (_visualStyle.isEven ? _shapes[index].$2 : _shapeGlyphs[index]) : _digits[index],
+    final symbol = Text(_isShapes ? (_visualStyle.isEven ? _shapes[index].$2 : _shapeGlyphs[index]) : _label(index),
       semanticsLabel: _label(index), style: TextStyle(fontSize: size,
         color: _isShapes ? [AppColors.brandBlue, AppColors.brandTeal,
           AppColors.orange, AppColors.pink][_visualStyle] : null));
@@ -268,19 +291,18 @@ class _ChoiceLearningGameState extends State<ChoiceLearningGame> {
 
   Widget _summary() => _panel([
     const Icon(Icons.emoji_events_outlined, size: 72, color: AppColors.brandTeal),
-    const SizedBox(height: 16), const Text('أحسنت، أكملت الرحلة!', textAlign: TextAlign.center,
+    const SizedBox(height: 16), Text(context.l10n.choiceCompleted, textAlign: TextAlign.center,
       style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-    const SizedBox(height: 14), Text('أكملت ${_rounds!.totalRounds} جولات\n'
-      '${_rounds!.firstTryCorrect} إجابات صحيحة من أول محاولة بلا تلميح',
+    const SizedBox(height: 14), Text(context.l10n.choiceSummary(_rounds!.totalRounds, _rounds!.firstTryCorrect),
       textAlign: TextAlign.center, style: const TextStyle(fontSize: 19, height: 1.8)),
-    const SizedBox(height: 12), const Text('التدريب يساعدك على التقدم. لنجرّب مرة أخرى!', textAlign: TextAlign.center),
+    const SizedBox(height: 12), Text(context.l10n.choicePractice, textAlign: TextAlign.center),
     if (_saving) const Padding(padding: EdgeInsets.all(12), child: LinearProgressIndicator()),
-    if (_saveError != null) ...[
-      Text(_saveError!, textAlign: TextAlign.center),
-      TextButton(onPressed: _saving ? null : () => unawaited(_save()), child: const Text('إعادة حفظ النتيجة')),
+    if (_saveError) ...[
+      Text(context.l10n.choiceSaveFailed, textAlign: TextAlign.center),
+      TextButton(onPressed: _saving ? null : () => unawaited(_save()), child: Text(context.l10n.choiceSaveRetry)),
     ],
-    const SizedBox(height: 20), _action('العب من جديد', Icons.replay, _saving || !_saved ? null : _start),
-    TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('العودة للألعاب')),
+    const SizedBox(height: 20), _action(context.l10n.choiceReplay, Icons.replay, _saving || !_saved ? null : _start),
+    TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.l10n.choiceBack)),
   ], id: 'summary');
 
   Widget _action(String text, IconData icon, VoidCallback? onPressed) => FilledButton.icon(
