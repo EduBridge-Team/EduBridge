@@ -6708,5 +6708,68 @@
       }
     },
     "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "breakTitle": "Break time",
+  "@breakTitle": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakIntro": "Take a short break, then continue where you left off. Select Ready to return.",
+  "@breakIntro": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakComfort": "Rest in a way that feels comfortable",
+  "@breakComfort": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAskHelp": "You can ask someone with you for help",
+  "@breakAskHelp": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAway": "You can take a short break away from the screen",
+  "@breakAway": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakAnother": "Another suggestion",
+  "@breakAnother": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakExtensionLimit": "No more extensions",
+  "@breakExtensionLimit": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakExtend": "More time (+30 seconds)",
+  "@breakExtend": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakReady": "Ready",
+  "@breakReady": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged."
+  },
+  "breakSpokenSuggestion": "Break time. {suggestion}",
+  "@breakSpokenSuggestion": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "suggestion": {
+        "type": "String"
+      }
+    }
+  },
+  "breakRemaining": "{count, plural, =1{1 second remaining} other{{count} seconds remaining}}",
+  "@breakRemaining": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "breakResumeSoon": "{count, plural, =1{Continuing in 1 second} other{Continuing in {count} seconds}}",
+  "@breakResumeSoon": {
+    "description": "Child learning break interface; timing and extension limits remain unchanged.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

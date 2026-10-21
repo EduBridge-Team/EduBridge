@@ -324,3 +324,21 @@ failed saves and retry. The custom-name heading can wrap inside its existing row
 This batch does not change voice recognition language or enable inactive features.
 Next: child activities/games and voice/semantic feedback, followed by the final
 completeness audit and deferred manual accessibility checks.
+
+### Phase 5 — learning break interface and speech
+
+Brain-break headings, suggestions, countdown plurals and actions now follow the
+selected Arabic/English locale. Changing language preserves the active suggestion,
+remaining time and extension count. Automatic suggestion speech starts after
+localizations become available and uses that interface language. The shared TTS
+API accepts an optional language code; legacy calls still default to Arabic and
+retain Arabic number/percentage normalization, while English speech keeps its text.
+
+The specialist duration, hidden countdown behavior, lifecycle pause/resume and
+maximum two 30-second extensions are unchanged. Automatic speech still respects
+sensory-calm and auto-read settings. Eight regression cases cover both directions,
+320px at 1x/2x text, suggestions, extension limits, early exit, hidden timed return,
+live language switching and speech language/text preservation.
+
+Next: remaining child feedback/voice/semantic messages and game interfaces, then
+the final screen-by-screen completeness and manual accessibility audit.
