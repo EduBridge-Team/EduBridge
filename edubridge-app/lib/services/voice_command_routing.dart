@@ -73,18 +73,21 @@ extension _VoiceCommandRoutingExtension on VoiceCommandService {
     return null;
   }
 
-  String _gameDisplayName(String gameId) => GameScreenFactory.info(gameId)?.title ?? 'اللعبة';
+  String _gameDisplayName(String gameId) {
+    final game = GameScreenFactory.info(gameId);
+    return game == null ? _strings.voiceCommandGamesLabel : GameCatalogDisplay.title(game, _strings);
+  }
 
   // ═══════════════════════════════════════════════════════════
   //  أدوات مساعدة
   // ═══════════════════════════════════════════════════════════
   String _normalize(String input) => normalizeVoiceText(input);
 
-  bool _matches(String text, List<String> keywords) => matchesVoiceText(text, keywords);
+  bool _matches(String text, List<String> keywords) => matchesVoiceCommand(text, keywords);
 
   Future<void> _reply(String message) async {
     lastReply.value = message;
-    await TtsService.instance.speakLine(message);
+    await TtsService.instance.speakLine(message, languageCode: _locale.value.languageCode);
   }
 
 }

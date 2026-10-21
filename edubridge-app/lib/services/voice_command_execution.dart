@@ -4,7 +4,7 @@ part of 'voice_command_service.dart';
 extension _VoiceCommandExecutionExtension on VoiceCommandService {
   Future<void> _executeCommand(String rawText) async {
     final userId = await ApiService.getUserId();
-    if (userId == null) { await _reply('سجّل الدخول لاستخدام الأوامر الصوتية'); return; }
+    if (userId == null) { await _reply(_strings.voiceCommandSignIn); return; }
     final text = _normalize(rawText);
     final nav = appNavigatorKey.currentState;
 
@@ -13,7 +13,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       if (TtsService.instance.tapToRead.value) {
         await TtsService.instance.toggleTapToRead();
       }
-      await _reply('أوقفت وضع القراءة');
+      await _reply(_strings.voiceCommandReadingOff);
       return;
     }
 
@@ -24,19 +24,19 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       if (!TtsService.instance.tapToRead.value) {
         await TtsService.instance.toggleTapToRead();
       }
-      await _reply('وضع القراءة باللمس مُفعّل');
+      await _reply(_strings.voiceCommandReadingOn);
       return;
     }
     // ═══ 2. الإيقاف ═══
     if (_matches(text, ['اوقف', 'اسكت', 'سكوت', 'هدوء', 'صمت'])) {
       await TtsService.instance.stop();
-      await _reply('تم الإيقاف');
+      await _reply(_strings.voiceCommandStopped);
       return;
     }
 
     // ═══ 3. التحقق من التنقل ═══
     if (nav == null) {
-      await _reply('تعذّر التنقل');
+      await _reply(_strings.voiceCommandNavigationFailed);
       return;
     }
 
@@ -45,16 +45,16 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       'رئيسيه', 'الرئيسيه', 'رئيسي', 'الصفحه الاولى',
       'البدايه', 'هوم',
     ])) {
-      await _reply('سأرجع للرئيسية');
+      await _reply(_strings.voiceCommandHome);
       nav.popUntil((r) => r.isFirst);
       return;
     }
     if (_matches(text, ['ارجع', 'رجوع', 'للخلف', 'خلف', 'باك'])) {
       if (nav.canPop()) {
         nav.pop();
-        await _reply('رجعت للخلف');
+        await _reply(_strings.voiceCommandBack);
       } else {
-        await _reply('لا يوجد شيء للرجوع');
+        await _reply(_strings.voiceCommandNoBack);
       }
       return;
     }
@@ -62,12 +62,12 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     // ═══ 5. الثيم ═══
     if (_matches(text, ['ليلي', 'الليلي', 'ظلام', 'داكن', 'مظلم'])) {
       if (jisrThemeMode.value != ThemeMode.dark) await toggleThemeMode();
-      await _reply('بدّلت للوضع الليلي');
+      await _reply(_strings.voiceCommandDark);
       return;
     }
     if (_matches(text, ['فاتح', 'الفاتح', 'نهاري', 'نهار', 'صبح'])) {
       if (jisrThemeMode.value != ThemeMode.light) await toggleThemeMode();
-      await _reply('بدّلت للوضع الفاتح');
+      await _reply(_strings.voiceCommandLight);
       return;
     }
 
@@ -83,13 +83,13 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       } else {
         screen = const ProfileScreen();
       }
-      await _reply('سأفتح إعدادات حسابك');
+      await _reply(_strings.voiceCommandAccount);
       nav.push(MaterialPageRoute(builder: (_) => screen));
       return;
     }
     if (!['admin', 'parent'].contains(role) && !await ApiService.isVerified()) {
       if (await ApiService.getUserId() != userId) return;
-      await _reply('وثّق هويتك أولاً لفتح الخدمات');
+      await _reply(_strings.voiceCommandVerify);
       nav.push(MaterialPageRoute(builder: (_) => const VerifyIdentityScreen()));
       return;
     }
@@ -97,26 +97,26 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     final childRole = ['parent', 'teacher', 'specialist', 'admin'].contains(role);
     if (_matches(text, ['دروس ولي الامر', 'دروس لولي الامر', 'دروس للاهل', 'نصائح', 'دروس عامه', 'الدروس العامه', 'مكتبه الدروس'])) {
       final parentLessons = !_matches(text, ['دروس عامه', 'الدروس العامه', 'مكتبه الدروس']);
-      if (parentLessons && !childRole) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
-      await _reply(parentLessons ? 'سأفتح دروس ولي الأمر' : 'سأفتح مكتبة الدروس');
+      if (parentLessons && !childRole) { await _reply(_strings.voiceCommandDenied); return; }
+      await _reply(parentLessons ? _strings.voiceCommandParentLessons : _strings.voiceCommandLibrary);
       nav.push(MaterialPageRoute(builder: (_) => parentLessons ? const ParentLessonsScreen() : const LessonsScreen()));
       return;
     }
     if (_matches(text, ['طلبات الدعم', 'طلبات الدعم التعليمي', 'اجتماعات الدعم التعليمي'])) {
-      if (!['parent', 'specialist', 'admin'].contains(role)) { await _reply('هذه الصفحة غير متاحة لدور حسابك'); return; }
-      await _reply('سأفتح طلبات الدعم');
+      if (!['parent', 'specialist', 'admin'].contains(role)) { await _reply(_strings.voiceCommandDenied); return; }
+      await _reply(_strings.voiceCommandSupport);
       nav.push(MaterialPageRoute(builder: (_) => const LearningSupportRequestsScreen()));
       return;
     }
     if (_matches(text, ['جلسات', 'الجلسات', 'اجتماعات الدعم', 'اجتماعات دعم', 'طلبات', 'الطلبات', 'طلبات الدعم', 'طلب دعم', 'دعم تعليمي']) &&
         !_matches(text, ['فريق', 'الفريق']) && !['parent', 'specialist', 'admin'].contains(role)) {
-      await _reply('الدعم التعليمي غير متاح لدور حسابك'); return;
+      await _reply(_strings.voiceCommandSupportDenied); return;
     }
     if (_matches(text, ['دراسه', 'دراسه الحاله', 'دراسات الحاله', 'نقاش', 'مناقشه']) && !['teacher', 'specialist', 'admin'].contains(role)) {
-      await _reply('دراسات الحالة غير متاحة لدور حسابك'); return;
+      await _reply(_strings.voiceCommandCasesDenied); return;
     }
     if (_matches(text, ['الاطفال', 'اطفال', 'الطلاب', 'طلاب', 'طلابي', 'طفل', 'دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقارير', 'التقارير', 'تقرير', 'التقرير', 'فريق', 'الفريق', 'العاب', 'الالعاب', 'العب']) && !childRole) {
-      await _reply('هذه الصفحة غير متاحة لدور حسابك'); return;
+      await _reply(_strings.voiceCommandDenied); return;
     }
     if (_matches(text, ['دروس', 'الدروس', 'درس', 'واجب', 'واجبات', 'الواجبات', 'الواجب', 'تقدم', 'التقدم', 'تقرير', 'التقرير', 'تقارير', 'التقارير', 'فريق', 'الفريق', 'طلب دعم', 'دعم تعليمي', 'تكييف', 'تكيف', 'دراسه', 'دراسات الحاله', 'نقاش', 'مناقشه'])) {
       await _ensureChildrenLoaded();
@@ -138,7 +138,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'الاطفال', 'اطفال', 'الطلاب', 'طلاب', 'طلابي', 'الاولاد', 'اولاد', 'قائمه الاطفال',
     ])) {
-      await _reply('سأفتح قائمة الأطفال');
+      await _reply(_strings.voiceCommandChildren);
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
       return;
     }
@@ -146,7 +146,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'دروس ولي الامر', 'دروس لولي الامر', 'دروس للاهل', 'نصائح',
     ])) {
-      await _reply('سأفتح دروس ولي الأمر');
+      await _reply(_strings.voiceCommandParentLessons);
       nav.push(MaterialPageRoute(
         builder: (_) => const ParentLessonsScreen(),
       ));
@@ -156,7 +156,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'اشعارات', 'الاشعارات', 'تنبيهات', 'جرس',
     ])) {
-      await _reply('سأفتح الإشعارات');
+      await _reply(_strings.voiceCommandNotifications);
       nav.push(MaterialPageRoute(
         builder: (_) => const NotificationsScreen(),
       ));
@@ -166,7 +166,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'محادثات', 'المحادثات', 'رسائل', 'شات',
     ])) {
-      await _reply('سأفتح المحادثات');
+      await _reply(_strings.voiceCommandChats);
       nav.push(MaterialPageRoute(builder: (_) => const ChatsScreen()));
       return;
     }
@@ -174,7 +174,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'مساعد', 'المساعد', 'نور', 'روبوت', 'اسال',
     ])) {
-      await _reply('سأفتح المساعد نور');
+      await _reply(_strings.voiceCommandAssistant);
       nav.push(MaterialPageRoute(
         builder: (_) => const AssistantScreen(),
       ));
@@ -185,10 +185,10 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
       'احتياجات', 'الاحتياجات', 'احتياجات الابناء', 'تخصيص',
     ])) {
       if (await ApiService.getRole() != 'specialist') {
-        await _reply('إعدادات التكيف متاحة للمختص فقط');
+        await _reply(_strings.voiceCommandSpecialistOnly);
         return;
       }
-      await _reply('سأفتح احتياجات الأبناء');
+      await _reply(_strings.voiceCommandNeeds);
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenAccessibilityOverviewScreen(),
       ));
@@ -198,7 +198,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'جلسات', 'الجلسات', 'اجتماعات دعم', 'اجتماعات الدعم',
     ])) {
-      await _reply('سأفتح الجلسات');
+      await _reply(_strings.voiceCommandSessions);
       nav.push(MaterialPageRoute(
         builder: (_) => const LearningSupportMeetingsScreen(),
       ));
@@ -208,7 +208,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'طلبات', 'الطلبات', 'طلبات الدعم',
     ])) {
-      await _reply('سأفتح طلبات الدعم');
+      await _reply(_strings.voiceCommandSupport);
       nav.push(MaterialPageRoute(
         builder: (_) => const LearningSupportRequestsScreen(),
       ));
@@ -218,7 +218,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
   'تواصل', 'التواصل',
 ]    )) {
-  await _reply('سأفتح المحادثات');
+  await _reply(_strings.voiceCommandChats);
   nav.push(MaterialPageRoute(builder: (_) => const ChatsScreen()));
   return;
 }
@@ -228,10 +228,10 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     ])) {
       final role = await ApiService.getRole();
       if (role != 'parent') {
-        await _reply('إضافة طفل متاحة لولي الأمر فقط');
+        await _reply(_strings.voiceCommandParentOnly);
         return;
       }
-      await _reply('سأفتح إضافة طفل جديد');
+      await _reply(_strings.voiceCommandAddChild);
       nav.push(MaterialPageRoute(
         builder: (_) => const AddChildScreen(),
       ));
@@ -239,7 +239,7 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     }
 
     if (_matches(text, ['دروس عامه', 'الدروس العامه', 'مكتبه الدروس'])) {
-      await _reply('سأفتح مكتبة الدروس');
+      await _reply(_strings.voiceCommandLibrary);
       nav.push(MaterialPageRoute(builder: (_) => const LessonsScreen()));
       return;
     }
@@ -248,22 +248,13 @@ extension _VoiceCommandExecutionExtension on VoiceCommandService {
     if (_matches(text, [
       'مساعده', 'مساعدة', 'اوامر', 'الاوامر', 'ساعدني',
     ])) {
-      await _reply(
-        'تقدر تقول: '
-        'افتح دروس [اسم الطفل]، افتح واجبات [اسم الطفل]، '
-        'افتح تقدم [اسم الطفل]، افتح تقرير [اسم الطفل]، '
-        'افتح دراسة حالة [اسم الطفل]. '
-        'كمان: الألعاب، الأطفال، الإشعارات، المحادثات، المساعد، '
-        'دروس ولي الأمر، احتياجات الأبناء، '
-        'الملف الشخصي، توثيق الهوية. '
-        'وتقدر تقول: اقرأ، أوقف، ارجع، الرئيسية، الوضع الليلي',
-      );
+      await _reply(_strings.voiceCommandHelp);
       return;
     }
 
     // ═══ غير مفهوم ═══
     await _reply(
-      'سمعتك تقول: $rawText. جرّب: افتح دروس محمد، أو افتح الألعاب',
+      _strings.voiceCommandUnknown(rawText),
     );
   }
 

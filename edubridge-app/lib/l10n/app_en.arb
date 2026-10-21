@@ -10110,5 +10110,263 @@
   "overviewDisabilityOther": "Other",
   "@overviewDisabilityOther": {
     "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "voiceCommandSignIn": "Sign in to use voice commands",
+  "@voiceCommandSignIn": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandReadingOff": "Reading mode is off",
+  "@voiceCommandReadingOff": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandReadingOn": "Tap to read is on",
+  "@voiceCommandReadingOn": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandStopped": "Stopped",
+  "@voiceCommandStopped": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNavigationFailed": "Could not navigate",
+  "@voiceCommandNavigationFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandHome": "Returning to home",
+  "@voiceCommandHome": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandBack": "Went back",
+  "@voiceCommandBack": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNoBack": "There is no previous page",
+  "@voiceCommandNoBack": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandDark": "Switched to dark mode",
+  "@voiceCommandDark": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLight": "Switched to light mode",
+  "@voiceCommandLight": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAccount": "Opening your account settings",
+  "@voiceCommandAccount": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandVerify": "Verify your identity first to open services",
+  "@voiceCommandVerify": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandDenied": "This page is unavailable for your account role",
+  "@voiceCommandDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandParentLessons": "Opening parent lessons",
+  "@voiceCommandParentLessons": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLibrary": "Opening the lesson library",
+  "@voiceCommandLibrary": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSupport": "Opening support requests",
+  "@voiceCommandSupport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSupportDenied": "Learning support is unavailable for your account role",
+  "@voiceCommandSupportDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandCasesDenied": "Case studies are unavailable for your account role",
+  "@voiceCommandCasesDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChildren": "Opening the children list",
+  "@voiceCommandChildren": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNotifications": "Opening notifications",
+  "@voiceCommandNotifications": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChats": "Opening chats",
+  "@voiceCommandChats": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAssistant": "Opening Noor assistant",
+  "@voiceCommandAssistant": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSpecialistOnly": "Adaptation settings are available to specialists only",
+  "@voiceCommandSpecialistOnly": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNeeds": "Opening children’s needs",
+  "@voiceCommandNeeds": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSessions": "Opening sessions",
+  "@voiceCommandSessions": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandParentOnly": "Only parents can add a child",
+  "@voiceCommandParentOnly": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAddChild": "Opening add child",
+  "@voiceCommandAddChild": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChooseChild": "Opening the children list to choose a child",
+  "@voiceCommandChooseChild": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandCases": "Opening case studies",
+  "@voiceCommandCases": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameChildFailed": "Could not load the child data needed for the game",
+  "@voiceCommandGameChildFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameNoChildren": "No child data is available to open the game",
+  "@voiceCommandGameNoChildren": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameChoose": "Choose a child to play",
+  "@voiceCommandGameChoose": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandHearFailed": "Could not hear the command. Check microphone permission and try again",
+  "@voiceCommandHearFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandMicUnavailable": "Microphone unavailable. Check microphone permission and try again",
+  "@voiceCommandMicUnavailable": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLocaleUnavailable": "Speech recognition for English is unavailable. Add English to the device speech service",
+  "@voiceCommandLocaleUnavailable": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandMicFailed": "Could not start the microphone. Try again",
+  "@voiceCommandMicFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandExecuteFailed": "Could not execute the command. Try again",
+  "@voiceCommandExecuteFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChildLessons": "Opening lessons for {name}",
+  "@voiceCommandChildLessons": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildHomework": "Opening homework for {name}",
+  "@voiceCommandChildHomework": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildProgress": "Opening progress for {name}",
+  "@voiceCommandChildProgress": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildReport": "Opening the report for {name}",
+  "@voiceCommandChildReport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildTeam": "Opening the care team for {name}",
+  "@voiceCommandChildTeam": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildSupport": "Opening a learning support request for {name}",
+  "@voiceCommandChildSupport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildAdaptation": "Opening adaptation settings for {name}",
+  "@voiceCommandChildAdaptation": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildCase": "Opening the case study for {name}",
+  "@voiceCommandChildCase": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildGames": "Opening games for {name}",
+  "@voiceCommandChildGames": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildGame": "Opening {game} for {name}",
+  "@voiceCommandChildGame": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "game": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandUnknown": "I heard: {text}. Try: open lessons for Sam, or open games",
+  "@voiceCommandUnknown": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandHelp": "You can say: open lessons for [child name], open homework for [child name], open progress for [child name], open report for [child name], or open case study for [child name]. Also: games, children, notifications, chats, assistant, parent lessons, children needs, profile, verify identity, read, stop, go back, home, or dark mode.",
+  "@voiceCommandHelp": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGamesLabel": "Games",
+  "@voiceCommandGamesLabel": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
   }
 }

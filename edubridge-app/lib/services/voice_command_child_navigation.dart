@@ -8,7 +8,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       // استثناء: "دروس ولي الأمر" له أولوية أعلى
       if (_matches(text, ['ولي الامر', 'ولي الأمر', 'لولي الامر'])) {
-        await _reply('سأفتح دروس ولي الأمر');
+        await _reply(_strings.voiceCommandParentLessons);
         nav.push(MaterialPageRoute(
           builder: (_) => const ParentLessonsScreen(),
         ));
@@ -17,7 +17,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
 
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح دروس ${child['name']}');
+        await _reply(_strings.voiceCommandChildLessons((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => ChildLessonsScreen(
             childId: child['id'],
@@ -29,7 +29,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال لاختيار طفل');
+      await _reply(_strings.voiceCommandChooseChild);
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
       return true;
     }
@@ -41,7 +41,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح واجبات ${child['name']}');
+        await _reply(_strings.voiceCommandChildHomework((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => ChildHomeworkScreen(
             childId: child['id'],
@@ -50,7 +50,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال لاختيار طفل');
+      await _reply(_strings.voiceCommandChooseChild);
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen(destination: 'homeworks')));
       return true;
     }
@@ -62,7 +62,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ]) && !_matches(text, ['التقدم الاسبوعي', 'تقدم اسبوعي'])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح تقدّم ${child['name']}');
+        await _reply(_strings.voiceCommandChildProgress((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => ChildProgressScreen(
             childId: child['id'],
@@ -71,7 +71,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال');
+      await _reply(_strings.voiceCommandChildren);
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenScreen(forProgress: true),
       ));
@@ -85,7 +85,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح تقرير ${child['name']}');
+        await _reply(_strings.voiceCommandChildReport((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => WeeklyReportScreen(
             childId: child['id'],
@@ -94,7 +94,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال');
+      await _reply(_strings.voiceCommandChildren);
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenScreen(destination: 'weekly-reports'),
       ));
@@ -107,7 +107,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح فريق ${child['name']}');
+        await _reply(_strings.voiceCommandChildTeam((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => CareTeamScreen(
             childId: child['id'],
@@ -116,7 +116,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال');
+      await _reply(_strings.voiceCommandChildren);
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
       return true;
     }
@@ -129,11 +129,11 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
       final child = _findChild(text);
       if (child != null) {
         if (await ApiService.getRole() != 'parent') {
-          await _reply('سأفتح طلبات الدعم');
+          await _reply(_strings.voiceCommandSupport);
           nav.push(MaterialPageRoute(builder: (_) => const LearningSupportRequestsScreen()));
           return true;
         }
-        await _reply('سأفتح طلب دعم تعليمي لـ ${child['name']}');
+        await _reply(_strings.voiceCommandChildSupport((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => CreateLearningSupportRequestScreen(
             childId: child['id'],
@@ -142,7 +142,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح قائمة الأطفال لاختيار طفل');
+      await _reply(_strings.voiceCommandChooseChild);
       nav.push(MaterialPageRoute(builder: (_) => const ChildrenScreen()));
       return true;
     }
@@ -153,12 +153,12 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
       'تكييف الطفل',
     ])) {
       if (await ApiService.getRole() != 'specialist') {
-        await _reply('إعدادات التكيف متاحة للمختص فقط');
+        await _reply(_strings.voiceCommandSpecialistOnly);
         return true;
       }
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح إعدادات تكييف ${child['name']}');
+        await _reply(_strings.voiceCommandChildAdaptation((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => ChildAccessibilitySettingsScreen(
             childId: child['id'],
@@ -168,7 +168,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح احتياجات الأبناء');
+      await _reply(_strings.voiceCommandNeeds);
       nav.push(MaterialPageRoute(
         builder: (_) => const ChildrenAccessibilityOverviewScreen(),
       ));
@@ -181,7 +181,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
     ])) {
       final child = _findChild(text);
       if (child != null) {
-        await _reply('سأفتح دراسة حالة ${child['name']}');
+        await _reply(_strings.voiceCommandChildCase((child['name'] ?? '').toString()));
         nav.push(MaterialPageRoute(
           builder: (_) => CaseDiscussionScreen(
             filterChildId: child['id'],
@@ -189,7 +189,7 @@ extension _VoiceCommandChildNavigationExtension on VoiceCommandService {
         ));
         return true;
       }
-      await _reply('سأفتح دراسات الحالة');
+      await _reply(_strings.voiceCommandCases);
       nav.push(MaterialPageRoute(
         builder: (_) => const CaseDiscussionScreen(),
       ));
