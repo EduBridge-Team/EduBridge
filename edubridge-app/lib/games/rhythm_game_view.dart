@@ -320,7 +320,7 @@ extension _RhythmGameView on _RhythmGameState {
                 fontSize: large ? 32 : 28,
                 fontWeight: FontWeight.bold,
               ),
-            )),
+            ),
             onPressed: _isPaused ? null : _tap,
           ),
         ),
