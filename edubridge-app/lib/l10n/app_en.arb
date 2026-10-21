@@ -8595,5 +8595,455 @@
   "choiceCountSeparator": ", ",
   "@choiceCountSeparator": {
     "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "visualWordApple": "Apple",
+  "@visualWordApple": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordDog": "Dog",
+  "@visualWordDog": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordHouse": "House",
+  "@visualWordHouse": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordSun": "Sun",
+  "@visualWordSun": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordMoon": "Moon",
+  "@visualWordMoon": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordCar": "Car",
+  "@visualWordCar": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTree": "Tree",
+  "@visualWordTree": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordFish": "Fish",
+  "@visualWordFish": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBook": "Book",
+  "@visualWordBook": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordPen": "Pen",
+  "@visualWordPen": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTeddy": "Teddy bear",
+  "@visualWordTeddy": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBicycle": "Bicycle",
+  "@visualWordBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBanana": "Banana",
+  "@visualWordBanana": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordGrapes": "Grapes",
+  "@visualWordGrapes": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordFlower": "Flower",
+  "@visualWordFlower": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordElephant": "Elephant",
+  "@visualWordElephant": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTurtle": "Turtle",
+  "@visualWordTurtle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordButterfly": "Butterfly",
+  "@visualWordButterfly": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordPlane": "Plane",
+  "@visualWordPlane": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTrain": "Train",
+  "@visualWordTrain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBall": "Ball",
+  "@visualWordBall": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordKey": "Key",
+  "@visualWordKey": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordClock": "Clock",
+  "@visualWordClock": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordCarrot": "Carrot",
+  "@visualWordCarrot": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageLibrary": "Samer went to the library after school to borrow a book about space. He chose a book about the planets and read the first chapter that evening.",
+  "@readingPassageLibrary": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionLibrary": "Why did Samer go to the library?",
+  "@readingQuestionLibrary": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption0": "To buy a toy",
+  "@readingLibraryOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption1": "To borrow a book",
+  "@readingLibraryOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption2": "To eat food",
+  "@readingLibraryOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption3": "To play football",
+  "@readingLibraryOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSeeds": "Layan planted tomato seeds in a pot near the window and watered them every morning. After a few days, small leaves began to appear.",
+  "@readingPassageSeeds": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSeeds": "What helped the seeds grow?",
+  "@readingQuestionSeeds": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption0": "Water and care",
+  "@readingSeedsOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption1": "Only darkness",
+  "@readingSeedsOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption2": "Neglecting them",
+  "@readingSeedsOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption3": "Moving them every day",
+  "@readingSeedsOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageRecycling": "The class decided to collect used paper for recycling. The students placed a special box beside the door and collected paper all week.",
+  "@readingPassageRecycling": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionRecycling": "What was the box for?",
+  "@readingQuestionRecycling": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption0": "Collecting toys",
+  "@readingRecyclingOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption1": "Collecting paper for recycling",
+  "@readingRecyclingOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption2": "Keeping food",
+  "@readingRecyclingOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption3": "Storing new books",
+  "@readingRecyclingOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSharing": "Maryam noticed that her friend had forgotten her pen, so she lent her a pen from her bag. Her friend thanked her, and they both continued the lesson.",
+  "@readingPassageSharing": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSharing": "How did Maryam help her friend?",
+  "@readingQuestionSharing": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption0": "She lent her a pen",
+  "@readingSharingOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption1": "She took her bag",
+  "@readingSharingOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption2": "She closed the notebook",
+  "@readingSharingOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption3": "She left the classroom",
+  "@readingSharingOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageRain": "It was raining in the morning. Khaled took his umbrella and put on his coat before leaving for school. He arrived with his clothes dry.",
+  "@readingPassageRain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionRain": "Why did Khaled take his umbrella?",
+  "@readingQuestionRain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption0": "To stay dry in the rain",
+  "@readingRainOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption1": "To play with it",
+  "@readingRainOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption2": "To carry his books",
+  "@readingRainOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption3": "To protect himself from the sun",
+  "@readingRainOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBird": "Salma heard a bird near the window. She put a bowl of water in a safe place, then watched the bird drink and fly away.",
+  "@readingPassageBird": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBird": "What did Salma put out for the bird?",
+  "@readingQuestionBird": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption0": "A bowl of water",
+  "@readingBirdOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption1": "A book",
+  "@readingBirdOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption2": "A bag",
+  "@readingBirdOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption3": "A pencil",
+  "@readingBirdOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSalad": "Yousef wanted to make a salad. First, he washed the vegetables well. Then he cut them with his father’s help and put them on a plate.",
+  "@readingPassageSalad": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSalad": "What did Yousef do first?",
+  "@readingQuestionSalad": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption0": "He washed the vegetables",
+  "@readingSaladOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption1": "He ate the salad",
+  "@readingSaladOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption2": "He put out the plate",
+  "@readingSaladOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption3": "He cut the vegetables",
+  "@readingSaladOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageStory": "Rami borrowed a storybook from his friend and kept it clean. After reading it, he returned it and thanked his friend.",
+  "@readingPassageStory": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionStory": "What did Rami do after reading?",
+  "@readingQuestionStory": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption0": "He returned the storybook and thanked his friend",
+  "@readingStoryOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption1": "He tore the storybook",
+  "@readingStoryOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption2": "He hid the storybook",
+  "@readingStoryOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption3": "He drew on the pages",
+  "@readingStoryOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBicycle": "Hana practiced riding a bicycle in the park. She wore her helmet, and her sister helped her until she could ride on her own.",
+  "@readingPassageBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBicycle": "What did Hana wear to protect her head?",
+  "@readingQuestionBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption0": "A helmet",
+  "@readingBicycleOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption1": "A scarf",
+  "@readingBicycleOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption2": "A glove",
+  "@readingBicycleOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption3": "A shoe",
+  "@readingBicycleOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBeach": "The family visited the beach in the morning. Before going home, the children collected their rubbish in a bag, leaving the place clean.",
+  "@readingPassageBeach": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBeach": "Why did the children collect the rubbish?",
+  "@readingQuestionBeach": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption0": "To keep the place clean",
+  "@readingBeachOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption1": "To make a toy",
+  "@readingBeachOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption2": "To feed the fish",
+  "@readingBeachOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption3": "To fill the sea",
+  "@readingBeachOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassagePlants": "The teacher put two seeds in two pots. She watered the first pot regularly and left the second without water. The first plant grew.",
+  "@readingPassagePlants": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionPlants": "Which plant grew?",
+  "@readingQuestionPlants": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption0": "The plant that was watered",
+  "@readingPlantsOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption1": "The plant without water",
+  "@readingPlantsOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption2": "Neither plant grew",
+  "@readingPlantsOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption3": "Both plants grew equally",
+  "@readingPlantsOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageTime": "Adam saw a sign saying the library closed at five o’clock. He arrived at four o’clock, so he had an hour to read.",
+  "@readingPassageTime": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionTime": "How much time did Adam have?",
+  "@readingQuestionTime": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption0": "One hour",
+  "@readingTimeOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption1": "Two hours",
+  "@readingTimeOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption2": "Three hours",
+  "@readingTimeOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption3": "A whole day",
+  "@readingTimeOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsTitle": "💙 Picture words",
+  "@visualWordsTitle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsQuestion": "What is in this picture?",
+  "@visualWordsQuestion": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsStreak": "Great! Three in a row!",
+  "@visualWordsStreak": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsCorrect": "Well done! {word}",
+  "@visualWordsCorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "visualWordsRetry": "Try again. This is {word}",
+  "@visualWordsRetry": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "readingTitle": "Advanced reading 📚",
+  "@readingTitle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingCorrect": "Excellent! You understood the text well",
+  "@readingCorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingIncorrect": "Read the text again and look for the main idea",
+  "@readingIncorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingComplete": "Great reading comprehension! {correct} out of {total}",
+  "@readingComplete": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "readingListen": "Listen to the text",
+  "@readingListen": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "gameRoundContinuing": "Continuing…",
+  "@gameRoundContinuing": {
+    "description": "Shared game round continuation status and retry error."
+  },
+  "gameRoundContinueFailed": "Could not continue the game. Try again.",
+  "@gameRoundContinueFailed": {
+    "description": "Shared game round continuation status and retry error."
   }
 }

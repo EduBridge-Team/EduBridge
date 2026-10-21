@@ -8595,5 +8595,455 @@
   "choiceCountSeparator": "، ",
   "@choiceCountSeparator": {
     "description": "Color, shape and counting game presentation; canonical bank identities remain unchanged."
+  },
+  "visualWordApple": "تفاحة",
+  "@visualWordApple": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordDog": "كلب",
+  "@visualWordDog": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordHouse": "بيت",
+  "@visualWordHouse": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordSun": "شمس",
+  "@visualWordSun": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordMoon": "قمر",
+  "@visualWordMoon": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordCar": "سيارة",
+  "@visualWordCar": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTree": "شجرة",
+  "@visualWordTree": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordFish": "سمكة",
+  "@visualWordFish": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBook": "كتاب",
+  "@visualWordBook": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordPen": "قلم",
+  "@visualWordPen": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTeddy": "دبدوب",
+  "@visualWordTeddy": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBicycle": "دراجة",
+  "@visualWordBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBanana": "موز",
+  "@visualWordBanana": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordGrapes": "عنب",
+  "@visualWordGrapes": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordFlower": "زهرة",
+  "@visualWordFlower": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordElephant": "فيل",
+  "@visualWordElephant": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTurtle": "سلحفاة",
+  "@visualWordTurtle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordButterfly": "فراشة",
+  "@visualWordButterfly": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordPlane": "طائرة",
+  "@visualWordPlane": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordTrain": "قطار",
+  "@visualWordTrain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordBall": "كرة",
+  "@visualWordBall": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordKey": "مفتاح",
+  "@visualWordKey": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordClock": "ساعة",
+  "@visualWordClock": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordCarrot": "جزر",
+  "@visualWordCarrot": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageLibrary": "ذهب سامر إلى المكتبة بعد المدرسة ليستعير كتاباً عن الفضاء. اختار كتاباً عن الكواكب وقرأ الفصل الأول في المساء.",
+  "@readingPassageLibrary": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionLibrary": "لماذا ذهب سامر إلى المكتبة؟",
+  "@readingQuestionLibrary": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption0": "ليشتري لعبة",
+  "@readingLibraryOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption1": "ليستعير كتاباً",
+  "@readingLibraryOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption2": "ليتناول الطعام",
+  "@readingLibraryOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingLibraryOption3": "ليلعب كرة القدم",
+  "@readingLibraryOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSeeds": "زرعت ليان بذور الطماطم في أصيص قرب النافذة، وكانت تسقيها كل صباح. بعد أيام بدأت أوراق صغيرة تظهر.",
+  "@readingPassageSeeds": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSeeds": "ما الذي ساعد البذور على النمو؟",
+  "@readingQuestionSeeds": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption0": "الماء والعناية",
+  "@readingSeedsOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption1": "الظلام فقط",
+  "@readingSeedsOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption2": "إهمالها",
+  "@readingSeedsOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSeedsOption3": "نقلها يومياً",
+  "@readingSeedsOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageRecycling": "قرر الصف جمع الورق المستعمل لإعادة تدويره. وضع الطلاب صندوقاً خاصاً بجانب الباب وبدأوا بجمع الأوراق طوال الأسبوع.",
+  "@readingPassageRecycling": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionRecycling": "ما هدف الصندوق؟",
+  "@readingQuestionRecycling": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption0": "جمع الألعاب",
+  "@readingRecyclingOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption1": "جمع الأوراق لإعادة التدوير",
+  "@readingRecyclingOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption2": "حفظ الطعام",
+  "@readingRecyclingOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRecyclingOption3": "تخزين الكتب الجديدة",
+  "@readingRecyclingOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSharing": "لاحظت مريم أن صديقتها نسيت قلمها، فأعارتها قلماً من حقيبتها. شكرتها صديقتها وأكملتا الدرس.",
+  "@readingPassageSharing": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSharing": "كيف ساعدت مريم صديقتها؟",
+  "@readingQuestionSharing": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption0": "أعارتها قلماً",
+  "@readingSharingOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption1": "أخذت حقيبتها",
+  "@readingSharingOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption2": "أغلقت الدفتر",
+  "@readingSharingOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSharingOption3": "غادرت الصف",
+  "@readingSharingOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageRain": "كان الجو ممطراً صباحاً. حمل خالد مظلته وارتدى معطفه قبل الخروج إلى المدرسة، فوصل وملابسه جافة.",
+  "@readingPassageRain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionRain": "لماذا حمل خالد مظلته؟",
+  "@readingQuestionRain": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption0": "ليحتمي من المطر",
+  "@readingRainOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption1": "ليلعب بها",
+  "@readingRainOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption2": "ليحمل كتبه",
+  "@readingRainOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingRainOption3": "ليحتمي من الشمس",
+  "@readingRainOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBird": "سمعت سلمى صوت عصفور قرب النافذة. وضعت له وعاء ماء في مكان آمن، ثم شاهدته يشرب ويطير.",
+  "@readingPassageBird": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBird": "ماذا وضعت سلمى للعصفور؟",
+  "@readingQuestionBird": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption0": "وعاء ماء",
+  "@readingBirdOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption1": "كتاباً",
+  "@readingBirdOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption2": "حقيبة",
+  "@readingBirdOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBirdOption3": "قلم رصاص",
+  "@readingBirdOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageSalad": "أراد يوسف إعداد سلطة. غسل الخضار جيداً أولاً، ثم قطعها بمساعدة والده ووضعها في الطبق.",
+  "@readingPassageSalad": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionSalad": "ماذا فعل يوسف أولاً؟",
+  "@readingQuestionSalad": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption0": "غسل الخضار",
+  "@readingSaladOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption1": "أكل السلطة",
+  "@readingSaladOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption2": "وضع الطبق",
+  "@readingSaladOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingSaladOption3": "قطع الخضار",
+  "@readingSaladOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageStory": "استعار رامي قصة من صديقه، وحافظ عليها نظيفة. بعد أن انتهى من قراءتها أعادها وشكر صديقه.",
+  "@readingPassageStory": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionStory": "ماذا فعل رامي بعد القراءة؟",
+  "@readingQuestionStory": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption0": "أعاد القصة وشكر صديقه",
+  "@readingStoryOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption1": "مزق القصة",
+  "@readingStoryOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption2": "أخفى القصة",
+  "@readingStoryOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingStoryOption3": "رسم على الصفحات",
+  "@readingStoryOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBicycle": "تدرّبت هناء على ركوب الدراجة في الحديقة. ارتدت خوذتها، وساعدتها أختها حتى استطاعت السير وحدها.",
+  "@readingPassageBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBicycle": "ما الذي ارتدته هناء لحماية رأسها؟",
+  "@readingQuestionBicycle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption0": "خوذة",
+  "@readingBicycleOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption1": "وشاحاً",
+  "@readingBicycleOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption2": "قفازاً",
+  "@readingBicycleOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBicycleOption3": "حذاء",
+  "@readingBicycleOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageBeach": "زارت العائلة البحر صباحاً. جمع الأطفال النفايات التي تركوها في كيس قبل العودة، فبقي المكان نظيفاً.",
+  "@readingPassageBeach": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionBeach": "لماذا جمع الأطفال النفايات؟",
+  "@readingQuestionBeach": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption0": "ليحافظوا على نظافة المكان",
+  "@readingBeachOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption1": "ليصنعوا لعبة",
+  "@readingBeachOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption2": "ليطعموا الأسماك",
+  "@readingBeachOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingBeachOption3": "ليملؤوا البحر",
+  "@readingBeachOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassagePlants": "وضعت المعلمة بذرتين في أصيصين. سقت الأصيص الأول بانتظام وتركت الثاني بلا ماء. نمت النبتة الأولى.",
+  "@readingPassagePlants": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionPlants": "أي نبتة نمت؟",
+  "@readingQuestionPlants": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption0": "النبتة التي سُقيت",
+  "@readingPlantsOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption1": "النبتة بلا ماء",
+  "@readingPlantsOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption2": "لم تنم أي نبتة",
+  "@readingPlantsOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPlantsOption3": "نمت النبتتان بالتساوي",
+  "@readingPlantsOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingPassageTime": "شاهد آدم لوحة تشير إلى أن المكتبة تغلق الساعة الخامسة. وصل الساعة الرابعة، فكان لديه ساعة للقراءة.",
+  "@readingPassageTime": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingQuestionTime": "كم وقتاً كان لدى آدم؟",
+  "@readingQuestionTime": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption0": "ساعة واحدة",
+  "@readingTimeOption0": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption1": "ساعتان",
+  "@readingTimeOption1": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption2": "ثلاث ساعات",
+  "@readingTimeOption2": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingTimeOption3": "يوم كامل",
+  "@readingTimeOption3": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsTitle": "💙 الكلمات البصرية",
+  "@visualWordsTitle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsQuestion": "ما هذه الصورة؟",
+  "@visualWordsQuestion": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsStreak": "رائع! ثلاث مرات متتالية!",
+  "@visualWordsStreak": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "visualWordsCorrect": "أحسنت! {word}",
+  "@visualWordsCorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "visualWordsRetry": "حاول مرة أخرى — هذه {word}",
+  "@visualWordsRetry": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "readingTitle": "القراءة المتقدمة 📚",
+  "@readingTitle": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingCorrect": "ممتاز، فهمت النص جيداً",
+  "@readingCorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingIncorrect": "ارجع للنص وابحث عن الفكرة الأساسية",
+  "@readingIncorrect": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "readingComplete": "فهم قرائي رائع! {correct} من {total}",
+  "@readingComplete": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "readingListen": "استمع إلى النص",
+  "@readingListen": {
+    "description": "Built-in visual-word and reading-game content or interface. Teacher-authored content is unchanged."
+  },
+  "gameRoundContinuing": "جارٍ المتابعة",
+  "@gameRoundContinuing": {
+    "description": "Shared game round continuation status and retry error."
+  },
+  "gameRoundContinueFailed": "تعذّر متابعة اللعبة، حاول مرة أخرى",
+  "@gameRoundContinueFailed": {
+    "description": "Shared game round continuation status and retry error."
   }
 }

@@ -1,6 +1,9 @@
 // لعبة الكلمات البصرية — لمتلازمة داون والإعاقة الذهنية
 // الطفل يرى صورة ويكون عليه اختيار الكلمة الصحيحة من بين 4 خيارات
 import 'game_content.dart';
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
+import '../utils/visual_word_display.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../services/game_progress_service.dart';
@@ -52,6 +55,18 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
   int _score = 0;
   bool _resultRecorded = false;
   int _streak = 0;
+  String? _spokenLocale;
+  String _display(String word) => VisualWordDisplay.word(word, context.l10n);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_spokenLocale != locale) {
+      _spokenLocale = locale;
+      _speak(_display(_target.$2));
+    }
+  }
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -97,13 +112,18 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     _options = [_target, ...distractors.take(_optionCount - 1)]..shuffle();
 
     // ✅ نطق الكلمة بصوت بطيء للداون
-    _speak(_target.$2);
+    if (_spokenLocale != null) _speak(_display(_target.$2));
 
     setState(() {});
   }
 
   void _speak(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+    }
   }
 
   // ═══════════════════════════════════════════════════════
@@ -122,15 +142,15 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
       });
 
       if (_streak >= 3) {
-        _speak('رائع! ثلاث مرات متتالية!');
+        _speak(context.l10n.visualWordsStreak);
       } else {
-        _speak('أحسنت! ${option.$2}');
+        _speak(context.l10n.visualWordsCorrect(_display(option.$2)));
       }
 
     } else {
       // ❌ خطأ
       AdaptiveHelper.hapticFeedback();
-      _speak('حاول مرة أخرى — هذه ${option.$2}');
+      _speak(context.l10n.visualWordsRetry(_display(option.$2)));
 
       setState(() => _streak = 0);
     }
@@ -146,7 +166,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
     if (!mounted) return;
     await VisualCelebration.show(
       context,
-      message: 'أحسنت! $_score/$_totalRounds كلمات',
+      message: context.l10n.wordBuilderComplete(_score, _totalRounds),
       emoji: '💙',
       childName: widget.childName,
       duration: const Duration(seconds: 3),
@@ -171,6 +191,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
             width: double.infinity,
             height: large ? 100 : 80,
             child: ElevatedButton(
+              key: ValueKey('visual_choice_${option.$1}'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF12283A),
@@ -184,14 +205,14 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
                 elevation: 2,
               ),
               onPressed: () => _check(option),
-              child: Text(
-                option.$2,
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text(
+                _display(option.$2),
                 style: TextStyle(
                   fontSize: large ? 32 : 28,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF12283A),
                 ),
-              ),
+              )),
             ),
           ),
         );
@@ -210,6 +231,7 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
       childAspectRatio: 1.3 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
       children: _options.map((option) {
         return GestureDetector(
+          key: ValueKey('visual_choice_${option.$1}'),
           onTap: () => _check(option),
           child: Container(
             decoration: BoxDecoration(
@@ -228,15 +250,15 @@ class _VisualWordsGameState extends State<VisualWordsGame> {
               ],
             ),
             alignment: Alignment.center,
-            child: Text(
-              option.$2,
+            child: Padding(padding: const EdgeInsets.all(8), child: FittedBox(fit: BoxFit.scaleDown, child: Text(
+              _display(option.$2),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: large ? 32 : 26,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF12283A),
               ),
-            ),
+            ))),
           ),
         );
       }).toList(),

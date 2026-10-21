@@ -443,3 +443,11 @@ final source/direction inventory and deferred manual accessibility checks.
 - Preserved canonical history IDs, object selection, correct answer indexes, adaptive option rules and result calculations. Retained feedback and save errors resolve in the current locale. Layout direction follows the app locale; next arrows follow reading direction.
 - Speech follows the interface locale while retaining slow speech, calm-mode automatic-speech suppression, explicit listening and the local sound switch.
 - Added all-topic gameplay coverage in Arabic/English at narrow width and double text scale, including wrong answers, hints, locale changes, speech, full completion and unchanged first-try scoring. Local ARB parity/metadata and diff checks precede PR CI for Flutter analysis/tests and platform builds.
+
+### Visual words and advanced reading
+- Localized 24 built-in visual words and all 12 reading passages, prompts and 48 choices, together with feedback, speech and completion messages.
+- Canonical banks, local history IDs and answer checks remain unchanged. Reading translations preserve the shuffled option order and correct-answer index; unknown custom content falls back unchanged.
+- Added selected-language speech with existing calm-mode and slow-speech policies; direct passage listening remains available when automatic speech is disabled.
+- Localized shared game continuation, busy and retry-error messages, completing the same controls in previously migrated games.
+- Added mapping coverage and repeated shuffle checks for every reading question, plus Arabic/English narrow-screen large-text gameplay, both visual-word layouts, duplicate-answer protection, retained answers/feedback, passage speech and continuation failure recovery.
+- Local catalog parity/metadata and diff checks precede Flutter analysis, tests and platform builds in PR CI. Teacher-authored lessons and backend code remain unchanged.
