@@ -13,6 +13,10 @@ class CommunicationListController extends ChangeNotifier {
   int _generation = 0;
   bool _disposed = false;
 
+  // A completed request may update state only while it is the newest request.
+  bool _canPublish(int requestGeneration) =>
+      !_disposed && requestGeneration == _generation;
+
   Future<bool> reload({bool showLoader = true}) async {
     if (_disposed) return false;
     final generation = ++_generation;
@@ -21,13 +25,13 @@ class CommunicationListController extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await _load();
-      if (_disposed || generation != _generation) return false;
+      if (!_canPublish(generation)) return false;
       items = result;
       loading = false;
       notifyListeners();
       return true;
     } catch (_) {
-      if (_disposed || generation != _generation) return false;
+      if (!_canPublish(generation)) return false;
       error = errorMessage;
       loading = false;
       notifyListeners();
