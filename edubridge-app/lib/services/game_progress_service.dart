@@ -28,7 +28,11 @@ class GameProgressService {
     _startedAt = DateTime.now();
   }
 
-  void end() { _childId = null; _gameKey = null; _startedAt = null; }
+  void end() {
+    _childId = null;
+    _gameKey = null;
+    _startedAt = null;
+  }
 
   Future<void> record(int score) {
     final childId = _childId;
@@ -52,14 +56,17 @@ class GameProgressService {
     });
   }
 
-  Future<String> _ownerKey() async => 'pending_game_attempts_v2_${await ApiService.getUserId() ?? 0}';
+  Future<String> _ownerKey() async =>
+      'pending_game_attempts_v2_${await ApiService.getUserId() ?? 0}';
 
   Future<List<Map<String, dynamic>>> _queue(SharedPreferences prefs, String key) async {
     final raw = prefs.getString(key) ?? prefs.getString('pending_game_attempts_v1');
     if (raw == null) return [];
     final decoded = jsonDecode(raw) as List;
     final queue = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
-    for (final item in queue) { item['event_id'] ??= newSyncEventId(); }
+    for (final item in queue) {
+      item['event_id'] ??= newSyncEventId();
+    }
     await _persistQueue(prefs, key, queue);
     await prefs.remove('pending_game_attempts_v1');
     return queue;
@@ -82,9 +89,9 @@ class GameProgressService {
   }
 
   Future<void> _flush(SharedPreferences prefs, String key, List<Map<String, dynamic>> queue) async {
-    var index = 0;
-    while (index < queue.length) {
-      final attempt = queue[index];
+    var queueIndex = 0;
+    while (queueIndex < queue.length) {
+      final attempt = queue[queueIndex];
       final childId = (attempt['child_id'] as num).toInt();
       if (await _ownerKey() != key) return;
       final payload = Map<String, dynamic>.from(attempt)..remove('child_id');
@@ -93,11 +100,13 @@ class GameProgressService {
         if (response.statusCode < 200 || response.statusCode >= 300) {
           if (response.statusCode >= 500 || response.statusCode == 429) return;
           // A revoked child or invalid legacy record must not block other children's results.
-          index++;
+          queueIndex++;
           continue;
         }
-      } catch (_) { return; }
-      queue.removeAt(index);
+      } catch (_) {
+        return;
+      }
+      queue.removeAt(queueIndex);
       await _persistQueue(prefs, key, queue);
     }
     if (queue.isEmpty) await prefs.remove(key);

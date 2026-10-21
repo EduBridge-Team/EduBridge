@@ -30,8 +30,10 @@ class RewardService {
     return result;
   }
 
-  String _cacheKey(int childId, int? owner) => 'child_stars_v2_${owner ?? 0}_$childId';
-  String _queueKey(int childId, int? owner) => 'child_stars_queue_v2_${owner ?? 0}_$childId';
+  String _cacheKey(int childId, int? owner) =>
+      'child_stars_v2_${owner ?? 0}_$childId';
+  String _queueKey(int childId, int? owner) =>
+      'child_stars_queue_v2_${owner ?? 0}_$childId';
 
   Future<void> _persistQueue(
     SharedPreferences prefs,
@@ -124,12 +126,12 @@ class RewardService {
       AccessibilityService.instance.profile.value,
       systemReduceMotion: MediaQuery.disableAnimationsOf(context),
     );
-    final dismissed = Completer<void>();
+    final dismissalCompleter = Completer<void>();
     late OverlayEntry entry;
     void close() {
-      if (dismissed.isCompleted) return;
+      if (dismissalCompleter.isCompleted) return;
       entry.remove();
-      dismissed.complete();
+      dismissalCompleter.complete();
     }
     entry = OverlayEntry(
       builder: (_) => _RewardOverlay(
@@ -146,7 +148,7 @@ class RewardService {
       await Future.delayed(const Duration(milliseconds: 2200));
       close();
     } else {
-      await dismissed.future;
+      await dismissalCompleter.future;
     }
   }
 }
@@ -172,25 +174,25 @@ class _RewardOverlay extends StatefulWidget {
 
 class _RewardOverlayState extends State<_RewardOverlay>
     with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
     if (widget.allowMotion) {
-      _ctrl.forward();
+      _animationController.forward();
     } else {
-      _ctrl.value = 1;
+      _animationController.value = 1;
     }
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -203,7 +205,7 @@ class _RewardOverlayState extends State<_RewardOverlay>
         child: Center(
           child: ScaleTransition(
             scale: Tween<double>(begin: widget.allowMotion ? 0.5 : 1, end: 1).animate(
-              CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut),
+              CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
             ),
             child: Container(
               padding: const EdgeInsets.all(24),

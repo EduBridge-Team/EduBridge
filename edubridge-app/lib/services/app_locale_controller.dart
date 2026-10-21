@@ -14,7 +14,9 @@ class AppLocaleController extends ValueNotifier<Locale> {
   Future<void> load() async {
     final revision = ++_revision;
     final prefs = await SharedPreferences.getInstance();
-    if (revision != _revision) return;
+    if (revision != _revision) {
+      return;
+    }
     final saved = prefs.getString(_preferenceKey);
     value = Locale(saved == 'en' ? 'en' : 'ar');
   }
@@ -31,7 +33,9 @@ class AppLocaleController extends ValueNotifier<Locale> {
       if (!await prefs.setString(_preferenceKey, language)) {
         throw StateError('Could not save interface language');
       }
-      if (revision == _revision) value = Locale(language);
+      if (revision == _revision) {
+        value = Locale(language);
+      }
     });
     // A failed save must not prevent later attempts.
     _pendingWrite = operation.catchError((Object _) {});
