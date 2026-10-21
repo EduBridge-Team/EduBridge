@@ -63,4 +63,46 @@ void main() {
     expect(await controller.reload(), false);
     expect(calls, 1);
   });
+
+
+  test('a disposed controller ignores a failed in-flight request', () async {
+    final request = Completer<List<dynamic>>();
+    final controller = CommunicationListController(
+      load: () => request.future,
+      errorMessage: 'offline',
+    );
+    var notifications = 0;
+    controller.addListener(() => notifications++);
+
+    final pending = controller.reload();
+    controller.dispose();
+    request.completeError(Exception('offline'));
+
+    expect(await pending, false);
+    expect(notifications, 1);
+    expect(controller.error, isNull);
+    expect(controller.loading, true);
+    expect(controller.items, isEmpty);
+  });
+
+  test('older success does not replace the newer error state', () async {
+    final oldRequest = Completer<List<dynamic>>();
+    final newRequest = Completer<List<dynamic>>();
+    var callCount = 0;
+    final controller = CommunicationListController(
+      load: () => ++callCount == 1 ? oldRequest.future : newRequest.future,
+      errorMessage: 'offline',
+    );
+    addTearDown(controller.dispose);
+
+    final older = controller.reload();
+    final newer = controller.reload(showLoader: false);
+    newRequest.completeError(Exception('offline'));
+    expect(await newer, false);
+    oldRequest.complete([1]);
+    expect(await older, false);
+    expect(controller.items, isEmpty);
+    expect(controller.error, 'offline');
+    expect(controller.loading, false);
+  });
 }
