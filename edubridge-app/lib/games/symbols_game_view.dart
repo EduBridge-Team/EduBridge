@@ -7,7 +7,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F7),
       appBar: BrandAppBar(
-        title: const Text('🌈 لعبة الرموز'),
+        title: Text(context.l10n.symbolsTitle),
       ),
       body: SingleChildScrollView(child: Column(
         children: [
@@ -24,20 +24,20 @@ extension _SymbolsGameStateView on _SymbolsGameState {
               children: [
                 GameStatChip(
                   icon: '🎯',
-                  label: 'الجولة',
+                  label: context.l10n.sequenceRound,
                   value: '$_roundNumber/$_totalRounds',
                   color: const Color(0xFF3A6EA5),
                 ),
                 GameStatChip(
                   icon: '⭐',
-                  label: 'النقاط',
+                  label: context.l10n.sequenceScore,
                   value: '$_score',
                   color: const Color(0xFF57B25A),
                 ),
                 if (_streak >= 2)
                   GameStatChip(
                     icon: '🔥',
-                    label: 'متتالية',
+                    label: context.l10n.sequenceStreak,
                     value: '$_streak',
                     color: const Color(0xFFF2842B),
                   ),
@@ -71,7 +71,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'الرموز تساعدك على التمييز بدون الاعتماد على اللون فقط',
+                    context.l10n.symbolsNotice,
                     style: TextStyle(
                       fontSize: large ? 14 : 12,
                       color: const Color(0xFF3A6EA5),
@@ -93,7 +93,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
             child: Column(
               children: [
                 Text(
-                  'أين هذا الرمز؟',
+                  context.l10n.symbolsQuestion,
                   style: TextStyle(
                     fontSize: large ? 22 : 18,
                     color: Colors.grey.shade700,
@@ -127,7 +127,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _target.$1,
+                        _target.$1, key: const ValueKey('symbols_target'),
                         textScaler: TextScaler.noScaling,
                         style: TextStyle(
                           fontSize: large ? 100 : 85,
@@ -137,7 +137,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _target.$2,
+                        _display(_target.$2),
                         style: TextStyle(
                           fontSize: large ? 22 : 18,
                           fontWeight: FontWeight.bold,
@@ -168,6 +168,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                 childAspectRatio: 1.1 / MediaQuery.textScalerOf(context).scale(1).clamp(1, 2),
                 children: _options.map((option) {
                   return GestureDetector(
+                    key: ValueKey('symbols_choice_${option.$1}'),
                     onTap: () => _check(option),
                     child: Container(
                       decoration: BoxDecoration(
@@ -203,7 +204,7 @@ extension _SymbolsGameStateView on _SymbolsGameState {
                           const SizedBox(height: 8),
                           // الاسم
                           Text(
-                            option.$2,
+                            _display(option.$2),
                             style: TextStyle(
                               fontSize: large ? 18 : 15,
                               fontWeight: FontWeight.bold,

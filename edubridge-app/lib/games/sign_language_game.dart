@@ -1,6 +1,8 @@
 // لعبة لغة الإشارة — للأطفال الصمّ وضعاف السمع
 // تعلّم الطفل ربط الحرف بإشارته
 import 'game_content.dart';
+import '../l10n/l10n.dart';
+import '../utils/symbol_sign_display.dart';
 import 'package:flutter/material.dart';
 import '../services/game_progress_service.dart';
 import '../utils/adaptive_helper.dart';
@@ -99,7 +101,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     if (!mounted) return;
     await VisualCelebration.show(
       context,
-      message: 'أحسنت يا ${widget.childName}! $scorePercent%',
+      message: context.l10n.signComplete(widget.childName, scorePercent),
       emoji: '🤟',
       playSound: false,
       duration: const Duration(seconds: 4),
@@ -108,11 +110,12 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     if (mounted) {
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
+        builder: (dialogContext) => AlertDialog(
+          scrollable: true,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20)),
-          title: const Text(
-            '🤟 بطل لغة الإشارة!',
+          title: Text(
+            dialogContext.l10n.signChampion,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
@@ -120,12 +123,12 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'النقاط: $_score/$_totalRounds',
+                dialogContext.l10n.signResult(_score, _totalRounds),
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 12),
               Text(
-                'النسبة: $scorePercent%',
+                dialogContext.l10n.signPercentage(scorePercent),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -144,7 +147,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                   backgroundColor: AppColors.pink,
                 ),
                 icon: const Icon(Icons.replay),
-                label: const Text('العب من جديد'),
+                label: Text(dialogContext.l10n.choiceReplay),
                 onPressed: () {
                   Navigator.pop(context);
                   setState(() {
@@ -167,7 +170,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
     final c = JisrColors.of(context);
 
     return Scaffold(
-      appBar: JisrAppBar(title: 'لعبة لغة الإشارة 🤟'),
+      appBar: JisrAppBar(title: context.l10n.signTitle),
       body: SingleChildScrollView(child: Column(
         children: [
           // شريط النقاط
@@ -179,10 +182,10 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                Text('الجولة: $_roundNumber/$_totalRounds',
+                Text(context.l10n.orderedGameRound(_roundNumber, _totalRounds),
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('النقاط: $_score ⭐',
+                Text(context.l10n.orderedGameScore(_score),
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
               ],
@@ -211,8 +214,8 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
               ),
               child: Column(
                 children: [
-                  const Text(
-                    'اختر الإشارة الصحيحة للحرف:',
+                  Text(
+                    context.l10n.signInstruction,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -221,7 +224,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    _target.$1,
+                    _target.$1, key: const ValueKey('sign_target'),
                     style: const TextStyle(
                       fontSize: 90,
                       fontWeight: FontWeight.bold,
@@ -247,6 +250,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                 crossAxisSpacing: 16,
                 children: _options.map((option) {
                   return GestureDetector(
+                    key: ValueKey('sign_choice_${option.$1}'),
                     onTap: () => _check(option),
                     child: Container(
                       decoration: BoxDecoration(
@@ -278,7 +282,7 @@ class _SignLanguageGameState extends State<SignLanguageGame> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8),
                             child: Text(
-                              option.$3,
+                              SymbolSignDisplay.sign(option.$3, context.l10n),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
