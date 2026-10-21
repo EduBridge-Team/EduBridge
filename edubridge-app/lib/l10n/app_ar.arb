@@ -9462,5 +9462,102 @@
   "rhythmSaveFailed": "تعذّر حفظ النتيجة، حاول مرة أخرى",
   "@rhythmSaveFailed": {
     "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "symbolsTitle": "🌈 لعبة الرموز",
+  "@symbolsTitle": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsNotice": "الرموز تساعدك على التمييز بدون الاعتماد على اللون فقط",
+  "@symbolsNotice": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsQuestion": "أين هذا الرمز؟",
+  "@symbolsQuestion": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsStreak": "رائع! ثلاث مرات متتالية",
+  "@symbolsStreak": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsRetry": "حاول مرة أخرى — انظر للرمز وليس اللون",
+  "@symbolsRetry": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signTitle": "لعبة لغة الإشارة 🤟",
+  "@signTitle": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signInstruction": "اختر الإشارة الصحيحة للحرف:",
+  "@signInstruction": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signComplete": "أحسنت يا {name}! {score}%",
+  "@signComplete": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "signChampion": "🤟 بطل لغة الإشارة!",
+  "@signChampion": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signResult": "النقاط: {score}/{total}",
+  "@signResult": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "signPercentage": "النسبة: {score}%",
+  "@signPercentage": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "signDescriptionThumb": "إصبع الإبهام مرفوع",
+  "@signDescriptionThumb": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionPalm": "كف مفتوح مستقيم",
+  "@signDescriptionPalm": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionTwo": "إصبعان مفتوحان",
+  "@signDescriptionTwo": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionThree": "ثلاثة أصابع",
+  "@signDescriptionThree": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionFist": "قبضة مغلقة",
+  "@signDescriptionFist": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionThumbPinky": "الإبهام والخنصر",
+  "@signDescriptionThumbPinky": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionCrossed": "إصبعان متقاطعان",
+  "@signDescriptionCrossed": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionOne": "إصبع واحد مرفوع",
+  "@signDescriptionOne": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
   }
 }

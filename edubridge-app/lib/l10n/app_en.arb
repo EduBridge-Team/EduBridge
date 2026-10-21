@@ -9462,5 +9462,102 @@
   "rhythmSaveFailed": "Could not save your score. Try again.",
   "@rhythmSaveFailed": {
     "description": "Built-in logic and rhythm game presentation; keep canonical answers, content IDs and timing unchanged."
+  },
+  "symbolsTitle": "🌈 Symbol game",
+  "@symbolsTitle": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsNotice": "Symbols help you tell things apart without relying only on color",
+  "@symbolsNotice": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsQuestion": "Where is this symbol?",
+  "@symbolsQuestion": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsStreak": "Great! Three in a row",
+  "@symbolsStreak": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "symbolsRetry": "Try again. Look at the symbol, rather than its color",
+  "@symbolsRetry": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signTitle": "Sign matching game 🤟",
+  "@signTitle": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signInstruction": "Choose the matching gesture for this Arabic letter:",
+  "@signInstruction": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signComplete": "Well done, {name}! {score}%",
+  "@signComplete": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "signChampion": "🤟 Sign matching champion!",
+  "@signChampion": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signResult": "Score: {score}/{total}",
+  "@signResult": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "signPercentage": "Percentage: {score}%",
+  "@signPercentage": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "signDescriptionThumb": "Thumb raised",
+  "@signDescriptionThumb": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionPalm": "Straight open palm",
+  "@signDescriptionPalm": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionTwo": "Two fingers open",
+  "@signDescriptionTwo": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionThree": "Three fingers",
+  "@signDescriptionThree": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionFist": "Closed fist",
+  "@signDescriptionFist": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionThumbPinky": "Thumb and little finger",
+  "@signDescriptionThumbPinky": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionCrossed": "Two crossed fingers",
+  "@signDescriptionCrossed": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "signDescriptionOne": "One finger raised",
+  "@signDescriptionOne": {
+    "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
   }
 }

@@ -1,6 +1,9 @@
 // لعبة الرموز — لعمى الألوان
 // الطفل يتعلّم الألوان بالاعتماد على الرموز والأنماط بدلاً من الألوان فقط
 import 'game_content.dart';
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
+import '../utils/symbol_sign_display.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../services/game_progress_service.dart';
@@ -41,6 +44,18 @@ class _SymbolsGameState extends State<SymbolsGame> {
   int _score = 0;
   bool _resultRecorded = false;
   int _streak = 0;
+  String? _spokenLocale;
+  String _display(String name) => SymbolSignDisplay.symbol(name, context.l10n);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_spokenLocale != locale) {
+      _spokenLocale = locale;
+      _speak(context.l10n.choiceWhere(_display(_target.$2)));
+    }
+  }
 
   AccessibilityProfile get _profile =>
       AccessibilityService.instance.profile.value;
@@ -80,13 +95,18 @@ class _SymbolsGameState extends State<SymbolsGame> {
     _options = [_target, ...distractors.take(3)]..shuffle();
 
     // نطق الهدف
-    _speak('أين ${_target.$2}؟');
+    if (_spokenLocale != null) _speak(context.l10n.choiceWhere(_display(_target.$2)));
 
     setState(() {});
   }
 
   void _speak(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: context.l10n.localeName);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: context.l10n.localeName);
+    }
   }
 
   // ═══════════════════════════════════════════════════════
@@ -105,15 +125,15 @@ class _SymbolsGameState extends State<SymbolsGame> {
       });
 
       if (_streak >= 3) {
-        _speak('رائع! ثلاث مرات متتالية');
+        _speak(context.l10n.symbolsStreak);
       } else {
-        _speak('أحسنت! ${option.$2}');
+        _speak(context.l10n.visualWordsCorrect(_display(option.$2)));
       }
 
     } else {
       // ❌ خطأ
       AdaptiveHelper.hapticFeedback();
-      _speak('حاول مرة أخرى — انظر للرمز وليس اللون');
+      _speak(context.l10n.symbolsRetry);
 
       setState(() => _streak = 0);
     }
@@ -129,7 +149,7 @@ class _SymbolsGameState extends State<SymbolsGame> {
     if (!mounted) return;
     await VisualCelebration.show(
       context,
-      message: 'أحسنت! $_score/$_totalRounds',
+      message: context.l10n.sequenceComplete(_score, _totalRounds),
       emoji: '🌈',
       childName: widget.childName,
       duration: const Duration(seconds: 3),
