@@ -8,7 +8,7 @@ import 'package:edubridge_app/widgets/accessibility/emergency_button.dart';
 import 'package:edubridge_app/widgets/accessibility/voice_draft_button.dart';
 import 'package:edubridge_app/widgets/accessibility/word_prediction_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -129,7 +129,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
   testWidgets('overview specialist gate remains active and translates retained errors', (tester) async {
-    FlutterSecureStorage.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({});
     final en=await AppLocalizations.delegate.load(const Locale('en'));
     final ar=await AppLocalizations.delegate.load(const Locale('ar'));
     const screen=ChildrenAccessibilityOverviewScreen();
