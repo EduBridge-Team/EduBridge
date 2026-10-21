@@ -120,14 +120,13 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
   }
 
   Widget _s15ConversationCard(Map conversation) {
-    final id = int.tryParse('${conversation['id'] ?? ''}');
-    final otherName = _text(
-      conversation['other_user_name'], fallback: context.l10n.user);
-    final lastMessage = _text(conversation['last_message']);
-    final lastDate = lastMessage.isNotEmpty &&
-            conversation['last_message_at'] != null
-        ? DateTime.tryParse(conversation['last_message_at'].toString())
-        : null;
+    final preview = ConversationPreview.fromMap(conversation);
+    final id = preview.id;
+    final otherName = preview.otherUserName.isEmpty
+        ? context.l10n.user
+        : preview.otherUserName;
+    final lastMessage = preview.lastMessage;
+    final lastDate = lastMessage.isNotEmpty ? preview.lastMessageAt : null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -148,8 +147,8 @@ extension _SpecialistChatsS15 on _ChatsScreenState {
                 builder: (_) => ChatScreen(
                   conversationId: id,
                   otherUserName: otherName,
-                  otherUserRole: _text(conversation['other_user_role']),
-                  childName: _text(conversation['subject']),
+                  otherUserRole: preview.otherUserRole,
+                  childName: preview.subject,
                 ),
               ),
             );
