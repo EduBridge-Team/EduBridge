@@ -1,6 +1,9 @@
 // لعبة رتّب القصة — للأعمار 6-12
 // الطفل يرى صوراً مبعثرة ويجب أن يرتّبها حسب ترتيب الأحداث
 import 'dart:math';
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
+import '../utils/ordered_game_display.dart';
 import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +87,21 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
   late String _title;
   List<String> get _userOrder => _ordered.selected;
 
-  String? _feedback;
+  bool? _feedback;
+  String? _spokenLocale;
+  String _display(String value) => OrderedGameDisplay.story(value, context.l10n);
+  String get _feedbackText => _feedback == true
+      ? context.l10n.sequenceCorrect : context.l10n.sequenceIncorrect;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_spokenLocale != locale) {
+      _spokenLocale = locale;
+      _speak(context.l10n.storyGameSpokenInstruction(_display(_title)));
+    }
+  }
   bool _answeredCorrectly = false;
   bool _finishing = false;
   bool _recorded = false;
@@ -133,13 +150,25 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     _answeredCorrectly = false;
 
     // نطق التعليمات
-    _speak('رتّب قصة $_title. اضغط على الصور بالترتيب الصحيح');
+    if (_spokenLocale != null) {
+      _speak(context.l10n.storyGameSpokenInstruction(_display(_title)));
+    }
 
     setState(() {});
   }
 
   void _speak(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    _read(text);
+  }
+
+  void _read(String text) {
+    final language = context.l10n.localeName;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: language);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: language);
+    }
   }
 
   void _retry() {
@@ -148,7 +177,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
       _ordered.reset();
       _feedback = null;
     });
-    _speak('أعد المحاولة');
+    _speak(context.l10n.retry);
   }
 
   @override
@@ -185,7 +214,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
     final correct = _ordered.correct;
     setState(() {
       _answeredCorrectly = correct;
-      _feedback = correct ? 'ممتاز! ترتيب صحيح' : 'خلينا نحاول مرة ثانية، فكّر بترتيب الأحداث';
+      _feedback = correct;
       if (correct) {
         _score++;
         _streak++;
@@ -194,7 +223,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
       }
     });
     AdaptiveHelper.hapticFeedback();
-    _speak(_feedback!);
+    _speak(_feedbackText);
   }
 
   Future<void> _advance() async {
@@ -219,7 +248,7 @@ class _StorySequencerGameState extends State<StorySequencerGame> {
         _recorded = true;
       }
       if (!mounted) return;
-      await VisualCelebration.show(context, message: 'أحسنت! $_score/$_totalRounds قصص',
+      await VisualCelebration.show(context, message: context.l10n.storyGameComplete(_score, _totalRounds),
         emoji: '📖', childName: widget.childName, duration: const Duration(seconds: 3));
       if (mounted) Navigator.pop(context);
     } catch (_) {

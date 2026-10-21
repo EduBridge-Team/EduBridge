@@ -1,5 +1,8 @@
 // لعبة بناء الكلمة — للأعمار 7-14
 import 'dart:math';
+import '../l10n/l10n.dart';
+import '../services/tts_service.dart';
+import '../utils/ordered_game_display.dart';
 import 'game_content.dart';
 import '../features/games/domain/ordered_round.dart';
 import 'package:flutter/material.dart';
@@ -34,11 +37,39 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
 
   late List<String> _words;
   late String _currentWord;
+  late String _wordId;
+  String? _wordLocale;
+
+  String get _feedbackText => _feedback == true
+      ? context.l10n.sequenceCorrect : context.l10n.wordBuilderIncorrect;
+
+  void _localizeWord() {
+    _currentWord = OrderedGameDisplay.word(_wordId, context.l10n);
+    _ordered = OrderedRound(_currentWord.split(''), random: _rnd);
+    if (_answeredCorrectly) {
+      for (final letter in _currentWord.split('')) {
+        _ordered.selectValue(letter);
+      }
+    } else {
+      _feedback = null;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = context.l10n.localeName;
+    if (_wordLocale != locale) {
+      _wordLocale = locale;
+      _localizeWord();
+      _speak(context.l10n.wordBuilderInstruction);
+    }
+  }
   late OrderedRound<String> _ordered;
   List<String> get _scrambled => _ordered.choices;
   List<String> get _userOrder => _ordered.selected;
   Set<int> get _usedIndices => _ordered.usedIndices;
-  String? _feedback;
+  bool? _feedback;
   bool _answeredCorrectly = false;
   bool _finishing = false;
   bool _recorded = false;
@@ -68,17 +99,29 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     if (_round >= _totalRounds) {
       return;
     }
-    _currentWord = GameContent.instance.pick('word_builder', _words, (word) => word);
-    _ordered = OrderedRound(_currentWord.split(''), random: _rnd);
+    _wordId = GameContent.instance.pick('word_builder', _words, (word) => word);
 
     _feedback = null;
     _answeredCorrectly = false;
-    _speak('رتّب الحروف لتكوين كلمة');
+    if (_wordLocale != null) {
+      _localizeWord();
+      _speak(context.l10n.wordBuilderInstruction);
+    }
     setState(() {});
   }
 
   void _speak(String text) {
-    if (AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(text);
+    if (!AdaptiveHelper.shouldReadOnTap) return;
+    _read(text);
+  }
+
+  void _read(String text) {
+    final language = context.l10n.localeName;
+    if (AdaptiveHelper.useSlowSpeech) {
+      TtsService.instance.speakLineSlow(text, languageCode: language);
+    } else {
+      TtsService.instance.speakLine(text, languageCode: language);
+    }
   }
 
   void _retry() {
@@ -87,7 +130,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
       _ordered.reset();
       _feedback = null;
     });
-    _speak('أعد المحاولة');
+    _speak(context.l10n.retry);
   }
 
   @override
@@ -117,11 +160,11 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     final correct = _ordered.correct;
     setState(() {
       _answeredCorrectly = correct;
-      _feedback = correct ? 'ممتاز! ترتيب صحيح' : 'خلينا نحاول مرة ثانية، رتّب حروف الكلمة';
+      _feedback = correct;
       if (correct) _score++;
     });
     AdaptiveHelper.hapticFeedback();
-    _speak(_feedback!);
+    _speak(_feedbackText);
   }
 
   Future<void> _advance() async {
@@ -143,7 +186,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
         _recorded = true;
       }
       if (!mounted) return;
-      await VisualCelebration.show(context, message: 'أحسنت! $_score/$_totalRounds كلمات',
+      await VisualCelebration.show(context, message: context.l10n.wordBuilderComplete(_score, _totalRounds),
         emoji: '🔤', childName: widget.childName, duration: const Duration(seconds: 3));
       if (mounted) Navigator.pop(context);
     } catch (_) {
@@ -158,7 +201,7 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F9FA),
       appBar: BrandAppBar(
-        title: const Text('🔤 بناء الكلمة'),
+        title: Text(context.l10n.wordBuilderTitle),
       ),
       body: SingleChildScrollView(child: Column(
         children: [
@@ -170,20 +213,20 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
               spacing: 16,
               runSpacing: 8,
               children: [
-                Text('الجولة: ${_round + 1}/$_totalRounds',
+                Text(context.l10n.orderedGameRound(_round + 1, _totalRounds),
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('النقاط: $_score ⭐',
+                Text(context.l10n.orderedGameScore(_score),
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           const SizedBox(height: 30),
-          Text('كوّن كلمة: $_currentWord', textAlign: TextAlign.center,
+          Text(context.l10n.wordBuilderTarget(_currentWord), textAlign: TextAlign.center,
               style: TextStyle(fontSize: large ? 28 : 22, fontWeight: FontWeight.bold)),
-          TextButton.icon(onPressed: _finishing ? null : () => AdaptiveHelper.speak(_currentWord),
-            icon: const Icon(Icons.volume_up_outlined), label: const Text('استمع للكلمة')),
+          TextButton.icon(onPressed: _finishing ? null : () => _read(_currentWord),
+            icon: const Icon(Icons.volume_up_outlined), label: Text(context.l10n.wordBuilderListen)),
           const SizedBox(height: 20),
 
           Padding(
@@ -205,19 +248,19 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
                     ),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: FittedBox(fit: BoxFit.scaleDown, child: Text(
                     letter,
                     style: TextStyle(
                       fontSize: 32, fontWeight: FontWeight.bold,
                       color: letter.isNotEmpty ? Colors.white : Colors.grey,
                     ),
-                  ),
+                  )),
                 );
               }),
             ),
           ),
           const SizedBox(height: 30),
-          const Text('الحروف المتاحة:',
+          Text(context.l10n.wordBuilderLetters,
               style: TextStyle(fontSize: 16, color: Colors.grey)),
           const SizedBox(height: 12),
 
@@ -243,9 +286,9 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
                             color: const Color(0xFF1AA9B2), width: 2),
                       ),
                       alignment: Alignment.center,
-                      child: Text(_scrambled[i],
+                      child: FittedBox(fit: BoxFit.scaleDown, child: Text(_scrambled[i],
                           style: const TextStyle(
-                              fontSize: 32, fontWeight: FontWeight.bold)),
+                              fontSize: 32, fontWeight: FontWeight.bold))),
                     ),
                   ),
                 );
@@ -253,12 +296,12 @@ class _WordBuilderGameState extends State<WordBuilderGame> {
             ),
           ),
           if (_feedback != null)
-            Semantics(liveRegion: true, child: Text(_feedback!, textAlign: TextAlign.center)),
+            Semantics(liveRegion: true, child: Text(_feedbackText, textAlign: TextAlign.center)),
           GameRoundContinuation(key: ValueKey(_round),
             answered: _answeredCorrectly, onContinue: _advance),
           if (_userOrder.isNotEmpty && !_answeredCorrectly)
             TextButton(onPressed: _finishing ? null : _retry,
-              child: Text(_feedback == null ? 'أعد الترتيب' : 'حاول مرة أخرى')),
+              child: Text(_feedback == null ? context.l10n.sequenceReorder : context.l10n.retry)),
           const SizedBox(height: 20),
         ],
       )),

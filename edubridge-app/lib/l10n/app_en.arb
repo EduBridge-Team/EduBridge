@@ -7752,5 +7752,404 @@
   "sequenceWash": "Soap → Water → Hand",
   "@sequenceWash": {
     "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "wordItemHouse": "house",
+  "@wordItemHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSun": "sun",
+  "@wordItemSun": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemMoon": "moon",
+  "@wordItemMoon": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemWater": "water",
+  "@wordItemWater": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemDoor": "door",
+  "@wordItemDoor": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPen": "pen",
+  "@wordItemPen": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemRoses": "rose",
+  "@wordItemRoses": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSea": "sea",
+  "@wordItemSea": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemStar": "star",
+  "@wordItemStar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemDates": "date",
+  "@wordItemDates": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBread": "bread",
+  "@wordItemBread": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemRiver": "river",
+  "@wordItemRiver": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBook": "book",
+  "@wordItemBook": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSchool": "school",
+  "@wordItemSchool": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemTree": "tree",
+  "@wordItemTree": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemFlower": "flower",
+  "@wordItemFlower": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSky": "sky",
+  "@wordItemSky": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemApple": "apple",
+  "@wordItemApple": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemCar": "car",
+  "@wordItemCar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemWindow": "window",
+  "@wordItemWindow": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBag": "bag",
+  "@wordItemBag": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemGarden": "garden",
+  "@wordItemGarden": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPlane": "plane",
+  "@wordItemPlane": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBicycle": "bicycle",
+  "@wordItemBicycle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemLibrary": "library",
+  "@wordItemLibrary": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemHospital": "hospital",
+  "@wordItemHospital": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemAirport": "airport",
+  "@wordItemAirport": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemUniversity": "university",
+  "@wordItemUniversity": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemFarm": "farm",
+  "@wordItemFarm": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemMusic": "music",
+  "@wordItemMusic": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSport": "sport",
+  "@wordItemSport": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemEngineer": "engineer",
+  "@wordItemEngineer": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemTeacher": "teacher",
+  "@wordItemTeacher": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemLaboratory": "laboratory",
+  "@wordItemLaboratory": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPlay": "play",
+  "@wordItemPlay": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemCompetition": "competition",
+  "@wordItemCompetition": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChickenJourney": "A chicken’s life",
+  "@storyItemChickenJourney": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemTreeGrowth": "A growing tree",
+  "@storyItemTreeGrowth": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFullDay": "A full day",
+  "@storyItemFullDay": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemWaterCycle": "The water cycle",
+  "@storyItemWaterCycle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemButterflyJourney": "A butterfly’s journey",
+  "@storyItemButterflyJourney": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemPreparingFood": "Preparing food",
+  "@storyItemPreparingFood": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCarTrip": "A car trip",
+  "@storyItemCarTrip": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemBuildingHouse": "Building a house",
+  "@storyItemBuildingHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEgg": "Egg",
+  "@storyItemEgg": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChick": "Chick",
+  "@storyItemChick": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemYoungChicken": "Young chicken",
+  "@storyItemYoungChicken": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChicken": "Chicken",
+  "@storyItemChicken": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemSeed": "Seed",
+  "@storyItemSeed": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemPlant": "Plant",
+  "@storyItemPlant": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemTree": "Tree",
+  "@storyItemTree": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFruit": "Fruit",
+  "@storyItemFruit": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemMorning": "Morning",
+  "@storyItemMorning": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemNoon": "Noon",
+  "@storyItemNoon": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEvening": "Evening",
+  "@storyItemEvening": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemNight": "Night",
+  "@storyItemNight": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemSea": "Sea",
+  "@storyItemSea": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEvaporation": "Evaporation",
+  "@storyItemEvaporation": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemClouds": "Clouds",
+  "@storyItemClouds": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemRain": "Rain",
+  "@storyItemRain": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCaterpillar": "Caterpillar",
+  "@storyItemCaterpillar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemLeaf": "Leaf",
+  "@storyItemLeaf": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemButterfly": "Butterfly",
+  "@storyItemButterfly": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFlower": "Flower",
+  "@storyItemFlower": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemShopping": "Shopping",
+  "@storyItemShopping": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemVegetables": "Vegetables",
+  "@storyItemVegetables": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCooking": "Cooking",
+  "@storyItemCooking": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEating": "Eating",
+  "@storyItemEating": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemStart": "Start",
+  "@storyItemStart": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemRoad": "Road",
+  "@storyItemRoad": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFuel": "Fuel",
+  "@storyItemFuel": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemArrival": "Arrival",
+  "@storyItemArrival": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemBricks": "Bricks",
+  "@storyItemBricks": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemConstruction": "Construction",
+  "@storyItemConstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemHouse": "House",
+  "@storyItemHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemGarden": "Garden",
+  "@storyItemGarden": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderTitle": "🔤 Word builder",
+  "@wordBuilderTitle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderInstruction": "Arrange the letters to make a word",
+  "@wordBuilderInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderTarget": "Build the word: {word}",
+  "@wordBuilderTarget": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "wordBuilderListen": "Listen to the word",
+  "@wordBuilderListen": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderLetters": "Available letters:",
+  "@wordBuilderLetters": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderIncorrect": "Let’s try again. Arrange the letters of the word.",
+  "@wordBuilderIncorrect": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderComplete": "Well done! {score}/{total} words",
+  "@wordBuilderComplete": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "orderedGameRound": "Round: {round}/{total}",
+  "@orderedGameRound": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "orderedGameScore": "Score: {score} ⭐",
+  "@orderedGameScore": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "storyGameTitle": "📖 Sequence the story",
+  "@storyGameTitle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameInstruction": "Put the events in the correct order",
+  "@storyGameInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameCards": "Available cards:",
+  "@storyGameCards": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameSpokenInstruction": "Arrange the story: {title}. Tap the pictures in the correct order",
+  "@storyGameSpokenInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storyGameComplete": "Well done! {score}/{total} stories",
+  "@storyGameComplete": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }
