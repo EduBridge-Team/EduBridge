@@ -21,7 +21,7 @@ void main() {
     AccessibilityService.instance.resetSession();
   });
   tearDown(AccessibilityService.instance.resetSession);
-  testWidgets('math keeps equations left to right and updates controls in both locales', (tester) async {
+  testWidgets('math and sequencing retain behavior across locales at large text scale', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(320, 800);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -37,12 +37,8 @@ void main() {
       expect(tester.takeException(), isNull);
     }
     await tester.pumpWidget(const SizedBox.shrink());
-  });
-  testWidgets('sequence labels, feedback and retry follow locale without changing the round', (tester) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(320, 800);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
+
+    // GameContent retains its write future; exercise both games in one test zone.
     const game = SequenceGame(childName: 'ليان');
     await host(tester, 'en', game);
     final en = await AppLocalizations.delegate.load(const Locale('en'));
