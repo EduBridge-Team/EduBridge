@@ -1,4 +1,4 @@
-import '../../../services/api_service.dart';
+import 'conversation_api_data_source.dart';
 
 /// Communication data access, leaving composer and navigation in the widgets.
 class ConversationRepository {
@@ -8,12 +8,11 @@ class ConversationRepository {
     Future<int> Function(int, String)? create,
     Future<List<dynamic>> Function(int)? messages,
     Future<void> Function(int, String)? send,
-  })  : _conversations = conversations ?? ApiService.getConversations,
-        _users = users ?? ApiService.getConversationUsers,
-        _create = create ?? ApiService.createConversation,
-        _messages = messages ?? ApiService.getMessages,
-        _send = send ?? ((id, content) =>
-            ApiService.sendMessage(conversationId: id, content: content));
+  })  : _conversations = conversations ?? ConversationApiDataSource.loadConversations,
+        _users = users ?? ConversationApiDataSource.availableUsers,
+        _create = create ?? ConversationApiDataSource.create,
+        _messages = messages ?? ConversationApiDataSource.loadMessages,
+        _send = send ?? ConversationApiDataSource.send;
 
   final Future<List<dynamic>> Function() _conversations;
   final Future<List<dynamic>> Function() _users;
