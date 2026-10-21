@@ -60,7 +60,7 @@ void main() {
         await http.runWithClient(() async {
           await _pump(tester, language: language, scale: scale);
           expect(find.text(s.adaptationSettingsFor('محمود')), findsOneWidget);
-          expect(Directionality.of(tester.element(find.byType(SwitchListTile).first)),
+          expect(Directionality.of(tester.element(find.text(s.adaptationOnlyFor('محمود')))),
             language == 'ar' ? TextDirection.rtl : TextDirection.ltr);
           await tester.enterText(find.byType(TextField), '');
           await _tap(tester, find.text(s.adaptationSaveDisability));

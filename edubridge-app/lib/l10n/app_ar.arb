@@ -6661,7 +6661,8 @@
       "name": {
         "type": "String"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   },
   "adaptationOnlyFor": "هذه الإعدادات تُطبَّق على {name} فقط.",
   "@adaptationOnlyFor": {
@@ -6669,7 +6670,8 @@
       "name": {
         "type": "String"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   },
   "adaptationDisabilityValue": "نوع الإعاقة: {value}",
   "@adaptationDisabilityValue": {
@@ -6677,7 +6679,8 @@
       "value": {
         "type": "String"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   },
   "adaptationCategorySaved": "تم حفظ التصنيف مع الحفاظ على إعدادات التكيف لـ \"{value}\"",
   "@adaptationCategorySaved": {
@@ -6685,7 +6688,8 @@
       "value": {
         "type": "String"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   },
   "adaptationMinutes": "{count, plural, =0{٠ دقيقة} =1{دقيقة واحدة} =2{دقيقتان} few{{count} دقائق} many{{count} دقيقة} other{{count} دقيقة}}",
   "@adaptationMinutes": {
@@ -6693,7 +6697,8 @@
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   },
   "adaptationSeconds": "{count, plural, =0{٠ ثانية} =1{ثانية واحدة} =2{ثانيتان} few{{count} ثوانٍ} many{{count} ثانية} other{{count} ثانية}}",
   "@adaptationSeconds": {
@@ -6701,6 +6706,7 @@
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   }
 }
