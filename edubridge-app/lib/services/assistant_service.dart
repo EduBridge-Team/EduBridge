@@ -120,12 +120,7 @@ class AssistantService {
             : context,
     });
 
-    Map<String, dynamic> data = {};
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      // A friendly fallback is thrown below.
-    }
+    final data = ApiService.decodeMap(response.body);
 
     if (response.statusCode == 200 && data['reply'] is String) {
       return (data['reply'] as String).trim();
