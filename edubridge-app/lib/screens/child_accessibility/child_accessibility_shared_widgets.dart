@@ -7,10 +7,10 @@ PreferredSizeWidget buildChildSettingsAppBar(BuildContext context, String childN
   titleSpacing: 0,
   leadingWidth: 52,
   leading: IconButton(
-    tooltip: 'رجوع', onPressed: () => Navigator.maybePop(context),
+    tooltip: context.l10n.back, onPressed: () => Navigator.maybePop(context),
     icon: const CircleAvatar(radius: 19, backgroundColor: Color(0x33FFFFFF),
       child: Icon(Icons.arrow_back_rounded, size: 22, color: Colors.white))),
-  title: Text('إعدادات $childName', maxLines: 1, overflow: TextOverflow.ellipsis,
+  title: Text(context.l10n.adaptationSettingsFor(childName), maxLines: 1, overflow: TextOverflow.ellipsis,
     style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
 );
 
@@ -21,18 +21,19 @@ Widget _settingsBadge(IconData icon) => Container(
   child: Icon(icon, color: const Color(0xFF09ACC0), size: 20),
 );
 
-Widget buildInfoBanner(JisrColors c, String childName) => Container(
+Widget buildInfoBanner(BuildContext context, JisrColors c, String childName) => Container(
   padding: const EdgeInsets.all(14),
   decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(20)),
   child: Row(children: [
     _settingsBadge(Icons.people_outline_rounded),
     const SizedBox(width: 12),
-    Expanded(child: Text('هذه الإعدادات تُطبَّق على $childName فقط.',
+    Expanded(child: Text(context.l10n.adaptationOnlyFor(childName),
       style: TextStyle(color: c.heading, fontSize: 15, height: 1.7, fontWeight: FontWeight.w700))),
   ]),
 );
 
 Widget buildDisabilitySelector({
+  required BuildContext context,
   required JisrColors c,
   required String? selectedValue,
   required VoidCallback? onTap,
@@ -49,7 +50,7 @@ Widget buildDisabilitySelector({
       child: Row(children: [
         _settingsBadge(Icons.description_outlined),
         const SizedBox(width: 8),
-        Expanded(child: Text(selectedValue == null ? 'نوع الإعاقة' : 'نوع الإعاقة: $selectedValue',
+        Expanded(child: Text(selectedValue == null ? context.l10n.disabilityType : context.l10n.adaptationDisabilityValue(DisabilityDisplay.label(selectedValue, context.l10n)),
           style: TextStyle(color: c.muted, fontSize: 13))),
         const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF1769C2), size: 21),
       ]),
@@ -58,6 +59,7 @@ Widget buildDisabilitySelector({
 );
 
 Widget buildCustomDisabilityBox({
+  required BuildContext context,
   required JisrColors c,
   required TextEditingController controller,
   required VoidCallback onSave,
@@ -75,14 +77,14 @@ Widget buildCustomDisabilityBox({
           children: [
             const Icon(AppIcons.edit, color: AppColors.brandTealDeep, size: 24),
             const SizedBox(width: 8),
-            Text(
-              'اكتب اسم الإعاقة',
+            Expanded(child: Text(
+              context.l10n.adaptationCustomName,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: c.onTint,
               ),
-            ),
+            )),
           ],
         ),
         const SizedBox(height: 12),
@@ -90,7 +92,7 @@ Widget buildCustomDisabilityBox({
           controller: controller,
           maxLines: 2,
           decoration: InputDecoration(
-            hintText: 'مثال: اضطراب المعالجة السمعية',
+            hintText: context.l10n.adaptationCustomHint,
             filled: true,
             fillColor: c.card,
             border: OutlineInputBorder(
@@ -108,7 +110,7 @@ Widget buildCustomDisabilityBox({
               foregroundColor: Colors.white,
             ),
             icon: const Icon(AppIcons.check),
-            label: const Text('حفظ الإعاقة'),
+            label: Text(context.l10n.adaptationSaveDisability),
             onPressed: onSave,
           ),
         ),
@@ -133,7 +135,7 @@ Widget buildFeatureSection({
     child: Builder(builder: (context) => Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          key: PageStorageKey('s27-$title'),
+          key: PageStorageKey('s27-${icon.codePoint}'),
           initiallyExpanded: initiallyExpanded,
           maintainState: true,
           tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -185,6 +187,7 @@ Widget buildDurationSetting({
   required int value,
   required List<int> choices,
   required String unit,
+  String Function(int)? optionLabel,
   required ValueChanged<int>? onChanged,
 }) {
   final options = {...choices, value}.toList()..sort();
@@ -202,7 +205,7 @@ Widget buildDurationSetting({
             value: value,
             isExpanded: true,
             items: options.map((option) => DropdownMenuItem(
-              value: option, child: Text('$option $unit'),
+              value: option, child: Text(optionLabel?.call(option) ?? '$option $unit'),
             )).toList(),
             onChanged: onChanged == null ? null : (next) {
               if (next != null) onChanged(next);

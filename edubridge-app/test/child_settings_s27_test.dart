@@ -15,7 +15,7 @@ void main() {
         return Scaffold(
           appBar: buildChildSettingsAppBar(context, 'محمود'),
           body: ListView(children: [
-            buildInfoBanner(c, 'محمود'),
+            buildInfoBanner(context, c, 'محمود'),
             buildFeatureSection(title: 'ميزات الإعاقات البصرية',
               icon: Icons.visibility, color: Colors.blue, c: c,
               children: [sw('واجهة نصية فقط', 'عرض وصف الصور', false, (_) {})]),

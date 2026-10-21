@@ -1,5 +1,7 @@
 // lib/screens/child_accessibility/child_accessibility_settings_screen.dart
 import 'package:flutter/material.dart';
+import '../../l10n/l10n.dart';
+import '../../widgets/disability/disability_display.dart';
 import '../../app_icons.dart';
 import '../../services/accessibility_service.dart';
 import '../../features/adaptation/data/adaptation_settings_loader.dart';
@@ -90,7 +92,7 @@ class _ChildAccessibilitySettingsScreenState
     } catch (_) {
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر حفظ إعدادات التكيف')),
+        SnackBar(content: Text(context.l10n.adaptationSaveFailed)),
       );
       return false;
     } finally {
@@ -129,7 +131,7 @@ class _ChildAccessibilitySettingsScreenState
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('تم حفظ التصنيف مع الحفاظ على إعدادات التكيف لـ "$result"'),
+        content: Text(context.l10n.adaptationCategorySaved(DisabilityDisplay.label(result, context.l10n))),
         backgroundColor: AppColors.brandBlueLight,
         duration: const Duration(seconds: 2),
       ),
@@ -142,8 +144,8 @@ class _ChildAccessibilitySettingsScreenState
     final name = _customNameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('يرجى كتابة اسم الإعاقة'),
+        SnackBar(
+          content: Text(context.l10n.adaptationEnterName),
           backgroundColor: AppColors.brandTealDeep,
         ),
       );
@@ -154,8 +156,8 @@ class _ChildAccessibilitySettingsScreenState
     if (!mounted) return;
     setState(() => _selectedDisability = name);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم حفظ الإعاقة المخصّصة'),
+      SnackBar(
+        content: Text(context.l10n.adaptationCustomSaved),
         backgroundColor: AppColors.brandBlueLight,
       ),
     );
@@ -171,15 +173,15 @@ class _ChildAccessibilitySettingsScreenState
       return Scaffold(
         appBar: buildChildSettingsAppBar(context, widget.childName),
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('تعذّر تحميل إعدادات الطفل'),
-          TextButton(onPressed: _loadSettings, child: const Text('إعادة المحاولة')),
+          Text(context.l10n.adaptationLoadFailed),
+          TextButton(onPressed: _loadSettings, child: Text(context.l10n.retryAction)),
         ])),
       );
     }
     if (!_canEdit) {
       return Scaffold(
         appBar: buildChildSettingsAppBar(context, widget.childName),
-        body: const Center(child: Text('إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.')),
+        body: Center(child: Text(context.l10n.adaptationRestricted)),
       );
     }
     return buildView(context);

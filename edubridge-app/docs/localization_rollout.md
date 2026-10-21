@@ -306,3 +306,21 @@ session; the PR workflows must validate analysis, tests and builds before merge.
   manual mobile/desktop and assistive-technology checks.
 
 English support is still in rollout; do not claim full completion.
+
+### Phase 5 — child adaptation settings
+
+The S27 settings view, specialist permission gate, classification/custom-name
+controls, feature labels/tooltips, duration choices, reset/save controls and
+save/error notices now resolve Arabic/English messages. Known disability labels
+use the existing presentation adapter; canonical categories, free-text names,
+profile fields, disabled unsupported controls and assigned-specialist permission
+checks remain unchanged. The settings view inherits the selected direction.
+Expansion keys use stable feature icons so translating headings does not reset
+open sections. Duration choices use ICU plural messages without changing values.
+
+Bilingual regression coverage exercises 320px at normal/doubled text, original
+custom names and canonical profile writes, unavailable switches, denied editing,
+failed saves and retry. The custom-name heading can wrap inside its existing row.
+This batch does not change voice recognition language or enable inactive features.
+Next: child activities/games and voice/semantic feedback, followed by the final
+completeness audit and deferred manual accessibility checks.
