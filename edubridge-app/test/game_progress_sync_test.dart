@@ -65,4 +65,43 @@ void main() {
     expect(sent.map((attempt) => attempt['score']).toList(), [100, 0]);
     expect(sent.every((attempt) => attempt['game_key'] == 'numbers'), isTrue);
   });
+
+  test('permanent rejection is removed while later queued attempts sync', () async {
+    var calls = 0;
+    final service = GameProgressService(
+      post: (_, body) async {
+        calls++;
+        return http.Response('{}', calls == 1 ? 403 : 200);
+      },
+    );
+
+    service.begin(childId: 7, gameKey: 'numbers');
+    await service.record(80);
+    await service.record(90);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(calls, 2);
+    expect(prefs.containsKey('pending_game_attempts_v2_0'), isFalse);
+  });
+
+  test('rate limiting preserves event ID for a subsequent retry', () async {
+    final ids = <String>[];
+    var online = false;
+    final service = GameProgressService(
+      post: (_, body) async {
+        ids.add(body['event_id'] as String);
+        return http.Response('{}', online ? 200 : 429);
+      },
+    );
+
+    service.begin(childId: 8, gameKey: 'memory');
+    await service.record(70);
+    online = true;
+    await service.flushPending();
+
+    expect(ids, hasLength(2));
+    expect(ids.first, ids.last);
+    expect((await SharedPreferences.getInstance())
+        .containsKey('pending_game_attempts_v2_0'), isFalse);
+  });
 }
