@@ -103,12 +103,12 @@ class AdaptiveHelper {
   static bool get useSlowSpeech => profile.slowSpeech;
 
   /// نطق نص حسب إعدادات البروفايل
-  static Future<void> speak(String text) async {
+  static Future<void> speak(String text, {String languageCode = 'ar'}) async {
     if (text.trim().isEmpty) return;
     if (useSlowSpeech) {
-      await TtsService.instance.speakLineSlow(text);
+      await TtsService.instance.speakLineSlow(text, languageCode: languageCode);
     } else {
-      await TtsService.instance.speakLine(text);
+      await TtsService.instance.speakLine(text, languageCode: languageCode);
     }
   }
 

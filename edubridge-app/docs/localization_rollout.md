@@ -465,3 +465,11 @@ final source/direction inventory and deferred manual accessibility checks.
 - Sign matching remains silent and preserves haptic preferences. Result-dialog text resolves in the dialog locale during language changes; its title/content scroll at large text scale to keep replay reachable.
 - Added Arabic/English mapping coverage and narrow-screen double-text-scale interactions for wrong/duplicate answers, retained targets/options/points, selected-language slow speech and calm suppression, eight-round sign completion, result locale changes and replay.
 - Local ARB parity/metadata and diff checks precede Flutter analysis/tests and platform builds in PR CI. Backend and teacher-authored lesson content remain unchanged.
+
+### Shared control speech audit
+- AdaptiveButton, AdaptiveIcon, LargeActionButton and AdaptiveWrapper now select the current interface language for UI speech. An optional speechLanguageCode preserves a caller-specified voice for content in another language.
+- AdaptiveHelper.speak accepts a languageCode while retaining Arabic defaults for existing content callers. Slow-speech selection remains centralized.
+- LargeActionButton now observes live adaptation changes and respects calm-mode automatic-speech suppression; its label fits inside the existing button dimensions at large text scale.
+- Repeated screen-title announcements track both title and voice language, so switching language re-announces even an unchanged title. Obsolete queued announcements are skipped.
+- Added Arabic/English large-text coverage for voice selection/override, callbacks, calm/slow settings, duplicate/busy action guards, repeated-title locale changes, stable rebuilds and legacy content defaults.
+- Remaining audit targets include step-by-step lesson interface text, authored-content voice boundaries, other shared speech/semantic widgets, final direction/literal inventory and deferred manual device/assistive-technology QA. This batch does not close phase 5 or claim full English coverage.

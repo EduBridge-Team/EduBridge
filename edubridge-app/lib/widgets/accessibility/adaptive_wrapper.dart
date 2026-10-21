@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/widgets/accessibility/adaptive_wrapper.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,11 +9,13 @@ import '../../utils/adaptive_helper.dart';
 class AdaptiveWrapper extends StatefulWidget {
   final Widget child;
   final String? screenTitle;
+  final String? speechLanguageCode;
 
   const AdaptiveWrapper({
     super.key,
     required this.child,
     this.screenTitle,
+    this.speechLanguageCode,
   });
 
   @override
@@ -22,6 +25,7 @@ class AdaptiveWrapper extends StatefulWidget {
 class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
   final _focusNode = FocusNode();
   String? _announcedTitle;
+  String? _announcedLanguage;
 
   @override
   void dispose() {
@@ -83,15 +87,25 @@ class _AdaptiveWrapperState extends State<AdaptiveWrapper> {
         // ═══════════════════════════════════════════════
         //  7. تكرار المحتوى (repetitionMode)
         // ═══════════════════════════════════════════════
-        if (profile.repetitionMode && widget.screenTitle != null &&
-            _announcedTitle != widget.screenTitle) {
-          _announcedTitle = widget.screenTitle;
+        final title = widget.screenTitle;
+        final language = widget.speechLanguageCode ?? context.l10n.localeName;
+        if (profile.repetitionMode && title != null &&
+            (_announcedTitle != title || _announcedLanguage != language)) {
+          _announcedTitle = title;
+          _announcedLanguage = language;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && AdaptiveHelper.shouldReadOnTap) AdaptiveHelper.speak(widget.screenTitle!);
+            if (mounted && _announcedTitle == title && _announcedLanguage == language &&
+                AccessibilityService.instance.profile.value.repetitionMode &&
+                AdaptiveHelper.shouldReadOnTap) {
+              AdaptiveHelper.speak(title, languageCode: language);
+            }
           });
         }
 
-        if (!profile.repetitionMode) _announcedTitle = null;
+        if (!profile.repetitionMode) {
+          _announcedTitle = null;
+          _announcedLanguage = null;
+        }
         return FocusTraversalGroup(child: result);
       },
     );

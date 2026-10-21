@@ -19,6 +19,7 @@ class AdaptiveButton extends StatefulWidget {
   final bool enableReadOnTap;
   final double? fontSize;
   final bool isBusy;
+  final String? speechLanguageCode;
   const AdaptiveButton({
     super.key,
     required this.label,
@@ -31,6 +32,7 @@ class AdaptiveButton extends StatefulWidget {
     this.enableReadOnTap = true,
     this.fontSize,
     this.isBusy = false,
+    this.speechLanguageCode,
   });
 
   @override
@@ -75,7 +77,8 @@ class _AdaptiveButtonState extends State<AdaptiveButton> {
 
           // نطق النص قبل التنفيذ
           if (widget.enableReadOnTap && profile.autoReadOnTap && !profile.sensoryCalmMode) {
-            AdaptiveHelper.speak(widget.label);
+            AdaptiveHelper.speak(widget.label,
+              languageCode: widget.speechLanguageCode ?? context.l10n.localeName);
           }
 
           widget.onPressed!();
