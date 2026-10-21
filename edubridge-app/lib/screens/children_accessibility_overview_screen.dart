@@ -1,3 +1,4 @@
+import '../l10n/l10n.dart';
 import '../utils/presentation_text.dart';
 // lib/screens/children_accessibility_overview_screen.dart
 import 'dart:convert';
@@ -27,7 +28,7 @@ class _ChildrenAccessibilityOverviewScreenState
     extends State<ChildrenAccessibilityOverviewScreen> {
   List _children = [];
   bool _loading = true;
-  String? _error;
+  int? _error;
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _ChildrenAccessibilityOverviewScreenState
 
     try {
       if (await ApiService.getRole() != 'specialist') {
-        if (mounted) setState(() { _error = 'إعدادات التكيف متاحة للمختص فقط'; _loading = false; });
+        if (mounted) setState(() { _error = 1; _loading = false; });
         return;
       }
       final res = await ApiService.authGet('/children');
@@ -76,14 +77,14 @@ class _ChildrenAccessibilityOverviewScreenState
       } else {
         if (!mounted) return;
         setState(() {
-          _error = data['error'] ?? 'تعذّر جلب الأطفال';
+          _error = 2;
           _loading = false;
         });
       }
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = 'تعذّر الاتصال بالسيرفر';
+        _error = 3;
         _loading = false;
       });
     }
@@ -112,7 +113,7 @@ class _ChildrenAccessibilityOverviewScreenState
   @override
   Widget build(BuildContext context) {
     return AdaptiveWrapper(
-      screenTitle: 'احتياجات الأبناء الخاصة',
+      screenTitle: context.l10n.overviewScreenTitle,
       child: Scaffold(
         appBar: BrandAppBar(
           title: Row(
@@ -120,21 +121,21 @@ class _ChildrenAccessibilityOverviewScreenState
             children: [
               const Icon(Icons.accessibility_new, color: Colors.white),
               const SizedBox(width: 8),
-              Text(
-                'احتياجات الأبناء',
+              Flexible(child: Text(
+                context.l10n.overviewTitle,
                 style: TextStyle(
                   fontSize: AdaptiveHelper.bodyFontSize + 2,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
-              ),
+              )),
             ],
           ),
           centerTitle: true,
           actions: [
             IconButton(
               icon: const Icon(AppIcons.refresh, color: Colors.white),
-              tooltip: 'تحديث',
+              tooltip: context.l10n.overviewRefresh,
               onPressed: _load,
             ),
           ],

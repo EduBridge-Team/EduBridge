@@ -481,3 +481,11 @@ final source/direction inventory and deferred manual accessibility checks.
 - Preserved slow speech, calm-mode automatic-reading suppression, direct listening, captions/sign-video data and authored content. Completion dialogs scroll at large text scale.
 - Added Arabic/English step navigation, retained position/generated labels, original content, direct speech, completion/review, empty state, content/UI voice boundaries and video failure-state coverage. Full CI must pass before merge.
 - Phase 5 still requires the final shared-widget/semantic inventory and phase 6 requires manual device/assistive-technology checks; this batch does not claim full completion.
+
+### Final shared UI and dictation sweep
+- Localized interactive-lesson chrome/feedback and removed its forced RTL wrapper while preserving authored explanations, option IDs and answer validation. Navigation wraps at large text scale.
+- Localized emergency confirmation/local instructions/status and direct-call labels, with scrollable dialogs and flexible titles. Existing emergency payload, recipients, contact actions and safety instructions retain their behavior; no real alert is sent by tests.
+- Localized child adaptation overview, classification display, badges, empty/error states, timeline, profile reload and microphone listening labels. Specialist permissions remain unchanged; error identities re-resolve on locale changes.
+- Dictation now selects a supported recognizer locale for the UI language and cancels on language changes, dropping stale results without changing the draft. Existing Arabic recognizer implementations remain compatible. Default word suggestions follow locale; caller-provided dictionaries remain intact.
+- Tests cover content-preserving interactive practice, wrong/correct/retry/restart, dictation locale/stale results, custom/default prediction, local-only emergency dialogs and the retained specialist gate.
+- This source sweep does not establish physical-device voice quality. The separate voice-command intent/reply engine, Noor response-language behavior, remaining source candidates and assistive-technology QA require explicit final verification before declaring the full rollout complete.

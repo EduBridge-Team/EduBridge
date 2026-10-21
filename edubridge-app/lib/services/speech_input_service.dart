@@ -51,6 +51,15 @@ class SpeechInputService {
     return identical(_owner, owner) ? locale : null;
   }
 
+  Future<String?> localeForLanguage(Object owner, String language) async {
+    if (!identical(_owner, owner)) return null;
+    final engine = _speech;
+    final locale = engine is LanguageSpeechRecognizer
+        ? await (engine as LanguageSpeechRecognizer).localeForLanguage(language)
+        : language.startsWith('ar') ? await engine.arabicLocale() : null;
+    return identical(_owner, owner) ? locale : null;
+  }
+
   Future<void> listen({required Object owner,
       required stt.SpeechListenOptions options,
       required void Function(SpeechRecognitionResult) onResult}) async {
@@ -98,7 +107,11 @@ abstract class SpeechRecognizer {
   Future<void> cancel();
 }
 
-class _PluginSpeechRecognizer implements SpeechRecognizer {
+abstract class LanguageSpeechRecognizer {
+  Future<String?> localeForLanguage(String language);
+}
+
+class _PluginSpeechRecognizer implements SpeechRecognizer, LanguageSpeechRecognizer {
   final _speech = stt.SpeechToText();
   @override
   bool get isListening => _speech.isListening;
@@ -107,9 +120,12 @@ class _PluginSpeechRecognizer implements SpeechRecognizer {
       required void Function(dynamic) onError}) =>
       _speech.initialize(onStatus: onStatus, onError: onError);
   @override
-  Future<String?> arabicLocale() async {
+  Future<String?> arabicLocale() => localeForLanguage('ar');
+  @override
+  Future<String?> localeForLanguage(String language) async {
+    final code = language.toLowerCase().split(RegExp('[-_]')).first;
     for (final locale in await _speech.locales()) {
-      if (locale.localeId.toLowerCase().startsWith('ar')) return locale.localeId;
+      if (locale.localeId.toLowerCase().split(RegExp('[-_]')).first == code) return locale.localeId;
     }
     return null;
   }

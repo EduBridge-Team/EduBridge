@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
@@ -66,7 +67,7 @@ class _ChildAdaptationScopeState extends State<ChildAdaptationScope> {
   Widget build(BuildContext context) {
     if (!_ready) {
       return Scaffold(body: Center(child: _failed
-        ? TextButton(onPressed: _enter, child: const Text('إعادة تحميل إعدادات التعلم'))
+        ? TextButton(onPressed: _enter, child: Text(context.l10n.adaptationReload))
         : const CircularProgressIndicator()));
     }
     return BrainBreakScheduler(profileListenable: _service.profile,

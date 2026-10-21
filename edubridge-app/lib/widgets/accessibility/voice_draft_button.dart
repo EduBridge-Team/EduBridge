@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/speech_input_service.dart';
@@ -19,6 +20,15 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
   bool _listening = false;
   bool _starting = false;
   int _generation = 0;
+  String? _language;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = context.l10n.localeName;
+    if (_language != null && _language != language) _cancel();
+    _language = language;
+  }
 
   @override
   void initState() {
@@ -62,7 +72,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
     if (!widget.enabled || _starting) return;
     if (_listening) {
       try { await _speech.stop(_owner); }
-      catch (_) { _cancel(); _error('تعذّر إيقاف التسجيل. يمكنك كتابة الإجابة.'); }
+      catch (_) { _cancel(); _error(context.l10n.dictationStopFailed); }
       if (mounted) setState(() => _listening = false);
       return;
     }
@@ -82,20 +92,21 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
             setState(() { _listening = false; _starting = false; });
             _generation++;
             unawaited(_speech.cancel(_owner));
-            _error('تعذّر سماع الصوت. يمكنك كتابة الإجابة.');
+            _error(context.l10n.dictationHearFailed);
           }
         },
       );
       if (!mounted || generation != _generation || !widget.enabled) return;
-      if (!available) { _error('الميكروفون غير متاح. يمكنك كتابة الإجابة.'); return; }
-      final arabic = await _speech.arabicLocale(_owner);
+      if (!available) { _error(context.l10n.dictationUnavailable); return; }
+      final language = context.l10n.localeName;
+      final locale = await _speech.localeForLanguage(_owner, language);
       if (!mounted || generation != _generation || !widget.enabled) return;
-      if (arabic == null) { _error('التعرف على الكلام العربي غير متاح على الجهاز.'); return; }
+      if (locale == null) { _error(context.l10n.dictationLocaleUnavailable); return; }
       setState(() => _listening = true);
       recordingRequested = true;
       await _speech.listen(
         owner: _owner,
-        options: stt.SpeechListenOptions(localeId: arabic,
+        options: stt.SpeechListenOptions(localeId: locale,
           partialResults: false, listenFor: const Duration(seconds: 30)),
         onResult: (result) {
           if (!mounted || generation != _generation || !widget.enabled || !result.finalResult) return;
@@ -114,7 +125,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
       if (mounted && generation == _generation) {
         setState(() => _listening = false);
         unawaited(_speech.cancel(_owner));
-        _error('تعذّر تشغيل الميكروفون. يمكنك كتابة الإجابة.');
+        _error(context.l10n.dictationStartFailed);
       }
     } finally {
       if (mounted && generation == _generation) {
@@ -128,7 +139,7 @@ class _VoiceDraftButtonState extends State<VoiceDraftButton> with WidgetsBinding
   Widget build(BuildContext context) => OutlinedButton.icon(
     onPressed: widget.enabled && !_starting ? _toggle : null,
     icon: Icon(_listening ? Icons.stop : Icons.mic_none),
-    label: Text(_starting ? 'جارٍ تشغيل الميكروفون' : _listening ? 'أوقف التسجيل' : 'أكتب بصوتي'),
+    label: Text(_starting ? context.l10n.dictationStarting : _listening ? context.l10n.dictationStop : context.l10n.dictationWrite),
     style: OutlinedButton.styleFrom(minimumSize: const Size(48, 52)),
   );
 }

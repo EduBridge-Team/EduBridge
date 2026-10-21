@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../models/interactive_lesson.dart';
 
@@ -29,9 +30,7 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
     final steps = widget.lesson.steps;
     final finished = _index == steps.length;
     final step = finished ? null : steps[_index];
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(title: Text(widget.lesson.title)),
         body: SafeArea(
           child: Padding(
@@ -41,8 +40,8 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
               children: [
                 Semantics(
                   label: finished
-                      ? 'اكتمل الدرس'
-                      : 'الخطوة ${_index + 1} من ${steps.length}',
+                      ? context.l10n.practiceCompleted
+                      : context.l10n.practicePosition(_index + 1, steps.length),
                   child: LinearProgressIndicator(
                     value: finished ? 1 : (_index + 1) / steps.length,
                   ),
@@ -52,7 +51,7 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                   child: finished
                       ? Center(
                           child: Text(
-                            'أكملت الدرس! أحسنت.',
+                            context.l10n.practiceWellDone,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
@@ -89,8 +88,8 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                                         padding: const EdgeInsets.all(12),
                                         child: Text(
                                           question.isCorrect(_selected!)
-                                              ? 'أحسنت! إجابة صحيحة.'
-                                              : 'حاول مرة أخرى.',
+                                              ? context.l10n.practiceCorrect
+                                              : context.l10n.practiceRetry,
                                         ),
                                       ),
                                     ),
@@ -98,7 +97,7 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                                     FilledButton(
                                       onPressed: () =>
                                           setState(() => _revealed = true),
-                                      child: const Text('تحقق من الإجابة'),
+                                      child: Text(context.l10n.practiceCheck),
                                     ),
                                   if (_revealed &&
                                       !question.isCorrect(_selected!))
@@ -107,21 +106,21 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                                         _selected = null;
                                         _revealed = false;
                                       }),
-                                      child: const Text('حاول مرة أخرى'),
+                                      child: Text(context.l10n.practiceTryAgain),
                                     ),
                                 ],
                               ),
                           },
                         ),
                 ),
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween, spacing: 12, runSpacing: 8,
                   children: [
                     if (_index > 0)
                       OutlinedButton(
                         onPressed: () => _move(-1),
-                        child: const Text('السابق'),
+                        child: Text(context.l10n.practicePrevious),
                       ),
-                    const Spacer(),
                     if (finished)
                       FilledButton(
                         onPressed: () => setState(() {
@@ -129,7 +128,7 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                           _selected = null;
                           _revealed = false;
                         }),
-                        child: const Text('إعادة الدرس'),
+                        child: Text(context.l10n.practiceRestart),
                       )
                     else if (step is LessonExplanation ||
                         (step is LessonSingleChoice &&
@@ -138,8 +137,8 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
                       FilledButton(
                         onPressed: () => _move(1),
                         child: Text(_index == steps.length - 1
-                            ? 'إنهاء الدرس'
-                            : 'التالي'),
+                            ? context.l10n.practiceFinish
+                            : context.l10n.practiceNext),
                       ),
                   ],
                 ),
@@ -147,7 +146,6 @@ class _InteractiveLessonPlayerState extends State<InteractiveLessonPlayer> {
             ),
           ),
         ),
-      ),
     );
   }
 }
