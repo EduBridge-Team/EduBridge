@@ -423,3 +423,9 @@ No game rules, content banks, permissions or backend endpoints change.
 Next: remaining game screens (arithmetic, sequencing, words/reading, rhythm,
 shapes/colors/sign language), remaining child voice/semantic strings, then the
 final source/direction inventory and deferred manual accessibility checks.
+
+### Arithmetic and simple sequencing
+- Localized MathRaceGame controls, completion and save failures, and SequenceGame instructions, six built-in sequences, card labels, feedback and completion.
+- Canonical sequence banks and shuffle-history identities remain unchanged; presentation resolves the current locale, including feedback after a language change.
+- Sequence speech uses the selected language and existing automatic/slow-speech preferences. Arithmetic expressions explicitly retain left-to-right order.
+- Added narrow-screen, double-text-scale widget coverage for both languages and preserved sequence state across a locale change. Flutter analysis/tests and platform builds are verified by PR CI.
