@@ -110,19 +110,15 @@ class _MathRaceGameState extends State<MathRaceGame> {
       appBar: BrandAppBar(
         title: Text(context.l10n.mathRaceTitle),
         actions: [
-          TextButton(
-            onPressed: _finishing ? null : _onFinish,
-            child: Text(_finishing ? context.l10n.saving : context.l10n.mathFinish,
-              style: const TextStyle(color: Colors.white)),
-          ),
-          if (_noPressure)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Center(
-                child: Text(context.l10n.mathUntimed,
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * .45),
+            child: TextButton(
+              onPressed: _finishing ? null : _onFinish,
+              child: Text(_finishing ? context.l10n.saving : context.l10n.mathFinish,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white)),
             ),
+          ),
         ],
       ),
       body: SafeArea(child: Center(child: ConstrainedBox(
@@ -139,6 +135,9 @@ class _MathRaceGameState extends State<MathRaceGame> {
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 Text('❌ $_wrong',
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                if (_noPressure)
+                  Text(context.l10n.mathUntimed,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 if (!_noPressure)
                   Text('⏱️ $_timeLeft',
                       style: TextStyle(
