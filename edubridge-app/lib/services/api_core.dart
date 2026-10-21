@@ -24,17 +24,8 @@ Never _apiCoreHandleError(Object error) {
     throw Exception('حدث خطأ غير متوقع');
   }
 
-Map<String, dynamic> _apiCoreDecodeBody(http.Response res) {
-    if (res.body.isEmpty) return {};
-    try {
-      final decoded = jsonDecode(res.body);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return Map<String, dynamic>.from(decoded);
-      return {};
-    } catch (_) {
-      return {};
-    }
-  }
+Map<String, dynamic> _apiCoreDecodeBody(http.Response res) =>
+    _apiCoreDecodeMap(res.body);
 
 Map<String, dynamic> _apiCoreDecodeMap(String body) {
     if (body.isEmpty) return {};

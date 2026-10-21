@@ -89,9 +89,11 @@ class AssistantService {
     final request = http.MultipartRequest(
       'POST', Uri.parse('${Config.baseUrl}/assistant/vision/analyze'),
     )..headers['Authorization'] = 'Bearer $token';
-    request.fields['question'] = question.trim().isEmpty
+    final trimmedQuestion = question.trim();
+    request.fields['question'] = trimmedQuestion.isEmpty
         ? 'اشرح محتوى هذه الصورة التعليمية.'
-        : question.trim().substring(0, question.trim().length > 1200 ? 1200 : question.trim().length);
+        : trimmedQuestion.substring(
+            0, trimmedQuestion.length > 1200 ? 1200 : trimmedQuestion.length);
     request.files.add(http.MultipartFile.fromBytes(
       'image', bytes, filename: image.name,
     ));
