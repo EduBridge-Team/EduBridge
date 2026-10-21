@@ -53,6 +53,7 @@ void main() {
           builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)), child: child!),
           home: const MatchingGame(childName: 'محمود', items: ['أ'])));
         await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'initial board layout');
         expect(find.text(s.matchingTitle), findsOneWidget);
         final cards = find.byWidgetPredicate((w) => w is GestureDetector && w.child is AnimatedContainer);
         expect(cards, findsNWidgets(2));
@@ -62,6 +63,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400)); await tester.pump();
         expect(find.text('أ'), findsNWidgets(2));
         await tester.pump(const Duration(seconds: 4)); await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'result dialog layout');
         expect(find.text(s.matchingWellDone), findsOneWidget);
         expect(find.text(s.matchingAttempts), findsOneWidget);
         expect(find.text('100%'), findsOneWidget);

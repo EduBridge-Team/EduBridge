@@ -220,9 +220,9 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _infoChip('⏱️', context.l10n.matchingSecondsShort(_secondsElapsed)),
-                _infoChip('🎯', '$_matches/${_cards.length ~/ 2}'),
-                _infoChip('❌', '$_mistakes'),
+                Expanded(child: _infoChip('⏱️', context.l10n.matchingSecondsShort(_secondsElapsed))),
+                Expanded(child: _infoChip('🎯', '$_matches/${_cards.length ~/ 2}')),
+                Expanded(child: _infoChip('❌', '$_mistakes')),
               ],
             ),
           ),
@@ -253,13 +253,15 @@ class _MatchingGameState extends State<MatchingGame> with WidgetsBindingObserver
 
   Widget _infoChip(String emoji, String value) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(emoji, style: const TextStyle(fontSize: 20)),
         const SizedBox(width: 4),
-        Text(
+        Flexible(child: Text(
           value,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        )),
       ],
     );
   }
