@@ -138,8 +138,6 @@ Future<void> _apiCoreLogout() async {
     await prefs.remove('role');
     await prefs.remove('name');
     await prefs.remove('userId');
-    ApiService.isAuthenticated.value = false;
-    ApiService.userRole.value = null;
   }
 
 Future<String?> _apiCoreLogin(String email, String password) async {
