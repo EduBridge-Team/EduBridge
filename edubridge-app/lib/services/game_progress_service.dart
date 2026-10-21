@@ -99,8 +99,9 @@ class GameProgressService {
         final response = await _post('/children/$childId/game-attempts', payload);
         if (response.statusCode < 200 || response.statusCode >= 300) {
           if (response.statusCode >= 500 || response.statusCode == 429) return;
-          // A revoked child or invalid legacy record must not block other children's results.
-          queueIndex++;
+          // Discard permanently rejected attempts so they cannot block retries.
+          queue.removeAt(queueIndex);
+          await _persistQueue(prefs, key, queue);
           continue;
         }
       } catch (_) {
