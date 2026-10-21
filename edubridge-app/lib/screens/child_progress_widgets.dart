@@ -220,15 +220,20 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
         color: Colors.white,
         borderRadius: BorderRadius.circular(17),
         border: Border.all(color: const Color(0xFFD8E6F2))),
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      child: LayoutBuilder(builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         CircleAvatar(radius: 19,
           backgroundColor: tint.withValues(alpha: 0.12),
           child: Icon(icon, size: 21, color: tint)),
         Text(value, maxLines: 1, style: const TextStyle(
           color: Color(0xFF102D49), fontSize: 18, fontWeight: FontWeight.w800)),
-        Text(label, maxLines: 1, textAlign: TextAlign.center,
+        Text(label, maxLines: 3, textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 10, color: Color(0xFF102D49))),
-      ]),
+          ]),
+        ),
+      )),
     ));
   }
 
@@ -338,7 +343,8 @@ extension _ChildProgressWidgets on _ChildProgressScreenState {
                 ],
               )),
               const SizedBox(width: 5),
-              const Icon(Icons.chevron_left_rounded,
+              Icon(Directionality.of(context) == TextDirection.rtl
+                ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
                 color: Color(0xFF637E98)),
             ]),
           ),
