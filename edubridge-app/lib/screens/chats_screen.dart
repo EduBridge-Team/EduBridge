@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../features/communication/data/conversation_repository.dart';
+import '../features/communication/models/conversation_preview.dart';
 import '../features/communication/presentation/communication_list_controller.dart';
 import '../l10n/l10n.dart';
 import '../services/api_service.dart';
