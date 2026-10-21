@@ -1,3 +1,6 @@
+import '../l10n/generated/app_localizations.dart';
+import '../utils/game_catalog_display.dart';
+import 'app_locale_controller.dart';
 // خدمة الأوامر الصوتية — تدعم فتح دروس/واجبات/تقدم طفل معيّن بالاسم
 import 'dart:async';
 import 'dart:convert';
@@ -47,10 +50,33 @@ part 'voice_command_child_navigation.dart';
 part 'voice_command_game_navigation.dart';
 
 class VoiceCommandService {
-  VoiceCommandService._();
+  VoiceCommandService._() : this._with(SpeechInputService.instance, AppLocaleController.instance);
+
+  @visibleForTesting
+  VoiceCommandService.forTesting(SpeechInputService speech, AppLocaleController locale)
+      : this._with(speech, locale);
+
+  VoiceCommandService._with(this._speech, this._locale) {
+    _locale.addListener(_localeChanged);
+  }
+
+  @visibleForTesting
+  Future<void> dispose() async {
+    _locale.removeListener(_localeChanged);
+    await cancel();
+  }
+
+  AppLocalizations get _strings => lookupAppLocalizations(_locale.value);
+
+  void _localeChanged() {
+    unawaited(cancel());
+    _localeId = null;
+    lastReply.value = '';
+  }
   static final VoiceCommandService instance = VoiceCommandService._();
 
-  final _speech = SpeechInputService.instance;
+  final SpeechInputService _speech;
+  final AppLocaleController _locale;
   final _speechOwner = Object();
   bool _available = false;
   bool _starting = false;
@@ -82,7 +108,7 @@ class VoiceCommandService {
         onError: _onError,
       );
       if (_available) {
-        _localeId = await _speech.arabicLocale(_speechOwner);
+        _localeId = await _speech.localeForLanguage(_speechOwner, _locale.value.languageCode);
       }
       return _available;
     } catch (_) {
@@ -101,7 +127,7 @@ class VoiceCommandService {
     isListening.value = false;
     _acceptResults = false;
     unawaited(_speech.cancel(_speechOwner));
-    lastReply.value = 'تعذّر سماع الأمر. تأكد من إذن الميكروفون ثم حاول مجدداً';
+    lastReply.value = _strings.voiceCommandHearFailed;
   }
 
   Future<void> startListening() async {
@@ -113,12 +139,12 @@ class VoiceCommandService {
     final session = ++_session;
     try {
       if (!await initialize()) {
-        await _reply('الميكروفون غير متاح. تأكد من إذن الميكروفون ثم حاول مجدداً');
+        await _reply(_strings.voiceCommandMicUnavailable);
         return;
       }
       if (session != _session) return;
       if (_localeId == null) {
-        await _reply('التعرف على الكلام العربي غير متاح. أضف اللغة العربية إلى خدمة الكلام على الجهاز');
+        await _reply(_strings.voiceCommandLocaleUnavailable);
         return;
       }
       await TtsService.instance.stop();
@@ -141,7 +167,7 @@ class VoiceCommandService {
     } catch (_) {
       isListening.value = false;
       _acceptResults = false;
-      await _reply('تعذّر تشغيل الميكروفون. حاول مجدداً');
+      await _reply(_strings.voiceCommandMicFailed);
     } finally {
       _starting = false;
       if (!isListening.value) await _speech.cancel(_speechOwner);
@@ -171,7 +197,7 @@ class VoiceCommandService {
       unawaited(_speech.cancel(_speechOwner));
       _acceptResults = false;
       isListening.value = false;
-      unawaited(_executeCommand(text).catchError((Object _) => _reply('تعذّر تنفيذ الأمر. حاول مجدداً')));
+      unawaited(_executeCommand(text).catchError((Object _) => _reply(_strings.voiceCommandExecuteFailed)));
     }
   }
 

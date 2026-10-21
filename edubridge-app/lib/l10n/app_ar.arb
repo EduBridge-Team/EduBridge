@@ -10110,5 +10110,263 @@
   "overviewDisabilityOther": "أخرى",
   "@overviewDisabilityOther": {
     "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "voiceCommandSignIn": "سجّل الدخول لاستخدام الأوامر الصوتية",
+  "@voiceCommandSignIn": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandReadingOff": "أوقفت وضع القراءة",
+  "@voiceCommandReadingOff": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandReadingOn": "وضع القراءة باللمس مُفعّل",
+  "@voiceCommandReadingOn": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandStopped": "تم الإيقاف",
+  "@voiceCommandStopped": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNavigationFailed": "تعذّر التنقل",
+  "@voiceCommandNavigationFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandHome": "سأرجع للرئيسية",
+  "@voiceCommandHome": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandBack": "رجعت للخلف",
+  "@voiceCommandBack": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNoBack": "لا يوجد شيء للرجوع",
+  "@voiceCommandNoBack": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandDark": "بدّلت للوضع الليلي",
+  "@voiceCommandDark": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLight": "بدّلت للوضع الفاتح",
+  "@voiceCommandLight": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAccount": "سأفتح إعدادات حسابك",
+  "@voiceCommandAccount": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandVerify": "وثّق هويتك أولاً لفتح الخدمات",
+  "@voiceCommandVerify": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandDenied": "هذه الصفحة غير متاحة لدور حسابك",
+  "@voiceCommandDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandParentLessons": "سأفتح دروس ولي الأمر",
+  "@voiceCommandParentLessons": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLibrary": "سأفتح مكتبة الدروس",
+  "@voiceCommandLibrary": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSupport": "سأفتح طلبات الدعم",
+  "@voiceCommandSupport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSupportDenied": "الدعم التعليمي غير متاح لدور حسابك",
+  "@voiceCommandSupportDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandCasesDenied": "دراسات الحالة غير متاحة لدور حسابك",
+  "@voiceCommandCasesDenied": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChildren": "سأفتح قائمة الأطفال",
+  "@voiceCommandChildren": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNotifications": "سأفتح الإشعارات",
+  "@voiceCommandNotifications": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChats": "سأفتح المحادثات",
+  "@voiceCommandChats": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAssistant": "سأفتح المساعد نور",
+  "@voiceCommandAssistant": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSpecialistOnly": "إعدادات التكيف متاحة للمختص فقط",
+  "@voiceCommandSpecialistOnly": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandNeeds": "سأفتح احتياجات الأبناء",
+  "@voiceCommandNeeds": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandSessions": "سأفتح الجلسات",
+  "@voiceCommandSessions": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandParentOnly": "إضافة طفل متاحة لولي الأمر فقط",
+  "@voiceCommandParentOnly": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandAddChild": "سأفتح إضافة طفل جديد",
+  "@voiceCommandAddChild": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChooseChild": "سأفتح قائمة الأطفال لاختيار طفل",
+  "@voiceCommandChooseChild": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandCases": "سأفتح دراسات الحالة",
+  "@voiceCommandCases": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameChildFailed": "تعذّر تحميل بيانات الطفل اللازمة للعبة",
+  "@voiceCommandGameChildFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameNoChildren": "لا توجد بيانات أطفال متاحة لفتح اللعبة",
+  "@voiceCommandGameNoChildren": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGameChoose": "اختر الطفل للعب",
+  "@voiceCommandGameChoose": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandHearFailed": "تعذّر سماع الأمر. تأكد من إذن الميكروفون ثم حاول مجدداً",
+  "@voiceCommandHearFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandMicUnavailable": "الميكروفون غير متاح. تأكد من إذن الميكروفون ثم حاول مجدداً",
+  "@voiceCommandMicUnavailable": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandLocaleUnavailable": "التعرف على الكلام العربي غير متاح. أضف اللغة العربية إلى خدمة الكلام على الجهاز",
+  "@voiceCommandLocaleUnavailable": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandMicFailed": "تعذّر تشغيل الميكروفون. حاول مجدداً",
+  "@voiceCommandMicFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandExecuteFailed": "تعذّر تنفيذ الأمر. حاول مجدداً",
+  "@voiceCommandExecuteFailed": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandChildLessons": "سأفتح دروس {name}",
+  "@voiceCommandChildLessons": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildHomework": "سأفتح واجبات {name}",
+  "@voiceCommandChildHomework": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildProgress": "سأفتح تقدّم {name}",
+  "@voiceCommandChildProgress": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildReport": "سأفتح تقرير {name}",
+  "@voiceCommandChildReport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildTeam": "سأفتح فريق {name}",
+  "@voiceCommandChildTeam": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildSupport": "سأفتح طلب دعم تعليمي لـ {name}",
+  "@voiceCommandChildSupport": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildAdaptation": "سأفتح إعدادات تكييف {name}",
+  "@voiceCommandChildAdaptation": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildCase": "سأفتح دراسة حالة {name}",
+  "@voiceCommandChildCase": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildGames": "سأفتح ألعاب {name}",
+  "@voiceCommandChildGames": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandChildGame": "سأفتح {game} لـ {name}",
+  "@voiceCommandChildGame": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "game": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandUnknown": "سمعتك تقول: {text}. جرّب: افتح دروس محمد، أو افتح الألعاب",
+  "@voiceCommandUnknown": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceCommandHelp": "تقدر تقول: افتح دروس [اسم الطفل]، افتح واجبات [اسم الطفل]، افتح تقدم [اسم الطفل]، افتح تقرير [اسم الطفل]، افتح دراسة حالة [اسم الطفل]. كمان: الألعاب، الأطفال، الإشعارات، المحادثات، المساعد، دروس ولي الأمر، احتياجات الأبناء، الملف الشخصي، توثيق الهوية. وتقدر تقول: اقرأ، أوقف، ارجع، الرئيسية، الوضع الليلي",
+  "@voiceCommandHelp": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "voiceCommandGamesLabel": "الألعاب",
+  "@voiceCommandGamesLabel": {
+    "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
   }
 }

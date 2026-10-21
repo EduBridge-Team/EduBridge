@@ -13,23 +13,23 @@ extension _VoiceCommandGameNavigation on VoiceCommandService {
       final named = _findChild(text);
       GamePlayer? player = named == null ? null : GamePlayer.fromChild(named);
       if (named != null && player == null) {
-        await _reply('تعذّر تحميل بيانات الطفل اللازمة للعبة');
+        await _reply(_strings.voiceCommandGameChildFailed);
         return;
       }
       if (player == null) {
         if (players.isEmpty) {
-          await _reply('لا توجد بيانات أطفال متاحة لفتح اللعبة');
+          await _reply(_strings.voiceCommandGameNoChildren);
           return;
         }
         player = await showDialog<GamePlayer>(context: nav.context, builder: (context) =>
-          SimpleDialog(title: const Text('اختر الطفل للعب'), children: players.map((child) =>
+          SimpleDialog(title: Text(_strings.voiceCommandGameChoose), children: players.map((child) =>
             SimpleDialogOption(onPressed: () => Navigator.pop(context, child),
               child: Text(child.name))).toList()));
       }
       if (player == null || await ApiService.getUserId() != userId || !nav.mounted) return;
       final selected = player;
-      await _reply(gameId == null ? 'سأفتح ألعاب ${selected.name}'
-        : 'سأفتح ${_gameDisplayName(gameId)} لـ ${selected.name}');
+      await _reply(gameId == null ? _strings.voiceCommandChildGames(selected.name)
+        : _strings.voiceCommandChildGame(_gameDisplayName(gameId), selected.name));
       if (await ApiService.getUserId() != userId || !nav.mounted) return;
       if (gameId != null) {
         await GameLauncher.instance.open(nav.context, gameId: gameId, player: selected);
