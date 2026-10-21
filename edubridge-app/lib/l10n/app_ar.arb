@@ -9559,5 +9559,127 @@
   "signDescriptionOne": "إصبع واحد مرفوع",
   "@signDescriptionOne": {
     "description": "Symbol/sign game interface. Preserve canonical symbols, Arabic letters, gestures and answer matching."
+  },
+  "stepLessonEmpty": "لا توجد خطوات لهذا الدرس بعد.",
+  "@stepLessonEmpty": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonPosition": "الخطوة {current} من {total}",
+  "@stepLessonPosition": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stepLessonExample": "مثال من الحياة",
+  "@stepLessonExample": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonSpokenExample": "مثال من الحياة: {example}",
+  "@stepLessonSpokenExample": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged.",
+    "placeholders": {
+      "example": {
+        "type": "String"
+      }
+    }
+  },
+  "stepLessonListen": "أسمع هذه الخطوة",
+  "@stepLessonListen": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonPrevious": "السابق",
+  "@stepLessonPrevious": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonNext": "التالي",
+  "@stepLessonNext": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonFinish": "أنهي المراجعة",
+  "@stepLessonFinish": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonEffort": "أحسنت على المحاولة!",
+  "@stepLessonEffort": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonComplete": "وصلت إلى آخر خطوة في درس \"{title}\". يمكنك مراجعة الخطوات أو الرجوع للدروس.",
+  "@stepLessonComplete": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "stepLessonReview": "أراجع الخطوات",
+  "@stepLessonReview": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "stepLessonBack": "أرجع للدروس",
+  "@stepLessonBack": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoTitle": "فيديو",
+  "@lessonVideoTitle": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoFailed": "تعذّر تشغيل الفيديو. حاول فتح الدرس مجدداً.",
+  "@lessonVideoFailed": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoDescribe": "سماع وصف الفيديو",
+  "@lessonVideoDescribe": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoCaptions": "الترجمات",
+  "@lessonVideoCaptions": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoSigns": "لغة الإشارة",
+  "@lessonVideoSigns": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoMoveSigns": "نقل المترجم",
+  "@lessonVideoMoveSigns": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoPlaying": "الفيديو يعمل",
+  "@lessonVideoPlaying": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoStopped": "الفيديو متوقف",
+  "@lessonVideoStopped": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoSignFailed": "تعذّر تحميل لغة الإشارة",
+  "@lessonVideoSignFailed": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoCloseSigns": "إغلاق لغة الإشارة",
+  "@lessonVideoCloseSigns": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoRewind": "إعادة عشر ثوانٍ",
+  "@lessonVideoRewind": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoForward": "تقديم عشر ثوانٍ",
+  "@lessonVideoForward": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoPause": "إيقاف الفيديو مؤقتاً",
+  "@lessonVideoPause": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "lessonVideoPlay": "تشغيل الفيديو",
+  "@lessonVideoPlay": {
+    "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
   }
 }

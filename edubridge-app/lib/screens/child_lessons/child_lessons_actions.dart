@@ -286,7 +286,7 @@ extension _ChildLessonsActions on _ChildLessonsScreenState {
                   childId: widget.childId,
                   lessonId: int.tryParse('${lesson['id']}'),
                   steps: [for (var i = 0; i < chunks.length; i++)
-                    LessonStep(title: context.l10n.childLessonsStep((i + 1).toString()), content: chunks[i])],
+                    LessonStep(title: context.l10n.childLessonsStep((i + 1).toString()), generatedNumber: i + 1, content: chunks[i])],
                 )));
               }
             : null,

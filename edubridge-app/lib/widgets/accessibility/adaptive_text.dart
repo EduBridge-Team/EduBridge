@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // lib/widgets/adaptive/adaptive_text.dart
 // نص يتكيّف تلقائياً مع البروفايل — مع دعم fontWeight + تبسيط اللغة
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class AdaptiveText extends StatelessWidget {
   final Color? color;
   final FontWeight? fontWeight;      // ✅ أُعيد
   final VoidCallback? onTap;
+  final String? speechLanguageCode;
 
   const AdaptiveText(
     this.text, {
@@ -29,6 +31,7 @@ class AdaptiveText extends StatelessWidget {
     this.color,
     this.fontWeight,
     this.onTap,
+    this.speechLanguageCode,
   });
 
   @override
@@ -89,7 +92,8 @@ class AdaptiveText extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               if (AdaptiveHelper.shouldReadOnTap && enableTap) {
-                AdaptiveHelper.speak(finalText);
+                AdaptiveHelper.speak(finalText,
+                  languageCode: speechLanguageCode ?? context.l10n.localeName);
               }
               onTap?.call();
             },

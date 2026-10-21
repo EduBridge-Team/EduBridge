@@ -51,7 +51,7 @@ Widget _buildLessonDetailModal({
             Row(
               children: [
                 Expanded(
-                  child: AdaptiveText(title, type: AdaptiveTextType.title),
+                  child: AdaptiveText(title, speechLanguageCode: ContentSpeechLanguage.resolve(title), type: AdaptiveTextType.title),
                 ),
                 IconButton(
                   tooltip: context.l10n.close,
@@ -101,7 +101,7 @@ Widget _buildLessonDetailModal({
             ],
             if (content.isNotEmpty) ...[
               SizedBox(height: AdaptiveHelper.spacing),
-              AdaptiveText(content, type: AdaptiveTextType.body),
+              AdaptiveText(content, speechLanguageCode: ContentSpeechLanguage.resolve(content), type: AdaptiveTextType.body),
             ],
 
             if (audioDescription != null && audioDescription.isNotEmpty) ...[
