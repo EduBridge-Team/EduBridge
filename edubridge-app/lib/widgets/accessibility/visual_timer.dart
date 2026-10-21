@@ -150,13 +150,15 @@ class _VisualTimerState extends State<VisualTimer>
                       backgroundColor: c.line,
                     ),
                   ),
-                  Column(
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: FittedBox(fit: BoxFit.scaleDown, child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (_isFinished)
                         const Text('🎉', style: TextStyle(fontSize: 44))
                       else
-                        FittedBox(fit: BoxFit.scaleDown, child: Text(
+                        Text(
                           '$mm:$ss',
                           textDirection: TextDirection.ltr,
                           style: TextStyle(
@@ -164,7 +166,7 @@ class _VisualTimerState extends State<VisualTimer>
                             fontWeight: FontWeight.bold,
                             color: c.heading,
                           ),
-                        )),
+                        ),
                       if (_isFinished) ...[
                         const SizedBox(height: 4),
                         Text(
@@ -177,6 +179,7 @@ class _VisualTimerState extends State<VisualTimer>
                         ),
                       ],
                     ],
+                    )),
                   ),
                 ],
               );
