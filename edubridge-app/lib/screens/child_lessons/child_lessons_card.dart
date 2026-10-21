@@ -110,6 +110,7 @@ Widget buildLessonCard({
               Expanded(
                 child: AdaptiveText(
                   title,
+                  speechLanguageCode: ContentSpeechLanguage.resolve(title),
                   type: AdaptiveTextType.subtitle,
                   fontWeight: FontWeight.w800,
                 ),
@@ -138,6 +139,7 @@ Widget buildLessonCard({
             SizedBox(height: AdaptiveHelper.spacing / 2),
             AdaptiveText(
               content,
+              speechLanguageCode: ContentSpeechLanguage.resolve(content),
               type: AdaptiveTextType.body,
               maxLines: 3,
             ),

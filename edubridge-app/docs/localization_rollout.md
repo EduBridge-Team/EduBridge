@@ -473,3 +473,11 @@ final source/direction inventory and deferred manual accessibility checks.
 - Repeated screen-title announcements track both title and voice language, so switching language re-announces even an unchanged title. Obsolete queued announcements are skipped.
 - Added Arabic/English large-text coverage for voice selection/override, callbacks, calm/slow settings, duplicate/busy action guards, repeated-title locale changes, stable rebuilds and legacy content defaults.
 - Remaining audit targets include step-by-step lesson interface text, authored-content voice boundaries, other shared speech/semantic widgets, final direction/literal inventory and deferred manual device/assistive-technology QA. This batch does not close phase 5 or claim full English coverage.
+
+### Step lessons and content/media speech boundaries
+- Localized step navigation, empty state, position, everyday-example heading and completion/review dialog, plus accessible video controls, playback states and errors.
+- Generated step labels now resolve from the current UI locale while the open step and authored title/content/examples remain intact. Persistence, navigation and media identities are unchanged.
+- AdaptiveText uses the UI voice by default with an explicit content-language override; lesson cards/details and step content supply a content voice. Image/video descriptions and full-step reading use a shared Arabic/Latin script heuristic, with explicit language overrides taking precedence. Neutral content uses the fallback language. This selects a voice and never translates text; mixed-script inference remains a heuristic.
+- Preserved slow speech, calm-mode automatic-reading suppression, direct listening, captions/sign-video data and authored content. Completion dialogs scroll at large text scale.
+- Added Arabic/English step navigation, retained position/generated labels, original content, direct speech, completion/review, empty state, content/UI voice boundaries and video failure-state coverage. Full CI must pass before merge.
+- Phase 5 still requires the final shared-widget/semantic inventory and phase 6 requires manual device/assistive-technology checks; this batch does not claim full completion.

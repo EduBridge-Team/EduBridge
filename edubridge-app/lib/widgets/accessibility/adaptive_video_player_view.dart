@@ -3,19 +3,19 @@ part of 'adaptive_video_player.dart';
 extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
   Widget buildView(BuildContext context) {
     if (!_initialized) {
-      return Scaffold(appBar: BrandAppBar(title: Text(widget.title ?? 'فيديو'),
+      return Scaffold(appBar: BrandAppBar(title: Text(widget.title ?? context.l10n.lessonVideoTitle),
       ),
-        body: Center(child: _error == null
-          ? const CircularProgressIndicator() : Text(_error!)));
+        body: Center(child: !_error
+          ? const CircularProgressIndicator() : Text(context.l10n.lessonVideoFailed)));
     }
 
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: BrandAppBar(
-        title: Text(widget.title ?? 'فيديو', style: const TextStyle(fontSize: 16)),
+        title: Text(widget.title ?? context.l10n.lessonVideoTitle, style: const TextStyle(fontSize: 16)),
         actions: [
           if (widget.audioDescription?.trim().isNotEmpty == true)
-            IconButton(tooltip: 'سماع وصف الفيديو',
+            IconButton(tooltip: context.l10n.lessonVideoDescribe,
               icon: const Icon(Icons.record_voice_over),
               onPressed: _readDescription),
           // ترجمات
@@ -25,7 +25,7 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
                 _showCaptions ? Icons.closed_caption : Icons.closed_caption_off,
                 color: _showCaptions ? AppColors.orange : Colors.white,
               ),
-              tooltip: 'الترجمات',
+              tooltip: context.l10n.lessonVideoCaptions,
               onPressed: _toggleCaptions,
             ),
           // لغة إشارة
@@ -37,14 +37,14 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
                     : Icons.sign_language_outlined,
                 color: _showSignLanguage ? AppColors.orange : Colors.white,
               ),
-              tooltip: 'لغة الإشارة',
+              tooltip: context.l10n.lessonVideoSigns,
               onPressed: _toggleSignLanguage,
             ),
           // تغيير موضع لغة الإشارة
           if (_showSignLanguage)
             IconButton(
               icon: const Icon(Icons.swap_horiz, color: Colors.white),
-              tooltip: 'نقل المترجم',
+              tooltip: context.l10n.lessonVideoMoveSigns,
               onPressed: _cycleSignPosition,
             ),
         ],
@@ -64,7 +64,7 @@ extension _AdaptiveVideoPlayerStateView on _AdaptiveVideoPlayerState {
               child: Center(child: Semantics(liveRegion: true,
                 child: Chip(
                   avatar: Icon(_controller.value.isPlaying ? Icons.play_arrow : Icons.pause),
-                  label: Text(_controller.value.isPlaying ? 'الفيديو يعمل' : 'الفيديو متوقف'),
+                  label: Text(_controller.value.isPlaying ? context.l10n.lessonVideoPlaying : context.l10n.lessonVideoStopped),
                 ),
               )),
             ),

@@ -6,9 +6,9 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
     if (widget.steps.isEmpty) {
       return Scaffold(
         appBar: JisrAppBar(title: widget.lessonTitle),
-        body: const Center(child: Padding(
-          padding: EdgeInsets.all(24),
-          child: AdaptiveText('لا توجد خطوات لهذا الدرس بعد.', enableTap: false),
+        body: Center(child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: AdaptiveText(context.l10n.stepLessonEmpty, enableTap: false),
         )),
       );
     }
@@ -41,7 +41,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
               Semantics(
                 liveRegion: true,
                 child: Text(
-                'الخطوة ${_currentStep + 1} من ${widget.steps.length}',
+                context.l10n.stepLessonPosition(_currentStep + 1, widget.steps.length),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
 
                       // العنوان
                       Text(
-                        step.title,
+                        _stepTitle(step),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 28,
@@ -93,6 +93,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
                         ),
                         child: AdaptiveText(
                           step.content,
+                          speechLanguageCode: _contentLanguage(step),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -118,7 +119,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'مثال من الحياة',
+                                      context.l10n.stepLessonExample,
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
@@ -148,7 +149,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
               const SizedBox(height: 16),
 
               AdaptiveButton(
-                label: 'أسمع هذه الخطوة',
+                label: context.l10n.stepLessonListen,
                 icon: Icons.volume_up,
                 enableReadOnTap: false,
                 onPressed: _readCurrentStep,
@@ -157,7 +158,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
               Row(children: [
                 if (_currentStep > 0) ...[
                   Expanded(child: AdaptiveButton(
-                    label: 'السابق',
+                    label: context.l10n.stepLessonPrevious,
                     style: AdaptiveButtonStyle.outlined,
                     onPressed: _previousStep,
                   )),
@@ -165,7 +166,7 @@ extension _StepByStepLessonStateView on _StepByStepLessonState {
                 ],
                 Expanded(child: AdaptiveButton(
                   label: _currentStep == widget.steps.length - 1
-                      ? 'أنهي المراجعة' : 'التالي',
+                      ? context.l10n.stepLessonFinish : context.l10n.stepLessonNext,
                   onPressed: _nextStep,
                 )),
               ]),

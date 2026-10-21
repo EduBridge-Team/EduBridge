@@ -1,3 +1,6 @@
+import '../../l10n/l10n.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../utils/content_speech_language.dart';
 
 // درس خطوة بخطوة — للإعاقة الذهنية البسيطة
 // يقسّم الدرس لخطوات صغيرة + يربط بالحياة اليومية
@@ -17,6 +20,7 @@ class LessonStep {
   final String title;
   final String content;
   final String? imageEmoji;
+  final int? generatedNumber;
   final String? realLifeExample; // ✅ ربط بالحياة اليومية
 
   const LessonStep({
@@ -24,6 +28,7 @@ class LessonStep {
     required this.content,
     this.imageEmoji,
     this.realLifeExample,
+    this.generatedNumber,
   });
 }
 
@@ -33,6 +38,7 @@ class StepByStepLesson extends StatefulWidget {
   final String childName;
   final int? childId;
   final int? lessonId;
+  final String? contentLanguageCode;
 
   const StepByStepLesson({
     super.key,
@@ -41,6 +47,7 @@ class StepByStepLesson extends StatefulWidget {
     required this.childName,
     this.childId,
     this.lessonId,
+    this.contentLanguageCode,
   });
 
   @override
@@ -110,22 +117,31 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
     _readCurrentStep();
   }
 
+  String _stepTitle(LessonStep step) => step.generatedNumber == null
+      ? step.title : context.l10n.childLessonsStep(step.generatedNumber.toString());
+
+  String _contentLanguage(LessonStep step) => ContentSpeechLanguage.resolve(
+      '${step.content} ${step.realLifeExample ?? ''}',
+      override: widget.contentLanguageCode, fallback: context.l10n.localeName);
+
   void _readCurrentStep() {
     if (!mounted || widget.steps.isEmpty) return;
     _initialReading?.cancel();
     final step = widget.steps[_currentStep];
+    final language = _contentLanguage(step);
+    final contentStrings = lookupAppLocalizations(Locale(language.startsWith('en') ? 'en' : 'ar'));
     final text = [
-      step.title,
+      _stepTitle(step),
       step.content,
       if (step.realLifeExample != null && _profile.realLifeLinking)
-        'مثال من الحياة: ${step.realLifeExample}',
+        contentStrings.stepLessonSpokenExample(step.realLifeExample!),
     ].join('. ');
 
     // ✅ نطق بطيء للإعاقة الذهنية
     if (_profile.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
+      TtsService.instance.speakLineSlow(text, languageCode: language);
     } else {
-      TtsService.instance.speakLine(text);
+      TtsService.instance.speakLine(text, languageCode: language);
     }
   }
 
@@ -154,27 +170,27 @@ class _StepByStepLessonState extends State<StepByStepLesson> {
     final finish = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const AdaptiveText(
-          'أحسنت على المحاولة!',
+        title: AdaptiveText(
+          dialogContext.l10n.stepLessonEffort,
           textAlign: TextAlign.center,
           enableTap: false,
         ),
         content: SingleChildScrollView(child: AdaptiveText(
-          'وصلت إلى آخر خطوة في درس "${widget.lessonTitle}". '
-          'يمكنك مراجعة الخطوات أو الرجوع للدروس.',
+          dialogContext.l10n.stepLessonComplete(widget.lessonTitle),
           textAlign: TextAlign.center,
           enableTap: false,
         )),
         actions: [
           AdaptiveButton(
-            label: 'أراجع الخطوات',
+            label: dialogContext.l10n.stepLessonReview,
             style: AdaptiveButtonStyle.outlined,
             onPressed: () => Navigator.pop(dialogContext, false),
           ),
           const SizedBox(height: 8),
           AdaptiveButton(
-            label: 'أرجع للدروس',
+            label: dialogContext.l10n.stepLessonBack,
             onPressed: () => Navigator.pop(dialogContext, true),
           ),
         ],

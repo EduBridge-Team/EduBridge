@@ -1,3 +1,5 @@
+import '../../l10n/l10n.dart';
+import '../../utils/content_speech_language.dart';
 // lib/widgets/adaptive/alt_text_image.dart
 // صورة مع وصف نصي وصوتي
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ class AltTextImage extends StatelessWidget {
   final double? width;
   final double? height;
   final BoxFit fit;
+  final String? speechLanguageCode;
 
   const AltTextImage({
     super.key,
@@ -21,6 +24,7 @@ class AltTextImage extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.cover,
+    this.speechLanguageCode,
   });
 
   @override
@@ -31,6 +35,11 @@ class AltTextImage extends StatelessWidget {
         if (profile.textOnlyMode || TextOnlyScope.of(context)) {
           final description = profile.detailedAltText ? detailedDescription ?? altText : altText;
           return Text(description, style: TextStyle(fontSize: AdaptiveHelper.bodyFontSize));
+        }
+        void readDescription() {
+          final text = profile.detailedAltText ? detailedDescription ?? altText : altText;
+          AdaptiveHelper.speak(text, languageCode: ContentSpeechLanguage.resolve(text,
+            override: speechLanguageCode, fallback: context.l10n.localeName));
         }
         final shouldDescribe = profile.detailedAltText || AdaptiveHelper.shouldReadOnTap;
 
@@ -60,16 +69,12 @@ class AltTextImage extends StatelessWidget {
         if (!shouldDescribe) return imageWidget;
 
         return GestureDetector(
-          onTap: () {
-            final description = profile.detailedAltText ? detailedDescription ?? altText : altText;
-            AdaptiveHelper.speak(description);
-          },
+          onTap: readDescription,
           child: Semantics(
             label: altText,
             excludeSemantics: true,
             image: true,
-            onTap: () => AdaptiveHelper.speak(profile.detailedAltText
-                ? detailedDescription ?? altText : altText),
+            onTap: readDescription,
             child: Stack(
               children: [
                 imageWidget,

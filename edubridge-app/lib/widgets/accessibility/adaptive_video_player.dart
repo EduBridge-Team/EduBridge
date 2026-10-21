@@ -1,3 +1,5 @@
+import '../../l10n/l10n.dart';
+import '../../utils/content_speech_language.dart';
 // lib/widgets/adaptive/adaptive_video_player.dart
 // مشغّل فيديو مع دعم الترجمات والوصف الصوتي
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class AdaptiveVideoPlayer extends StatefulWidget {
   final String? audioDescription;
   final String? title;
   final String? signLanguageUrl;
+  final String? descriptionLanguageCode;
 
   const AdaptiveVideoPlayer({
     super.key,
@@ -26,6 +29,7 @@ class AdaptiveVideoPlayer extends StatefulWidget {
     this.audioDescription,
     this.title,
     this.signLanguageUrl,
+    this.descriptionLanguageCode,
   });
 
   @override
@@ -36,7 +40,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
   late VideoPlayerController _controller;
   bool _initialized = false;
   bool _created = false;
-  String? _error;
+  bool _error = false;
   VideoPlayerController? _signController;
   bool _signFailed = false;
   bool _syncingSign = false;
@@ -117,7 +121,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
 
       if (mounted) setState(() => _initialized = true);
     } catch (e) {
-      if (mounted) setState(() => _error = 'تعذّر تشغيل الفيديو. حاول فتح الدرس مجدداً.');
+      if (mounted) setState(() => _error = true);
     }
   }
 
@@ -125,9 +129,9 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
     final text = widget.audioDescription?.trim();
     if (text == null || text.isEmpty) return;
     if (AccessibilityService.instance.profile.value.slowSpeech) {
-      TtsService.instance.speakLineSlow(text);
+      TtsService.instance.speakLineSlow(text, languageCode: ContentSpeechLanguage.resolve(text, override: widget.descriptionLanguageCode));
     } else {
-      TtsService.instance.speakLine(text);
+      TtsService.instance.speakLine(text, languageCode: ContentSpeechLanguage.resolve(text, override: widget.descriptionLanguageCode));
     }
   }
 
@@ -277,7 +281,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
         child: Stack(
           children: [
             Center(child: _signFailed
-                ? const Text('تعذّر تحميل لغة الإشارة', textAlign: TextAlign.center,
+                ? Text(context.l10n.lessonVideoSignFailed, textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white))
                 : _signController?.value.isInitialized == true
                     ? AspectRatio(aspectRatio: _signController!.value.aspectRatio,
@@ -288,7 +292,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
               top: 4,
               right: 4,
               child: IconButton(
-                tooltip: 'إغلاق لغة الإشارة',
+                tooltip: context.l10n.lessonVideoCloseSigns,
                 onPressed: _toggleSignLanguage,
                 style: IconButton.styleFrom(backgroundColor: Colors.black.withValues(alpha: 0.7)),
                 icon: const Icon(Icons.close, color: Colors.white, size: 24),
@@ -329,7 +333,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                tooltip: 'إعادة عشر ثوانٍ',
+                tooltip: context.l10n.lessonVideoRewind,
                 iconSize: 36,
                 icon: const Icon(Icons.replay_10, color: Colors.white),
                 onPressed: () {
@@ -340,7 +344,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
               ),
               const SizedBox(width: 16),
               IconButton(
-                tooltip: _controller.value.isPlaying ? 'إيقاف الفيديو مؤقتاً' : 'تشغيل الفيديو',
+                tooltip: _controller.value.isPlaying ? context.l10n.lessonVideoPause : context.l10n.lessonVideoPlay,
                 iconSize: 72,
                 icon: Icon(
                   _controller.value.isPlaying
@@ -358,7 +362,7 @@ class _AdaptiveVideoPlayerState extends State<AdaptiveVideoPlayer> with WidgetsB
               ),
               const SizedBox(width: 16),
               IconButton(
-                tooltip: 'تقديم عشر ثوانٍ',
+                tooltip: context.l10n.lessonVideoForward,
                 iconSize: 36,
                 icon: const Icon(Icons.forward_10, color: Colors.white),
                 onPressed: () {

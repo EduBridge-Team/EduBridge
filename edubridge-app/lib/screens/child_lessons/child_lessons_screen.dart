@@ -1,3 +1,4 @@
+import '../../utils/content_speech_language.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/accessibility/child_adaptation_scope.dart';
 // lib/screens/child_lessons/child_lessons_screen.dart
