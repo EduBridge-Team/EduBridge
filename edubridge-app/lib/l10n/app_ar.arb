@@ -7752,5 +7752,404 @@
   "sequenceWash": "الصابون → الماء → اليد",
   "@sequenceWash": {
     "description": "Arithmetic and sequencing game presentation; canonical game content and scoring stay unchanged."
+  },
+  "wordItemHouse": "بيت",
+  "@wordItemHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSun": "شمس",
+  "@wordItemSun": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemMoon": "قمر",
+  "@wordItemMoon": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemWater": "ماء",
+  "@wordItemWater": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemDoor": "باب",
+  "@wordItemDoor": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPen": "قلم",
+  "@wordItemPen": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemRoses": "ورد",
+  "@wordItemRoses": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSea": "بحر",
+  "@wordItemSea": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemStar": "نجم",
+  "@wordItemStar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemDates": "تمر",
+  "@wordItemDates": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBread": "خبز",
+  "@wordItemBread": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemRiver": "نهر",
+  "@wordItemRiver": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBook": "كتاب",
+  "@wordItemBook": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSchool": "مدرسة",
+  "@wordItemSchool": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemTree": "شجرة",
+  "@wordItemTree": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemFlower": "زهرة",
+  "@wordItemFlower": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSky": "سماء",
+  "@wordItemSky": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemApple": "تفاحة",
+  "@wordItemApple": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemCar": "سيارة",
+  "@wordItemCar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemWindow": "نافذة",
+  "@wordItemWindow": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBag": "حقيبة",
+  "@wordItemBag": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemGarden": "حديقة",
+  "@wordItemGarden": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPlane": "طائرة",
+  "@wordItemPlane": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemBicycle": "دراجة",
+  "@wordItemBicycle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemLibrary": "مكتبة",
+  "@wordItemLibrary": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemHospital": "مستشفى",
+  "@wordItemHospital": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemAirport": "مطار",
+  "@wordItemAirport": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemUniversity": "جامعة",
+  "@wordItemUniversity": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemFarm": "مزرعة",
+  "@wordItemFarm": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemMusic": "موسيقى",
+  "@wordItemMusic": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemSport": "رياضة",
+  "@wordItemSport": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemEngineer": "مهندس",
+  "@wordItemEngineer": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemTeacher": "معلمة",
+  "@wordItemTeacher": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemLaboratory": "مختبر",
+  "@wordItemLaboratory": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemPlay": "مسرحية",
+  "@wordItemPlay": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordItemCompetition": "مسابقة",
+  "@wordItemCompetition": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChickenJourney": "رحلة الدجاجة",
+  "@storyItemChickenJourney": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemTreeGrowth": "نموّ الشجرة",
+  "@storyItemTreeGrowth": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFullDay": "يوم كامل",
+  "@storyItemFullDay": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemWaterCycle": "دورة الماء",
+  "@storyItemWaterCycle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemButterflyJourney": "رحلة الفراشة",
+  "@storyItemButterflyJourney": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemPreparingFood": "إعداد الطعام",
+  "@storyItemPreparingFood": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCarTrip": "رحلة في السيارة",
+  "@storyItemCarTrip": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemBuildingHouse": "بناء المنزل",
+  "@storyItemBuildingHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEgg": "البيضة",
+  "@storyItemEgg": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChick": "الكتكوت",
+  "@storyItemChick": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemYoungChicken": "الفرخ",
+  "@storyItemYoungChicken": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemChicken": "الدجاجة",
+  "@storyItemChicken": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemSeed": "البذرة",
+  "@storyItemSeed": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemPlant": "النبتة",
+  "@storyItemPlant": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemTree": "الشجرة",
+  "@storyItemTree": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFruit": "الثمرة",
+  "@storyItemFruit": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemMorning": "الصباح",
+  "@storyItemMorning": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemNoon": "الظهر",
+  "@storyItemNoon": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEvening": "المساء",
+  "@storyItemEvening": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemNight": "الليل",
+  "@storyItemNight": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemSea": "البحر",
+  "@storyItemSea": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEvaporation": "التبخّر",
+  "@storyItemEvaporation": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemClouds": "السحاب",
+  "@storyItemClouds": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemRain": "المطر",
+  "@storyItemRain": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCaterpillar": "اليسروع",
+  "@storyItemCaterpillar": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemLeaf": "الورقة",
+  "@storyItemLeaf": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemButterfly": "الفراشة",
+  "@storyItemButterfly": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFlower": "الزهرة",
+  "@storyItemFlower": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemShopping": "التسوّق",
+  "@storyItemShopping": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemVegetables": "الخضار",
+  "@storyItemVegetables": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemCooking": "الطبخ",
+  "@storyItemCooking": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemEating": "الأكل",
+  "@storyItemEating": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemStart": "البداية",
+  "@storyItemStart": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemRoad": "الطريق",
+  "@storyItemRoad": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemFuel": "الوقود",
+  "@storyItemFuel": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemArrival": "الوصول",
+  "@storyItemArrival": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemBricks": "الطوب",
+  "@storyItemBricks": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemConstruction": "البناء",
+  "@storyItemConstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemHouse": "المنزل",
+  "@storyItemHouse": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyItemGarden": "الحديقة",
+  "@storyItemGarden": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderTitle": "🔤 بناء الكلمة",
+  "@wordBuilderTitle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderInstruction": "رتّب الحروف لتكوين كلمة",
+  "@wordBuilderInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderTarget": "كوّن كلمة: {word}",
+  "@wordBuilderTarget": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "wordBuilderListen": "استمع للكلمة",
+  "@wordBuilderListen": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderLetters": "الحروف المتاحة:",
+  "@wordBuilderLetters": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderIncorrect": "خلينا نحاول مرة ثانية، رتّب حروف الكلمة",
+  "@wordBuilderIncorrect": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "wordBuilderComplete": "أحسنت! {score}/{total} كلمات",
+  "@wordBuilderComplete": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "orderedGameRound": "الجولة: {round}/{total}",
+  "@orderedGameRound": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "orderedGameScore": "النقاط: {score} ⭐",
+  "@orderedGameScore": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "storyGameTitle": "📖 رتّب القصة",
+  "@storyGameTitle": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameInstruction": "رتّب الأحداث بالترتيب الصحيح",
+  "@storyGameInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameCards": "البطاقات المتاحة:",
+  "@storyGameCards": {
+    "description": "Built-in word-building and story-sequencing game presentation."
+  },
+  "storyGameSpokenInstruction": "رتّب قصة {title}. اضغط على الصور بالترتيب الصحيح",
+  "@storyGameSpokenInstruction": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storyGameComplete": "أحسنت! {score}/{total} قصص",
+  "@storyGameComplete": {
+    "description": "Built-in word-building and story-sequencing game presentation.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

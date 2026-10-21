@@ -429,3 +429,10 @@ final source/direction inventory and deferred manual accessibility checks.
 - Canonical sequence banks and shuffle-history identities remain unchanged; presentation resolves the current locale, including feedback after a language change.
 - Sequence speech uses the selected language and existing automatic/slow-speech preferences. Arithmetic expressions explicitly retain left-to-right order.
 - Added narrow-screen, double-text-scale widget coverage for both languages and preserved sequence state across a locale change. Flutter analysis/tests and platform builds are verified by PR CI.
+
+### Word builder and story sequencer
+- Translated all 36 built-in word targets and all eight story titles / 32 card labels, together with controls, retained feedback, completion and selected-language speech.
+- Canonical Arabic bank identities, shuffle history, age eligibility, scoring and result payloads remain unchanged. English word rounds use the translated word's letters, including repeated letters.
+- A word-language change rebuilds the letter bank: unfinished attempts restart within the same round, while completed answers and points remain credited. Story selections stay intact during language changes.
+- Added adapter coverage for every built-in value and narrow-screen, double-text-scale interactions for all three word age groups and both story card counts, wrong/correct answers, retry, locale changes and explicit speech with automatic reading disabled.
+- Flutter analysis, tests and platform builds are verified through PR CI; no backend or teacher-authored lesson content changes.

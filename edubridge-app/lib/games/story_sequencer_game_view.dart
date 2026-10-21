@@ -10,12 +10,12 @@ extension _StorySequencerGameView on _StorySequencerGameState {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1FF),
       appBar: BrandAppBar(
-        title: const Text('📖 رتّب القصة'),
+        title: Text(context.l10n.storyGameTitle),
         actions: [
           // زر إعادة الجولة
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'جولة جديدة',
+            tooltip: context.l10n.sequenceNewRound,
             onPressed: _finishing || _answeredCorrectly ? null : _retry,
           ),
         ],
@@ -34,20 +34,20 @@ extension _StorySequencerGameView on _StorySequencerGameState {
               children: [
                 GameStatChip(
                   icon: '🎯',
-                  label: 'الجولة',
+                  label: context.l10n.sequenceRound,
                   value: '${_round + 1}/$_totalRounds',
                   color: const Color(0xFF8B6DD4),
                 ),
                 GameStatChip(
                   icon: '⭐',
-                  label: 'النقاط',
+                  label: context.l10n.sequenceScore,
                   value: '$_score',
                   color: const Color(0xFF57B25A),
                 ),
                 if (_streak >= 2)
                   GameStatChip(
                     icon: '🔥',
-                    label: 'متتالية',
+                    label: context.l10n.sequenceStreak,
                     value: '$_streak',
                     color: const Color(0xFFF2842B),
                   ),
@@ -65,7 +65,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
             child: Column(
               children: [
                 Text(
-                  _title,
+                  _display(_title),
                   style: TextStyle(
                     fontSize: large ? 28 : 24,
                     fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'رتّب الأحداث بالترتيب الصحيح',
+                  context.l10n.storyGameInstruction,
                   style: TextStyle(
                     fontSize: large ? 16 : 14,
                     color: Colors.grey.shade700,
@@ -111,7 +111,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                   final filled = i < _userOrder.length;
                   final emoji = filled ? _userOrder[i] : '';
                   final label = filled
-                      ? _correctLabels[_correctOrder.indexOf(_userOrder[i])]
+                      ? _display(_correctLabels[_correctOrder.indexOf(_userOrder[i])])
                       : '';
 
                   return Column(
@@ -128,14 +128,14 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: FittedBox(fit: BoxFit.scaleDown, child: Text(
                           '${i + 1}',
                           style: TextStyle(
                             color: filled ? Colors.white : Colors.grey.shade600,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
+                        )),
                       ),
                       const SizedBox(height: 6),
 
@@ -197,7 +197,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
               child: Column(
                 children: [
                   Text(
-                    'البطاقات المتاحة:',
+                    context.l10n.storyGameCards,
                     style: TextStyle(
                       fontSize: large ? 18 : 16,
                       fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                                     padding: const EdgeInsets.only(
                                         top: 2, left: 4, right: 4),
                                     child: Text(
-                                      _correctLabels[labelIndex],
+                                      _display(_correctLabels[labelIndex]),
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 11,
@@ -283,7 +283,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                   //  زر "أعد الترتيب"
                   // ═══════════════════════════════════════════════
                   if (_feedback != null)
-                    Semantics(liveRegion: true, child: Text(_feedback!,
+                    Semantics(liveRegion: true, child: Text(_feedbackText,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: large ? 20 : 18, fontWeight: FontWeight.bold))),
                   GameRoundContinuation(
@@ -297,7 +297,7 @@ extension _StorySequencerGameView on _StorySequencerGameState {
                       ),
                       icon: const Icon(Icons.undo),
                       label: Text(
-                        _feedback == null ? 'أعد الترتيب' : 'حاول مرة أخرى',
+                        _feedback == null ? context.l10n.sequenceReorder : context.l10n.retry,
                         style: TextStyle(fontSize: 16),
                       ),
                       onPressed: _finishing ? null : _retry,
