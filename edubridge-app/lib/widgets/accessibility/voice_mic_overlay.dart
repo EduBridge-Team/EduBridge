@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // زر مايك عائم — للأوامر الصوتية
 // - نقرة واحدة: ابدأ/أوقف الاستماع
 // - ضغطة طويلة: اسحب لتغيير الموضع
@@ -179,7 +180,7 @@ class _ListeningBubble extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    heard.isEmpty ? '🎤 أتكلّم...' : '« $heard »',
+                    heard.isEmpty ? context.l10n.voiceListening : '« $heard »',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,

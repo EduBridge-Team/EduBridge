@@ -43,14 +43,14 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AdaptiveText(
-                    'خصص التكييف لكل طفل',
+                  AdaptiveText(
+                    context.l10n.overviewCustomize,
                     type: AdaptiveTextType.body,
                     fontWeight: FontWeight.bold,
                   ),
                   SizedBox(height: AdaptiveHelper.spacing / 4),
-                  const AdaptiveText(
-                    'كل طفل له احتياجات مختلفة. اضغط على طفلك لتخصيص تجربته.',
+                  AdaptiveText(
+                    context.l10n.overviewDescription,
                     type: AdaptiveTextType.caption,
                   ),
                 ],
@@ -72,8 +72,24 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
 
     final color = AppColors.kidPalette[index % AppColors.kidPalette.length];
     final label = profile.type == DisabilityType.other
-        ? (profile.customDisabilityName ?? 'مخصّص')
-        : (disabilityLabels[profile.type] ?? 'بدون تكييف');
+        ? (profile.customDisabilityName ?? context.l10n.overviewCustom)
+        : switch (profile.type) {
+          DisabilityType.none => context.l10n.overviewDisabilityNone,
+          DisabilityType.adhd => context.l10n.overviewDisabilityAdhd,
+          DisabilityType.autismMild => context.l10n.overviewDisabilityAutismMild,
+          DisabilityType.autismSevere => context.l10n.overviewDisabilityAutismSevere,
+          DisabilityType.downSyndrome => context.l10n.overviewDisabilityDownSyndrome,
+          DisabilityType.blind => context.l10n.overviewDisabilityBlind,
+          DisabilityType.deaf => context.l10n.overviewDisabilityDeaf,
+          DisabilityType.stuttering => context.l10n.overviewDisabilityStuttering,
+          DisabilityType.speechDisorders => context.l10n.overviewDisabilitySpeechDisorders,
+          DisabilityType.mildIntellectual => context.l10n.overviewDisabilityMildIntellectual,
+          DisabilityType.colorBlindness => context.l10n.overviewDisabilityColorBlindness,
+          DisabilityType.epilepsy => context.l10n.overviewDisabilityEpilepsy,
+          DisabilityType.motorDisability => context.l10n.overviewDisabilityMotorDisability,
+          DisabilityType.multipleDisabilities => context.l10n.overviewDisabilityMultipleDisabilities,
+          DisabilityType.other => context.l10n.overviewDisabilityOther,
+        };
 
     final activeFeatures = _countActiveFeatures(profile);
 
@@ -115,7 +131,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
                       ),
                       SizedBox(height: AdaptiveHelper.spacing / 4),
                       AdaptiveText(
-                        'العمر: $age سنة',
+                        context.l10n.overviewAge(age.toString()),
                         type: AdaptiveTextType.caption,
                       ),
                     ],
@@ -159,7 +175,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AdaptiveText(
-                          'نوع الإعاقة',
+                          context.l10n.disabilityType,
                           type: AdaptiveTextType.label,
                           color: AdaptiveHelper.accentColor(context),
                           fontWeight: FontWeight.bold,
@@ -189,7 +205,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
                   ),
                   SizedBox(width: AdaptiveHelper.spacing / 3),
                   AdaptiveText(
-                    '$activeFeatures ميزة تكييف مُفعّلة',
+                    context.l10n.overviewActive(activeFeatures),
                     type: AdaptiveTextType.caption,
                     color: AppColors.green,
                     fontWeight: FontWeight.bold,
@@ -208,7 +224,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
             SizedBox(height: AdaptiveHelper.spacing),
 
             AdaptiveButton(
-              label: 'تخصيص التكييف',
+              label: context.l10n.overviewCustomizeAction,
               icon: AppIcons.settings,
               backgroundColor: AdaptiveHelper.accentColor(context),
               onPressed: () => _openChildSettings(child),
@@ -312,48 +328,48 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
       );
     }
 
-    if (p.videoCaptions) addBadge(AppIcons.captions, 'ترجمات', AppColors.pink);
+    if (p.videoCaptions) addBadge(AppIcons.captions, context.l10n.overviewBadgeCaptions, AppColors.pink);
     if (p.signLanguageTranslation) {
-      addBadge(AppIcons.signLanguage, 'لغة إشارة', AppColors.pink);
+      addBadge(AppIcons.signLanguage, context.l10n.overviewBadgeSigns, AppColors.pink);
     }
-    if (p.vibrationAlerts) addBadge(Icons.vibration, 'اهتزاز', AppColors.pink);
+    if (p.vibrationAlerts) addBadge(Icons.vibration, context.l10n.overviewBadgeVibration, AppColors.pink);
     if (p.detailedAltText) {
-      addBadge(AppIcons.volumeUp, 'وصف صوتي', AppColors.brandBlue);
+      addBadge(AppIcons.volumeUp, context.l10n.overviewBadgeAudioDescription, AppColors.brandBlue);
     }
     if (p.audioDescriptions) {
-      addBadge(AppIcons.speech, 'وصف فيديو', AppColors.brandBlue);
+      addBadge(AppIcons.speech, context.l10n.overviewBadgeVideoDescription, AppColors.brandBlue);
     }
-    if (p.voiceToText) addBadge(AppIcons.mic, 'كتابة صوتية', AppColors.purple);
-    if (p.slowSpeech) addBadge(Icons.speed, 'نطق بطيء', AppColors.orangeDeep);
+    if (p.voiceToText) addBadge(AppIcons.mic, context.l10n.overviewBadgeDictation, AppColors.purple);
+    if (p.slowSpeech) addBadge(Icons.speed, context.l10n.overviewBadgeSlowSpeech, AppColors.orangeDeep);
     if (p.voiceControl) {
-      addBadge(AppIcons.mic, 'تحكم صوتي', AppColors.brandBlue);
+      addBadge(AppIcons.mic, context.l10n.overviewBadgeVoiceControl, AppColors.brandBlue);
     }
     if (p.keyboardOnlyNavigation || p.keyboardShortcuts) {
-      addBadge(Icons.keyboard, 'لوحة مفاتيح', AppColors.brandBlue);
+      addBadge(Icons.keyboard, context.l10n.overviewBadgeKeyboard, AppColors.brandBlue);
     }
     if (p.verySimpleLanguage) {
-      addBadge(AppIcons.info, 'لغة مبسّطة', AppColors.purple);
+      addBadge(AppIcons.info, context.l10n.overviewBadgeSimpleLanguage, AppColors.purple);
     }
-    if (p.iconOnlyMode) addBadge(AppIcons.aac, 'أيقونات', AppColors.purple);
+    if (p.iconOnlyMode) addBadge(AppIcons.aac, context.l10n.overviewBadgeIcons, AppColors.purple);
     if (p.rewardSystem) {
-      addBadge(AppIcons.starFilled, 'مكافآت', AppColors.yellow);
+      addBadge(AppIcons.starFilled, context.l10n.overviewBadgeRewards, AppColors.yellow);
     }
     if (p.shortSentences) {
-      addBadge(Icons.short_text, 'جمل قصيرة', AppColors.purple);
+      addBadge(Icons.short_text, context.l10n.overviewBadgeShortSentences, AppColors.purple);
     }
     if (p.extraLargeTouchTargets) {
-      addBadge(Icons.touch_app, 'أزرار كبيرة', AppColors.brandBlue);
+      addBadge(Icons.touch_app, context.l10n.overviewBadgeLargeButtons, AppColors.brandBlue);
     }
     if (p.autoReadOnTap) {
-      addBadge(AppIcons.volumeUp, 'نطق باللمس', AppColors.brandTeal);
+      addBadge(AppIcons.volumeUp, context.l10n.overviewBadgeTapSpeech, AppColors.brandTeal);
     }
-    if (p.highContrast) addBadge(AppIcons.theme, 'تباين عالٍ', AppColors.brandBlue);
-    if (p.noTimers) addBadge(Icons.pause, 'بدون وقت', AppColors.green);
+    if (p.highContrast) addBadge(AppIcons.theme, context.l10n.overviewBadgeContrast, AppColors.brandBlue);
+    if (p.noTimers) addBadge(Icons.pause, context.l10n.overviewBadgeUntimed, AppColors.green);
     if (p.reducedAnimations) {
-      addBadge(Icons.slow_motion_video, 'حركة هادئة', AppColors.brandTeal);
+      addBadge(Icons.slow_motion_video, context.l10n.overviewBadgeCalmMotion, AppColors.brandTeal);
     }
     if (p.emergencyButton) {
-      addBadge(AppIcons.emergency, 'طوارئ', AppColors.red);
+      addBadge(AppIcons.emergency, context.l10n.overviewBadgeEmergency, AppColors.red);
     }
 
     if (badges.isEmpty) {
@@ -370,7 +386,7 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
               const Icon(AppIcons.info, size: 14, color: AppColors.muted),
               const SizedBox(width: 4),
               Text(
-                'لا توجد ميزات',
+                context.l10n.overviewNoFeatures,
                 style: TextStyle(
                   fontSize: AdaptiveHelper.bodyFontSize - 5,
                   fontWeight: FontWeight.bold,
@@ -396,14 +412,14 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
           color: AppColors.muted,
         ),
         SizedBox(height: AdaptiveHelper.spacing),
-        const AdaptiveText(
-          'لا يوجد أبناء مسجّلون بعد',
+        AdaptiveText(
+          context.l10n.overviewNoChildren,
           type: AdaptiveTextType.subtitle,
           textAlign: TextAlign.center,
         ),
         SizedBox(height: AdaptiveHelper.spacing / 2),
-        const AdaptiveText(
-          'أضف أطفالك من الشاشة الرئيسية',
+        AdaptiveText(
+          context.l10n.overviewAddChildren,
           type: AdaptiveTextType.caption,
           textAlign: TextAlign.center,
         ),
@@ -425,14 +441,14 @@ extension _ChildrenAccessibilityOverviewWidgets on _ChildrenAccessibilityOvervie
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveText(
-              _error!,
+              _error == 1 ? context.l10n.overviewSpecialistOnly : _error == 2 ? context.l10n.overviewLoadFailed : context.l10n.overviewConnectionFailed,
               type: AdaptiveTextType.body,
               textAlign: TextAlign.center,
               color: AppColors.red,
             ),
             SizedBox(height: AdaptiveHelper.spacing),
             AdaptiveButton(
-              label: 'إعادة المحاولة',
+              label: context.l10n.overviewRetry,
               icon: AppIcons.refresh,
               onPressed: _load,
             ),

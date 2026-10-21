@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // زر الطوارئ — للصرع والحالات الحرجة
 // يُرسل تنبيهاً فورياً للأهل والمختص + يعرض تعليمات
 import 'dart:convert';
@@ -32,26 +33,26 @@ class _EmergencyButtonState extends State<EmergencyButton> {
   Future<void> _triggerEmergency() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red, size: 32),
             SizedBox(width: 8),
-            Text('تأكيد الطوارئ'),
+            Expanded(child: Text(dialogContext.l10n.emergencyConfirmTitle)),
           ],
         ),
         content: Text(
-          'هل تريد إرسال تنبيه طوارئ للأهل والمختص؟\n\n'
-          'الطفل: ${widget.childName}',
+          dialogContext.l10n.emergencyConfirmBody(widget.childName),
           style: const TextStyle(fontSize: 16, height: 1.6),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
+            child: Text(dialogContext.l10n.cancel),
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
@@ -59,7 +60,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
               foregroundColor: Colors.white,
             ),
             icon: const Icon(Icons.sos),
-            label: const Text('إرسال فوراً'),
+            label: Text(dialogContext.l10n.emergencySendNow),
             onPressed: () => Navigator.pop(context, true),
           ),
         ],
@@ -126,7 +127,8 @@ class _EmergencyButtonState extends State<EmergencyButton> {
   }) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -138,7 +140,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
               size: 32,
             ),
             const SizedBox(width: 8),
-            Text(serverSuccess ? 'تم إرسال التنبيه' : 'تنبيه محلي'),
+            Expanded(child: Text(serverSuccess ? dialogContext.l10n.emergencySent : dialogContext.l10n.emergencyLocal)),
           ],
         ),
         content: Column(
@@ -149,7 +151,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'تم إشعار $notifiedRecipients من أولياء الأمر/المختصين داخل EduBridge.',
+                  dialogContext.l10n.emergencyNotified(notifiedRecipients),
                   style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.w600,
@@ -164,25 +166,25 @@ class _EmergencyButtonState extends State<EmergencyButton> {
                   color: Colors.orange.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
-                  '⚠️ تعذّر إرسال التنبيه للسيرفر. استخدم خيارات الاتصال المباشر أدناه عند الحاجة.',
+                child: Text(
+                  dialogContext.l10n.emergencyServerFailed,
                   style: TextStyle(fontSize: 13),
                 ),
               ),
-            const Text(
-              'خطوات الأمان:',
+            Text(
+              dialogContext.l10n.emergencySafety,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            const Text('1.  ابقَ هادئاً وضع الطفل في مكان آمن',
+            Text(dialogContext.l10n.emergencySafePlace,
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            const Text('2.  أبعد الأشياء الحادة عن الطفل',
+            Text(dialogContext.l10n.emergencySharpObjects,
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            const Text('3.  لا تضع شيئاً في فمه',
+            Text(dialogContext.l10n.emergencyMouth,
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            const Text('4.  سجّل مدة النوبة',
+            Text(dialogContext.l10n.emergencyDuration,
                 style: TextStyle(fontSize: 15, height: 1.6)),
-            const Text('5.  إن استمرت أكثر من 5 دقائق → اتصل بالطبيب',
+            Text(dialogContext.l10n.emergencyDoctor,
                 style: TextStyle(
                   fontSize: 15,
                   height: 1.6,
@@ -196,21 +198,21 @@ class _EmergencyButtonState extends State<EmergencyButton> {
             TextButton.icon(
               onPressed: () => _callNumber(widget.parentPhone!),
               icon: const Icon(Icons.call),
-              label: const Text('اتصال بولي الأمر'),
+              label: Text(dialogContext.l10n.emergencyCallParent),
             ),
           if (widget.specialistPhone != null &&
               widget.specialistPhone!.isNotEmpty)
             TextButton.icon(
               onPressed: () => _callNumber(widget.specialistPhone!),
               icon: const Icon(Icons.medical_services_outlined),
-              label: const Text('اتصال بالمختص'),
+              label: Text(dialogContext.l10n.emergencyCallSpecialist),
             ),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
               onPressed: () => Navigator.pop(context),
-              child: const Text('فهمت'),
+              child: Text(dialogContext.l10n.emergencyUnderstood),
             ),
           ),
         ],
@@ -232,8 +234,8 @@ class _EmergencyButtonState extends State<EmergencyButton> {
         children: [
           const Icon(Icons.emergency, color: Colors.red, size: 44),
           const SizedBox(height: 10),
-          const Text(
-            'زر الطوارئ',
+          Text(
+            context.l10n.emergencyTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -242,13 +244,13 @@ class _EmergencyButtonState extends State<EmergencyButton> {
           ),
           const SizedBox(height: 6),
           Text(
-            'للحالات الطارئة فقط',
+            context.l10n.emergencyOnly,
             style: TextStyle(fontSize: 14, color: JisrColors.of(context).muted),
           ),
           const SizedBox(height: 16),
-          SizedBox(
+          Container(
             width: double.infinity,
-            height: 64,
+            constraints: const BoxConstraints(minHeight: 64),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -268,7 +270,7 @@ class _EmergencyButtonState extends State<EmergencyButton> {
                     )
                   : const Icon(Icons.sos, size: 32),
               label: Text(
-                _sending ? 'جارٍ الإرسال...' : 'إرسال تنبيه طوارئ',
+                _sending ? context.l10n.emergencySending : context.l10n.emergencySend,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               onPressed: _sending ? null : _triggerEmergency,

@@ -1,3 +1,4 @@
+import '../../l10n/l10n.dart';
 // خط زمني بصري ثابت — يُظهر ما تم إنجازه وما هو التالي
 import 'package:flutter/material.dart';
 import '../../services/accessibility_service.dart';
@@ -127,7 +128,7 @@ class _TimelineRow extends StatelessWidget {
                 color: AppColors.orange,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text('الآن',
+              child: Text(context.l10n.timelineNow,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,

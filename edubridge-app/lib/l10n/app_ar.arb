@@ -9681,5 +9681,434 @@
   "lessonVideoPlay": "تشغيل الفيديو",
   "@lessonVideoPlay": {
     "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "timelineNow": "الآن",
+  "@timelineNow": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "adaptationReload": "إعادة تحميل إعدادات التعلم",
+  "@adaptationReload": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "voiceListening": "🎤 أتكلّم...",
+  "@voiceListening": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStopFailed": "تعذّر إيقاف التسجيل. يمكنك كتابة الإجابة.",
+  "@dictationStopFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationHearFailed": "تعذّر سماع الصوت. يمكنك كتابة الإجابة.",
+  "@dictationHearFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationUnavailable": "الميكروفون غير متاح. يمكنك كتابة الإجابة.",
+  "@dictationUnavailable": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationLocaleUnavailable": "التعرف على الكلام العربي غير متاح على الجهاز.",
+  "@dictationLocaleUnavailable": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStartFailed": "تعذّر تشغيل الميكروفون. يمكنك كتابة الإجابة.",
+  "@dictationStartFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStarting": "جارٍ تشغيل الميكروفون",
+  "@dictationStarting": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStop": "أوقف التسجيل",
+  "@dictationStop": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationWrite": "أكتب بصوتي",
+  "@dictationWrite": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionWant": "أريد",
+  "@predictionWant": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionNeed": "أحتاج",
+  "@predictionNeed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionHelp": "مساعدة",
+  "@predictionHelp": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionThanks": "شكراً",
+  "@predictionThanks": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionYes": "نعم",
+  "@predictionYes": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionNo": "لا",
+  "@predictionNo": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCompleted": "اكتمل الدرس",
+  "@practiceCompleted": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceWellDone": "أكملت الدرس! أحسنت.",
+  "@practiceWellDone": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCorrect": "أحسنت! إجابة صحيحة.",
+  "@practiceCorrect": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceRetry": "حاول مرة أخرى.",
+  "@practiceRetry": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCheck": "تحقق من الإجابة",
+  "@practiceCheck": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceTryAgain": "حاول مرة أخرى",
+  "@practiceTryAgain": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practicePrevious": "السابق",
+  "@practicePrevious": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceRestart": "إعادة الدرس",
+  "@practiceRestart": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceFinish": "إنهاء الدرس",
+  "@practiceFinish": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceNext": "التالي",
+  "@practiceNext": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyConfirmTitle": "تأكيد الطوارئ",
+  "@emergencyConfirmTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySendNow": "إرسال فوراً",
+  "@emergencySendNow": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySent": "تم إرسال التنبيه",
+  "@emergencySent": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyLocal": "تنبيه محلي",
+  "@emergencyLocal": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyServerFailed": "⚠️ تعذّر إرسال التنبيه للسيرفر. استخدم خيارات الاتصال المباشر أدناه عند الحاجة.",
+  "@emergencyServerFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySafety": "خطوات الأمان:",
+  "@emergencySafety": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySafePlace": "1.  ابقَ هادئاً وضع الطفل في مكان آمن",
+  "@emergencySafePlace": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySharpObjects": "2.  أبعد الأشياء الحادة عن الطفل",
+  "@emergencySharpObjects": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyMouth": "3.  لا تضع شيئاً في فمه",
+  "@emergencyMouth": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyDuration": "4.  سجّل مدة النوبة",
+  "@emergencyDuration": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyDoctor": "5.  إن استمرت أكثر من 5 دقائق → اتصل بالطبيب",
+  "@emergencyDoctor": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyCallParent": "اتصال بولي الأمر",
+  "@emergencyCallParent": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyCallSpecialist": "اتصال بالمختص",
+  "@emergencyCallSpecialist": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyUnderstood": "فهمت",
+  "@emergencyUnderstood": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyTitle": "زر الطوارئ",
+  "@emergencyTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyOnly": "للحالات الطارئة فقط",
+  "@emergencyOnly": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySending": "جارٍ الإرسال...",
+  "@emergencySending": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySend": "إرسال تنبيه طوارئ",
+  "@emergencySend": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustomize": "خصص التكييف لكل طفل",
+  "@overviewCustomize": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewDescription": "كل طفل له احتياجات مختلفة. اضغط على طفلك لتخصيص تجربته.",
+  "@overviewDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustom": "مخصّص",
+  "@overviewCustom": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustomizeAction": "تخصيص التكييف",
+  "@overviewCustomizeAction": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewNoFeatures": "لا توجد ميزات",
+  "@overviewNoFeatures": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewNoChildren": "لا يوجد أبناء مسجّلون بعد",
+  "@overviewNoChildren": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewAddChildren": "أضف أطفالك من الشاشة الرئيسية",
+  "@overviewAddChildren": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewSpecialistOnly": "إعدادات التكيف متاحة للمختص فقط",
+  "@overviewSpecialistOnly": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewLoadFailed": "تعذّر جلب الأطفال",
+  "@overviewLoadFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewConnectionFailed": "تعذّر الاتصال بالسيرفر",
+  "@overviewConnectionFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewScreenTitle": "احتياجات الأبناء الخاصة",
+  "@overviewScreenTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewTitle": "احتياجات الأبناء",
+  "@overviewTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewRefresh": "تحديث",
+  "@overviewRefresh": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewRetry": "إعادة المحاولة",
+  "@overviewRetry": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionComplete": "إكمال الكلمة: {word}",
+  "@predictionComplete": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "practicePosition": "الخطوة {current} من {total}",
+  "@practicePosition": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "emergencyConfirmBody": "هل تريد إرسال تنبيه طوارئ للأهل والمختص؟\n\nالطفل: {name}",
+  "@emergencyConfirmBody": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "emergencyNotified": "تم إشعار {count} من أولياء الأمر/المختصين داخل EduBridge.",
+  "@emergencyNotified": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewAge": "العمر: {age} سنة",
+  "@overviewAge": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewActive": "{count} ميزة تكييف مُفعّلة",
+  "@overviewActive": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewBadgeCaptions": "ترجمات",
+  "@overviewBadgeCaptions": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSigns": "لغة إشارة",
+  "@overviewBadgeSigns": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVibration": "اهتزاز",
+  "@overviewBadgeVibration": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeAudioDescription": "وصف صوتي",
+  "@overviewBadgeAudioDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVideoDescription": "وصف فيديو",
+  "@overviewBadgeVideoDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeDictation": "كتابة صوتية",
+  "@overviewBadgeDictation": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSlowSpeech": "نطق بطيء",
+  "@overviewBadgeSlowSpeech": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVoiceControl": "تحكم صوتي",
+  "@overviewBadgeVoiceControl": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeKeyboard": "لوحة مفاتيح",
+  "@overviewBadgeKeyboard": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSimpleLanguage": "لغة مبسّطة",
+  "@overviewBadgeSimpleLanguage": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeIcons": "أيقونات",
+  "@overviewBadgeIcons": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeRewards": "مكافآت",
+  "@overviewBadgeRewards": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeShortSentences": "جمل قصيرة",
+  "@overviewBadgeShortSentences": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeLargeButtons": "أزرار كبيرة",
+  "@overviewBadgeLargeButtons": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeTapSpeech": "نطق باللمس",
+  "@overviewBadgeTapSpeech": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeContrast": "تباين عالٍ",
+  "@overviewBadgeContrast": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeUntimed": "بدون وقت",
+  "@overviewBadgeUntimed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeCalmMotion": "حركة هادئة",
+  "@overviewBadgeCalmMotion": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeEmergency": "طوارئ",
+  "@overviewBadgeEmergency": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewDisabilityNone": "بدون تكييف",
+  "@overviewDisabilityNone": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAdhd": "فرط الحركة وتشتت الانتباه",
+  "@overviewDisabilityAdhd": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAutismMild": "طيف التوحّد (بسيط/متوسط)",
+  "@overviewDisabilityAutismMild": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAutismSevere": "طيف التوحّد (شديد)",
+  "@overviewDisabilityAutismSevere": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityDownSyndrome": "متلازمة داون",
+  "@overviewDisabilityDownSyndrome": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityBlind": "عمى / ضعف بصر شديد",
+  "@overviewDisabilityBlind": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityDeaf": "طرش / ضعف سمع",
+  "@overviewDisabilityDeaf": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityStuttering": "التأتأة (تلعثم الكلام)",
+  "@overviewDisabilityStuttering": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilitySpeechDisorders": "اضطرابات النطق",
+  "@overviewDisabilitySpeechDisorders": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMildIntellectual": "إعاقة ذهنية بسيطة",
+  "@overviewDisabilityMildIntellectual": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityColorBlindness": "عمى الألوان",
+  "@overviewDisabilityColorBlindness": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityEpilepsy": "الصرع",
+  "@overviewDisabilityEpilepsy": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMotorDisability": "إعاقة حركية",
+  "@overviewDisabilityMotorDisability": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMultipleDisabilities": "إعاقات متعددة",
+  "@overviewDisabilityMultipleDisabilities": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityOther": "أخرى",
+  "@overviewDisabilityOther": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
   }
 }

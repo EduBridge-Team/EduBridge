@@ -9681,5 +9681,434 @@
   "lessonVideoPlay": "Play video",
   "@lessonVideoPlay": {
     "description": "Step lesson and accessible video interface. Authored lesson/media content stays unchanged."
+  },
+  "timelineNow": "Now",
+  "@timelineNow": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "adaptationReload": "Reload learning settings",
+  "@adaptationReload": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "voiceListening": "🎤 Listening…",
+  "@voiceListening": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStopFailed": "Could not stop recording. You can type your answer.",
+  "@dictationStopFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationHearFailed": "Could not hear the audio. You can type your answer.",
+  "@dictationHearFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationUnavailable": "The microphone is unavailable. You can type your answer.",
+  "@dictationUnavailable": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationLocaleUnavailable": "Speech recognition for the selected language is unavailable on this device.",
+  "@dictationLocaleUnavailable": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStartFailed": "Could not start the microphone. You can type your answer.",
+  "@dictationStartFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStarting": "Starting microphone",
+  "@dictationStarting": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationStop": "Stop recording",
+  "@dictationStop": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "dictationWrite": "Dictate",
+  "@dictationWrite": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionWant": "want",
+  "@predictionWant": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionNeed": "need",
+  "@predictionNeed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionHelp": "help",
+  "@predictionHelp": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionThanks": "thanks",
+  "@predictionThanks": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionYes": "yes",
+  "@predictionYes": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionNo": "no",
+  "@predictionNo": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCompleted": "Lesson completed",
+  "@practiceCompleted": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceWellDone": "You completed the lesson! Well done.",
+  "@practiceWellDone": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCorrect": "Well done! Correct answer.",
+  "@practiceCorrect": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceRetry": "Try again.",
+  "@practiceRetry": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceCheck": "Check answer",
+  "@practiceCheck": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceTryAgain": "Try again",
+  "@practiceTryAgain": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practicePrevious": "Previous",
+  "@practicePrevious": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceRestart": "Restart lesson",
+  "@practiceRestart": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceFinish": "Finish lesson",
+  "@practiceFinish": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "practiceNext": "Next",
+  "@practiceNext": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyConfirmTitle": "Confirm emergency alert",
+  "@emergencyConfirmTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySendNow": "Send now",
+  "@emergencySendNow": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySent": "Alert sent",
+  "@emergencySent": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyLocal": "Local alert",
+  "@emergencyLocal": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyServerFailed": "⚠️ Could not send the alert to the server. Use the direct contact options below if needed.",
+  "@emergencyServerFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySafety": "Safety steps:",
+  "@emergencySafety": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySafePlace": "1. Stay calm and keep the child in a safe place",
+  "@emergencySafePlace": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySharpObjects": "2. Move sharp objects away from the child",
+  "@emergencySharpObjects": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyMouth": "3. Do not put anything in their mouth",
+  "@emergencyMouth": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyDuration": "4. Record how long the seizure lasts",
+  "@emergencyDuration": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyDoctor": "5. If it lasts more than 5 minutes, contact the doctor",
+  "@emergencyDoctor": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyCallParent": "Call guardian",
+  "@emergencyCallParent": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyCallSpecialist": "Call specialist",
+  "@emergencyCallSpecialist": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyUnderstood": "Understood",
+  "@emergencyUnderstood": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyTitle": "Emergency button",
+  "@emergencyTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencyOnly": "For emergencies only",
+  "@emergencyOnly": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySending": "Sending…",
+  "@emergencySending": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "emergencySend": "Send emergency alert",
+  "@emergencySend": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustomize": "Personalize adaptations for each child",
+  "@overviewCustomize": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewDescription": "Every child has different needs. Select a child to personalize their experience.",
+  "@overviewDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustom": "Custom",
+  "@overviewCustom": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewCustomizeAction": "Personalize adaptations",
+  "@overviewCustomizeAction": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewNoFeatures": "No features",
+  "@overviewNoFeatures": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewNoChildren": "No children registered yet",
+  "@overviewNoChildren": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewAddChildren": "Add your children from the home screen",
+  "@overviewAddChildren": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewSpecialistOnly": "Adaptation settings are available to specialists only",
+  "@overviewSpecialistOnly": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewLoadFailed": "Could not load children",
+  "@overviewLoadFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewConnectionFailed": "Could not connect to the server",
+  "@overviewConnectionFailed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewScreenTitle": "Children’s accessibility needs",
+  "@overviewScreenTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewTitle": "Children’s needs",
+  "@overviewTitle": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewRefresh": "Refresh",
+  "@overviewRefresh": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewRetry": "Try again",
+  "@overviewRetry": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "predictionComplete": "Complete word: {word}",
+  "@predictionComplete": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "practicePosition": "Step {current} of {total}",
+  "@practicePosition": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "emergencyConfirmBody": "Send an emergency alert to the guardian and specialist?\n\nChild: {name}",
+  "@emergencyConfirmBody": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "emergencyNotified": "{count, plural, one {{count} guardian/specialist was notified in EduBridge.} other {{count} guardians/specialists were notified in EduBridge.}}",
+  "@emergencyNotified": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewAge": "Age: {age}",
+  "@overviewAge": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewActive": "{count, plural, one {{count} active adaptation} other {{count} active adaptations}}",
+  "@overviewActive": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewBadgeCaptions": "Captions",
+  "@overviewBadgeCaptions": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSigns": "Sign language",
+  "@overviewBadgeSigns": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVibration": "Vibration",
+  "@overviewBadgeVibration": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeAudioDescription": "Audio description",
+  "@overviewBadgeAudioDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVideoDescription": "Video description",
+  "@overviewBadgeVideoDescription": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeDictation": "Dictation",
+  "@overviewBadgeDictation": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSlowSpeech": "Slow speech",
+  "@overviewBadgeSlowSpeech": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeVoiceControl": "Voice control",
+  "@overviewBadgeVoiceControl": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeKeyboard": "Keyboard",
+  "@overviewBadgeKeyboard": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeSimpleLanguage": "Simple language",
+  "@overviewBadgeSimpleLanguage": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeIcons": "Icons",
+  "@overviewBadgeIcons": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeRewards": "Rewards",
+  "@overviewBadgeRewards": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeShortSentences": "Short sentences",
+  "@overviewBadgeShortSentences": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeLargeButtons": "Large buttons",
+  "@overviewBadgeLargeButtons": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeTapSpeech": "Tap to read",
+  "@overviewBadgeTapSpeech": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeContrast": "High contrast",
+  "@overviewBadgeContrast": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeUntimed": "No time limit",
+  "@overviewBadgeUntimed": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeCalmMotion": "Calm motion",
+  "@overviewBadgeCalmMotion": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewBadgeEmergency": "Emergency",
+  "@overviewBadgeEmergency": {
+    "description": "Shared accessibility, dictation, emergency, child-overview or interactive-lesson UI; preserve authored content and server identities."
+  },
+  "overviewDisabilityNone": "No adaptation",
+  "@overviewDisabilityNone": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAdhd": "Attention deficit hyperactivity disorder",
+  "@overviewDisabilityAdhd": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAutismMild": "Autism spectrum (mild/moderate)",
+  "@overviewDisabilityAutismMild": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityAutismSevere": "Autism spectrum (severe)",
+  "@overviewDisabilityAutismSevere": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityDownSyndrome": "Down syndrome",
+  "@overviewDisabilityDownSyndrome": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityBlind": "Blindness / severe visual impairment",
+  "@overviewDisabilityBlind": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityDeaf": "Deafness / hearing loss",
+  "@overviewDisabilityDeaf": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityStuttering": "Stuttering",
+  "@overviewDisabilityStuttering": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilitySpeechDisorders": "Speech disorders",
+  "@overviewDisabilitySpeechDisorders": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMildIntellectual": "Mild intellectual disability",
+  "@overviewDisabilityMildIntellectual": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityColorBlindness": "Color blindness",
+  "@overviewDisabilityColorBlindness": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityEpilepsy": "Epilepsy",
+  "@overviewDisabilityEpilepsy": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMotorDisability": "Motor disability",
+  "@overviewDisabilityMotorDisability": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityMultipleDisabilities": "Multiple disabilities",
+  "@overviewDisabilityMultipleDisabilities": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
+  },
+  "overviewDisabilityOther": "Other",
+  "@overviewDisabilityOther": {
+    "description": "Presentation of existing adaptation classification; canonical enum values remain unchanged."
   }
 }
