@@ -1,16 +1,17 @@
-import '../l10n/l10n.dart';
-import '../utils/presentation_text.dart';
 // lib/screens/chats_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/teacher_navigation_bar.dart';
+
 import '../features/communication/data/conversation_repository.dart';
 import '../features/communication/presentation/communication_list_controller.dart';
-import '../theme.dart';
+import '../l10n/l10n.dart';
 import '../services/api_service.dart';
-import 'specialist/specialist_screen.dart';
+import '../theme.dart';
+import '../utils/presentation_text.dart';
+import '../widgets/teacher_navigation_bar.dart';
 import 'case_discussion/case_discussion_screen.dart';
-import 'learning_support_requests/learning_support_requests_screen.dart';
 import 'chat_screen.dart';
+import 'learning_support_requests/learning_support_requests_screen.dart';
+import 'specialist/specialist_screen.dart';
 part 'chats_screen_s15.dart';
 part 'chats_user_picker_s19.dart';
 
