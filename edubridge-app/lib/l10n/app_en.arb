@@ -6206,5 +6206,507 @@
   "childProgressWeekday6": "Fri",
   "@childProgressWeekday6": {
     "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "adaptationVisualSection": "Visual accessibility",
+  "@adaptationVisualSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationScreenReader": "Screen reader support",
+  "@adaptationScreenReader": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationScreenReaderHint": "Improve element labels for the device screen reader",
+  "@adaptationScreenReaderHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDetailedImages": "Detailed image descriptions",
+  "@adaptationDetailedImages": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDetailedImagesHint": "Tap a lesson image to read its description when available",
+  "@adaptationDetailedImagesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAudioDescriptions": "Audio descriptions",
+  "@adaptationAudioDescriptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAudioDescriptionsHint": "Read the description when one is attached to the lesson video",
+  "@adaptationAudioDescriptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardShortcuts": "Keyboard shortcuts",
+  "@adaptationKeyboardShortcuts": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardShortcutsHint": "Use Tab to navigate and Enter to activate a choice",
+  "@adaptationKeyboardShortcutsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTextOnly": "Text-only interface",
+  "@adaptationTextOnly": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTextOnlyHint": "Show lesson image descriptions instead of loading images",
+  "@adaptationTextOnlyHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLargeCursor": "Large mouse cursor",
+  "@adaptationLargeCursor": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLargeCursorHint": "Enlarge the mouse pointer and text cursor in the child experience; touch is unchanged",
+  "@adaptationLargeCursorHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHearingSection": "Hearing accessibility",
+  "@adaptationHearingSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCaptions": "Video captions",
+  "@adaptationCaptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCaptionsHint": "Show the caption file when one is attached to the lesson video",
+  "@adaptationCaptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSoundDescriptions": "Environmental sound descriptions",
+  "@adaptationSoundDescriptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSoundDescriptionsHint": "Show descriptions such as [music] when included in the video captions",
+  "@adaptationSoundDescriptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSignLanguage": "Sign language",
+  "@adaptationSignLanguage": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSignLanguageHint": "Show the sign language video when one is attached to the lesson",
+  "@adaptationSignLanguageHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVisualNotifications": "Visual notifications",
+  "@adaptationVisualNotifications": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVisualNotificationsHint": "Clearly show playback and pause states over the lesson video",
+  "@adaptationVisualNotificationsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationFlashAlerts": "Flashing alerts",
+  "@adaptationFlashAlerts": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationFlashAlertsHint": "Currently inactive in child screens; the saved value is preserved",
+  "@adaptationFlashAlertsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVibration": "Vibration alerts",
+  "@adaptationVibration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVibrationHint": "Vibrate on success and emergency confirmation according to the settings",
+  "@adaptationVibrationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMotorSection": "Motor and neurological accessibility",
+  "@adaptationMotorSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardNavigation": "Keyboard navigation",
+  "@adaptationKeyboardNavigation": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardNavigationHint": "Use Tab to navigate, Enter to select and Escape to go back in adapted screens",
+  "@adaptationKeyboardNavigationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVoiceControl": "Voice control",
+  "@adaptationVoiceControl": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVoiceControlHint": "Not implemented in child screens yet; the saved setting does not change them",
+  "@adaptationVoiceControlHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEyeTracking": "Eye tracking",
+  "@adaptationEyeTracking": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnavailable": "Currently unavailable",
+  "@adaptationUnavailable": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSwitchControl": "Switch control",
+  "@adaptationSwitchControl": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSwitchControlHint": "Keyboard navigation; assistive hardware requires device setup",
+  "@adaptationSwitchControlHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoTimedInteractions": "No timed interactions",
+  "@adaptationNoTimedInteractions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoTimedInteractionsHint": "Notices and encouragement stay until dismissed; breaks remain time limited",
+  "@adaptationNoTimedInteractionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCognitiveSection": "Cognitive and developmental accessibility",
+  "@adaptationCognitiveSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStepByStep": "Step-by-step reading",
+  "@adaptationStepByStep": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStepByStepHint": "Show the easy-reading button to divide lesson text without removing content",
+  "@adaptationStepByStepHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleGrid": "Simple icon grid",
+  "@adaptationSimpleGrid": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleGridHint": "Show child games and lessons with clear icons and titles without hiding activities",
+  "@adaptationSimpleGridHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationIconButtons": "Icon buttons",
+  "@adaptationIconButtons": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationIconButtonsHint": "Hide button text when an icon is available while keeping lesson instructions",
+  "@adaptationIconButtonsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleLanguage": "Simplify common phrases",
+  "@adaptationSimpleLanguage": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleLanguageHint": "Use simpler words for some waiting, success and error messages",
+  "@adaptationSimpleLanguageHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadScreenTitle": "Read the screen title",
+  "@adaptationReadScreenTitle": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadScreenTitleHint": "Read the title once on entry when automatic speech is enabled",
+  "@adaptationReadScreenTitleHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStarRewards": "Star encouragement",
+  "@adaptationStarRewards": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStarRewardsHint": "Show a star reward when lesson completion is recorded",
+  "@adaptationStarRewardsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRoutine": "Consistent routine",
+  "@adaptationRoutine": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRoutineHint": "Keep lesson order consistent with clear session steps",
+  "@adaptationRoutineHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationThreeChoices": "Up to 3 choices",
+  "@adaptationThreeChoices": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationThreeChoicesHint": "Show 3 communication cards at a time with access to the remaining cards",
+  "@adaptationThreeChoicesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechSection": "Speech and language accessibility",
+  "@adaptationSpeechSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechToText": "Speech to text",
+  "@adaptationSpeechToText": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechToTextHint": "Dictate homework answers; Arabic speech support is required on the device",
+  "@adaptationSpeechToTextHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationWordPrediction": "Word suggestions",
+  "@adaptationWordPrediction": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationWordPredictionHint": "Suggest common communication words while typing homework answers",
+  "@adaptationWordPredictionHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationShortSentences": "Very short sentences",
+  "@adaptationShortSentences": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationShortSentencesHint": "Display text in short lines without removing content",
+  "@adaptationShortSentencesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnlimitedTime": "Unlimited task time",
+  "@adaptationUnlimitedTime": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnlimitedTimeHint": "Disable the task timer; breaks remain time limited",
+  "@adaptationUnlimitedTimeHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationGeneralSection": "General settings",
+  "@adaptationGeneralSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationExtraLargeTargets": "Extra-large buttons",
+  "@adaptationExtraLargeTargets": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationExtraLargeTargetsHint": "At least 88 pixels",
+  "@adaptationExtraLargeTargetsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReducedMotion": "Reduce motion",
+  "@adaptationReducedMotion": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReducedMotionHint": "Gentle animations",
+  "@adaptationReducedMotionHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoFlashing": "Avoid flashing",
+  "@adaptationNoFlashing": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoFlashingHint": "Disable motion and flashing effects in adapted elements",
+  "@adaptationNoFlashingHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAutoRead": "Automatic speech",
+  "@adaptationAutoRead": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAutoReadHint": "Read supporting elements and encouragement automatically; listen buttons remain manual",
+  "@adaptationAutoReadHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSlowSpeech": "Slow speech",
+  "@adaptationSlowSpeech": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSlowSpeechHint": "For stuttering and intellectual disabilities",
+  "@adaptationSlowSpeechHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStrongBorders": "Clearer borders",
+  "@adaptationStrongBorders": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStrongBordersHint": "Thicker borders while keeping EduBridge colors",
+  "@adaptationStrongBordersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationColorFilters": "Soften menu colors",
+  "@adaptationColorFilters": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationColorFiltersHint": "Reduce saturation in lesson, game and homework menus; lesson content, media and games keep their original colors",
+  "@adaptationColorFiltersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSensoryCalm": "Sensory calm mode",
+  "@adaptationSensoryCalm": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSensoryCalmHint": "Reduce motion, automatic audio and vibration in supporting elements; manual listening remains available",
+  "@adaptationSensoryCalmHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEmergency": "Emergency button",
+  "@adaptationEmergency": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEmergencyHint": "Quick contact with family",
+  "@adaptationEmergencyHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakSection": "Breaks and learning time",
+  "@adaptationBreakSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBrainBreaks": "Learning breaks",
+  "@adaptationBrainBreaks": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBrainBreaksHint": "Suggest a break during lessons",
+  "@adaptationBrainBreaksHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakInterval": "Time between breaks",
+  "@adaptationBreakInterval": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakIntervalHint": "Suggest a break after this amount of learning time.",
+  "@adaptationBreakIntervalHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMinute": "minutes",
+  "@adaptationMinute": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakDuration": "Break duration",
+  "@adaptationBreakDuration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakHiddenHint": "The timer is hidden from the child; the break ends after the set duration.",
+  "@adaptationBreakHiddenHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakDurationHint": "The child can finish early or extend the break twice, by 30 seconds each time.",
+  "@adaptationBreakDurationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSecond": "seconds",
+  "@adaptationSecond": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskTimer": "Task timer",
+  "@adaptationTaskTimer": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskTimerHint": "Show a visual or audio timer according to the child’s settings",
+  "@adaptationTaskTimerHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDuration": "Task timer duration",
+  "@adaptationTaskDuration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDisabledHint": "The timer is disabled by the current time settings; its duration remains saved.",
+  "@adaptationTaskDisabledHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDurationHint": "Time available before suggesting a break.",
+  "@adaptationTaskDurationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHideTimers": "Hide timers",
+  "@adaptationHideTimers": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHideTimersHint": "Hide task and break timers; breaks remain time limited",
+  "@adaptationHideTimersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReset": "Reset",
+  "@adaptationReset": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaved": "Settings saved",
+  "@adaptationSaved": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaving": "Saving…",
+  "@adaptationSaving": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSave": "Save settings",
+  "@adaptationSave": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadOnly": "Read only — only the child’s assigned specialist can edit.",
+  "@adaptationReadOnly": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaveFailed": "Could not save adaptation settings",
+  "@adaptationSaveFailed": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEnterName": "Please enter the disability name",
+  "@adaptationEnterName": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomSaved": "Custom disability saved",
+  "@adaptationCustomSaved": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLoadFailed": "Could not load the child’s settings",
+  "@adaptationLoadFailed": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRestricted": "Adaptation settings are available only to the child’s assigned specialist.",
+  "@adaptationRestricted": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomName": "Enter the disability name",
+  "@adaptationCustomName": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomHint": "Example: auditory processing disorder",
+  "@adaptationCustomHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaveDisability": "Save disability",
+  "@adaptationSaveDisability": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSettingsFor": "{name}’s settings",
+  "@adaptationSettingsFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationOnlyFor": "These settings apply only to {name}.",
+  "@adaptationOnlyFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDisabilityValue": "Disability type: {value}",
+  "@adaptationDisabilityValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCategorySaved": "Classification saved while preserving adaptation settings for \"{value}\"",
+  "@adaptationCategorySaved": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@adaptationMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSeconds": "{count, plural, =1{1 second} other{{count} seconds}}",
+  "@adaptationSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   }
 }

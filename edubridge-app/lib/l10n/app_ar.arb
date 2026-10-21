@@ -6206,5 +6206,507 @@
   "childProgressWeekday6": "جمعة",
   "@childProgressWeekday6": {
     "description": "Child progress display; keep server statuses, scores and lesson content unchanged."
+  },
+  "adaptationVisualSection": "ميزات الإعاقات البصرية",
+  "@adaptationVisualSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationScreenReader": "تحسين لقارئ الشاشة",
+  "@adaptationScreenReader": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationScreenReaderHint": "تحسين تسميات العناصر لقارئ الشاشة على الجهاز",
+  "@adaptationScreenReaderHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDetailedImages": "وصف تفصيلي للصور",
+  "@adaptationDetailedImages": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDetailedImagesHint": "قراءة وصف صورة الدرس عند توفره، بالضغط عليها",
+  "@adaptationDetailedImagesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAudioDescriptions": "وصف صوتي للفيديوهات",
+  "@adaptationAudioDescriptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAudioDescriptionsHint": "قراءة الوصف إذا كان مضافاً لفيديو الدرس",
+  "@adaptationAudioDescriptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardShortcuts": "اختصارات لوحة المفاتيح",
+  "@adaptationKeyboardShortcuts": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardShortcutsHint": "Tab للتنقل وEnter لتفعيل الاختيار",
+  "@adaptationKeyboardShortcutsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTextOnly": "واجهة نصية فقط",
+  "@adaptationTextOnly": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTextOnlyHint": "عرض وصف صور الدرس بدل تحميل الصور",
+  "@adaptationTextOnlyHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLargeCursor": "مؤشر فأرة كبير",
+  "@adaptationLargeCursor": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLargeCursorHint": "تكبير سهم الفأرة ومؤشر الكتابة داخل تجربة الطفل؛ لا يغيّر اللمس",
+  "@adaptationLargeCursorHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHearingSection": "ميزات الإعاقات السمعية",
+  "@adaptationHearingSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCaptions": "ترجمة نصية للفيديوهات",
+  "@adaptationCaptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCaptionsHint": "عرض ملف الترجمة إذا كان مضافاً لفيديو الدرس",
+  "@adaptationCaptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSoundDescriptions": "وصف الأصوات البيئية",
+  "@adaptationSoundDescriptions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSoundDescriptionsHint": "عرض أوصاف مثل [موسيقى] إذا كانت مكتوبة بملف ترجمة الفيديو",
+  "@adaptationSoundDescriptionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSignLanguage": "ترجمة لغة الإشارة",
+  "@adaptationSignLanguage": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSignLanguageHint": "عرض فيديو الإشارة إذا كان مضافاً للدرس",
+  "@adaptationSignLanguageHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVisualNotifications": "إشعارات بصرية",
+  "@adaptationVisualNotifications": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVisualNotificationsHint": "إظهار حالة التشغيل والتوقف بشكل واضح فوق فيديو الدرس",
+  "@adaptationVisualNotificationsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationFlashAlerts": "تنبيهات بوميض",
+  "@adaptationFlashAlerts": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationFlashAlertsHint": "غير مفعّلة في شاشات الطفل حالياً؛ تبقى القيمة المحفوظة دون تغيير",
+  "@adaptationFlashAlertsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVibration": "اهتزاز للتنبيهات",
+  "@adaptationVibration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVibrationHint": "اهتزاز عند النجاح وتأكيد الطوارئ حسب الإعدادات",
+  "@adaptationVibrationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMotorSection": "ميزات الإعاقات الحركية والعصبية",
+  "@adaptationMotorSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardNavigation": "تنقل بلوحة المفاتيح",
+  "@adaptationKeyboardNavigation": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationKeyboardNavigationHint": "Tab للتنقل وEnter للاختيار وEscape للرجوع في الشاشات المتكيفة",
+  "@adaptationKeyboardNavigationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVoiceControl": "تحكم صوتي",
+  "@adaptationVoiceControl": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationVoiceControlHint": "غير منفذ في شاشات الطفل حالياً — الإعداد المحفوظ لا يغيّرها",
+  "@adaptationVoiceControlHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEyeTracking": "تتبع العين",
+  "@adaptationEyeTracking": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnavailable": "غير متاح حاليًا",
+  "@adaptationUnavailable": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSwitchControl": "مفاتيح تبديل",
+  "@adaptationSwitchControl": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSwitchControlHint": "تنقل بلوحة المفاتيح؛ الجهاز المساعد يحتاج إعداداً على الجهاز",
+  "@adaptationSwitchControlHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoTimedInteractions": "بدون تفاعل مؤقّت",
+  "@adaptationNoTimedInteractions": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoTimedInteractionsHint": "التنبيهات والتشجيع يبقيان حتى الإغلاق؛ الاستراحة محدودة",
+  "@adaptationNoTimedInteractionsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCognitiveSection": "ميزات الإعاقات الذهنية والتطويرية",
+  "@adaptationCognitiveSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStepByStep": "قراءة خطوة بخطوة",
+  "@adaptationStepByStep": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStepByStepHint": "إظهار زر أقرأ بسهولة لتقسيم نص الدرس دون حذف محتواه",
+  "@adaptationStepByStepHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleGrid": "شبكة أيقونات مبسّطة",
+  "@adaptationSimpleGrid": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleGridHint": "عرض ألعاب الطفل ودروسه برموز وعناوين واضحة دون إخفاء الأنشطة",
+  "@adaptationSimpleGridHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationIconButtons": "أزرار برموز",
+  "@adaptationIconButtons": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationIconButtonsHint": "إخفاء نص الزر عند توفر رمز، مع إبقاء تعليمات الدرس",
+  "@adaptationIconButtonsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleLanguage": "تبسيط عبارات شائعة",
+  "@adaptationSimpleLanguage": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSimpleLanguageHint": "استبدال بعض عبارات الانتظار والنجاح والخطأ بكلمات أبسط",
+  "@adaptationSimpleLanguageHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadScreenTitle": "قراءة عنوان الشاشة",
+  "@adaptationReadScreenTitle": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadScreenTitleHint": "قراءة العنوان مرة عند الدخول إذا كان النطق التلقائي مفعّلاً",
+  "@adaptationReadScreenTitleHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStarRewards": "تشجيع بالنجوم",
+  "@adaptationStarRewards": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStarRewardsHint": "عرض مكافأة نجمة عند تسجيل إكمال الدرس",
+  "@adaptationStarRewardsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRoutine": "روتين ثابت",
+  "@adaptationRoutine": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRoutineHint": "ترتيب ثابت للدروس وخطوات جلسة واضحة",
+  "@adaptationRoutineHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationThreeChoices": "حد أقصى 3 خيارات",
+  "@adaptationThreeChoices": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationThreeChoicesHint": "عرض 3 بطاقات تواصل بالمرة مع الوصول لباقي البطاقات",
+  "@adaptationThreeChoicesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechSection": "ميزات اضطرابات النطق واللغة",
+  "@adaptationSpeechSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechToText": "تحويل الكلام إلى نص",
+  "@adaptationSpeechToText": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSpeechToTextHint": "كتابة إجابة الواجب بالصوت؛ يتطلب دعم العربية على الجهاز",
+  "@adaptationSpeechToTextHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationWordPrediction": "اقتراح كلمات",
+  "@adaptationWordPrediction": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationWordPredictionHint": "اقتراح كلمات تواصل عامة أثناء كتابة إجابة الواجب",
+  "@adaptationWordPredictionHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationShortSentences": "جمل قصيرة جداً",
+  "@adaptationShortSentences": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationShortSentencesHint": "تقسيم عرض النص لأسطر قصيرة بدون حذف المحتوى",
+  "@adaptationShortSentencesHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnlimitedTime": "وقت غير محدود",
+  "@adaptationUnlimitedTime": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationUnlimitedTimeHint": "تعطيل مؤقّت المهمة؛ الاستراحة تبقى محدودة",
+  "@adaptationUnlimitedTimeHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationGeneralSection": "خصائص عامة",
+  "@adaptationGeneralSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationExtraLargeTargets": "أزرار ضخمة جداً",
+  "@adaptationExtraLargeTargets": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationExtraLargeTargetsHint": "≥ 88 بكسل",
+  "@adaptationExtraLargeTargetsHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReducedMotion": "تقليل الحركات",
+  "@adaptationReducedMotion": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReducedMotionHint": "أنيميشن هادئ",
+  "@adaptationReducedMotionHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoFlashing": "تجنّب الوميض",
+  "@adaptationNoFlashing": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationNoFlashingHint": "تعطيل مؤثرات الحركة والوميض في العناصر المتكيفة",
+  "@adaptationNoFlashingHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAutoRead": "نطق تلقائي",
+  "@adaptationAutoRead": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationAutoReadHint": "قراءة العناصر الداعمة والتشجيع تلقائياً؛ أزرار الاستماع تبقى يدوية",
+  "@adaptationAutoReadHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSlowSpeech": "نطق بطيء",
+  "@adaptationSlowSpeech": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSlowSpeechHint": "للتأتأة والإعاقة الذهنية",
+  "@adaptationSlowSpeechHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStrongBorders": "حدود أوضح",
+  "@adaptationStrongBorders": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationStrongBordersHint": "حدود أكثر سماكة مع الحفاظ على ألوان EduBridge",
+  "@adaptationStrongBordersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationColorFilters": "تخفيف ألوان القوائم",
+  "@adaptationColorFilters": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationColorFiltersHint": "تقليل تشبّع ألوان قوائم الدروس والألعاب والواجبات؛ محتوى الدروس والوسائط والألعاب يحتفظ بألوانه الأصلية",
+  "@adaptationColorFiltersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSensoryCalm": "وضع الهدوء الحسي",
+  "@adaptationSensoryCalm": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSensoryCalmHint": "تقليل الحركة والصوت التلقائي والاهتزاز في العناصر الداعمة؛ الاستماع اليدوي يبقى متاحاً",
+  "@adaptationSensoryCalmHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEmergency": "زر طوارئ",
+  "@adaptationEmergency": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEmergencyHint": "اتصال سريع بالأهل",
+  "@adaptationEmergencyHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakSection": "الاستراحة ووقت التعلم",
+  "@adaptationBreakSection": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBrainBreaks": "استراحات أثناء التعلم",
+  "@adaptationBrainBreaks": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBrainBreaksHint": "اقتراح استراحة خلال الدروس",
+  "@adaptationBrainBreaksHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakInterval": "الفترة بين الاستراحات",
+  "@adaptationBreakInterval": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakIntervalHint": "اقتراح استراحة بعد هذه المدة من التعلم.",
+  "@adaptationBreakIntervalHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMinute": "دقيقة",
+  "@adaptationMinute": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakDuration": "مدة الاستراحة",
+  "@adaptationBreakDuration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakHiddenHint": "العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.",
+  "@adaptationBreakHiddenHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationBreakDurationHint": "يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.",
+  "@adaptationBreakDurationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSecond": "ثانية",
+  "@adaptationSecond": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskTimer": "مؤقّت المهمة",
+  "@adaptationTaskTimer": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskTimerHint": "عرض مؤقّت بصري أو سمعي حسب إعدادات الطفل",
+  "@adaptationTaskTimerHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDuration": "مدة مؤقّت المهمة",
+  "@adaptationTaskDuration": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDisabledHint": "المؤقّت معطّل حسب إعدادات الوقت الحالية؛ تبقى المدة محفوظة.",
+  "@adaptationTaskDisabledHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationTaskDurationHint": "المدة المتاحة قبل اقتراح استراحة.",
+  "@adaptationTaskDurationHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHideTimers": "إخفاء العدّادات",
+  "@adaptationHideTimers": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationHideTimersHint": "إخفاء عدّاد المهمة والاستراحة؛ الاستراحة تبقى محدودة",
+  "@adaptationHideTimersHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReset": "إعادة الضبط",
+  "@adaptationReset": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaved": "تم حفظ الإعدادات",
+  "@adaptationSaved": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaving": "جارِ الحفظ...",
+  "@adaptationSaving": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSave": "حفظ الإعدادات",
+  "@adaptationSave": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationReadOnly": "للعرض فقط — التعديل متاح للمختص المعيّن للطفل.",
+  "@adaptationReadOnly": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaveFailed": "تعذّر حفظ إعدادات التكيف",
+  "@adaptationSaveFailed": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationEnterName": "يرجى كتابة اسم الإعاقة",
+  "@adaptationEnterName": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomSaved": "تم حفظ الإعاقة المخصّصة",
+  "@adaptationCustomSaved": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationLoadFailed": "تعذّر تحميل إعدادات الطفل",
+  "@adaptationLoadFailed": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationRestricted": "إعدادات التكيف متاحة للمختص المعيّن للطفل فقط.",
+  "@adaptationRestricted": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomName": "اكتب اسم الإعاقة",
+  "@adaptationCustomName": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCustomHint": "مثال: اضطراب المعالجة السمعية",
+  "@adaptationCustomHint": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSaveDisability": "حفظ الإعاقة",
+  "@adaptationSaveDisability": {
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSettingsFor": "إعدادات {name}",
+  "@adaptationSettingsFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationOnlyFor": "هذه الإعدادات تُطبَّق على {name} فقط.",
+  "@adaptationOnlyFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationDisabilityValue": "نوع الإعاقة: {value}",
+  "@adaptationDisabilityValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationCategorySaved": "تم حفظ التصنيف مع الحفاظ على إعدادات التكيف لـ \"{value}\"",
+  "@adaptationCategorySaved": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationMinutes": "{count, plural, =0{٠ دقيقة} =1{دقيقة واحدة} =2{دقيقتان} few{{count} دقائق} many{{count} دقيقة} other{{count} دقيقة}}",
+  "@adaptationMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
+  },
+  "adaptationSeconds": "{count, plural, =0{٠ ثانية} =1{ثانية واحدة} =2{ثانيتان} few{{count} ثوانٍ} many{{count} ثانية} other{{count} ثانية}}",
+  "@adaptationSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Child adaptation settings interface; saved values and permissions remain unchanged."
   }
 }

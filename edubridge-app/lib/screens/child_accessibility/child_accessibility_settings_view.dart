@@ -4,10 +4,8 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: AdaptiveWrapper(
-      screenTitle: 'إعدادات ${widget.childName}',
+    return AdaptiveWrapper(
+      screenTitle: context.l10n.adaptationSettingsFor(widget.childName),
       child: Scaffold(
         appBar: buildChildSettingsAppBar(context, widget.childName),
         backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -19,14 +17,15 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
             return ListView(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
               children: [
-                buildInfoBanner(c, widget.childName),
+                buildInfoBanner(context, c, widget.childName),
                 if (!_canEdit)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('للعرض فقط — التعديل متاح للمختص المعيّن للطفل.'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(context.l10n.adaptationReadOnly),
                   ),
                 const SizedBox(height: 12),
                 buildDisabilitySelector(
+                  context: context,
                   c: c,
                   selectedValue: _selectedDisability,
                   onTap: _canChange ? _openDisabilityPicker : null,
@@ -34,6 +33,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 if (_canEdit && _selectedDisability == 'أخرى') ...[
                   const SizedBox(height: 12),
                   buildCustomDisabilityBox(
+                    context: context,
                     c: c,
                     controller: _customNameCtrl,
                     onSave: _applyCustom,
@@ -42,219 +42,222 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                 const SizedBox(height: 12),
 
                 buildFeatureSection(
-                  title: 'ميزات الإعاقات البصرية',
+                  title: context.l10n.adaptationVisualSection,
                   initiallyExpanded: true,
                   icon: AppIcons.blind,
                   color: AppColors.brandBlue,
                   c: c,
                   children: [
-                    sw('تحسين لقارئ الشاشة', 'تحسين تسميات العناصر لقارئ الشاشة على الجهاز',
+                    sw(context.l10n.adaptationScreenReader, context.l10n.adaptationScreenReaderHint,
                         p.screenReaderOptimized,
                         (v) => _set(p.copyWith(screenReaderOptimized: v)), enabled: _canChange),
-                    sw('وصف تفصيلي للصور', 'قراءة وصف صورة الدرس عند توفره، بالضغط عليها',
+                    sw(context.l10n.adaptationDetailedImages, context.l10n.adaptationDetailedImagesHint,
                         p.detailedAltText,
                         (v) => _set(p.copyWith(detailedAltText: v)), enabled: _canChange),
-                    sw('وصف صوتي للفيديوهات', 'قراءة الوصف إذا كان مضافاً لفيديو الدرس',
+                    sw(context.l10n.adaptationAudioDescriptions, context.l10n.adaptationAudioDescriptionsHint,
                         p.audioDescriptions,
                         (v) => _set(p.copyWith(audioDescriptions: v)), enabled: _canChange),
-                    sw('اختصارات لوحة المفاتيح', 'Tab للتنقل وEnter لتفعيل الاختيار',
+                    sw(context.l10n.adaptationKeyboardShortcuts, context.l10n.adaptationKeyboardShortcutsHint,
                         p.keyboardShortcuts,
                         (v) => _set(p.copyWith(keyboardShortcuts: v)), enabled: _canChange),
-                    sw('واجهة نصية فقط', 'عرض وصف صور الدرس بدل تحميل الصور',
+                    sw(context.l10n.adaptationTextOnly, context.l10n.adaptationTextOnlyHint,
                         p.textOnlyMode, (v) => _set(p.copyWith(textOnlyMode: v)), enabled: _canChange),
-                    sw('مؤشر فأرة كبير', 'تكبير سهم الفأرة ومؤشر الكتابة داخل تجربة الطفل؛ لا يغيّر اللمس',
+                    sw(context.l10n.adaptationLargeCursor, context.l10n.adaptationLargeCursorHint,
                         p.largeMouseCursor,
                         (v) => _set(p.copyWith(largeMouseCursor: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات الإعاقات السمعية',
+                  title: context.l10n.adaptationHearingSection,
                   initiallyExpanded: false,
                   icon: AppIcons.deaf,
                   color: AppColors.pink,
                   c: c,
                   children: [
-                    sw('ترجمة نصية للفيديوهات', 'عرض ملف الترجمة إذا كان مضافاً لفيديو الدرس',
+                    sw(context.l10n.adaptationCaptions, context.l10n.adaptationCaptionsHint,
                         p.videoCaptions,
                         (v) => _set(p.copyWith(videoCaptions: v)), enabled: _canChange),
-                    sw('وصف الأصوات البيئية', 'عرض أوصاف مثل [موسيقى] إذا كانت مكتوبة بملف ترجمة الفيديو',
+                    sw(context.l10n.adaptationSoundDescriptions, context.l10n.adaptationSoundDescriptionsHint,
                         p.soundDescriptions, (v) => _set(p.copyWith(soundDescriptions: v)), enabled: _canChange),
-                    sw('ترجمة لغة الإشارة', 'عرض فيديو الإشارة إذا كان مضافاً للدرس',
+                    sw(context.l10n.adaptationSignLanguage, context.l10n.adaptationSignLanguageHint,
                         p.signLanguageTranslation,
                         (v) => _set(p.copyWith(signLanguageTranslation: v)), enabled: _canChange),
-                    sw('إشعارات بصرية', 'إظهار حالة التشغيل والتوقف بشكل واضح فوق فيديو الدرس',
+                    sw(context.l10n.adaptationVisualNotifications, context.l10n.adaptationVisualNotificationsHint,
                         p.visualNotifications, (v) => _set(p.copyWith(visualNotifications: v)), enabled: _canChange),
-                    sw('تنبيهات بوميض', 'غير مفعّلة في شاشات الطفل حالياً؛ تبقى القيمة المحفوظة دون تغيير',
+                    sw(context.l10n.adaptationFlashAlerts, context.l10n.adaptationFlashAlertsHint,
                         p.flashAlerts, (_) {}, enabled: false),
-                    sw('اهتزاز للتنبيهات', 'اهتزاز عند النجاح وتأكيد الطوارئ حسب الإعدادات', p.vibrationAlerts,
+                    sw(context.l10n.adaptationVibration, context.l10n.adaptationVibrationHint, p.vibrationAlerts,
                         (v) => _set(p.copyWith(vibrationAlerts: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات الإعاقات الحركية والعصبية',
+                  title: context.l10n.adaptationMotorSection,
                   initiallyExpanded: false,
                   icon: AppIcons.motor,
                   color: AppColors.brandBlue,
                   c: c,
                   children: [
-                    sw('تنقل بلوحة المفاتيح', 'Tab للتنقل وEnter للاختيار وEscape للرجوع في الشاشات المتكيفة',
+                    sw(context.l10n.adaptationKeyboardNavigation, context.l10n.adaptationKeyboardNavigationHint,
                         p.keyboardOnlyNavigation,
                         (v) => _set(p.copyWith(keyboardOnlyNavigation: v)), enabled: _canChange),
-                    sw('تحكم صوتي', 'غير منفذ في شاشات الطفل حالياً — الإعداد المحفوظ لا يغيّرها',
+                    sw(context.l10n.adaptationVoiceControl, context.l10n.adaptationVoiceControlHint,
                         p.voiceControl, (_) {}, enabled: false),
-                    sw('تتبع العين', 'غير متاح حاليًا',
+                    sw(context.l10n.adaptationEyeTracking, context.l10n.adaptationUnavailable,
                         false, (_) {}, enabled: false),
-                    sw('مفاتيح تبديل', 'تنقل بلوحة المفاتيح؛ الجهاز المساعد يحتاج إعداداً على الجهاز',
+                    sw(context.l10n.adaptationSwitchControl, context.l10n.adaptationSwitchControlHint,
                         p.switchControl,
                         (v) => _set(p.copyWith(switchControl: v)), enabled: _canChange),
-                    sw('بدون تفاعل مؤقّت', 'التنبيهات والتشجيع يبقيان حتى الإغلاق؛ الاستراحة محدودة',
+                    sw(context.l10n.adaptationNoTimedInteractions, context.l10n.adaptationNoTimedInteractionsHint,
                         p.noTimedInteractions,
                         (v) => _set(p.copyWith(noTimedInteractions: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات الإعاقات الذهنية والتطويرية',
+                  title: context.l10n.adaptationCognitiveSection,
                   initiallyExpanded: false,
                   icon: AppIcons.cognitive,
                   color: AppColors.purple,
                   c: c,
                   children: [
-                    sw('قراءة خطوة بخطوة', 'إظهار زر أقرأ بسهولة لتقسيم نص الدرس دون حذف محتواه',
+                    sw(context.l10n.adaptationStepByStep, context.l10n.adaptationStepByStepHint,
                         p.stepByStepLessons,
                         (v) => _set(p.copyWith(stepByStepLessons: v)), enabled: _canChange),
-                    sw('شبكة أيقونات مبسّطة', 'عرض ألعاب الطفل ودروسه برموز وعناوين واضحة دون إخفاء الأنشطة',
+                    sw(context.l10n.adaptationSimpleGrid, context.l10n.adaptationSimpleGridHint,
                         p.simpleIconsGrid,
                         (v) => _set(p.copyWith(simpleIconsGrid: v)), enabled: _canChange),
-                    sw('أزرار برموز', 'إخفاء نص الزر عند توفر رمز، مع إبقاء تعليمات الدرس',
+                    sw(context.l10n.adaptationIconButtons, context.l10n.adaptationIconButtonsHint,
                         p.iconOnlyMode, (v) => _set(p.copyWith(iconOnlyMode: v)), enabled: _canChange),
-                    sw('تبسيط عبارات شائعة', 'استبدال بعض عبارات الانتظار والنجاح والخطأ بكلمات أبسط',
+                    sw(context.l10n.adaptationSimpleLanguage, context.l10n.adaptationSimpleLanguageHint,
                         p.verySimpleLanguage,
                         (v) => _set(p.copyWith(verySimpleLanguage: v)), enabled: _canChange),
-                    sw('قراءة عنوان الشاشة', 'قراءة العنوان مرة عند الدخول إذا كان النطق التلقائي مفعّلاً',
+                    sw(context.l10n.adaptationReadScreenTitle, context.l10n.adaptationReadScreenTitleHint,
                         p.repetitionMode,
                         (v) => _set(p.copyWith(repetitionMode: v)), enabled: _canChange),
-                    sw('تشجيع بالنجوم', 'عرض مكافأة نجمة عند تسجيل إكمال الدرس', p.rewardSystem,
+                    sw(context.l10n.adaptationStarRewards, context.l10n.adaptationStarRewardsHint, p.rewardSystem,
                         (v) => _set(p.copyWith(rewardSystem: v)), enabled: _canChange),
-                    sw('روتين ثابت', 'ترتيب ثابت للدروس وخطوات جلسة واضحة',
+                    sw(context.l10n.adaptationRoutine, context.l10n.adaptationRoutineHint,
                         p.routineStructure, (v) => _set(p.copyWith(routineStructure: v)), enabled: _canChange),
-                    sw('حد أقصى 3 خيارات', 'عرض 3 بطاقات تواصل بالمرة مع الوصول لباقي البطاقات',
+                    sw(context.l10n.adaptationThreeChoices, context.l10n.adaptationThreeChoicesHint,
                         p.maxOptionsCount3,
                         (v) => _set(p.copyWith(maxOptionsCount3: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'ميزات اضطرابات النطق واللغة',
+                  title: context.l10n.adaptationSpeechSection,
                   initiallyExpanded: false,
                   icon: AppIcons.speech,
                   color: AppColors.orangeDeep,
                   c: c,
                   children: [
-                    sw('تحويل الكلام إلى نص', 'كتابة إجابة الواجب بالصوت؛ يتطلب دعم العربية على الجهاز',
+                    sw(context.l10n.adaptationSpeechToText, context.l10n.adaptationSpeechToTextHint,
                         p.voiceToText,
                         (v) => _set(p.copyWith(voiceToText: v)), enabled: _canChange),
-                    sw('اقتراح كلمات', 'اقتراح كلمات تواصل عامة أثناء كتابة إجابة الواجب',
+                    sw(context.l10n.adaptationWordPrediction, context.l10n.adaptationWordPredictionHint,
                         p.wordPrediction,
                         (v) => _set(p.copyWith(wordPrediction: v)), enabled: _canChange),
-                    sw('جمل قصيرة جداً', 'تقسيم عرض النص لأسطر قصيرة بدون حذف المحتوى',
+                    sw(context.l10n.adaptationShortSentences, context.l10n.adaptationShortSentencesHint,
                         p.shortSentences,
                         (v) => _set(p.copyWith(shortSentences: v)), enabled: _canChange),
-                    sw('وقت غير محدود', 'تعطيل مؤقّت المهمة؛ الاستراحة تبقى محدودة',
+                    sw(context.l10n.adaptationUnlimitedTime, context.l10n.adaptationUnlimitedTimeHint,
                         p.unlimitedTime,
                         (v) => _set(p.copyWith(unlimitedTime: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'خصائص عامة',
+                  title: context.l10n.adaptationGeneralSection,
                   initiallyExpanded: true,
                   icon: AppIcons.settings,
                   color: AppColors.muted,
                   c: c,
                   children: [
-                    sw('أزرار ضخمة جداً', '≥ 88 بكسل',
+                    sw(context.l10n.adaptationExtraLargeTargets, context.l10n.adaptationExtraLargeTargetsHint,
                         p.extraLargeTouchTargets,
                         (v) => _set(p.copyWith(extraLargeTouchTargets: v)), enabled: _canChange),
-                    sw('تقليل الحركات', 'أنيميشن هادئ', p.reducedAnimations,
+                    sw(context.l10n.adaptationReducedMotion, context.l10n.adaptationReducedMotionHint, p.reducedAnimations,
                         (v) => _set(p.copyWith(reducedAnimations: v)), enabled: _canChange),
-                    sw('تجنّب الوميض', 'تعطيل مؤثرات الحركة والوميض في العناصر المتكيفة',
+                    sw(context.l10n.adaptationNoFlashing, context.l10n.adaptationNoFlashingHint,
                         p.noFlashing,
                         (v) => _set(p.copyWith(noFlashing: v)), enabled: _canChange),
-                    sw('نطق تلقائي', 'قراءة العناصر الداعمة والتشجيع تلقائياً؛ أزرار الاستماع تبقى يدوية',
+                    sw(context.l10n.adaptationAutoRead, context.l10n.adaptationAutoReadHint,
                         p.autoReadOnTap,
                         (v) => _set(p.copyWith(autoReadOnTap: v)), enabled: _canChange),
-                    sw('نطق بطيء', 'للتأتأة والإعاقة الذهنية', p.slowSpeech,
+                    sw(context.l10n.adaptationSlowSpeech, context.l10n.adaptationSlowSpeechHint, p.slowSpeech,
                         (v) => _set(p.copyWith(slowSpeech: v)), enabled: _canChange),
-                    sw('حدود أوضح', 'حدود أكثر سماكة مع الحفاظ على ألوان EduBridge',
+                    sw(context.l10n.adaptationStrongBorders, context.l10n.adaptationStrongBordersHint,
                         p.highContrast, (v) => _set(p.copyWith(highContrast: v)), enabled: _canChange),
-                    sw('تخفيف ألوان القوائم', 'تقليل تشبّع ألوان قوائم الدروس والألعاب والواجبات؛ محتوى الدروس والوسائط والألعاب يحتفظ بألوانه الأصلية',
+                    sw(context.l10n.adaptationColorFilters, context.l10n.adaptationColorFiltersHint,
                         p.colorFiltersEnabled,
                         (v) => _set(p.copyWith(colorFiltersEnabled: v)), enabled: _canChange),
-                    sw('وضع الهدوء الحسي', 'تقليل الحركة والصوت التلقائي والاهتزاز في العناصر الداعمة؛ الاستماع اليدوي يبقى متاحاً',
+                    sw(context.l10n.adaptationSensoryCalm, context.l10n.adaptationSensoryCalmHint,
                         p.sensoryCalmMode,
                         (v) => _set(p.copyWith(sensoryCalmMode: v)), enabled: _canChange),
-                    sw('زر طوارئ', 'اتصال سريع بالأهل', p.emergencyButton,
+                    sw(context.l10n.adaptationEmergency, context.l10n.adaptationEmergencyHint, p.emergencyButton,
                         (v) => _set(p.copyWith(emergencyButton: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'الاستراحة ووقت التعلم',
+                  title: context.l10n.adaptationBreakSection,
                   initiallyExpanded: false,
                   icon: Icons.pause_circle_outline,
                   color: AppColors.teal,
                   c: c,
                   children: [
-                    sw('استراحات أثناء التعلم', 'اقتراح استراحة خلال الدروس',
+                    sw(context.l10n.adaptationBrainBreaks, context.l10n.adaptationBrainBreaksHint,
                         p.brainBreaksEnabled,
                         (v) => _set(p.copyWith(brainBreaksEnabled: v)), enabled: _canChange),
                     buildDurationSetting(
-                      title: 'الفترة بين الاستراحات',
-                      subtitle: 'اقتراح استراحة بعد هذه المدة من التعلم.',
+                      title: context.l10n.adaptationBreakInterval,
+                      subtitle: context.l10n.adaptationBreakIntervalHint,
                       value: p.brainBreakIntervalMinutes,
                       choices: const [5, 10, 15, 20, 30, 45, 60, 90, 120],
-                      unit: 'دقيقة',
+                      unit: context.l10n.adaptationMinute,
+                      optionLabel: context.l10n.adaptationMinutes,
                       onChanged: _canChange && p.brainBreaksEnabled
                           ? (value) => _set(p.copyWith(brainBreakIntervalMinutes: value)) : null,
                     ),
                     buildDurationSetting(
-                      title: 'مدة الاستراحة',
+                      title: context.l10n.adaptationBreakDuration,
                       subtitle: p.noTimedInteractions || p.noTimers
-                          ? 'العدّاد مخفي عن الطفل، والاستراحة تنتهي حسب المدة المحددة.'
-                          : 'يمكن للطفل إنهاؤها مبكراً أو تمديدها مرتين، كل مرة 30 ثانية.',
+                          ? context.l10n.adaptationBreakHiddenHint
+                          : context.l10n.adaptationBreakDurationHint,
                       value: p.brainBreakDurationSeconds,
                       choices: const [15, 30, 60, 90, 120],
-                      unit: 'ثانية',
+                      unit: context.l10n.adaptationSecond,
+                      optionLabel: context.l10n.adaptationSeconds,
                       onChanged: _canChange
                           ? (value) => _set(p.copyWith(brainBreakDurationSeconds: value)) : null,
                     ),
 
-                    sw('مؤقّت المهمة', 'عرض مؤقّت بصري أو سمعي حسب إعدادات الطفل',
+                    sw(context.l10n.adaptationTaskTimer, context.l10n.adaptationTaskTimerHint,
                         p.visualTimerEnabled,
                         (v) => _set(p.copyWith(visualTimerEnabled: v)), enabled: _canChange),
                     buildDurationSetting(
-                      title: 'مدة مؤقّت المهمة',
+                      title: context.l10n.adaptationTaskDuration,
                       subtitle: p.unlimitedTime || p.noTimers || p.noTimedInteractions
-                          ? 'المؤقّت معطّل حسب إعدادات الوقت الحالية؛ تبقى المدة محفوظة.'
-                          : 'المدة المتاحة قبل اقتراح استراحة.',
+                          ? context.l10n.adaptationTaskDisabledHint
+                          : context.l10n.adaptationTaskDurationHint,
                       value: p.timerRenewalMinutes,
                       choices: const [1, 3, 5, 10, 15, 20, 30, 45, 60],
-                      unit: 'دقيقة',
+                      unit: context.l10n.adaptationMinute,
+                      optionLabel: context.l10n.adaptationMinutes,
                       onChanged: _canChange && p.visualTimerEnabled &&
                           !p.unlimitedTime && !p.noTimers && !p.noTimedInteractions
                           ? (value) => _set(p.copyWith(timerRenewalMinutes: value)) : null,
                     ),
-                    sw('إخفاء العدّادات', 'إخفاء عدّاد المهمة والاستراحة؛ الاستراحة تبقى محدودة',
+                    sw(context.l10n.adaptationHideTimers, context.l10n.adaptationHideTimersHint,
                         p.noTimers,
                         (v) => _set(p.copyWith(noTimers: v)), enabled: _canChange),
                   ],
                 ),
 
                 buildFeatureSection(
-                  title: 'إعادة الضبط',
+                  title: context.l10n.adaptationReset,
                   initiallyExpanded: false,
                   icon: AppIcons.refresh,
                   color: AppColors.brandBlue,
@@ -262,7 +265,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                   children: [
                     OutlinedButton.icon(
                       icon: const Icon(AppIcons.refresh),
-                      label: const Text('إعادة الضبط'),
+                      label: Text(context.l10n.adaptationReset),
                       onPressed: !_canChange ? null : () async {
                         final saved = await _set(const AccessibilityProfile(type: DisabilityType.none));
                         if (saved && mounted) _refreshState(() => _selectedDisability = null);
@@ -282,7 +285,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                       final saved = await _set(_p);
                       if (saved && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('تم حفظ الإعدادات')),
+                          SnackBar(content: Text(context.l10n.adaptationSaved)),
                         );
                       }
                     },
@@ -290,7 +293,7 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
                         ? const SizedBox(width: 18, height: 18,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                         : const Icon(Icons.save_outlined, size: 19),
-                    label: Text(_saving ? 'جارِ الحفظ...' : 'حفظ الإعدادات'),
+                    label: Text(_saving ? context.l10n.adaptationSaving : context.l10n.adaptationSave),
                   ),
                 ),
               ],
@@ -298,6 +301,6 @@ extension _ChildAccessibilitySettingsScreenStateView on _ChildAccessibilitySetti
           },
         ),
       ),
-    ));
+    );
   }
 }
