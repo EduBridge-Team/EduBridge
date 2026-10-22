@@ -4,7 +4,6 @@ import '../../l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
-import '../../services/approval_service.dart';
 import '../../theme.dart';
 import '../../utils/safe_bottom.dart';
 
@@ -46,6 +45,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   int? _selectedTeacherId;
   bool _loading = false;
   Object? _error;
+  Map<String, dynamic>? _savedEvaluation;
 
   bool _sendToMinistry = false;
 
@@ -78,7 +78,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
               .toList()
           : ['عام'];
 
-      final result = await ApiService.evaluateChild(
+      final result = _savedEvaluation ?? await ApiService.evaluateChild(
         childId: widget.child['id'],
         evaluationType: _evaluationType,
         cognitiveAssessment: _cognitiveCtrl.text.trim(),
@@ -101,10 +101,35 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         return;
       }
 
-      final updatedChild = widget.child;
-      updatedChild['status'] = 'evaluated';
+      // Reuse a successfully saved evaluation if ministry submission needs a retry.
+      _savedEvaluation = result;
+      if (_sendToMinistry) {
+        final submitted = await ApiService.submitForMinistryApproval(
+          childId: widget.child['id'],
+          evaluationId: result['id'],
+          educationalPlan: _educationalPlanCtrl.text.trim(),
+          cognitiveAssessment: _cognitiveCtrl.text.trim(),
+          motorAssessment: _motorCtrl.text.trim(),
+          emotionalAssessment: _emotionalCtrl.text.trim(),
+          socialAssessment: _socialCtrl.text.trim(),
+          recommendations: _recommendationsCtrl.text.trim(),
+          teachingMethods: teachingMethods,
+          teacherId: _selectedTeacherId,
+        );
+        if (!mounted) return;
+        if (submitted == null) {
+          setState(() {
+            _error = SharedUiMessage.changesSaveFailed;
+            _loading = false;
+          });
+          return;
+        }
+      }
+
+      // Do not mutate the input map; publish changes only after server confirmation.
+      final updatedChild = Map<String, dynamic>.from(widget.child);
+      updatedChild['status'] = _selectedTeacherId == null ? 'evaluated' : 'assigned';
       if (_selectedTeacherId != null) {
-        updatedChild['status'] = 'assigned';
         updatedChild['assigned_teacher_id'] = _selectedTeacherId;
         final teacher = widget.teachers.firstWhere(
           (t) => t['id'] == _selectedTeacherId,
@@ -115,7 +140,13 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
       widget.onSaved(updatedChild);
 
       if (_sendToMinistry) {
-        await _handleMinistryFlow(result, teachingMethods);
+        await _showSuccessDialog(
+          icon: AppIcons.upload,
+          iconColor: AppColors.orange,
+          title: context.l10n.evaluationSentToMinistry,
+          message: context.l10n.ministryEvaluationSuccessDetails,
+        );
+        if (mounted) Navigator.pop(context, true);
       } else {
         await _handleDirectToTeacherFlow(result);
       }
@@ -126,44 +157,6 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         _loading = false;
       });
     }
-  }
-
-  Future<void> _handleMinistryFlow(
-    Map<String, dynamic> result,
-    List<String> teachingMethods,
-  ) async {
-    await ApprovalService.submitForApproval(
-      childId: widget.child['id'],
-      childName: widget.child['name'] ?? '',
-      evaluationId: result['id'] ?? 0,
-      evaluationData: result,
-      teacherId: _selectedTeacherId,
-      teacherName: widget.teachers
-              .firstWhere(
-                (t) => t['id'] == _selectedTeacherId,
-                orElse: () => {'name': ''},
-              )['name']
-              ?.toString() ??
-          '',
-      educationalPlan: _educationalPlanCtrl.text.trim(),
-      cognitiveAssessment: _cognitiveCtrl.text.trim(),
-      motorAssessment: _motorCtrl.text.trim(),
-      emotionalAssessment: _emotionalCtrl.text.trim(),
-      socialAssessment: _socialCtrl.text.trim(),
-      recommendations: _recommendationsCtrl.text.trim(),
-      teachingMethods: teachingMethods,
-    );
-
-    if (!mounted) return;
-
-    await _showSuccessDialog(
-      icon: AppIcons.upload,
-      iconColor: AppColors.orange,
-      title: context.l10n.evaluationSentToMinistry,
-      message: context.l10n.ministryEvaluationSuccessDetails,
-    );
-
-    if (mounted) Navigator.pop(context, true);
   }
 
   Future<void> _handleDirectToTeacherFlow(

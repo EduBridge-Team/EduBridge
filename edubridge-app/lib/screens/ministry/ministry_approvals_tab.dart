@@ -28,25 +28,12 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
       final serverProcessed =
           await ApiService.getAllApprovals(status: 'approved,rejected');
 
-      if (serverPending.isEmpty) {
-        final localPending = await ApprovalService.getPendingApprovals();
-        final localApproved = await ApprovalService.getApprovedPlans();
-        final localRejected = await ApprovalService.getRejectedPlans();
-
-        if (!mounted) return;
-        setState(() {
-          _pending = localPending;
-          _processed = [...localApproved, ...localRejected];
-          _loading = false;
-        });
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _pending = serverPending.cast<Map<String, dynamic>>();
-          _processed = serverProcessed.cast<Map<String, dynamic>>();
-          _loading = false;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _pending = serverPending.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        _processed = serverProcessed.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        _loading = false;
+      });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -85,15 +72,16 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
 
     if (confirmed != true) return;
 
-    await ApprovalService.approve(
-      approvalId: approval['id'].toString(),
-      specialistName: 'الوزارة',
-    );
-
     final serverId = approval['server_id'] ?? approval['id'];
-    await ApiService.approveMinistryRequest(
-      serverId is int ? serverId : int.tryParse(serverId.toString()) ?? 0,
-    );
+    final id = int.tryParse(serverId.toString());
+    final success = id != null && await ApiService.approveMinistryRequest(id);
+    if (!mounted) return;
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.changesSaveFailed)),
+      );
+      return;
+    }
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -156,16 +144,19 @@ class _MinistryApprovalsTabState extends State<_MinistryApprovalsTab> {
 
     if (confirmed != true) return;
 
-    await ApprovalService.reject(
-      approvalId: approval['id'].toString(),
-      reason: reasonCtrl.text.trim().isEmpty ? null : reasonCtrl.text.trim(),
-    );
-
     final serverId = approval['server_id'] ?? approval['id'];
-    await ApiService.rejectMinistryRequest(
-      serverId is int ? serverId : int.tryParse(serverId.toString()) ?? 0,
+    final id = int.tryParse(serverId.toString());
+    final success = id != null && await ApiService.rejectMinistryRequest(
+      id,
       reason: reasonCtrl.text.trim(),
     );
+    if (!mounted) return;
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.changesSaveFailed)),
+      );
+      return;
+    }
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(

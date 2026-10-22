@@ -4,7 +4,6 @@ import '../../utils/presentation_text.dart';
 import 'package:flutter/material.dart';
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
-import '../../services/approval_service.dart';
 import '../../theme.dart';
 import '../../widgets/legal_links_button.dart';
 import '../../widgets/dashboard_menu.dart';
