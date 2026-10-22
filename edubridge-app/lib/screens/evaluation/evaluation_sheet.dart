@@ -45,6 +45,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
   int? _selectedTeacherId;
   bool _loading = false;
   Object? _error;
+  Map<String, dynamic>? _savedEvaluation;
 
   bool _sendToMinistry = false;
 
@@ -77,7 +78,7 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
               .toList()
           : ['عام'];
 
-      final result = await ApiService.evaluateChild(
+      final result = _savedEvaluation ?? await ApiService.evaluateChild(
         childId: widget.child['id'],
         evaluationType: _evaluationType,
         cognitiveAssessment: _cognitiveCtrl.text.trim(),
@@ -100,6 +101,8 @@ class _EvaluationSheetState extends State<EvaluationSheet> with LocaleFormValida
         return;
       }
 
+      // Reuse a successfully saved evaluation if ministry submission needs a retry.
+      _savedEvaluation = result;
       if (_sendToMinistry) {
         final submitted = await ApiService.submitForMinistryApproval(
           childId: widget.child['id'],
