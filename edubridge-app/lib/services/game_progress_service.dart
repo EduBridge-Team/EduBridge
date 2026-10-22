@@ -60,15 +60,29 @@ class GameProgressService {
       'pending_game_attempts_v2_${await ApiService.getUserId() ?? 0}';
 
   Future<List<Map<String, dynamic>>> _queue(SharedPreferences prefs, String key) async {
-    final raw = prefs.getString(key) ?? prefs.getString('pending_game_attempts_v1');
+    final current = prefs.getString(key);
+    final legacy = current == null
+        ? prefs.getString('pending_game_attempts_v1')
+        : null;
+    final raw = current ?? legacy;
     if (raw == null) return [];
     final decoded = jsonDecode(raw) as List;
     final queue = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+    var addedEventIds = false;
     for (final item in queue) {
-      item['event_id'] ??= newSyncEventId();
+      if (item['event_id'] == null) {
+        item['event_id'] = newSyncEventId();
+        addedEventIds = true;
+      }
     }
-    await _persistQueue(prefs, key, queue);
-    await prefs.remove('pending_game_attempts_v1');
+    // Reads must not rewrite an unchanged queue. Legacy migration and missing
+    // event IDs are persisted before removing the old storage key.
+    if (legacy != null || addedEventIds) {
+      await _persistQueue(prefs, key, queue);
+    }
+    if (legacy != null) {
+      await prefs.remove('pending_game_attempts_v1');
+    }
     return queue;
   }
 
