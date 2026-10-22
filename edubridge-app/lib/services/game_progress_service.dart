@@ -112,7 +112,12 @@ class GameProgressService {
       try {
         final response = await _post('/children/$childId/game-attempts', payload);
         if (response.statusCode < 200 || response.statusCode >= 300) {
-          if (response.statusCode >= 500 || response.statusCode == 429) return;
+          // HTTP 408 is transient like 429 and server errors: keep the event ID.
+          if (response.statusCode >= 500 ||
+              response.statusCode == 429 ||
+              response.statusCode == 408) {
+            return;
+          }
           // Discard permanently rejected attempts so they cannot block retries.
           queue.removeAt(queueIndex);
           await _persistQueue(prefs, key, queue);
