@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:edubridge_app/services/reward_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -85,4 +86,27 @@ void main() {
     expect(prefs.containsKey('child_stars_queue_v2_1_10'), isTrue);
   });
 
+
+  test('an account switch during reward retrieval cannot expose stale stars', () async {
+    SharedPreferences.setMockInitialValues({'userId': 1});
+    final response = Completer<http.Response>();
+    final requestStarted = Completer<void>();
+    final service = RewardService(
+      get: (_) {
+        requestStarted.complete();
+        return response.future;
+      },
+      post: (_, __) async => http.Response('{}', 200),
+    );
+
+    final pending = service.getStars(10);
+    await requestStarted.future;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('userId', 2);
+    response.complete(http.Response(jsonEncode({'stars': 90}), 200));
+
+    expect(await pending, 0);
+    expect(prefs.containsKey('child_stars_v2_1_10'), isFalse);
+    expect(prefs.containsKey('child_stars_v2_2_10'), isFalse);
+  });
 }
