@@ -53,7 +53,25 @@ class _LanguageSelectorState extends State<_LanguageSelector> {
   }
 }
 
-/// Language remains reachable before sign-in, through the same menu convention.
+/// Opens language selection directly from authentication screens.
+class LanguageCircleButton extends StatelessWidget {
+  const LanguageCircleButton({super.key, this.color});
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => IconButton.filledTonal(
+    tooltip: context.l10n.language,
+    style: IconButton.styleFrom(
+      shape: const CircleBorder(),
+      foregroundColor: color,
+      backgroundColor: color?.withValues(alpha: .12),
+    ),
+    onPressed: () => showLanguageSelector(context),
+    icon: const Icon(Icons.language),
+  );
+}
+
+/// Language remains reachable through the menu on recovery screens.
 class LanguageMenuButton extends StatelessWidget {
   const LanguageMenuButton({super.key, this.color});
   final Color? color;

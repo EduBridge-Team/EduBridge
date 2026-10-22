@@ -37,7 +37,7 @@ extension _LoginScreenStateView on _LoginScreenState {
                   child: Column(
                     children: [
                       const Align(alignment: AlignmentDirectional.centerEnd,
-                        child: LanguageMenuButton()),
+                        child: LanguageCircleButton()),
                       const BrandLockup(
                         iconSize: 50,
                         fontSize: 32,
