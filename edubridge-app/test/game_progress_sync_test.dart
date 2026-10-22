@@ -153,4 +153,27 @@ void main() {
     expect(pending.single['event_id'], ids.first);
     expect(prefs.containsKey('pending_game_attempts_v1'), isFalse);
   });
+
+  test('request timeout preserves attempt for retry with identical event ID', () async {
+    final ids = <String>[];
+    var timedOut = true;
+    final service = GameProgressService(
+      post: (_, body) async {
+        ids.add(body['event_id'] as String);
+        return http.Response('{}', timedOut ? 408 : 201);
+      },
+    );
+
+    service.begin(childId: 11, gameKey: 'numbers');
+    await service.record(60);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.containsKey('pending_game_attempts_v2_0'), isTrue);
+
+    timedOut = false;
+    await service.flushPending();
+
+    expect(ids, hasLength(2));
+    expect(ids.first, ids.last);
+    expect(prefs.containsKey('pending_game_attempts_v2_0'), isFalse);
+  });
 }
