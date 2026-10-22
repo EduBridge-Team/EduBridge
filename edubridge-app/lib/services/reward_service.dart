@@ -91,6 +91,9 @@ class RewardService {
       await _sync(childId, owner, prefs);
       final response = await _get('/children/$childId/engagement');
       if (response.statusCode == 200) {
+        // A login change during the request must not publish another account's
+        // reward balance into the UI or the current session's cache.
+        if (await ApiService.getUserId() != owner) return 0;
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final queue = await _queue(childId, owner, prefs);
         final total = ((body['stars'] as num?)?.toInt() ?? 0) + (queue['pending'] as num).toInt();
