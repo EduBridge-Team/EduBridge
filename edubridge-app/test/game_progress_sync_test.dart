@@ -104,4 +104,53 @@ void main() {
     expect((await SharedPreferences.getInstance())
         .containsKey('pending_game_attempts_v2_0'), isFalse);
   });
+
+  test('reading an unchanged offline queue keeps its persisted payload', () async {
+    final raw = jsonEncode([
+      {
+        'child_id': 10,
+        'game_key': 'matching',
+        'score': 50,
+        'event_id': 'saved-attempt',
+      },
+    ]);
+    SharedPreferences.setMockInitialValues({
+      'pending_game_attempts_v2_0': raw,
+    });
+    final service = GameProgressService(
+      post: (_, __) async => http.Response('{}', 503),
+    );
+
+    await service.flushPending();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('pending_game_attempts_v2_0'), raw);
+  });
+
+  test('legacy attempts receive stable IDs and migrate to scoped storage', () async {
+    SharedPreferences.setMockInitialValues({
+      'pending_game_attempts_v1': jsonEncode([
+        {'child_id': 10, 'game_key': 'memory', 'score': 25},
+      ]),
+    });
+    final ids = <String>[];
+    final service = GameProgressService(
+      post: (_, body) async {
+        ids.add(body['event_id'] as String);
+        return http.Response('{}', 503);
+      },
+    );
+
+    await service.flushPending();
+    await service.flushPending();
+
+    final prefs = await SharedPreferences.getInstance();
+    final pending = jsonDecode(
+      prefs.getString('pending_game_attempts_v2_0')!,
+    ) as List;
+    expect(ids, hasLength(2));
+    expect(ids.first, ids.last);
+    expect(pending.single['event_id'], ids.first);
+    expect(prefs.containsKey('pending_game_attempts_v1'), isFalse);
+  });
 }
