@@ -11,10 +11,12 @@ class DashboardHeaderActions extends StatelessWidget {
     super.key,
     required this.actions,
     this.showMicrophoneToggle = false,
+    this.menuIcon = Icons.more_vert,
   });
 
   final List<DashboardMenuAction> actions;
   final bool showMicrophoneToggle;
+  final IconData menuIcon;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -44,7 +46,7 @@ class DashboardHeaderActions extends StatelessWidget {
         actions: actions,
         showMicrophoneToggle: showMicrophoneToggle,
         iconSize: 25,
-        menuIcon: Icons.more_vert,
+        menuIcon: menuIcon,
         specialistFigmaMenu: true,
         iconColor: Colors.white,
       ),
