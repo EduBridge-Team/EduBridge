@@ -10,9 +10,9 @@ import '../widgets/dashboard_profile_identity.dart';
 import '../widgets/legal_links_button.dart';
 import 'chats_screen.dart';
 import 'lessons_screen.dart';
-import 'verify_identity/verify_identity_screen.dart';
 import 'login_screen.dart';
 import 'institution_operations_screen.dart';
+import 'institution_school_account_screen.dart';
 part 'institution_screen_view.dart';
 
 class InstitutionScreen extends StatelessWidget {

@@ -53,7 +53,16 @@ void main() {
           await SharedPreferences.getInstance();
         });
         await tester.pump();
-        expect(find.text(language == 'en' ? 'Institution tasks' : 'مهام المؤسسة'), findsOneWidget);
+        final tasksHeading =
+            find.text(language == 'en' ? 'Institution tasks' : 'مهام المؤسسة');
+        // New school actions can place this heading below the first viewport,
+        // especially at 200% text scale. Verify it after scrolling into view.
+        await tester.scrollUntilVisible(
+          tasksHeading,
+          150,
+          scrollable: find.byType(Scrollable).last,
+        );
+        expect(tasksHeading, findsOneWidget);
         final identity = tester.element(find.byType(DashboardProfileIdentity));
         expect(Directionality.of(identity), language == 'en' ? TextDirection.ltr : TextDirection.rtl);
         expect(tester.takeException(), isNull);

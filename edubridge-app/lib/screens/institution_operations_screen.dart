@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme.dart';
 
 /// Institution-scoped operations. The API validates active organization
 /// membership for every request; a slug never grants access by itself.
@@ -232,7 +233,34 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     final summary = _report?['summary'];
     final counts = summary is Map ? summary : const {};
     return Scaffold(
-      appBar: AppBar(title: const Text('إدارة المؤسسة')),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(76),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.appBarGradient,
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'الرجوع إلى الرئيسية',
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                ),
+                const Expanded(
+                  child: Text(
+                    'إدارة المدارس',
+                    style: TextStyle(color: Colors.white,
+                      fontSize: 21, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         const Text('معرف المؤسسة', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
