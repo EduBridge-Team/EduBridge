@@ -57,28 +57,14 @@ DashboardHeaderActions(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _MetricCard(
-                        icon: AppIcons.users,
-                        value: MaterialLocalizations.of(context).formatDecimal(24),
-                        label: context.l10n.teamMembersMetric,
-                        color: AppColors.brandBlue,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _MetricCard(
-                        icon: AppIcons.check,
-                        value: MaterialLocalizations.of(context).formatDecimal(18),
-                        label: context.l10n.activeCasesMetric,
-                        color: AppColors.brandTeal,
-                      ),
-                    ),
-                  ],
+                _ActionCard(
+                  icon: Icons.apartment_rounded,
+                  title: 'إدارة المؤسسة والمدارس',
+                  subtitle: 'المدارس والمعلمون والتقارير والحضور والجدول والمناهج',
+                  color: AppColors.brandBlue,
+                  onTap: () => _open(context, const InstitutionOperationsScreen()),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Text(
                   context.l10n.institutionTasks,
                   style: TextStyle(
