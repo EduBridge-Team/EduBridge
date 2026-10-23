@@ -140,6 +140,88 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     ));
   }
 
+  Future<void> _editSchool(Map<String, dynamic> school) async {
+    final schoolId = school['id'];
+    if (schoolId is! int) return;
+    final name = TextEditingController(text: '${school['name'] ?? ''}');
+    final address = TextEditingController(text: '${school['address'] ?? ''}');
+    final phone = TextEditingController(text: '${school['phone'] ?? ''}');
+    final key = GlobalKey<FormState>();
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('تعديل بيانات المدرسة'),
+        content: Form(
+          key: key,
+          child: SingleChildScrollView(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextFormField(
+                controller: name,
+                maxLength: 150,
+                decoration: const InputDecoration(labelText: 'اسم المدرسة'),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'اسم المدرسة مطلوب' : null,
+              ),
+              TextFormField(
+                controller: address,
+                maxLength: 255,
+                decoration: const InputDecoration(labelText: 'العنوان'),
+              ),
+              TextFormField(
+                controller: phone,
+                maxLength: 30,
+                decoration: const InputDecoration(labelText: 'الهاتف'),
+              ),
+            ]),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (key.currentState!.validate()) {
+                Navigator.pop(dialogContext, true);
+              }
+            },
+            child: const Text('حفظ'),
+          ),
+        ],
+      ),
+    );
+    final changes = {
+      'name': name.text.trim(),
+      'address': address.text.trim(),
+      'phone': phone.text.trim(),
+    };
+    name.dispose();
+    address.dispose();
+    phone.dispose();
+    if (confirm != true || !mounted) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final response = await ApiService.authPatch(
+        _path('/schools/$schoolId'), changes,
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        final data = ApiService.decodeMap(response.body);
+        throw Exception(data['error'] ?? data['message'] ??
+            'تعذر حفظ المدرسة (HTTP ${response.statusCode})');
+      }
+      final schools = await _get('/schools');
+      if (mounted) setState(() => _schools = _items(schools['schools']));
+    } catch (error) {
+      if (mounted) setState(() => _error = '$error');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   void _schoolDetails(Map<String, dynamic> school) {
     final id = school['id'];
     if (id is! int) return;
@@ -192,7 +274,17 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
           ]),
           if (_schools.isEmpty) const Text('لا توجد مدارس مرتبطة بالمؤسسة.'),
           for (final school in _schools)
-            _action('${school['name'] ?? 'مدرسة'}', Icons.school, () => _schoolDetails(school)),
+            Card(child: ListTile(
+              leading: const Icon(Icons.school),
+              title: Text('${school['name'] ?? 'مدرسة'}'),
+              subtitle: const Text('عرض تفاصيل المدرسة'),
+              onTap: () => _schoolDetails(school),
+              trailing: IconButton(
+                tooltip: 'تعديل المدرسة',
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: _loading ? null : () => _editSchool(school),
+              ),
+            )),
           const SizedBox(height: 16),
           Text('الإدارة والمتابعة', style: Theme.of(context).textTheme.titleLarge),
           _action('المعلمون', Icons.people, () => _openSection('المعلمون', '/teachers', 'teachers')),
