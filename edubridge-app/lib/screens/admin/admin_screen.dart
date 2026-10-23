@@ -61,6 +61,14 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  Future<void> _openAccountPage(String role) async {
+    if ((widget.admin['role'] ?? '').toString() != 'admin') return;
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => _AdminCreateAccountPage(role: role)),
+    );
+  }
+
   Widget _buildAdminHeader() {
     final menuActions = <DashboardMenuAction>[
       DashboardMenuAction(
@@ -72,6 +80,20 @@ class _AdminScreenState extends State<AdminScreen> {
           MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
         ),
       ),
+      if ((widget.admin['role'] ?? '').toString() == 'admin') ...[
+        DashboardMenuAction(
+          id: 'create_institution',
+          label: 'إنشاء حساب مؤسسة',
+          icon: Icons.add_business_outlined,
+          onSelected: () => _openAccountPage('institution'),
+        ),
+        DashboardMenuAction(
+          id: 'create_ministry',
+          label: 'إنشاء حساب وزارة',
+          icon: Icons.account_balance_outlined,
+          onSelected: () => _openAccountPage('ministry'),
+        ),
+      ],
       DashboardMenuAction(
         id: 'legal',
         label: context.l10n.privacyAndAccount,
