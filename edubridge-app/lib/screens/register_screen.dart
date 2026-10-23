@@ -6,6 +6,7 @@ import '../app_icons.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/brand_lockup.dart';
+import 'login_screen.dart';
 part 'register_screen_view.dart';
 
 class RegisterScreen extends StatefulWidget {
