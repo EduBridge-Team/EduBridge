@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { BASE_URL } from './api/core'
+import { BASE_URL, getUser } from './api/core'
 
 const InstitutionContext = createContext({ institution: null, loading: false, error: null })
 
@@ -20,13 +20,16 @@ export function resolveInstitutionSlug(hostname = window.location.hostname) {
 
 export function InstitutionProvider({ children }) {
   const slug = useMemo(() => resolveInstitutionSlug(), [])
-  const [state, setState] = useState({ institution: null, loading: Boolean(slug), error: null })
+  const resolveMembership = !slug && getUser()?.role === 'institution'
+  const [state, setState] = useState({ institution: null, loading: Boolean(slug || resolveMembership), error: null, resolvedSlug: slug })
 
   useEffect(() => {
-    if (!slug) return
+    if (!slug && !resolveMembership) return
     let active = true
 
-    fetch(`${BASE_URL}/institutions/${encodeURIComponent(slug)}/context`, {
+    fetch(slug
+      ? `${BASE_URL}/institutions/${encodeURIComponent(slug)}/context`
+      : `${BASE_URL}/institutions/my-organization`, {
       credentials: 'same-origin',
       headers: { 'X-EduBridge-Client': 'web' },
     })
@@ -37,14 +40,14 @@ export function InstitutionProvider({ children }) {
       .then((data) => {
         if (!active) return
         const institution = data.organization || null
-        setState({ institution, loading: false, error: null })
+        setState({ institution, loading: false, error: null, resolvedSlug: institution?.slug || slug })
       })
       .catch((error) => {
-        if (active) setState({ institution: null, loading: false, error: error.message })
+        if (active) setState({ institution: null, loading: false, error: error.message, resolvedSlug: slug })
       })
 
     return () => { active = false }
-  }, [slug])
+  }, [slug, resolveMembership])
 
   useEffect(() => {
     const institution = state.institution
@@ -66,7 +69,7 @@ export function InstitutionProvider({ children }) {
     document.title = `${displayName} | EduBridge`
   }, [slug, state.institution])
 
-  return <InstitutionContext.Provider value={{ ...state, slug }}>{children}</InstitutionContext.Provider>
+  return <InstitutionContext.Provider value={{ ...state, slug: state.resolvedSlug }}>{children}</InstitutionContext.Provider>
 }
 
 export function useInstitution() {
