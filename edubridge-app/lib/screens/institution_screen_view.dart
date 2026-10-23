@@ -59,10 +59,17 @@ DashboardHeaderActions(
               children: [
                 _ActionCard(
                   icon: Icons.apartment_rounded,
-                  title: 'إدارة المؤسسة والمدارس',
+                  title: 'إدارة المدارس',
                   subtitle: 'المدارس ومدراؤها وبيانات كل مدرسة',
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const InstitutionOperationsScreen()),
+                ),
+                _ActionCard(
+                  icon: Icons.add_business_outlined,
+                  title: 'إنشاء حساب مدرسة تابعة للمؤسسة',
+                  subtitle: 'تجهيز حساب دخول لإحدى المدارس التابعة للمؤسسة',
+                  color: AppColors.brandTeal,
+                  onTap: () => _open(context, const InstitutionSchoolAccountScreen()),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -87,13 +94,6 @@ DashboardHeaderActions(
                   subtitle: context.l10n.teamCommunicationDescription,
                   color: const Color(0xFF7557BD),
                   onTap: () => _open(context, const ChatsScreen()),
-                ),
-                _ActionCard(
-                  icon: AppIcons.verified,
-                  title: context.l10n.institutionVerification,
-                  subtitle: context.l10n.institutionVerificationDescription,
-                  color: const Color.fromARGB(255, 17, 108, 182),
-                  onTap: () => _open(context, const VerifyIdentityScreen()),
                 ),
               ],
             ),
