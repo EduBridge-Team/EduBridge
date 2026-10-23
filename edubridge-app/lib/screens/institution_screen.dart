@@ -13,6 +13,7 @@ import 'children_screen.dart';
 import 'lessons_screen.dart';
 import 'verify_identity/verify_identity_screen.dart';
 import 'login_screen.dart';
+import 'institution_operations_screen.dart';
 part 'institution_screen_view.dart';
 
 class InstitutionScreen extends StatelessWidget {
@@ -36,48 +37,6 @@ class InstitutionScreen extends StatelessWidget {
   Widget build(BuildContext context) => buildView(context);
 }
 
-class _MetricCard extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  final Color color;
-
-  const _MetricCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final c = JisrColors.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: c.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: c.line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              color: c.heading,
-              fontSize: 25,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          Text(label, style: TextStyle(color: c.muted, fontSize: 13)),
-        ],
-      ),
-    );
-  }
-}
 
 class _ActionCard extends StatelessWidget {
   final IconData icon;
