@@ -134,12 +134,6 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     }
   }
 
-  void _openSection(String title, String endpoint, String key) {
-    Navigator.push(context, MaterialPageRoute<void>(
-      builder: (_) => _InstitutionDataScreen(title: title, path: _path(endpoint), listKey: key),
-    ));
-  }
-
   Future<void> _editSchool(Map<String, dynamic> school) async {
     final schoolId = school['id'];
     if (schoolId is! int) return;
