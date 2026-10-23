@@ -1,7 +1,9 @@
 part of 'admin_screen.dart';
 
 class _CreateAccountSheet extends StatefulWidget {
-  const _CreateAccountSheet();
+  const _CreateAccountSheet({this.initialRole});
+
+  final String? initialRole;
 
   @override
   State<_CreateAccountSheet> createState() => _CreateAccountSheetState();
@@ -14,7 +16,13 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
   final _phone = TextEditingController();
   final _password = TextEditingController();
   final _confirmation = TextEditingController();
-  String _role = 'institution';
+  late String _role;
+
+  @override
+  void initState() {
+    super.initState();
+    _role = widget.initialRole ?? 'institution';
+  }
   bool _saving = false;
   Object? _error;
 
@@ -66,9 +74,9 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(context.l10n.createInstitutionMinistryAccount, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(widget.initialRole == 'institution' ? context.l10n.institutionRole : widget.initialRole == 'ministry' ? context.l10n.ministryRole : context.l10n.createInstitutionMinistryAccount, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
+                if (widget.initialRole == null) DropdownButtonFormField<String>(
                   initialValue: _role,
                   decoration: InputDecoration(labelText: context.l10n.accountType),
                   items: [
@@ -121,4 +129,20 @@ class _CreateAccountSheetState extends State<_CreateAccountSheet> {
       ),
     );
   }
+}
+
+class _AdminCreateAccountPage extends StatelessWidget {
+  const _AdminCreateAccountPage({required this.role});
+
+  final String role;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(role == 'institution'
+              ? context.l10n.institutionRole
+              : context.l10n.ministryRole),
+        ),
+        body: _CreateAccountSheet(initialRole: role),
+      );
 }
