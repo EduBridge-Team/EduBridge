@@ -73,7 +73,9 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         _error = 'لم يُسمح بالوصول لهذه المؤسسة أو تعذّر الاتصال: $error';
       });
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -282,7 +284,9 @@ class _InstitutionDataScreenState extends State<_InstitutionDataScreen> {
           itemCount: entries.length,
           itemBuilder: (context, i) {
             final entry = entries[i];
-            if (entry is! Map) return ListTile(title: Text('$entry'));
+            if (entry is! Map) {
+              return ListTile(title: Text('$entry'));
+            }
             final values = Map<String, dynamic>.from(entry);
             final title = values['name'] ?? values['title'] ??
                 values['school_name'] ?? values['email'] ?? 'سجل ${i + 1}';
