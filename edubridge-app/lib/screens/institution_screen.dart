@@ -12,7 +12,7 @@ import 'chats_screen.dart';
 import 'lessons_screen.dart';
 import 'login_screen.dart';
 import 'institution_operations_screen.dart';
-import 'institution_summary_card.dart';
+import 'institution_statistics_screen.dart';
 import 'institution_school_account_screen.dart';
 part 'institution_screen_view.dart';
 
