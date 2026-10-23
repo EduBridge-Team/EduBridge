@@ -252,6 +252,7 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
 
   @override
   Widget build(BuildContext context) {
+    final english = Localizations.localeOf(context).languageCode == 'en';
     final summary = _report?['summary'];
     final counts = summary is Map ? summary : const {};
     return Scaffold(
@@ -269,14 +270,14 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
               child: Row(
                 children: [
                   IconButton(
-                    tooltip: 'العودة إلى الرئيسية',
+                    tooltip: english ? 'Back to home' : 'العودة إلى الرئيسية',
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.arrow_forward_rounded,
                       color: Colors.white, size: 27),
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text('إدارة المدارس',
+                  Expanded(
+                    child: Text(english ? 'School Management' : 'إدارة المدارس',
                       style: TextStyle(color: Colors.white,
                         fontSize: 23, fontWeight: FontWeight.w800)),
                   ),
@@ -287,33 +288,33 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         ),
       ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        const Text('معرف المؤسسة', style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(english ? 'Institution ID' : 'معرف المؤسسة', style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         TextField(controller: _slug, enabled: !_loading,
           decoration: const InputDecoration(border: OutlineInputBorder(),
-            hintText: 'مثال: demo-institution')),
+            hintText: english ? 'e.g. demo-institution' : 'مثال: demo-institution')),
         const SizedBox(height: 8),
         FilledButton(onPressed: _loading ? null : _connect,
-          child: const Text('تحميل بيانات المؤسسة')),
+          child: Text(english ? 'Load institution data' : 'تحميل بيانات المؤسسة')),
         if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))),
         if (_loading) const LinearProgressIndicator(),
         if (_report != null) ...[
           const SizedBox(height: 16),
-          Text('إحصائيات فعلية', style: Theme.of(context).textTheme.titleLarge),
+          Text(english ? 'Live statistics' : 'إحصائيات فعلية', style: Theme.of(context).textTheme.titleLarge),
           Wrap(spacing: 10, runSpacing: 10, children: [
             for (final metric in {
-              'المدارس': 'schools',
+              (english ? 'Schools' : 'المدارس'): 'schools',
             }.entries)
               Chip(label: Text('${metric.key}: ${counts[metric.value] ?? 0}')),
           ]),
           const SizedBox(height: 12),
           Row(children: [
-            Expanded(child: Text('المدارس', style: Theme.of(context).textTheme.titleLarge)),
+            Expanded(child: Text(english ? 'Schools' : 'المدارس', style: Theme.of(context).textTheme.titleLarge)),
             TextButton.icon(onPressed: _loading ? null : _createSchool,
-              icon: const Icon(Icons.add), label: const Text('إضافة مدرسة')),
+              icon: const Icon(Icons.add), label: Text(english ? 'Add school' : 'إضافة مدرسة')),
           ]),
-          if (_schools.isEmpty) const Text('لا توجد مدارس مرتبطة بالمؤسسة.'),
+          if (_schools.isEmpty) Text(english ? 'No schools are linked to this institution.' : 'لا توجد مدارس مرتبطة بالمؤسسة.'),
           for (final school in _schools)
             Card(child: ListTile(
               leading: const Icon(Icons.school),
