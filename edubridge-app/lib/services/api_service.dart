@@ -112,6 +112,9 @@ class ApiService {
 
   static Future<http.Response> authDelete(String path) => _apiCoreAuthDelete(path);
 
+  static Future<http.Response> authPatch(String path, Map<String, dynamic> body) =>
+      _apiCoreAuthPatch(path, body);
+
   // Domain API facade. Implementations live in focused part files.
     static Future<Map<String, dynamic>?> getChildren() => _apiGetChildren();
 

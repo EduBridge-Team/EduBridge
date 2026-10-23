@@ -348,6 +348,19 @@ Future<http.Response> _apiCoreAuthPut(
     return _apiCoreCheckSession(token, response);
   }
 
+Future<http.Response> _apiCoreAuthPatch(String path, Map<String, dynamic> body) async {
+    final token = await ApiService.getToken();
+    final response = await http.patch(
+      Uri.parse('${Config.baseUrl}$path'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+    return _apiCoreCheckSession(token, response);
+  }
+
 Future<http.Response> _apiCoreAuthDelete(String path) async {
     final token = await ApiService.getToken();
     final response = await http.delete(
