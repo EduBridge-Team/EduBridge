@@ -8,7 +8,22 @@ extension _RegisterScreenStateView on _RegisterScreenState {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: JisrAppBar(title: context.l10n.createAccountTitle, actions: const [LanguageCircleButton(color: Colors.white)]),
+      appBar: JisrAppBar(
+        title: context.l10n.createAccountTitle,
+        leading: BackButton(
+          onPressed: () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+            } else {
+              navigator.pushReplacement(
+                MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+              );
+            }
+          },
+        ),
+        actions: const [LanguageCircleButton(color: Colors.white)],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
