@@ -9,7 +9,6 @@ import '../widgets/dashboard_header_actions.dart';
 import '../widgets/dashboard_profile_identity.dart';
 import '../widgets/legal_links_button.dart';
 import 'chats_screen.dart';
-import 'children_screen.dart';
 import 'lessons_screen.dart';
 import 'verify_identity/verify_identity_screen.dart';
 import 'login_screen.dart';
