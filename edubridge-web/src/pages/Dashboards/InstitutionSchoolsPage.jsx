@@ -39,7 +39,7 @@ function Stat({ Icon, label, value }) {
 }
 
 export default function InstitutionSchoolsPage() {
-  const { institution, slug, loading: institutionLoading } = useInstitution()
+  const { institution, slug, error: institutionError, loading: institutionLoading } = useInstitution()
   const [schools, setSchools] = useState([])
   const [selectedId, setSelectedId] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -127,7 +127,7 @@ export default function InstitutionSchoolsPage() {
   if (!slug || !institution) {
     return (
       <div className="state error">
-        هذه الصفحة متاحة من نطاق المؤسسة المخصص فقط، مثل jabalia.edubridge.win.
+        {institutionError || 'لم يتم العثور على مؤسسة مرتبطة بهذا الحساب.'}
       </div>
     )
   }
@@ -155,7 +155,7 @@ export default function InstitutionSchoolsPage() {
             <div className="section-heading compact">
               <div>
                 <h2>بيانات المدرسة الرسمية</h2>
-                <p>لا تدخل بيانات تجريبية هنا؛ استخدم الاسم ووسائل التواصل المعتمدة من جمعية جباليا.</p>
+                <p>استخدم بيانات المدرسة المعتمدة لمؤسستك. في بيئة الاختبار يمكن استخدام بيانات وهمية واضحة.</p>
               </div>
             </div>
             <form className="institution-school-form" onSubmit={submitSchool}>
@@ -180,7 +180,7 @@ export default function InstitutionSchoolsPage() {
           {loading ? (
             <div className="state"><LoaderCircle className="spin" size={20} /> جارِ تحميل المدارس…</div>
           ) : schools.length === 0 ? (
-            <div className="state">لا توجد مدرسة مرتبطة بالمؤسسة بعد. الخطوة التالية هي إدخال بيانات مدرسة التجربة الرسمية.</div>
+            <div className="state">لا توجد مدرسة مرتبطة بالمؤسسة بعد. يمكنك إضافة مدرسة من زر «إضافة مدرسة» أعلاه.</div>
           ) : (
             <div className="institution-actions">
               {schools.map((school) => (

@@ -19,10 +19,10 @@ applyTheme(getTheme(), { persist: false, notify: false })
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <InstitutionProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <InstitutionProvider>
         <App />
-      </BrowserRouter>
-    </InstitutionProvider>
+      </InstitutionProvider>
+    </BrowserRouter>
   </StrictMode>,
 )

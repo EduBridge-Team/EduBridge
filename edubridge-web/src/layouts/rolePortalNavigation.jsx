@@ -2,6 +2,10 @@ import {
   Accessibility,
   BarChart3,
   BookOpen,
+  CalendarDays,
+  ClipboardCheck,
+  GraduationCap,
+  School,
   Home,
   LifeBuoy,
   MessageCircle,
@@ -15,6 +19,7 @@ export function activeSection(pathname, role, homePath) {
   if (pathname === homePath) return 'home'
   if (/\/children\/[^/]+\/progress$/.test(pathname)) return role === 'parent' ? 'progress' : 'children'
   if (/\/children\/[^/]+\/lessons$/.test(pathname)) return role === 'parent' ? 'lessons' : 'children'
+  if (pathname.startsWith('/institution/')) return pathname.slice('/institution/'.length).split('/')[0]
   if (pathname === '/lessons') return 'lessons'
   if (pathname.startsWith('/children')) return 'children'
   if (pathname === '/conversations') return 'conversations'
@@ -119,8 +124,14 @@ export function createRoleNavItems({
   if (role === 'institution') {
     return [
       home,
+      item('schools', 'إدارة المدارس', <School size={21} />, '/institution/schools'),
+      item('teachers', 'إدارة المعلمين', <Users size={21} />, '/institution/teachers'),
+      item('students', 'إدارة الطلاب', <GraduationCap size={21} />, '/institution/students'),
+      item('timetable', 'الجدول المدرسي', <CalendarDays size={21} />, '/institution/timetable'),
+      item('attendance', 'الحضور والغياب', <ClipboardCheck size={21} />, '/institution/attendance'),
+      item('substitutions', 'غياب المعلمين والبدائل', <Users size={21} />, '/institution/substitutions'),
+      item('reports', 'التقارير والإحصائيات', <BarChart3 size={21} />, '/institution/reports'),
       item('lessons', 'الدروس', <BookOpen size={21} />, '/lessons'),
-      ...(['teacher', 'specialist', 'admin'].includes(role) ? [item('parent-lessons', 'دروس لولي الأمر', <BookOpen size={21} />, '/parent-lessons')] : []),
       item('search', 'البحث عن طالب', <Search size={21} />, '/search'),
       conversations,
       item('support', 'الدعم', <LifeBuoy size={21} />, '/support'),
