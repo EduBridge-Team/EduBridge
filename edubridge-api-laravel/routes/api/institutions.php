@@ -13,6 +13,36 @@ use App\Http\Controllers\InstitutionSubstitutionController;
 use App\Http\Controllers\InstitutionTimetableController;
 use Illuminate\Support\Facades\Route;
 
+
+// Main-domain institution accounts resolve their own tenant server-side.
+// Never trust an organization slug or user ID supplied by the browser.
+Route::get('/institutions/my-organization', function (\Illuminate\Http\Request $request) {
+    $user = $request->attributes->get('jwt_user');
+    if (!$user || ($user->role ?? null) !== 'institution') {
+        return response()->json(['error' => 'غير مصرح لهذا الحساب'], 403);
+    }
+
+    $organizations = \Illuminate\Support\Facades\DB::table('organizations as o')
+        ->join('organization_user as ou', 'ou.organization_id', '=', 'o.id')
+        ->where('ou.user_id', $user->id)
+        ->where('ou.is_active', true)
+        ->where('o.is_active', true)
+        ->whereIn('ou.role', ['owner', 'admin', 'school_admin'])
+        ->select('o.*')
+        ->limit(2)
+        ->get();
+
+    if ($organizations->count() !== 1) {
+        return response()->json([
+            'error' => $organizations->isEmpty()
+                ? 'هذا الحساب غير مرتبط بمؤسسة فعالة'
+                : 'الحساب مرتبط بأكثر من مؤسسة؛ يرجى تحديد المؤسسة من الإدارة',
+        ], 403);
+    }
+
+    return response()->json(['organization' => $organizations->first()]);
+});
+
 Route::prefix('/institutions/{organizationSlug}')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:owner,admin,school_admin')
