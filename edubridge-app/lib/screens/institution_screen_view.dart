@@ -57,6 +57,8 @@ DashboardHeaderActions(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                const InstitutionSummaryCard(),
+                const SizedBox(height: 14),
                 _ActionCard(
                   icon: Icons.apartment_rounded,
                   title: 'إدارة المدارس',
