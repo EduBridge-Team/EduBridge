@@ -15,6 +15,8 @@ class InstitutionOperationsScreen extends StatefulWidget {
 
 class _InstitutionOperationsScreenState extends State<InstitutionOperationsScreen> {
   final _slug = TextEditingController();
+  final _schoolQuery = TextEditingController();
+  String _schoolSearch = '';
   String? _organization;
   String? _error;
   bool _loading = false;
@@ -40,6 +42,7 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
   @override
   void dispose() {
     _slug.dispose();
+    _schoolQuery.dispose();
     super.dispose();
   }
 
@@ -245,8 +248,8 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     final id = school['id'];
     if (id is! int) return;
     Navigator.push(context, MaterialPageRoute<void>(
-      builder: (_) => _SchoolDataScreen(schoolName: '${school['name'] ?? ''}',
-          basePath: _path('/schools/$id')),
+      builder: (_) => _InstitutionRecordScreen(
+        title: '${school['name'] ?? ''}', path: _path('/schools/$id')),
     ));
   }
 
@@ -314,15 +317,30 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
             TextButton.icon(onPressed: _loading ? null : _createSchool,
               icon: const Icon(Icons.add), label: Text(english ? 'Add school' : 'إضافة مدرسة')),
           ]),
-          if (_schools.isEmpty) Text(english ? 'No schools are linked to this institution.' : 'لا توجد مدارس مرتبطة بالمؤسسة.'),
-          for (final school in _schools)
+          TextField(
+            controller: _schoolQuery,
+            onChanged: (value) => setState(() => _schoolSearch = value.trim().toLowerCase()),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: english ? 'Search schools by name' : 'ابحث عن مدرسة بالاسم',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (_schools.isEmpty)
+            Text(english ? 'No schools are linked to this institution.' : 'لا توجد مدارس مرتبطة بالمؤسسة.')
+          else if (!_schools.any((school) =>
+              '${school['name'] ?? ''}'.toLowerCase().contains(_schoolSearch)))
+            Text(english ? 'No matching schools.' : 'لا توجد مدارس تطابق البحث.'),
+          for (final school in _schools.where((school) =>
+              '${school['name'] ?? ''}'.toLowerCase().contains(_schoolSearch)))
             Card(child: ListTile(
               leading: const Icon(Icons.school),
-              title: Text('${school['name'] ?? 'مدرسة'}'),
-              subtitle: const Text('عرض تفاصيل المدرسة'),
+              title: Text('${school['name'] ?? ''}'),
+              subtitle: Text(english ? 'View school information' : 'عرض معلومات المدرسة'),
               onTap: () => _schoolDetails(school),
               trailing: IconButton(
-                tooltip: 'تعديل المدرسة',
+                tooltip: english ? 'Edit school' : 'تعديل المدرسة',
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: _loading ? null : () => _editSchool(school),
               ),
@@ -337,40 +355,6 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         ],
       ]),
     );
-  }
-}
-
-class _SchoolDataScreen extends StatelessWidget {
-  const _SchoolDataScreen({required this.schoolName, required this.basePath});
-  final String schoolName;
-  final String basePath;
-
-  @override
-  Widget build(BuildContext context) {
-    final sections = <(String, String, String)>[
-      ('الهيكل الأكاديمي', '/academic', 'years'),
-      ('الطلاب المسجلون', '/participants', 'students'),
-      ('سجلات التسجيل', '/academic/student-enrollments', 'enrollments'),
-      ('الحضور والغياب', '/attendance', 'sessions'),
-      ('تقرير الحضور', '/attendance/report', 'records'),
-      ('الجدول المدرسي', '/timetable', 'entries'),
-      ('المناهج الدراسية', '/curriculum', 'books'),
-    ];
-    return Scaffold(appBar: AppBar(title: Text(schoolName)),
-      body: ListView(children: [
-        ListTile(
-          leading: const Icon(Icons.info_outline),
-          title: const Text('البيانات الأساسية للمدرسة'),
-          trailing: const Icon(Icons.chevron_left),
-          onTap: () => Navigator.push(context, MaterialPageRoute<void>(
-            builder: (_) => _InstitutionRecordScreen(title: 'بيانات المدرسة', path: basePath))),
-        ),
-        for (final item in sections)
-          ListTile(title: Text(item.$1), trailing: const Icon(Icons.chevron_left),
-            onTap: () => Navigator.push(context, MaterialPageRoute<void>(
-              builder: (_) => _InstitutionDataScreen(
-                title: item.$1, path: '$basePath${item.$2}', listKey: item.$3)))),
-      ]));
   }
 }
 
@@ -421,11 +405,23 @@ class _InstitutionRecordScreenState extends State<_InstitutionRecordScreen> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            for (final field in school.entries)
-              ListTile(
-                title: Text('${field.key}'),
-                subtitle: Text('${field.value ?? '—'}'),
-              ),
+            for (final field in <String, String>{
+              'name': 'اسم المدرسة',
+              'slug': 'معرف المدرسة',
+              'address': 'العنوان',
+              'phone': 'الهاتف',
+              'email': 'البريد الإلكتروني',
+            }.entries)
+              if (school[field.key] != null && '${school[field.key]}'.trim().isNotEmpty)
+                ListTile(
+                  title: Text(Localizations.localeOf(context).languageCode == 'en'
+                      ? <String, String>{
+                          'name': 'School name', 'slug': 'School ID',
+                          'address': 'Address', 'phone': 'Phone',
+                          'email': 'Email',
+                        }[field.key]! : field.value),
+                  subtitle: Text('${school[field.key]}'),
+                ),
           ],
         );
       },
@@ -433,75 +429,3 @@ class _InstitutionRecordScreenState extends State<_InstitutionRecordScreen> {
   );
 }
 
-/// A reusable read-only view of scoped API records. All mutating actions must
-/// have dedicated validated forms rather than sending arbitrary JSON.
-class _InstitutionDataScreen extends StatefulWidget {
-  const _InstitutionDataScreen({required this.title, required this.path, required this.listKey});
-  final String title, path, listKey;
-
-  @override
-  State<_InstitutionDataScreen> createState() => _InstitutionDataScreenState();
-}
-
-class _InstitutionDataScreenState extends State<_InstitutionDataScreen> {
-  late Future<Map<String, dynamic>> _future;
-
-  Future<Map<String, dynamic>> _load() async {
-    final response = await ApiService.authGet(widget.path);
-    final data = ApiService.decodeMap(response.body);
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(data['error'] ?? data['message'] ?? 'HTTP ${response.statusCode}');
-    }
-    return data;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _future = _load();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(widget.title),
-      actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () =>
-          setState(() => _future = _load()))]),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Padding(
-          padding: const EdgeInsets.all(20), child: Text('${snapshot.error}')));
-        }
-        final data = snapshot.data ?? const <String, dynamic>{};
-        final value = data[widget.listKey];
-        final entries = value is List ? value : <dynamic>[];
-        if (entries.isEmpty) {
-          return Center(child: Text(data.isEmpty ? 'لا توجد بيانات' :
-              'لا توجد سجلات لهذه الصفحة حاليًا'));
-        }
-        return ListView.builder(
-          itemCount: entries.length,
-          itemBuilder: (context, i) {
-            final entry = entries[i];
-            if (entry is! Map) {
-              return ListTile(title: Text('$entry'));
-            }
-            final values = Map<String, dynamic>.from(entry);
-            final title = values['name'] ?? values['title'] ??
-                values['school_name'] ?? values['email'] ?? 'سجل ${i + 1}';
-            return Card(child: ExpansionTile(title: Text('$title'), children: [
-              for (final item in values.entries)
-                if (item.value != null && item.value is! Map && item.value is! List)
-                  ListTile(dense: true, title: Text(item.key),
-                      subtitle: Text('${item.value}')),
-            ]));
-          },
-        );
-      },
-    ),
-  );
-}
