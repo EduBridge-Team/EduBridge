@@ -38,6 +38,7 @@ class _InstitutionSummaryCardState extends State<InstitutionSummaryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final english = Localizations.localeOf(context).languageCode == 'en';
     return FutureBuilder<Map<String, dynamic>?>(
       future: _summary,
       builder: (context, snapshot) {
@@ -49,10 +50,10 @@ class _InstitutionSummaryCardState extends State<InstitutionSummaryCard> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(children: [
-                  const Expanded(child: Text('إحصائيات المؤسسة',
+                  Expanded(child: Text(english ? 'Institution statistics' : 'إحصائيات المؤسسة',
                     style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800))),
                   IconButton(
-                    tooltip: 'تحديث الإحصائيات',
+                    tooltip: english ? 'Refresh statistics' : 'تحديث الإحصائيات',
                     icon: const Icon(Icons.refresh),
                     onPressed: () => setState(() => _summary = _load()),
                   ),
@@ -60,9 +61,9 @@ class _InstitutionSummaryCardState extends State<InstitutionSummaryCard> {
                 if (snapshot.connectionState != ConnectionState.done)
                   const LinearProgressIndicator()
                 else if (snapshot.hasError)
-                  const Text('تعذّر تحميل الإحصائيات. تحقق من صلاحية المؤسسة.')
+                  Text(english ? 'Could not load statistics. Check institution access.' : 'تعذّر تحميل الإحصائيات. تحقق من صلاحية المؤسسة.')
                 else if (values == null)
-                  const Text('افتح إدارة المدارس وحمّل بيانات المؤسسة أولًا لعرض الإحصائيات.')
+                  Text(english ? 'Open School Management and load your institution data first.' : 'افتح إدارة المدارس وحمّل بيانات المؤسسة أولًا لعرض الإحصائيات.')
                 else
                   GridView.count(
                     crossAxisCount: 2,
@@ -72,16 +73,16 @@ class _InstitutionSummaryCardState extends State<InstitutionSummaryCard> {
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                     children: [
-                      _count('المدارس', values['schools']),
-                      _count('الطلاب', values['student_files']),
-                      _count('المعلمون', values['active_teachers']),
-                      _count('الأخصائيون', null),
+                      _count(english ? 'Schools' : 'المدارس', values['schools']),
+                      _count(english ? 'Students' : 'الطلاب', values['student_files']),
+                      _count(english ? 'Teachers' : 'المعلمون', values['active_teachers']),
+                      _count(english ? 'Specialists' : 'الأخصائيون', null),
                     ],
                   ),
                 if (values != null)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Text('عدد الأخصائيين غير متاح حاليًا في تقرير المؤسسة.',
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(english ? 'Specialist count is not provided by the institution API yet.' : 'عدد الأخصائيين غير متاح حاليًا في تقرير المؤسسة.',
                       style: TextStyle(fontSize: 12)),
                   ),
               ],
