@@ -149,10 +149,12 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
       }
       final schools = await _get('/schools');
       final report = await _get('/management-report');
-      if (mounted) setState(() {
-        _schools = _items(schools['schools']);
-        _report = report;
-      });
+      if (mounted) {
+        setState(() {
+          _schools = _items(schools['schools']);
+          _report = report;
+        });
+      }
     } catch (error) {
       if (mounted) setState(() => _error = '$error');
     } finally {
@@ -294,7 +296,7 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         Text(english ? 'Institution ID' : 'معرف المؤسسة', style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         TextField(controller: _slug, enabled: !_loading,
-          decoration: const InputDecoration(border: OutlineInputBorder(),
+          decoration: InputDecoration(border: const OutlineInputBorder(),
             hintText: english ? 'e.g. demo-institution' : 'مثال: demo-institution')),
         const SizedBox(height: 8),
         FilledButton(onPressed: _loading ? null : _connect,
