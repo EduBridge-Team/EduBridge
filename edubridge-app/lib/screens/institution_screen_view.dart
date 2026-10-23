@@ -58,14 +58,19 @@ DashboardHeaderActions(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const InstitutionSummaryCard(),
-                const SizedBox(height: 14),
                 _ActionCard(
                   icon: Icons.apartment_rounded,
                   title: english ? 'School Management' : 'إدارة المدارس',
                   subtitle: english ? 'Schools, principals and school details' : 'المدارس ومدراؤها وبيانات كل مدرسة',
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const InstitutionOperationsScreen()),
+                ),
+                _ActionCard(
+                  icon: Icons.bar_chart_rounded,
+                  title: english ? 'Comprehensive Statistics' : 'الإحصائيات الشاملة',
+                  subtitle: english ? 'School, student, teacher, and attendance reports' : 'تقارير المدارس والطلاب والمعلمين والحضور',
+                  color: AppColors.brandBlue,
+                  onTap: () => _open(context, const InstitutionStatisticsScreen()),
                 ),
                 _ActionCard(
                   icon: Icons.add_business_outlined,
