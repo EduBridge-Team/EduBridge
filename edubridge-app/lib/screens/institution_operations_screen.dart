@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -19,6 +20,22 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
   bool _loading = false;
   Map<String, dynamic>? _report;
   List<Map<String, dynamic>> _schools = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreSlug();
+  }
+
+  Future<void> _restoreSlug() async {
+    final userId = await ApiService.getUserId();
+    if (userId == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    final previous = prefs.getString('institution_slug_$userId');
+    if (!mounted || previous == null || previous.isEmpty) return;
+    _slug.text = previous;
+    await _connect();
+  }
 
   @override
   void dispose() {
@@ -62,6 +79,11 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         _get('/management-report'),
         _get('/schools'),
       ]);
+      final userId = await ApiService.getUserId();
+      if (userId != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('institution_slug_$userId', slug);
+      }
       if (!mounted) return;
       setState(() {
         _report = results[0];
@@ -234,7 +256,7 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     final counts = summary is Map ? summary : const {};
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(76),
+        preferredSize: const Size.fromHeight(118),
         child: Container(
           decoration: const BoxDecoration(
             gradient: AppColors.appBarGradient,
@@ -242,21 +264,24 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
           ),
           child: SafeArea(
             bottom: false,
-            child: Row(
-              children: [
-                IconButton(
-                  tooltip: 'الرجوع إلى الرئيسية',
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
-                ),
-                const Expanded(
-                  child: Text(
-                    'إدارة المدارس',
-                    style: TextStyle(color: Colors.white,
-                      fontSize: 21, fontWeight: FontWeight.w800),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: 'العودة إلى الرئيسية',
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_forward_rounded,
+                      color: Colors.white, size: 27),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text('إدارة المدارس',
+                      style: TextStyle(color: Colors.white,
+                        fontSize: 23, fontWeight: FontWeight.w800)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
