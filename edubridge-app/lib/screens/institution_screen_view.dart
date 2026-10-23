@@ -3,6 +3,7 @@ part of 'institution_screen.dart';
 extension _InstitutionScreenView on InstitutionScreen {
   Widget buildView(BuildContext context) {
     final c = JisrColors.of(context);
+    final english = Localizations.localeOf(context).languageCode == 'en';
 
     return Scaffold(
       body: Column(
@@ -61,15 +62,15 @@ DashboardHeaderActions(
                 const SizedBox(height: 14),
                 _ActionCard(
                   icon: Icons.apartment_rounded,
-                  title: 'إدارة المدارس',
-                  subtitle: 'المدارس ومدراؤها وبيانات كل مدرسة',
+                  title: english ? 'School Management' : 'إدارة المدارس',
+                  subtitle: english ? 'Schools, principals and school details' : 'المدارس ومدراؤها وبيانات كل مدرسة',
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const InstitutionOperationsScreen()),
                 ),
                 _ActionCard(
                   icon: Icons.add_business_outlined,
-                  title: 'إنشاء حساب مدرسة تابعة للمؤسسة',
-                  subtitle: 'تجهيز حساب دخول لإحدى المدارس التابعة للمؤسسة',
+                  title: english ? 'Create a school account' : 'إنشاء حساب مدرسة تابعة للمؤسسة',
+                  subtitle: english ? 'Prepare login credentials for an affiliated school' : 'تجهيز حساب دخول لإحدى المدارس التابعة للمؤسسة',
                   color: AppColors.brandTeal,
                   onTap: () => _open(context, const InstitutionSchoolAccountScreen()),
                 ),
