@@ -127,6 +127,7 @@ Expanded(child: DashboardProfileIdentity(roleLabel: context.l10n.adminRole, subt
 const SizedBox(width: 8),
 DashboardHeaderActions(
                     actions: menuActions,
+                    menuIcon: Icons.menu_rounded,
                   ),
 ]),
             ],
