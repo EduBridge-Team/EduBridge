@@ -175,3 +175,23 @@ test('admin has institution and ministry creation inside account management', as
     assert.ok(!html.includes('aria-modal="true"'))
   }
 })
+
+test('institution sidebar exposes operational modules and tracks current section', async () => {
+  const { createRoleNavItems, activeSection } = await server.ssrLoadModule('/src/layouts/rolePortalNavigation.jsx')
+  const items = createRoleNavItems({
+    role: 'institution', homePath: '/institution', childrenList: [],
+    conversationCount: 0, navigate() {}, goToProgress() {},
+  })
+  for (const key of ['schools', 'teachers', 'students', 'timetable', 'attendance', 'substitutions', 'reports']) {
+    assert.ok(items.some((item) => item.key === key), key)
+    assert.equal(activeSection('/institution/' + key, 'institution', '/institution'), key)
+  }
+  assert.equal(activeSection('/institution', 'institution', '/institution'), 'home')
+})
+
+test('institution hostname resolver does not mistake the main domain for a tenant', async () => {
+  const { resolveInstitutionSlug } = await server.ssrLoadModule('/src/institutionContext.jsx')
+  assert.equal(resolveInstitutionSlug('edubridge.win'), null)
+  assert.equal(resolveInstitutionSlug('jabalia.edubridge.win'), 'jabalia')
+  assert.equal(resolveInstitutionSlug('api.edubridge.win'), null)
+})
