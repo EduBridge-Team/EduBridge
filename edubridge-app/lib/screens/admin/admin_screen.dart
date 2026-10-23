@@ -89,8 +89,8 @@ class _AdminScreenState extends State<AdminScreen> {
           onSelected: () => _openAccountPage('institution'),
         ),
         DashboardMenuAction(
-          id: 'add_school',
-          label: 'إضافة مدرسة',
+          id: 'create_school_account',
+          label: 'إنشاء حساب مدرسة',
           icon: Icons.school_outlined,
           onSelected: () => Navigator.push(
             context,
