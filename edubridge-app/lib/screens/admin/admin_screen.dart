@@ -12,6 +12,7 @@ import '../../widgets/dashboard_profile_identity.dart';
 import '../../widgets/legal_links_button.dart';
 import '../edit_child_screen.dart';
 import '../login_screen.dart';
+import 'admin_school_create_page.dart';
 
 part 'admin_users_tab.dart';
 part 'admin_create_account_sheet.dart';
@@ -86,6 +87,15 @@ class _AdminScreenState extends State<AdminScreen> {
           label: 'إنشاء حساب مؤسسة',
           icon: Icons.add_business_outlined,
           onSelected: () => _openAccountPage('institution'),
+        ),
+        DashboardMenuAction(
+          id: 'add_school',
+          label: 'إضافة مدرسة',
+          icon: Icons.school_outlined,
+          onSelected: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AdminSchoolCreatePage()),
+          ),
         ),
         DashboardMenuAction(
           id: 'create_ministry',
