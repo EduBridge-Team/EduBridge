@@ -100,7 +100,9 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('إلغاء')),
           FilledButton(onPressed: () {
-            if (form.currentState!.validate()) Navigator.pop(dialogContext, true);
+            if (form.currentState!.validate()) {
+              Navigator.pop(dialogContext, true);
+            }
           }, child: const Text('إضافة')),
         ],
       ),
@@ -224,10 +226,6 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
           basePath: _path('/schools/$id')),
     ));
   }
-
-  Widget _action(String name, IconData icon, VoidCallback callback) =>
-      Card(child: ListTile(leading: Icon(icon), title: Text(name),
-          trailing: const Icon(Icons.chevron_left), onTap: callback));
 
   @override
   Widget build(BuildContext context) {
@@ -420,8 +418,10 @@ class _InstitutionDataScreenState extends State<_InstitutionDataScreen> {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasError) return Center(child: Padding(
+        if (snapshot.hasError) {
+          return Center(child: Padding(
           padding: const EdgeInsets.all(20), child: Text('${snapshot.error}')));
+        }
         final data = snapshot.data ?? const <String, dynamic>{};
         final value = data[widget.listKey];
         final entries = value is List ? value : <dynamic>[];
