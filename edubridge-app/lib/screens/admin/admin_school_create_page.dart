@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
 
-/// Creates a school record only. This does not provision a login account.
+/// UI prepared for independent school accounts (not linked to an institution).
+///
+/// Backend account creation is deliberately disabled until an authorized
+/// endpoint for the school role exists. Never send credentials to the existing
+/// institution/ministry account or institution-scoped school endpoints.
 class AdminSchoolCreatePage extends StatefulWidget {
   const AdminSchoolCreatePage({super.key});
 
@@ -11,65 +14,27 @@ class AdminSchoolCreatePage extends StatefulWidget {
 
 class _AdminSchoolCreatePageState extends State<AdminSchoolCreatePage> {
   final _formKey = GlobalKey<FormState>();
-  final _organizationSlug = TextEditingController();
   final _name = TextEditingController();
-  final _schoolSlug = TextEditingController();
+  final _email = TextEditingController();
+  final _phone = TextEditingController();
   final _address = TextEditingController();
-  bool _saving = false;
-  String? _error;
+  final _password = TextEditingController();
+  final _confirmation = TextEditingController();
 
   @override
   void dispose() {
-    _organizationSlug.dispose();
-    _name.dispose();
-    _schoolSlug.dispose();
-    _address.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (_saving || !_formKey.currentState!.validate()) return;
-    setState(() {
-      _saving = true;
-      _error = null;
-    });
-    try {
-      final slug = _organizationSlug.text.trim().toLowerCase();
-      final response = await ApiService.authPost(
-        '/institutions/${Uri.encodeComponent(slug)}/schools',
-        {
-          'name': _name.text.trim(),
-          'slug': _schoolSlug.text.trim().toLowerCase(),
-          'address': _address.text.trim(),
-        },
-      );
-      if (!mounted) return;
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إضافة سجل المدرسة بنجاح')),
-        );
-        Navigator.of(context).pop(true);
-        return;
-      }
-      final data = ApiService.decodeMap(response.body);
-      setState(() {
-        _error = (data['error'] ?? data['message'] ??
-          'تعذّرت إضافة المدرسة. تأكد من عضويتك وصلاحيتك في المؤسسة.').toString();
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() => _error = 'تعذّر الاتصال بالخادم');
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
+    for (final controller in [
+      _name, _email, _phone, _address, _password, _confirmation,
+    ]) {
+      controller.dispose();
     }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const slugPattern = r'^[a-z0-9][a-z0-9-]*$';
     return Scaffold(
-      appBar: AppBar(title: const Text('إضافة مدرسة')),
+      appBar: AppBar(title: const Text('إنشاء حساب مدرسة')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -79,57 +44,66 @@ class _AdminSchoolCreatePageState extends State<AdminSchoolCreatePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'هذه الشاشة تنشئ سجل مدرسة داخل مؤسسة موجودة، '
-                  'ولا تنشئ حساب تسجيل دخول. يجب أن يمتلك المستخدم '
-                  'صلاحية إدارة المؤسسة المحددة.',
+                  'حساب مدرسة مستقلة لا تتبع لأي مؤسسة.',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _organizationSlug,
-                  enabled: !_saving,
-                  decoration: const InputDecoration(
-                    labelText: 'معرّف المؤسسة',
-                    hintText: 'demo-institution',
-                  ),
-                  validator: (value) =>
-                      RegExp(slugPattern).hasMatch((value ?? '').trim().toLowerCase())
-                          ? null : 'أدخل معرّف مؤسسة صحيحًا',
-                ),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: _name,
-                  enabled: !_saving,
                   maxLength: 150,
                   decoration: const InputDecoration(labelText: 'اسم المدرسة'),
                   validator: (value) => (value ?? '').trim().isEmpty
                       ? 'اسم المدرسة مطلوب' : null,
                 ),
                 TextFormField(
-                  controller: _schoolSlug,
-                  enabled: !_saving,
-                  maxLength: 80,
-                  decoration: const InputDecoration(
-                    labelText: 'معرّف المدرسة بالإنجليزية',
-                  ),
+                  controller: _email,
+                  maxLength: 255,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: 'البريد الإلكتروني للمدرسة'),
                   validator: (value) =>
-                      RegExp(slugPattern).hasMatch((value ?? '').trim().toLowerCase())
-                          ? null : 'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطة',
+                      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                              .hasMatch((value ?? '').trim())
+                          ? null : 'أدخل بريدًا إلكترونيًا صالحًا',
+                ),
+                TextFormField(
+                  controller: _phone,
+                  maxLength: 20,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'رقم الهاتف (اختياري)'),
                 ),
                 TextFormField(
                   controller: _address,
-                  enabled: !_saving,
                   maxLength: 255,
-                  decoration: const InputDecoration(labelText: 'العنوان (اختياري)'),
+                  decoration: const InputDecoration(labelText: 'عنوان المدرسة (اختياري)'),
                 ),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(_error!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                  ),
-                const SizedBox(height: 14),
-                FilledButton(
-                  onPressed: _saving ? null : _submit,
-                  child: Text(_saving ? 'جارٍ الحفظ...' : 'إضافة مدرسة'),
+                TextFormField(
+                  controller: _password,
+                  obscureText: true,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  decoration: const InputDecoration(labelText: 'كلمة المرور'),
+                  validator: (value) => (value ?? '').length < 8 ||
+                          (value ?? '').length > 128
+                      ? 'كلمة المرور يجب أن تكون بين 8 و128 حرفًا' : null,
+                ),
+                TextFormField(
+                  controller: _confirmation,
+                  obscureText: true,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  decoration: const InputDecoration(labelText: 'تأكيد كلمة المرور'),
+                  validator: (value) => value == _password.text
+                      ? null : 'كلمتا المرور غير متطابقتين',
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'إنشاء حساب المدرسة غير متاح حاليًا. سيتم تفعيل الحفظ '
+                  'بعد إضافة دعم الحسابات المدرسية في السيرفر.',
+                ),
+                const SizedBox(height: 16),
+                const FilledButton(
+                  onPressed: null,
+                  child: Text('إنشاء الحساب — بانتظار ربط السيرفر'),
                 ),
               ],
             ),
