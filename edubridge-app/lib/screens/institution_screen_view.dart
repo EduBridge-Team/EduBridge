@@ -60,7 +60,7 @@ DashboardHeaderActions(
                 _ActionCard(
                   icon: Icons.apartment_rounded,
                   title: 'إدارة المؤسسة والمدارس',
-                  subtitle: 'المدارس والمعلمون والتقارير والحضور والجدول والمناهج',
+                  subtitle: 'المدارس ومدراؤها وبيانات كل مدرسة',
                   color: AppColors.brandBlue,
                   onTap: () => _open(context, const InstitutionOperationsScreen()),
                 ),
@@ -74,13 +74,6 @@ DashboardHeaderActions(
                   ),
                 ),
                 const SizedBox(height: 10),
-                _ActionCard(
-                  icon: AppIcons.child,
-                  title: context.l10n.studentRecords,
-                  subtitle: context.l10n.institutionStudentsDescription,
-                  color: AppColors.brandBlue,
-                  onTap: () => _open(context, const ChildrenScreen()),
-                ),
                 _ActionCard(
                   icon: AppIcons.lesson,
                   title: context.l10n.lessonLibrary,

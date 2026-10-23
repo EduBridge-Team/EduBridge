@@ -134,12 +134,6 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
     }
   }
 
-  void _openSection(String title, String endpoint, String key) {
-    Navigator.push(context, MaterialPageRoute<void>(
-      builder: (_) => _InstitutionDataScreen(title: title, path: _path(endpoint), listKey: key),
-    ));
-  }
-
   Future<void> _editSchool(Map<String, dynamic> school) async {
     final schoolId = school['id'];
     if (schoolId is! int) return;
@@ -259,10 +253,6 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
           Wrap(spacing: 10, runSpacing: 10, children: [
             for (final metric in {
               'المدارس': 'schools',
-              'المعلمون النشطون': 'active_teachers',
-              'ملفات الطلاب': 'student_files',
-              'التسجيلات النشطة': 'active_enrollments',
-              'جلسات الحضور': 'attendance_sessions',
             }.entries)
               Chip(label: Text('${metric.key}: ${counts[metric.value] ?? 0}')),
           ]),
@@ -287,10 +277,11 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
             )),
           const SizedBox(height: 16),
           Text('الإدارة والمتابعة', style: Theme.of(context).textTheme.titleLarge),
-          _action('المعلمون', Icons.people, () => _openSection('المعلمون', '/teachers', 'teachers')),
-          _action('دعوات المعلمين', Icons.mail_outline, () => _openSection('دعوات المعلمين', '/teacher-invitations', 'invitations')),
-          _action('التقارير الإدارية', Icons.assessment, () =>
-              _openSection('التقارير الإدارية', '/management-report', 'schools')),
+          const ListTile(
+            leading: Icon(Icons.manage_accounts_outlined),
+            title: Text('إدارة مدراء المدارس'),
+            subtitle: Text('إنشاء حسابات مدراء المدارس يحتاج صلاحية API غير متاحة حاليًا للمؤسسة'),
+          ),
         ],
       ]),
     );
@@ -315,6 +306,13 @@ class _SchoolDataScreen extends StatelessWidget {
     ];
     return Scaffold(appBar: AppBar(title: Text(schoolName)),
       body: ListView(children: [
+        ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('البيانات الأساسية للمدرسة'),
+          trailing: const Icon(Icons.chevron_left),
+          onTap: () => Navigator.push(context, MaterialPageRoute<void>(
+            builder: (_) => _InstitutionRecordScreen(title: 'بيانات المدرسة', path: basePath))),
+        ),
         for (final item in sections)
           ListTile(title: Text(item.$1), trailing: const Icon(Icons.chevron_left),
             onTap: () => Navigator.push(context, MaterialPageRoute<void>(
@@ -322,6 +320,65 @@ class _SchoolDataScreen extends StatelessWidget {
                 title: item.$1, path: '$basePath${item.$2}', listKey: item.$3)))),
       ]));
   }
+}
+
+/// Shows all school fields returned for the authorized institution.
+class _InstitutionRecordScreen extends StatefulWidget {
+  const _InstitutionRecordScreen({required this.title, required this.path});
+  final String title;
+  final String path;
+
+  @override
+  State<_InstitutionRecordScreen> createState() => _InstitutionRecordScreenState();
+}
+
+class _InstitutionRecordScreenState extends State<_InstitutionRecordScreen> {
+  late Future<Map<String, dynamic>> _future;
+
+  Future<Map<String, dynamic>> _load() async {
+    final response = await ApiService.authGet(widget.path);
+    final data = ApiService.decodeMap(response.body);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data['error'] ?? data['message'] ?? 'تعذّر تحميل بيانات المدرسة');
+    }
+    return data;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _load();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(widget.title),
+      actions: [IconButton(icon: const Icon(Icons.refresh),
+        onPressed: () => setState(() => _future = _load()))]),
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData && !snapshot.hasError) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) return Center(child: Text('${snapshot.error}'));
+        final school = snapshot.data?['school'];
+        if (school is! Map) {
+          return const Center(child: Text('لا توجد بيانات للمدرسة'));
+        }
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            for (final field in school.entries)
+              ListTile(
+                title: Text('${field.key}'),
+                subtitle: Text('${field.value ?? '—'}'),
+              ),
+          ],
+        );
+      },
+    ),
+  );
 }
 
 /// A reusable read-only view of scoped API records. All mutating actions must
