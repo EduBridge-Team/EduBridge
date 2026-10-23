@@ -327,24 +327,27 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
             ),
           ),
           const SizedBox(height: 12),
-          if (_schools.isEmpty)
+          if (_schoolSearch.isEmpty)
+            Text(english ? 'Enter a school name to view its information.' : 'أدخل اسم المدرسة لعرض معلوماتها.')
+          else if (_schools.isEmpty)
             Text(english ? 'No schools are linked to this institution.' : 'لا توجد مدارس مرتبطة بالمؤسسة.')
           else if (!_schools.any((school) =>
               '${school['name'] ?? ''}'.toLowerCase().contains(_schoolSearch)))
-            Text(english ? 'No matching schools.' : 'لا توجد مدارس تطابق البحث.'),
-          for (final school in _schools.where((school) =>
-              '${school['name'] ?? ''}'.toLowerCase().contains(_schoolSearch)))
-            Card(child: ListTile(
-              leading: const Icon(Icons.school),
-              title: Text('${school['name'] ?? ''}'),
-              subtitle: Text(english ? 'View school information' : 'عرض معلومات المدرسة'),
-              onTap: () => _schoolDetails(school),
-              trailing: IconButton(
-                tooltip: english ? 'Edit school' : 'تعديل المدرسة',
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: _loading ? null : () => _editSchool(school),
-              ),
-            )),
+            Text(english ? 'No matching school found.' : 'لم يتم العثور على مدرسة مطابقة.')
+          else
+            for (final school in _schools.where((school) =>
+                '${school['name'] ?? ''}'.toLowerCase().contains(_schoolSearch)))
+              Card(child: ListTile(
+                leading: const Icon(Icons.school),
+                title: Text('${school['name'] ?? ''}'),
+                subtitle: Text(english ? 'View this school information' : 'عرض معلومات هذه المدرسة'),
+                onTap: () => _schoolDetails(school),
+                trailing: IconButton(
+                  tooltip: english ? 'Edit school' : 'تعديل المدرسة',
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: _loading ? null : () => _editSchool(school),
+                ),
+              )),
           const SizedBox(height: 16),
           Text('الإدارة والمتابعة', style: Theme.of(context).textTheme.titleLarge),
           const ListTile(
