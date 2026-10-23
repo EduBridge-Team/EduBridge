@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { BASE_URL, getUser } from './api/core'
 
@@ -19,12 +20,17 @@ export function resolveInstitutionSlug(hostname = window.location.hostname) {
 }
 
 export function InstitutionProvider({ children }) {
+  const location = useLocation()
   const slug = useMemo(() => resolveInstitutionSlug(), [])
   const resolveMembership = !slug && getUser()?.role === 'institution'
   const [state, setState] = useState({ institution: null, loading: Boolean(slug || resolveMembership), error: null, resolvedSlug: slug })
 
   useEffect(() => {
-    if (!slug && !resolveMembership) return
+    if (!slug && !resolveMembership) {
+      setState({ institution: null, loading: false, error: null, resolvedSlug: null })
+      return
+    }
+    setState((current) => ({ ...current, loading: true }))
     let active = true
 
     fetch(slug
@@ -47,7 +53,7 @@ export function InstitutionProvider({ children }) {
       })
 
     return () => { active = false }
-  }, [slug, resolveMembership])
+  }, [slug, resolveMembership, location.pathname])
 
   useEffect(() => {
     const institution = state.institution
