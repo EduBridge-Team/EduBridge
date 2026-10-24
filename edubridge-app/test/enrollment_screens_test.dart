@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:edubridge_app/l10n/generated/app_localizations.dart';
-import 'package:edubridge_app/model/enrollment/enrollment_models.dart';
 import 'package:edubridge_app/screens/enrollment/school_dashboard_screen.dart';
 import 'package:edubridge_app/screens/enrollment/parent_enrollment_screen.dart';
 import 'package:edubridge_app/services/enrollment/enrollment_api_client.dart';
