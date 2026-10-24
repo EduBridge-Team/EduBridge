@@ -14,7 +14,7 @@ Future<Widget> homeScreenForRole() async {
 
   // 🛡️ استثناء الأدمن: لا يُطلب منه التوثيق، يدخل مباشرة
   if (role == 'admin') {
-    return const AdminScreen(admin: {});
+    return const AdminScreen(admin: {'role': 'admin'});
   }
 
   // ✅ التعديل هنا: لا نوجه المعلم والمختص لشاشة التوثيق إجبارياً

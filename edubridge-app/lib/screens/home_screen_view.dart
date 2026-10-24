@@ -186,7 +186,7 @@ extension _HomeScreenView on HomeScreen {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      const AdminScreen(admin: {}),
+                                      const AdminScreen(admin: {'role': 'admin'}),
                                 ),
                               );
                             },

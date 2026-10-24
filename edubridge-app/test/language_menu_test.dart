@@ -4,6 +4,7 @@ import 'package:edubridge_app/main.dart';
 import 'package:edubridge_app/services/accessibility_service.dart';
 import 'package:edubridge_app/services/app_locale_controller.dart';
 import 'package:edubridge_app/widgets/dashboard_menu.dart';
+import 'package:edubridge_app/widgets/dashboard_header_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -71,6 +72,39 @@ void main() {
     expect(Directionality.of(tester.element(find.byType(TextField))), TextDirection.rtl);
     expect(find.text('درس أضافه المعلم'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('dashboard header exposes and invokes supplied admin creation actions', (tester) async {
+    String? selected;
+    const labels = {
+      'institution': 'إنشاء حساب مؤسسة',
+      'school': 'إنشاء حساب مدرسة',
+      'ministry': 'إنشاء حساب وزارة',
+    };
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('ar'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Scaffold(appBar: AppBar(actions: [DashboardHeaderActions(
+        actions: [for (final entry in labels.entries) DashboardMenuAction(
+          id: entry.key,
+          label: entry.value,
+          icon: Icons.add,
+          onSelected: () => selected = entry.key,
+        )],
+      )])),
+    ));
+    for (final entry in labels.entries) {
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      for (final label in labels.values) {
+        expect(find.text(label), findsOneWidget);
+      }
+      await tester.tap(find.text(entry.value));
+      await tester.pumpAndSettle();
+      expect(selected, entry.key);
+    }
     expect(tester.takeException(), isNull);
   });
 

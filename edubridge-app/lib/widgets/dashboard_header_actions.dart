@@ -47,7 +47,7 @@ class DashboardHeaderActions extends StatelessWidget {
         showMicrophoneToggle: showMicrophoneToggle,
         iconSize: 25,
         menuIcon: menuIcon,
-        specialistFigmaMenu: true,
+        specialistFigmaMenu: false,
         iconColor: Colors.white,
       ),
     ],

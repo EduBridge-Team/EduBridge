@@ -15,6 +15,7 @@ import '../login_screen.dart';
 import 'admin_school_create_page.dart';
 
 part 'admin_users_tab.dart';
+part 'admin_account_type_dialog.dart';
 part 'admin_create_account_sheet.dart';
 part 'admin_user_children_sheet.dart';
 part 'admin_user_tiles.dart';
@@ -70,6 +71,23 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  Future<void> _showAccountTypeDialog() async {
+    if ((widget.admin['role'] ?? '').toString() != 'admin') return;
+    final role = await showDialog<String>(
+      context: context,
+      builder: (_) => const _AdminAccountTypeDialog(),
+    );
+    if (!mounted || role == null) return;
+    if (role == 'school') {
+      await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(builder: (_) => const AdminSchoolCreatePage()),
+      );
+    } else {
+      await _openAccountPage(role);
+    }
+  }
+
   Widget _buildAdminHeader() {
     final menuActions = <DashboardMenuAction>[
       DashboardMenuAction(
@@ -81,29 +99,15 @@ class _AdminScreenState extends State<AdminScreen> {
           MaterialPageRoute(builder: (_) => const SearchByIdentityScreen()),
         ),
       ),
-      if ((widget.admin['role'] ?? '').toString() == 'admin') ...[
+      if ((widget.admin['role'] ?? '').toString() == 'admin')
         DashboardMenuAction(
-          id: 'create_institution',
-          label: 'إنشاء حساب مؤسسة',
-          icon: Icons.add_business_outlined,
-          onSelected: () => _openAccountPage('institution'),
+          id: 'create_accounts',
+          label: Localizations.localeOf(context).languageCode == 'ar'
+              ? 'إنشاء حسابات'
+              : 'Create accounts',
+          icon: Icons.person_add_alt_1_outlined,
+          onSelected: _showAccountTypeDialog,
         ),
-        DashboardMenuAction(
-          id: 'create_school_account',
-          label: 'إنشاء حساب مدرسة',
-          icon: Icons.school_outlined,
-          onSelected: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AdminSchoolCreatePage()),
-          ),
-        ),
-        DashboardMenuAction(
-          id: 'create_ministry',
-          label: 'إنشاء حساب وزارة',
-          icon: Icons.account_balance_outlined,
-          onSelected: () => _openAccountPage('ministry'),
-        ),
-      ],
       DashboardMenuAction(
         id: 'legal',
         label: context.l10n.privacyAndAccount,
