@@ -79,6 +79,13 @@ DashboardHeaderActions(
                   color: AppColors.brandTeal,
                   onTap: () => _open(context, const InstitutionSchoolAccountScreen()),
                 ),
+                _ActionCard(
+                  icon: Icons.manage_accounts_outlined,
+                  title: context.l10n.directorTitle,
+                  subtitle: context.l10n.directorSubtitle,
+                  color: AppColors.brandBlue,
+                  onTap: () => _open(context, const SchoolDirectorsScreen()),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   context.l10n.institutionTasks,

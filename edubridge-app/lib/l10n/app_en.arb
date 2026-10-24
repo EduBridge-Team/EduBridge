@@ -10476,5 +10476,173 @@
   },
   "@schoolAccountServer": {
     "description": "School account provisioning: Server."
+  },
+  "directorTitle": "School directors",
+  "@directorTitle": {
+    "description": "School director management: Title."
+  },
+  "directorSubtitle": "Director profiles, current assignment and history",
+  "@directorSubtitle": {
+    "description": "School director management: Subtitle."
+  },
+  "directorChooseSchool": "Choose a school",
+  "@directorChooseSchool": {
+    "description": "School director management: ChooseSchool."
+  },
+  "directorNoSchools": "No schools belong to this institution.",
+  "@directorNoSchools": {
+    "description": "School director management: NoSchools."
+  },
+  "directorChooseSchoolHint": "Choose a school to view directors and assignments.",
+  "@directorChooseSchoolHint": {
+    "description": "School director management: ChooseSchoolHint."
+  },
+  "directorNoProfiles": "No director profiles for this school.",
+  "@directorNoProfiles": {
+    "description": "School director management: NoProfiles."
+  },
+  "directorAdd": "Add director profile",
+  "@directorAdd": {
+    "description": "School director management: Add."
+  },
+  "directorEdit": "Edit director profile",
+  "@directorEdit": {
+    "description": "School director management: Edit."
+  },
+  "directorName": "Director name",
+  "@directorName": {
+    "description": "School director management: Name."
+  },
+  "directorQualification": "Qualification",
+  "@directorQualification": {
+    "description": "School director management: Qualification."
+  },
+  "directorExperience": "Years of experience",
+  "@directorExperience": {
+    "description": "School director management: Experience."
+  },
+  "directorExperienceInvalid": "Enter a whole number from 0 to 80.",
+  "@directorExperienceInvalid": {
+    "description": "School director management: ExperienceInvalid."
+  },
+  "directorRequired": "This field is required.",
+  "@directorRequired": {
+    "description": "School director management: Required."
+  },
+  "directorPhone": "Phone",
+  "@directorPhone": {
+    "description": "School director management: Phone."
+  },
+  "directorEmail": "Email",
+  "@directorEmail": {
+    "description": "School director management: Email."
+  },
+  "directorSave": "Save details",
+  "@directorSave": {
+    "description": "School director management: Save."
+  },
+  "directorSaving": "Saving…",
+  "@directorSaving": {
+    "description": "School director management: Saving."
+  },
+  "directorSaved": "The operation was saved successfully.",
+  "@directorSaved": {
+    "description": "School director management: Saved."
+  },
+  "directorCurrent": "Currently assigned director",
+  "@directorCurrent": {
+    "description": "School director management: Current."
+  },
+  "directorNoCurrent": "No director is currently assigned.",
+  "@directorNoCurrent": {
+    "description": "School director management: NoCurrent."
+  },
+  "directorAssign": "Assign director",
+  "@directorAssign": {
+    "description": "School director management: Assign."
+  },
+  "directorEnd": "End assignment",
+  "@directorEnd": {
+    "description": "School director management: End."
+  },
+  "directorHistory": "Assignment history",
+  "@directorHistory": {
+    "description": "School director management: History."
+  },
+  "directorNoHistory": "No assignment history.",
+  "@directorNoHistory": {
+    "description": "School director management: NoHistory."
+  },
+  "directorActive": "Active assignment",
+  "@directorActive": {
+    "description": "School director management: Active."
+  },
+  "directorStarts": "Assignment start",
+  "@directorStarts": {
+    "description": "School director management: Starts."
+  },
+  "directorEnded": "Assignment end",
+  "@directorEnded": {
+    "description": "School director management: Ended."
+  },
+  "directorConfirmAssign": "Confirm director assignment",
+  "@directorConfirmAssign": {
+    "description": "School director management: ConfirmAssign."
+  },
+  "directorAssignNotice": "Submit an assignment request for this director.",
+  "@directorAssignNotice": {
+    "description": "School director management: AssignNotice."
+  },
+  "directorReplaceNotice": "On acceptance, the server must end the current assignment and revoke the former director’s access. Continue?",
+  "@directorReplaceNotice": {
+    "description": "School director management: ReplaceNotice."
+  },
+  "directorEndNotice": "Submit a request to end this assignment and revoke its access. Continue?",
+  "@directorEndNotice": {
+    "description": "School director management: EndNotice."
+  },
+  "directorConfirm": "Confirm",
+  "@directorConfirm": {
+    "description": "School director management: Confirm."
+  },
+  "directorCancel": "Cancel",
+  "@directorCancel": {
+    "description": "School director management: Cancel."
+  },
+  "directorReload": "Reload",
+  "@directorReload": {
+    "description": "School director management: Reload."
+  },
+  "directorUnavailable": "Director management is not available on the server yet.",
+  "@directorUnavailable": {
+    "description": "School director management: Unavailable."
+  },
+  "directorLoadFailed": "Could not load the data. Try reloading.",
+  "@directorLoadFailed": {
+    "description": "School director management: LoadFailed."
+  },
+  "directorPermission": "You do not have permission to manage directors in this scope.",
+  "@directorPermission": {
+    "description": "School director management: Permission."
+  },
+  "directorSession": "Your session expired. Sign in again.",
+  "@directorSession": {
+    "description": "School director management: Session."
+  },
+  "directorValidation": "Review the details and dates before trying again.",
+  "@directorValidation": {
+    "description": "School director management: Validation."
+  },
+  "directorConflict": "The data changed or conflicts with existing records. Reload before continuing.",
+  "@directorConflict": {
+    "description": "School director management: Conflict."
+  },
+  "directorRateLimited": "Too many requests. Wait before trying again.",
+  "@directorRateLimited": {
+    "description": "School director management: RateLimited."
+  },
+  "directorUncertain": "The operation could not be confirmed. Reload and check the history before resubmitting.",
+  "@directorUncertain": {
+    "description": "School director management: Uncertain."
   }
 }

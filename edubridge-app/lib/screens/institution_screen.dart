@@ -14,6 +14,7 @@ import 'login_screen.dart';
 import 'institution_operations_screen.dart';
 import 'institution_statistics_screen.dart';
 import 'institution_school_account_screen.dart';
+import 'school_directors/school_directors_screen.dart';
 part 'institution_screen_view.dart';
 
 class InstitutionScreen extends StatelessWidget {
