@@ -10644,5 +10644,109 @@
   "directorUncertain": "تعذر تأكيد العملية. أعد تحميل السجل وتحقق منه قبل إعادة الإرسال.",
   "@directorUncertain": {
     "description": "School director management: Uncertain."
+  },
+  "directorEvidenceTitle": "المرفقات والتحقق من الهوية",
+  "@directorEvidenceTitle": {
+    "description": "School director evidence: EvidenceTitle."
+  },
+  "directorEvidenceHint": "ارفع مستندات المدير ثم أرسل مستند الهوية للمراجعة. الرفع لا يعني اعتماد الهوية.",
+  "@directorEvidenceHint": {
+    "description": "School director evidence: EvidenceHint."
+  },
+  "directorDocumentKind": "نوع المستند",
+  "@directorDocumentKind": {
+    "description": "School director evidence: DocumentKind."
+  },
+  "directorDocumentIdentity": "إثبات الهوية",
+  "@directorDocumentIdentity": {
+    "description": "School director evidence: DocumentIdentity."
+  },
+  "directorDocumentQualification": "المؤهل العلمي",
+  "@directorDocumentQualification": {
+    "description": "School director evidence: DocumentQualification."
+  },
+  "directorDocumentAppointment": "قرار التكليف",
+  "@directorDocumentAppointment": {
+    "description": "School director evidence: DocumentAppointment."
+  },
+  "directorDocumentOther": "مستند آخر",
+  "@directorDocumentOther": {
+    "description": "School director evidence: DocumentOther."
+  },
+  "directorDocumentUpload": "اختيار ملف ورفعه",
+  "@directorDocumentUpload": {
+    "description": "School director evidence: DocumentUpload."
+  },
+  "directorDocumentLimits": "PDF أو JPG أو PNG، حتى 5MB لكل ملف.",
+  "@directorDocumentLimits": {
+    "description": "School director evidence: DocumentLimits."
+  },
+  "directorDocumentEmpty": "لا توجد مرفقات محفوظة.",
+  "@directorDocumentEmpty": {
+    "description": "School director evidence: DocumentEmpty."
+  },
+  "directorDocumentOpen": "فتح المستند",
+  "@directorDocumentOpen": {
+    "description": "School director evidence: DocumentOpen."
+  },
+  "directorDocumentRemove": "حذف المستند",
+  "@directorDocumentRemove": {
+    "description": "School director evidence: DocumentRemove."
+  },
+  "directorDocumentRemoveConfirm": "هل تريد حذف هذا المستند من الملف؟ تحتفظ جهة المراجعة بالسجلات التاريخية وفق سياسة الاحتفاظ.",
+  "@directorDocumentRemoveConfirm": {
+    "description": "School director evidence: DocumentRemoveConfirm."
+  },
+  "directorDocumentProtected": "هذا المستند مرتبط بطلب قيد المراجعة أو معتمد، ولا يمكن حذفه.",
+  "@directorDocumentProtected": {
+    "description": "School director evidence: DocumentProtected."
+  },
+  "directorVerificationTitle": "مراجعة الهوية",
+  "@directorVerificationTitle": {
+    "description": "School director evidence: VerificationTitle."
+  },
+  "directorVerificationNone": "لم يُرسل طلب تحقق",
+  "@directorVerificationNone": {
+    "description": "School director evidence: VerificationNone."
+  },
+  "directorVerificationPending": "قيد المراجعة",
+  "@directorVerificationPending": {
+    "description": "School director evidence: VerificationPending."
+  },
+  "directorVerificationApproved": "اعتمدت جهة المراجعة الهوية",
+  "@directorVerificationApproved": {
+    "description": "School director evidence: VerificationApproved."
+  },
+  "directorVerificationRejected": "أُعيد الطلب للتصحيح",
+  "@directorVerificationRejected": {
+    "description": "School director evidence: VerificationRejected."
+  },
+  "directorVerificationReason": "سبب الإرجاع",
+  "@directorVerificationReason": {
+    "description": "School director evidence: VerificationReason."
+  },
+  "directorVerificationChoose": "اختر مستند الهوية",
+  "@directorVerificationChoose": {
+    "description": "School director evidence: VerificationChoose."
+  },
+  "directorVerificationMissing": "ارفع مستندًا من نوع إثبات الهوية أولًا.",
+  "@directorVerificationMissing": {
+    "description": "School director evidence: VerificationMissing."
+  },
+  "directorVerificationSubmit": "إرسال للمراجعة",
+  "@directorVerificationSubmit": {
+    "description": "School director evidence: VerificationSubmit."
+  },
+  "directorVerificationConfirm": "سيُرسل مستند الهوية المحدد لجهة مراجعة مخوّلة. هل تريد المتابعة؟",
+  "@directorVerificationConfirm": {
+    "description": "School director evidence: VerificationConfirm."
+  },
+  "directorFileInvalid": "الملف غير صالح. اختر PDF أو JPG أو PNG حتى 5MB وبمحتوى مطابق لامتداده.",
+  "@directorFileInvalid": {
+    "description": "School director evidence: FileInvalid."
+  },
+  "directorDocumentOpenFailed": "تعذر فتح المستند. أعد المحاولة للحصول على رابط جديد.",
+  "@directorDocumentOpenFailed": {
+    "description": "School director evidence: DocumentOpenFailed."
   }
 }

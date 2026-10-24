@@ -10644,5 +10644,109 @@
   "directorUncertain": "The operation could not be confirmed. Reload and check the history before resubmitting.",
   "@directorUncertain": {
     "description": "School director management: Uncertain."
+  },
+  "directorEvidenceTitle": "Documents and identity review",
+  "@directorEvidenceTitle": {
+    "description": "School director evidence: EvidenceTitle."
+  },
+  "directorEvidenceHint": "Upload director documents, then submit an identity document for review. Uploading does not verify identity.",
+  "@directorEvidenceHint": {
+    "description": "School director evidence: EvidenceHint."
+  },
+  "directorDocumentKind": "Document type",
+  "@directorDocumentKind": {
+    "description": "School director evidence: DocumentKind."
+  },
+  "directorDocumentIdentity": "Identity document",
+  "@directorDocumentIdentity": {
+    "description": "School director evidence: DocumentIdentity."
+  },
+  "directorDocumentQualification": "Qualification document",
+  "@directorDocumentQualification": {
+    "description": "School director evidence: DocumentQualification."
+  },
+  "directorDocumentAppointment": "Appointment document",
+  "@directorDocumentAppointment": {
+    "description": "School director evidence: DocumentAppointment."
+  },
+  "directorDocumentOther": "Other document",
+  "@directorDocumentOther": {
+    "description": "School director evidence: DocumentOther."
+  },
+  "directorDocumentUpload": "Choose and upload file",
+  "@directorDocumentUpload": {
+    "description": "School director evidence: DocumentUpload."
+  },
+  "directorDocumentLimits": "PDF, JPG or PNG, up to 5MB per file.",
+  "@directorDocumentLimits": {
+    "description": "School director evidence: DocumentLimits."
+  },
+  "directorDocumentEmpty": "No saved documents.",
+  "@directorDocumentEmpty": {
+    "description": "School director evidence: DocumentEmpty."
+  },
+  "directorDocumentOpen": "Open document",
+  "@directorDocumentOpen": {
+    "description": "School director evidence: DocumentOpen."
+  },
+  "directorDocumentRemove": "Remove document",
+  "@directorDocumentRemove": {
+    "description": "School director evidence: DocumentRemove."
+  },
+  "directorDocumentRemoveConfirm": "Remove this document from the profile? Review history is retained according to the retention policy.",
+  "@directorDocumentRemoveConfirm": {
+    "description": "School director evidence: DocumentRemoveConfirm."
+  },
+  "directorDocumentProtected": "This document belongs to a pending or approved review and cannot be removed.",
+  "@directorDocumentProtected": {
+    "description": "School director evidence: DocumentProtected."
+  },
+  "directorVerificationTitle": "Identity review",
+  "@directorVerificationTitle": {
+    "description": "School director evidence: VerificationTitle."
+  },
+  "directorVerificationNone": "No review submitted",
+  "@directorVerificationNone": {
+    "description": "School director evidence: VerificationNone."
+  },
+  "directorVerificationPending": "Pending review",
+  "@directorVerificationPending": {
+    "description": "School director evidence: VerificationPending."
+  },
+  "directorVerificationApproved": "Identity approved by reviewer",
+  "@directorVerificationApproved": {
+    "description": "School director evidence: VerificationApproved."
+  },
+  "directorVerificationRejected": "Review rejected; correction needed",
+  "@directorVerificationRejected": {
+    "description": "School director evidence: VerificationRejected."
+  },
+  "directorVerificationReason": "Review reason",
+  "@directorVerificationReason": {
+    "description": "School director evidence: VerificationReason."
+  },
+  "directorVerificationChoose": "Choose an identity document",
+  "@directorVerificationChoose": {
+    "description": "School director evidence: VerificationChoose."
+  },
+  "directorVerificationMissing": "Upload an identity document first.",
+  "@directorVerificationMissing": {
+    "description": "School director evidence: VerificationMissing."
+  },
+  "directorVerificationSubmit": "Submit for review",
+  "@directorVerificationSubmit": {
+    "description": "School director evidence: VerificationSubmit."
+  },
+  "directorVerificationConfirm": "Send the selected identity document to an authorized reviewer. Continue?",
+  "@directorVerificationConfirm": {
+    "description": "School director evidence: VerificationConfirm."
+  },
+  "directorFileInvalid": "Invalid file. Choose a PDF, JPG or PNG up to 5MB with matching file contents.",
+  "@directorFileInvalid": {
+    "description": "School director evidence: FileInvalid."
+  },
+  "directorDocumentOpenFailed": "Could not open the document. Try again to request a fresh link.",
+  "@directorDocumentOpenFailed": {
+    "description": "School director evidence: DocumentOpenFailed."
   }
 }
