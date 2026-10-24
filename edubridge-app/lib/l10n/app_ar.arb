@@ -10368,5 +10368,113 @@
   "voiceCommandGamesLabel": "الألعاب",
   "@voiceCommandGamesLabel": {
     "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
+  },
+  "schoolAccountIndependentTitle": "إنشاء حساب مدرسة مستقلة",
+  "schoolAccountAffiliatedTitle": "إنشاء حساب مدرسة تابعة",
+  "schoolAccountIndependentHint": "حساب مدرسة مستقلة لا تتبع لأي مؤسسة.",
+  "schoolAccountAffiliatedHint": "سيُربط حساب المدرسة بمؤسستك الحالية.",
+  "schoolAccountName": "اسم المدرسة",
+  "schoolAccountEmail": "البريد الإلكتروني للمدرسة",
+  "schoolAccountPhone": "رقم الهاتف (اختياري)",
+  "schoolAccountAddress": "العنوان (اختياري)",
+  "schoolAccountPassword": "كلمة المرور",
+  "schoolAccountConfirmation": "تأكيد كلمة المرور",
+  "schoolAccountSubmit": "إنشاء الحساب",
+  "schoolAccountSubmitting": "جارٍ إنشاء الحساب…",
+  "schoolAccountSuccess": "تم إنشاء حساب المدرسة بنجاح.",
+  "schoolAccountNameRequired": "أدخل اسم المدرسة.",
+  "schoolAccountEmailInvalid": "أدخل بريدًا إلكترونيًا صالحًا.",
+  "schoolAccountPasswordInvalid": "كلمة المرور يجب أن تكون بين 8 و128 حرفًا.",
+  "schoolAccountPasswordMismatch": "كلمتا المرور غير متطابقتين.",
+  "schoolAccountFieldRejected": "تحقق من قيمة هذا الحقل.",
+  "schoolAccountUnavailable": "خدمة إنشاء حسابات المدارس غير متاحة على السيرفر حاليًا.",
+  "schoolAccountUnauthorized": "انتهت الجلسة. سجّل الدخول مجددًا.",
+  "schoolAccountForbidden": "لا تملك صلاحية إنشاء حساب مدرسة في هذا النطاق.",
+  "schoolAccountValidation": "راجع البيانات المدخلة ثم أعد المحاولة.",
+  "schoolAccountConflict": "يوجد حساب أو مدرسة بهذه البيانات. تحقق قبل إعادة المحاولة.",
+  "schoolAccountRateLimited": "طلبات كثيرة. انتظر قليلًا قبل المحاولة مجددًا.",
+  "schoolAccountNetwork": "تعذر الاتصال. تحقق من الإنترنت وحاول مجددًا.",
+  "schoolAccountUncertain": "تعذر تأكيد إنشاء الحساب. تحقق من وجوده قبل إعادة الإرسال.",
+  "schoolAccountServer": "تعذر إتمام الطلب. تحقق من وجود الحساب قبل إعادة المحاولة.",
+  "@schoolAccountIndependentTitle": {
+    "description": "School account provisioning: IndependentTitle."
+  },
+  "@schoolAccountAffiliatedTitle": {
+    "description": "School account provisioning: AffiliatedTitle."
+  },
+  "@schoolAccountIndependentHint": {
+    "description": "School account provisioning: IndependentHint."
+  },
+  "@schoolAccountAffiliatedHint": {
+    "description": "School account provisioning: AffiliatedHint."
+  },
+  "@schoolAccountName": {
+    "description": "School account provisioning: Name."
+  },
+  "@schoolAccountEmail": {
+    "description": "School account provisioning: Email."
+  },
+  "@schoolAccountPhone": {
+    "description": "School account provisioning: Phone."
+  },
+  "@schoolAccountAddress": {
+    "description": "School account provisioning: Address."
+  },
+  "@schoolAccountPassword": {
+    "description": "School account provisioning: Password."
+  },
+  "@schoolAccountConfirmation": {
+    "description": "School account provisioning: Confirmation."
+  },
+  "@schoolAccountSubmit": {
+    "description": "School account provisioning: Submit."
+  },
+  "@schoolAccountSubmitting": {
+    "description": "School account provisioning: Submitting."
+  },
+  "@schoolAccountSuccess": {
+    "description": "School account provisioning: Success."
+  },
+  "@schoolAccountNameRequired": {
+    "description": "School account provisioning: NameRequired."
+  },
+  "@schoolAccountEmailInvalid": {
+    "description": "School account provisioning: EmailInvalid."
+  },
+  "@schoolAccountPasswordInvalid": {
+    "description": "School account provisioning: PasswordInvalid."
+  },
+  "@schoolAccountPasswordMismatch": {
+    "description": "School account provisioning: PasswordMismatch."
+  },
+  "@schoolAccountFieldRejected": {
+    "description": "School account provisioning: FieldRejected."
+  },
+  "@schoolAccountUnavailable": {
+    "description": "School account provisioning: Unavailable."
+  },
+  "@schoolAccountUnauthorized": {
+    "description": "School account provisioning: Unauthorized."
+  },
+  "@schoolAccountForbidden": {
+    "description": "School account provisioning: Forbidden."
+  },
+  "@schoolAccountValidation": {
+    "description": "School account provisioning: Validation."
+  },
+  "@schoolAccountConflict": {
+    "description": "School account provisioning: Conflict."
+  },
+  "@schoolAccountRateLimited": {
+    "description": "School account provisioning: RateLimited."
+  },
+  "@schoolAccountNetwork": {
+    "description": "School account provisioning: Network."
+  },
+  "@schoolAccountUncertain": {
+    "description": "School account provisioning: Uncertain."
+  },
+  "@schoolAccountServer": {
+    "description": "School account provisioning: Server."
   }
 }
