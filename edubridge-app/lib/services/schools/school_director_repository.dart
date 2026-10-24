@@ -127,8 +127,7 @@ class SchoolDirectorRepository implements SchoolDirectorGateway {
       final profile = SchoolDirector.fromJson(_map(data['director']));
       if (profile.schoolId != school.id ||
           (directorId != null && profile.id != directorId) ||
-          profile.details.email.toLowerCase() !=
-              draft.email.trim().toLowerCase()) {
+          !profile.details.matches(draft)) {
         throw const FormatException('Director response mismatch');
       }
     });

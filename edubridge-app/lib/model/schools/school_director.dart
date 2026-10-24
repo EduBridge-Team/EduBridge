@@ -54,6 +54,13 @@ class DirectorDraft {
   final String qualification;
   final int experienceYears;
 
+  bool matches(DirectorDraft other) =>
+      name.trim() == other.name.trim() &&
+      email.trim().toLowerCase() == other.email.trim().toLowerCase() &&
+      phone.trim() == other.phone.trim() &&
+      qualification.trim() == other.qualification.trim() &&
+      experienceYears == other.experienceYears;
+
   Map<String, dynamic> toJson() => {
     'name': name.trim(),
     'email': email.trim(),
