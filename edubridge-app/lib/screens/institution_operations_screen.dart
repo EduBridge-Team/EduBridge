@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/l10n.dart';
+import 'school_directors/school_directors_screen.dart';
 
 /// Institution-scoped operations. The API validates active organization
 /// membership for every request; a slug never grants access by itself.
@@ -352,10 +354,12 @@ class _InstitutionOperationsScreenState extends State<InstitutionOperationsScree
               )),
           const SizedBox(height: 16),
           Text('الإدارة والمتابعة', style: Theme.of(context).textTheme.titleLarge),
-          const ListTile(
-            leading: Icon(Icons.manage_accounts_outlined),
-            title: Text('إدارة مدراء المدارس'),
-            subtitle: Text('إنشاء حسابات مدراء المدارس يحتاج صلاحية API غير متاحة حاليًا للمؤسسة'),
+          ListTile(
+            leading: const Icon(Icons.manage_accounts_outlined),
+            title: Text(context.l10n.directorTitle),
+            subtitle: Text(context.l10n.directorSubtitle),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const SchoolDirectorsScreen())),
           ),
         ],
       ]),

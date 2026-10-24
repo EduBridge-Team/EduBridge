@@ -10476,5 +10476,173 @@
   },
   "@schoolAccountServer": {
     "description": "School account provisioning: Server."
+  },
+  "directorTitle": "إدارة مدراء المدارس",
+  "@directorTitle": {
+    "description": "School director management: Title."
+  },
+  "directorSubtitle": "ملفات المديرين والتكليف الحالي والسجل السابق",
+  "@directorSubtitle": {
+    "description": "School director management: Subtitle."
+  },
+  "directorChooseSchool": "اختر المدرسة",
+  "@directorChooseSchool": {
+    "description": "School director management: ChooseSchool."
+  },
+  "directorNoSchools": "لا توجد مدارس تابعة للمؤسسة.",
+  "@directorNoSchools": {
+    "description": "School director management: NoSchools."
+  },
+  "directorChooseSchoolHint": "اختر مدرسة لعرض ملفات المديرين وتكليفاتهم.",
+  "@directorChooseSchoolHint": {
+    "description": "School director management: ChooseSchoolHint."
+  },
+  "directorNoProfiles": "لا توجد ملفات مديرين لهذه المدرسة.",
+  "@directorNoProfiles": {
+    "description": "School director management: NoProfiles."
+  },
+  "directorAdd": "إضافة ملف مدير",
+  "@directorAdd": {
+    "description": "School director management: Add."
+  },
+  "directorEdit": "تعديل ملف المدير",
+  "@directorEdit": {
+    "description": "School director management: Edit."
+  },
+  "directorName": "اسم المدير",
+  "@directorName": {
+    "description": "School director management: Name."
+  },
+  "directorQualification": "المؤهل العلمي",
+  "@directorQualification": {
+    "description": "School director management: Qualification."
+  },
+  "directorExperience": "سنوات الخبرة",
+  "@directorExperience": {
+    "description": "School director management: Experience."
+  },
+  "directorExperienceInvalid": "أدخل عددًا صحيحًا من 0 إلى 80.",
+  "@directorExperienceInvalid": {
+    "description": "School director management: ExperienceInvalid."
+  },
+  "directorRequired": "هذا الحقل مطلوب.",
+  "@directorRequired": {
+    "description": "School director management: Required."
+  },
+  "directorPhone": "رقم الهاتف",
+  "@directorPhone": {
+    "description": "School director management: Phone."
+  },
+  "directorEmail": "البريد الإلكتروني",
+  "@directorEmail": {
+    "description": "School director management: Email."
+  },
+  "directorSave": "حفظ البيانات",
+  "@directorSave": {
+    "description": "School director management: Save."
+  },
+  "directorSaving": "جارٍ الحفظ…",
+  "@directorSaving": {
+    "description": "School director management: Saving."
+  },
+  "directorSaved": "تم حفظ العملية بنجاح.",
+  "@directorSaved": {
+    "description": "School director management: Saved."
+  },
+  "directorCurrent": "المدير المكلّف حاليًا",
+  "@directorCurrent": {
+    "description": "School director management: Current."
+  },
+  "directorNoCurrent": "لا يوجد مدير مكلّف حاليًا.",
+  "@directorNoCurrent": {
+    "description": "School director management: NoCurrent."
+  },
+  "directorAssign": "تعيين مدير",
+  "@directorAssign": {
+    "description": "School director management: Assign."
+  },
+  "directorEnd": "إنهاء التكليف",
+  "@directorEnd": {
+    "description": "School director management: End."
+  },
+  "directorHistory": "سجل التكليفات",
+  "@directorHistory": {
+    "description": "School director management: History."
+  },
+  "directorNoHistory": "لا توجد تكليفات مسجلة.",
+  "@directorNoHistory": {
+    "description": "School director management: NoHistory."
+  },
+  "directorActive": "تكليف سارٍ",
+  "@directorActive": {
+    "description": "School director management: Active."
+  },
+  "directorStarts": "بداية التكليف",
+  "@directorStarts": {
+    "description": "School director management: Starts."
+  },
+  "directorEnded": "نهاية التكليف",
+  "@directorEnded": {
+    "description": "School director management: Ended."
+  },
+  "directorConfirmAssign": "تأكيد تعيين المدير",
+  "@directorConfirmAssign": {
+    "description": "School director management: ConfirmAssign."
+  },
+  "directorAssignNotice": "سيُرسل طلب تعيين هذا المدير للمدرسة.",
+  "@directorAssignNotice": {
+    "description": "School director management: AssignNotice."
+  },
+  "directorReplaceNotice": "سيُنهي السيرفر تكليف المدير الحالي ويُبطل وصوله عند قبول الطلب. هل تريد المتابعة؟",
+  "@directorReplaceNotice": {
+    "description": "School director management: ReplaceNotice."
+  },
+  "directorEndNotice": "سيُرسل طلب إنهاء التكليف وإبطال الوصول المرتبط به. هل تريد المتابعة؟",
+  "@directorEndNotice": {
+    "description": "School director management: EndNotice."
+  },
+  "directorConfirm": "تأكيد",
+  "@directorConfirm": {
+    "description": "School director management: Confirm."
+  },
+  "directorCancel": "إلغاء",
+  "@directorCancel": {
+    "description": "School director management: Cancel."
+  },
+  "directorReload": "إعادة تحميل",
+  "@directorReload": {
+    "description": "School director management: Reload."
+  },
+  "directorUnavailable": "خدمة ملفات المديرين غير متاحة على السيرفر حاليًا.",
+  "@directorUnavailable": {
+    "description": "School director management: Unavailable."
+  },
+  "directorLoadFailed": "تعذر تحميل البيانات. حاول إعادة التحميل.",
+  "@directorLoadFailed": {
+    "description": "School director management: LoadFailed."
+  },
+  "directorPermission": "لا تملك صلاحية إدارة المديرين في هذا النطاق.",
+  "@directorPermission": {
+    "description": "School director management: Permission."
+  },
+  "directorSession": "انتهت الجلسة. سجّل الدخول مجددًا.",
+  "@directorSession": {
+    "description": "School director management: Session."
+  },
+  "directorValidation": "راجع البيانات والتواريخ وأعد المحاولة.",
+  "@directorValidation": {
+    "description": "School director management: Validation."
+  },
+  "directorConflict": "تغيّرت البيانات أو يوجد تعارض. أعد التحميل قبل المتابعة.",
+  "@directorConflict": {
+    "description": "School director management: Conflict."
+  },
+  "directorRateLimited": "طلبات كثيرة. انتظر قليلًا قبل المحاولة مجددًا.",
+  "@directorRateLimited": {
+    "description": "School director management: RateLimited."
+  },
+  "directorUncertain": "تعذر تأكيد العملية. أعد تحميل السجل وتحقق منه قبل إعادة الإرسال.",
+  "@directorUncertain": {
+    "description": "School director management: Uncertain."
   }
 }
