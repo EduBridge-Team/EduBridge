@@ -4,6 +4,7 @@ import '../../l10n/l10n.dart';
 import '../../model/schools/school_director.dart';
 import 'director_assignment_actions.dart';
 import 'director_profile_form.dart';
+import 'evidence/director_evidence_screen.dart';
 import 'school_directors_controller.dart';
 
 class DirectorDirectoryView extends StatelessWidget {
@@ -55,6 +56,20 @@ class DirectorDirectoryView extends StatelessWidget {
                           : null,
                       icon: const Icon(Icons.edit_outlined),
                     ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: controller.canMutate
+                        ? () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => DirectorEvidenceScreen(
+                                school: controller.school!,
+                                director: director,
+                              ),
+                            ),
+                          )
+                        : null,
+                    icon: const Icon(Icons.folder_shared_outlined),
+                    label: Text(l10n.directorEvidenceTitle),
                   ),
                   if (director.details.phone.isNotEmpty)
                     Text('${l10n.directorPhone}: ${director.details.phone}'),

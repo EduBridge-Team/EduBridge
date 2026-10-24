@@ -10,6 +10,8 @@ String directorFailureMessage(AppLocalizations l10n, DirectorFailure error) =>
       DirectorFailure.conflict => l10n.directorConflict,
       DirectorFailure.rateLimited => l10n.directorRateLimited,
       DirectorFailure.network => l10n.directorLoadFailed,
+      DirectorFailure.invalidFile => l10n.directorFileInvalid,
+      DirectorFailure.openFailed => l10n.directorDocumentOpenFailed,
       DirectorFailure.uncertain ||
       DirectorFailure.invalidResponse ||
       DirectorFailure.server => l10n.directorUncertain,
