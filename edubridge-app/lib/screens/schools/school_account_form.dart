@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../l10n/l10n.dart';
 import '../../model/schools/school_account.dart';
 import '../../services/schools/school_account_repository.dart';
@@ -39,7 +40,12 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
   @override
   void dispose() {
     for (final controller in [
-      _name, _email, _phone, _address, _password, _confirmation,
+      _name,
+      _email,
+      _phone,
+      _address,
+      _password,
+      _confirmation,
     ]) {
       controller.dispose();
     }
@@ -52,8 +58,11 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     final request = SchoolAccountRequest(
-      name: _name.text, email: _email.text, phone: _phone.text,
-      address: _address.text, password: _password.text,
+      name: _name.text,
+      email: _email.text,
+      phone: _phone.text,
+      address: _address.text,
+      password: _password.text,
       passwordConfirmation: _confirmation.text,
     );
     setState(() => _submitting = true);
@@ -71,15 +80,21 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       if (mounted) setState(() => _error = error);
     } on Exception {
       if (mounted) {
-        setState(() => _error = const SchoolAccountException(
-          SchoolAccountFailure.uncertain));
+        setState(
+          () => _error = const SchoolAccountException(
+            SchoolAccountFailure.uncertain,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
 
-  Widget _field(String key, String label, TextEditingController controller, {
+  Widget _field(
+    String key,
+    String label,
+    TextEditingController controller, {
     int? maxLength,
     bool secret = false,
     TextInputType? keyboard,
@@ -102,7 +117,8 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
       decoration: InputDecoration(
         labelText: label,
         errorText: _error?.fields.contains(key) == true
-            ? context.l10n.schoolAccountFieldRejected : null,
+            ? context.l10n.schoolAccountFieldRejected
+            : null,
         border: const OutlineInputBorder(),
       ),
     ),
@@ -114,10 +130,14 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
     final independent = widget.scope == SchoolAccountScope.independent;
     return Scaffold(
       appBar: AppBar(
-        title: Text(independent ? l10n.schoolAccountIndependentTitle
-            : l10n.schoolAccountAffiliatedTitle),
+        title: Text(
+          independent
+              ? l10n.schoolAccountIndependentTitle
+              : l10n.schoolAccountAffiliatedTitle,
+        ),
         flexibleSpace: const DecoratedBox(
-          decoration: BoxDecoration(gradient: AppColors.appBarGradient)),
+          decoration: BoxDecoration(gradient: AppColors.appBarGradient),
+        ),
       ),
       body: SafeArea(
         child: Center(
@@ -126,51 +146,105 @@ class _SchoolAccountFormState extends State<SchoolAccountForm> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: _created
-                ? Semantics(liveRegion: true, child: Text(l10n.schoolAccountSuccess,
-                    key: const ValueKey('school-account-success')))
-                : Form(
-                    key: _formKey,
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(independent ? l10n.schoolAccountIndependentHint
-                            : l10n.schoolAccountAffiliatedHint),
-                        const SizedBox(height: 20),
-                        _field('name', l10n.schoolAccountName, _name, maxLength: 150,
-                          validator: (v) => (v ?? '').trim().isEmpty
-                              ? l10n.schoolAccountNameRequired : null),
-                        _field('email', l10n.schoolAccountEmail, _email,
-                          maxLength: 190, keyboard: TextInputType.emailAddress,
-                          validator: (v) => RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                            .hasMatch((v ?? '').trim())
-                              ? null : l10n.schoolAccountEmailInvalid),
-                        _field('phone', l10n.schoolAccountPhone, _phone,
-                          maxLength: 30, keyboard: TextInputType.phone),
-                        _field('address', l10n.schoolAccountAddress, _address,
-                          maxLength: 255),
-                        _field('password', l10n.schoolAccountPassword, _password,
-                          secret: true, validator: (v) => (v ?? '').length < 8 ||
-                            (v ?? '').length > 128
-                              ? l10n.schoolAccountPasswordInvalid : null),
-                        _field('password_confirmation', l10n.schoolAccountConfirmation,
-                          _confirmation, secret: true,
-                          validator: (v) => v == _password.text
-                              ? null : l10n.schoolAccountPasswordMismatch),
-                        if (_error != null) ...[
-                          Semantics(liveRegion: true, child: Text(
-                            schoolAccountFailureMessage(l10n, _error!.failure),
-                            key: const ValueKey('school-account-error'),
-                            style: TextStyle(color: Theme.of(context).colorScheme.error))),
-                          const SizedBox(height: 12),
+                  ? Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        l10n.schoolAccountSuccess,
+                        key: const ValueKey('school-account-success'),
+                      ),
+                    )
+                  : Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            independent
+                                ? l10n.schoolAccountIndependentHint
+                                : l10n.schoolAccountAffiliatedHint,
+                          ),
+                          const SizedBox(height: 20),
+                          _field(
+                            'name',
+                            l10n.schoolAccountName,
+                            _name,
+                            maxLength: 150,
+                            validator: (v) => (v ?? '').trim().isEmpty
+                                ? l10n.schoolAccountNameRequired
+                                : null,
+                          ),
+                          _field(
+                            'email',
+                            l10n.schoolAccountEmail,
+                            _email,
+                            maxLength: 190,
+                            keyboard: TextInputType.emailAddress,
+                            validator: (v) =>
+                                RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                    .hasMatch((v ?? '').trim())
+                                ? null
+                                : l10n.schoolAccountEmailInvalid,
+                          ),
+                          _field(
+                            'phone',
+                            l10n.schoolAccountPhone,
+                            _phone,
+                            maxLength: 30,
+                            keyboard: TextInputType.phone,
+                          ),
+                          _field(
+                            'address',
+                            l10n.schoolAccountAddress,
+                            _address,
+                            maxLength: 255,
+                          ),
+                          _field(
+                            'password',
+                            l10n.schoolAccountPassword,
+                            _password,
+                            secret: true,
+                            validator: (v) =>
+                                (v ?? '').length < 8 || (v ?? '').length > 128
+                                ? l10n.schoolAccountPasswordInvalid
+                                : null,
+                          ),
+                          _field(
+                            'password_confirmation',
+                            l10n.schoolAccountConfirmation,
+                            _confirmation,
+                            secret: true,
+                            validator: (v) => v == _password.text
+                                ? null
+                                : l10n.schoolAccountPasswordMismatch,
+                          ),
+                          if (_error != null) ...[
+                            Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                schoolAccountFailureMessage(
+                                  l10n,
+                                  _error!.failure,
+                                ),
+                                key: const ValueKey('school-account-error'),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          FilledButton(
+                            key: const ValueKey('school-account-submit'),
+                            onPressed: _submitting ? null : _submit,
+                            child: Text(
+                              _submitting
+                                  ? l10n.schoolAccountSubmitting
+                                  : l10n.schoolAccountSubmit,
+                            ),
+                          ),
                         ],
-                        FilledButton(
-                          key: const ValueKey('school-account-submit'),
-                          onPressed: _submitting ? null : _submit,
-                          child: Text(_submitting ? l10n.schoolAccountSubmitting
-                              : l10n.schoolAccountSubmit),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
             ),
           ),
         ),

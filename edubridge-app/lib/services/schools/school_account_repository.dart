@@ -1,12 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../../model/schools/school_account.dart';
 import '../api_service.dart';
 
 enum SchoolAccountFailure {
-  unavailable, unauthorized, forbidden, validation, conflict,
-  rateLimited, network, uncertain, invalidResponse, server,
+  unavailable,
+  unauthorized,
+  forbidden,
+  validation,
+  conflict,
+  rateLimited,
+  network,
+  uncertain,
+  invalidResponse,
+  server,
 }
 
 class SchoolAccountException implements Exception {
@@ -16,14 +26,16 @@ class SchoolAccountException implements Exception {
 }
 
 typedef SchoolAccountPost = Future<http.Response> Function(
-  String path, Map<String, dynamic> body);
+  String path,
+  Map<String, dynamic> body,
+);
 typedef SchoolAccountGet = Future<http.Response> Function(String path);
 
 /// Flutter-owned API contract. No fallback to school-record CRUD endpoints.
 class SchoolAccountRepository {
   SchoolAccountRepository({SchoolAccountPost? post, SchoolAccountGet? get})
-      : _post = post ?? ApiService.authPost,
-        _get = get ?? ApiService.authGet;
+    : _post = post ?? ApiService.authPost,
+      _get = get ?? ApiService.authGet;
 
   final SchoolAccountPost _post;
   final SchoolAccountGet _get;
@@ -34,25 +46,35 @@ class SchoolAccountRepository {
 
   Future<SchoolAccount> createAffiliated(SchoolAccountRequest request) async {
     // Resolve the signed-in institution; never reuse another user's cached slug.
-    final response = await _request(() => _get('/institutions/my-organization'));
+    final response = await _request(
+      () => _get('/institutions/my-organization'),
+    );
     _requireSuccess(response, 200);
     final organization = _decode(response.body)['organization'];
     if (organization is! Map<String, dynamic> ||
-        organization['id'] is! int || (organization['id'] as int) <= 0 ||
+        organization['id'] is! int ||
+        (organization['id'] as int) <= 0 ||
         organization['slug'] is! String ||
         !RegExp(r'^[a-z0-9][a-z0-9-]{1,79}$')
             .hasMatch(organization['slug'] as String)) {
       throw const SchoolAccountException(SchoolAccountFailure.invalidResponse);
     }
     return _create(
-      '/institutions/${organization['slug']}/school-accounts', request,
+      '/institutions/${organization['slug']}/school-accounts',
+      request,
       organizationId: organization['id'] as int,
     );
   }
 
-  Future<SchoolAccount> _create(String path, SchoolAccountRequest request,
-      {required int? organizationId}) async {
-    final response = await _request(() => _post(path, request.toJson()), mutation: true);
+  Future<SchoolAccount> _create(
+    String path,
+    SchoolAccountRequest request, {
+    required int? organizationId,
+  }) async {
+    final response = await _request(
+      () => _post(path, request.toJson()),
+      mutation: true,
+    );
     _requireSuccess(response, 201);
     try {
       final account = SchoolAccount.fromJson(_decode(response.body));
@@ -66,16 +88,24 @@ class SchoolAccountRepository {
     }
   }
 
-  Future<http.Response> _request(Future<http.Response> Function() send,
-      {bool mutation = false}) async {
+  Future<http.Response> _request(
+    Future<http.Response> Function() send, {
+    bool mutation = false,
+  }) async {
     try {
       return await send().timeout(_timeout);
     } on TimeoutException {
-      throw SchoolAccountException(mutation
-          ? SchoolAccountFailure.uncertain : SchoolAccountFailure.network);
+      throw SchoolAccountException(
+        mutation
+            ? SchoolAccountFailure.uncertain
+            : SchoolAccountFailure.network,
+      );
     } on http.ClientException {
-      throw SchoolAccountException(mutation
-          ? SchoolAccountFailure.uncertain : SchoolAccountFailure.network);
+      throw SchoolAccountException(
+        mutation
+            ? SchoolAccountFailure.uncertain
+            : SchoolAccountFailure.network,
+      );
     }
   }
 

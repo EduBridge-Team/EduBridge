@@ -47,15 +47,18 @@ class SchoolAccount {
     final account = json['account'];
     if (school is! Map<String, dynamic> ||
         account is! Map<String, dynamic> ||
-        school['id'] is! int || (school['id'] as int) <= 0 ||
-        account['id'] is! int || (account['id'] as int) <= 0 ||
-        school['name'] is! String || (school['name'] as String).trim().isEmpty ||
+        school['id'] is! int ||
+        (school['id'] as int) <= 0 ||
+        account['id'] is! int ||
+        (account['id'] as int) <= 0 ||
+        school['name'] is! String ||
+        (school['name'] as String).trim().isEmpty ||
         account['email'] is! String ||
         account['role'] != 'school' ||
         !school.containsKey('organization_id') ||
         (school['organization_id'] != null &&
-          (school['organization_id'] is! int ||
-            (school['organization_id'] as int) <= 0))) {
+            (school['organization_id'] is! int ||
+                (school['organization_id'] as int) <= 0))) {
       throw const FormatException('Invalid school account response');
     }
     return SchoolAccount(
