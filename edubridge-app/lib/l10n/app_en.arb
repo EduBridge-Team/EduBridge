@@ -10368,5 +10368,32 @@
   "voiceCommandGamesLabel": "Games",
   "@voiceCommandGamesLabel": {
     "description": "Voice navigation feedback; preserve account checks, route identifiers and authored names."
-  }
+  },
+  "schoolAccountIndependentTitle": "Create independent school account",
+  "schoolAccountAffiliatedTitle": "Create affiliated school account",
+  "schoolAccountIndependentHint": "An independent school account without an institution.",
+  "schoolAccountAffiliatedHint": "The school account will belong to your current institution.",
+  "schoolAccountName": "School name",
+  "schoolAccountEmail": "School email",
+  "schoolAccountPhone": "Phone (optional)",
+  "schoolAccountAddress": "Address (optional)",
+  "schoolAccountPassword": "Password",
+  "schoolAccountConfirmation": "Confirm password",
+  "schoolAccountSubmit": "Create account",
+  "schoolAccountSubmitting": "Creating account…",
+  "schoolAccountSuccess": "School account created successfully.",
+  "schoolAccountNameRequired": "Enter the school name.",
+  "schoolAccountEmailInvalid": "Enter a valid email address.",
+  "schoolAccountPasswordInvalid": "Password must contain 8 to 128 characters.",
+  "schoolAccountPasswordMismatch": "Passwords do not match.",
+  "schoolAccountFieldRejected": "Check this field.",
+  "schoolAccountUnavailable": "School account creation is not available on the server yet.",
+  "schoolAccountUnauthorized": "Your session has expired. Sign in again.",
+  "schoolAccountForbidden": "You cannot create a school account in this scope.",
+  "schoolAccountValidation": "Review the entered details and try again.",
+  "schoolAccountConflict": "An account or school already uses these details. Check before retrying.",
+  "schoolAccountRateLimited": "Too many requests. Wait before trying again.",
+  "schoolAccountNetwork": "Could not connect. Check your connection and try again.",
+  "schoolAccountUncertain": "Account creation could not be confirmed. Check whether it exists before submitting again.",
+  "schoolAccountServer": "The request could not be completed. Check whether the account exists before retrying."
 }
