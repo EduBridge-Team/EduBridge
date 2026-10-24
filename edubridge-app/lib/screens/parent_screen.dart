@@ -26,6 +26,7 @@ import 'create_learning_support_request_screen.dart';
 import 'chats_screen.dart';
 import 'parent_lessons_screen.dart';
 import 'login_screen.dart';
+import 'enrollment/parent_enrollment_screen.dart';
 
 part 'parent_screen_widgets.dart';
 

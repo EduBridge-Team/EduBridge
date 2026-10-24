@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../screens/home_screen.dart';
 import '../screens/parent_screen.dart';
 import '../screens/institution_screen.dart';
+import '../screens/enrollment/school_dashboard_screen.dart';
 
 Future<Widget> homeScreenForRole() async {
   final role = await ApiService.getRole();
@@ -28,6 +29,8 @@ Future<Widget> homeScreenForRole() async {
       return const ParentScreen();
     case 'ministry':
       return const MinistryScreen();
+    case 'school':
+      return const SchoolDashboardScreen();
     case 'institution':
       return const InstitutionScreen();
     default:

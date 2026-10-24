@@ -34,6 +34,8 @@ extension _ProfileWidgetsExtension on _ProfileScreenState {
         return context.l10n.adminRole;
       case 'ministry':
         return context.l10n.ministryRole;
+      case 'school':
+        return context.l10n.schoolRole;
       case 'institution':
         return context.l10n.institutionRole;
       default:
