@@ -262,6 +262,13 @@ extension _ParentScreenWidgetsExtension on _ParentScreenState {
                   ],
                 ),
                 const SizedBox(height: 6),
+                OutlinedButton.icon(
+                  onPressed: child['id'] is int ? () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => ParentEnrollmentScreen(
+                      childId: child['id'] as int, childName: name))) : null,
+                  icon: const Icon(Icons.school_outlined),
+                  label: Text(context.l10n.enrollmentParentTitle),
+                ),
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: TextButton.icon(

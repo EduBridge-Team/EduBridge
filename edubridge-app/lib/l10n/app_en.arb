@@ -10748,5 +10748,161 @@
   "directorDocumentOpenFailed": "Could not open the document. Try again to request a fresh link.",
   "@directorDocumentOpenFailed": {
     "description": "School director evidence: DocumentOpenFailed."
+  },
+  "schoolRole": "School",
+  "@schoolRole": {
+    "description": "School enrollment: schoolRole."
+  },
+  "enrollmentSchoolTitle": "School dashboard",
+  "@enrollmentSchoolTitle": {
+    "description": "School enrollment: enrollmentSchoolTitle."
+  },
+  "enrollmentParentTitle": "School enrollment",
+  "@enrollmentParentTitle": {
+    "description": "School enrollment: enrollmentParentTitle."
+  },
+  "enrollmentRequests": "Enrollment requests",
+  "@enrollmentRequests": {
+    "description": "School enrollment: enrollmentRequests."
+  },
+  "enrollmentHistory": "Request history",
+  "@enrollmentHistory": {
+    "description": "School enrollment: enrollmentHistory."
+  },
+  "enrollmentNoRequests": "No enrollment requests.",
+  "@enrollmentNoRequests": {
+    "description": "School enrollment: enrollmentNoRequests."
+  },
+  "enrollmentPending": "Pending",
+  "@enrollmentPending": {
+    "description": "School enrollment: enrollmentPending."
+  },
+  "enrollmentApproved": "Approved",
+  "@enrollmentApproved": {
+    "description": "School enrollment: enrollmentApproved."
+  },
+  "enrollmentRejected": "Rejected",
+  "@enrollmentRejected": {
+    "description": "School enrollment: enrollmentRejected."
+  },
+  "enrollmentCancelled": "Cancelled",
+  "@enrollmentCancelled": {
+    "description": "School enrollment: enrollmentCancelled."
+  },
+  "enrollmentApprove": "Approve and enroll",
+  "@enrollmentApprove": {
+    "description": "School enrollment: enrollmentApprove."
+  },
+  "enrollmentReject": "Reject request",
+  "@enrollmentReject": {
+    "description": "School enrollment: enrollmentReject."
+  },
+  "enrollmentSection": "Year / grade / section",
+  "@enrollmentSection": {
+    "description": "School enrollment: enrollmentSection."
+  },
+  "enrollmentSectionRequired": "Choose a section for enrollment.",
+  "@enrollmentSectionRequired": {
+    "description": "School enrollment: enrollmentSectionRequired."
+  },
+  "enrollmentNoSections": "No sections are currently available for approval.",
+  "@enrollmentNoSections": {
+    "description": "School enrollment: enrollmentNoSections."
+  },
+  "enrollmentReason": "Decision reason",
+  "@enrollmentReason": {
+    "description": "School enrollment: enrollmentReason."
+  },
+  "enrollmentReasonRequired": "A rejection reason is required.",
+  "@enrollmentReasonRequired": {
+    "description": "School enrollment: enrollmentReasonRequired."
+  },
+  "enrollmentConfirm": "Confirm",
+  "@enrollmentConfirm": {
+    "description": "School enrollment: enrollmentConfirm."
+  },
+  "enrollmentCancelAction": "Cancel",
+  "@enrollmentCancelAction": {
+    "description": "School enrollment: enrollmentCancelAction."
+  },
+  "enrollmentCancelRequest": "Cancel enrollment request",
+  "@enrollmentCancelRequest": {
+    "description": "School enrollment: enrollmentCancelRequest."
+  },
+  "enrollmentCancelNotice": "Cancel this pending request? The child profile will remain.",
+  "@enrollmentCancelNotice": {
+    "description": "School enrollment: enrollmentCancelNotice."
+  },
+  "enrollmentSubmit": "Submit enrollment request",
+  "@enrollmentSubmit": {
+    "description": "School enrollment: enrollmentSubmit."
+  },
+  "enrollmentSubmitNotice": "Send an enrollment request for this child to the selected school. Continue?",
+  "@enrollmentSubmitNotice": {
+    "description": "School enrollment: enrollmentSubmitNotice."
+  },
+  "enrollmentSearch": "Search for a school",
+  "@enrollmentSearch": {
+    "description": "School enrollment: enrollmentSearch."
+  },
+  "enrollmentSearchAction": "Search",
+  "@enrollmentSearchAction": {
+    "description": "School enrollment: enrollmentSearchAction."
+  },
+  "enrollmentSearchHint": "Enter at least two characters, then search.",
+  "@enrollmentSearchHint": {
+    "description": "School enrollment: enrollmentSearchHint."
+  },
+  "enrollmentNoSchools": "No matching schools.",
+  "@enrollmentNoSchools": {
+    "description": "School enrollment: enrollmentNoSchools."
+  },
+  "enrollmentPendingNotice": "This child already has a pending request or active enrollment.",
+  "@enrollmentPendingNotice": {
+    "description": "School enrollment: enrollmentPendingNotice."
+  },
+  "enrollmentActive": "Active enrollment",
+  "@enrollmentActive": {
+    "description": "School enrollment: enrollmentActive."
+  },
+  "enrollmentSaved": "The operation was saved successfully.",
+  "@enrollmentSaved": {
+    "description": "School enrollment: enrollmentSaved."
+  },
+  "enrollmentReload": "Reload",
+  "@enrollmentReload": {
+    "description": "School enrollment: enrollmentReload."
+  },
+  "enrollmentUnavailable": "Enrollment is not available on the server yet.",
+  "@enrollmentUnavailable": {
+    "description": "School enrollment: enrollmentUnavailable."
+  },
+  "enrollmentSession": "Your session expired. Sign in again.",
+  "@enrollmentSession": {
+    "description": "School enrollment: enrollmentSession."
+  },
+  "enrollmentForbidden": "You do not have access to this child or school.",
+  "@enrollmentForbidden": {
+    "description": "School enrollment: enrollmentForbidden."
+  },
+  "enrollmentValidation": "Review the required details and try again.",
+  "@enrollmentValidation": {
+    "description": "School enrollment: enrollmentValidation."
+  },
+  "enrollmentConflict": "The request changed or conflicts with another request or enrollment. Reload before continuing.",
+  "@enrollmentConflict": {
+    "description": "School enrollment: enrollmentConflict."
+  },
+  "enrollmentRateLimited": "Too many requests. Wait before trying again.",
+  "@enrollmentRateLimited": {
+    "description": "School enrollment: enrollmentRateLimited."
+  },
+  "enrollmentLoadFailed": "Could not load the data. Try reloading.",
+  "@enrollmentLoadFailed": {
+    "description": "School enrollment: enrollmentLoadFailed."
+  },
+  "enrollmentUncertain": "The operation could not be confirmed. Reload and check the history before resubmitting.",
+  "@enrollmentUncertain": {
+    "description": "School enrollment: enrollmentUncertain."
   }
 }

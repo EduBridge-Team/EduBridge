@@ -10748,5 +10748,161 @@
   "directorDocumentOpenFailed": "تعذر فتح المستند. أعد المحاولة للحصول على رابط جديد.",
   "@directorDocumentOpenFailed": {
     "description": "School director evidence: DocumentOpenFailed."
+  },
+  "schoolRole": "المدرسة",
+  "@schoolRole": {
+    "description": "School enrollment: schoolRole."
+  },
+  "enrollmentSchoolTitle": "لوحة المدرسة",
+  "@enrollmentSchoolTitle": {
+    "description": "School enrollment: enrollmentSchoolTitle."
+  },
+  "enrollmentParentTitle": "الالتحاق بالمدرسة",
+  "@enrollmentParentTitle": {
+    "description": "School enrollment: enrollmentParentTitle."
+  },
+  "enrollmentRequests": "طلبات الالتحاق",
+  "@enrollmentRequests": {
+    "description": "School enrollment: enrollmentRequests."
+  },
+  "enrollmentHistory": "سجل الطلبات",
+  "@enrollmentHistory": {
+    "description": "School enrollment: enrollmentHistory."
+  },
+  "enrollmentNoRequests": "لا توجد طلبات التحاق.",
+  "@enrollmentNoRequests": {
+    "description": "School enrollment: enrollmentNoRequests."
+  },
+  "enrollmentPending": "قيد الانتظار",
+  "@enrollmentPending": {
+    "description": "School enrollment: enrollmentPending."
+  },
+  "enrollmentApproved": "مقبول",
+  "@enrollmentApproved": {
+    "description": "School enrollment: enrollmentApproved."
+  },
+  "enrollmentRejected": "مرفوض",
+  "@enrollmentRejected": {
+    "description": "School enrollment: enrollmentRejected."
+  },
+  "enrollmentCancelled": "ملغي",
+  "@enrollmentCancelled": {
+    "description": "School enrollment: enrollmentCancelled."
+  },
+  "enrollmentApprove": "قبول وتسجيل الطالب",
+  "@enrollmentApprove": {
+    "description": "School enrollment: enrollmentApprove."
+  },
+  "enrollmentReject": "رفض الطلب",
+  "@enrollmentReject": {
+    "description": "School enrollment: enrollmentReject."
+  },
+  "enrollmentSection": "السنة / الصف / الشعبة",
+  "@enrollmentSection": {
+    "description": "School enrollment: enrollmentSection."
+  },
+  "enrollmentSectionRequired": "اختر شعبة لتسجيل الطالب.",
+  "@enrollmentSectionRequired": {
+    "description": "School enrollment: enrollmentSectionRequired."
+  },
+  "enrollmentNoSections": "لا توجد شعب متاحة للقبول حاليًا.",
+  "@enrollmentNoSections": {
+    "description": "School enrollment: enrollmentNoSections."
+  },
+  "enrollmentReason": "سبب القرار",
+  "@enrollmentReason": {
+    "description": "School enrollment: enrollmentReason."
+  },
+  "enrollmentReasonRequired": "سبب الرفض مطلوب.",
+  "@enrollmentReasonRequired": {
+    "description": "School enrollment: enrollmentReasonRequired."
+  },
+  "enrollmentConfirm": "تأكيد",
+  "@enrollmentConfirm": {
+    "description": "School enrollment: enrollmentConfirm."
+  },
+  "enrollmentCancelAction": "إلغاء",
+  "@enrollmentCancelAction": {
+    "description": "School enrollment: enrollmentCancelAction."
+  },
+  "enrollmentCancelRequest": "إلغاء طلب الالتحاق",
+  "@enrollmentCancelRequest": {
+    "description": "School enrollment: enrollmentCancelRequest."
+  },
+  "enrollmentCancelNotice": "هل تريد إلغاء هذا الطلب المعلّق؟ لن يُحذف ملف الطفل.",
+  "@enrollmentCancelNotice": {
+    "description": "School enrollment: enrollmentCancelNotice."
+  },
+  "enrollmentSubmit": "إرسال طلب التحاق",
+  "@enrollmentSubmit": {
+    "description": "School enrollment: enrollmentSubmit."
+  },
+  "enrollmentSubmitNotice": "سيُرسل طلب التحاق لهذا الطفل إلى المدرسة المحددة. هل تريد المتابعة؟",
+  "@enrollmentSubmitNotice": {
+    "description": "School enrollment: enrollmentSubmitNotice."
+  },
+  "enrollmentSearch": "ابحث عن مدرسة",
+  "@enrollmentSearch": {
+    "description": "School enrollment: enrollmentSearch."
+  },
+  "enrollmentSearchAction": "بحث",
+  "@enrollmentSearchAction": {
+    "description": "School enrollment: enrollmentSearchAction."
+  },
+  "enrollmentSearchHint": "اكتب حرفين على الأقل ثم اضغط بحث.",
+  "@enrollmentSearchHint": {
+    "description": "School enrollment: enrollmentSearchHint."
+  },
+  "enrollmentNoSchools": "لا توجد مدارس مطابقة للبحث.",
+  "@enrollmentNoSchools": {
+    "description": "School enrollment: enrollmentNoSchools."
+  },
+  "enrollmentPendingNotice": "يوجد طلب معلّق أو قيد نشط لهذا الطفل.",
+  "@enrollmentPendingNotice": {
+    "description": "School enrollment: enrollmentPendingNotice."
+  },
+  "enrollmentActive": "القيد النشط",
+  "@enrollmentActive": {
+    "description": "School enrollment: enrollmentActive."
+  },
+  "enrollmentSaved": "تم حفظ العملية بنجاح.",
+  "@enrollmentSaved": {
+    "description": "School enrollment: enrollmentSaved."
+  },
+  "enrollmentReload": "إعادة تحميل",
+  "@enrollmentReload": {
+    "description": "School enrollment: enrollmentReload."
+  },
+  "enrollmentUnavailable": "خدمة الالتحاق غير متاحة على السيرفر حاليًا.",
+  "@enrollmentUnavailable": {
+    "description": "School enrollment: enrollmentUnavailable."
+  },
+  "enrollmentSession": "انتهت الجلسة. سجّل الدخول مجددًا.",
+  "@enrollmentSession": {
+    "description": "School enrollment: enrollmentSession."
+  },
+  "enrollmentForbidden": "لا تملك صلاحية الوصول إلى بيانات هذا الطفل أو المدرسة.",
+  "@enrollmentForbidden": {
+    "description": "School enrollment: enrollmentForbidden."
+  },
+  "enrollmentValidation": "راجع البيانات المطلوبة ثم حاول مجددًا.",
+  "@enrollmentValidation": {
+    "description": "School enrollment: enrollmentValidation."
+  },
+  "enrollmentConflict": "تغيّر الطلب أو يوجد طلب أو قيد متعارض. أعد التحميل قبل المتابعة.",
+  "@enrollmentConflict": {
+    "description": "School enrollment: enrollmentConflict."
+  },
+  "enrollmentRateLimited": "طلبات كثيرة. انتظر قليلًا ثم حاول مجددًا.",
+  "@enrollmentRateLimited": {
+    "description": "School enrollment: enrollmentRateLimited."
+  },
+  "enrollmentLoadFailed": "تعذر تحميل البيانات. حاول إعادة التحميل.",
+  "@enrollmentLoadFailed": {
+    "description": "School enrollment: enrollmentLoadFailed."
+  },
+  "enrollmentUncertain": "تعذر تأكيد العملية. أعد تحميل السجل وتحقق منه قبل إعادة الإرسال.",
+  "@enrollmentUncertain": {
+    "description": "School enrollment: enrollmentUncertain."
   }
 }
