@@ -9,10 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
-Widget host(Widget child, String language) => MaterialApp(
+Widget host(Widget child, String language, {double scale = 1}) => MaterialApp(
   locale: Locale(language),
   supportedLocales: AppLocalizations.supportedLocales,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+    child: child!,
+  ),
   home: child,
 );
 
@@ -29,6 +33,8 @@ Future<void> fill(WidgetTester tester) async {
     await tester.ensureVisible(field(entry.key));
     await tester.enterText(field(entry.key), entry.value);
   }
+  FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pumpAndSettle();
   await tester.ensureVisible(submit);
   await tester.pumpAndSettle();
 }
@@ -120,11 +126,9 @@ void main() {
         );
         await tester.pumpWidget(
           host(
-            MediaQuery(
-              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-              child: InstitutionSchoolAccountScreen(repository: repository),
-            ),
+            InstitutionSchoolAccountScreen(repository: repository),
             language,
+            scale: 2,
           ),
         );
         await tester.pumpAndSettle();
