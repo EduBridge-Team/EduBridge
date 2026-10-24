@@ -31,11 +31,12 @@ void main() {
         get: (path) async {
           calls.add(path);
           if (path.endsWith('context')) return json(schoolContext());
-          if (path.endsWith('options'))
+          if (path.endsWith('options')) {
             return json({
               'school_id': 10,
               'sections': [sectionJson()],
             });
+          }
           return json({
             'school_id': 10,
             'requests': [enrollmentRequestJson()],
@@ -60,8 +61,9 @@ void main() {
           client: EnrollmentApiClient(
             get: (path) async {
               if (path.endsWith('context')) return json(schoolContext());
-              if (path.endsWith('options'))
+              if (path.endsWith('options')) {
                 return json({'school_id': foreign ? 10 : 99, 'sections': []});
+              }
               return json({'school_id': foreign ? 99 : 10, 'requests': []});
             },
           ),

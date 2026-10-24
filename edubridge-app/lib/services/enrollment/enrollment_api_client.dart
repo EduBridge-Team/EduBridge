@@ -53,7 +53,7 @@ class EnrollmentApiClient {
         mutation ? EnrollmentFailure.uncertain : EnrollmentFailure.network,
       );
     }
-    if (response.statusCode != success)
+    if (response.statusCode != success) {
       throw EnrollmentApiException(switch (response.statusCode) {
         401 => EnrollmentFailure.session,
         403 => EnrollmentFailure.forbidden,
@@ -64,6 +64,7 @@ class EnrollmentApiClient {
         >= 200 && < 300 => EnrollmentFailure.invalidResponse,
         _ => EnrollmentFailure.server,
       });
+    }
     try {
       final data = jsonDecode(response.body);
       if (data is Map<String, dynamic>) return data;

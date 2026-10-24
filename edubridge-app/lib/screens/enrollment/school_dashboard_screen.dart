@@ -58,8 +58,9 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
         sections: _controller.snapshot!.sections,
       ),
     );
-    if (mounted && decision != null)
+    if (mounted && decision != null) {
       await _controller.decide(request, decision);
+    }
   }
 
   @override

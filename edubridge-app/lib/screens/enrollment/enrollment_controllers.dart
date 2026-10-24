@@ -13,12 +13,14 @@ class SchoolEnrollmentController
   ) async {
     if (!canWrite ||
         !snapshot!.requests.contains(request) ||
-        request.status != EnrollmentStatus.pending)
+        request.status != EnrollmentStatus.pending) {
       return;
+    }
     if (decision.approve
         ? !snapshot!.sections.any((s) => s.id == decision.sectionId)
-        : decision.reason.trim().isEmpty)
+        : decision.reason.trim().isEmpty) {
       return;
+    }
     await mutate(() => _gateway.decide(request, decision));
   }
 }
@@ -77,16 +79,18 @@ class ParentEnrollmentController
   }
 
   Future<void> submit(EnrollmentSchool school) async {
-    if (!canWrite || !snapshot!.canRequest || !_schools.contains(school))
+    if (!canWrite || !snapshot!.canRequest || !_schools.contains(school)) {
       return;
+    }
     await mutate(() => _gateway.submit(school));
   }
 
   Future<void> cancel(EnrollmentRequest request) async {
     if (!canWrite ||
         !snapshot!.requests.contains(request) ||
-        request.status != EnrollmentStatus.pending)
+        request.status != EnrollmentStatus.pending) {
       return;
+    }
     await mutate(() => _gateway.cancel(request));
   }
 }

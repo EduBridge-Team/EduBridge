@@ -25,8 +25,9 @@ List<EnrollmentRequest> _requests(dynamic data) {
   final items = enrollmentList(data)
       .map((v) => EnrollmentRequest.fromJson(enrollmentMap(v)))
       .toList();
-  if (items.map((r) => r.id).toSet().length != items.length)
+  if (items.map((r) => r.id).toSet().length != items.length) {
     throw const FormatException('Duplicate request IDs');
+  }
   return items;
 }
 
@@ -39,8 +40,9 @@ void _changed(
       result.schoolId != original.schoolId ||
       result.childId != original.childId ||
       result.version != original.version + 1 ||
-      result.status != status)
+      result.status != status) {
     throw const FormatException('Request response mismatch');
+  }
 }
 
 class SchoolEnrollmentRepository implements SchoolEnrollmentGateway {
@@ -59,16 +61,19 @@ class SchoolEnrollmentRepository implements SchoolEnrollmentGateway {
     ]);
     return _parse(() {
       if (enrollmentId(results[0]['school_id']) != identity.school.id ||
-          enrollmentId(results[1]['school_id']) != identity.school.id)
+          enrollmentId(results[1]['school_id']) != identity.school.id) {
         throw const FormatException('School scope mismatch');
+      }
       final requests = _requests(results[0]['requests']);
-      if (requests.any((r) => r.schoolId != identity.school.id))
+      if (requests.any((r) => r.schoolId != identity.school.id)) {
         throw const FormatException('Foreign request');
+      }
       final sections = enrollmentList(results[1]['sections'])
           .map((s) => EnrollmentSection.fromJson(enrollmentMap(s)))
           .toList();
-      if (sections.map((s) => s.id).toSet().length != sections.length)
+      if (sections.map((s) => s.id).toSet().length != sections.length) {
         throw const FormatException('Duplicate sections');
+      }
       return SchoolEnrollmentInbox(
         identity: identity,
         requests: requests,
@@ -113,8 +118,9 @@ class SchoolEnrollmentRepository implements SchoolEnrollmentGateway {
         );
         if (enrollment.childId != request.childId ||
             enrollment.schoolId != request.schoolId ||
-            enrollment.sectionId != decision.sectionId)
+            enrollment.sectionId != decision.sectionId) {
           throw const FormatException('Enrollment mismatch');
+        }
       } else if (data['enrollment'] != null ||
           result.reason?.trim() != decision.reason.trim()) {
         throw const FormatException('Rejection mismatch');
@@ -136,8 +142,9 @@ class ParentEnrollmentRepository implements ParentEnrollmentGateway {
     final data = await _client.get(_path);
     return _parse(() {
       if (enrollmentId(data['child_id']) != childId ||
-          !data.containsKey('active_enrollment'))
+          !data.containsKey('active_enrollment')) {
         throw const FormatException('Child scope mismatch');
+      }
       final requests = _requests(data['requests']);
       final active = data['active_enrollment'] == null
           ? null
@@ -147,8 +154,9 @@ class ParentEnrollmentRepository implements ParentEnrollmentGateway {
       if (requests.any((r) => r.childId != childId) ||
           (active != null && active.childId != childId) ||
           requests.where((r) => r.status == EnrollmentStatus.pending).length >
-              1)
+              1) {
         throw const FormatException('Invalid child history');
+      }
       return ParentEnrollmentHistory(
         requests: requests,
         activeEnrollment: active,
@@ -159,8 +167,9 @@ class ParentEnrollmentRepository implements ParentEnrollmentGateway {
   @override
   Future<List<EnrollmentSchool>> search(String query) async {
     final value = query.trim();
-    if (value.length < 2 || value.length > 100)
+    if (value.length < 2 || value.length > 100) {
       throw const EnrollmentApiException(EnrollmentFailure.validation);
+    }
     final data = await _client.get(
       '/parent/enrollment-schools?q=${Uri.encodeQueryComponent(value)}',
     );
@@ -169,8 +178,9 @@ class ParentEnrollmentRepository implements ParentEnrollmentGateway {
           .map((s) => EnrollmentSchool.fromJson(enrollmentMap(s)))
           .toList();
       if (schools.length > 50 ||
-          schools.map((s) => s.id).toSet().length != schools.length)
+          schools.map((s) => s.id).toSet().length != schools.length) {
         throw const FormatException('Invalid school search');
+      }
       return List.unmodifiable(schools);
     });
   }
@@ -183,16 +193,18 @@ class ParentEnrollmentRepository implements ParentEnrollmentGateway {
       if (result.childId != childId ||
           result.schoolId != school.id ||
           result.status != EnrollmentStatus.pending ||
-          result.version != 1)
+          result.version != 1) {
         throw const FormatException('Submission mismatch');
+      }
     });
   }
 
   @override
   Future<void> cancel(EnrollmentRequest request) async {
     if (request.childId != childId ||
-        request.status != EnrollmentStatus.pending)
+        request.status != EnrollmentStatus.pending) {
       throw const EnrollmentApiException(EnrollmentFailure.forbidden);
+    }
     final data = await _client.post('$_path/${request.id}/cancel', {
       'expected_version': request.version,
     }, success: 200);

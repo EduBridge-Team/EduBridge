@@ -5,14 +5,16 @@ int enrollmentId(dynamic value) {
 }
 
 String enrollmentText(dynamic value) {
-  if (value is! String || value.trim().isEmpty)
+  if (value is! String || value.trim().isEmpty) {
     throw const FormatException('Missing text');
+  }
   return value;
 }
 
 Map<String, dynamic> enrollmentMap(dynamic value) {
-  if (value is! Map<String, dynamic>)
+  if (value is! Map<String, dynamic>) {
     throw const FormatException('Expected object');
+  }
   return value;
 }
 
@@ -33,8 +35,9 @@ class EnrollmentSchool {
   final String name;
   final String address;
   factory EnrollmentSchool.fromJson(Map<String, dynamic> data) {
-    if (data['address'] != null && data['address'] is! String)
+    if (data['address'] != null && data['address'] is! String) {
       throw const FormatException('Invalid address');
+    }
     return EnrollmentSchool(
       id: enrollmentId(data['id']),
       name: enrollmentText(data['name']),
@@ -51,8 +54,9 @@ class SchoolPortalIdentity {
   final EnrollmentSchool school;
   final int? organizationId;
   factory SchoolPortalIdentity.fromJson(Map<String, dynamic> data) {
-    if (!data.containsKey('organization_id'))
+    if (!data.containsKey('organization_id')) {
       throw const FormatException('Missing ownership');
+    }
     return SchoolPortalIdentity(
       school: EnrollmentSchool.fromJson(data),
       organizationId: data['organization_id'] == null
@@ -151,8 +155,9 @@ class ActiveSchoolEnrollment {
   final String schoolName;
   final int sectionId;
   factory ActiveSchoolEnrollment.fromJson(Map<String, dynamic> data) {
-    if (data['status'] != 'active')
+    if (data['status'] != 'active') {
       throw const FormatException('Expected active enrollment');
+    }
     return ActiveSchoolEnrollment(
       id: enrollmentId(data['id']),
       childId: enrollmentId(data['child_id']),

@@ -93,7 +93,7 @@ class _SchoolEnrollmentDecisionDialogState
       FilledButton(
         key: const ValueKey('enrollment-decision-confirm'),
         onPressed: () {
-          if (_form.currentState!.validate())
+          if (_form.currentState!.validate()) {
             Navigator.pop(
               context,
               EnrollmentDecision(
@@ -102,6 +102,7 @@ class _SchoolEnrollmentDecisionDialogState
                 reason: _reason.text.trim(),
               ),
             );
+          }
         },
         child: Text(context.l10n.enrollmentConfirm),
       ),

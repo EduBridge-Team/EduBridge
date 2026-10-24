@@ -68,8 +68,9 @@ class EnrollmentState<T> extends ChangeNotifier {
               EnrollmentFailure.invalidResponse,
               EnrollmentFailure.conflict,
               EnrollmentFailure.server,
-            }.contains(e.failure))
+            }.contains(e.failure)) {
           _snapshot = null;
+        }
       }
     } finally {
       if (!_disposed) {

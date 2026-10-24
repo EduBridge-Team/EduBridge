@@ -65,8 +65,9 @@ class FakeSchoolEnrollment implements SchoolEnrollmentGateway {
   EnrollmentDecision? lastDecision;
   @override
   Future<SchoolEnrollmentInbox> load() async {
-    if (loadFailure != null || (writes > 0 && failRefresh))
+    if (loadFailure != null || (writes > 0 && failRefresh)) {
       throw EnrollmentApiException(loadFailure ?? EnrollmentFailure.network);
+    }
     if (pendingRead != null) return pendingRead!.future;
     return SchoolEnrollmentInbox(
       identity: const SchoolPortalIdentity(
@@ -110,8 +111,9 @@ class FakeParentEnrollment implements ParentEnrollmentGateway {
   Completer<void>? pendingWrite;
   @override
   Future<ParentEnrollmentHistory> load() async {
-    if (loadFailure != null || (writes > 0 && failRefresh))
+    if (loadFailure != null || (writes > 0 && failRefresh)) {
       throw EnrollmentApiException(loadFailure ?? EnrollmentFailure.network);
+    }
     return ParentEnrollmentHistory(
       requests: requests,
       activeEnrollment: active,
