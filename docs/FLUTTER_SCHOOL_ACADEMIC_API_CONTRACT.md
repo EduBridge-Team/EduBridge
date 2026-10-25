@@ -70,3 +70,19 @@ verified end-to-end after backend implementation.
 Model/repository/controller/widget tests cover scope/relationships, real dates,
 unique/current constraints, exact receipts, invalid drafts, concurrent writes,
 saved-but-refresh-failed behavior, and both locales with large text/narrow screens.
+
+## Section browsing and refresh
+
+The Flutter catalog filters sections locally by academic year and grade, with
+All as the default for each. Combined filters never modify the server query or
+authorization. A school switch resets both; a removed year/grade resets that
+selection after canonical refresh. Long authored names wrap in choice dialogs
+and filter buttons. Empty filtered results retain the controls for recovery.
+
+The catalog supports pull-to-refresh and app resume, with the existing state
+controller serializing reads/writes. Unavailable/denied reads remove stale
+catalog actions. Tests cover Arabic/English, 320/720/1280 widths, 2x text,
+combined/empty results, preserved/removed selections and school changes.
+
+As of main a2db201, /school/academic and its creation endpoints remain a Backend
+dependency. These tests use an injected gateway; they do not certify a live API.
