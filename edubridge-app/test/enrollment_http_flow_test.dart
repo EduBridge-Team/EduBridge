@@ -22,8 +22,20 @@ Widget host(Widget screen, String language) => MaterialApp(
   home: screen,
 );
 
-Future<void> tapVisible(WidgetTester tester, Finder target) async {
+Future<void> reveal(WidgetTester tester, Finder target) async {
   if (target.evaluate().isEmpty) {
+    tester
+        .state<ScrollableState>(
+          find
+              .descendant(
+                of: find.byType(ListView).first,
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        )
+        .position
+        .jumpTo(0);
+    await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       target,
       250,
@@ -37,13 +49,25 @@ Future<void> tapVisible(WidgetTester tester, Finder target) async {
   }
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();
+}
+
+Future<void> tapVisible(WidgetTester tester, Finder target) async {
+  await reveal(tester, target);
   await tester.tap(target);
   await tester.pumpAndSettle();
 }
 
 Future<void> resume(WidgetTester tester) async {
-  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+  for (final state in [
+    AppLifecycleState.inactive,
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+    AppLifecycleState.hidden,
+    AppLifecycleState.inactive,
+    AppLifecycleState.resumed,
+  ]) {
+    tester.binding.handleAppLifecycleStateChanged(state);
+  }
   await tester.pumpAndSettle();
 }
 
@@ -109,8 +133,17 @@ void main() {
             find.byKey(const ValueKey('enrollment-submit-10')),
           );
           await tapVisible(tester, find.text(strings.enrollmentConfirm));
+          await reveal(tester, find.text(strings.enrollmentPending));
           expect(find.text(strings.enrollmentPending), findsOneWidget);
+          await reveal(
+            tester,
+            find.byKey(const ValueKey('enrollment-submit-10')),
+          );
           expect(fixture.writes, ['/parent/children/6/enrollment-requests']);
+          await reveal(
+            tester,
+            find.byKey(const ValueKey('enrollment-submit-10')),
+          );
           expect(
             tester
                 .widget<FilledButton>(
@@ -124,6 +157,7 @@ void main() {
             find.byKey(const ValueKey('enrollment-cancel-50')),
           );
           await tapVisible(tester, find.text(strings.enrollmentConfirm));
+          await reveal(tester, find.text(strings.enrollmentCancelled));
           expect(find.text(strings.enrollmentCancelled), findsOneWidget);
           expect(fixture.writes.length, 2);
           // A later decision by the school/another guardian is visible on resume.
@@ -152,6 +186,10 @@ void main() {
           expect(
             find.text('${strings.enrollmentActive}: School A'),
             findsOneWidget,
+          );
+          await reveal(
+            tester,
+            find.byKey(const ValueKey('enrollment-submit-10')),
           );
           expect(
             tester
