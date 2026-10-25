@@ -1,11 +1,17 @@
 import '../../l10n/l10n.dart';
 import '../../utils/presentation_text.dart';
+
 import 'package:flutter/material.dart';
+
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
 import '../../features/adaptation/data/adaptation_permission_repository.dart';
 import '../child_accessibility/child_accessibility_settings_screen.dart';
 import '../../features/students/data/student_profile_repository.dart';
+import '../../features/students/data/student_learning_metrics_repository.dart';
+import '../../features/students/presentation/student_learning_metrics_cards.dart';
+import '../../features/students/presentation/student_profile_action_card.dart';
+import '../../features/students/presentation/student_profile_details_section.dart';
 import '../../features/students/domain/student_profile.dart';
 import '../../features/students/presentation/student_profile_labels.dart';
 import '../../theme.dart';
@@ -50,8 +56,6 @@ class _SpecialistChildProfileScreenState
   int? _s08LessonsCount;
   int? _s08CompletionPct;
 
-  void _updateProfileState(VoidCallback callback) => setState(callback);
-
   @override
   void initState() {
     super.initState();
@@ -68,8 +72,12 @@ class _SpecialistChildProfileScreenState
       _error = null;
     });
     try {
-      final profile = await _repository.load(_childId, allowAssignmentPreview: true);
-      final canAdapt = !profile.isAssignmentPreview &&
+      final profile = await _repository.load(
+        _childId,
+        allowAssignmentPreview: true,
+      );
+      final canAdapt =
+          !profile.isAssignmentPreview &&
           await AdaptationPermissionRepository().canEdit(_childId);
       if (!mounted) return;
       setState(() {
@@ -78,14 +86,30 @@ class _SpecialistChildProfileScreenState
       });
     } catch (_) {
       if (mounted) {
-        setState(() =>
-            _error = SharedUiMessage.studentProfileRefreshFailed);
+        setState(() => _error = SharedUiMessage.studentProfileRefreshFailed);
       }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
     if (mounted && _error == null && !_profile.isAssignmentPreview) {
       await _loadS08Metrics();
+    }
+  }
+
+  Future<void> _loadS08Metrics() async {
+    try {
+      final metrics = await StudentLearningMetricsRepository().load(_childId);
+      if (!mounted) return;
+      setState(() {
+        _s08LessonsCount = metrics.lessonsCount;
+        _s08CompletionPct = metrics.completionPercent;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _s08LessonsCount = null;
+        _s08CompletionPct = null;
+      });
     }
   }
 
@@ -169,12 +193,14 @@ class _SpecialistChildProfileScreenState
                 const SizedBox(height: 4),
                 Text(
                   [
-                    if (age != null) context.l10n.childAgeYears(age.toString()),
-                    if (disability.isNotEmpty) disability,
-                  ].join(' • ').isEmpty
+                        if (age != null)
+                          context.l10n.childAgeYears(age.toString()),
+                        if (disability.isNotEmpty) disability,
+                      ].join(' • ').isEmpty
                       ? context.l10n.studentInformation
                       : [
-                          if (age != null) context.l10n.childAgeYears(age.toString()),
+                          if (age != null)
+                            context.l10n.childAgeYears(age.toString()),
                           if (disability.isNotEmpty) disability,
                         ].join(' • '),
                   maxLines: 1,
@@ -195,7 +221,9 @@ class _SpecialistChildProfileScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                isPreview ? context.l10n.beforeAssignment : context.l10n.underFollowUp,
+                isPreview
+                    ? context.l10n.beforeAssignment
+                    : context.l10n.underFollowUp,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 11,
@@ -359,12 +387,7 @@ class _SpecialistChildProfileScreenState
     );
   }
 
-  Widget _chips(
-    JisrColors c,
-    String label,
-    List<String> values,
-    Color color,
-  ) {
+  Widget _chips(JisrColors c, String label, List<String> values, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -372,10 +395,7 @@ class _SpecialistChildProfileScreenState
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              color: c.heading,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w800, color: c.heading),
           ),
           const SizedBox(height: 8),
           Wrap(
