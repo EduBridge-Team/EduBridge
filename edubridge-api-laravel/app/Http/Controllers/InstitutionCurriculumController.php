@@ -190,7 +190,7 @@ PROMPT;
 
         $content = data_get($response->json(), 'choices.0.message.content');
         $output = is_string($content) ? json_decode($content, true) : null;
-        if (!is_array($output)) {
+        if (!is_array($output) || !$this->isCompleteNoorPlan($output)) {
             return response()->json(['error' => 'وصل رد غير مكتمل من نور.'], 502);
         }
 
@@ -262,6 +262,33 @@ PROMPT;
         }
 
         return response()->json(['message' => 'تم اعتماد مسودة نور', 'generation_id' => $generation]);
+    }
+
+    private function isCompleteNoorPlan(array $output): bool
+    {
+        $required = [
+            'objectives', 'simplified_explanation', 'key_concepts',
+            'visual_sequence', 'sign_keywords', 'classroom_activity',
+            'assessment_questions', 'worksheet_items', 'parent_summary',
+            'source_note',
+        ];
+
+        foreach ($required as $key) {
+            if (!array_key_exists($key, $output)) {
+                return false;
+            }
+
+            $value = $output[$key];
+            if (is_string($value) && trim($value) !== '') {
+                continue;
+            }
+            if (is_array($value) && $value !== []) {
+                continue;
+            }
+            return false;
+        }
+
+        return true;
     }
 
     private function schoolWithinTenant(Request $request, int $school): ?object

@@ -98,4 +98,27 @@ class InstitutionNoorReviewTest extends TestCase
             ->approveGeneration($this->approvalRequest(200), 'jabalia', 20, 2);
         $this->assertSame(404, $response->getStatusCode());
     }
+    public function test_generated_plan_requires_all_sections(): void
+    {
+        $plan = array_fill_keys([
+            'objectives', 'simplified_explanation', 'key_concepts',
+            'visual_sequence', 'sign_keywords', 'classroom_activity',
+            'assessment_questions', 'worksheet_items', 'parent_summary',
+            'source_note',
+        ], 'محتوى');
+
+        $method = new \ReflectionMethod(InstitutionCurriculumController::class, 'isCompleteNoorPlan');
+        $controller = app(InstitutionCurriculumController::class);
+        $this->assertTrue($method->invoke($controller, $plan));
+
+        unset($plan['worksheet_items']);
+        $this->assertFalse($method->invoke($controller, $plan));
+
+        $plan['worksheet_items'] = [];
+        $this->assertFalse($method->invoke($controller, $plan));
+
+        $plan['worksheet_items'] = ' ';
+        $this->assertFalse($method->invoke($controller, $plan));
+    }
+
 }
