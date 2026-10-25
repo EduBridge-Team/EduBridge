@@ -11039,5 +11039,21 @@
   "curriculumYearRequired": "أضف سنة دراسية قبل إنشاء فصل دراسي.",
   "@curriculumYearRequired": {"description": "School curriculum management."},
   "curriculumTermInvalid": "اختر سنة، وترتيبًا متاحًا من ١ إلى ٢٠، وتاريخ نهاية بعد البداية ضمن السنة المختارة.",
-  "@curriculumTermInvalid": {"description": "School curriculum management."}
+  "@curriculumTermInvalid": {"description": "School curriculum management."},
+  "teacherAssignmentsTitle": "ربط المعلمين بالشعب والمواد",
+  "@teacherAssignmentsTitle": {"description": "School teacher assignment management."},
+  "teacherAssignmentAdd": "إضافة ربط معلم",
+  "@teacherAssignmentAdd": {"description": "School teacher assignment management."},
+  "teacherAssignmentTeacher": "المعلم",
+  "@teacherAssignmentTeacher": {"description": "School teacher assignment management."},
+  "teacherAssignmentRemove": "إلغاء الربط",
+  "@teacherAssignmentRemove": {"description": "School teacher assignment management."},
+  "teacherAssignmentRemoveNotice": "سيتم إلغاء هذا الربط فقط، وسيبقى حساب المعلم وبيانات الطلاب كما هي.",
+  "@teacherAssignmentRemoveNotice": {"description": "School teacher assignment management."},
+  "teacherAssignmentPrerequisite": "يلزم وجود معلم ومادة مفعّلين وشعبة لإضافة ربط.",
+  "@teacherAssignmentPrerequisite": {"description": "School teacher assignment management."},
+  "teacherAssignmentsEmpty": "لا يوجد ربط للمعلمين بعد.",
+  "@teacherAssignmentsEmpty": {"description": "School teacher assignment management."},
+  "teacherAssignmentInvalid": "اختر معلمًا ومادة مفعّلين وشعبة من المدرسة، دون تكرار نفس الربط.",
+  "@teacherAssignmentInvalid": {"description": "School teacher assignment management."}
 }
