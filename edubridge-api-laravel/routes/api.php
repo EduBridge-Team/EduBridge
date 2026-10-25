@@ -45,6 +45,8 @@ Route::get('/private-files/lesson/{lessonId}/{filename}', [\App\Http\Controllers
 
 // كل ما يلي يتطلب توكن صالح، تحقق هوية، وحماية موحدة من الإغراق.
 Route::middleware(['auth.jwt', 'identity.verified', 'api.abuse'])->group(function () {
+    Route::get('/school/context', [\App\Http\Controllers\SchoolContextController::class, 'show'])
+        ->middleware(['role:school', 'throttle:120,1']);
     require __DIR__ . '/api/account-admin.php';
     require __DIR__ . '/api/support-children.php';
     require __DIR__ . '/api/learning-content.php';
