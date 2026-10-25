@@ -28,7 +28,9 @@ Future<void> reveal(WidgetTester tester, Finder target) async {
         .state<ScrollableState>(
           find
               .descendant(
-                of: find.byType(ListView).first,
+                of: find
+                    .byWidgetPredicate((widget) => widget is ScrollView)
+                    .first,
                 matching: find.byType(Scrollable),
               )
               .first,
@@ -41,7 +43,7 @@ Future<void> reveal(WidgetTester tester, Finder target) async {
       250,
       scrollable: find
           .descendant(
-            of: find.byType(ListView).first,
+            of: find.byWidgetPredicate((widget) => widget is ScrollView).first,
             matching: find.byType(Scrollable),
           )
           .first,
@@ -74,13 +76,16 @@ Future<void> resume(WidgetTester tester) async {
 Future<void> pullToRefresh(WidgetTester tester) async {
   final scrollable = find
       .descendant(
-        of: find.byType(ListView).first,
+        of: find.byWidgetPredicate((widget) => widget is ScrollView).first,
         matching: find.byType(Scrollable),
       )
       .first;
   tester.state<ScrollableState>(scrollable).position.jumpTo(0);
   await tester.pump();
-  await tester.drag(find.byType(ListView).first, const Offset(0, 350));
+  await tester.drag(
+    find.byWidgetPredicate((widget) => widget is ScrollView).first,
+    const Offset(0, 350),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -169,7 +174,9 @@ void main() {
               .state<ScrollableState>(
                 find
                     .descendant(
-                      of: find.byType(ListView).first,
+                      of: find
+                          .byWidgetPredicate((widget) => widget is ScrollView)
+                          .first,
                       matching: find.byType(Scrollable),
                     )
                     .first,

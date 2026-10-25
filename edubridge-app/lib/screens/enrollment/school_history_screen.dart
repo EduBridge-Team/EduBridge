@@ -48,7 +48,8 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
       return Scaffold(
         appBar: BrandAppBar(
           leading: const BackButton(),
-          title: Text(l10n.schoolHistoryTitle),
+          centerTitle: true,
+          title: Text(l10n.schoolHistoryTitle, textAlign: TextAlign.center),
           actions: [
             IconButton(
               tooltip: l10n.enrollmentReload,
@@ -58,46 +59,64 @@ class _SchoolHistoryScreenState extends State<SchoolHistoryScreen> {
           ],
         ),
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(widget.childName, style: Theme.of(context).textTheme.titleLarge),
-              Text(l10n.schoolHistoryHint),
-              if (_state.loading) const LinearProgressIndicator(),
-              if (_state.error != null)
-                Semantics(
-                  liveRegion: true,
-                  child: Text(enrollmentFailureMessage(l10n, _state.error!)),
+          child: DefaultTextStyle.merge(
+            textAlign: TextAlign.center,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  widget.childName,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              if (_state.snapshot != null) ...[
-                if (_state.snapshot!.records.isEmpty) Text(l10n.schoolHistoryEmpty),
-                for (final record in _state.snapshot!.records)
-                  Card(
-                    key: ValueKey('school-history-${record.id}'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(record.schoolName,
-                              style: Theme.of(context).textTheme.titleMedium),
-                          Text(record.sectionLabel),
-                          Text(switch (record.status) {
-                            SchoolRecordStatus.active => l10n.schoolHistoryActive,
-                            SchoolRecordStatus.closed => l10n.schoolHistoryClosed,
-                            SchoolRecordStatus.transferred => l10n.schoolHistoryTransferred,
-                          }),
-                          Text('${l10n.schoolHistoryStart}: ${MaterialLocalizations.of(context).formatMediumDate(record.startedOn)}'),
-                          if (record.endedOn != null)
-                            Text('${l10n.schoolHistoryEnd}: ${MaterialLocalizations.of(context).formatMediumDate(record.endedOn!)}'),
-                          if (record.transferredToId != null)
-                            Text('${l10n.schoolHistoryDestination}: ${_state.snapshot!.records.firstWhere((r) => r.id == record.transferredToId).schoolName}'),
-                        ],
+                Text(l10n.schoolHistoryHint),
+                if (_state.loading) const LinearProgressIndicator(),
+                if (_state.error != null)
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(enrollmentFailureMessage(l10n, _state.error!)),
+                  ),
+                if (_state.snapshot != null) ...[
+                  if (_state.snapshot!.records.isEmpty)
+                    Text(l10n.schoolHistoryEmpty),
+                  for (final record in _state.snapshot!.records)
+                    Card(
+                      key: ValueKey('school-history-${record.id}'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              record.schoolName,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            Text(record.sectionLabel),
+                            Text(switch (record.status) {
+                              SchoolRecordStatus.active =>
+                                l10n.schoolHistoryActive,
+                              SchoolRecordStatus.closed =>
+                                l10n.schoolHistoryClosed,
+                              SchoolRecordStatus.transferred =>
+                                l10n.schoolHistoryTransferred,
+                            }),
+                            Text(
+                              '${l10n.schoolHistoryStart}: ${MaterialLocalizations.of(context).formatMediumDate(record.startedOn)}',
+                            ),
+                            if (record.endedOn != null)
+                              Text(
+                                '${l10n.schoolHistoryEnd}: ${MaterialLocalizations.of(context).formatMediumDate(record.endedOn!)}',
+                              ),
+                            if (record.transferredToId != null)
+                              Text(
+                                '${l10n.schoolHistoryDestination}: ${_state.snapshot!.records.firstWhere((r) => r.id == record.transferredToId).schoolName}',
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );
