@@ -44,6 +44,14 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
             $t->unsignedBigInteger('decided_by')->nullable(); $t->timestamp('decided_at')->nullable();
             $t->timestamps();
         });
+        Schema::create('child_parent', function (Blueprint $t) {
+            $t->unsignedBigInteger('child_id'); $t->unsignedBigInteger('parent_id');
+        });
+        Schema::create('notifications', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('user_id'); $t->string('title');
+            $t->text('message'); $t->string('type')->nullable();
+        });
+        DB::table('child_parent')->insert(['child_id'=>10,'parent_id'=>25]);
         DB::table('schools')->insert([
             ['id'=>1,'name'=>'Own','is_active'=>true,'organization_id'=>null],
             ['id'=>2,'name'=>'Other','is_active'=>true,'organization_id'=>null],
@@ -75,7 +83,7 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['school_enrollment_requests','student_enrollments','sections','academic_years',
+        foreach (['notifications','child_parent','school_enrollment_requests','student_enrollments','sections','academic_years',
             'grades','children','school_accounts','schools','organizations'] as $table) {
             Schema::dropIfExists($table);
         }
@@ -100,6 +108,8 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
         $this->assertSame(2,DB::table('school_enrollment_requests')->where('id',100)->value('version'));
         $this->assertSame(409,$this->decide(100,$body)->getStatusCode());
         $this->assertSame(1,DB::table('student_enrollments')->count());
+        $this->assertSame(1, DB::table('notifications')->where('user_id',25)
+            ->where('type','school_enrollment')->count());
     }
 
     public function test_foreign_school_request_and_section_are_denied(): void
@@ -126,6 +136,7 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
             'decision'=>'rejected','expected_version'=>2,'reason'=>'Reason',
         ])->getStatusCode());
         $this->assertSame('pending',DB::table('school_enrollment_requests')->where('id',100)->value('status'));
+        $this->assertSame(0,DB::table('notifications')->count());
     }
 
     public function test_rejection_does_not_enroll_child(): void
@@ -137,5 +148,6 @@ class SchoolEnrollmentDecisionIntegrityTest extends TestCase
         $this->assertNull($result->getData(true)['enrollment']);
         $this->assertSame(0,DB::table('student_enrollments')->count());
         $this->assertSame('rejected',DB::table('school_enrollment_requests')->where('id',100)->value('status'));
+        $this->assertSame(1,DB::table('notifications')->where('user_id',25)->count());
     }
 }

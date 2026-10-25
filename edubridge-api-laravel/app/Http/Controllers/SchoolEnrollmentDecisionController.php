@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Notify;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +99,15 @@ class SchoolEnrollmentDecisionController extends Controller
                 'reason' => $data['reason'] ?? null, 'decided_by' => $actor->id,
                 'decided_at' => now(), 'updated_at' => now(),
             ]);
+            // Persist decision first; only notify guardians after a successful commit.
+            $notificationTitle = 'قرار طلب الالتحاق';
+            $notificationMessage = $data['decision'] === 'approved'
+                ? 'تمت الموافقة على التحاق الطالب ' . $child->name . ' في مدرسة ' . $school->name
+                : 'تم رفض طلب التحاق الطالب ' . $child->name . ' في مدرسة ' . $school->name;
+            DB::afterCommit(function () use ($child, $notificationTitle, $notificationMessage) {
+                Notify::toChildParents($child->id, $notificationTitle, $notificationMessage, 'school_enrollment');
+            });
+
             return response()->json(['request' => [
                 'id' => (int) $record->id, 'school_id' => (int) $school->id,
                 'school_name' => $school->name, 'child_id' => (int) $child->id,
