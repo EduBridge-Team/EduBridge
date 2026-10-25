@@ -1,6 +1,18 @@
 # School portal and guardian enrollment — Flutter contract v1
 
-Flutter implementation; new backend routes are pending. No API/database/web or
+Flutter implementation; route availability is tracked separately from the contract.
+At main `e05477f`, school context, options and pending inbox plus guardian search,
+submission, history and cancellation are implemented. The school decision route
+remains a backend dependency; Flutter decision tests exercise contract fixtures,
+not a live API. No backend changes are included in this Flutter batch.
+
+Both enrollment screens refresh on app resume and pull-to-refresh. Refresh only
+reads state and never repeats a write. Session, permission and unavailable-route
+failures invalidate stale actions until a successful reload. Widget flow tests
+use the actual repositories with injected HTTP responses in Arabic and English
+at 320/720/1280 widths and 2x text; they are not live deployment tests.
+
+ No API/database/web or
 deployment code is changed. School role login now routes through the existing
 home router to its own inbox dashboard. Guardian entry: Parent dashboard → child
 card → School enrollment. This phase covers requests and initial enrollment;
