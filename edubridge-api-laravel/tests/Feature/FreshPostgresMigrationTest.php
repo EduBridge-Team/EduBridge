@@ -132,4 +132,54 @@ class FreshPostgresMigrationTest extends TestCase
             $this->assertCount(3, $queries); // count + page + batch media, no assignment prefetch.
         }
     }
+
+    public function test_postgres_allows_only_one_pending_school_request_per_child(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Requires PostgreSQL.');
+        }
+
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        $this->assertTrue(Schema::hasIndex('school_enrollment_requests', 'school_requests_one_pending_per_child'));
+
+        $parent = DB::table('users')->insertGetId([
+            'name' => 'Guardian', 'email' => 'guardian-pending@example.org',
+            'password' => 'unused', 'role' => 'parent',
+        ]);
+        $child = DB::table('children')->insertGetId(['name' => 'Existing child']);
+        $firstSchool = DB::table('schools')->insertGetId([
+            'name' => 'First school', 'slug' => 'first-school',
+            'organization_id' => null,
+        ]);
+        $secondSchool = DB::table('schools')->insertGetId([
+            'name' => 'Second school', 'slug' => 'second-school',
+            'organization_id' => null,
+        ]);
+        $request = [
+            'child_id' => $child, 'school_id' => $firstSchool,
+            'requested_by' => $parent, 'status' => 'pending',
+            'version' => 1, 'created_at' => now(), 'updated_at' => now(),
+        ];
+        DB::table('school_enrollment_requests')->insert($request);
+
+        try {
+            DB::table('school_enrollment_requests')->insert([
+                ...$request, 'school_id' => $secondSchool,
+            ]);
+            $this->fail('Duplicate pending request was accepted.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->assertSame('23505', (string) $e->getCode());
+        }
+
+        $this->assertSame(1, DB::table('school_enrollment_requests')->where('child_id', $child)->count());
+        DB::table('school_enrollment_requests')->where('child_id', $child)->update([
+            'status' => 'cancelled', 'version' => 2,
+        ]);
+        DB::table('school_enrollment_requests')->insert([
+            ...$request, 'school_id' => $secondSchool,
+        ]);
+        $this->assertSame(1, DB::table('school_enrollment_requests')
+            ->where('child_id', $child)->where('status', 'pending')->count());
+    }
+
 }
