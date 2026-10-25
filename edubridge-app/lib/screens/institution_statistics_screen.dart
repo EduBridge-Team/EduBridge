@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -25,11 +24,17 @@ class _InstitutionStatisticsScreenState extends State<InstitutionStatisticsScree
   }
 
   Future<Map<String, dynamic>?> _load() async {
-    final userId = await ApiService.getUserId();
-    if (userId == null) return null;
-    final preferences = await SharedPreferences.getInstance();
-    final slug = preferences.getString('institution_slug_$userId');
-    if (slug == null || slug.isEmpty) return null;
+    final contextResponse = await ApiService.authGet('/institutions/my-organization');
+    final organization = ApiService.decodeMap(contextResponse.body)['organization'];
+    if (contextResponse.statusCode != 200 || organization is! Map) {
+      throw Exception('Institution context unavailable');
+    }
+    final slug = organization['slug'];
+    if (organization['id'] is! int || organization['id'] <= 0 ||
+        slug is! String ||
+        !RegExp(r'^[a-z0-9][a-z0-9-]{1,79}$').hasMatch(slug)) {
+      throw const FormatException('Invalid institution context');
+    }
     final response = await ApiService.authGet(
       '/institutions/${Uri.encodeComponent(slug)}/management-report',
     );
