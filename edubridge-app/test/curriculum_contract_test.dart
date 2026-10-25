@@ -188,6 +188,7 @@ void main() {
         post: (path, body) async => http.Response(
           jsonEncode({'school_id': 99, 'item': curriculumSubject()}),
           201,
+          headers: {'content-type': 'application/json; charset=utf-8'},
         ),
       ),
     );
