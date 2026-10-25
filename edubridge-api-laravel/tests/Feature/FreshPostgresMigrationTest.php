@@ -182,4 +182,55 @@ class FreshPostgresMigrationTest extends TestCase
             ->where('child_id', $child)->where('status', 'pending')->count());
     }
 
+
+    public function test_postgres_prevents_two_active_enrollments_for_the_same_child(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Requires PostgreSQL.');
+        }
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        $this->assertTrue(Schema::hasIndex('student_enrollments', 'student_enrollments_one_active_per_child'));
+
+        $child = DB::table('children')->insertGetId(['name' => 'Existing student']);
+        $school = DB::table('schools')->insertGetId([
+            'name' => 'Enrolling School', 'slug' => 'safety-school',
+            'organization_id' => null,
+        ]);
+        $year = DB::table('academic_years')->insertGetId([
+            'school_id' => $school, 'name' => '2026/27',
+            'starts_on' => '2026-09-01', 'ends_on' => '2027-06-30',
+            'is_current' => true,
+        ]);
+        $grade = DB::table('grades')->insertGetId([
+            'school_id' => $school, 'name' => 'Grade 2',
+        ]);
+        $first = DB::table('sections')->insertGetId([
+            'grade_id' => $grade, 'academic_year_id' => $year, 'name' => 'A',
+        ]);
+        $second = DB::table('sections')->insertGetId([
+            'grade_id' => $grade, 'academic_year_id' => $year, 'name' => 'B',
+        ]);
+
+        DB::table('student_enrollments')->insert([
+            'child_id' => $child, 'section_id' => $first, 'status' => 'active',
+        ]);
+        try {
+            DB::table('student_enrollments')->insert([
+                'child_id' => $child, 'section_id' => $second, 'status' => 'active',
+            ]);
+            $this->fail('Second active enrollment was accepted.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->assertSame('23505', (string) $e->getCode());
+        }
+
+        DB::table('student_enrollments')->where('child_id', $child)->update([
+            'status' => 'left',
+        ]);
+        DB::table('student_enrollments')->insert([
+            'child_id' => $child, 'section_id' => $second, 'status' => 'active',
+        ]);
+        $this->assertSame(1, DB::table('student_enrollments')
+            ->where('child_id', $child)->where('status', 'active')->count());
+    }
+
 }
