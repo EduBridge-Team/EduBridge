@@ -5,6 +5,7 @@ import '../../utils/presentation_text.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../interactive_lesson/starter_lesson_library_entry.dart';
 
 import '../../app_icons.dart';
 import '../../services/api_service.dart';
