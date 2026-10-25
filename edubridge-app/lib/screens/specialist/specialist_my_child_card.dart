@@ -194,7 +194,7 @@ extension _MyChildCardExtension on _SpecialistDashboardScreenState {
                       ),
                       onPressed: isPending
                           ? () => _openEvaluation(row)
-                          : () => _viewEvaluation(childId),
+                          : () => _viewEvaluation(childId, childName: name),
                     ),
                   ),
                 ),
