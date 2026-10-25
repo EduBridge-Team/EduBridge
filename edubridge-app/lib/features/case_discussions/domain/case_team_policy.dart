@@ -50,8 +50,9 @@ abstract final class CaseTeamPolicy {
     if (role == 'admin') return true;
     // A missing local identity must not expose unassigned children to a teacher.
     if (userId == null) return false;
-    if (role == 'teacher')
+    if (role == 'teacher') {
       return child['assigned_teacher_id']?.toString() == userId.toString();
+    }
     if (role == 'specialist') return specialistIds(child).contains(userId);
     return false;
   }).toList();

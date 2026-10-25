@@ -25,6 +25,7 @@ class StudentProfileActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = JisrColors.of(context);
+    final badgeLabel = badge;
     return Padding(
       padding: const EdgeInsets.only(bottom: 11),
       child: Material(
@@ -70,7 +71,7 @@ class StudentProfileActionCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (badge != null)
+                if (badgeLabel != null)
                   Flexible(
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -83,7 +84,7 @@ class StudentProfileActionCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
-                        badge,
+                        badgeLabel,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
