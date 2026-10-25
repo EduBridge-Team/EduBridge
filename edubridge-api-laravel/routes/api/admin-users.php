@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+// School account identity provisioning is admin-only.
+Route::post('/admin/school-accounts', [\App\Http\Controllers\SchoolProvisionController::class, 'independent'])
+    ->middleware(['role:admin', 'throttle:10,1']);
+
 // إدارة المستخدمين
 Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])
     ->middleware(['role:admin', 'throttle:10,1']);

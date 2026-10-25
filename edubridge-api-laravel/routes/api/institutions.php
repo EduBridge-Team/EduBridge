@@ -43,11 +43,17 @@ Route::get('/institutions/my-organization', function (\Illuminate\Http\Request $
     return response()->json(['organization' => $organizations->first()]);
 });
 
+// Explicit full path is also recognized by the Flutter ↔ Laravel contract checker.
+Route::get('/institutions/{organizationSlug}/management-report', [InstitutionManagementReportController::class, 'index'])
+    ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
+    ->middleware('organization.member:owner,admin,school_admin');
+
 Route::prefix('/institutions/{organizationSlug}')
     ->where(['organizationSlug' => '[a-z0-9][a-z0-9-]{1,79}'])
     ->middleware('organization.member:owner,admin,school_admin')
     ->group(function () {
-        Route::get('/management-report', [InstitutionManagementReportController::class, 'index']);
+        Route::post('/school-accounts', [\App\Http\Controllers\SchoolProvisionController::class, 'affiliated'])
+            ->middleware('throttle:10,1');
         Route::get('/teachers', [InstitutionTeacherMembershipController::class, 'index']);
         Route::patch('/teachers/{teacher}', [InstitutionTeacherMembershipController::class, 'update'])->whereNumber('teacher');
         Route::get('/teacher-invitations', [InstitutionTeacherInvitationController::class, 'index']);
