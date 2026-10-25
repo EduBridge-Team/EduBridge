@@ -138,10 +138,11 @@ class _AdminCreateAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(role == 'institution'
-              ? context.l10n.institutionRole
-              : context.l10n.ministryRole),
+        appBar: BrandAppBar(
+          leading: const BackButton(),
+          title: Text(
+            '${context.l10n.createAccount} — ${role == 'institution' ? context.l10n.institutionRole : context.l10n.ministryRole}',
+          ),
         ),
         body: _CreateAccountSheet(initialRole: role),
       );
