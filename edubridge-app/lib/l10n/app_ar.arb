@@ -11017,6 +11017,27 @@
   "academicSectionPrerequisite": "أضف سنة دراسية وصفًا قبل إنشاء شعبة.",
   "@academicSectionPrerequisite": {
     "description": "School academic management: academicSectionPrerequisite."
-  }
-
+  },
+  "curriculumTitle": "الفصول الدراسية والمواد",
+  "@curriculumTitle": {"description": "School curriculum management."},
+  "curriculumTerms": "الفصول الدراسية",
+  "@curriculumTerms": {"description": "School curriculum management."},
+  "curriculumSubjects": "المواد الدراسية",
+  "@curriculumSubjects": {"description": "School curriculum management."},
+  "curriculumAddTerm": "إضافة فصل دراسي",
+  "@curriculumAddTerm": {"description": "School curriculum management."},
+  "curriculumAddSubject": "إضافة مادة دراسية",
+  "@curriculumAddSubject": {"description": "School curriculum management."},
+  "curriculumPosition": "ترتيب الفصل داخل السنة",
+  "@curriculumPosition": {"description": "School curriculum management."},
+  "curriculumCode": "رمز المادة (اختياري)",
+  "@curriculumCode": {"description": "School curriculum management."},
+  "curriculumActive": "مادة مفعّلة",
+  "@curriculumActive": {"description": "School curriculum management."},
+  "curriculumInactive": "مادة غير مفعّلة",
+  "@curriculumInactive": {"description": "School curriculum management."},
+  "curriculumYearRequired": "أضف سنة دراسية قبل إنشاء فصل دراسي.",
+  "@curriculumYearRequired": {"description": "School curriculum management."},
+  "curriculumTermInvalid": "اختر سنة، وترتيبًا متاحًا من ١ إلى ٢٠، وتاريخ نهاية بعد البداية ضمن السنة المختارة.",
+  "@curriculumTermInvalid": {"description": "School curriculum management."}
 }
