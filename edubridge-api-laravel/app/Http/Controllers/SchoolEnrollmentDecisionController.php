@@ -70,7 +70,7 @@ class SchoolEnrollmentDecisionController extends Controller
                     ->where('g.school_id', $school->id)
                     ->where('y.school_id', $school->id)
                     ->where('g.is_active', true)->where('y.is_current', true)
-                    ->select('s.id', 's.capacity')->first();
+                    ->select('s.id', 's.capacity')->lockForUpdate()->first();
                 if (!$section) {
                     return response()->json(['error' => 'Section unavailable'], 422);
                 }
