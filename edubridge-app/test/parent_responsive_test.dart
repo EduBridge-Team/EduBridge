@@ -72,7 +72,7 @@ void main() {
               'id': 6, 'name': 'Long child name اسم طفل طويل لاختبار الشاشة',
               'age': 7, 'status': 'assigned',
               'disability_type': 'Long description وصف طويل لاختبار التفاف النص',
-            }]}), 200);
+            }]}), 200, headers: {'content-type': 'application/json; charset=utf-8'});
           }
           if (request.url.path.endsWith('/enrollment-requests')) {
             return http.Response(jsonEncode({
